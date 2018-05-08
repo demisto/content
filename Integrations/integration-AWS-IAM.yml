@@ -1,0 +1,785 @@
+commonfields:
+  id: AWS - IAM
+  version: -1
+name: AWS - IAM
+display: AWS - IAM
+category: IT Services
+image: data:image/png;base64,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
+description: Amazon Web Services Identity and Access Management (IAM)
+configuration:
+- display: AWS Access Key
+  name: accesskey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: AWS Secret Key
+  name: secretkey
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: |+
+    import boto3
+    from datetime import datetime
+
+    AWS_ACCESS_KEY = demisto.params()['accesskey']
+    AWS_SECRET_KEY = demisto.params()['secretkey']
+
+    client = boto3.client('iam',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+
+    def create_entry(title,data, ec):
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
+            'EntryContext': ec
+        }
+
+    def create_user(args):
+        if args.get('path') is not None:
+            response = client.create_user(UserName=args.get('userName'),Path=args.get('path'))
+        else:
+            response = client.create_user(UserName=args.get('userName'))
+        user = response['User']
+        data = {
+            'UserName': user['UserName'],
+            'UserId': user['UserId'],
+            'Arn': user['Arn'],
+            'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
+            'Path': user['Path'],
+        }
+        if args.get('managementConsoleAccess') == 'Yes':
+            loginProfile = client.create_login_profile(
+                        UserName=args.get('userName'),
+                        Password=args.get('password'),
+                        PasswordResetRequired=True if args.get('passwordResetRequired') == 'True'  else False
+                    )
+            data.update({'ManegmentConsolePassword':args.get('password')})
+        if args.get('programmaticAccess') == 'Yes':
+            iam = client.create_access_key(UserName=args.get('userName'))
+            AccessKey = iam['AccessKey']
+            data.update({'AccessKey':{
+                'UserName': AccessKey['UserName'],
+                'AccessKeyId': AccessKey['AccessKeyId'],
+                'SecretAccessKey': AccessKey['SecretAccessKey'],
+                'Status': AccessKey['Status'],
+                'CreateDate': datetime.strftime(AccessKey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
+                }})
+
+        ec = {'AWS.IAM.Users': data}
+        return create_entry('AWS IAM Users', data, ec)
+
+    def get_user(args):
+        response = client.get_user(UserName=args.get('userName'))
+        user = response['User']
+        data = ({
+            'UserName': user['UserName'],
+            'UserId': user['UserId'],
+            'Arn': user['Arn'],
+            'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+            'Path':user['Path'],
+        })
+        ec = {'AWS.IAM.Users': data}
+        return create_entry('AWS IAM Users', data, ec)
+
+    def list_users():
+        data = []
+        paginator = client.get_paginator('list_users')
+        for response in paginator.paginate():
+            for user in response['Users']:
+                data.append ({
+                    'UserName': user['UserName'],
+                    'UserId': user['UserId'],
+                    'Arn': user['Arn'],
+                    'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
+                    'Path': user['Path'],
+                })
+        ec = {'AWS.IAM.Users': data}
+        return create_entry('AWS IAM Users', data, ec)
+
+    def update_user(args):
+        kwargs = {'UserName': args.get('oldUserName')}
+        if args.get('newUserName'):
+            kwargs.update({'NewUserName': args.get('newUserName')})
+        if args.get('newPath'):
+            kwargs.update({'NewPath': args.get('newPath')})
+
+        response = client.update_user(**kwargs)
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "Changed UserName {0} To: {1}".format(args.get('oldUserName'), args.get('newUserName'))
+
+    def delete_user(args):
+        response = client.delete_user(UserName=args.get('userName'))
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return 'The User {0} has been deleted'.format(args.get('userName'))
+
+    def change_user_password(args):
+        response = client.update_login_profile(
+            Password=args.get('newPassword'),
+            UserName=args.get('userName'),
+             PasswordResetRequired=True if args.get('passwordResetRequired') == 'True'  else False
+            )
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "The user {0} Password was changed".format(args.get('userName'))
+
+    def create_group(args):
+        if args.get('path') is not None:
+            response = client.create_group(GroupName=args.get('groupName'),Path=args.get('path'))
+        else:
+            response = client.create_group(GroupName=args.get('groupName'))
+        group = response['Group']
+        data = ({
+            'GroupName': group['GroupName'],
+            'GroupId': group['GroupId'],
+            'Arn': group['Arn'],
+            'CreateDate': datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+            'Path': group['Path'],
+        })
+        ec = {'AWS.IAM.Groups': data}
+        return create_entry('AWS IAM Groups', data, ec)
+
+    def list_groups():
+        data = []
+        paginator = client.get_paginator('list_groups')
+        for response in paginator.paginate():
+            for group in response['Groups']:
+                data.append ({
+                    'GroupName': group['GroupName'],
+                    'GroupId': group['GroupId'],
+                    'Arn': group['Arn'],
+                    'CreateDate': datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                    'Path': group['Path'],
+                })
+        ec = {'AWS.IAM.Groups': data}
+        return create_entry('AWS IAM Groups', data, ec)
+
+    def list_groups_for_user(args):
+        data=[]
+        response = client.list_groups_for_user(UserName=args.get('userName'))
+        for group in response['Groups']:
+            data.append ({
+                'UserName': args.get('userName'),
+                'GroupName': group['GroupName'],
+                'GroupId': group['GroupId'],
+                'Arn': group['Arn'],
+                'CreateDate': datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                'Path': group['Path'],
+                })
+
+        ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).Groups': data}
+        return create_entry('AWS IAM User Groups', data, ec)
+
+    def add_user_to_group(args):
+        response = client.add_user_to_group(
+            GroupName=args.get('groupName'),
+            UserName=args.get('userName')
+        )
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "The user {0} was added to the IAM group: {1}".format(args.get('userName'), args.get('groupName'))
+
+    def create_access_key(args):
+        response = client.create_access_key(UserName=args.get('userName'))
+        AccessKey = response['AccessKey']
+        data = ({
+            'UserName': AccessKey['UserName'],
+            'AccessKeyId': AccessKey['AccessKeyId'],
+            'SecretAccessKey': AccessKey['SecretAccessKey'],
+            'Status': AccessKey['Status'],
+            'CreateDate': datetime.strftime(AccessKey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
+        })
+
+        ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).AccessKeys': data}
+        return create_entry('AWS IAM Users', data, ec)
+
+    def update_access_key(args):
+        response = client.update_access_key(
+            UserName=args.get('userName'),
+            AccessKeyId=args.get('accessKeyId'),
+            Status=args.get('status')
+            )
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "Access Key with ID {0} was set to status {1}:".format(args.get('accessKeyId'),args.get('status'))
+
+    def list_access_key_for_user(args):
+        data =[]
+        response = client.list_access_keys(UserName=args.get('userName'))
+        for accesskey in response['AccessKeyMetadata']:
+            data.append({
+                'UserName': accesskey['UserName'],
+                'AccessKeyId': accesskey['AccessKeyId'],
+                'Status': accesskey['Status'],
+                'CreateDate': datetime.strftime(accesskey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
+            })
+
+        ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).AccessKeys': data}
+        return create_entry('AWS IAM Users Access Keys', data, ec)
+
+    def list_policies(args):
+        data = []
+        response = client.list_policies(
+            Scope=args.get('scope'),
+            OnlyAttached=True if args.get('onlyAttached') == 'True'  else False
+            )
+        for policy in response['Policies']:
+            data.append({
+                'PolicyName': policy['PolicyName'],
+                'PolicyId': policy['PolicyId'],
+                'Arn': policy['Arn'],
+                'Path': policy['Path'],
+                'DefaultVersionId': policy['DefaultVersionId'],
+                'IsAttachable': policy['IsAttachable'],
+                'AttachmentCount': policy['AttachmentCount'],
+                'CreateDate': datetime.strftime(policy['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                'UpdateDate': datetime.strftime(policy['UpdateDate'], '%Y-%m-%dT%H:%M:%S'),
+            })
+        ec = {'AWS.IAM.Policies': data}
+        return create_entry('AWS IAM Policies', data, ec)
+
+    def list_roles(args):
+        data = []
+        paginator = client.get_paginator('list_roles')
+        for response in paginator.paginate():
+            for role in response['Roles']:
+                data.append ({
+                    'RoleName': role['RoleName'],
+                    'RoleId': role['RoleId'],
+                    'Arn': role['Arn'],
+                    'CreateDate': datetime.strftime(role['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                    'Path': role['Path'],
+                    'AssumeRolePolicyDocument': role['AssumeRolePolicyDocument'],
+                    'Description': role['Description'],
+                    'MaxSessionDuration': role['MaxSessionDuration']
+                })
+        ec = {'AWS.IAM.Roles': data}
+        return create_entry('AWS IAM Roles', data, ec)
+
+    def attach_policy(args):
+        if args.get('type') == 'User':
+            response = client.attach_user_policy(
+                UserName=args.get('entityName'),
+                PolicyArn=args.get('policyArn')
+            )
+        if args.get('type') == 'Group':
+            response = client.attach_group_policy(
+                GroupName=args.get('entityName'),
+                PolicyArn=args.get('policyArn')
+            )
+        if args.get('type') == 'Role':
+            response = client.attach_role_policy(
+                RoleName=args.get('entityName'),
+                PolicyArn=args.get('policyArn')
+            )
+
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "Policy was attached to {0}: {1} ".format(args.get('type'),args.get('entityName'))
+
+
+    def detach_policy(args):
+        if args.get('type') == 'User':
+            response = client.detach_user_policy(
+                UserName=args.get('entityName'),
+                PolicyArn=args.get('policyArn')
+            )
+        if args.get('type') == 'Group':
+            response = client.detach_group_policy(
+                GroupName=args.get('entityName'),
+                PolicyArn=args.get('policyArn')
+            )
+        if args.get('type') == 'Role':
+            response = client.detach_role_policy(
+                RoleName=args.get('entityName'),
+                PolicyArn=args.get('policyArn')
+            )
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "Policy was deattached from {0}: {1} ".format(args.get('type'),args.get('entityName'))
+
+    def delete_login_profile(args):
+        response = client.delete_login_profile(UserName=args.get('userName'))
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "The user {0} login profile has been deleted".format(args.get('userName'))
+
+    def delete_group(args):
+        response = client.delete_group(GroupName=args.get('groupName'))
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "The Group {0} has been deleted".format(args.get('groupName'))
+
+    def remove_user_from_group(args):
+        response = client.remove_user_from_group(
+            GroupName=args.get('groupName'),
+            UserName=args.get('userName')
+        )
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return "The User {0} has been removed from the group {1}".format(args.get('userName'),args.get('groupName'))
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        response = list_groups()
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+          result = ('ok')
+
+    if demisto.command() == 'aws-iam-create-user':
+        result = create_user(demisto.args())
+
+    if demisto.command() == 'aws-iam-get-user':
+        result = get_user(demisto.args())
+
+    if demisto.command() == 'aws-iam-list-users':
+        result = list_users()
+
+    if demisto.command() == 'aws-iam-update-user':
+        result = update_user(demisto.args())
+
+    if demisto.command() == 'aws-iam-delete-user':
+        result = delete_user(demisto.args())
+
+    if demisto.command() == 'aws-iam-change-user-password':
+        result = change_user_password(demisto.args())
+
+    if demisto.command() == 'aws-iam-create-group':
+        result = create_group(demisto.args())
+
+    if demisto.command() == 'aws-iam-list-groups':
+        result = list_groups()
+
+    if demisto.command() == 'aws-iam-list-groups-for-user':
+        result = list_groups_for_user(demisto.args())
+
+    if demisto.command() == 'aws-iam-create-access-key':
+        result = create_access_key(demisto.args())
+
+    if demisto.command() == 'aws-iam-update-access-key':
+        result = update_access_key(demisto.args())
+
+    if demisto.command() == 'aws-iam-list-access-key':
+        result = list_access_key_for_user(demisto.args())
+
+    if demisto.command() == 'aws-iam-list-policies':
+        result = list_policies(demisto.args())
+
+    if demisto.command() == 'aws-iam-list-roles':
+        result = list_roles(demisto.args())
+
+    if demisto.command() == 'aws-iam-attach-policy':
+        result = attach_policy(demisto.args())
+
+    if demisto.command() == 'aws-iam-detach-policy':
+        result = detach_policy(demisto.args())
+
+    if demisto.command() == 'aws-iam-delete-login-profile':
+        result = delete_login_profile(demisto.args())
+
+    if demisto.command() == 'aws-iam-add-user-to-group':
+        result = add_user_to_group(demisto.args())
+
+    if demisto.command() == 'aws-iam-delete-group':
+        result = delete_group(demisto.args())
+
+    if demisto.command() == 'aws-iam-remove-user-from-group':
+        result = remove_user_from_group(demisto.args())
+
+    demisto.results(result)
+    sys.exit(0)
+
+  type: python
+  commands:
+  - name: aws-iam-create-user
+    arguments:
+    - name: userName
+      description: The name of the user to create.
+    - name: path
+      description: The path for the user name. This parameter is optional. If it is
+        not included, it defaults to a slash (/).
+    - name: managementConsoleAccess
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Enables a password that allows users to sign-in to the AWS Management
+        Console.
+    - name: programmaticAccess
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Enables an access key ID and secret access key for the AWS API,
+        CLI, SDK, and other development tools.
+    - name: password
+      description: Set Management Console Password. Only use if managementConsoleAccess
+        is set to 'Yes"
+    - name: passwordResetRequired
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether the user is required to set a new password on
+        next sign-in. Only use if managementConsoleAccess is set to 'Yes"
+    outputs:
+    - contextPath: AWS.IAM.Users.UserName
+      description: The friendly name identifying the user.
+      type: string
+    - contextPath: AWS.IAM.Users.UserId
+      description: The stable and unique string identifying the user.
+      type: string
+    - contextPath: AWS.IAM.Users.Arn
+      description: 'The Amazon Resource Name (ARN) that identifies the user. '
+      type: string
+    - contextPath: AWS.IAM.Users.CreateDate
+      description: The date and time, when the user was created.
+      type: date
+    - contextPath: AWS.IAM.Users.Path
+      description: The path to the user.
+      type: string
+    description: Creates a new IAM user for your AWS account.
+  - name: aws-iam-get-user
+    arguments:
+    - name: userName
+      description: 'The name of the user to get information about.  This parameter
+        is optional. If it is not included, it defaults to the user making the request. '
+    outputs:
+    - contextPath: AWS.IAM.Users.UserName
+      description: The friendly name identifying the user.
+      type: string
+    - contextPath: AWS.IAM.Users.UserId
+      description: The stable and unique string identifying the user.
+      type: string
+    - contextPath: AWS.IAM.Users.Arn
+      description: The Amazon Resource Name (ARN) that identifies the user.
+      type: string
+    - contextPath: AWS.IAM.Users.CreateDate
+      description: The date and time when the user was created.
+      type: date
+    - contextPath: AWS.IAM.Users.Path
+      description: The path to the user
+      type: string
+    description: Retrieves information about the specified IAM user, including the
+      user's creation date, path, unique ID, and ARN.  If you do not specify a user
+      name, IAM determines the user name implicitly based on the AWS access key ID
+      used to sign the request to this API.
+  - name: aws-iam-list-users
+    arguments: []
+    outputs:
+    - contextPath: AWS.IAM.Users.UserName
+      description: The friendly name identifying the user.
+      type: string
+    - contextPath: AWS.IAM.Users.UserId
+      description: The stable and unique string identifying the user.
+      type: string
+    - contextPath: AWS.IAM.Users.Arn
+      description: The Amazon Resource Name (ARN) that identifies the user.
+      type: string
+    - contextPath: AWS.IAM.Users.CreateDate
+      description: The date and time when the user was created.
+      type: date
+    - contextPath: AWS.IAM.Users.Path
+      description: The path to the user
+      type: string
+    description: Lists the IAM users, returns all users in the AWS account.
+  - name: aws-iam-update-user
+    arguments:
+    - name: oldUserName
+      required: true
+      description: Name of the user to update.
+    - name: newUserName
+      description: New name for the user. Include this parameter only if you're changing
+        the user's name.
+    - name: newPath
+      description: New path for the IAM user. Include this parameter only if you're
+        changing the user's path.
+    description: Updates the name and/or the path of the specified IAM user.
+  - name: aws-iam-delete-user
+    arguments:
+    - name: userName
+      required: true
+      description: The name of the user to delete.
+    description: Deletes the specified IAM user. The user must not belong to any groups
+      or have any access keys, signing certificates, or attached policies.
+  - name: aws-iam-change-user-password
+    arguments:
+    - name: userName
+      description: The name of the user whose password you want to update.
+    - name: newPassword
+      description: The new password for the specified IAM user.
+    - name: passwordResetRequired
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Allows this new password to be used only once by requiring the
+        specified IAM user to set a new password on next sign-in.
+    description: Changes the password for the specified IAM user.
+  - name: aws-iam-create-group
+    arguments:
+    - name: groupName
+      description: The name of the group to create. Do not include the path in this
+        value.
+    - name: path
+      description: The path to the group.
+    outputs:
+    - contextPath: AWS.IAM.Groups.GroupName
+      description: The friendly name that identifies the group.
+      type: string
+    - contextPath: AWS.IAM.Groups.GroupId
+      description: The stable and unique string identifying the group.
+      type: string
+    - contextPath: AWS.IAM.Groups.Arn
+      description: The Amazon Resource Name (ARN) specifying the group.
+      type: string
+    - contextPath: AWS.IAM.Groups.CreateDate
+      description: The date and time when the group was created.
+      type: date
+    - contextPath: AWS.IAM.Groups.Path
+      description: The path to the group.
+      type: string
+    description: Creates a new iam group.
+  - name: aws-iam-list-groups
+    arguments: []
+    outputs:
+    - contextPath: AWS.IAM.Groups.GroupName
+      description: The friendly name that identifies the group.
+      type: string
+    - contextPath: AWS.IAM.Groups.GroupId
+      description: 'The stable and unique string identifying the group. '
+      type: string
+    - contextPath: AWS.IAM.Groups.Arn
+      description: The Amazon Resource Name (ARN) specifying the group.
+      type: string
+    - contextPath: AWS.IAM.Groups.CreateDate
+      description: The date and time when the group was created.
+      type: date
+    - contextPath: AWS.IAM.Groups.Path
+      description: 'The path to the group. '
+      type: string
+    description: Lists all the IAM groups in the AWS account
+  - name: aws-iam-list-groups-for-user
+    arguments:
+    - name: userName
+      required: true
+      description: The name of the user to list groups for.
+    outputs:
+    - contextPath: AWS.IAM.Users.Groups.GroupName
+      description: The friendly name that identifies the group.
+      type: string
+    - contextPath: AWS.IAM.Users.Groups.GroupId
+      description: The stable and unique string identifying the group
+      type: string
+    - contextPath: AWS.IAM.Users.Groups.Arn
+      description: The Amazon Resource Name (ARN) specifying the group.
+      type: string
+    - contextPath: AWS.IAM.Users.Groups.CreateDate
+      description: The date and time when the group was created.
+      type: date
+    - contextPath: AWS.IAM.Users.Groups.Path
+      description: The path to the group.
+      type: string
+    description: Lists the IAM groups that the specified IAM user belongs to.
+  - name: aws-iam-add-user-to-group
+    arguments:
+    - name: userName
+      description: The name of the user to add.
+    - name: groupName
+      description: The name of the group to update.
+    description: Adds the specified user to the specified group.
+  - name: aws-iam-create-access-key
+    arguments:
+    - name: userName
+      description: The name of the IAM user that the new key will belong to.
+    outputs:
+    - contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
+      description: The ID for this access key.
+      type: string
+    - contextPath: AWS.IAM.Users.AccessKeys.SecretAccessKey
+      description: The secret key used to sign requests.
+      type: string
+    - contextPath: AWS.IAM.Users.AccessKeys.Status
+      description: The status of the access key. Active means that the key is valid
+        for API calls, while Inactive means it is not.
+      type: string
+    - contextPath: AWS.IAM.Users.AccessKeys.CreateDate
+      description: The date when the access key was created.
+      type: date
+    description: Creates a new AWS secret access key and corresponding AWS access
+      key ID for the specified user. The default status for new keys is Active .
+  - name: aws-iam-update-access-key
+    arguments:
+    - name: userName
+      description: The name of the user whose key you want to update.
+    - name: accessKeyId
+      required: true
+      description: The access key ID of the secret access key you want to update.
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Active
+      - Inactive
+      description: The status you want to assign to the secret access key. Active
+        means that the key can be used for API calls to AWS, while Inactive means
+        that the key cannot be used.
+    description: Changes the status of the specified access key from Active to Inactive,
+      or vice versa. This operation can be used to disable a user's key as part of
+      a key rotation workflow.
+  - name: aws-iam-list-access-key
+    arguments:
+    - name: userName
+      required: true
+      description: The name of the user.
+    outputs:
+    - contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
+      description: The ID for this access key.
+      type: string
+    - contextPath: AWS.IAM.Users.AccessKeys.Status
+      description: The status of the access key. Active means the key is valid for
+        API calls; Inactive means it is not.
+      type: string
+    - contextPath: AWS.IAM.Users.AccessKeys.CreateDate
+      description: The date when the access key was created.
+      type: date
+    - contextPath: AWS.IAM.Users.AccessKeys.UserName
+      description: The name of the IAM user that the key is associated with.
+      type: string
+    description: Returns information about the access key IDs associated with the
+      specified IAM user.
+  - name: aws-iam-list-policies
+    arguments:
+    - name: scope
+      auto: PREDEFINED
+      predefined:
+      - All
+      - AWS
+      - Local
+      description: The scope to use for filtering the results.  To list only AWS managed
+        policies, set Scope to AWS . To list only the customer managed policies in
+        your AWS account, set Scope to Local .
+      defaultValue: All
+    - name: onlyAttached
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: A flag to filter the results to only the attached policies.  When
+        OnlyAttached is true , the returned list contains only the policies that are
+        attached to an IAM user, group, or role. When OnlyAttached is false , or when
+        the parameter is not included, all policies are returned.
+      defaultValue: "False"
+    outputs:
+    - contextPath: AWS.IAM.Policies.PolicyName
+      description: The friendly name (not ARN) identifying the policy.
+      type: string
+    - contextPath: AWS.IAM.Policies.PolicyId
+      description: The stable and unique string identifying the policy.
+      type: string
+    - contextPath: AWS.IAM.Policies.Arn
+      description: 'The Amazon Resource Name (ARN). '
+      type: string
+    - contextPath: AWS.IAM.Policies.Path
+      description: The path to the policy.
+      type: string
+    - contextPath: AWS.IAM.Policies.DefaultVersionId
+      description: The identifier for the version of the policy that is set as the
+        default version.
+      type: string
+    - contextPath: AWS.IAM.Policies.IsAttachable
+      description: Specifies whether the policy can be attached to an IAM user, group,
+        or role.
+      type: string
+    - contextPath: AWS.IAM.Policies.CreateDate
+      description: when the policy was created.
+      type: date
+    - contextPath: AWS.IAM.Policies.UpdateDate
+      description: when the policy was last updated.
+      type: date
+    - contextPath: AWS.IAM.Policies.AttachmentCount
+      description: The number of entities (users, groups, and roles) that the policy
+        is attached to.
+      type: number
+    description: Lists all the managed policies that are available in your AWS account,
+      including your own customer-defined managed policies and all AWS managed policies.
+  - name: aws-iam-list-roles
+    arguments: []
+    outputs:
+    - contextPath: AWS.IAM.Roles.RoleName
+      description: The friendly name that identifies the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.RoleId
+      description: The stable and unique string identifying the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.Arn
+      description: The Amazon Resource Name (ARN) specifying the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.CreateDate
+      description: The date and time when the role was created.
+      type: date
+    - contextPath: AWS.IAM.Roles.Path
+      description: The path to the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.AssumeRolePolicyDocument
+      description: The policy that grants an entity permission to assume the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.Description
+      description: A description of the role that you provide.
+      type: string
+    - contextPath: AWS.IAM.Roles.MaxSessionDuration
+      description: The maximum session duration (in seconds) for the specified role.
+        Anyone who uses the AWS CLI or API to assume the role can specify the duration
+        using the optional DurationSeconds API parameter or duration-seconds CLI parameter.
+      type: number
+    description: Lists all IAM roles
+  - name: aws-iam-attach-policy
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - User
+      - Group
+      - Role
+      description: The Type of IAM Entity
+    - name: entityName
+      description: The name (friendly name, not ARN) of the IAM Entity to attach the
+        policy to.
+    - name: policyArn
+      description: The Amazon Resource Name (ARN) of the IAM policy you want to attach.
+    description: Attaches the specified managed policy to the specified IAM Entity.
+  - name: aws-iam-detach-policy
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - User
+      - Group
+      - Role
+      description: IAM Entity Type
+    - name: entityName
+      description: The name (friendly name, not ARN) of the IAM Entity to detach the
+        policy from.
+    - name: policyArn
+      description: The Amazon Resource Name (ARN) of the IAM policy you want to detach.
+    description: Removes the specified managed policy from the specified IAM Entity.
+  - name: aws-iam-delete-login-profile
+    arguments:
+    - name: userName
+      required: true
+      description: The name of the user whose password you want to delete.
+    description: Deletes the password for the specified IAM user, which terminates
+      the user's ability to access AWS services through the AWS Management Console.
+  - name: aws-iam-delete-group
+    arguments:
+    - name: groupName
+      required: true
+      description: The name of the IAM group to delete.
+    description: Deletes the specified IAM group. The group must not contain any users
+      or have any attached policies.
+  - name: aws-iam-remove-user-from-group
+    arguments:
+    - name: userName
+      required: true
+      description: The name of the user to remove.
+    - name: groupName
+      required: true
+      description: The name of the group to update.
+    description: Removes the specified user from the specified group.
+  dockerimage: demisto/boto3
+  runonce: false

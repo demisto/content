@@ -1,0 +1,666 @@
+id: 286ba035-ee5c-4c43-8d20-ef39c428ed62
+version: 8
+name: AWS-IAM-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 358b0b16-cf24-4da2-888c-1ef4e06fa77c
+    type: start
+    task:
+      id: 358b0b16-cf24-4da2-888c-1ef4e06fa77c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: c828a359-dc7f-4fef-8e26-e0ff01ba8d3c
+    type: regular
+    task:
+      id: c828a359-dc7f-4fef-8e26-e0ff01ba8d3c
+      version: -1
+      name: aws-iam-create-user
+      description: Creates a new IAM user for your AWS account.
+      script: AWS - IAM|||aws-iam-create-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context: {}
+      managementConsoleAccess:
+        simple: "Yes"
+      password:
+        simple: ${NEW_PASSWORD}
+      passwordResetRequired:
+        simple: "True"
+      path: {}
+      programmaticAccess:
+        simple: "Yes"
+      userName:
+        simple: test3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 660c0b48-43e5-49dd-8d7e-72a80304807d
+    type: regular
+    task:
+      id: 660c0b48-43e5-49dd-8d7e-72a80304807d
+      version: -1
+      name: aws-iam-get-user
+      description: Retrieves information about the specified IAM user, including the
+        user's creation date, path, unique ID, and ARN.  If you do not specify a user
+        name, IAM determines the user name implicitly based on the AWS access key
+        ID used to sign the request to this API.
+      script: AWS - IAM|||aws-iam-get-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      userName:
+        simple: test3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: da089e97-12c3-4639-8fd1-4d770aaeeca9
+    type: regular
+    task:
+      id: da089e97-12c3-4639-8fd1-4d770aaeeca9
+      version: -1
+      name: aws-iam-list-users
+      description: Lists the IAM users, returns all users in the AWS account.
+      script: AWS - IAM|||aws-iam-list-users
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 1232d59e-fcc7-4b2e-881d-5b993f374327
+    type: regular
+    task:
+      id: 1232d59e-fcc7-4b2e-881d-5b993f374327
+      version: -1
+      name: aws-iam-update-user
+      description: Updates the name and/or the path of the specified IAM user.
+      script: AWS - IAM|||aws-iam-update-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      newPath: {}
+      newUserName:
+        simple: test2
+      oldUserName:
+        simple: test3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 83c49d42-f23e-434d-87f7-6cc386a6460b
+    type: regular
+    task:
+      id: 83c49d42-f23e-434d-87f7-6cc386a6460b
+      version: -1
+      name: aws-iam-change-user-password
+      description: Changes the password for the specified IAM user.
+      script: AWS - IAM|||aws-iam-change-user-password
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      newPassword:
+        simple: Ab12341224422!!
+      passwordResetRequired:
+        simple: "True"
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "6":
+    id: "6"
+    taskid: c3b363a8-81b5-465c-87d9-13320074792e
+    type: regular
+    task:
+      id: c3b363a8-81b5-465c-87d9-13320074792e
+      version: -1
+      name: aws-iam-create-group
+      description: Creates a new iam group.
+      script: AWS - IAM|||aws-iam-create-group
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      groupName:
+        simple: test
+      path: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 925e4333-fb4c-4e14-8d70-155341b8128d
+    type: regular
+    task:
+      id: 925e4333-fb4c-4e14-8d70-155341b8128d
+      version: -1
+      name: aws-iam-add-user-to-group
+      description: Adds the specified user to the specified group.
+      script: AWS - IAM|||aws-iam-add-user-to-group
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      groupName:
+        simple: test
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "8":
+    id: "8"
+    taskid: fe1e9b23-7718-40c5-8503-00222bcb9c22
+    type: regular
+    task:
+      id: fe1e9b23-7718-40c5-8503-00222bcb9c22
+      version: -1
+      name: aws-iam-list-groups
+      description: Lists all the IAM groups in the AWS account
+      script: AWS - IAM|||aws-iam-list-groups
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "9":
+    id: "9"
+    taskid: aa0bb99e-5081-4231-8d73-6dc562b2acfb
+    type: regular
+    task:
+      id: aa0bb99e-5081-4231-8d73-6dc562b2acfb
+      version: -1
+      name: aws-iam-list-groups-for-user
+      description: Lists the IAM groups that the specified IAM user belongs to.
+      script: AWS - IAM|||aws-iam-list-groups-for-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "10":
+    id: "10"
+    taskid: eae56e78-707e-40d8-89a2-824db14d8aae
+    type: regular
+    task:
+      id: eae56e78-707e-40d8-89a2-824db14d8aae
+      version: -1
+      name: aws-iam-create-access-key
+      description: Creates a new AWS secret access key and corresponding AWS access
+        key ID for the specified user. The default status for new keys is Active .
+      script: AWS - IAM|||aws-iam-create-access-key
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "11":
+    id: "11"
+    taskid: f2f0e513-b089-4c64-8f80-ab61a0d97c37
+    type: regular
+    task:
+      id: f2f0e513-b089-4c64-8f80-ab61a0d97c37
+      version: -1
+      name: aws-iam-list-access-key
+      description: Returns information about the access key IDs associated with the
+        specified IAM user.
+      script: AWS - IAM|||aws-iam-list-access-key
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 9a394019-758e-4daa-8f23-00f599b978b5
+    type: regular
+    task:
+      id: 9a394019-758e-4daa-8f23-00f599b978b5
+      version: -1
+      name: aws-iam-update-access-key
+      description: Changes the status of the specified access key from Active to Inactive,
+        or vice versa. This operation can be used to disable a user's key as part
+        of a key rotation workflow.
+      script: AWS - IAM|||aws-iam-update-access-key
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      accessKeyId:
+        simple: ${AWS.IAM.Users.AccessKeys.AccessKeyId}
+      extend-context: {}
+      status:
+        simple: Inactive
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 9fad9186-5462-4d5a-8b30-b3820e3bc692
+    type: regular
+    task:
+      id: 9fad9186-5462-4d5a-8b30-b3820e3bc692
+      version: -1
+      name: aws-iam-list-policies
+      description: Lists all the managed policies that are available in your AWS account,
+        including your own customer-defined managed policies and all AWS managed policies.
+      script: AWS - IAM|||aws-iam-list-policies
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      onlyAttached:
+        simple: "False"
+      scope:
+        simple: AWS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 88b01e61-75e3-483d-8240-ab46e085fa4a
+    type: regular
+    task:
+      id: 88b01e61-75e3-483d-8240-ab46e085fa4a
+      version: -1
+      name: aws-iam-attach-policy
+      description: Attaches the specified managed policy to the specified IAM Entity.
+      script: AWS - IAM|||aws-iam-attach-policy
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entityName:
+        simple: test2
+      policyArn:
+        simple: ${AWS.IAM.Policies.[0].Arn}
+      type:
+        simple: User
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 89f3451e-78c0-4eda-83c8-d1ead9c04ad8
+    type: regular
+    task:
+      id: 89f3451e-78c0-4eda-83c8-d1ead9c04ad8
+      version: -1
+      name: aws-iam-detach-policy
+      description: Removes the specified managed policy from the specified IAM Entity.
+      script: AWS - IAM|||aws-iam-detach-policy
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      entityName:
+        simple: test2
+      policyArn:
+        simple: ${AWS.IAM.Policies.[0].Arn}
+      type:
+        simple: User
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 1c75eb0b-017a-4534-82d6-d1a75f9e8b4c
+    type: regular
+    task:
+      id: 1c75eb0b-017a-4534-82d6-d1a75f9e8b4c
+      version: -1
+      name: aws-iam-delete-login-profile
+      description: Deletes the password for the specified IAM user, which terminates
+        the user's ability to access AWS services through the AWS Management Console.
+      script: AWS - IAM|||aws-iam-delete-login-profile
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 9dfecb55-32ad-473c-837d-0c144381e3ad
+    type: regular
+    task:
+      id: 9dfecb55-32ad-473c-837d-0c144381e3ad
+      version: -1
+      name: aws-iam-delete-user
+      description: Deletes the specified IAM user. The user must not belong to any
+        groups or have any access keys, signing certificates, or attached policies.
+      script: AWS - IAM|||aws-iam-delete-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+  "18":
+    id: "18"
+    taskid: c2be548e-985a-4ed6-86a3-fcb774503961
+    type: regular
+    task:
+      id: c2be548e-985a-4ed6-86a3-fcb774503961
+      version: -1
+      name: aws-iam-remove-user-from-group
+      description: Removes the specified user from the specified group.
+      script: AWS - IAM|||aws-iam-remove-user-from-group
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      groupName:
+        simple: test
+      userName:
+        simple: test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 9a1bf667-9750-426d-8627-7891f171e3fe
+    type: regular
+    task:
+      id: 9a1bf667-9750-426d-8627-7891f171e3fe
+      version: -1
+      name: aws-iam-delete-group
+      description: Deletes the specified IAM group. The group must not contain any
+        users or have any attached policies.
+      script: AWS - IAM|||aws-iam-delete-group
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    scriptarguments:
+      groupName:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 9b1e8239-3462-4cb9-838f-d09da9db567c
+    type: regular
+    task:
+      id: 9b1e8239-3462-4cb9-838f-d09da9db567c
+      version: -1
+      name: GeneratePassword
+      description: "This function generates a password and allows various parameters
+        to customize the properties of the password depending on the use case (e.g.
+        password complexity requirements).  The default behavior is to generate a
+        password of  *random length* including all four character classes (upper,
+        lower, digits, symbols) with at least five and at most ten characters per
+        class. \n\nThe min_* values all default to 0. This means that if the command
+        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
+        a password of length zero could be generated. It is therefore recommended
+        to always include a min_* parameter that matches. \n\nThe debug parameter
+        will print certain properties of the command into the WarRoom for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      debug: {}
+      max_digits: {}
+      max_lcase: {}
+      max_symbols: {}
+      max_ucase: {}
+      min_digits:
+        simple: "4"
+      min_lcase:
+        simple: "3"
+      min_symbols:
+        simple: "3"
+      min_ucase:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "21":
+    id: "21"
+    taskid: 39952e18-fcd8-4744-893a-0e21e1afd18e
+    type: regular
+    task:
+      id: 39952e18-fcd8-4744-893a-0e21e1afd18e
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3740,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
