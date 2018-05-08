@@ -1,10 +1,11 @@
 id: process_email_-_generic
 version: -1
 name: Process Email - Generic
-fromversion: 3.6.0
-releaseNotes: "Add support for EWS and Phishing default mapping"
-description: Add email details to the relevant context entities and handle the case
-  where original emails are attached.
+fromversion: 3.5.0
+toversion: 3.5.9
+releaseNotes: "-"
+description: Add email details into the relevant context entities and handle the case
+  where you have attached original emails.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,22 +21,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
-      - "10"
+      - "1"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 265,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: f2b26499-4ab2-4361-8349-61c6ee840908
+    taskid: cc8169d1-5e52-455d-8860-023d5a7cf70b
     type: condition
     task:
-      id: f2b26499-4ab2-4361-8349-61c6ee840908
+      id: cc8169d1-5e52-455d-8860-023d5a7cf70b
       version: -1
       name: Do we have original emails attached?
       description: Check if we have any attachments with relevant attachment types
@@ -46,21 +46,21 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "8"
+      - "2"
       "yes":
       - "3"
     scriptarguments:
       value:
-        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2
-          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
+          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
+          0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
+          0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 545
+          "x": 265,
+          "y": 195
         }
       }
   "2":
@@ -78,7 +78,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "4"
     scriptarguments:
       append: {}
       key:
@@ -91,40 +91,40 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 370
         }
       }
   "3":
     id: "3"
-    taskid: e88faaf2-0aa0-46da-8f82-611736b3b2b5
+    taskid: bd9c830c-abc5-4e0e-878f-e77493c6e92d
     type: regular
     task:
-      id: e88faaf2-0aa0-46da-8f82-611736b3b2b5
+      id: bd9c830c-abc5-4e0e-878f-e77493c6e92d
       version: -1
       name: Add original email attachments to context
-      scriptName: ParseEmailFiles
       description: ""
+      scriptName: ParseEmailFiles
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "4"
     scriptarguments:
       entryid:
-        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2
-          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
+          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
+          0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
+          0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     results:
     - AttachmentName
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 480,
+          "y": 370
         }
       }
   "4":
@@ -158,8 +158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1215
+          "x": 265,
+          "y": 545
         }
       }
   "5":
@@ -190,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1390
+          "x": 377.5,
+          "y": 720
         }
       }
   "6":
@@ -210,179 +210,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1565
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 89bf5fad-7ce9-4754-8091-b9c99bedee26
-    type: playbook
-    task:
-      id: 89bf5fad-7ce9-4754-8091-b9c99bedee26
-      version: -1
-      name: Process Email - EWS
-      description: ""
-      playbookName: Process Email - EWS
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 705,
-          "y": 370
-        }
-      }
-  "8":
-    id: "8"
-    taskid: b368765b-e29c-4df9-8320-73b826419988
-    type: condition
-    task:
-      id: b368765b-e29c-4df9-8320-73b826419988
-      version: -1
-      name: Was an e-mail object created previously?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: Email
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 688,
-          "y": 731
-        }
-      }
-  "9":
-    id: "9"
-    taskid: cc9f4698-3226-4a41-8bd0-486e837ecbed
-    type: regular
-    task:
-      id: cc9f4698-3226-4a41-8bd0-486e837ecbed
-      version: -1
-      name: Set input files to context
-      description: ""
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      append: {}
-      key:
-        simple: File
-      value:
-        complex:
-          root: inputs.File
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 370
-        }
-      }
-  "10":
-    id: "10"
-    taskid: a3636352-1537-4f8f-857a-33a5b1956dc7
-    type: condition
-    task:
-      id: a3636352-1537-4f8f-857a-33a5b1956dc7
-      version: -1
-      name: Is there an input file?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "1"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs.File
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
-        }
-      }
-  "11":
-    id: "11"
-    taskid: 104966c4-8595-4a5a-8c75-c84f55e51c84
-    type: title
-    task:
-      id: 104966c4-8595-4a5a-8c75-c84f55e51c84
-      version: -1
-      name: Advance features
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-      - "12"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1070
-        }
-      }
-  "12":
-    id: "12"
-    taskid: 2f5dd8de-695b-4ed5-89d9-432dda410e2d
-    type: playbook
-    task:
-      id: 2f5dd8de-695b-4ed5-89d9-432dda410e2d
-      version: -1
-      name: Process Email - Add custom fields
-      description: ""
-      playbookName: Process Email - Add custom fields
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 705,
-          "y": 1390
+          "x": 265,
+          "y": 895
         }
       }
 view: |-
@@ -390,8 +219,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1580,
-        "width": 1035,
+        "height": 910,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -460,13 +289,6 @@ inputs:
       accessor: labels.Email/format
   required: false
   description: The email’s format
-- key: EmailID
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/ID
-  required: false
-  description: The EWS Email ID
 outputs:
 - contextPath: Email
   description: Email object
