@@ -50,30 +50,6 @@ tasks:
           "y": 1497
         }
       }
-  "2":
-    id: "2"
-    taskid: cb359925-88e0-434d-80fa-cf7be2f32b76
-    type: regular
-    task:
-      id: cb359925-88e0-434d-80fa-cf7be2f32b76
-      version: -1
-      name: sqs-get-messages
-      description: Gets up to 10 messages from the Queue
-      script: SQS|||sqs-get-messages
-      type: regular
-      iscommand: true
-      brand: SQS
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1027
-        }
-      }
   "3":
     id: "3"
     taskid: 57d10a13-29d6-483a-8fcf-ad3fb31b9c37
@@ -223,7 +199,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "14"
     scriptarguments:
       seconds:
         simple: "11"
@@ -233,36 +209,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 867
-        }
-      }
-  "9":
-    id: "9"
-    taskid: 6569d639-6718-4154-8afd-548eb1d5dd77
-    type: condition
-    task:
-      id: 6569d639-6718-4154-8afd-548eb1d5dd77
-      version: -1
-      name: Verify get messages
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "1"
-    scriptarguments:
-      left:
-        simple: ${SQS.Messages.Body}
-      right:
-        simple: gbtbeu6jn
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1229
         }
       }
   "11":
@@ -346,6 +292,45 @@ tasks:
         "position": {
           "x": 450,
           "y": 1738
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 65ceb0bf-065d-4a45-876b-25871656251b
+    type: regular
+    task:
+      id: 65ceb0bf-065d-4a45-876b-25871656251b
+      version: -1
+      name: WhileLoop - sqs-get-messages
+      description: |
+        While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
+        Please make sure timeout of the script also sufficient for the loop.
+      scriptName: WhileLoop
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      cmdArguments:
+        simple: ''''''
+      cmdToRun:
+        simple: sqs-get-messages
+      keyToWatch:
+        simple: SQS.Messages.Body
+      maxIterations:
+        simple: "8"
+      sleepTime:
+        simple: "2"
+      value:
+        simple: gbtbeu6jn
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1102
         }
       }
 view: |-
