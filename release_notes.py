@@ -432,16 +432,16 @@ Content.register(IntegrationContent)
 
 
 releaseNoteGenerator = {
-    "Scripts": ScriptContent(),
     "Integrations": IntegrationContent(),
+    "Scripts": ScriptContent(),
     "Playbooks": PlaybookContent(),
     "Reports": ReportContent(),
-    "Misc": ReputationContent(),
     "Dashboards": DashboardContent(),
     "Widgets": WidgetContent(),
     "IncidentFields": IncidentFieldContent(),
     "Layouts": LayoutContent(),
-    "Classifiers": ClassifierContent()
+    "Classifiers": ClassifierContent(),
+    "Misc": ReputationContent()
 }
 
 
