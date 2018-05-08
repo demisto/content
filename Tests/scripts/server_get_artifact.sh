@@ -8,7 +8,6 @@ TOKEN_ATTR="circle-token=$1"
 echo "Getting latest build num"
 TEMP=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=5&filter=successful&$TOKEN_ATTR")
 
-echo $TEMP
 ARTIFACT_BUILD_NUM=
 for i in `seq 0 4`; do
     if [[ $(echo "$TEMP" | jq ".[$i].build_parameters") == "null" ]]; then

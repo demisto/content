@@ -27,9 +27,9 @@ jobs:
       - run:
           name: Validate Files and Yaml
           command: |
-              ./Tests/scripts/validate_files_structure.sh
               chmod +x ./Tests/yamlvalidator
               ./Tests/yamlvalidator
+              ./Tests/scripts/validate_files_structure.sh
       - run:
           name: Build Content Descriptor
           command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM bbe11e6757bbd0c8a440d1e10aff6d8f8d3df3e0 $CONTENT_VERSION
@@ -37,7 +37,7 @@ jobs:
           name: Common Server Documentation
           command: ./Docs/commonServerDocs.sh
       - run:
-          name: Server Documentation
+          name: Create Content Artifacts
           command: python content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
