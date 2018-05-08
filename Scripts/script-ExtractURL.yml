@@ -28,7 +28,7 @@ script: |-
   if (args.urlRegex) {
       reg = new RegExp(args.urlRegex, "gmi");
   } else {
-      reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
+      reg = /(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);]*[A-Z0-9+&@#\/%=~_$\(\);])?/gmi;
   }
 
   var whitelist = getCSVListAsArray('Indicators Whitelist');

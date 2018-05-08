@@ -1,6 +1,7 @@
 id: Arcsight - Get events related to the Case
 version: -1
 name: Arcsight - Get events related to the Case
+fromversion: ""
 description: |-
   Get the Case's Arcsight ResourceID from the FetchID field, or the "ID" label. If neither is there, ask user for the ID.
   Use the resource ID to get full data for the case, the correlated/aggregate events underneath it, and all base events underneath them.

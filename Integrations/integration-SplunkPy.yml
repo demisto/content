@@ -482,4 +482,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: 'Fetch notable events by index time (instead of event time)'

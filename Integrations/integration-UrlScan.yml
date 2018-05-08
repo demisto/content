@@ -293,21 +293,21 @@ script:
             wait(parseInt(timeout));
         } else {
 
-            var res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
+            var res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
 
             if (res.results.length >= 1) {
                 while (tWait < timeout &&
                         res.results[0]._id !== resScan.uuid) {
                             wait(5);
                             tWait += 5;
-                            res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
+                            res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
                         }
             } else {
                 while (tWait < timeout &&
                     res.results.length < 1) {
                         wait(5);
                         tWait += 5;
-                        res = sendRequest("GET","/search?q=" + "\"" + scanUrl + "\"");
+                        res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
                     }
             }
         }
