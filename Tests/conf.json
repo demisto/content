@@ -279,6 +279,10 @@
             "playbookID": "CarbonBlackLiveResponseTest"
         },
         {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test"
+        },
+        {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
         },
@@ -288,10 +292,6 @@
         }
     ],
     "skipped": [
-        {
-            "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
-        },
         {
             "integrations": {
               "name": "carbonblack-v2",
