@@ -31,6 +31,26 @@ configuration:
   defaultvalue: false
   type: 8
   required: false
+- display: File Threshold
+  name: fileThreshold
+  defaultvalue: "10"
+  type: 0
+  required: true
+- display: IP Threshold
+  name: ipThreshold
+  defaultvalue: "10"
+  type: 0
+  required: true
+- display: URL Threshold
+  name: urlThreshold
+  defaultvalue: "10"
+  type: 0
+  required: true
+- display: Domain Threshold
+  name: domainThreshold
+  defaultvalue: "10"
+  type: 0
+  required: true
 script:
   script: |-
     var serverUrl = params.Server;
@@ -103,8 +123,9 @@ script:
 
     var doFile = function(hash, longFormat, threshold, waitForRateLimit, retries) {
         if (!threshold) {
-            threshold = 10;
+            threshold = params.fileThreshold;
         }
+        threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
         var o = res.obj;
         var ec = {};
@@ -180,8 +201,9 @@ script:
             return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
         }
         if (!threshold) {
-            threshold = 10;
+            threshold = params.ipThreshold;
         }
+        threshold = parseInt(threshold)
         if (!sampleSize) {
             sampleSize = 10;
         }
@@ -246,8 +268,9 @@ script:
             sampleSize = 10;
         }
         if (!threshold) {
-            threshold = 10;
+            threshold = params.urlThreshold;
         }
+        threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
         var o = res.obj;
         var ec = {};
@@ -305,8 +328,9 @@ script:
             sampleSize = 10;
         }
         if (!threshold) {
-            threshold = 10;
+            threshold = params.domainThreshold;
         }
+        threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
         var o = res.obj;
         var ec = {};
@@ -520,9 +544,7 @@ script:
       description: Should we return full response with scans
       defaultValue: "false"
     - name: threshold
-      description: If number of positives is bigger than the threshold we will consider
-        it malicious
-      defaultValue: "10"
+      description: If the number of positives is bigger than the threshold the file will be considered malicious. If threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
     - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
       defaultValue: "60"
@@ -566,9 +588,7 @@ script:
       description: Should we return full response with detected URLs
       defaultValue: "false"
     - name: threshold
-      description: If number of positive detected IPs is bigger than the threshold
-        we will consider it malicious
-      defaultValue: "10"
+      description: If the number of positives is bigger than the threshold the IP will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
         etc.) to display for long format
@@ -617,8 +637,7 @@ script:
       description: Should we return full response with detected URLs
       defaultValue: "false"
     - name: threshold
-      description: If number of positive detected URLs is bigger than the threshold
-        we will consider it malicious
+      description: If the number of positives is bigger than the threshold the URL will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
     - name: submitWait
       description: Seconds to wait if the URL does not exist and is submitted to be
         scanned
@@ -664,9 +683,7 @@ script:
         etc.) to display for long format
       defaultValue: "10"
     - name: threshold
-      description: If number of positive detected domains is bigger than the threshold
-        we will consider it malicious
-      defaultValue: "10"
+      description: If the number of positives is bigger than the threshold the domain will be considered malicious. If threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
     - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
       defaultValue: "60"
