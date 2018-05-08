@@ -52,6 +52,7 @@ class Content:
         self.modified_store = []  # holds modified file paths
         self.added_store = []  # holds added file paths
         self.deleted_store = []  # holds deleted file paths
+        self.show_secondary_header = True
 
     def add(self, change_type, data):
         if change_type == "M":
@@ -79,7 +80,7 @@ class Content:
     def load_data(self, data):
         return
 
-    def show_secondary_header(self):
+    def (self):
         return True
 
     # create a release notes section for store (add or modified) - return None if found missing release notes
@@ -91,7 +92,7 @@ class Content:
             new_count = 0
             for path in store:
                 with open(path, 'r') as f:
-                    print " - adding release notes (New) for file - [%s]... " % (path,),
+                    print " - adding release notes (%s) for file - [%s]... " % (path, title_prefix),
                     raw_content = f.read()
                     cnt = self.load_data(raw_content)
 
@@ -115,7 +116,7 @@ class Content:
                         print "Skipped"
 
             if len(new_str) > 0:
-                if self.show_secondary_header():
+                if self.show_secondary_header:
                     count_str = ""
                     if new_count > 1:
                         count_str = " " + str(new_count)
@@ -301,6 +302,11 @@ Content.register(WidgetContent)
 
 
 class IncidentFieldContent(Content):
+
+    def __init__(self):
+        super(IncidentFieldContent, self).__init__()
+        self.show_secondary_header = False
+
     def load_data(self, data):
         return json.loads(data)
 
@@ -313,9 +319,6 @@ class IncidentFieldContent(Content):
             return None
 
         return add_dot(rn) + "\n"
-
-    def show_secondary_header(self):
-        return False
 
     def modified_release_notes(self, cnt):
         rn = cnt.get("releaseNotes", "")
@@ -416,6 +419,10 @@ Content.register(ClassifierContent)
 
 
 class ReputationContent(Content):
+    def __init__(self):
+        super(IncidentFieldContent, self).__init__()
+        self.show_secondary_header = False
+
     def load_data(self, data):
         return json.loads(data)
 
@@ -425,9 +432,6 @@ class ReputationContent(Content):
     def added_release_notes(self, cnt):
         # This should never happen
         return ""
-
-    def show_secondary_header(self):
-        return False
 
     def modified_release_notes(self, cnt):
         rn = cnt.get("releaseNotes", "")
