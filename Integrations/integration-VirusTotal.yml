@@ -35,22 +35,22 @@ configuration:
   name: fileThreshold
   defaultvalue: "10"
   type: 0
-  required: true
+  required: false
 - display: IP Threshold
   name: ipThreshold
   defaultvalue: "10"
   type: 0
-  required: true
+  required: false
 - display: URL Threshold
   name: urlThreshold
   defaultvalue: "10"
   type: 0
-  required: true
+  required: false
 - display: Domain Threshold
   name: domainThreshold
   defaultvalue: "10"
   type: 0
-  required: true
+  required: false
 script:
   script: |-
     var serverUrl = params.Server;
@@ -123,7 +123,7 @@ script:
 
     var doFile = function(hash, longFormat, threshold, waitForRateLimit, retries) {
         if (!threshold) {
-            threshold = params.fileThreshold;
+            threshold = params.fileThreshold || 10;
         }
         threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
@@ -201,7 +201,7 @@ script:
             return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
         }
         if (!threshold) {
-            threshold = params.ipThreshold;
+            threshold = params.ipThreshold || 10;
         }
         threshold = parseInt(threshold)
         if (!sampleSize) {
@@ -268,7 +268,7 @@ script:
             sampleSize = 10;
         }
         if (!threshold) {
-            threshold = params.urlThreshold;
+            threshold = params.urlThreshold || 10;
         }
         threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
@@ -328,7 +328,7 @@ script:
             sampleSize = 10;
         }
         if (!threshold) {
-            threshold = params.domainThreshold;
+            threshold = params.domainThreshold || 10;
         }
         threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
