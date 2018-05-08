@@ -80,9 +80,6 @@ class Content:
     def load_data(self, data):
         return
 
-    def (self):
-        return True
-
     # create a release notes section for store (add or modified) - return None if found missing release notes
     def release_notes_section(self, store, title_prefix):
         res = ""
