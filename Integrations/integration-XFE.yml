@@ -35,6 +35,16 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: IP Threshold
+  name: ipThreshold
+  defaultvalue: "7"
+  type: 0
+  required: false
+- display: URL Threshold
+  name: urlThreshold
+  defaultvalue: "7"
+  type: 0
+  required: false
 script:
   script: |
     var serverUrl = 'https://api.xforce.ibmcloud.com/';
@@ -129,8 +139,9 @@ script:
 
     var doIP = function(ip, longFormat, threshold) {
         if (!threshold) {
-            threshold = 7;
+            threshold = params.ipThreshold || 7;
         }
+        threshold = parseInt(threshold)
         // Need to make sure to be backwards compatible with the JSON
         var res = {};
         var ipRes = doReq('GET', 'ipr/' + ip);
@@ -179,8 +190,9 @@ script:
 
     var doURL = function(url, longFormat, threshold) {
         if (!threshold) {
-            threshold = 7;
+            threshold = params.urlThreshold || 7;
         }
+        threshold = parseInt(threshold)
         // Need to make sure to be backwards compatible with the JSON
         var res = {};
         var resolutionRes = doReq('GET', 'resolve/' + url);
@@ -383,8 +395,7 @@ script:
       defaultValue: "false"
     - name: threshold
       deprecated: false
-      description: If the score is above the given threshold, will be considered malicious
-      defaultValue: "7"
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -459,8 +470,7 @@ script:
       defaultValue: "false"
     - name: threshold
       deprecated: false
-      description: If the score is above the given threshold, will be considered malicious
-      defaultValue: "7"
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: IP.Address
       description: Bad IP found
@@ -497,8 +507,7 @@ script:
       defaultValue: "false"
     - name: threshold
       deprecated: false
-      description: If the score is above the given threshold, will be considered malicious
-      defaultValue: "7"
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -558,3 +567,4 @@ script:
     description: Return the latest vulnerabilities found
 hidden: false
 fromversion: 2.5.0
+releaseNote: "Add indicators thresholds as instance parameters"
