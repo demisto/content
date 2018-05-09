@@ -46,7 +46,7 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
             yml_info = yaml.safe_load(f)
 
         ver = yml_info.get('fromversion', '0')
-        if is_ge_version(version_num, ver):
+        if ver == '' or is_ge_version(version_num, ver):
             print ' - marked as post: %s (%s)' % (ver, path, )
             shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
@@ -118,11 +118,11 @@ def main(circle_artifacts):
 
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
 
-    print 'finished create content artifact'
+    print 'finished create content artifact at %s' % (circle_artifacts, )
 
 
 def test_version_compare(version_num):
-    V = ['3.5', '2.0', '2.1', '4.7', '1.1.1', '1.5', '3.10.0', '2.7.1', '3', '3.4.9', '3.5.1']
+    V = ['3.5', '2.0', '2.1', '4.7', '1.1.1', '1.5', '3.10.0', '2.7.1', '3', '3.4.9', '3.5.1', '3.6']
 
     lower = []
     greater = []
