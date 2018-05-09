@@ -301,7 +301,7 @@ Content.register(WidgetContent)
 class IncidentFieldContent(Content):
 
     def __init__(self):
-        super(IncidentFieldContent, self).__init__()
+        super(Content, self).__init__()
         self.show_secondary_header = False
 
     def load_data(self, data):
@@ -417,7 +417,7 @@ Content.register(ClassifierContent)
 
 class ReputationContent(Content):
     def __init__(self):
-        super(IncidentFieldContent, self).__init__()
+        super(Content, self).__init__()
         self.show_secondary_header = False
 
     def load_data(self, data):
