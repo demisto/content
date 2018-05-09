@@ -12,7 +12,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Accept any certificate
   name: insecure
   defaultvalue: ""
   type: 8
