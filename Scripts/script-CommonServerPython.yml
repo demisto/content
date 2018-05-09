@@ -2,7 +2,6 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
-releaseNotes: "tabletomarkdown - empty response bug fix"
 script: |-
   # Common functions script
   # =======================
@@ -564,7 +563,7 @@ script: |-
               sep = '-|'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
-              vals = [(formatCell(entry.get(h, ''), False) if entry.get(h) is not None else '') for h in headers]
+              vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''), True, True) for h in headers]
               mdResult += '|'
               if len(vals) == 1:
                   mdResult += vals[0]
@@ -576,7 +575,6 @@ script: |-
           mdResult += '**No entries.**\n'
 
       return mdResult
-
 
   tblToMd = tableToMarkdown
 
@@ -758,13 +756,16 @@ script: |-
          :rtype: ``str``
       """
       if escape_multiline:
-          st = st.replace('\n', '<br>')
+          st = st.replace('\r\n', '<br>')#Windows
+          st = st.replace('\r', '<br>')#old Mac
+          st = st.replace('\n', '<br>')#Unix
 
       if minimal_escaping:
           for c in '|':
               st = st.replace(c, '\\' + c)
       else:
           st = "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
+
       return st
 
 
@@ -1025,3 +1026,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "Fixed tableToMarkdown escaping bug"

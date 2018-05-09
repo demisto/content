@@ -190,4 +190,3 @@ inputs:
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
-releaseNotes: "-"
