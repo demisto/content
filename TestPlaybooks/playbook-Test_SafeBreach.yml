@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3aec5aaa-ee32-401c-8ea3-38b421c7e8aa
+    taskid: 98a8d5f4-f30c-4d6c-82e3-4883ed3edcd5
     type: start
     task:
-      id: 3aec5aaa-ee32-401c-8ea3-38b421c7e8aa
+      id: 98a8d5f4-f30c-4d6c-82e3-4883ed3edcd5
       version: -1
       name: ""
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: b3c30f83-3e9b-4c60-81d3-9097ca735e6d
+    taskid: d03a2335-af6a-4003-87cb-9c8651de1b2d
     type: regular
     task:
-      id: b3c30f83-3e9b-4c60-81d3-9097ca735e6d
+      id: d03a2335-af6a-4003-87cb-9c8651de1b2d
       version: -1
       name: safebreach-rerun
       description: Rerun the simulation/s related to the incident
@@ -112,8 +112,6 @@ tasks:
               ]
             }
           }
-      using:
-        simple: SafeBreach_instance
     separatecontext: false
     view: |-
       {
@@ -124,10 +122,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: fda9d09e-5901-4217-8e1d-fc737641cadd
+    taskid: 2f161268-7999-4abc-821b-9ad06207bc05
     type: regular
     task:
-      id: fda9d09e-5901-4217-8e1d-fc737641cadd
+      id: 2f161268-7999-4abc-821b-9ad06207bc05
       version: -1
       name: safebreach-get-simulation
       description: Fetch the breach simulation results
@@ -138,8 +136,6 @@ tasks:
     scriptarguments:
       simulationId:
         simple: 03ff1fb5d3fe765a20280754b4be04ce
-      using:
-        simple: SafeBreach_instance
     separatecontext: false
     view: |-
       {
