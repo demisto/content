@@ -574,7 +574,7 @@ def main(argv):
         ans = value.generate_release_notes()
         if ans is None:
             missing_release_notes = True
-        if len(ans) > 0:
+        elif len(ans) > 0:
             res.append(ans)
 
     if missing_release_notes:
