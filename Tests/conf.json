@@ -423,6 +423,10 @@
         {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
+        },
+        {
+            "integrations": "Palo Alto AppFramework",
+            "playbookID": "pan-appframework-test"
         }
     ]
 }
