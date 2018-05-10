@@ -890,7 +890,7 @@ script:
             'time_zone': time_zone
         }
         #remove None values
-        url_params = { k:v for k,v in url_params.items() if v}
+        url_params = { k:v for k,v in url_params.items() if v is not None}
 
         response = http_request(
             'GET',
@@ -905,7 +905,11 @@ script:
             raise ValueError('Failed to parse response body - unexpected response structure from the server.')
 
     def get_host_by_name_request(host_name):
-        return get_hosts_request(host_name=host_name, limit=1)[0]
+        try:
+            return get_hosts_request(host_name=host_name, limit=1)[0]
+        except Exception as e:
+            LOG(e)
+            raise ValueError('Host {} not found.'.format(host_name))
 
     def get_all_agents_ids():
         """
@@ -1125,7 +1129,7 @@ script:
         }
 
         #remove None values
-        body = {k:v for k,v in body.items() if v}
+        body = {k:v for k,v in body.items() if v is not None}
 
 
         response = http_request(
@@ -1374,7 +1378,7 @@ script:
             'has_alerts': has_alerts
         }
         #remove None values
-        url_params = { k:v for k,v in url_params.items() if v}
+        url_params = { k:v for k,v in url_params.items() if v is not None}
 
         response = http_request(
             'GET',
@@ -1798,7 +1802,7 @@ script:
         }
 
         #remove None values
-        body = {k:v for k,v in body.items() if v}
+        body = {k:v for k,v in body.items() if v is not None}
 
         response = http_request(
             'POST',
