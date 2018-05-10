@@ -1,0 +1,204 @@
+commonfields:
+  id: SafeBreach
+  version: -1
+name: SafeBreach
+display: SafeBreach
+category: Analytics & SIEM
+image: data:image/png;base64,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
+
+description: SafeBreach simulates attacks across the kill chain, to validate security
+  policy, configuration, and effectiveness. Quantify the real impact of a cyber attack
+  on your systems at any given moment. Identify remediation options. Stay ahead of
+  attackers.
+configuration:
+- display: Account ID
+  name: accountId
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: SafeBreach Platform URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Version
+  name: apiVersion
+  defaultvalue: "1"
+  type: 0
+  required: true
+script:
+  script: |
+    /**
+     * Returns true if string ends with search string
+     * @param {String} search - The string to be searched
+     * @param {Integer} this_len - Optional. If provided it is used as the length of search string. If omitted, the default value is the length of the string.
+     * @return {Boolean} true if string ends with <search> string
+     */
+    if (!String.prototype.endsWith) {
+        String.prototype.endsWith = function(search, this_len) {
+            if (this_len === undefined || this_len > this.length) {
+                this_len = this.length;
+            }
+            return this.substring(this_len - search.length, this_len) === search;
+        };
+    }
+
+    /**
+     * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
+     *
+     * @param {String} url - e.g https://some_url.com:8080/ or https://some_url.com:8080
+     * @return {String} url without slash in the end - e.g https://some_url.com:8080
+     */
+    function fixUrl(url) {
+        if (url.endsWith('/')) {
+            return url.slice(0, -1);
+        }
+
+        return url;
+    }
+
+    var SERVER_URL = fixUrl(params.url);
+
+    function sendRequest(method, url, body) {
+        var requestParams = {
+            Method: method,
+            Headers: {
+                Accept: ['application/json'],
+                'x-apitoken': [params.apiKey]
+            }
+        };
+
+        if (body) {
+            requestParams.body = body;
+            requestParams.Headers['Content-Type'] = ["application/json"];
+        }
+
+        var res = http(url, requestParams);
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res;
+    }
+
+    switch (command) {
+        case 'test-module':
+            var url = SERVER_URL + '/api/orch/v' + params.apiVersion + '/status';
+            sendRequest('GET', url);
+
+            return 'ok';
+        case 'safebreach-rerun':
+            var url = SERVER_URL + '/api/orch/v' + params.apiVersion + '/accounts/' + params.accountId + '/queue';
+            var rerunData = args.rerunData;
+
+            if (!rerunData && incidents && incidents[0] && incidents[0].labels) {
+                for (var index = 0; index <= incidents[0].labels.length; index++) {
+                    var label = incidents[0].labels[index];
+
+                    if (label.type === "rerun") {
+                        rerunData = label.value;
+                        break;
+                    }
+                }
+            }
+
+            sendRequest('POST', url, rerunData);
+
+            return 'ok';
+        case 'safebreach-get-simulation':
+            var simulationId = args.simulationId;
+
+            if (!simulationId && incidents && incidents[0] && incidents[0].labels) {
+                for (var index = 0; index <= incidents[0].labels.length; index++) {
+                    var label = incidents[0].labels[index];
+
+                    if (label.type === "id") {
+                        simulationId = label.value;
+                        break;
+                    }
+                }
+            }
+
+            var url = SERVER_URL + '/api/data/v' + params.apiVersion +
+                      '/accounts/' + params.accountId + '/executions/' + simulationId;
+
+            var response = sendRequest('GET', url);
+            var body;
+
+            try {
+                body = JSON.parse(response.Body)
+            } catch (err) {
+                console.log("There were a problem with parsing response body: " + JSON.stringify(err));
+            }
+
+            return {
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: body,
+                HumanReadable: tableToMarkdown(body.moveName, [{
+                    'Source Name': body.srcNodeName,
+                    'Source IP': body.srcNodeIp,
+                    'Destination Name': body.destNodeName,
+                    'Destination IP': body.destNodeIp,
+                    'Port': body.serverPort,
+                    'Result': body.status
+                }], [
+                    'Source Name',
+                    'Source IP',
+                    'Destination Name',
+                    'Destination IP',
+                    'Port',
+                    'Result'
+                ]),
+                EntryContext: {
+                    'SafeBreach.Simulation(val.id==obj.id)': body
+                }
+
+
+            };
+    }
+  type: javascript
+  commands:
+  - name: safebreach-rerun
+    arguments:
+    - name: rerunData
+      description: The rerun command to execute. By default taken from the incident
+    description: Rerun the simulation/s related to the incident
+  - name: safebreach-get-simulation
+    arguments:
+    - name: simulationId
+      description: The ID of the simulation. By default taken from the incident
+    outputs:
+    - contextPath: SafeBreach.Simulation
+      description: Simulation details and result
+      type: unknown
+    - contextPath: SafeBreach.Simulation.status
+      description: Simulation Result (SUCCESS,FAIL,INTERNAL_FAIL)
+      type: string
+    - contextPath: SafeBreach.Simulation.srcNodeName
+      description: Source simulator
+      type: string
+    - contextPath: SafeBreach.Simulation.srcNodeIp
+      description: Source simulator IP
+      type: string
+    - contextPath: SafeBreach.Simulation.destNodeName
+      description: Destination simulator
+      type: string
+    - contextPath: SafeBreach.Simulation.destNodeIp
+      description: 'Destination simulator '
+      type: string
+    - contextPath: SafeBreach.Simulation.serverPort
+      description: Port
+      type: number
+    description: Fetch the breach simulation results
+  runonce: false
+releaseNotes: SafeBreach simulates attacks across the kill chain, to validate security
+  policy, configuration, and effectiveness. Quantify the real impact of a cyber attack
+  on your systems at any given moment. Identify remediation options. Stay ahead of
+  attackers.
