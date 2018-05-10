@@ -12,7 +12,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Accept any certificate
+- display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -115,18 +115,19 @@ script:
     def update_context_data(access_token):
         new_data = {
             'access_token': access_token,
-            'timestamp': datetime.datetime.now()
+            'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         demisto.setIntegrationContext(new_data)
 
     def refresh_needed(saved_data):
         ''' This function returns whether or not we need to refresh our access token '''
-        if ((saved_data is None) or (saved_data.access_token is None) or (saved_data.timestamp is None)):
+        if ((saved_data is None) or ('access_token' not in saved_data) or ('timestamp' not in saved_data)):
             return True
 
         current_time = datetime.datetime.now()
+        saved_time = datetime.datetime.strptime(saved_data['timestamp'], "%Y-%m-%d %H:%M:%S")
         # access token is valid for one hour
-        if ((data.timestamp - current_time).total_seconds() >= 3600):
+        if ((saved_time - current_time).total_seconds() >= 3600):
             return True
 
         return False
@@ -136,16 +137,17 @@ script:
             refreshes the token and returns the new one'''
         access_token = None
         saved_data = demisto.getIntegrationContext()
+
         if (refresh_needed(saved_data)):
             access_token = refresh_access_token(refresh_token)
-            update_context_data(authentication_token)
+            update_context_data(access_token)
         else:
-            access_token = saved_data.access_token
+            access_token = saved_data['access_token']
 
         return access_token
 
-    # ACCESS_TOKEN=get_access_token(REFRESH_TOKEN)
-    ACCESS_TOKEN=refresh_access_token(REFRESH_TOKEN)
+    ACCESS_TOKEN=get_access_token(REFRESH_TOKEN)
+
     # setting the access token as env variable for the pancloud sdk
     os.environ['ACCESS_TOKEN'] = ACCESS_TOKEN;
 
@@ -715,3 +717,4 @@ script:
     description: Query Appframework Logging service according to pre-set queries
   dockerimage: demisto/python_pancloud
   runonce: false
+releaseNotes: "-"
