@@ -890,7 +890,7 @@ script:
             'time_zone': time_zone
         }
         #remove None values
-        url_params = { k:v for k,v in url_params.items() if v}
+        url_params = { k:v for k,v in url_params.items() if v is not None}
 
         response = http_request(
             'GET',
@@ -1129,7 +1129,7 @@ script:
         }
 
         #remove None values
-        body = {k:v for k,v in body.items() if v}
+        body = {k:v for k,v in body.items() if v is not None}
 
 
         response = http_request(
@@ -1378,7 +1378,7 @@ script:
             'has_alerts': has_alerts
         }
         #remove None values
-        url_params = { k:v for k,v in url_params.items() if v}
+        url_params = { k:v for k,v in url_params.items() if v is not None}
 
         response = http_request(
             'GET',
@@ -1802,7 +1802,7 @@ script:
         }
 
         #remove None values
-        body = {k:v for k,v in body.items() if v}
+        body = {k:v for k,v in body.items() if v is not None}
 
         response = http_request(
             'POST',
