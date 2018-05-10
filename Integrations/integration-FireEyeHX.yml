@@ -2575,8 +2575,6 @@ script:
     - name: name
       required: true
       description: Indicator name.
-    - name: limit
-      description: Limit the number of results
     outputs:
     - contextPath: FireEyeHX.Indicators._id
       description: FireEye unique indicator ID.
