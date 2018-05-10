@@ -14,7 +14,7 @@ script: |-
       url = 'https://falcon.crowdstrike.com/activity/detections/detail/4ae027b246528y357r1a01e9cdf55724/176094545335?_cid=21aadgime3514d6fa68df313d7b1937d'
 
       # Find the Agent ID and map it to the "aid" group name.
-      match = re.search(r'detail\/(?P<aid>(\w{32}))\/(?P<detect>(\w{12}))', url)
+      match = re.search(r'detail\/(?P<aid>(\w{32}))\/(?P<detect>([0-9]+))', url)
 
       # returns '4ae027b246528y357r1a01e9cdf55724'
       match.group('aid')
