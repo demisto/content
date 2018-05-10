@@ -905,7 +905,11 @@ script:
             raise ValueError('Failed to parse response body - unexpected response structure from the server.')
 
     def get_host_by_name_request(host_name):
-        return get_hosts_request(host_name=host_name, limit=1)[0]
+        try:
+            return get_hosts_request(host_name=host_name, limit=1)[0]
+        except Exception as e:
+            LOG(e)
+            raise ValueError('Host {} not found.'.format(host_name))
 
     def get_all_agents_ids():
         """
