@@ -2566,7 +2566,7 @@ script:
       description: Total number of agents with HX alerts associated with this indicator.
     - contextPath: FireEyeHX.Indicators.platforms
       description: List of families of operating systems.
-    description: Get s a list of indicators
+    description: Get a list of indicators
   - name: fireeye-hx-get-indicator
     arguments:
     - name: category
@@ -2575,8 +2575,6 @@ script:
     - name: name
       required: true
       description: Indicator name.
-    - name: limit
-      description: Limit the number of results
     outputs:
     - contextPath: FireEyeHX.Indicators._id
       description: FireEye unique indicator ID.
@@ -2726,7 +2724,7 @@ script:
     - name: acquisitionId
       required: true
       description: The acquisition ID.
-    description: Delete that file acquisition, by ID.
+    description: Delete the file acquisition, by ID.
   - name: fireeye-hx-data-acquisition
     arguments:
     - name: script
