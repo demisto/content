@@ -120,9 +120,9 @@ script:
         conn.disconnect()
         sys.exit(0)
     if demisto.command() == 'fetch-incidents':
-        lastRun = demisto.getLastRun()
+        #lastRun = demisto.getLastRun()
         subscription_id = demisto.params()['subscription-id']
-        demisto.info('before ActiveMQ subscribe'+str(lastRun))
+        #demisto.debug('before ActiveMQ subscribe'+str(lastRun))
         listener = MsgListener()
         if client and len(client) > 0:
             conn.set_listener('Demisto', listener)
@@ -144,7 +144,10 @@ script:
         for msg_id in listener.msg_ids:
             conn.ack(msg_id, subscription_id)
             last_msg_id = msg_id
-        demisto.setLastRun({'subscribe': str(subscription_id),'last_msg_id':last_msg_id})
+        lastRun = {'subscribe': str(subscription_id)}
+        if len(last_msg_id)>0:
+            lastRun['last_msg_id'] = last_msg_id
+        demisto.setLastRun(lastRun)
         conn.disconnect()
         sys.exit(0)
   type: python
@@ -158,6 +161,7 @@ script:
     - name: body
       required: true
       description: the content of the message
+    description: Send msg to topic or queue
   - name: activemq-subscribe
     arguments:
     - name: subscription-id
