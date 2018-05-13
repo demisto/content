@@ -82,6 +82,8 @@ mapping:
               brand:
                 type: text
                 required: yes
+              reputationcalc:
+                type: float
               issystemtask:
                 type: bool
               clonedfrom:
