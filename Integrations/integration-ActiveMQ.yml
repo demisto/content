@@ -50,7 +50,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |+
+  script: |-
     import stomp
 
     class MsgListener(stomp.ConnectionListener):
@@ -114,8 +114,8 @@ script:
         time.sleep(1)
         for msg in listener.result_arr:
             demisto.results(msg)
-        #for msg_id in listener.msg_ids:
-        #    conn.ack(msg_id, 1)
+        for msg_id in listener.msg_ids:
+            conn.ack(msg_id, subscription_id)
         conn.disconnect()
         sys.exit(0)
     if demisto.command() == 'fetch-incidents':
