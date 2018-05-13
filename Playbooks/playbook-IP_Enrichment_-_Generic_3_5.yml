@@ -1,9 +1,9 @@
 id: ip_enrichment_generic
 version: -1
+fromversion: 3.5.0
+toversion: 3.6.0
 name: IP Enrichment - Generic
 description: Enrich IP using one or more integrations
-fromversion: 3.6.0
-releaseNotes: "Add support for auto-extract"
 starttaskid: "0"
 tasks:
   "0":
@@ -20,7 +20,6 @@ tasks:
     nexttasks:
       '#none#':
       - "28"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -47,7 +46,7 @@ tasks:
       '#default#':
       - "24"
       "yes":
-      - "30"
+      - "19"
     scriptarguments:
       extend-context: {}
       value:
@@ -63,13 +62,12 @@ tasks:
                 value:
                   simple: "no"
           accessor: Address
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -467,
-          "y": 459
+          "y": 559
         }
       }
   "19":
@@ -105,14 +103,13 @@ tasks:
                 value:
                   simple: "no"
           accessor: Address
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -494,
-          "y": 840
+          "x": -552,
+          "y": 785
         }
       }
   "24":
@@ -127,7 +124,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -151,7 +147,6 @@ tasks:
     nexttasks:
       '#none#':
       - "24"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -168,14 +163,13 @@ tasks:
       id: c57e91b0-706a-40a2-8a30-e2fb9cfabba6
       version: -1
       name: Check external IP addresses
-      type: title
       description: ""
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "15"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -201,7 +195,6 @@ tasks:
       - "24"
       "yes":
       - "29"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -241,7 +234,6 @@ tasks:
         simple: ${inputs.IP}
       ipRanges:
         simple: ${inputs.InternalRange}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -250,54 +242,14 @@ tasks:
           "y": 169
         }
       }
-  "30":
-    id: "30"
-    taskid: 195d997e-47ad-4be1-8766-272775fe62a0
-    type: condition
-    task:
-      id: 195d997e-47ad-4be1-8766-272775fe62a0
-      version: -1
-      name: Should the system get the IP Reputation?
-      description: "Should the system retrieve the IPs reputation from all of the
-        relevant integration?\nDefault: True\n "
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "24"
-      "yes":
-      - "19"
-    reputationcalc: 0
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value:
-              complex:
-                root: inputs.GetReputation
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": -733,
-          "y": 633
-        }
-      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1252,
-        "width": 1631,
-        "x": -733,
+        "width": 1450,
+        "x": -552,
         "y": -153
       }
     }
@@ -305,20 +257,13 @@ view: |-
 inputs:
 - key: IP
   value:
-    complex:
-      root: IP
-      accessor: Address
+    simple: ${IP.Address}
   required: false
   description: The IP addresses to enrich
 - key: InternalRange
   value: {}
   required: false
   description: The internal range to check against the IPs
-- key: GetReputation
-  value:
-    simple: "True"
-  required: true
-  description: Should the playbook get reputation for the IPs
 outputs:
 - contextPath: IP
   description: The IP objects
