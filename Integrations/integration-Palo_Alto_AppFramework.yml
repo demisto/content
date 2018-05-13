@@ -12,7 +12,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Accept any certificate
   name: insecure
   defaultvalue: ""
   type: 8
@@ -32,14 +32,36 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: Application to fetch from (Wildfire)
+  name: application
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Severity to filter fetch results by (Informational, Low, Medium, High,
+    Critical)
+  name: severity
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: |
     ''' IMPORTS '''
-
     import os
     import datetime
     import requests
     import json
+    from time import strftime
+    from time import localtime
     import pancloud
     from pancloud.logging import LoggingService
     from pancloud.event import EventService
@@ -82,9 +104,6 @@ script:
         client_id = demisto.params()['clientId']
         client_secret = demisto.params()['clientSecret']
 
-        # TODO maybe first add a check to see if the current token is ok and if so return it.
-
-
         # grant_type should refreshToken per OAuth2 std
         # refresh_token should be a valid <refreshToken> per OAuth2
         request_params = [('grant_type', 'refresh_token')]
@@ -120,21 +139,26 @@ script:
         demisto.setIntegrationContext(new_data)
 
     def refresh_needed(saved_data):
-        ''' This function returns whether or not we need to refresh our access token '''
+        '''
+        This function returns whether or not we need to refresh our access token
+        '''
         if ((saved_data is None) or ('access_token' not in saved_data) or ('timestamp' not in saved_data)):
             return True
 
         current_time = datetime.datetime.now()
         saved_time = datetime.datetime.strptime(saved_data['timestamp'], "%Y-%m-%d %H:%M:%S")
         # access token is valid for one hour
-        if ((saved_time - current_time).total_seconds() >= 3600):
+
+        if ((current_time - saved_time).total_seconds() >= 3600):
             return True
 
         return False
 
     def get_access_token(refresh_token):
-        ''' This function checks if we need to refresh our authentication token and if we do it
-            refreshes the token and returns the new one'''
+        '''
+        This function checks if we need to refresh our authentication token and if we do it
+        refreshes the token and returns the new one
+        '''
         access_token = None
         saved_data = demisto.getIntegrationContext()
 
@@ -154,11 +178,13 @@ script:
     ''' HELPER FUNCTIONS '''
 
     def ack_event_channel(channel_id):
-        ''' Event Service always begins reading from the beginning of the channel whenever it starts up.
-            This means that if the service restarts, the app will be reading events that it has already seen
-            and, presumably, has already processed. To avoid this, we ack the channel. An ack causes the
-            beginning of the channel to move to the current read point. Mechanically, the Event Service simply
-            deletes all events from the channel that existed prior to the current read point. '''
+        '''
+        Event Service always begins reading from the beginning of the channel whenever it starts up.
+        This means that if the service restarts, the app will be reading events that it has already seen
+        and, presumably, has already processed. To avoid this, we ack the channel. An ack causes the
+        beginning of the channel to move to the current read point. Mechanically, the Event Service simply
+        deletes all events from the channel that existed prior to the current read point.
+        '''
         event_service = EventService(
             url=API_URL,
             headers={
@@ -172,7 +198,9 @@ script:
         event_service.ack(channel_id)
 
     def query_loggings(query_data):
-        ''' This function handles all the querying of Appframework Logging service '''
+        '''
+        This function handles all the querying of Appframework Logging service
+        '''
 
         logging_service = LoggingService(
             url=API_URL,
@@ -185,7 +213,12 @@ script:
 
         query_result= logging_service.query(query_data).json()
 
-        query_id = query_result['queryId']  # access 'queryId' from 'query' response
+        try:
+            query_id = query_result['queryId']  # access 'queryId' from 'query' response
+        except Exception, e:
+
+            raise Exception(json.dumps(query_result))
+            raise Exception('Received error %s when querying logs. Please check if your authentication token is valid' % e)
         poll_params = {  # Prepare 'poll' params
             "maxWaitTime": 1000 # waiting for resposnse up to 1000ms
         }
@@ -199,7 +232,9 @@ script:
         return full_response
 
     def poll_events(channel_id):
-        ''' This function handles polling events from Appframework's Events service '''
+        '''
+        This function handles polling events from Appframework's Events service
+        '''
 
         event_service = EventService(
             url=API_URL,
@@ -213,7 +248,9 @@ script:
         return event_service.poll(channel_id)
 
     def results_screener(table_name, full_results):
-        ''' This function is used to make sure we include only pre-defined metrics in the human readable'''
+        '''
+        This function is used to make sure we include only pre-defined metrics in the human readable
+        '''
         screened_results = []
         if(table_name == "traffic"):
             for row in full_results:
@@ -241,6 +278,66 @@ script:
         elif (date_type == 'weeks'):
             return current_date - datetime.timedelta(weeks=time_value)
 
+    def convert_log_to_incident(log):
+        log_contents = log['_source']
+        log_contents['id'] = log['_id']
+        log_contents['score'] = log['_score']
+        occured = datetime.datetime.utcfromtimestamp(log_contents['time_received']).isoformat() + 'Z'
+        # stringifying dictionary values for fetching. (json.dumps() doesn't stringify dictionary values)
+        for key, value in log_contents.iteritems():
+            log_contents[key] = str(value)
+
+        incident = {
+            'name': 'Palo Alto Incident: ' + log['_id'],
+            'rawJSON': json.dumps(log_contents),
+            'labels':[
+                {
+                    'type': 'id',
+                    'value': log['_id']
+                },
+                {
+                    'type': 'score',
+                    'value': str(log['_score'])
+                }
+            ],
+            'occurred': occured
+        }
+        return incident
+
+    def severity_name_to_number(severity):
+        severity_to_check = severity
+        if not severity_to_check:
+            return None
+        else:
+            severity_to_check = severity.lower()
+        severity_number_dic = {
+            'informational': 1,
+            'low': 2,
+            'medium': 3,
+            'high': 4,
+            'critical': 5
+        }
+        if severity_to_check in severity_number_dic:
+            return severity_number_dic[severity_to_check]
+        else:
+            raise Exception('''Severity parameter of the integration should be one of the
+                following: Informational, Low, Medium, High, Critical''')
+
+    def app_to_table(app):
+        app_to_check = app
+        if not app_to_check:
+            return None
+        else:
+            app_to_check = app.lower()
+        app_to_table_dic = {
+            'wildfire': 'wildfire'
+            # TODO add the other apps here
+        }
+        if app_to_check in app_to_table_dic:
+            return app_to_table_dic[app_to_check]
+        else:
+            raise Exception('''Application to fetch from parameter of the integration should be one of the
+                following: Wildfire, Panorama''')
 
     ''' COMMANDS FUNCTIONS '''
 
@@ -248,7 +345,6 @@ script:
         '''
         Corresponds to 'pan-appframework-query-logs' command. Return the result of querying the Logging service
         '''
-
         args = demisto.args()
         start_time = args.get('startTime')
         end_time = args.get('endTime')
@@ -312,7 +408,9 @@ script:
         return entry
 
     def poll_events_command():
-        ''' corresponds to 'pan-appframework-poll-events' command. Polls events from Appframework '''
+        '''
+        corresponds to 'pan-appframework-poll-events' command. Polls events from Appframework
+        '''
 
         channel_id = 'EventFilter'
 
@@ -323,7 +421,9 @@ script:
         return poll_events(channel_id).json()
 
     def get_critical_logs_command():
-        ''' corresponds to 'pan-appframework-get-critical-threat-logs' command. Queries Appframework Logging according to a pre-set query '''
+        '''
+        corresponds to 'pan-appframework-get-critical-threat-logs' command. Queries Appframework Logging according to a pre-set query
+        '''
 
         args = demisto.args()
 
@@ -372,7 +472,7 @@ script:
                 results.append(row_contents)
 
         screened_results = results_screener('threat', results)
-        # screened_results=results
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': results,
@@ -449,6 +549,52 @@ script:
         }
         return entry
 
+
+    def fetch_incidents():
+
+        last_run = demisto.getLastRun().get('lastRun', datetime.datetime.now() - datetime.timedelta(days=1))
+        if (type(last_run) == str):
+            last_run = datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S")
+
+        if (!demisto.params()['application']):
+            raise Exception('Please enter the name of application that you want to fetch from')
+
+        table = app_to_table(demisto.params()['application'])
+        severity = severity_name_to_number(demisto.params()['severity'])
+
+        query =  "SELECT * FROM panw.threat WHERE subtype='%s'" %table
+
+        if (severity):
+            query += " AND severity='%d'" %severity
+
+        LOG('Fetching Palo Alto Appframeword incidents with query: %s' %query)
+
+        service_start_date_epoch = int(last_run.strftime("%s"))
+        service_end_date_epoch = int(datetime.datetime.now().strftime("%s"))
+
+        query_data = {
+            "query": query,
+            "startTime": service_start_date_epoch,
+            "endTime": service_end_date_epoch,
+        }
+
+        pages = query_loggings(query_data)
+        incidents = []
+        table_name = None
+
+        for page in pages:
+            current_page = page.json()
+            page_logs = current_page['result']['esResult']['hits']['hits']
+
+            for log in page_logs:
+                incident = convert_log_to_incident(log)
+                incidents.append(incident)
+
+        demisto.setLastRun({
+            'lastRun': last_run.strftime("%Y-%m-%dT%H:%M:%S")
+        })
+        demisto.incidents(incidents)
+
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
     try:
@@ -471,6 +617,8 @@ script:
             demisto.results(get_critical_logs_command())
         elif demisto.command() == 'pan-appframework-get-social-applications':
             demisto.results(get_social_applications_command())
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
     except Exception, e:
         LOG(e.message)
@@ -716,5 +864,6 @@ script:
       description: Sub-category of application time
     description: Query Appframework Logging service according to pre-set queries
   dockerimage: demisto/python_pancloud
+  isfetch: true
   runonce: false
 releaseNotes: "-"
