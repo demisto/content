@@ -42,6 +42,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: File Threshold
+  name: file_threshold
+  defaultvalue: "-59"
+  type: 0
+  required: false
 script:
   script: |+
     import jwt
@@ -99,6 +104,7 @@ script:
     TID = demisto.params()['tid']
     SERVER_URL = load_server_url()
     PROXY = load_proxy()
+    FILE_THRESHOLD = demisto.params()['file_threshold']
 
     # HELPERS
     def generate_jwt_times():
@@ -172,6 +178,15 @@ script:
     def normalize_score(score):
         ''' Translates API raw float (-1 to 1) score to UI score (-100 to 100) '''
         return score*100
+
+    def translate_score(score, threshold):
+        if score > 0:
+            dbot_score = 1
+        elif threshold <= score:
+            dbot_score = 2
+        else:
+            dbot_score = 3
+        return dbot_score
 
     # FUNCTIONS
     def test():
@@ -335,18 +350,30 @@ script:
         page_size = demisto.args()['pageSize'] if 'pageSize' in demisto.args() else None
 
         device_threats = get_device_threats_request(device_id, page, page_size)['page_items']
+        dbot_score_array = []
+
         for threat in device_threats:
+            dbot_score = 0
             score = threat.get('cylance_score', None)
             if score:
                 threat['cylance_score'] = normalize_score(threat['cylance_score'])
+                threshold = demisto.args().get('threshold')
+                threshold = threshold if threshold else FILE_THRESHOLD
+                dbot_score = translate_score(threat['cylance_score'], int(threshold))
+            dbot_score_array.append({
+                'Indicator': threat['name'],
+                'Type': 'file',
+                'Vendor': 'Cylance Protect',
+                'Score': dbot_score
+            })
         if device_threats:
             threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
             ec = {
-                'File': threats_context
+                'File': threats_context,
+                'DBotScore': dbot_score_array
             }
 
             title = 'Cylance Protect Device Threat ' + device_id
-
             entry = {
                 'Type': entryTypes['note'],
                 'Contents': device_threats,
@@ -586,12 +613,22 @@ script:
         hash = demisto.args()['sha256']
         threat = get_threat_request(hash)
         if threat:
+            dbot_score = 0
             score = threat.get('cylance_score', None)
             if score:
                 threat['cylance_score'] = normalize_score(threat['cylance_score'])
+                threshold = demisto.args().get('threshold')
+                threshold = threshold if threshold else FILE_THRESHOLD
+                dbot_score = translate_score(threat['cylance_score'], int(threshold))
             context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
             ec = {
-                'File':  context_threat
+                'File':  context_threat,
+                'DBotScore': {
+                    'Indicator': threat['name'],
+                    'Type': 'file',
+                    'Vendor': 'Cylance Protect',
+                    'Score': dbot_score
+                }
             }
 
             title = 'Cylance Protect Threat ' + hash
@@ -619,18 +656,29 @@ script:
         return res
 
     def get_threats():
-
         page = demisto.args()['page'] if 'page' in demisto.args() else None
         page_size = demisto.args()['page_size'] if 'page_size' in demisto.args() else None
 
         threats = get_threats_request(page, page_size)['page_items']
+        dbot_score_array = []
         for threat in threats:
+            dbot_score = 0
             score = threat.get('cylance_score', None)
             if score:
                 threat['cylance_score'] = normalize_score(threat['cylance_score'])
+                threshold = demisto.args().get('threshold')
+                threshold = threshold if threshold else FILE_THRESHOLD
+                dbot_score = translate_score(threat['cylance_score'], int(threshold))
+            dbot_score_array.append({
+                'Indicator': threat['name'],
+                'Type': 'file',
+                'Vendor': 'Cylance Protect',
+                'Score': dbot_score
+            })
         context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
         ec = {
-            'File':  context_threat
+            'File':  context_threat,
+            'DBotScore': dbot_score_array
         }
 
         title = 'Cylance Protect Threats'
@@ -733,14 +781,26 @@ script:
         page_size = demisto.args()['pageSize'] if 'pageSize' in demisto.args() else None
 
         lst = get_list_request(demisto.args()['listTypeId'], page, page_size)['page_items']
+        dbot_score_array = []
         for threat in lst:
+            dbot_score = 0
             score = threat.get('cylance_score', None)
             if score:
                 threat['cylance_score'] = normalize_score(threat['cylance_score'])
+                threshold = demisto.args().get('threshold')
+                threshold = threshold if threshold else FILE_THRESHOLD
+                dbot_score = translate_score(threat['cylance_score'], int(threshold))
+            dbot_score_array.append({
+                'Indicator': threat['name'],
+                'Type': 'file',
+                'Vendor': 'Cylance Protect',
+                'Score': dbot_score
+            })
         if lst:
             context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
             ec = {
-                'File':  context_list
+                'File':  context_list,
+                'DBotScore': dbot_score_array
             }
 
             title = 'Cylance Protect Global List'
@@ -978,6 +1038,10 @@ script:
       required: true
       default: true
       description: The device ID
+    - name: threshold
+      description: If threat score is less or equal than the threshold, then file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
     - name: pageNumber
       description: 'Default: 1'
     - name: pageSize
@@ -1009,6 +1073,18 @@ script:
     - contextPath: File.SubClassification
       description: The threat sub-classification assigned by Cylance.
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Allows a caller to request a page with a list of threats found on
       a specific device
   - name: cylance-protect-get-policies
@@ -1202,6 +1278,18 @@ script:
       description: The threat was identified by Cylance but not by other anti-virus
         sources.
       type: boolean
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Request threat details for a specific threat
   - name: cylance-protect-get-threat-devices
     arguments:
@@ -1291,6 +1379,18 @@ script:
     - contextPath: File.Md5
       description: The MD5 hash for the threat.
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Gets information about Cylance Protect threats
   - name: cylance-protect-update-device-threats
     arguments:
@@ -1350,6 +1450,19 @@ script:
     - contextPath: File.Name
       description: The name of the threat.
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Gets a list of global list resources for a tenant
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
+releaseNotes: "Added DBotScore support including file threshold to set malicious files"
