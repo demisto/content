@@ -112,11 +112,10 @@ script:
         topic_name = demisto.args()['topic-name']
         conn.subscribe('/topic/'+topic_name, subscription_id, ack='client-individual', headers = {'activemq.subscriptionName': client })
         time.sleep(1)
-        demisto.results(len(listener.result_arr))
         for msg in listener.result_arr:
             demisto.results(msg)
-        for msg_id in listener.msg_ids:
-            conn.ack(msg_id, 1)
+        #for msg_id in listener.msg_ids:
+        #    conn.ack(msg_id, 1)
         conn.disconnect()
         sys.exit(0)
     if demisto.command() == 'fetch-incidents':
