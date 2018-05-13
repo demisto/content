@@ -32,7 +32,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Application to fetch from (Wildfire)
+- display: 'PAN application to fetch from (for example: Wildfire)'
   name: application
   defaultvalue: ""
   type: 0
@@ -69,7 +69,6 @@ script:
     requests.packages.urllib3.disable_warnings()
 
     ''' GLOBAL VARS '''
-
     API_URL=demisto.params()['apiUrl']
     REFRESH_TOKEN=demisto.params()['refreshToken']
     USE_SSL = not demisto.params().get('insecure', False)
@@ -556,7 +555,7 @@ script:
         if (type(last_run) == str):
             last_run = datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S")
 
-        if (!demisto.params()['application']):
+        if not (demisto.params()['application']):
             raise Exception('Please enter the name of application that you want to fetch from')
 
         table = app_to_table(demisto.params()['application'])
@@ -866,4 +865,4 @@ script:
   dockerimage: demisto/python_pancloud
   isfetch: true
   runonce: false
-releaseNotes: "-"
+releaseNotes:"-"
