@@ -1,9 +1,9 @@
 id: File Enrichment - Generic
 version: -1
 name: File Enrichment - Generic
+fromversion: 3.5.0
+toversion: 3.6.0
 description: Get file reputation using one or more integrations
-fromversion: 3.6.0
-releaseNotes: "Add support for auto-extract"
 starttaskid: "0"
 tasks:
   "0":
@@ -19,13 +19,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
-    reputationcalc: 0
+      - "1"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 592.5,
           "y": 50
         }
       }
@@ -46,13 +45,12 @@ tasks:
       - "14"
       - "15"
       - "17"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 370
+          "y": 195
         }
       }
   "5":
@@ -75,14 +73,13 @@ tasks:
       file:
         complex:
           root: inputs.MD5
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 49,
+          "y": 515
         }
       }
   "7":
@@ -97,13 +94,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 865
+          "x": 592.5,
+          "y": 690
         }
       }
   "14":
@@ -126,7 +122,6 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.MD5}
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -141,7 +136,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 515
+          "y": 340
         }
       }
   "15":
@@ -164,7 +159,6 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.SHA256}
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -179,7 +173,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 515
+          "y": 340
         }
       }
   "16":
@@ -202,14 +196,13 @@ tasks:
       file:
         complex:
           root: inputs.SHA256
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 705,
-          "y": 690
+          "y": 515
         }
       }
   "17":
@@ -232,7 +225,6 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.SHA256}
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -247,7 +239,7 @@ tasks:
       {
         "position": {
           "x": 1042.5,
-          "y": 515
+          "y": 340
         }
       }
   "18":
@@ -270,55 +262,13 @@ tasks:
       file:
         complex:
           root: inputs.SHA1
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1155,
-          "y": 690
-        }
-      }
-  "19":
-    id: "19"
-    taskid: f1c17fd6-bc64-422f-8776-2754a45c4f6d
-    type: condition
-    task:
-      id: f1c17fd6-bc64-422f-8776-2754a45c4f6d
-      version: -1
-      name: Should the system get the File Reputation?
-      description: |
-        Should the system retrieve the file reputation from all of the relevant integration?
-        Default: True
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "1"
-    reputationcalc: 0
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
-            value:
-              complex:
-                root: inputs.GetReputation
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 930,
-          "y": 195
+          "y": 515
         }
       }
 view: |-
@@ -329,9 +279,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 880,
-        "width": 1485,
-        "x": 50,
+        "height": 705,
+        "width": 1486,
+        "x": 49,
         "y": 50
       }
     }
@@ -358,11 +308,6 @@ inputs:
       accessor: SHA1
   required: false
   description: File SHA1 to enrich
-- key: GetReputation
-  value:
-    simple: "True"
-  required: true
-  description: Should the playbook get reputation for the File
 outputs:
 - contextPath: File
   description: The file's object
