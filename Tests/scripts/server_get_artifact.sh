@@ -3,7 +3,7 @@ set -e
 
 ACCEPT_TYPE="Accept: application/json"
 SERVER_API_URI="https://circleci.com/api/v1/project/demisto/server"
-TOKEN_ATTR="circle-token=$SERVER_CI_TOKEN"
+TOKEN_ATTR="circle-token=$1"
 
 echo "Getting latest build num"
 TEMP=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=5&filter=successful&$TOKEN_ATTR")
