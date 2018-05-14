@@ -35,10 +35,10 @@ tasks:
       name: cybereason-is-probe-connected
       description: Checks if the machine is currently connected to the Cybereason
         server
-      script: Cybereason1|||cybereason-is-probe-connected
+      script: Cybereason|||cybereason-is-probe-connected
       type: regular
       iscommand: true
-      brand: Cybereason1
+      brand: Cybereason
     nexttasks:
       '#none#':
       - "2"
@@ -99,10 +99,10 @@ tasks:
       version: -1
       name: cybereason-query-connections
       description: Searches for connections.
-      script: Cybereason1|||cybereason-query-connections
+      script: Cybereason|||cybereason-query-connections
       type: regular
       iscommand: true
-      brand: Cybereason1
+      brand: Cybereason
     nexttasks:
       '#none#':
       - "4"
@@ -166,10 +166,10 @@ tasks:
       version: -1
       name: cybereason-query-processes
       description: Searches for processes with various filters.
-      script: Cybereason1|||cybereason-query-processes
+      script: Cybereason|||cybereason-query-processes
       type: regular
       iscommand: true
-      brand: Cybereason1
+      brand: Cybereason
     nexttasks:
       '#none#':
       - "6"
