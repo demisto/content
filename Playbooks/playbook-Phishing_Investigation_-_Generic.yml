@@ -1,7 +1,8 @@
 id: Phishing Investigation - Generic
 version: -1
 name: Phishing Investigation - Generic
-fromversion: 3.5.0
+fromversion: 3.6.0
+releaseNotes: "Add support for auto-extract"
 description: Investigate a phishing incident using one or more integrations
 starttaskid: "0"
 tasks:
@@ -55,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 865
         }
       }
   "6":
@@ -80,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 865
+          "y": 690
         }
       }
   "7":
@@ -103,7 +104,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1040
         }
       }
   "8":
@@ -128,7 +129,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1215
         }
       }
   "11":
@@ -145,7 +146,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "26"
     separatecontext: false
     view: |-
       {
@@ -184,7 +185,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 515
+          "y": 340
         }
       }
   "13":
@@ -227,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 865
+          "y": 690
         }
       }
   "14":
@@ -251,7 +252,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 690
+          "y": 515
         }
       }
   "15":
@@ -287,7 +288,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1040
+          "y": 865
         }
       }
   "16":
@@ -327,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1215
+          "y": 1040
         }
       }
   "17":
@@ -338,8 +339,8 @@ tasks:
       id: dc6d53be-322c-42ef-86b3-43674b9dc3d8
       version: -1
       name: Send email to user - email you reported is malicious
-      scriptName: SendEmail
       description: ""
+      scriptName: SendEmail
       type: regular
       iscommand: false
       brand: ""
@@ -366,7 +367,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1215
+          "y": 1040
         }
       }
   "18":
@@ -389,89 +390,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 355
-        }
-      }
-  "19":
-    id: "19"
-    taskid: c398e131-67cd-447e-8e8b-feb09501d5a4
-    type: playbook
-    task:
-      id: c398e131-67cd-447e-8e8b-feb09501d5a4
-      version: -1
-      name: Process Email - Generic
-      description: ""
-      playbookName: Process Email - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 340
-        }
-      }
-  "20":
-    id: "20"
-    taskid: 9ade9816-a5c9-4f6b-8252-351173d62086
-    type: playbook
-    task:
-      id: 9ade9816-a5c9-4f6b-8252-351173d62086
-      version: -1
-      name: Extract Indicators - Generic
-      description: ""
-      description: Extract indicators from input data
-      playbookName: Extract Indicators - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-      - "22"
-    scriptarguments:
-      incident:
-        complex:
-          root: Email
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 515
-        }
-      }
-  "21":
-    id: "21"
-    taskid: d1d783fb-9d1d-4d5c-81ff-59866dfd2b4c
-    type: playbook
-    task:
-      id: d1d783fb-9d1d-4d5c-81ff-59866dfd2b4c
-      version: -1
-      name: Entity Enrichment - Generic
-      description: ""
-      playbookName: Entity Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 690
+          "y": 195
         }
       }
   "22":
@@ -494,8 +413,57 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 2d862878-1ee1-4eab-8f14-d0ce5ebf0c92
+    type: playbook
+    task:
+      id: 2d862878-1ee1-4eab-8f14-d0ce5ebf0c92
+      version: -1
+      name: Entity Enrichment - Generic
+      description: ""
+      playbookName: Entity Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
           "x": 480,
-          "y": 690
+          "y": 515
+        }
+      }
+  "26":
+    id: "26"
+    taskid: eff3c1ea-a788-45db-8f09-38dfee0f8857
+    type: playbook
+    task:
+      id: eff3c1ea-a788-45db-8f09-38dfee0f8857
+      version: -1
+      name: Process Email - Generic
+      description: ""
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+      - "22"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
         }
       }
 view: |-
@@ -505,7 +473,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1260,
         "width": 1240,
         "x": 50,
         "y": 50

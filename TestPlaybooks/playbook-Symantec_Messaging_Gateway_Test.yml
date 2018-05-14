@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bfd9179b-1619-400f-8693-5fc8a7bf13e7
+    taskid: 22b1677f-8e21-46e0-800f-d5eb0bc3c982
     type: start
     task:
-      id: bfd9179b-1619-400f-8693-5fc8a7bf13e7
+      id: 22b1677f-8e21-46e0-800f-d5eb0bc3c982
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 973dace6-b737-4279-8870-18da86336431
+    taskid: 1d4d8b96-34f7-4469-8733-fd02eb296ba9
     type: regular
     task:
-      id: 973dace6-b737-4279-8870-18da86336431
+      id: 1d4d8b96-34f7-4469-8733-fd02eb296ba9
       version: -1
       name: smg-block-email
       description: Adds email address to the Local Bad Sender Domains.
@@ -42,21 +42,21 @@ tasks:
       - "8"
     scriptarguments:
       email:
-        simple: test@test.com
+        simple: ${GeneratedUUID}@mail.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
   "2":
     id: "2"
-    taskid: b96f7bc1-4828-4c93-802b-c69f90d9c808
+    taskid: fc69005b-bdd8-4fff-8e14-c4fb19c9e38c
     type: regular
     task:
-      id: b96f7bc1-4828-4c93-802b-c69f90d9c808
+      id: fc69005b-bdd8-4fff-8e14-c4fb19c9e38c
       version: -1
       name: smg-unblock-email
       description: Removes email address from the Local Bad Sender Domains.
@@ -69,21 +69,21 @@ tasks:
       - "10"
     scriptarguments:
       email:
-        simple: test@test.com
+        simple: ${GeneratedUUID}@mail.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
   "3":
     id: "3"
-    taskid: e25ec9b9-8d46-4457-817c-412a39e10605
+    taskid: 46caef04-5680-4d42-81ad-eeaa62c1364f
     type: regular
     task:
-      id: e25ec9b9-8d46-4457-817c-412a39e10605
+      id: 46caef04-5680-4d42-81ad-eeaa62c1364f
       version: -1
       name: smg-block-domain
       description: Adds domain to the Local Bad Sender Domains group.
@@ -96,21 +96,21 @@ tasks:
       - "11"
     scriptarguments:
       domain:
-        simple: www.test.com
+        simple: www.${GeneratedUUID}.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
   "4":
     id: "4"
-    taskid: 40c50201-6556-4a13-83af-d2fabe937ebc
+    taskid: 8aa3bb88-5d02-4112-85ba-9d65a0942df9
     type: regular
     task:
-      id: 40c50201-6556-4a13-83af-d2fabe937ebc
+      id: 8aa3bb88-5d02-4112-85ba-9d65a0942df9
       version: -1
       name: smg-unblock-domain
       description: Removes domain from the Local Bad Sender Domains group.
@@ -123,21 +123,21 @@ tasks:
       - "13"
     scriptarguments:
       domain:
-        simple: www.test.com
+        simple: www.${GeneratedUUID}.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
   "5":
     id: "5"
-    taskid: 5a8ef37a-7709-4da6-8392-2be31230c6bb
+    taskid: d752290e-6ffe-4793-8b7a-ba3a92dbe639
     type: regular
     task:
-      id: 5a8ef37a-7709-4da6-8392-2be31230c6bb
+      id: d752290e-6ffe-4793-8b7a-ba3a92dbe639
       version: -1
       name: smg-block-ip
       description: Adds IP address to the Local Bad Sender IPs  group.
@@ -150,21 +150,21 @@ tasks:
       - "14"
     scriptarguments:
       ip:
-        simple: 10.20.30.40
+        simple: ${GeneratedIP}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2295
         }
       }
   "7":
     id: "7"
-    taskid: 272a4152-38cb-4330-8c9c-0ee63e404e2c
+    taskid: 22d423e1-120e-4d9d-88c7-1ea856f2f7d0
     type: title
     task:
-      id: 272a4152-38cb-4330-8c9c-0ee63e404e2c
+      id: 22d423e1-120e-4d9d-88c7-1ea856f2f7d0
       version: -1
       name: Done
       type: title
@@ -175,15 +175,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3170
         }
       }
   "8":
     id: "8"
-    taskid: c05eaad3-3e33-41ff-81ee-d3303cccf093
+    taskid: b89a5c41-5ed7-4eaf-89a2-cb6b9a4f79f4
     type: regular
     task:
-      id: c05eaad3-3e33-41ff-81ee-d3303cccf093
+      id: b89a5c41-5ed7-4eaf-89a2-cb6b9a4f79f4
       version: -1
       name: Verify Email Address
       description: |-
@@ -201,7 +201,7 @@ tasks:
       - "9"
     scriptarguments:
       expectedValue:
-        simple: test@test.com
+        simple: ${GeneratedUUID}@mail.com
       fields: {}
       path:
         simple: Email.Address
@@ -210,15 +210,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
   "9":
     id: "9"
-    taskid: 2c31c4f4-9777-4ff1-8bd5-328fcdd8a596
+    taskid: ef7b123d-8f48-4187-8db5-7c471fab470c
     type: regular
     task:
-      id: 2c31c4f4-9777-4ff1-8bd5-328fcdd8a596
+      id: ef7b123d-8f48-4187-8db5-7c471fab470c
       version: -1
       name: Verify Blocked
       description: |-
@@ -245,15 +245,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
   "10":
     id: "10"
-    taskid: c54b0359-c5bc-4182-8244-d4c953997458
+    taskid: 1ad308c6-4c45-437c-8d26-17916e6a0f8e
     type: regular
     task:
-      id: c54b0359-c5bc-4182-8244-d4c953997458
+      id: 1ad308c6-4c45-437c-8d26-17916e6a0f8e
       version: -1
       name: Verify Unblocked
       description: |-
@@ -280,15 +280,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
   "11":
     id: "11"
-    taskid: 90aa81c6-5958-4606-8be9-d93217762939
+    taskid: 54ba84a1-126e-49c5-85fe-66ce35bdab42
     type: regular
     task:
-      id: 90aa81c6-5958-4606-8be9-d93217762939
+      id: 54ba84a1-126e-49c5-85fe-66ce35bdab42
       version: -1
       name: Verify Domain
       description: |-
@@ -306,7 +306,7 @@ tasks:
       - "12"
     scriptarguments:
       expectedValue:
-        simple: www.test.com
+        simple: www.${GeneratedUUID}.com
       fields: {}
       path:
         simple: Domain.Name
@@ -315,15 +315,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
   "12":
     id: "12"
-    taskid: 8630aa83-16c4-41e6-8f0c-ec7a760b8e42
+    taskid: fe4ee2fd-cb4d-4fad-8d0f-9c5002734566
     type: regular
     task:
-      id: 8630aa83-16c4-41e6-8f0c-ec7a760b8e42
+      id: fe4ee2fd-cb4d-4fad-8d0f-9c5002734566
       version: -1
       name: Verify Blocked
       description: |-
@@ -350,15 +350,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
   "13":
     id: "13"
-    taskid: 0728f51f-14d5-4bbc-8a84-306dff812297
+    taskid: fba5b92f-cbe7-42a2-8af7-ea4d083c731a
     type: regular
     task:
-      id: 0728f51f-14d5-4bbc-8a84-306dff812297
+      id: fba5b92f-cbe7-42a2-8af7-ea4d083c731a
       version: -1
       name: Verify Unblocked
       description: |-
@@ -373,7 +373,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "19"
     scriptarguments:
       expectedValue:
         simple: "false"
@@ -385,15 +385,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
   "14":
     id: "14"
-    taskid: e833a81d-7e80-4706-8bf6-b603e0ba2be1
+    taskid: 430873f6-25d0-4965-816f-1ce438d39e21
     type: regular
     task:
-      id: e833a81d-7e80-4706-8bf6-b603e0ba2be1
+      id: 430873f6-25d0-4965-816f-1ce438d39e21
       version: -1
       name: Verify IP Address
       description: |-
@@ -411,7 +411,7 @@ tasks:
       - "15"
     scriptarguments:
       expectedValue:
-        simple: 10.20.30.40
+        simple: ${GeneratedIP}
       fields: {}
       path:
         simple: IP.Address
@@ -420,15 +420,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2470
         }
       }
   "15":
     id: "15"
-    taskid: 6169db6d-73fd-48bd-86c5-4926f93b3c7f
+    taskid: 370ccbc5-2de4-4816-8457-0236e6605679
     type: regular
     task:
-      id: 6169db6d-73fd-48bd-86c5-4926f93b3c7f
+      id: 370ccbc5-2de4-4816-8457-0236e6605679
       version: -1
       name: Verify Blocked
       description: |-
@@ -455,15 +455,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2645
         }
       }
   "16":
     id: "16"
-    taskid: ebf39e3d-2862-479f-870f-df0fc50dbb5d
+    taskid: eac73899-bfb2-46a3-8259-d45b89e62cc1
     type: regular
     task:
-      id: ebf39e3d-2862-479f-870f-df0fc50dbb5d
+      id: eac73899-bfb2-46a3-8259-d45b89e62cc1
       version: -1
       name: Verify Unblocked
       description: |-
@@ -490,15 +490,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2995
         }
       }
   "17":
     id: "17"
-    taskid: d38c911c-04ee-4f41-82e0-7005bc8e2e41
+    taskid: 65a6a859-ec28-45d2-8746-2f923c64a365
     type: regular
     task:
-      id: d38c911c-04ee-4f41-82e0-7005bc8e2e41
+      id: 65a6a859-ec28-45d2-8746-2f923c64a365
       version: -1
       name: smg-unblock-ip
       description: Removes IP address from the Local Bad Sender IPs  group.
@@ -511,13 +511,59 @@ tasks:
       - "16"
     scriptarguments:
       ip:
-        simple: 10.20.30.40
+        simple: ${GeneratedIP}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2820
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 38241dd3-f8af-42d5-8682-98712ff151a7
+    type: regular
+    task:
+      id: 38241dd3-f8af-42d5-8682-98712ff151a7
+      version: -1
+      name: GenerateUUID
+      scriptName: GenerateUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "19":
+    id: "19"
+    taskid: dca5a26d-8575-447b-8d45-c0cddc77f9af
+    type: regular
+    task:
+      id: dca5a26d-8575-447b-8d45-c0cddc77f9af
+      version: -1
+      name: GenerateIP
+      scriptName: GenerateIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
         }
       }
 view: |-
@@ -525,7 +571,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2835,
+        "height": 3185,
         "width": 380,
         "x": 50,
         "y": 50
