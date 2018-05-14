@@ -296,6 +296,10 @@
         {
             "integrations": "SQS",
             "playbookID": "sqs_test"
+        },
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
         }
     ],
     "skipped": [
