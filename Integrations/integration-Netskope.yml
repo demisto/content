@@ -5,11 +5,11 @@ name: Netskope
 display: Netskope
 category: Network Security
 image: data:image/png;base64,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
-description: Netskope Platform Integration
+description: Cloud access security broker that enables to find, understand, and secure cloud apps.
 detaileddescription: 'You can grab the API token from your Netskope tenant by navigating
   to: Settings-->Manage-->REST API'
 configuration:
-- display: URL of Netskope Tenant (e.g. tenant.goskope.com)
+- display: URL of Netskope Tenant (e.g. https://tenant.goskope.com)
   name: url
   defaultvalue: ""
   type: 0
@@ -17,11 +17,16 @@ configuration:
 - display: Tenant API Token
   name: token
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
   type: 8
   required: false
 script:
@@ -31,7 +36,7 @@ script:
     var TOKEN = params.token;
 
     function sendRequest(method, api) {
-        var requestUrl = "https://" + BASE_URL + api;
+        var requestUrl = BASE_URL + api;
         var result = http(
             requestUrl,
             {
@@ -48,7 +53,7 @@ script:
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
         }
         if (result.Body === '') {
-            throw 'No content received.' + requestUrl + result.Body;
+            throw 'No content received.' + url + result;
         }
         var body;
         try {
@@ -186,14 +191,14 @@ script:
                 return 'ok';
             }
             return result;
-        case 'NetskopeEvents':
+        case 'netskope-events':
             return getEvents();
-        case 'NetskopeAlerts':
+        case 'netskope-alerts':
             return getAlerts();
     }
   type: javascript
   commands:
-  - name: NetskopeEvents
+  - name: netskope-events
     arguments:
     - name: query
       description: filter query (e.g. user eq jtesarz@netskope.com)
@@ -208,9 +213,9 @@ script:
       - "7776000"
       description: TimePeriod
     - name: starttime
-      description: start time in epoch
+      description: 'start time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
     - name: endtime
-      description: end time in epoch
+      description: 'end time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
     - name: type
       required: true
       auto: PREDEFINED
@@ -226,34 +231,41 @@ script:
       description: Skip over some of the events (useful for pagination in combination
         with limit)
     outputs:
-    - contextPath: Netskope.Events.app
+    - contextPath: Netskope.Events.App
       description: Name of Application
-    - contextPath: Netskope.Events.timestamp
+      type: string
+    - contextPath: Netskope.Events.Timestamp
       description: Timestamp of event
-    - contextPath: Netskope.Events.activity
+      type: string
+    - contextPath: Netskope.Events.Activity
       description: Activity of event
-    - contextPath: Netskope.Events.object
+      type: string
+    - contextPath: Netskope.Events.Object
       description: Document/object from event
+      type: string
     - contextPath: Netskope.Events.hostname
       description: Hostname of device
-    - contextPath: Netskope.Events.Category
+    - contextPath: Netskope.Events.AppCategory
       description: Netskope application category (e.g. Cloud Storage, Webmail, etc)
+      type: string
     - contextPath: Netskope.Events.device_classification
       description: Device classification (e.g. managed vs unmanaged)
-    - contextPath: Netskope.Events.user
+    - contextPath: Netskope.Events.User
       description: User
+      type: string
     - contextPath: Netskope.Events.from_user
       description: Login IDs for cloud apps
     - contextPath: Netskope.Events.to_user
       description: Destination user IDs
-    - contextPath: Netskope.Events.srcip
+    - contextPath: Netskope.Events.SourceIP
       description: Source IP
-    - contextPath: Netskope.Events.access_method
+      type: string
+    - contextPath: Netskope.Events.AccessMethod
       description: Access method (e.g. client, reverse proxy, Secure Forwarder, etc)
+      type: string
     - contextPath: Netskope.Events.url
       description: URL
-    - contextPath: Netskope.Events.appcategory
-  - name: NetskopeAlerts
+  - name: netskope-alerts
     arguments:
     - name: type
       required: true
@@ -280,21 +292,25 @@ script:
       - "7776000"
       description: Time period (e.g. Last 60 minutes, Last 24 hours, etc.)
     - name: starttime
-      description: Start time in epoch
+      description: 'Start time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
     - name: endtime
-      description: End time in epoch
+      description: 'End time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
     - name: query
-      description: "Valid event query described in the query language document\t"
+      description: "Valid event query described in the query language document"
     outputs:
-    - contextPath: Netskope.Events.app
+    - contextPath: Netskope.Alerts.App
       description: Name of Application
-    - contextPath: Netskope.Events.timestamp
+      type: string
+    - contextPath: Netskope.Alerts.Timestamp
       description: Timestamp of event
-    - contextPath: Netskope.Events.policy
+      type: string
+    - contextPath: Netskope.Alerts.Policy
       description: Name of Policy Triggered
-    - contextPath: Netskope.Events.DLP_File
+      type: string
+    - contextPath: Netskope.Alerts.DLPFile
       description: Name of DLP File that triggered
-    - contextPath: Netskope.Events.Hostname
+      type: string
+    - contextPath: Netskope.Alerts.Hostname
       description: Hostname
-    - contextPath: Netskope.Events.User
-      description: Email of user
+      type: string
+  runonce: false
