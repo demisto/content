@@ -865,4 +865,4 @@ script:
   dockerimage: demisto/python_pancloud
   isfetch: true
   runonce: false
-releaseNotes:"-"
+releaseNotes: "-"
