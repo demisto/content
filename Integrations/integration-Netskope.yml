@@ -265,6 +265,7 @@ script:
       type: string
     - contextPath: Netskope.Events.url
       description: URL
+    description: Gets a list of events
   - name: netskope-alerts
     arguments:
     - name: type
@@ -281,6 +282,7 @@ script:
       - quarantine
       - Remediation
       - watchlist
+      description: Type of alert
     - name: timeperiod
       auto: PREDEFINED
       predefined:
@@ -313,4 +315,5 @@ script:
     - contextPath: Netskope.Alerts.Hostname
       description: Hostname
       type: string
+    description: Gets a list of alerts
   runonce: false
