@@ -124,6 +124,8 @@ mapping:
               - type: str
           continueonerror:
             type: bool
+          reputationcalc:
+            type: int
           separatecontext:
             type: bool
   system:
