@@ -2,6 +2,7 @@ commonfields:
   id: http
   version: -1
 name: http
+releaseNotes: "-"
 comment: Sends http request. Returns the response as json.
 script: |+
   var requestObj = {
@@ -35,9 +36,9 @@ script: |+
       requestObj.Headers = headersJs;
   }
 
-  var insecure = (args.insecure === 'true');
+  var unsecure = (args.unsecure === 'true');
   var proxy = (args.proxy === 'true');
-  var res = http(args.url, requestObj, insecure, proxy);
+  var res = http(args.url, requestObj, unsecure, proxy);
   var fileName;
   if (args.filename) {
       fileName = args.filename;
@@ -88,7 +89,7 @@ args:
   description: The url for the http request
 - name: headers
   description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
-- name: insecure
+- name: unsecure
   auto: PREDEFINED
   description: Trust any certificate (unsecure)
   predefined:
