@@ -33,7 +33,7 @@ configuration:
   defaultvalue: true
   type: 8
   required: false
-- display: Allow self-signed SSL certificates
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: false
   type: 8
@@ -781,4 +781,4 @@ script:
     description: Private API. Retrieve comments for a given resource
 hidden: false
 fromversion: 2.5.0
-releaseNotes: "Add indicators thresholds as instance parameters "
+releaseNotes: "Add indicators thresholds as instance parameters"
