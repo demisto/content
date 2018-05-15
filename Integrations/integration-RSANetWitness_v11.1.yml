@@ -575,6 +575,8 @@ script:
     def fetch_incidents():
 
         lastRun = demisto.getLastRun()
+        #limit each fetch to 100 incidents
+        limit = 100
 
         #if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
         if lastRun and lastRun.get('timestamp'):
@@ -583,13 +585,15 @@ script:
             day_ago = datetime.now() - timedelta(days=1)
             #convert to ISO 8601 format and add Z suffix
             timestamp = day_ago.isoformat() + 'Z'
+            #first fetch - set limit to 5 incidents
+            limit = 5
 
         token = get_token()
 
         netwitness_incidents = get_all_incidents(
             token,
             since = timestamp,
-            limit = 1000
+            limit = limit
         )
 
         demisto_incidents =[]
@@ -1333,3 +1337,4 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
+  releaseNotes: Add limitation on fetch incidents. First fetch is restricted to 5 incidents, each fetch to follow will be restricted to 100 incidents.
