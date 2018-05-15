@@ -1790,7 +1790,7 @@ script:
     """
 
 
-    def file_acquisition_request(agent_id, file_name, file_path, comment=None, external_id=None):
+    def file_acquisition_request(agent_id, file_name, file_path, comment=None, external_id=None, req_use_api=None):
 
         url = '{}/hosts/{}/files'.format(BASE_PATH, agent_id)
 
@@ -1798,7 +1798,8 @@ script:
             'req_path': file_path,
             'req_filename': file_name,
             'comment': comment,
-            'external_id': external_id
+            'external_id': external_id,
+            'req_use_api': req_use_api
         }
 
         #remove None values
@@ -1877,12 +1878,13 @@ script:
         if args.get('hostName'):
             args['agentId'] = get_agent_id(args['hostName'])
 
+        use_api = args.get('acquireUsing') == 'API'
+
         acquisition_info = file_acquisition_request(
             args.get('agentId'),
             args.get('fileName'),
             args.get('filePath'),
-            comment=args.get('comment'),
-            external_id=args.get('externalId')
+            req_use_api=use_api
         )
 
         acquisition_id = acquisition_info.get('_id')
@@ -2698,6 +2700,13 @@ script:
     - name: filePath
       required: true
       description: The file path.
+    - name: acquireUsing
+      required: false
+      description: Whether to aqcuire the file using the API or RAW. By default, raw file will be acquired. Use API option when file is encrypted.
+      auto: PREDEFINED
+      predefined:
+      - API
+      - RAW
     - name: agentId
       description: The agent ID associated with the host that holds the file. If the
         hostName is not specified, the agentId must be specified.
@@ -2764,3 +2773,4 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
+  releaseNotes: Add option to acquire files using the API.
