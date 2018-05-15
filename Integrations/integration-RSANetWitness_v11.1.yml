@@ -573,10 +573,10 @@ script:
         demisto.results(entry)
 
     def fetch_incidents():
-
+        """
+        fetch is limited to 100 results
+        """
         lastRun = demisto.getLastRun()
-        #limit each fetch to 100 incidents
-        limit = 100
 
         #if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
         if lastRun and lastRun.get('timestamp'):
@@ -585,15 +585,13 @@ script:
             day_ago = datetime.now() - timedelta(days=1)
             #convert to ISO 8601 format and add Z suffix
             timestamp = day_ago.isoformat() + 'Z'
-            #first fetch - set limit to 10 incidents
-            limit = 10
 
         token = get_token()
 
         netwitness_incidents = get_all_incidents(
             token,
             since = timestamp,
-            limit = limit
+            limit = 100
         )
 
         demisto_incidents =[]
