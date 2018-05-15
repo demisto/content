@@ -75,6 +75,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
