@@ -12,7 +12,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Credentials
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
@@ -32,6 +32,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Number of offenses to pull per API call
+  name: offensesPerCall
+  defaultvalue: "50"
+  type: 0
+  required: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "true"
@@ -45,7 +50,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "true"
-  type: 0
+  type: 8
   required: false
 script:
   script: |-
@@ -59,7 +64,8 @@ script:
     var server = params.server+'/';
     var insecure = params.insecure;
     var query = params.query;
-    var incidentsPerCall = 50;
+    var offensesPerCall = parseInt(params.offensesPerCall);
+
     var createIncidentFromOffense = function(incident) {
         var keys = Object.keys(incident);
         var labels = [];
@@ -225,7 +231,19 @@ script:
         case 'fetch-incidents':
             var lastRun = getLastRun();
             var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''), undefined, '0-' + incidentsPerCall);
+            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''), undefined, '0-' + (offensesPerCall-1));
+            var totalOffenses = res.length;
+            var lastCallOffenses = res.length;
+            while (startTime && lastCallOffenses >= offensesPerCall) {
+                var min = res.length;
+                var max = min + offensesPerCall;
+                var lastIncidentTime = res[res.length-1].start_time;
+
+                res = res.concat(getOffenses('start_time>' + startTime + ' AND start_time<' + lastIncidentTime + (query ? (' AND (' + query +')') : ''), undefined, min + '-' + max));
+                lastCallOffenses = res.length - totalOffenses;
+                totalOffenses = res.length;
+            }
+
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var offense = res[i];
@@ -515,3 +533,7 @@ script:
       description: Table headers
     description: Retrieve a note for an offense
   isfetch: true
+  runonce: false
+releaseNotes: |
+  * Added parameter to control number of offenses fetched per API call 
+  * Added pagination support for fetch-incidents to allow importing large amounts of offenses
