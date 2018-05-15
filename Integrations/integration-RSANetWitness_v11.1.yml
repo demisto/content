@@ -308,7 +308,7 @@ script:
 
         #validate one of the following was passed - until, since
         if not any([args.get('since'), args.get('until'), args.get('lastDays')]):
-            raise ValueError("Please provide one or both of the following parameters: since, until.")
+            raise ValueError("Please provide one or both of the following parameters: since, until. Alternatively, use lastDays")
 
         num_of_days = args.get('lastDays')
         if num_of_days:
