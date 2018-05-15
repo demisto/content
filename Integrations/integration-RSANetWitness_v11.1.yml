@@ -585,8 +585,8 @@ script:
             day_ago = datetime.now() - timedelta(days=1)
             #convert to ISO 8601 format and add Z suffix
             timestamp = day_ago.isoformat() + 'Z'
-            #first fetch - set limit to 5 incidents
-            limit = 5
+            #first fetch - set limit to 10 incidents
+            limit = 10
 
         token = get_token()
 
@@ -1337,4 +1337,4 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
-  releaseNotes: Add limitation on fetch incidents. First fetch is restricted to 5 incidents, each fetch to follow will be restricted to 100 incidents.
+  releaseNotes: Add limitation on fetch incidents. First fetch is restricted to 10 incidents, each fetch to follow will be restricted to 100 incidents.
