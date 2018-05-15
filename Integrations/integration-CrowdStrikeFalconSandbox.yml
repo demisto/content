@@ -223,7 +223,8 @@ script:
         }
         // create context from environments
         var context = {
-            'VX.Environment(val.ID && val.ID == obj.ID)': envContext
+            'VX.Environment(val.ID && val.ID == obj.ID)': envContext,
+            'CrowdStrike.Environment(val.ID && val.ID == obj.ID)': envContext
         };
 
 
@@ -840,25 +841,25 @@ script:
   - name: crowdstrike-get-environments
     arguments: []
     outputs:
-    - contextPath: VX.Environment.ID
+    - contextPath: CrowdStrike.Environment.ID
       description: Environment ID
       type: number
-    - contextPath: VX.Environment.description
+    - contextPath: CrowdStrike.Environment.description
       description: Environment description
       type: string
-    - contextPath: VX.Environment.architecture
+    - contextPath: CrowdStrike.Environment.architecture
       description: Environment architecture
       type: string
-    - contextPath: VX.Environment.VMs_total
+    - contextPath: CrowdStrike.Environment.VMs_total
       description: Total virtual machines in environment
       type: number
-    - contextPath: VX.Environment.VMs_busy
+    - contextPath: CrowdStrike.Environment.VMs_busy
       description: Busy virtual machines in environment
       type: number
-    - contextPath: VX.Environment.analysisMode
+    - contextPath: CrowdStrike.Environment.analysisMode
       description: 'Analysis mode of environment '
       type: string
-    - contextPath: VX.Environment.groupicon
+    - contextPath: CrowdStrike.Environment.groupicon
       description: Icon of environment
       type: string
     description: Get a list of all available environments
