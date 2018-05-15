@@ -74,7 +74,7 @@ tasks:
       fields:
         simple: ID,description,architecture,VMs_total,VMs_busy,analysisMode,groupicon
       path:
-        simple: VX.Environment
+        simple: CrowdStrike.Environment
     separatecontext: false
     view: |-
       {
