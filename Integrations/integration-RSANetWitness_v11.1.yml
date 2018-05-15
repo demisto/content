@@ -1337,4 +1337,4 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
-  releaseNotes: Add limitation on fetch incidents. First fetch is restricted to 10 incidents, each fetch to follow will be restricted to 100 incidents.
+releaseNotes: "Add limitation on fetch incidents. First fetch is restricted to 10 incidents, each fetch to follow will be restricted to 100 incidents."
