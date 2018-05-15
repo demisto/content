@@ -2773,4 +2773,4 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
-releaseNotes: Add option to acquire files using the API.
+releaseNotes: "Add option to acquire files using the API."
