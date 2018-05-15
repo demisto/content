@@ -222,7 +222,7 @@ script:
         }
         demisto.results(entry)
 
-    def get_incidents_request(token, since=None, until=None, page_number=None, page_size=None):
+    def get_incidents_request(token, since=None, until=None, page_number=None, page_size=100):
         """
 
         returns the response body
