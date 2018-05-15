@@ -1,0 +1,120 @@
+id: test_url_regex
+version: -1
+name: Test URL Regex
+description: Test the URL regex
+fromversion: "3.6.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b7660052-6c13-41dd-8ca7-51d03a397f8f
+    type: start
+    task:
+      id: b7660052-6c13-41dd-8ca7-51d03a397f8f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 3d458497-3938-481b-8fcd-25c5e21dd4c7
+    type: regular
+    task:
+      id: 3d458497-3938-481b-8fcd-25c5e21dd4c7
+      version: -1
+      name: Print URL
+      description: ""
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-2540
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: ac0f49a0-20cd-4acc-88e2-f2bac019c156
+    type: regular
+    task:
+      id: ac0f49a0-20cd-4acc-88e2-f2bac019c156
+      version: -1
+      name: VerifyContext
+      description: ""
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue:
+        simple: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-2540
+      fields: {}
+      path:
+        simple: URL.Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c1f37b22-c11a-4b4b-8020-086b22d85968
+    type: title
+    task:
+      id: c1f37b22-c11a-4b4b-8020-086b22d85968
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
