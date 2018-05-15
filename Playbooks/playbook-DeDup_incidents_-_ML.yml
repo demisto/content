@@ -81,7 +81,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "4"
       "yes":
       - "6"
@@ -195,7 +195,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "3"
       "yes":
       - "5"
@@ -250,3 +250,4 @@ outputs:
 - contextPath: duplicateCandidate
   description: the duplicate top candidate
   type: unknown
+releaseNotes: 'Fix ELSE condition in DeDup Playbook'
