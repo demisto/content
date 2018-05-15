@@ -1,0 +1,60 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:9.11
+    environment:
+      CONTENT_VERSION: "18.5.2"
+    steps:
+      - checkout
+      - run:
+          name: Prepare Environment
+          command: |
+              echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+              source $BASH_ENV
+              sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+      - run:
+          name: Install dependencies
+          command: |
+              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
+              sudo easy_install pip
+              sudo npm install npm -g
+              sudo pip install pykwalify
+              sudo pip install requests
+              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
+              sudo npm install -g jsdoc-to-markdown
+              sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
+      - run:
+          name: Validate Files and Yaml
+          command: |
+              chmod +x ./Tests/yamlvalidator
+              ./Tests/yamlvalidator
+              ./Tests/scripts/validate_files_structure.sh
+      - run:
+          name: Build Content Descriptor
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM bbe11e6757bbd0c8a440d1e10aff6d8f8d3df3e0 $CONTENT_VERSION
+      - run:
+          name: Common Server Documentation
+          command: ./Docs/commonServerDocs.sh
+      - run:
+          name: Create Content Artifacts
+          command: python content_creator.py $CIRCLE_ARTIFACTS
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+      - run:
+          name: Setup Instance
+          command: |
+              sudo pip install awscli
+              chmod +x ./Tests/scripts/*
+              ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+              ./Tests/scripts/create_instance.sh
+              ./Tests/scripts/download_demisto_conf.sh
+              ./Tests/scripts/run_installer_on_instance.sh
+              ./Tests/scripts/wait_until_server_ready.sh
+      - run:
+          name: Run Tests
+          command: ./Tests/scripts/run_tests.sh
+      - run:
+          name: Destory Instances
+          command: ./Tests/scripts/destroy_instances.sh
