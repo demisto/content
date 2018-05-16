@@ -36,7 +36,7 @@ script: |+
       requestObj.Headers = headersJs;
   }
 
-  var unsecure = (args.unsecure === 'true');
+  var unsecure = (args.unsecure === 'true' || args.insecure === 'true');
   var proxy = (args.proxy === 'true');
   var res = http(args.url, requestObj, unsecure, proxy);
   var fileName;
@@ -89,6 +89,10 @@ args:
   description: The url for the http request
 - name: headers
   description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
+- name: insecure
+  auto: PREDEFINED
+  description: Trust any certificate (unsecure)
+  deprecated: true
 - name: unsecure
   auto: PREDEFINED
   description: Trust any certificate (unsecure)
