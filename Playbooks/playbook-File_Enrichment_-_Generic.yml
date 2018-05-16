@@ -20,7 +20,6 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -46,7 +45,6 @@ tasks:
       - "14"
       - "15"
       - "17"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -75,7 +73,6 @@ tasks:
       file:
         complex:
           root: inputs.MD5
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
@@ -97,7 +94,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -126,7 +122,6 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.MD5}
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -164,7 +159,6 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.SHA256}
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -202,7 +196,6 @@ tasks:
       file:
         complex:
           root: inputs.SHA256
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
@@ -232,7 +225,6 @@ tasks:
     scriptarguments:
       value:
         simple: ${File.SHA256}
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -270,7 +262,6 @@ tasks:
       file:
         complex:
           root: inputs.SHA1
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
@@ -299,7 +290,6 @@ tasks:
       - "7"
       "yes":
       - "1"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"

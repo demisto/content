@@ -20,7 +20,6 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -62,7 +61,6 @@ tasks:
       todate: {}
       toduedate: {}
       type: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -88,7 +86,6 @@ tasks:
       - "4"
       "yes":
       - "9"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -135,7 +132,6 @@ tasks:
                 value:
                   simple: External
           accessor: Email.Address
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
@@ -170,7 +166,6 @@ tasks:
         complex:
           root: inputs.Email
       extend-context: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -194,7 +189,6 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -219,7 +213,6 @@ tasks:
       '#none#':
       - "18"
       - "19"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -268,7 +261,6 @@ tasks:
       nestedSearch: {}
       userAccountControlOut: {}
       username: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -309,7 +301,6 @@ tasks:
                 value:
                   simple: External
           accessor: Email
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -350,7 +341,6 @@ tasks:
                 value:
                   simple: Internal
           accessor: Email
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -394,7 +384,6 @@ tasks:
                   simple: External
           accessor: Email.Address
       threshold: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -418,7 +407,6 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -467,7 +455,6 @@ tasks:
                 value:
                   simple: active
           accessor: brand
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -498,7 +485,6 @@ tasks:
       value:
         complex:
           root: inputs.Domain
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -527,7 +513,6 @@ tasks:
       - "4"
       "yes":
       - "7"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"

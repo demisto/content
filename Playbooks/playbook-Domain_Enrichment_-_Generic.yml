@@ -20,7 +20,6 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -46,7 +45,6 @@ tasks:
       - "24"
       "yes":
       - "20"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -108,7 +106,6 @@ tasks:
       domain:
         complex:
           root: inputs.Domain
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
@@ -130,7 +127,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -157,7 +153,6 @@ tasks:
       - "24"
       "yes":
       - "16"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
