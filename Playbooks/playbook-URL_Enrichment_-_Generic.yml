@@ -20,7 +20,6 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -49,7 +48,6 @@ tasks:
     scriptarguments:
       value:
         simple: inputs.url
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -88,7 +86,6 @@ tasks:
       ip: {}
       url:
         simple: ${inputs.url}
-    reputationcalc: 0
     continueonerror: true
     separatecontext: false
     view: |-
@@ -110,7 +107,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -158,7 +154,6 @@ tasks:
               right:
                 value:
                   simple: active
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -189,7 +184,6 @@ tasks:
       url:
         simple: ${inputs.url}
       width: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -215,7 +209,6 @@ tasks:
       - "24"
       "yes":
       - "25"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -254,7 +247,6 @@ tasks:
       - "29"
       - "30"
       - "31"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -278,7 +270,6 @@ tasks:
     nexttasks:
       '#none#':
       - "27"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -302,7 +293,6 @@ tasks:
     nexttasks:
       '#none#':
       - "34"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -326,7 +316,6 @@ tasks:
     nexttasks:
       '#none#':
       - "33"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -354,7 +343,6 @@ tasks:
     scriptarguments:
       url:
         simple: ${inputs.url}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -380,7 +368,6 @@ tasks:
       - "24"
       "yes":
       - "32"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -420,7 +407,6 @@ tasks:
       - "24"
       "yes":
       - "20"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
