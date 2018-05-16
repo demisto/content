@@ -145,6 +145,7 @@ script:
         // A bit of an ugly hack but make sure to add some data to the original res
         res.results[0].lists = lists;
         res.results[0].regDomainStats = resStats.regDomainStats;
+        res.results[0].malicious = resStats.malicious;
         return addMD(resStats, lists, res.results[0].result);
     };
 
