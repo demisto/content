@@ -160,7 +160,7 @@ script:
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
 
-            if (res.malicious !== 0){
+            if (res.results[0].malicious !== 0){
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
@@ -209,7 +209,7 @@ script:
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
 
-            if (res.malicious !== 0){
+            if (res.results[0].malicious !== 0){
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.ip, {
                     Address: ip,
@@ -247,7 +247,7 @@ script:
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
 
-            if (res.malicious !== 0) {
+            if (res.results[0].malicious !== 0) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.file, {
                     MD5: hash,
