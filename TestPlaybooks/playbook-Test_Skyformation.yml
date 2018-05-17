@@ -76,7 +76,7 @@ tasks:
     task:
       id: 819d761b-c539-4e5f-845f-533a4e183cd7
       version: -1
-      name: Ensure Account X exists in context
+      name: Ensure Account demisto exists in context
       type: condition
       iscommand: false
       brand: ""
