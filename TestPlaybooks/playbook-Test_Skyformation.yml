@@ -83,6 +83,8 @@ tasks:
     nexttasks:
       '#default#':
       - "4"
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -126,8 +128,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": -221,
+          "y": 766
+        }
+      }
+  "5":
+    id: "5"
+    taskid: eb5202b3-d487-4def-82d3-d0b60b15a923
+    type: title
+    task:
+      id: eb5202b3-d487-4def-82d3-d0b60b15a923
+      version: -1
+      name: Test Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 312,
+          "y": 781
         }
       }
 view: |-
@@ -135,9 +156,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 380,
-        "x": 50,
+        "height": 811,
+        "width": 913,
+        "x": -221,
         "y": 50
       }
     }
