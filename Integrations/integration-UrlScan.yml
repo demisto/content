@@ -5,6 +5,7 @@ name: urlscan.io
 display: urlscan.io
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
+releaseNotes: "Added lists to the raw response and MD"
 description: Urlscan.io reputation
 defaultEnabled: true
 detaileddescription: |-
@@ -50,7 +51,7 @@ script:
         if (img) {
             requestUrl = img;
 
-            var res = http(
+            res = http(
                 requestUrl,
                 {
                     Method: method,
@@ -65,7 +66,7 @@ script:
         } else {
             requestUrl = url + arg;
 
-            var res = http(
+            res = http(
                 requestUrl,
                 {
                     Method: method,
@@ -77,75 +78,96 @@ script:
             );
         }
 
-
-        if ((res.StatusCode < 200 || res.StatusCode >= 300) || res.success === false || JSON.parse(res.Body).status === 400) {
-            throw 'Urlscan.io Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+        if (res.StatusCode < 200 || res.StatusCode >= 300 || res.success === false) {
+            throw 'Urlscan.io Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + res.Body + '.';
         }
 
         try {
-            return JSON.parse(res.Body);
+            var obj = JSON.parse(res.Body);
+            if (obj.status === 400) {
+                throw 'Urlscan.io Request Failed.\nObject Status code: ' + obj.status + '.\nBody: ' + res.Body + '.';
+            }
+            return obj;
         }
-        catch(exc) {
-            throw "Urlscan.io Error: JSON parse error";
+        catch (exc) {
+            throw 'Urlscan.io Error: JSON parse error.\n' + res.Body;
         }
     };
 
     var searchResults = function(id) {
-        var res = sendRequest("GET", "/result/" + id);
-        return res;
+        return sendRequest('GET', '/result/' + id);
     };
 
-    var addMD = function(res) {
-        var md = "";
+    var addMD = function(stats, lists, link) {
+        var md = '';
 
-        if (res.securePercentage !== undefined) {
-            md += "Security Percentage: **"+res.securePercentage + "**\n";
+        if (stats.securePercentage) {
+            md += 'Security Percentage: **' + stats.securePercentage + '**\n';
         }
 
-        if (res.resourceStats[0] !== undefined) {
-            if (res.resourceStats[0].countries !== undefined) {
-                md += "Number of countries associated with this site: **" + res.resourceStats[0].countries.length + " (";
+        if (stats.resourceStats && stats.resourceStats[0] && stats.resourceStats[0].countries) {
+            md += 'Number of countries associated with this site: **' + stats.resourceStats[0].countries.length + ' (';
+            md += stats.resourceStats[0].countries.join(', ') + ')**\n';
+        }
+
+        if (stats.ipStats && stats.ipStats[0] && stats.ipStats[0].asn) {
+            md += 'ASN: **' + stats.ipStats[0].asn.asn + ' ' + stats.ipStats[0].asn.description + '**\n';
+        }
+
+        if (stats.malicious) {
+            md += 'Malicious: **' + stats.malicious + '**\n';
+        }
+
+        if (stats.regDomainStats) {
+            md += tableToMarkdown('Registered Domains', stats.regDomainStats, ['regDomain', 'count', 'ips', 'countries', 'redirects']);
+        }
+
+        if (lists) {
+            if (lists.ips) {
+                md += 'IPs: **' + lists.ips.join(', ') + '**\n';
             }
-            for (var i = 0; i < res.resourceStats[0].countries.length-1; i++){
-                md += " " + res.resourceStats[0].countries[i] + ",";
-            }
-            if (res.resourceStats[0].countries.length >= 1) {
-                md += " " + res.resourceStats[0].countries[res.resourceStats[0].countries.length-1] + ")**\n";
+            if (lists.domains) {
+                md += 'Domains: **' + lists.domains.join(', ') + '**\n';
             }
         }
 
-        if (res.ipStats !== undefined &&
-            res.ipStats[0] !== undefined &&
-            res.ipStats[0].asn !== undefined) {
-            md += "ASN: **" + res.ipStats[0].asn.asn + " " + res.ipStats[0].asn.description + "**\n";
-        }
-        if (res.malicious !== undefined) {
-            md += "Malicious: **" + res.malicious + "**";
+        if (link) {
+            md += 'Urlscan.io result link: [' + link + '](' + link + ')\n';
         }
 
         return md;
-    }
+    };
+
+    var handleSearchResults = function(res) {
+        var data = searchResults(res.results[0]._id);
+        var resStats = data.stats;
+        var lists = data.lists;
+        // A bit of an ugly hack but make sure to add some data to the original res
+        res.results[0].lists = lists;
+        res.results[0].regDomainStats = resStats.regDomainStats;
+        res.results[0].malicious = resStats.malicious;
+        return addMD(resStats, lists, res.results[0].result);
+    };
 
     var searchUrl = function(url) {
-        var res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(url) + "\"");
-        var md = "";
+        var res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(url) + '"');
+        var md = '';
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
-        md += "## Urlscan.io Reputation for " + url + "\n";
+        md += '## Urlscan.io Reputation for ' + url + '\n';
 
         if (res.results.length !== 0) {
-            var resStats = searchResults(res.results[0]._id).stats;
-            md += addMD(resStats);
+            md += handleSearchResults(res);
 
-            if (resStats.malicious !== 0){
+            if (res.malicious !== 0){
                 dbotScore = 3;
-                ec.URL = {};
-                addMalicious(ec, "URL", {
+                addMalicious(ec, outputPaths.url, {
                     Data: url,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
-            }else{
+            } else {
+                ec[outputPaths.url] = {Data: url};
                 dbotScore = 1;
             }
 
@@ -155,9 +177,9 @@ script:
 
             return resDis;
 
-        }else{
+        } else {
             ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'UrlscanIO', Score: dbotScore};
-            md += "No results for this url";
+            md += 'No results for this url';
             resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
         }
 
@@ -172,31 +194,29 @@ script:
         var img = scanRes.task.screenshotURL;
         var res = sendRequest('GET', '', '','' , img);
 
-        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': res };
+        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': res};
     };
 
     var searchIP = function(ip) {
-        var res = sendRequest("GET","/search?q=ip:" + ip);
-        var md = "";
+        var res = sendRequest('GET', '/search?q=ip:' + ip);
+        var md = '';
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
 
-        md += "## Urlscan.io Reputation for " + ip + "\n";
+        md += '## Urlscan.io Reputation for ' + ip + '\n';
 
-        if (res.results.length !== 0){
-            var resStats = searchResults(res.results[0]._id).stats;
+        if (res.results.length !== 0) {
+            md += handleSearchResults(res);
 
-            md += addMD(resStats);
-
-            if (resStats.malicious !== 0){
+            if (res.malicious !== 0){
                 dbotScore = 3;
-                ec.IP = {};
-                addMalicious(ec, "IP", {
+                addMalicious(ec, outputPaths.ip, {
                     Address: ip,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
-            }else{
+            } else {
+                ec[outputPaths.ip] = {Address: ip};
                 dbotScore = 1;
             }
 
@@ -208,7 +228,7 @@ script:
 
         }else {
             ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'Urlscan.io', Score: dbotScore};
-            md += "No results for this ip";
+            md += 'No results for this ip';
             resDis.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
         }
 
@@ -216,27 +236,25 @@ script:
     };
 
     var searchHash = function(hash) {
-        var res = sendRequest("GET","/search?q=hash:" + hash);
-        var md = "";
+        var res = sendRequest('GET', '/search?q=hash:' + hash);
+        var md = '';
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
 
-        md += "## Urlscan.io Reputation for " + hash + "\n";
+        md += '## Urlscan.io Reputation for ' + hash + '\n';
 
-        if(res.results.length !== 0) {
-            var resStats = searchResults(res.results[0]._id).stats;
+        if (res.results.length !== 0) {
+            md += handleSearchResults(res);
 
-            md += addMD(resStats);
-
-            if (resStats.malicious !== 0) {
+            if (res.malicious !== 0) {
                 dbotScore = 3;
-                ec.File = {};
-                addMalicious(ec, "File", {
+                addMalicious(ec, outputPaths.file, {
                     MD5: hash,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
             }else {
+                ec[outputPaths.file] = {MD5: hash};
                 dbotScore = 1;
             }
 
@@ -246,9 +264,9 @@ script:
 
             return resDis;
 
-        }else{
+        } else {
             ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'Urlscan.io', Score: dbotScore};
-            md += "No results for this hash"
+            md += 'No results for this hash';
             resDis.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
         }
 
@@ -256,34 +274,34 @@ script:
     };
 
     var submitUrl = function(scanUrl, timeout, isPublic) {
-        if (params.apikey === undefined) {
-            throw "Urlscan.io: No API key provided.";
+        if (!params.apikey) {
+            throw 'Urlscan.io: No API key provided.';
         }
 
-        var md = "";
+        var md = '';
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
         var body;
 
         if (scanUrl.indexOf('#') !== -1) {
-            md += "## Urlscan.io Reputation for " + scanUrl + "\n";
-            md += "Could not submit this url";
+            md += '## Urlscan.io Reputation for ' + scanUrl + '\n';
+            md += 'Could not submit this url';
             return ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': {}, 'HumanReadable': md, 'EntryContext': {}});
         }
 
         if (isPublic === 'public') {
-            body = JSON.stringify({"url": scanUrl, "public": 'on'});
+            body = JSON.stringify({url: scanUrl, 'public': 'on'});
         } else {
-            body = JSON.stringify({"url": scanUrl});
+            body = JSON.stringify({url: scanUrl});
         }
 
-        var headers = {"Content-Type": ['application/json'], "API-Key": [params.apikey]}
+        var headers = {'Content-Type': ['application/json'], 'API-Key': [params.apikey]};
         var resScan = sendRequest('POST', '/scan', body, headers);
 
         var tWait = 0;
 
-        md += "## Urlscan.io Reputation for " + scanUrl + "\n";
+        md += '## Urlscan.io Reputation for ' + scanUrl + '\n';
 
         if (!timeout) {
             timeout = 30;
@@ -292,27 +310,24 @@ script:
         if (isPublic === 'private') {
             wait(parseInt(timeout));
         } else {
-
-            var res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
+            var res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
 
             if (res.results.length >= 1) {
-                while (tWait < timeout &&
-                        res.results[0]._id !== resScan.uuid) {
-                            wait(5);
-                            tWait += 5;
-                            res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
-                        }
+                while (tWait < timeout && res.results[0]._id !== resScan.uuid) {
+                    wait(5);
+                    tWait += 5;
+                    res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
+                }
             } else {
-                while (tWait < timeout &&
-                    res.results.length < 1) {
-                        wait(5);
-                        tWait += 5;
-                        res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
-                    }
+                while (tWait < timeout && res.results.length < 1) {
+                    wait(5);
+                    tWait += 5;
+                    res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
+                }
             }
         }
 
-        if ((resScan.api) ||
+        if (resScan.api ||
             (res.results.length >= 1 &&
             res.results[0]._id === resScan.uuid)) {
 
@@ -320,9 +335,8 @@ script:
             var resStats;
 
             if (isPublic === 'private') {
-                var res = http(resScan.api,{Method: 'GET',},params.insecure,params.proxy);
+                var res = http(resScan.api, {Method: 'GET'}, params.insecure, params.proxy);
                 resStats = JSON.parse(res.Body).stats
-
             } else {
                 scanResults = res.results[0];
                 resStats = searchResults(scanResults._id).stats;
@@ -332,12 +346,12 @@ script:
 
             if (resStats.malicious !== 0){
                 dbotScore = 3;
-                ec.URL = {};
-                addMalicious(ec, "URL", {
+                addMalicious(ec, outputPaths.url, {
                     Data: scanUrl,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
-            }else{
+            } else {
+                ec[outputPaths.url] = {Data: scanUrl};
                 dbotScore = 1;
             }
 
@@ -355,7 +369,7 @@ script:
 
         } else {
             ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'Urlscan.io', Score: dbotScore};
-            md += "No scan results.";
+            md += 'No scan results.';
             resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
             return resDis;
         }
@@ -366,26 +380,26 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            searchHash("google.com");
+            searchHash('google.com');
 
             if(params.apikey) {
-                var body = JSON.stringify({"url": "www.demisto.com", "public": "on"});
-                var headers = {"Content-Type": ['application/json'], "API-Key": [params.apikey]}
+                var body = JSON.stringify({url: 'www.demisto.com', 'public': 'on'});
+                var headers = {'Content-Type': ['application/json'], 'API-Key': [params.apikey]};
                 sendRequest('POST', '/scan', body, headers);
             }
 
             return 'ok';
 
-        case "url":
+        case 'url':
             return searchUrl(args.url);
 
-        case "ip":
+        case 'ip':
             return searchIP(args.ip);
 
-        case "file":
+        case 'file':
             return searchHash(args.file);
 
-        case "urlscan-submit":
+        case 'urlscan-submit':
             return submitUrl(args.url, args.timeout, args.public);
 
         default:
