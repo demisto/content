@@ -290,6 +290,10 @@
             "playbookID": "Symantec Messaging Gateway Test"
         },
         {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
+        },
+        {
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
         },
@@ -352,10 +356,6 @@
             ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 400
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
         },
         {
             "integrations": "Remedy AR",
