@@ -300,13 +300,13 @@
         {
             "integrations": "SQS",
             "playbookID": "sqs_test"
-        }
-    ],
-    "skipped": [
+        },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
-        },
+        }
+    ],
+    "skipped": [
         {
             "integrations": {
                 "name": "carbonblack-v2",
