@@ -387,7 +387,7 @@ tasks:
       - "14"
     scriptarguments:
       target-mailbox:
-        simple: aleeng@demisto.int
+        simple: DEM174861@demisto.int
     separatecontext: false
     view: |-
       {
