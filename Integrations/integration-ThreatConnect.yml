@@ -297,6 +297,12 @@ script:
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
         filter1.add_indicator(demisto.args()['indicator'])
+        owners_arr = []
+        owners = tc.owners()
+        owners.retrieve()
+        for owner in owners:
+            owners_arr.append(owner.name)
+        filter1.add_owner(owners_arr)
         indicators.retrieve()
 
         for indicator in indicators:
