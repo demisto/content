@@ -250,4 +250,3 @@ outputs:
 - contextPath: duplicateCandidate
   description: the duplicate top candidate
   type: unknown
-releaseNotes: 'Fix ELSE condition in DeDup Playbook'
