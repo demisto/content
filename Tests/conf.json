@@ -303,7 +303,7 @@
         },
         {
             "integrations": "urlscan.io",
-            "playbookID": "Urlscan_malicious_Test"
+            "playbookID": "urlscan_malicious_Test"
         }
     ],
     "skipped": [
