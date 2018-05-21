@@ -57,4 +57,4 @@ jobs:
           command: ./Tests/scripts/run_tests.sh
       - run:
           name: Destory Instances
-          command: ./Tests/scripts/destroy_instances.sh
+          command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
