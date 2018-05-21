@@ -308,6 +308,10 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
+        },
+        {
+            "integrations": "Netskope",
+            "playbookID": "Netskope Test"
         }
     ],
     "skipped": [
