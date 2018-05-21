@@ -81,7 +81,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "4"
       "yes":
       - "6"
@@ -195,7 +195,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "3"
       "yes":
       - "5"

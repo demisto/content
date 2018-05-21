@@ -86,4 +86,3 @@ scripttarget: 0
 dependson:
   must:
   - jira-get-issue
-releaseNotes: "Added dependency on jira-get-issue command"
