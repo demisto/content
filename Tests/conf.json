@@ -300,6 +300,10 @@
         {
             "integrations": "SQS",
             "playbookID": "sqs_test"
+        },
+        {
+            "integrations": "urlscan.io",
+            "playbookID": "Urlscan_malicious_Test"
         }
     ],
     "skipped": [
