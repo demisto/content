@@ -559,8 +559,6 @@ script: |-
               mdResult += '|'.join(newHeaders)
           mdResult = mdResult + '|\n'
           sep = '-'
-          if len(headers) == 1:
-              sep = '-|'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
               vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''), True, True) for h in headers]
@@ -1026,3 +1024,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
