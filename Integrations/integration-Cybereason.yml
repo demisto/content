@@ -250,14 +250,27 @@ script:
         var body = buildQuery(queryFields, path);
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
 
+        var isConnected = false;
         var elements = res.data.resultIdToElementDataMap;
         for (var key in elements) {
             if (elements[key].simpleValues.elementDisplayName.values[0].toUpperCase() === args.machine.toUpperCase()) {
-                return true;
+                isConnected = true;
             }
         }
-
-        return false;
+        var ec = {
+            'Cybereason.Machine(val.Name && val.Name === obj.Name)': {
+                isConnected: isConnected,
+                Name: args.machine
+            }
+        }
+        return {
+            ContentsFormat: formats.json,
+            Type: entryTypes.note,
+            Contents: isConnected,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: isConnected,
+            EntryContext: ec
+        }
     }
 
     var queryProcesses = function(cookies) {
@@ -330,40 +343,61 @@ script:
     }
 
     var queryConnections = function(cookies) {
-        queryFilters = [];
-        if (args.ip) {
-            queryFilters.push({facetName: 'elementDisplayName', values: [args.ip]});
+
+
+        if (args.machine && args.ip) {
+            return 'Too many arguments given.'
         }
-        var path = [
-            {
-                requestedType: 'Connection',
-                filters: queryFilters,
-                isResult: true
-            }
-        ];
+        var path;
+        if (args.machine) {
+            path = [
+                {
+                    requestedType: 'Connection',
+                    filters: [],
+                    connectionFeature:
+                    {
+                        elementInstanceType: 'Connection',
+                        featureName: 'ownerMachine'
+                    },
+                    isResult: true
+                },
+                {
+                    requestedType: 'Machine',
+                    filters:
+                    [{
+                        facetName: 'elementDisplayName',
+                        values: [args.machine],
+                        filterType: 'Equals'
+                    }]
+                }
+            ];
+        } else if (args.ip) {
+            path = [
+                {
+                    requestedType: 'Connection',
+                    filters:
+                    [{
+                        facetName: 'elementDisplayName',
+                        values: [args.ip]
+                    }],
+                    isResult: true
+                }
+            ];
+        } else {
+            return 'Not enough arguments given.'
+        }
 
         var body = buildQuery(connectionFields, path);
         res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
-
         var elements = res.data.resultIdToElementDataMap;
         var outputs = [];
         for (var key in elements) {
             var simpleValues = elements[key].simpleValues;
             var elementValues = elements[key].elementValues;
-
-            if (
-                args.machine &&
-                elementValues.ownerMachine.elementValues &&
-                (args.machine != elementValues.ownerMachine.elementValues[0].name)
-            ) {
-                continue;
-            }
-
             var output = {};
             updateOutput(output, simpleValues, elementValues, connectionInfo);
             outputs.push(output);
         }
-
         var entry = buildEmptyEntryContext();
         entry.HumanReadable = tableToMarkdown('Cybereason Connections', outputs, connectionHeaders);
         updateContext(entry, outputs, 'Connection');
@@ -477,7 +511,7 @@ script:
     switch (command) {
         case 'test-module':
             res = login();
-            if (res.Cookies) {
+            if (res.Cookies.length > 0) {
                 return 'ok';
             }
             break;
@@ -502,9 +536,6 @@ script:
             res = unisolateMachine(cookies);
             break;
 
-        case 'cybereason-login':
-            res = login();
-            saveCookies(res.Cookies);
         default:
             break;
     }
@@ -583,14 +614,18 @@ script:
     - contextPath: Process.ProductName
       description: The product's name
     description: Searches for processes with various filters.
-  - name: cybereason-login
-    arguments: []
-    description: Logs in and updates the cookies.
   - name: cybereason-is-probe-connected
     arguments:
     - name: machine
       required: true
       description: The hostname of the machine to check.
+    outputs:
+    - contextPath: Cybereason.Machine.isConnected
+      description: true if machine is connected, else false
+      type: boolean
+    - contextPath: Cybereason.Machine.Name
+      description: Machine name
+      type: string
     description: Checks if the machine is currently connected to the Cybereason server
   - name: cybereason-query-connections
     arguments:
@@ -667,4 +702,4 @@ script:
       type: string
     description: Stops isolation of a machine
     execution: true
-hidden: false
+releaseNotes: "Improved the query sent in query-connections, added outputs to is-probe-connected and removed login command"
