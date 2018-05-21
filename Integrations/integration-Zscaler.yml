@@ -330,7 +330,7 @@ script:
                     }
                     hr[i]['ip'] = hr[i].pop('url')
                 dbot_score_array[i]['Score'] = score
-                dbot_score_array[i]['Type'] = ioc_type
+                dbot_score_array[i]['Type'] = 'url'
                 dbot_score_array[i]['Vendor'] = 'Zscaler'
 
             ioc_context = createContext(data=ioc_context, removeNull=True)
@@ -380,12 +380,12 @@ script:
                         score = 3
                     ioc_context[i]['Malicious'] = {
                         'Vendor': 'Zscaler',
-                        'Description': r[i]['ipClassificationsWithSecurityAlert']
+                        'Description': hr[i]['ipClassificationsWithSecurityAlert']
                     }
                 del hr[i]['urlClassificationsWithSecurityAlert']
                 hr[i]['ip'] = hr[i].pop('url')
                 dbot_score_array[i]['Score'] = score
-                dbot_score_array[i]['Type'] = ioc_type
+                dbot_score_array[i]['Type'] = 'ip'
                 dbot_score_array[i]['Vendor'] = 'Zscaler'
 
             ioc_context = createContext(data=ioc_context, removeNull=True)
@@ -595,4 +595,3 @@ script:
         8.8.8.8,1.2.3.4) '
     description: Adds IP address to the blacklist.
     execution: true
-releaseNotes: "Added commands: lookup, whitelist, undo-whitelist, undo-blacklist of URLs and IP addresses"
