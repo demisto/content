@@ -56,5 +56,6 @@
 		"Access - High or Critical Priority Individual Logging into Infected Machine - Rule": "Access",
 		"Endpoint - High Or Critical Priority Host With Malware - Rule": "Malware"
 	},
-	"brandName": "SplunkPy"
+	"brandName": "SplunkPy",
+	"releaseNotes":"Add Malware mapping"
 }
