@@ -435,6 +435,8 @@ script: |-
       indent = 4 if is_pretty else None
       if type(data) in STRING_TYPES:
           return data
+      elif isinstance(data, list):
+          return ',\n'.join(str(d) for d in data)
       else:
           return json.dumps(data, indent=indent)
 
