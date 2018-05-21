@@ -306,6 +306,12 @@
             "playbookID": "sqs_test"
         },
         {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        }
+    ],
+    "skipped": [
+        {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         }
