@@ -53,7 +53,7 @@ script:
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
         }
         if (result.Body === '') {
-            throw 'No content received.' + url + result;
+            throw 'No content received.' + requestUrl + result;
         }
         var body;
         try {
@@ -68,53 +68,63 @@ script:
         return Date(timestamp);
     }
 
+    function translateTimeperiod(timeperiod){
+        var timeperiodTranslator = {
+            'Last60Minutes': '3600',
+            'Last24Hours': '86400',
+            'Last7Days': '604800',
+            'Last30Days': '2592000',
+            'Last60Days': '5184000',
+            'Last90Days': '7776000'
+        };
+        return timeperiodTranslator[timeperiod];
+    }
+
     function getAlerts() {
         var queryArgs = {
             token: TOKEN,
             type: encodeURIComponent(args.type)
         };
-        if (!args.timeperiod && !args.query) {
+        if (args.starttime && args.endtime) {
             queryArgs.starttime = args.starttime;
             queryArgs.endtime = args.endtime;
-        } else if (!args.timeperiod && !args.query) {
-            queryArgs.starttime = args.starttime;
-            queryArgs.endtime = args.endtime;
-            queryArgs.query = encodeURIComponent(args.query);
-        } else if (!args.query) {
-            if (!args.timeperiod) {
-                queryArgs.starttime = args.starttime;
-                queryArgs.endtime = args.endtime;
-            } else {
-                queryArgs.timeperiod = args.timeperiod;
+            if (args.timeperiod) {
+                queryArgs.timeperiod = translateTimeperiod(args.timeperiod);
             }
-        } else if (args.query && args.timeperiod) {
-            queryArgs.timeperiod = args.timeperiod;
-            queryArgs.query = encodeURIComponent(args.query);
+            if (args.query) {
+                queryArgs.query = encodeURIComponent(args.query);
+            }
+        } else if (args.timeperiod) {
+            queryArgs.timeperiod = translateTimeperiod(args.timeperiod);
+            if (args.query) {
+                queryArgs.query = encodeURIComponent(args.query);
+            }
         } else {
-            throw 'Not given enough arguments to filter events by.'
+            throw 'Not given enough arguments to filter events by.';
         }
-
         var cmdUrl = 'alerts' + encodeToURLQuery(queryArgs);
         var result = sendRequest('GET', cmdUrl);
         var retArray = [];
         result.data.forEach(function(arrayItem) {
+            var id = arrayItem._id;
             var app =  arrayItem.app;
             var timestamp =  normalizeTimestamp(arrayItem.timestamp);
             var dlp_profile =  arrayItem.dlp_profile;
             var dlp_file =  arrayItem.dlp_file;
             var hostname =  arrayItem.hostname;
             var policy =  arrayItem.policy;
-            retArray.push({"App" : app, "Timestamp" : timestamp, "DLPProfile" : dlp_profile, "DLPFile" : dlp_file, "Hostname" : hostname, "Policy" : policy})
+            retArray.push({'ID': id, 'App' : app, 'Timestamp' : timestamp, 'DLPProfile' : dlp_profile, 'DLPFile' : dlp_file, 'Hostname' : hostname, 'Policy' : policy})
         });
         var ec = {
-            "Netskope.Alerts" : retArray
+            "Netskope.Alerts(val.ID && val.ID === obj.ID)" : retArray
         };
+        headers = ['ID', 'Timestamp', 'DLPProfile', 'DLPFile', 'Hostname', 'Policy']
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
             Contents: retArray,
             ReadableContensFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Netskope alerts', retArray),
+            HumanReadable: tableToMarkdown('Netskope alerts', retArray, headers),
             EntryContext: ec
         };
     }
@@ -124,31 +134,28 @@ script:
             token: TOKEN,
             type: encodeURIComponent(args.type)
         };
-        if (!args.timeperiod && !args.query) {
+        if (args.starttime && args.endtime) {
             queryArgs.starttime = args.starttime;
             queryArgs.endtime = args.endtime;
-        } else if (!args.timeperiod && !args.query) {
-            queryArgs.starttime = args.starttime;
-            queryArgs.endtime = args.endtime;
-            queryArgs.query = encodeURIComponent(args.query);
-        } else if (!args.query) {
-            if (!args.timeperiod) {
-                queryArgs.starttime = args.starttime;
-                queryArgs.endtime = args.endtime;
-            } else {
-                queryArgs.timeperiod = args.timeperiod;
+            if (args.timeperiod) {
+                queryArgs.timeperiod = translateTimeperiod(args.timeperiod);
             }
-        } else if (args.query && args.timeperiod) {
-            queryArgs.timeperiod = args.timeperiod;
-            queryArgs.query = encodeURIComponent(args.query);
+            if (args.query) {
+                queryArgs.query = encodeURIComponent(args.query);
+            }
+        } else if (args.timeperiod) {
+            queryArgs.timeperiod = translateTimeperiod(args.timeperiod);
+            if (args.query) {
+                queryArgs.query = encodeURIComponent(args.query);
+            }
         } else {
-            throw 'Not given enough arguments to filter events by.'
+            throw 'Not given enough arguments to filter events by.';
         }
-
         var cmdUrl = 'events' + encodeToURLQuery(queryArgs);
         var result = sendRequest('GET', cmdUrl);
         var retArray = [];
         result.data.forEach(function(arrayItem) {
+            var id = arrayItem._id;
             var app =  arrayItem.app;
             var timestamp = normalizeTimestamp(arrayItem.timestamp);
             var activity =  arrayItem.activity;
@@ -162,17 +169,19 @@ script:
             var srcip =  arrayItem.srcip;
             var access_method =  arrayItem.access_method;
             var url =  arrayItem.url;
-            retArray.push({"App" : app, "Timestamp" : timestamp, "Activity" : activity, "Object" : object, "Hostname" : hostname, "AppCategory" : category, "DeviceClassification" : device_classification, "User" : user, "FromUser" : from_user, "ToUser" : to_user, "SourceIP" : srcip, "AccessMethod" : access_method, "URL" : url});
+            retArray.push({'ID': id, 'App' : app, 'Timestamp' : timestamp, 'Activity' : activity, 'Object' : object, 'Hostname' : hostname, 'AppCategory' : category, 'DeviceClassification' : device_classification, 'User' : user, 'FromUser' : from_user, 'ToUser' : to_user, 'SourceIP' : srcip, 'AccessMethod' : access_method, 'URL' : url});
         });
         var ec = {
-            "Netskope.Events" : retArray
+            "Netskope.Events(val.ID && val.ID === obj.ID)" : retArray
         };
+        headers = ['ID', 'App', 'Timestamp', 'Activity', 'Object', 'Hostname', 'AppCategory', 'DeviceClassification', 'User',
+        'FromUser', 'ToUser', 'SourceIP', 'AccessMethod', 'URL']
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
             Contents: retArray,
             ReadableContensFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Netskope Events', retArray),
+            HumanReadable: tableToMarkdown('Netskope Events', retArray, headers),
             EntryContext: ec
         };
     }
@@ -205,12 +214,12 @@ script:
     - name: timeperiod
       auto: PREDEFINED
       predefined:
-      - "3600"
-      - "86400"
-      - "604800"
-      - "2592000"
-      - "5184000"
-      - "7776000"
+      - Last60Minutes
+      - Last24Hours
+      - Last7Days
+      - Last30Days
+      - Last60Days
+      - Last90Days
       description: TimePeriod
     - name: starttime
       description: 'start time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
@@ -245,18 +254,22 @@ script:
       type: string
     - contextPath: Netskope.Events.hostname
       description: Hostname of device
+      type: string
     - contextPath: Netskope.Events.AppCategory
       description: Netskope application category (e.g. Cloud Storage, Webmail, etc)
       type: string
     - contextPath: Netskope.Events.device_classification
       description: Device classification (e.g. managed vs unmanaged)
+      type: string
     - contextPath: Netskope.Events.User
       description: User
       type: string
     - contextPath: Netskope.Events.from_user
       description: Login IDs for cloud apps
+      type: string
     - contextPath: Netskope.Events.to_user
       description: Destination user IDs
+      type: string
     - contextPath: Netskope.Events.SourceIP
       description: Source IP
       type: string
@@ -265,6 +278,10 @@ script:
       type: string
     - contextPath: Netskope.Events.url
       description: URL
+      type: string
+    - contextPath: Netskope.Events.ID
+      description: Event ID
+      type: string
     description: Gets a list of events
   - name: netskope-alerts
     arguments:
@@ -286,19 +303,19 @@ script:
     - name: timeperiod
       auto: PREDEFINED
       predefined:
-      - "3600"
-      - "86400"
-      - "604800"
-      - "2592000"
-      - "5184000"
-      - "7776000"
+      - Last60Minutes
+      - Last24Hours
+      - Last7Days
+      - Last30Days
+      - Last60Days
+      - Last90Days
       description: Time period (e.g. Last 60 minutes, Last 24 hours, etc.)
     - name: starttime
       description: 'Start time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
     - name: endtime
       description: 'End time: Month Day, Year HH:MM:SS (e.g. December 31, 1999 11:59:59)'
     - name: query
-      description: "Valid event query described in the query language document"
+      description: Valid event query described in the query language document
     outputs:
     - contextPath: Netskope.Alerts.App
       description: Name of Application
@@ -314,6 +331,9 @@ script:
       type: string
     - contextPath: Netskope.Alerts.Hostname
       description: Hostname
+      type: string
+    - contextPath: Netskope.Alerts.ID
+      description: Alert ID
       type: string
     description: Gets a list of alerts
   runonce: false
