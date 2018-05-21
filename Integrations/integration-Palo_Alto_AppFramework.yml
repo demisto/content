@@ -69,6 +69,7 @@ script:
     requests.packages.urllib3.disable_warnings()
 
     ''' GLOBAL VARS '''
+
     API_URL=demisto.params()['apiUrl']
     REFRESH_TOKEN=demisto.params()['refreshToken']
     USE_SSL = not demisto.params().get('insecure', False)
@@ -81,12 +82,12 @@ script:
     }
 
     THREAT_TABLE_HEADERS = ['id', 'score', 'risk-of-app','type', 'action', 'app', 'pcap_id', 'proto', 'dst', 'reportid', 'rule', 'category-of-threatid', 'characteristic-of-app', 'device_name',
-                            'subtype', 'time_received', 'pcap', 'name-of-threatid', 'severity', 'nat', 'natdport', 'natdst', 'natsrc', 'src', 'category-of-app', 'srcloc', 'dstloc' ]
+                            'subtype', 'time_received', 'pcap', 'name-of-threatid', 'severity', 'nat', 'natdport', 'natdst', 'natsrc', 'src', 'category-of-app', 'srcloc', 'dstloc', 'category', 'SHA256', 'filetype', 'filename']
 
     TRAFFIC_TABLE_HEADERS = ['id', 'score', 'aggregations.size', 'action', 'app', 'proto', 'dst', 'rule', 'characteristic-of-app', 'device_name', 'risk-of-app', 'natsport', 'start', 'subcategory-of-app'
                              'time_received', 'nat', 'natdport', 'natdst', 'natsrc', 'src', 'category-of-app', 'srcloc', 'dstloc' ]
 
-    COMMON_HEADERS = ['id', 'score', 'action', 'app', 'proto', 'dst', 'rule', 'characteristic-of-app', 'device_name', 'nat', 'natdport', 'natdst', 'natsrc', 'src', 'category-of-app', 'srcloc', 'dstloc']
+    COMMON_HEADERS = ['id', 'score', 'action', 'app', 'proto', 'dst', 'rule', 'characteristic-of-app', 'device_name', 'nat', 'natdport', 'natdst', 'natsrc', 'src', 'category-of-app', 'srcloc', 'dstloc','filetype', 'SHA256', 'filename']
 
     API_TOKEN_URL = 'https://api.paloaltonetworks.com/api/oauth2/RequestToken'
 
@@ -169,7 +170,12 @@ script:
 
         return access_token
 
-    ACCESS_TOKEN=get_access_token(REFRESH_TOKEN)
+    try:
+        ACCESS_TOKEN=get_access_token(REFRESH_TOKEN)
+    except AttributeError:
+        # if we are using a Demisto version which doesn't support integrationContext (Demisto <= 3.6)
+        ACCESS_TOKEN=refresh_access_token(REFRESH_TOKEN)
+
 
     # setting the access token as env variable for the pancloud sdk
     os.environ['ACCESS_TOKEN'] = ACCESS_TOKEN;
@@ -215,8 +221,6 @@ script:
         try:
             query_id = query_result['queryId']  # access 'queryId' from 'query' response
         except Exception, e:
-
-            raise Exception(json.dumps(query_result))
             raise Exception('Received error %s when querying logs. Please check if your authentication token is valid' % e)
         poll_params = {  # Prepare 'poll' params
             "maxWaitTime": 1000 # waiting for resposnse up to 1000ms
@@ -246,11 +250,25 @@ script:
         # Poll event channel
         return event_service.poll(channel_id)
 
+    def transform_row_keys(row):
+        transformed_row = {}
+        for metric, value in row.iteritems():
+            if (metric == 'filedigest'):
+                transformed_row['SHA256'] = value
+            elif (metric == 'misc'):
+                transformed_row['filename'] = value
+            elif (metric == 'category' and str(value) == '1'):
+                transformed_row['category'] = 'malicious'
+            else:
+                transformed_row[metric] = value
+        return transformed_row
+
     def results_screener(table_name, full_results):
         '''
         This function is used to make sure we include only pre-defined metrics in the human readable
         '''
         screened_results = []
+
         if(table_name == "traffic"):
             for row in full_results:
                 screened_row = {metric:value for metric, value in row.iteritems() if metric in TRAFFIC_TABLE_HEADERS}
@@ -285,18 +303,49 @@ script:
         # stringifying dictionary values for fetching. (json.dumps() doesn't stringify dictionary values)
         for key, value in log_contents.iteritems():
             log_contents[key] = str(value)
-
         incident = {
             'name': 'Palo Alto Incident: ' + log['_id'],
-            'rawJSON': json.dumps(log_contents),
+            'rawJSON': json.dumps(log_contents, ensure_ascii=False),
             'labels':[
                 {
                     'type': 'id',
-                    'value': log['_id']
+                    'value': log.get('_id', None)
                 },
                 {
                     'type': 'score',
-                    'value': str(log['_score'])
+                    'value': str(log.get('_score', None))
+                },
+                {
+                    'type': 'srcuser',
+                    'value': log_contents.get('srcuser', None)
+                },
+                {
+                    'type': 'threatid',
+                    'value': str(log_contents.get('threatid', None))
+                },
+                {
+                    'type': 'sport',
+                    'value': str(log_contents.get('sport', None))
+                },
+                {
+                    'type': 'dport',
+                    'value': str(log_contents.get('dport', None))
+                },
+                {
+                    'type': 'src',
+                    'value': log_contents.get('src', None)
+                },
+                {
+                    'type': 'subtype',
+                    'value': log_contents.get('subtype', None)
+                },
+                {
+                    'type': 'reportid',
+                    'value': str(log_contents.get('reportid', None))
+                },
+                {
+                    'type': 'SHA256',
+                    'value': str(log_contents.get('filedigest', None))
                 }
             ],
             'occurred': occured
@@ -309,6 +358,7 @@ script:
             return None
         else:
             severity_to_check = severity.lower()
+
         severity_number_dic = {
             'informational': 1,
             'low': 2,
@@ -316,6 +366,7 @@ script:
             'high': 4,
             'critical': 5
         }
+
         if severity_to_check in severity_number_dic:
             return severity_number_dic[severity_to_check]
         else:
@@ -330,7 +381,6 @@ script:
             app_to_check = app.lower()
         app_to_table_dic = {
             'wildfire': 'wildfire'
-            # TODO add the other apps here
         }
         if app_to_check in app_to_table_dic:
             return app_to_table_dic[app_to_check]
@@ -389,7 +439,8 @@ script:
                 row_contents = row['_source']
                 row_contents['id'] = row_id
                 row_contents['score'] = row['_score']
-                results.append(row_contents)
+                transformed_row = transform_row_keys(row_contents)
+                results.append(transformed_row)
 
         screened_results = results_screener('common', results)
 
@@ -468,7 +519,8 @@ script:
                 row_contents = row['_source']
                 row_contents['id'] = row_id
                 row_contents['score'] = row['_score']
-                results.append(row_contents)
+                transformed_row = transform_row_keys(row_contents)
+                results.append(transformed_row)
 
         screened_results = results_screener('threat', results)
 
@@ -548,13 +600,80 @@ script:
         }
         return entry
 
+    def search_by_file_hash_command():
+        '''
+        corresponds to 'pan-appframework-search-by-file-hash' command. Queries Appframework Logging according to a pre-set query
+        '''
+
+        args = demisto.args()
+
+        start_time = args.get('startTime')
+        end_time = args.get('endTime')
+        value = args.get('logsAmount')
+        time_range = args.get('timeRange')
+        time_value = args.get('rangeValue')
+        filehash = args.get('SHA256')
+
+        if (time_range):
+            if (time_value):
+                service_end_date = datetime.datetime.now()
+                service_start_date = get_start_time(time_range, int(time_value))
+            else:
+                raise 'Please enter timeRange and timeValue, or startTime and endTime'
+        else:
+            # parses user input to datetime object
+            service_start_date = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+            service_end_date = datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+
+        # transforms datetime object to epoch time
+        service_start_date_epoch = int(service_start_date.strftime("%s"))
+        service_end_date_epoch = int(service_end_date.strftime("%s"))
+
+        api_query = "SELECT * FROM panw.threat WHERE filedigest='" + filehash + "' LIMIT " + value
+
+        query_data = {
+            "query": api_query,
+            "startTime": service_start_date_epoch,
+            "endTime": service_end_date_epoch,
+        }
+        pages = query_loggings(query_data)
+
+        results = []
+        table_name = None
+        for page in pages:
+            current_page = page.json()
+            table_name = current_page['result']['esQuery']['table'][0].split('.')[1]
+            table_rows = current_page['result']['esResult']['hits']['hits']
+
+            for row in table_rows:
+                row_id = row['_id']
+                row_contents = row['_source']
+                row_contents['id'] = row_id
+                row_contents['score'] = row['_score']
+                transformed_row = transform_row_keys(row_contents)
+                results.append(transformed_row)
+
+        screened_results = results_screener('threat', results)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': results,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table',  screened_results),
+            'EntryContext': {
+                  'Appframework.Logging(val.id==obj.id)': results
+            }
+        }
+        return entry
 
     def fetch_incidents():
 
-        last_run = demisto.getLastRun().get('lastRun', datetime.datetime.now() - datetime.timedelta(days=1))
-        if (type(last_run) == str):
+        last_run = demisto.getLastRun().get('lastRun', None)
+        if (last_run is not None):
             last_run = datetime.datetime.strptime(last_run, "%Y-%m-%dT%H:%M:%S")
-
+        else:
+            last_run = datetime.datetime.now() - datetime.timedelta(days=1)
         if not (demisto.params()['application']):
             raise Exception('Please enter the name of application that you want to fetch from')
 
@@ -616,6 +735,8 @@ script:
             demisto.results(get_critical_logs_command())
         elif demisto.command() == 'pan-appframework-get-social-applications':
             demisto.results(get_social_applications_command())
+        elif demisto.command() == 'pan-appframework-search-by-file-hash':
+            demisto.results(search_by_file_hash_command())
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
 
@@ -861,6 +982,99 @@ script:
       description: Traffic start
     - contextPath: Appframework.Logging.subcategory-of-apptime_received
       description: Sub-category of application time
+    description: Query Appframework Logging service according to pre-set queries
+  - name: pan-appframework-search-by-file-hash
+    arguments:
+    - name: startTime
+      description: Query start time. For example, startTime="2018-04-26 00:00:00"
+      defaultValue: 1970-01-01 00:00:00
+    - name: endTime
+      description: Query end time. For example, endTime="2018-04-26 00:00:00"
+      defaultValue: 2020-01-01 00:00:00
+    - name: logsAmount
+      description: Amount of logs. Default is 10
+      defaultValue: "10"
+    - name: timeRange
+      auto: PREDEFINED
+      predefined:
+      - minutes
+      - days
+      - weeks
+      description: Time range for the query, used with rangeValue. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    - name: rangeValue
+      description: Time value for the query,  used with timeRange. For example, timeRange="weeks"
+        rangeValue="1" would run the query on the last week.
+    - name: SHA256
+      required: true
+      description: File hash for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc"
+        would return all logs related to this file.
+    outputs:
+    - contextPath: Appframework.Logging.id
+      description: The id of the log
+      type: string
+    - contextPath: Appframework.Logging.score
+      description: The score of the log
+      type: number
+    - contextPath: Appframework.Logging.action
+      description: The action of the log
+    - contextPath: Appframework.Logging.app
+      description: The app of the log
+    - contextPath: Appframework.Logging.proto
+      description: The protocol used
+      type: string
+    - contextPath: Appframework.Logging.dst
+      description: Destination ip
+      type: string
+    - contextPath: Appframework.Logging.rule
+      description: Rule used
+    - contextPath: Appframework.Logging.src
+      description: The source of the action
+    - contextPath: Appframework.Logging.category-of-app
+      description: Application's category
+      type: string
+    - contextPath: Appframework.Logging.srcloc
+      description: Source location
+      type: string
+    - contextPath: Appframework.Logging.dstloc
+      description: Destination location
+      type: string
+    - contextPath: Appframework.Logging.characteristic-of-app
+      description: Application's characteristics
+    - contextPath: Appframework.Logging.device_name
+      description: The name of the device
+      type: string
+    - contextPath: Appframework.Logging.nat
+      description: Whether NAT was used or not
+      type: number
+    - contextPath: Appframework.Logging.natdport
+      description: NAT port
+    - contextPath: Appframework.Logging.natdst
+      description: NAT destination
+    - contextPath: Appframework.Logging.natsrc
+      description: NAT source
+    - contextPath: Appframework.Logging.risk-of-app
+      description: Risk of application
+    - contextPath: Appframework.Logging.type
+      description: Threat type
+    - contextPath: Appframework.Logging.pcad_id
+      description: Pcap id
+    - contextPath: Appframework.Logging.reportid
+      description: Report id
+      type: number
+    - contextPath: Appframework.Logging.category-of-threatid
+      description: Category of threat id
+    - contextPath: Appframework.Logging.subtype
+      description: Threat sub type
+    - contextPath: Appframework.Logging.time_received
+      description: Time received
+    - contextPath: Appframework.Logging.pcap
+      description: Pcap
+    - contextPath: Appframework.Logging.name-of-threatid
+      description: Name of threat id
+      type: string
+    - contextPath: Appframework.Logging.severity
+      description: Threat Severity
     description: Query Appframework Logging service according to pre-set queries
   dockerimage: demisto/python_pancloud
   isfetch: true
