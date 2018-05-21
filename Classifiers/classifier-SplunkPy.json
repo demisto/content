@@ -28,6 +28,19 @@
 				}
 			},
 			"dontMapEventToLabels": false
+		},
+		"Malware": {
+			"internalMapping": {
+				"Dest": {
+					"simple": "dest",
+					"complex": null
+				},
+				"Signature": {
+					"simple": "signature",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
 		}
 	},
 	"custom": true,
