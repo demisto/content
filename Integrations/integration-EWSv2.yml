@@ -124,6 +124,9 @@ script:
     MAILBOX = "mailbox"
     MAILBOX_ID = "mailboxId"
 
+    MOVED_TO_MAILBOX = "movedToMailbox"
+    MOVED_TO_FOLDER = "movedToFolder"
+
     FILE_ATTACHMENT_TYPE = 'FileAttachment'
     ITEM_ATTACHMENT_TYPE = 'ItemAttachment'
     ATTACHMENT_TYPE = 'attachmentType'
@@ -340,20 +343,28 @@ script:
         def parse_element(element):
             to_recipients = element.find('{%s}ToRecipients' % TNS)
             if to_recipients:
-                to_recipients = map(lambda x: x.text, to_recipients)
+                to_recipients = map(lambda x: x.text if x is not None else None, to_recipients)
 
-            return {
-                ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'],
-                MAILBOX: element.find('{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)).text,
-                'subject': element.find("{%s}Subject" % TNS).text,
+            result = {
+                ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'] if element.find('{%s}Id' % TNS) is not None else None,
+                MAILBOX: element.find('{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)).text if element.find(
+                    '{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)) is not None else None,
+                'subject': element.find("{%s}Subject" % TNS).text if element.find(
+                    "{%s}Subject" % TNS) is not None else None,
                 'toRecipients': to_recipients,
-                'sender': element.find("{%s}Sender" % TNS).text,
-                'hasAttachments': element.find("{%s}HasAttachment" % TNS).text,
-                'datetimeSent': element.find("{%s}SentTime" % TNS).text,
-                'datetimeReceived': element.find("{%s}ReceivedTime" % TNS).text
+                'sender': element.find("{%s}Sender" % TNS).text if element.find("{%s}Sender" % TNS) is not None else None,
+                'hasAttachments': element.find("{%s}HasAttachment" % TNS).text if element.find(
+                    "{%s}HasAttachment" % TNS) is not None else None,
+                'datetimeSent': element.find("{%s}SentTime" % TNS).text if element.find(
+                    "{%s}SentTime" % TNS) is not None else None,
+                'datetimeReceived': element.find("{%s}ReceivedTime" % TNS).text if element.find(
+                    "{%s}ReceivedTime" % TNS) is not None else None
             }
 
+            return result
+
         def call(self, query, mailboxes):
+            query = query.replace(".", "\\.")
             if self.protocol.version.build < EXCHANGE_2013:
                 raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
             elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
@@ -771,6 +782,25 @@ script:
 
         return entries
 
+    def move_item_between_mailboxes(item_id, destination_mailbox, destination_folder_path, source_mailbox=None):
+        source_account = get_account(source_mailbox or ACCOUNT_EMAIL)
+        destination_account = get_account(destination_mailbox or ACCOUNT_EMAIL)
+        destination_folder = get_folder_by_path(destination_account, destination_folder_path)
+        item = get_item_from_mailbox(source_account, item_id)
+        source_account.bulk_move(ids=[item], to_folder=destination_folder)
+        move_result = {
+            MOVED_TO_MAILBOX: destination_mailbox,
+            MOVED_TO_FOLDER: destination_folder_path,
+        }
+
+        return {
+          'Type': entryTypes['note'],
+          'Contents': "Item was moved successfully.",
+          'ContentsFormat': formats['text'],
+          ENTRY_CONTEXT: {
+             "EWS.Items(val.itemId === '%s')" % (item_id,): move_result
+          }
+        }
 
     def move_item(item_id, target_folder_path, target_mailbox=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -1070,6 +1100,8 @@ script:
             demisto.results(get_searchable_mailboxes(config.protocol))
         elif demisto.command() == 'ews-search-mailboxes':
             demisto.results(search_mailboxes(config.protocol, **args))
+        elif demisto.command() == 'ews-move-item-between-mailboxes':
+            demisto.results(move_item_between_mailboxes(**args))
         elif demisto.command() == 'ews-move-item':
             demisto.results(move_item(**args))
         elif demisto.command() == 'ews-delete-items':
@@ -1621,7 +1653,32 @@ script:
       description: Attachment name for item attachment.
       type: unknown
     description: Get items by id.
+  - name: ews-move-item-between-mailboxes
+    arguments:
+    - name: item-id
+      required: true
+      description: The item id to move.
+    - name: destination-folder-path
+      required: true
+      description: The folder in the destination mailbox to move the item to. Complex
+        path can be used, e.g. Inbox\Phishing.
+    - name: destination-mailbox
+      required: true
+      description: The mailbox to move the item to.
+    - name: source-mailbox
+      description: The mailbox to move the item from (conventionally called "target-mailbox"
+        - the target mailbox to apply the command on).
+    outputs:
+    - contextPath: EWS.Items.movedToMailbox
+      description: The mailbox that the item was moved to.
+      type: string
+    - contextPath: EWS.Items.movedToFolder
+      description: The folder that the item was moved to.
+      type: string
+    - contextPath: EWS.Items.action
+      description: The action, value will be 'moved'.
+      type: string
+    description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews
   isfetch: true
-releaseNotes: "1. support folder id in a addition to folder path.
-2. add ews-find-folders, ews-get-items, ews-get-items-from-folder commands"
+releaseNotes: "Added command: ews-move-between-mailboxes."

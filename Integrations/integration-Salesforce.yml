@@ -1375,4 +1375,3 @@ script:
     description: Close a case
   isfetch: true
   runonce: false
-releaseNotes: "Added context and markdown for all command, added chatter api"
