@@ -172,6 +172,7 @@ script:
 
         return {Type: entryTypes.note, Contents: readyRes, ContentsFormat: formats.json, HumanReadable: md};
     };
+
     var epoGetDatUpdateTask = function() {
         var pArgs = {'searchText':'VSEContentUpdateDemisto'};
         var result = callEpo('clienttask.find', pArgs);
@@ -196,6 +197,7 @@ script:
         var md = "ePO client DAT update task started: " + result;
         return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
     }
+
     var epoUpdateRepository = function() {
         var pArgs = {'sourceRepository':'McAfeeHttp','targetBranch':'Current'};
         var result = callEpo('repository.pull', pArgs);
@@ -204,6 +206,7 @@ script:
         md += result;
         return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
     }
+
     var epoGetSystemTreeGroups = function () {
         var pArgs = {};
         if (args.search) {
@@ -217,6 +220,7 @@ script:
         }
         return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
     }
+
     var epoGetSystemGroupPath = function(groupId) {
         var result = epoGetSystemTreeGroups();
         result = result.Contents;
@@ -227,6 +231,7 @@ script:
         }
         return null;
     }
+
     var epoGetCurrentDat = function () {
         var pArgs = {"searchText":"VSCANDAT1000"};
         var result = callEpo('repository.findPackages', pArgs);
@@ -241,6 +246,7 @@ script:
             throw 'Error getting current DAT version. Response: ' + JSON.stringify(result);
         }
     }
+
     var epoFindSystems = function() {
         var name = epoGetSystemGroupPath(args.groupId);
 
@@ -276,11 +282,13 @@ script:
         }
         throw 'Cannot get McAfee latest DAT file version';
     }
+
     var epoCheckLatestDat = function() {
         var datVersion = epoGetLatestDat();
         var md='McAfee Latest DAT file version is **' + datVersion + '**\n';
         return {Type: entryTypes.note, Contents: {mcAfeeLatestDatVersion:datVersion}, ContentsFormat: formats.json, HumanReadable: md};
     }
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -306,15 +314,31 @@ script:
             }
             var pArgs = {};
             for (var key in args) {
-                if (key != 'command') {
+                if (key != 'command' && key != 'headers') {
                     pArgs[key] = args[key];
                 }
             }
             var result = callEpo(args.command,pArgs);
-            var md = "#### ePO command *"+args.command+"* results:\n";
-            md += objToMd(result);
-            result = (typeof result === 'string') ? {result:result} : result;
-            return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+
+            var md;
+            var contents;
+            if (typeof result === 'string') {
+                md = "#### ePO command *"+args.command+"* results:\n" + result;
+                contents = { result: result };
+            } else {
+                md = tableToMarkdown(
+                    'ePO command *'+args.command+'* results:',
+                    Object.keys(result || {}).map(function (k) { return result[k]}), // object keys
+                    args.headers && args.headers.split(',')
+                );
+                contents = result;
+            }
+            return {
+                Type: entryTypes.note,
+                Contents: contents,
+                ContentsFormat: formats.json,
+                HumanReadable: md
+            };
         default:
             throw 'ePO Error: unknown command';
     }
@@ -386,5 +410,8 @@ script:
     description: Find systems in the System Tree - by group ID or by search
   - name: epo-command
     arguments: []
-    description: Execute ePO command
+    description: Execute ePO command. Receives mandatory 'command' argument and other
+      specific commands other arguments - Run 'epo-help' command to see a list available
+      commands. You can also specify 'headers' argument  to filter tables headers.
+      e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
   runonce: false

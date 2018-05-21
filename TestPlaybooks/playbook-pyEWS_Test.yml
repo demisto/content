@@ -245,7 +245,7 @@ tasks:
     scriptarguments:
       attachment-ids: {}
       item-id:
-        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AAAAAAkQAAA=
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqzBAAA=
       target-mailbox: {}
     separatecontext: false
     view: |-
@@ -300,9 +300,9 @@ tasks:
       - "11"
     scriptarguments:
       attachment-ids:
-        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAABEgAQAIyyWHXCJ8BLlkZfdtd6xS4=
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqyNAAABEgAQAK46mX7iCqlLp3Ro936zoX8=
       item-id:
-        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5ROAAA=
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqyNAAA=
       target-mailbox: {}
     separatecontext: false
     view: |-
@@ -387,7 +387,7 @@ tasks:
       - "14"
     scriptarguments:
       target-mailbox:
-        simple: aleeng@demisto.int
+        simple: DEM174861@demisto.int
     separatecontext: false
     view: |-
       {
@@ -494,7 +494,7 @@ tasks:
       - "18"
     scriptarguments:
       item-ids:
-        simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5SxAAA=
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqyQAAA=
       target-mailbox: {}
     separatecontext: false
     view: |-
@@ -532,7 +532,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AAMkAGYxOTg3OTMzLTQ0MDYtNDg1Zi1hNDAzLTdhZjAyMGNhNDg4NABGAAAAAAB6Flhhw5PxTotLZ/er42qYBwDYq1Uc13t9Qa7AeRVeYnG3AAAAAAENAADYq1Uc13t9Qa7AeRVeYnG3AACds5SxAAA=
+              simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqyQAAA=
     view: |-
       {
         "position": {
@@ -549,7 +549,7 @@ tasks:
       version: -1
       description: ""
       name: Did not find item in content
-      scriptName: Exception
+      script: Exception
       type: regular
       iscommand: false
       brand: ""
@@ -595,3 +595,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "-"

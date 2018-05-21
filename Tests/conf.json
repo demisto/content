@@ -3,15 +3,23 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "test_url_regex"
+        },
+        {
+            "integrations": "Skyformation",
+            "playbookID": "TestSkyformation"
+        },
+        {
+            "integrations": "okta",
+            "playbookID": "okta_test_playbook",
+            "timeout": 240
+        },
+        {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
         },
         {
-          "playbookID": "Test filters & transformers scripts"
-        },
-        {
-            "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
+            "playbookID": "Test filters & transformers scripts"
         },
         {
             "integrations": "Salesforce",
@@ -56,7 +64,7 @@
                 "byoi": false
             },
             "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
-            "timeout": 240
+            "timeout": 500
         },
         {
             "playbookID": "process_email_-_generic_-_test",
@@ -68,7 +76,7 @@
                 "byoi": false
             },
             "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
-            "timeout": 240
+            "timeout": 500
         },
         {
             "integrations":"Cylance Protect",
@@ -103,15 +111,16 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test"
+            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test",
+            "timeout": 500
         },
         {
             "integrations": "FalconHost",
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-          "integrations": "AlienVault OTX",
-          "playbookID": "ip_enrichment_generic_test"
+            "integrations": "AlienVault OTX",
+            "playbookID": "ip_enrichment_generic_test"
         },
         {
             "integrations": "Cylance Protect",
@@ -129,8 +138,8 @@
             "playbookID": "Test CommonServer"
         },
         {
-          "integrations": "AlienVault OTX",
-          "playbookID": "domain_enrichment_generic_test"
+            "integrations": "AlienVault OTX",
+            "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -277,15 +286,41 @@
             "playbookID": "CarbonBlackLiveResponseTest"
         },
         {
+            "playbookID": "TestSafeBreach",
+            "integrations": "SafeBreach"
+        },
+        {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
+        },
+        {
+            "integrations": "SQS",
+            "playbookID": "sqs_test"
+        },
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        }
+    ],
+    "skipped": [
+        {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test"
         }
     ],
     "skipped": [
         {
             "integrations": {
-              "name": "carbonblack-v2",
-              "byoi": true
+                "name": "carbonblack-v2",
+                "byoi": true
             },
             "playbookID": "CarbonBlackResponseTest"
         },
@@ -316,11 +351,11 @@
         },
         {
             "integrations": [
-              "AlienVault OTX",
-              {
-                "name": "activedir",
-                "byoi": false
-              }],
+                "AlienVault OTX",
+                {
+                    "name": "activedir",
+                    "byoi": false
+                }],
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
@@ -331,10 +366,6 @@
             ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 400
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
         },
         {
             "integrations": "Remedy AR",
@@ -374,15 +405,19 @@
                 {
                     "name": "carbonblackprotection",
                     "byoi": false
+                },
+                {
+                    "name": "carbonblack",
+                    "byoi": false
                 }
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 240
+            "timeout": 500
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
-            "timeout": 240
+            "timeout": 500
         },
         {
             "integrations": "iDefense",
@@ -393,6 +428,18 @@
             "integrations": "LogRhythm",
             "playbookID": "LogRhythm-Test-Playbook",
             "timeout": 200
+        },
+        {
+            "integrations": "FireEye HX",
+            "playbookID": "FireEye HX Test"
+        },
+        {
+            "integrations": "Phish.AI",
+            "playbookID": "PhishAi-Test"
+        },
+        {
+            "integrations": "Centreon",
+            "playbookID": "Centreon-Test-Playbook"
         }
     ]
 }

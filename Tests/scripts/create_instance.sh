@@ -15,7 +15,7 @@ INSTANCE_ID=$(aws ec2 run-instances \
     --instance-type t2.large \
     --key-name ci-key \
     --instance-initiated-shutdown-behavior terminate \
-    --block-device-mappings DeviceName=/dev/sda1,Ebs={DeleteOnTermination=true} \
+    --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{ "DeleteOnTermination": true}}]' \
     --user-data file://Tests/scripts/shutdown_instance.sh \
     --query 'Instances[0].InstanceId' | tr -d '"')
 
