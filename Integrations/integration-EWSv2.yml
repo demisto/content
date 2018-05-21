@@ -1681,4 +1681,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews
   isfetch: true
-releaseNotes: "Added command: ews-move-between-mailboxes."
+releaseNotes: "Added command: ews-move-between-mailboxes. When fetching emails, email attachments will be saved in warroom"
