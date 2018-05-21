@@ -1187,6 +1187,37 @@
 		"unsearchable": false
 	},
 	{
+		"id": "incident_user",
+		"version": 1,
+		"modified": "2018-05-14T15:47:08.650407205Z",
+		"name": "User",
+		"ownerOnly": false,
+		"placeholder": "",
+		"description": "The user involved",
+		"cliName": "user",
+		"type": "shortText",
+		"closeForm": false,
+		"editForm": true,
+		"required": false,
+		"script": "",
+		"neverSetAsRequired": false,
+		"isReadOnly": false,
+		"selectValues": null,
+		"validationRegex": "",
+		"useAsKpi": false,
+		"locked": false,
+		"system": false,
+		"content": false,
+		"group": 0,
+		"hidden": false,
+		"associatedTypes": [
+			"Malware"
+		],
+		"associatedToAll": false,
+		"unmapped": false,
+		"unsearchable": false
+	},
+	{
 		"id": "incident_srcuser",
 		"version": 1,
 		"modified": "2018-04-23T16:57:58.176727359Z",
