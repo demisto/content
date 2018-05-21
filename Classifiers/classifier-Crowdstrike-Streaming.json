@@ -43,7 +43,6 @@
 		}
 	},
 	"unclassifiedCases": {},
-	"incidentSamples": [],
 	"custom": true,
 	"transformer": {
 		"simple": "metadata.eventType",
