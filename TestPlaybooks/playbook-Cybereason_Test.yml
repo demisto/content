@@ -1,14 +1,14 @@
-id: 9c94b383-893a-42fd-8c41-d99b0a6e5492
-version: 15
+id: Cybereason Test
+version: -1
 name: Cybereason Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7da45d65-8da3-416d-8e7a-9f625aaead92
+    taskid: 969927d6-b806-4b1f-8e76-e49332cc1962
     type: start
     task:
-      id: 7da45d65-8da3-416d-8e7a-9f625aaead92
+      id: 969927d6-b806-4b1f-8e76-e49332cc1962
       version: -1
       name: ""
       iscommand: false
@@ -16,73 +16,26 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 450,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: 593b7702-e9a6-4c3b-8126-dd46eedc7d19
+    taskid: aeeab39e-6a78-49d1-844e-481f03cb45e1
     type: regular
     task:
-      id: 593b7702-e9a6-4c3b-8126-dd46eedc7d19
+      id: aeeab39e-6a78-49d1-844e-481f03cb45e1
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      all: "yes"
-      key: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 35e28e44-dd9f-47f3-8aff-65b3e8f8cca7
-    type: regular
-    task:
-      id: 35e28e44-dd9f-47f3-8aff-65b3e8f8cca7
-      version: -1
-      name: cybereason-is-probe-connected (osboxes)
-      description: Checks if the given hostname exists in Cybereason.
+      name: cybereason-is-probe-connected
+      description: Checks if the machine is currently connected to the Cybereason
+        server
       script: Cybereason|||cybereason-is-probe-connected
-      type: regular
-      iscommand: true
-      brand: Cybereason
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      machine: osboxes
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 0397738f-d2ce-407b-83e9-37149ebba12b
-    type: regular
-    task:
-      id: 0397738f-d2ce-407b-83e9-37149ebba12b
-      version: -1
-      name: cybereason-login
-      script: Cybereason|||cybereason-login
       type: regular
       iscommand: true
       brand: Cybereason
@@ -90,122 +43,210 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      machine: ""
+      machine:
+        simple: ip-172-16-3-7.ec2.internal
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 450,
+          "y": 230
         }
       }
-  "4":
-    id: "4"
-    taskid: 214d0aad-bb53-4766-8d2b-a9c7466fbcb2
+  "2":
+    id: "2"
+    taskid: 15f1326b-b4ea-4967-819a-000d46fcbb06
     type: regular
     task:
-      id: 214d0aad-bb53-4766-8d2b-a9c7466fbcb2
+      id: 15f1326b-b4ea-4967-819a-000d46fcbb06
       version: -1
-      name: cybereason-query-processes (hasIncomingConnections=true)
-      script: Cybereason|||cybereason-query-processes
-      type: regular
-      iscommand: true
-      brand: Cybereason
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      hasIncomingConnection: "true"
-      hasOutgoingConnection: ""
-      limit: ""
-      machine: ""
-      onlySuspicious: ""
-      processName: ""
-      saveToContext: "true"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 1498bffd-0f81-4486-8251-fd1d4b203778
-    type: regular
-    task:
-      id: 1498bffd-0f81-4486-8251-fd1d4b203778
-      version: -1
-      name: VerifyContext (Process)
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "3"
     scriptarguments:
-      expectedValue: ""
-      fields: Name,User,CreationTime,SignedAndVerified,CommandLine
-      path: Process
+      expectedValue: {}
+      fields:
+        simple: isConnected,Name
+      path:
+        simple: Cybereason.Machine
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 450,
+          "y": 410
         }
       }
-  "6":
-    id: "6"
-    taskid: ae8b4b7a-8627-476e-8481-22c3f5d05be2
+  "3":
+    id: "3"
+    taskid: 44c94e93-6cb5-4dcb-89bb-95f6d1f76668
     type: regular
     task:
-      id: ae8b4b7a-8627-476e-8481-22c3f5d05be2
+      id: 44c94e93-6cb5-4dcb-89bb-95f6d1f76668
       version: -1
-      name: cybereason-query-connections (machine=osboxes)
+      name: cybereason-query-connections
+      description: Searches for connections.
       script: Cybereason|||cybereason-query-connections
       type: regular
       iscommand: true
       brand: Cybereason
     nexttasks:
       '#none#':
-      - "7"
+      - "4"
     scriptarguments:
-      hasIncomingConnection: "true"
-      hasOutgoingConnection: ""
-      ip: ""
-      limit: ""
-      machine: osboxes
-      onlySuspicious: ""
-      processName: ""
-      saveToContext: "true"
+      ip: {}
+      machine:
+        simple: ${Cybereason.Machine.Name}
+      saveToContext:
+        simple: "true"
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1071
+          "x": 450,
+          "y": 590
         }
       }
-  "7":
-    id: "7"
-    taskid: d7be6d1a-3494-46c4-89db-13d46985b57e
+  "4":
+    id: "4"
+    taskid: e07e9a44-1152-4978-8a67-3d7c58f3f489
     type: regular
     task:
-      id: d7be6d1a-3494-46c4-89db-13d46985b57e
+      id: e07e9a44-1152-4978-8a67-3d7c58f3f489
       version: -1
-      name: VerifyContext (Connection)
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
-      expectedValue: ""
-      fields: ServerPort,EndTime,TransmittedBytes,ReceivedBytes,Name,CreationTime,RemoteCountry,ServerAddress,OwnerMachine,OwnerProcess,Direction
-      path: Connection
+      expectedValue: {}
+      fields:
+        simple: Name,Direction,ServerAddress,OwnerMachine,OwnerProcess,ServerPort,CreationTime,
+      path:
+        simple: Connection
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1241
+          "x": 450,
+          "y": 770
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 6809f9f6-e98f-47a4-8883-10b4cc7dc1cb
+    type: regular
+    task:
+      id: 6809f9f6-e98f-47a4-8883-10b4cc7dc1cb
+      version: -1
+      name: cybereason-query-processes
+      description: Searches for processes with various filters.
+      script: Cybereason|||cybereason-query-processes
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      hasIncomingConnection: {}
+      hasOutgoingConnection: {}
+      limit:
+        simple: "5"
+      machine:
+        simple: ${Cybereason.Machine.Name}
+      onlySuspicious: {}
+      processName: {}
+      saveToContext:
+        simple: "true"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 114c2f5b-f61d-4490-8dfb-03e1d0750108
+    type: regular
+    task:
+      id: 114c2f5b-f61d-4490-8dfb-03e1d0750108
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name,Malicious,CreationTime,EndTime,CommandLine,SignedAndVerified,ProductType,Parent,OwnerMachine,User,ImageFile,Sha1,Md5
+      path:
+        simple: Process
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 5d2737b4-e2bf-4373-8fdd-f4cf9721516c
+    type: title
+    task:
+      id: 5d2737b4-e2bf-4373-8fdd-f4cf9721516c
+      version: -1
+      name: Success!
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 446,
+          "y": 1319
         }
       }
 view: |-
@@ -213,11 +254,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1286,
-        "width": 380,
-        "x": 50,
+        "height": 1334,
+        "width": 384,
+        "x": 446,
         "y": 50
       }
     }
   }
 inputs: []
+outputs: []
