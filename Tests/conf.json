@@ -6,6 +6,10 @@
             "playbookID": "test_url_regex"
         },
         {
+            "integrations": "Skyformation",
+            "playbookID": "TestSkyformation"
+        },
+        {
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
@@ -290,6 +294,10 @@
             "playbookID": "Symantec Messaging Gateway Test"
         },
         {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test"
+        },
+        {
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
         },
@@ -306,7 +314,9 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
-        },
+        }
+    ],
+    "skipped": [
         {
             "integrations": {
                 "name": "carbonblack-v2",
@@ -356,10 +366,6 @@
             ],
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 400
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
         },
         {
             "integrations": "Remedy AR",
