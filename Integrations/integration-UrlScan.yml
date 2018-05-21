@@ -50,7 +50,7 @@ script:
         if (img) {
             requestUrl = img;
 
-            var res = http(
+            res = http(
                 requestUrl,
                 {
                     Method: method,
@@ -65,7 +65,7 @@ script:
         } else {
             requestUrl = url + arg;
 
-            var res = http(
+            res = http(
                 requestUrl,
                 {
                     Method: method,
@@ -77,75 +77,96 @@ script:
             );
         }
 
-
-        if ((res.StatusCode < 200 || res.StatusCode >= 300) || res.success === false || JSON.parse(res.Body).status === 400) {
-            throw 'Urlscan.io Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+        if (res.StatusCode < 200 || res.StatusCode >= 300 || res.success === false) {
+            throw 'Urlscan.io Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + res.Body + '.';
         }
 
         try {
-            return JSON.parse(res.Body);
+            var obj = JSON.parse(res.Body);
+            if (obj.status === 400) {
+                throw 'Urlscan.io Request Failed.\nObject Status code: ' + obj.status + '.\nBody: ' + res.Body + '.';
+            }
+            return obj;
         }
-        catch(exc) {
-            throw "Urlscan.io Error: JSON parse error";
+        catch (exc) {
+            throw 'Urlscan.io Error: JSON parse error.\n' + res.Body;
         }
     };
 
     var searchResults = function(id) {
-        var res = sendRequest("GET", "/result/" + id);
-        return res;
+        return sendRequest('GET', '/result/' + id);
     };
 
-    var addMD = function(res) {
-        var md = "";
+    var addMD = function(stats, lists, link) {
+        var md = '';
 
-        if (res.securePercentage !== undefined) {
-            md += "Security Percentage: **"+res.securePercentage + "**\n";
+        if (stats.securePercentage) {
+            md += 'Security Percentage: **' + stats.securePercentage + '**\n';
         }
 
-        if (res.resourceStats[0] !== undefined) {
-            if (res.resourceStats[0].countries !== undefined) {
-                md += "Number of countries associated with this site: **" + res.resourceStats[0].countries.length + " (";
+        if (stats.resourceStats && stats.resourceStats[0] && stats.resourceStats[0].countries) {
+            md += 'Number of countries associated with this site: **' + stats.resourceStats[0].countries.length + ' (';
+            md += stats.resourceStats[0].countries.join(', ') + ')**\n';
+        }
+
+        if (stats.ipStats && stats.ipStats[0] && stats.ipStats[0].asn) {
+            md += 'ASN: **' + stats.ipStats[0].asn.asn + ' ' + stats.ipStats[0].asn.description + '**\n';
+        }
+
+        if (stats.malicious) {
+            md += 'Malicious: **' + stats.malicious + '**\n';
+        }
+
+        if (stats.regDomainStats) {
+            md += tableToMarkdown('Registered Domains', stats.regDomainStats, ['regDomain', 'count', 'ips', 'countries', 'redirects']);
+        }
+
+        if (lists) {
+            if (lists.ips) {
+                md += 'IPs: **' + lists.ips.join(', ') + '**\n';
             }
-            for (var i = 0; i < res.resourceStats[0].countries.length-1; i++){
-                md += " " + res.resourceStats[0].countries[i] + ",";
-            }
-            if (res.resourceStats[0].countries.length >= 1) {
-                md += " " + res.resourceStats[0].countries[res.resourceStats[0].countries.length-1] + ")**\n";
+            if (lists.domains) {
+                md += 'Domains: **' + lists.domains.join(', ') + '**\n';
             }
         }
 
-        if (res.ipStats !== undefined &&
-            res.ipStats[0] !== undefined &&
-            res.ipStats[0].asn !== undefined) {
-            md += "ASN: **" + res.ipStats[0].asn.asn + " " + res.ipStats[0].asn.description + "**\n";
-        }
-        if (res.malicious !== undefined) {
-            md += "Malicious: **" + res.malicious + "**";
+        if (link) {
+            md += 'Urlscan.io result link: [' + link + '](' + link + ')\n';
         }
 
         return md;
-    }
+    };
+
+    var handleSearchResults = function(res) {
+        var data = searchResults(res.results[0]._id);
+        var resStats = data.stats;
+        var lists = data.lists;
+        // A bit of an ugly hack but make sure to add some data to the original res
+        res.results[0].lists = lists;
+        res.results[0].regDomainStats = resStats.regDomainStats;
+        res.results[0].malicious = resStats.malicious;
+        return addMD(resStats, lists, res.results[0].result);
+    };
 
     var searchUrl = function(url) {
-        var res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(url) + "\"");
-        var md = "";
+        var res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(url) + '"');
+        var md = '';
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
-        md += "## Urlscan.io Reputation for " + url + "\n";
+        md += '## Urlscan.io Reputation for ' + url + '\n';
 
         if (res.results.length !== 0) {
-            var resStats = searchResults(res.results[0]._id).stats;
-            md += addMD(resStats);
+            md += handleSearchResults(res);
 
-            if (resStats.malicious !== 0){
+            if (res.malicious !== 0){
                 dbotScore = 3;
-                ec.URL = {};
-                addMalicious(ec, "URL", {
+                addMalicious(ec, outputPaths.url, {
                     Data: url,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
-            }else{
+            } else {
+                ec[outputPaths.url] = {Data: url};
                 dbotScore = 1;
             }
 
@@ -155,9 +176,9 @@ script:
 
             return resDis;
 
-        }else{
+        } else {
             ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'UrlscanIO', Score: dbotScore};
-            md += "No results for this url";
+            md += 'No results for this url';
             resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
         }
 
@@ -172,31 +193,29 @@ script:
         var img = scanRes.task.screenshotURL;
         var res = sendRequest('GET', '', '','' , img);
 
-        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': res };
+        return {'Contents': '', 'ContentsFormat': formats.text, 'Type': 7, 'File': id, 'FileID': res};
     };
 
     var searchIP = function(ip) {
-        var res = sendRequest("GET","/search?q=ip:" + ip);
-        var md = "";
+        var res = sendRequest('GET', '/search?q=ip:' + ip);
+        var md = '';
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
 
-        md += "## Urlscan.io Reputation for " + ip + "\n";
+        md += '## Urlscan.io Reputation for ' + ip + '\n';
 
-        if (res.results.length !== 0){
-            var resStats = searchResults(res.results[0]._id).stats;
+        if (res.results.length !== 0) {
+            md += handleSearchResults(res);
 
-            md += addMD(resStats);
-
-            if (resStats.malicious !== 0){
+            if (res.malicious !== 0){
                 dbotScore = 3;
-                ec.IP = {};
-                addMalicious(ec, "IP", {
+                addMalicious(ec, outputPaths.ip, {
                     Address: ip,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
-            }else{
+            } else {
+                ec[outputPaths.ip] = {Address: ip};
                 dbotScore = 1;
             }
 
@@ -208,7 +227,7 @@ script:
 
         }else {
             ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'Urlscan.io', Score: dbotScore};
-            md += "No results for this ip";
+            md += 'No results for this ip';
             resDis.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
         }
 
@@ -216,27 +235,25 @@ script:
     };
 
     var searchHash = function(hash) {
-        var res = sendRequest("GET","/search?q=hash:" + hash);
-        var md = "";
+        var res = sendRequest('GET', '/search?q=hash:' + hash);
+        var md = '';
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
 
-        md += "## Urlscan.io Reputation for " + hash + "\n";
+        md += '## Urlscan.io Reputation for ' + hash + '\n';
 
-        if(res.results.length !== 0) {
-            var resStats = searchResults(res.results[0]._id).stats;
+        if (res.results.length !== 0) {
+            md += handleSearchResults(res);
 
-            md += addMD(resStats);
-
-            if (resStats.malicious !== 0) {
+            if (res.malicious !== 0) {
                 dbotScore = 3;
-                ec.File = {};
-                addMalicious(ec, "File", {
+                addMalicious(ec, outputPaths.file, {
                     MD5: hash,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
             }else {
+                ec[outputPaths.file] = {MD5: hash};
                 dbotScore = 1;
             }
 
@@ -246,9 +263,9 @@ script:
 
             return resDis;
 
-        }else{
+        } else {
             ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'Urlscan.io', Score: dbotScore};
-            md += "No results for this hash"
+            md += 'No results for this hash';
             resDis.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
         }
 
@@ -256,34 +273,34 @@ script:
     };
 
     var submitUrl = function(scanUrl, timeout, isPublic) {
-        if (params.apikey === undefined) {
-            throw "Urlscan.io: No API key provided.";
+        if (!params.apikey) {
+            throw 'Urlscan.io: No API key provided.';
         }
 
-        var md = "";
+        var md = '';
         var ec = {};
         var resDis = [];
         var dbotScore = 0;
         var body;
 
         if (scanUrl.indexOf('#') !== -1) {
-            md += "## Urlscan.io Reputation for " + scanUrl + "\n";
-            md += "Could not submit this url";
+            md += '## Urlscan.io Reputation for ' + scanUrl + '\n';
+            md += 'Could not submit this url';
             return ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': {}, 'HumanReadable': md, 'EntryContext': {}});
         }
 
         if (isPublic === 'public') {
-            body = JSON.stringify({"url": scanUrl, "public": 'on'});
+            body = JSON.stringify({url: scanUrl, 'public': 'on'});
         } else {
-            body = JSON.stringify({"url": scanUrl});
+            body = JSON.stringify({url: scanUrl});
         }
 
-        var headers = {"Content-Type": ['application/json'], "API-Key": [params.apikey]}
+        var headers = {'Content-Type': ['application/json'], 'API-Key': [params.apikey]};
         var resScan = sendRequest('POST', '/scan', body, headers);
 
         var tWait = 0;
 
-        md += "## Urlscan.io Reputation for " + scanUrl + "\n";
+        md += '## Urlscan.io Reputation for ' + scanUrl + '\n';
 
         if (!timeout) {
             timeout = 30;
@@ -292,27 +309,24 @@ script:
         if (isPublic === 'private') {
             wait(parseInt(timeout));
         } else {
-
-            var res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
+            var res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
 
             if (res.results.length >= 1) {
-                while (tWait < timeout &&
-                        res.results[0]._id !== resScan.uuid) {
-                            wait(5);
-                            tWait += 5;
-                            res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
-                        }
+                while (tWait < timeout && res.results[0]._id !== resScan.uuid) {
+                    wait(5);
+                    tWait += 5;
+                    res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
+                }
             } else {
-                while (tWait < timeout &&
-                    res.results.length < 1) {
-                        wait(5);
-                        tWait += 5;
-                        res = sendRequest("GET","/search?q=" + "\"" + encodeURIComponent(scanUrl) + "\"");
-                    }
+                while (tWait < timeout && res.results.length < 1) {
+                    wait(5);
+                    tWait += 5;
+                    res = sendRequest('GET', '/search?q=' + '"' + encodeURIComponent(scanUrl) + '"');
+                }
             }
         }
 
-        if ((resScan.api) ||
+        if (resScan.api ||
             (res.results.length >= 1 &&
             res.results[0]._id === resScan.uuid)) {
 
@@ -320,9 +334,8 @@ script:
             var resStats;
 
             if (isPublic === 'private') {
-                var res = http(resScan.api,{Method: 'GET',},params.insecure,params.proxy);
+                var res = http(resScan.api, {Method: 'GET'}, params.insecure, params.proxy);
                 resStats = JSON.parse(res.Body).stats
-
             } else {
                 scanResults = res.results[0];
                 resStats = searchResults(scanResults._id).stats;
@@ -332,12 +345,12 @@ script:
 
             if (resStats.malicious !== 0){
                 dbotScore = 3;
-                ec.URL = {};
-                addMalicious(ec, "URL", {
+                addMalicious(ec, outputPaths.url, {
                     Data: scanUrl,
                     Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
-            }else{
+            } else {
+                ec[outputPaths.url] = {Data: scanUrl};
                 dbotScore = 1;
             }
 
@@ -355,7 +368,7 @@ script:
 
         } else {
             ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'Urlscan.io', Score: dbotScore};
-            md += "No scan results.";
+            md += 'No scan results.';
             resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
             return resDis;
         }
@@ -366,26 +379,26 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            searchHash("google.com");
+            searchHash('google.com');
 
             if(params.apikey) {
-                var body = JSON.stringify({"url": "www.demisto.com", "public": "on"});
-                var headers = {"Content-Type": ['application/json'], "API-Key": [params.apikey]}
+                var body = JSON.stringify({url: 'www.demisto.com', 'public': 'on'});
+                var headers = {'Content-Type': ['application/json'], 'API-Key': [params.apikey]};
                 sendRequest('POST', '/scan', body, headers);
             }
 
             return 'ok';
 
-        case "url":
+        case 'url':
             return searchUrl(args.url);
 
-        case "ip":
+        case 'ip':
             return searchIP(args.ip);
 
-        case "file":
+        case 'file':
             return searchHash(args.file);
 
-        case "urlscan-submit":
+        case 'urlscan-submit':
             return submitUrl(args.url, args.timeout, args.public);
 
         default:

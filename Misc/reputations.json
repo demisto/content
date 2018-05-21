@@ -1,6 +1,5 @@
 {
   "name": "reputations",
-  "releaseNotes": "Add URL support for the '-' char",
   "reputations": [
     {
       "id": "fileRep",
