@@ -1,5 +1,6 @@
 {
   "name": "reputations",
+  "releaseNotes": "Add Domain type",
   "reputations": [
     {
       "id": "fileRep",
@@ -219,6 +220,16 @@
       "details": "username",
       "enhancementScriptNames": [
         "ADGetUser"
+      ]
+    },
+    {
+      "id": "domainRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "Domain",
+      "enhancementScriptNames": [
+        "DomainReputation"
       ]
     }
   ]
