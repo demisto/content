@@ -169,7 +169,7 @@ script: |-
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
-      'XML' : test_xml,
+      #'XML' : test_xml,
       'ENTRY' : test_entry,
       'TBLMD' : test_tbl_to_md
   }
