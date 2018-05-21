@@ -526,6 +526,14 @@ script: |-
          :rtype: ``str``
       """
 
+      mdResult = ''
+      if name:
+          mdResult = '### ' + name + '\n'
+
+      if not t or len(t) == 0:
+          mdResult += '**No entries.**\n'
+          return mdResult
+
       if not isinstance(t, list):
           t = [t]
       # in case of headers was not provided (backward compatibility)
@@ -537,10 +545,6 @@ script: |-
           for header in headers_aux:
               if all(obj[header] is None for obj in t):
                   headers.remove(header)
-
-      mdResult = ''
-      if name:
-          mdResult = '### ' + name + '\n'
 
       if t:
           newHeaders = []
@@ -555,11 +559,9 @@ script: |-
               mdResult += '|'.join(newHeaders)
           mdResult = mdResult + '|\n'
           sep = '-'
-          if len(headers) == 1:
-              sep = '-|'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
-              vals = [(formatCell(entry.get(h, ''), False) if entry.get(h) is not None else '') for h in headers]
+              vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''), True, True) for h in headers]
               mdResult += '|'
               if len(vals) == 1:
                   mdResult += vals[0]
@@ -571,7 +573,6 @@ script: |-
           mdResult += '**No entries.**\n'
 
       return mdResult
-
 
   tblToMd = tableToMarkdown
 
@@ -753,13 +754,16 @@ script: |-
          :rtype: ``str``
       """
       if escape_multiline:
-          st = st.replace('\n', '<br>')
+          st = st.replace('\r\n', '<br>')#Windows
+          st = st.replace('\r', '<br>')#old Mac
+          st = st.replace('\n', '<br>')#Unix
 
       if minimal_escaping:
           for c in '|':
               st = st.replace(c, '\\' + c)
       else:
           st = "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
+
       return st
 
 
@@ -1020,3 +1024,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"
