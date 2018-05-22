@@ -312,13 +312,13 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
-        },
-        {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
         }
     ],
     "skipped": [
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
