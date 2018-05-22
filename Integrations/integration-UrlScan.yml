@@ -159,7 +159,7 @@ script:
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
 
-            if (res.malicious !== 0){
+            if (res.results[0].malicious !== 0){
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
@@ -208,7 +208,7 @@ script:
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
 
-            if (res.malicious !== 0){
+            if (res.results[0].malicious !== 0){
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.ip, {
                     Address: ip,
@@ -246,7 +246,7 @@ script:
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
 
-            if (res.malicious !== 0) {
+            if (res.results[0].malicious !== 0) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.file, {
                     MD5: hash,
@@ -505,3 +505,4 @@ script:
       description: The actual score
     description: Submit an url to scan
 fromversion: 3.5.0
+releaseNotes: "-"
