@@ -140,7 +140,6 @@ script:
 
         # Generate current time & token timeout
         epoch_time, epoch_timeout = generate_jwt_times()
-
         # Token claims
         claims = {
             'exp': epoch_timeout,
@@ -158,7 +157,6 @@ script:
         encoded = jwt.encode(claims, APP_SECRET, algorithm='HS256')
         payload = {'auth_token': encoded}
         headers = {'Content-Type': 'application/json; charset=utf-8'}
-
         res = api_call(method='post', uri=URI_AUTH, body=payload, headers=headers)
         return res['access_token']
 
@@ -198,7 +196,6 @@ script:
     def get_devices():
         page = demisto.args()['pageNumber'] if 'pageNumber' in demisto.args() else None
         page_size = demisto.args()['pageSize'] if 'pageSize' in demisto.args() else None
-
         result = get_devices_request(page, page_size)
         devices = result['page_items']
 
@@ -240,7 +237,6 @@ script:
             params['page'] = page
         if page_size:
             params['page_size'] = page_size
-
         res = api_call(uri=URI_DEVICES, method='get', headers=headers, params=params)
         return res
 
@@ -357,8 +353,7 @@ script:
             score = threat.get('cylance_score', None)
             if score:
                 threat['cylance_score'] = normalize_score(threat['cylance_score'])
-                threshold = demisto.args().get('threshold')
-                threshold = threshold if threshold else FILE_THRESHOLD
+                threshold = demisto.args().get('threshold', FILE_THRESHOLD)
                 dbot_score = translate_score(threat['cylance_score'], int(threshold))
             dbot_score_array.append({
                 'Indicator': threat['name'],
@@ -617,8 +612,7 @@ script:
             score = threat.get('cylance_score', None)
             if score:
                 threat['cylance_score'] = normalize_score(threat['cylance_score'])
-                threshold = demisto.args().get('threshold')
-                threshold = threshold if threshold else FILE_THRESHOLD
+                threshold = demisto.args().get('threshold', FILE_THRESHOLD)
                 dbot_score = translate_score(threat['cylance_score'], int(threshold))
             context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
             ec = {
@@ -666,8 +660,7 @@ script:
             score = threat.get('cylance_score', None)
             if score:
                 threat['cylance_score'] = normalize_score(threat['cylance_score'])
-                threshold = demisto.args().get('threshold')
-                threshold = threshold if threshold else FILE_THRESHOLD
+                threshold = demisto.args().get('threshold', FILE_THRESHOLD)
                 dbot_score = translate_score(threat['cylance_score'], int(threshold))
             dbot_score_array.append({
                 'Indicator': threat['name'],
@@ -787,8 +780,7 @@ script:
             score = threat.get('cylance_score', None)
             if score:
                 threat['cylance_score'] = normalize_score(threat['cylance_score'])
-                threshold = demisto.args().get('threshold')
-                threshold = threshold if threshold else FILE_THRESHOLD
+                threshold = demisto.args().get('threshold', FILE_THRESHOLD)
                 dbot_score = translate_score(threat['cylance_score'], int(threshold))
             dbot_score_array.append({
                 'Indicator': threat['name'],
@@ -972,6 +964,9 @@ script:
       type: string
     - contextPath: Endpoint.Policy
       description: The policy ID and name.
+      type: string
+    - contextPath: Endpoint.State
+      description: Machine state
       type: string
     description: Allows a caller to request a page with a list of Console device resources
       belongings to a Tenant, sorted by registration (created) date in descending
