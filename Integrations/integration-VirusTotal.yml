@@ -10,13 +10,6 @@ detaileddescription: |-
   Don’t have a Virustotal key?
   Register at https://www.virustotal.com
   After signing in click on your user name (top right) and go to “My API Key”
-
-  Indicators thresholds:
-  Configure the default threshold for each indicator type in the instance settings.
-  Note that it is also possible to specify the threshold when runing the command.
-  Indicators with positive results equal or bigger than the threshold will be considered malicious.
-  Indicators with positive results equal or bigger than half of the threshold value, and lower than the threshold, will be considered suspicious.
-
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: Server
@@ -30,33 +23,13 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: useproxy
-  defaultvalue: true
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Allow self-signed SSL certificates
   name: insecure
-  defaultvalue: false
+  defaultvalue: "false"
   type: 8
-  required: false
-- display: File Threshold. Minimun number of positive reuslts from VT scanners to consider the file malicious.
-  name: fileThreshold
-  defaultvalue: "10"
-  type: 0
-  required: false
-- display: IP Threshold. Minimun number of positive reuslts from VT scanners to consider the IP malicious.
-  name: ipThreshold
-  defaultvalue: "10"
-  type: 0
-  required: false
-- display: URL Threshold. Minimun number of positive reuslts from VT scanners to consider the URL malicious.
-  name: urlThreshold
-  defaultvalue: "10"
-  type: 0
-  required: false
-- display: Domain Threshold. Minimun number of positive reuslts from VT scanners to consider the domain malicious.
-  name: domainThreshold
-  defaultvalue: "10"
-  type: 0
   required: false
 script:
   script: |-
@@ -130,9 +103,8 @@ script:
 
     var doFile = function(hash, longFormat, threshold, waitForRateLimit, retries) {
         if (!threshold) {
-            threshold = params.fileThreshold || 10;
+            threshold = 10;
         }
-        threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
         var o = res.obj;
         var ec = {};
@@ -208,9 +180,8 @@ script:
             return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
         }
         if (!threshold) {
-            threshold = params.ipThreshold || 10;
+            threshold = 10;
         }
-        threshold = parseInt(threshold)
         if (!sampleSize) {
             sampleSize = 10;
         }
@@ -275,9 +246,8 @@ script:
             sampleSize = 10;
         }
         if (!threshold) {
-            threshold = params.urlThreshold || 10;
+            threshold = 10;
         }
-        threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
         var o = res.obj;
         var ec = {};
@@ -335,9 +305,8 @@ script:
             sampleSize = 10;
         }
         if (!threshold) {
-            threshold = params.domainThreshold || 10;
+            threshold = 10;
         }
-        threshold = parseInt(threshold)
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
         var o = res.obj;
         var ec = {};
@@ -500,6 +469,69 @@ script:
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: arrToMd(res.obj.comments)};
     }
 
+    var fileSearch = function(query, offset) {
+
+        if (!offset) {
+            var params = {query: query};
+        } else {
+            var params = {query: query, offset: offset};
+        }
+        var res = doReq('POST', 'file/search', params);
+
+        if (res.obj.response_code !== 1) {
+            throw 'Response code: ' + res.obj.response_code + ', message: ' + res.obj.verbose_msg;
+        }
+
+        if (Array.isArray(res.obj.hashes)) { // Got multiple hashes so need to nicely iterate
+            r = res.obj.hashes;
+        } else {
+            r = [res.obj.hashes];
+        }
+
+        var md = '# File Search Hashes for query: ' + query + '\n';
+        md += '| Hashes |\n';
+        md += '|----|\n';
+        var ec = {vtFileSearch: []};
+        for (var i=0; i<r.length; i++) {
+            md += '|' + r[i] + '| \n';
+            ec.vtFileSearch.push(r[i]);  // Add to return if we want to push to context
+        }
+        md += '| Count: ' + r.length + '|\n';
+        md += '# Page Offset: \n';
+        md += res.obj.offset + '\n';
+
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md};
+    }
+
+    var fileDownload = function(filehash) {
+
+        var parameters = {apikey: params.APIKey};
+        parameters.hash = filehash;
+
+        var result = http(
+            serverUrl + 'file/download' + encodeToURLQuery(parameters),
+            { Method: 'GET' },
+            params.insecure,
+            params.useproxy
+        );
+
+        if (result.StatusCode == 404) {
+            throw 'File Not Found on VirusTotal.';
+        }
+
+        if (result.StatusCode < 200 || result.StatusCode > 299) {
+            throw 'Failed to perform request file/download, request status code: ' + result.StatusCode;
+        }
+        if (result.Body === '' && result.StatusCode === 204) {
+            return {statusCode: result.StatusCode};
+        }
+        if (result.Bytes === '') {
+            throw 'No File received.';
+        }
+
+    return {Type: 3, FileID: saveFile(result.Bytes), File: filehash, Contents: filehash};
+    }
+
     var fileScanUploadURL = function() {
         var res = doReq('GET', 'file/scan/upload_url');
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.upload_url, EntryContext: {vtUploadURL: res.obj.upload_url}};
@@ -529,13 +561,16 @@ script:
             return getComments(args.resource, args.before);
         case 'vt-file-scan-upload-url':
             return fileScanUploadURL();
+        case 'vt-file-search':
+            return fileSearch(args.query, args.offset);
+        case 'vt-file-download':
+            return fileDownload(args.filehash);
         default:
             throw 'Unknown command - ' + command;
     }
   type: javascript
   commands:
   - name: file
-    deprecated: false
     arguments:
     - name: file
       required: true
@@ -551,7 +586,9 @@ script:
       description: Should we return full response with scans
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is bigger than the threshold the file will be considered malicious. If threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
+      description: If number of positives is bigger than the threshold we will consider
+        it malicious
+      defaultValue: "10"
     - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
       defaultValue: "60"
@@ -581,7 +618,6 @@ script:
       description: The actual score
     description: Check file reputation of the given hash
   - name: ip
-    deprecated: false
     arguments:
     - name: ip
       required: true
@@ -595,7 +631,9 @@ script:
       description: Should we return full response with detected URLs
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is bigger than the threshold the IP will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
+      description: If number of positive detected IPs is bigger than the threshold
+        we will consider it malicious
+      defaultValue: "10"
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
         etc.) to display for long format
@@ -627,7 +665,6 @@ script:
       description: The actual score
     description: Check IP Reputation
   - name: url
-    deprecated: false
     arguments:
     - name: url
       required: true
@@ -644,7 +681,8 @@ script:
       description: Should we return full response with detected URLs
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is bigger than the threshold the URL will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      description: If number of positive detected URLs is bigger than the threshold
+        we will consider it malicious
     - name: submitWait
       description: Seconds to wait if the URL does not exist and is submitted to be
         scanned
@@ -672,7 +710,6 @@ script:
       description: The actual score
     description: Check URL Reputation
   - name: domain
-    deprecated: false
     arguments:
     - name: domain
       required: true
@@ -690,7 +727,9 @@ script:
         etc.) to display for long format
       defaultValue: "10"
     - name: threshold
-      description: If the number of positives is bigger than the threshold the domain will be considered malicious. If threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
+      description: If number of positive detected domains is bigger than the threshold
+        we will consider it malicious
+      defaultValue: "10"
     - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
       defaultValue: "60"
@@ -714,7 +753,6 @@ script:
       description: The actual score
     description: Check domain reputation
   - name: file-scan
-    deprecated: false
     arguments:
     - name: entryID
       required: true
@@ -728,7 +766,6 @@ script:
       description: Scan IDs of the submitted files
     description: Submit a file for scanning
   - name: file-rescan
-    deprecated: false
     arguments:
     - name: file
       required: true
@@ -739,7 +776,6 @@ script:
       description: Scan IDs of the submitted files
     description: Rescan an already submitted file to save time and not upload
   - name: url-scan
-    deprecated: false
     arguments:
     - name: url
       required: true
@@ -750,7 +786,6 @@ script:
       description: Scan IDs of the submitted URLs
     description: Scan a given URL
   - name: vt-comments-add
-    deprecated: false
     arguments:
     - name: resource
       required: true
@@ -763,14 +798,12 @@ script:
         @VirusTotalTeam).'
     description: Add comments for files and URLs
   - name: vt-file-scan-upload-url
-    deprecated: false
     arguments: []
     outputs:
     - contextPath: vtUploadURL
       description: The special upload URL for large files
     description: Private API. Get a special URL for files above 32M.
   - name: vt-comments-get
-    deprecated: false
     arguments:
     - name: resource
       required: true
@@ -779,5 +812,21 @@ script:
     - name: before
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
-hidden: false
-fromversion: 2.5.0
+  - name: vt-file-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query based on search modifier, e.g. "type:peexe positives:5".
+        https://www.virustotal.com/intelligence/help/file-search/
+    - name: offset
+      description: Page offset, each page is max 300 hashes
+    description: Private API. Advanced Reverse File Search
+  - name: vt-file-download
+    arguments:
+    - name: filehash
+      required: true
+      default: true
+      description: File hash
+    description: Download file using its hash
+  runonce: false
