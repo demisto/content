@@ -306,17 +306,19 @@
             "playbookID": "sqs_test"
         },
         {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
-        }
-    ],
-    "skipped": [
+            "integrations": "urlscan.io",
+            "playbookID": "urlscan_malicious_Test"
+        },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         }
     ],
     "skipped": [
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
