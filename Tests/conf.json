@@ -6,6 +6,11 @@
             "playbookID": "test_url_regex"
         },
         {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500
+        },
+        {
             "integrations": "Skyformation",
             "playbookID": "TestSkyformation"
         },
@@ -269,10 +274,6 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test"
-        },
-        {
             "integrations": [
                 {
                     "name": "carbonblackliveresponse",
@@ -325,6 +326,10 @@
             "playbookID": "CarbonBlackResponseTest"
         },
         {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
+        },
+        {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco-Umbrella-Test"
         },
@@ -336,11 +341,6 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
         },
         {
             "playbookID": "TestParseCSV"

@@ -31,6 +31,7 @@ script:
   script: |
     ''' IMPORTS '''
     import time
+    import shutil
     import requests
     from distutils.util import strtobool
     # disable insecure warnings
@@ -149,7 +150,9 @@ script:
             raise Exception('API Key is incorrect')
 
         if res.status_code != 200:
-            raise Exception('Your request failed with the following error: ' + res.reason)
+            LOG('result is: %s' % (res.json(), ))
+            error_msg = res.json()['errors'][0]['message']
+            raise Exception('Your request failed with the following error: %s.\n%s' % (res.reason, error_msg, ))
 
         if parse_json:
             return res.json()
@@ -173,8 +176,8 @@ script:
             'title' : title,
             'data' : [
                 {'to' : 'WebID', 'from' : u'webid'},
-                {'to' : 'AnalysisID', 'from' : u'analysisid', 'humanReadable' : False},
-                {'to' : 'FileName', 'from' : u'filename'},
+                # {'to' : 'AnalysisID', 'from' : u'analysisid', 'humanReadable' : False},
+                {'to' : 'SampleName', 'from' : u'filename'},
                 {'to' : 'Status', 'from' : u'status'},
                 {'to' : 'Comments', 'from' : u'comments'},
                 {'to' : 'Time', 'from' : u'time'},
@@ -246,18 +249,20 @@ script:
     def analyse_url():
         args = demisto.args()
         url = args.get('url')
+        internet_access = bool(strtobool(args.get('internet-access', 'true')))
         comments = args.get('comments')
         systems = args.get('systems')
         systems = None if systems is None else systems.split(',')
 
         should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
-        return analyse_url_request(url, should_wait, comments, systems)
+        return analyse_url_request(url, should_wait, internet_access, comments, systems)
 
 
-    def analyse_url_request(url, should_wait, comments=None, systems=None):
+    def analyse_url_request(url, should_wait, internet_access, comments=None, systems=None):
         data = {
             'accept-tac': 1,
             'url' : url,
+            'internet-access' : 1 if internet_access else 0,
         }
         if comments is not None:
             data['comments'] = comments
@@ -274,38 +279,44 @@ script:
         if should_wait:
             return poll_webid(res['data']['webids'][0])
 
-        info = [{'webid' : i} for i in res['data']['webids']]
-        return webid_to_entry('Web ID:', info)
+        web_id = res['data']['webids'][0]
+        result = info_request(res['data']['webids'][0])
+        return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
 
 
     def analyse_sample():
         args = demisto.args()
         file_entry = args.get('file_id')
         sample_url = args.get('sample_url')
+        internet_access = bool(strtobool(args.get('internet-access', 'true')))
+        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
         comments = args.get('comments')
         systems = args.get('systems')
-        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
 
         if (file_entry is None and sample_url is None) or (None not in [file_entry, sample_url]):
             raise ValueError('You must specify one (and only one) of the following: sample_url, file_id.')
 
         LOG('analysing sample')
         if file_entry is not None:
-            return analyse_sample_file_request(file_entry, should_wait, comments, systems)
+            return analyse_sample_file_request(file_entry, should_wait, internet_access, comments, systems)
         else:
-            return analyse_sample_url_request(sample_url, should_wait, comments, systems)
+            return analyse_sample_url_request(sample_url, should_wait, internet_access, comments, systems)
 
 
-    def analyse_sample_file_request(file_entry, should_wait, comments=None, systems=None):
+    def analyse_sample_file_request(file_entry, should_wait, internet_access, comments=None, systems=None):
         data = {
             'accept-tac': 1,
+            'internet-access' : 1 if internet_access else 0,
         }
         if comments is not None:
             data['comments'] = comments
         if systems is not None:
             data['systems[]'] = systems.split(',')
 
-        with open(demisto.getFilePath(file_entry)['path'], 'rb') as f:
+        shutil.copy(demisto.getFilePath(file_entry)['path'],
+            demisto.getFilePath(file_entry)['name'])
+
+        with open(demisto.getFilePath(file_entry)['name'], 'rb') as f:
             res = http_post('v2/analysis/submit',
                 data=data,
                 files={'sample':f})
@@ -315,25 +326,28 @@ script:
                 LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
                 raise Exception('command failed to run.')
 
+        shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+
         if should_wait:
             return poll_webid(res['data']['webids'][0])
 
-        info = [{'webid' : i} for i in res['data']['webids']]
-        return webid_to_entry('Web ID:', info)
+        web_id = res['data']['webids'][0]
+        result = info_request(res['data']['webids'][0])
+        return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
 
 
-    def analyse_sample_url_request(sample_url, should_wait, comments, systems):
+    def analyse_sample_url_request(sample_url, should_wait, internet_access, comments, systems):
         data = {
             'accept-tac': 1,
             'sample-url' : sample_url,
+            'internet-access' : 1 if internet_access else 0,
         }
         if comments is not None:
             data['comments'] = comments
         if systems is not None:
             data['systems[]'] = systems.split(',')
 
-        res = http_post('v2/analysis/submit',
-            data=data)
+        res = http_post('v2/analysis/submit', data=data)
 
         if 'errors' in res:
             LOG('Error! in command sample file: file url=%s' % (sample_url, ))
@@ -343,8 +357,9 @@ script:
         if should_wait:
             return poll_webid(res['data']['webids'][0])
 
-        info = [{'webid' : i} for i in res['data']['webids']]
-        return webid_to_entry('Web ID:', info)
+        web_id = res['data']['webids'][0]
+        result = info_request(res['data']['webids'][0])
+        return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
 
 
     def download_report():
@@ -359,6 +374,7 @@ script:
         webid = args.get('webid')
         rsc_type = 'sample'
         return download_request(webid, rsc_type)
+
 
     def download_request(webid, rsc_type):
         res = http_post('v2/analysis/download',
@@ -431,12 +447,19 @@ script:
     - name: systems
       description: Operating System to run analysis on(comma separated). should be
         one of the the follow
+    - name: internet-access
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Enable full internet access. Default is True
+      defaultValue: "True"
     outputs:
     - contextPath: Joe.Analysis.WebID
       description: Web ID
       type: string
-    - contextPath: Joe.Analysis.FileName
-      description: Sample Data
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
       type: string
     - contextPath: Joe.Analysis.Status
       description: Analysis Status
@@ -475,8 +498,8 @@ script:
     outputs:
     - contextPath: Joe.Analysis.WebID
       description: Web ID
-    - contextPath: Joe.Analysis.FileName
-      description: Sample Data
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
       type: string
     - contextPath: Joe.Analysis.Status
       description: Analysis Status
@@ -517,11 +540,18 @@ script:
       description: Comments for the analysis
     - name: systems
       description: Operating System to run analysis on(comma separated)
+    - name: internet-access
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Enable full internet access. Default is True
+      defaultValue: "True"
     outputs:
     - contextPath: Joe.Analysis.WebID
       description: Web ID
-    - contextPath: Joe.Analysis.FileName
-      description: Sample Data
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
     - contextPath: Joe.Analysis.Status
       description: Analysis Status
     - contextPath: Joe.Analysis.Comments
