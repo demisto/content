@@ -1,6 +1,6 @@
 commonfields:
   id: TestPYCommonServer
-  version: -1
+  version: 53
 name: TestPYCommonServer
 script: |-
   INFO = {'b' : 1,
@@ -24,9 +24,9 @@ script: |-
       # if x != expected_x:
       #     raise ValueError('expected: [%s]\n %s\ngot: [%s]\n%s' % (type(expected_x), expected_x, type(x), x))
 
-      demisto.results('DQ tests finished successfully!')
+      demisto.results('DQ tests finished successfully! - deprecated')
 
-  def test_entry_MD():
+  def test_entry():
       #entry = createEntry(INFO, {
       #        'contextPath' : 'PY.Test(val.ID && val.ID == obj.ID)',
       #        'title' : 'Python DQ Test',
@@ -58,6 +58,18 @@ script: |-
 
       demisto.results('XML tests finished successfully!')
 
+
+  def toEntry(table):
+      return {
+
+          'Type' : entryTypes['note'],
+          'Contents': table,
+          'ContentsFormat': formats['table'],
+          'ReadableContentsFormat' : formats['markdown'],
+          'HumanReadable' : table
+      }
+
+
   def test_tbl_to_md():
       data = [
           {
@@ -81,18 +93,89 @@ script: |-
               'header_3': 'c3'
           }
       ]
+
       table = tableToMarkdown('tableToMarkdown test', data)
-      demisto.results(table)
+      expected_tbl = '''### tableToMarkdown test
+  |header_2|header_3|header_1|
+  |-|-|-|
+  |b1|c1|a1|
+  |b2|c2|a2|
+  |b3|c3|a3|
+  '''
+      table_tranform = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
+      expected_transform_tbl = '''### tableToMarkdown test with headerTransform
+  |Header2|Header3|Header1|
+  |-|-|-|
+  |b1|c1|a1|
+  |b2|c2|a2|
+  |b3|c3|a3|
+  '''
 
-      table = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
-      demisto.results(table)
+      data2 = data[:]
+      for i, d in enumerate(data2):
+          d['header_2'] = 'b%d.1\nb%d.2' % (i+1, i+1, )
+          d['header_3'] = 'c%d|1' % (i+1, )
+      table_multiline = tableToMarkdown('tableToMarkdown test with multiline', data2)
+      expected_multiline_tbl = '''### tableToMarkdown test with multiline
+  |header_2|header_3|header_1|
+  |-|-|-|
+  |b1.1<br>b1.2|c1\|1|a1|
+  |b2.1<br>b2.2|c2\|1|a2|
+  |b3.1<br>b3.2|c3\|1|a3|
+  '''
 
-      demisto.results('ok')
+      data3 = data[:]
+      for i, d in enumerate(data2):
+          d['header_3'] = '[url](https:\\demisto.com)'
+          d['header_2'] = None
+      table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data3)
+      expected_url_missing_info_tbl = '''### tableToMarkdown test with url and missing info
+  |header_2|header_3|header_1|
+  |-|-|-|
+  ||[url](https:\\demisto.com)|a1|
+  ||[url](https:\\demisto.com)|a2|
+  ||[url](https:\\demisto.com)|a3|
+  '''
+
+      table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
+      expected_single_column_tbl = '''### tableToMarkdown test with single column
+  |header_1|
+  |-|
+  |a1|
+  |a2|
+  |a3|
+  '''
+
+      demisto.results(toEntry(table))
+      demisto.results(toEntry(expected_tbl))
+      demisto.results(toEntry(table_tranform))
+      demisto.results(toEntry(expected_transform_tbl))
+      demisto.results(toEntry(table_multiline))
+      demisto.results(toEntry(expected_multiline_tbl))
+      demisto.results(toEntry(table_url_missing_info))
+      demisto.results(toEntry(expected_url_missing_info_tbl))
+      demisto.results(toEntry(table_single_column))
+      demisto.results(toEntry(expected_single_column_tbl))
+
+
+      results = [table == expected_tbl,
+          table_tranform == expected_transform_tbl,
+          table_multiline == expected_multiline_tbl,
+          table_url_missing_info == expected_url_missing_info_tbl,
+          table_single_column == expected_single_column_tbl,
+          ]
+
+      if all(results):
+          demisto.results('ok')
+      else:
+          demisto.results(str(results))
+          demisto.results('error')
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
-      'MD' : test_entry_MD,
+      #'XML' : test_xml,
+      'ENTRY' : test_entry,
       'TBLMD' : test_tbl_to_md
   }
 
@@ -112,9 +195,10 @@ args:
   auto: PREDEFINED
   predefined:
   - DQ
-  - MD
+  - ENTRY
   - XML
   - TBLMD
   description: one of python common server testing features
   defaultValue: dq
 scripttarget: 0
+runonce: false

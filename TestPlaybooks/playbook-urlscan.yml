@@ -132,7 +132,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      url: www.google.com
+      url: https://vendretshirt.bid/_-/Microsoft/index2.php?l=_JeHFUq_VJOXK0QWHtoGYDw1774256418&fid.13InboxLight.aspxn.1774256418&fid.125289964252813InboxLight99642_Product-email&email=http://www.goanywhere.com/
     view: |-
       {
         "position": {
@@ -241,7 +241,7 @@ tasks:
       - "11"
     scriptarguments:
       timeout: "30"
-      url: www.demisto.com
+      url: https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a8.8.8.8&run=toolpage
       wait: ""
     view: |-
       {

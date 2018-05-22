@@ -526,6 +526,14 @@ script: |-
          :rtype: ``str``
       """
 
+      mdResult = ''
+      if name:
+          mdResult = '### ' + name + '\n'
+
+      if not t or len(t) == 0:
+          mdResult += '**No entries.**\n'
+          return mdResult
+
       if not isinstance(t, list):
           t = [t]
       # in case of headers was not provided (backward compatibility)
@@ -538,39 +546,33 @@ script: |-
               if all(obj[header] is None for obj in t):
                   headers.remove(header)
 
-      mdResult = ''
-      if name:
-          mdResult = '### ' + name + '\n'
-
       if t:
           newHeaders = []
           if headerTransform is None:
               headerTransform = lambda s: s
           for header in headers:
               newHeaders.append(headerTransform(header))
-
+          mdResult += '|'
           if len(newHeaders) == 1:
-              mdResult += newHeaders[0] + '|' + '\n'
+              mdResult += newHeaders[0]
           else:
-              mdResult += '|'.join(newHeaders) + '\n'
-
+              mdResult += '|'.join(newHeaders)
+          mdResult = mdResult + '|\n'
           sep = '-'
-          if len(headers) == 1:
-              sep = '-|'
-          mdResult += '|'.join([sep] * len(headers)) + '\n'
+          mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
-              vals = [stringEscapeMD(formatCell(entry.get(h, ''), False), minimal_escaping=True, escape_line_ending=True)
-                 for h in headers]
-              #vals = [formatCell(entry.get(h, ''), False) for h in headers]
+              vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''), True, True) for h in headers]
+              mdResult += '|'
               if len(vals) == 1:
-                  mdResult += vals[0] + '|' + '\n'
+                  mdResult += vals[0]
               else:
-                  mdResult += '|'.join(vals) + '\n'
+                  mdResult += '|'.join(vals)
+              mdResult += '|\n'
+
       else:
           mdResult += '**No entries.**\n'
 
       return mdResult
-
 
   tblToMd = tableToMarkdown
 
@@ -735,32 +737,33 @@ script: |-
   MARKDOWN_CHARS = "\`*_{}[]()#+-!"
 
 
-  def stringEscapeMD(st, minimal_escaping=False, escape_line_ending=False):
+  def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
       """
          Escape any chars that might break a markdown string
 
          :type st: ``str``
-         :param st: The string tobe modified (required)
+         :param st: The string to be modified (required)
 
          :type minimal_escaping: ``bool``
-         :param minimal_escaping: whether replace all special characters or table format only (optional)
+         :param minimal_escaping: Whether replace all special characters or table format only (optional)
 
-         :type escape_line_ending: ``bool``
-         :param escape_line_ending: whether escape line ending characters (optional)
+         :type escape_multiline: ``bool``
+         :param escape_multiline: Whether convert line-ending characters (optional)
 
          :return: A modified string
          :rtype: ``str``
       """
-      if escape_line_ending:
-          for c in ['\r\n', '\n', '\r']:
-              st = st.replace(c, '<br>')
+      if escape_multiline:
+          st = st.replace('\r\n', '<br>')#Windows
+          st = st.replace('\r', '<br>')#old Mac
+          st = st.replace('\n', '<br>')#Unix
 
-      chars = MARKDOWN_CHARS
       if minimal_escaping:
-          chars = '|'
+          for c in '|':
+              st = st.replace(c, '\\' + c)
+      else:
+          st = "".join([ "\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
 
-      for c in chars:
-          st = st.replace(c, '\\' + c)
       return st
 
 
@@ -1021,4 +1024,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "escaped special characters used in tableToMarkdown"
+releaseNotes: "-"

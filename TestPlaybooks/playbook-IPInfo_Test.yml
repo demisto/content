@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f26b27ab-8ef8-4670-8692-50141359ceec
+    taskid: b85d5853-35b3-404a-8632-44a3d4bfc53e
     type: start
     task:
-      id: f26b27ab-8ef8-4670-8692-50141359ceec
+      id: b85d5853-35b3-404a-8632-44a3d4bfc53e
       version: -1
       name: ""
       iscommand: false
@@ -16,19 +16,20 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: 5cb15fd6-585d-457a-8cc2-33afa53bc71a
+    taskid: 01a43ec0-90b2-43ba-8000-187274868ad4
     type: regular
     task:
-      id: 5cb15fd6-585d-457a-8cc2-33afa53bc71a
+      id: 01a43ec0-90b2-43ba-8000-187274868ad4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -40,21 +41,23 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
   "2":
     id: "2"
-    taskid: 2846e13f-b4b9-4fb0-8268-1d4982b0b790
+    taskid: 35a05cb0-ff86-48e8-8128-fbf0d5354473
     type: regular
     task:
-      id: 2846e13f-b4b9-4fb0-8268-1d4982b0b790
+      id: 35a05cb0-ff86-48e8-8128-fbf0d5354473
       version: -1
       name: ip
       description: Check IP reputation (when information is available, returns a JSON
@@ -66,23 +69,26 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      - "4"
     scriptarguments:
-      ip: 1.1.1.1
+      ip:
+        simple: 1.1.1.1
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
   "3":
     id: "3"
-    taskid: 49ad0b1b-621c-4eb6-8c0f-53420198083f
+    taskid: c5e85b52-a34a-4ae3-8c4b-936fd13dfb2a
     type: regular
     task:
-      id: 49ad0b1b-621c-4eb6-8c0f-53420198083f
+      id: c5e85b52-a34a-4ae3-8c4b-936fd13dfb2a
       version: -1
-      name: VerifyContext IP
+      name: VerifyContext Geo
       description: |-
         Verifies path in context:
         - Verifies path existence
@@ -94,13 +100,48 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: ""
-      fields: Address, Geo.Description, Geo.Country, Geo.Location
-      path: IP
+      expectedValue: {}
+      fields:
+        simple: Description,Country,Location
+      path:
+        simple: IP.Geo
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 2cb75452-7d8b-439d-897f-a5dc6174b447
+    type: regular
+    task:
+      id: 2cb75452-7d8b-439d-897f-a5dc6174b447
+      version: -1
+      name: VerifyContext Address
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Address
+      path:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 545
         }
       }
@@ -110,10 +151,11 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 590,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
+outputs: []

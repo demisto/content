@@ -1,0 +1,582 @@
+id: Symantec Messaging Gateway Test
+version: -1
+name: Symantec Messaging Gateway Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22b1677f-8e21-46e0-800f-d5eb0bc3c982
+    type: start
+    task:
+      id: 22b1677f-8e21-46e0-800f-d5eb0bc3c982
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 1d4d8b96-34f7-4469-8733-fd02eb296ba9
+    type: regular
+    task:
+      id: 1d4d8b96-34f7-4469-8733-fd02eb296ba9
+      version: -1
+      name: smg-block-email
+      description: Adds email address to the Local Bad Sender Domains.
+      script: Symantec Messaging Gateway|||smg-block-email
+      type: regular
+      iscommand: true
+      brand: Symantec Messaging Gateway
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      email:
+        simple: ${GeneratedUUID}@mail.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: fc69005b-bdd8-4fff-8e14-c4fb19c9e38c
+    type: regular
+    task:
+      id: fc69005b-bdd8-4fff-8e14-c4fb19c9e38c
+      version: -1
+      name: smg-unblock-email
+      description: Removes email address from the Local Bad Sender Domains.
+      script: Symantec Messaging Gateway|||smg-unblock-email
+      type: regular
+      iscommand: true
+      brand: Symantec Messaging Gateway
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      email:
+        simple: ${GeneratedUUID}@mail.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 46caef04-5680-4d42-81ad-eeaa62c1364f
+    type: regular
+    task:
+      id: 46caef04-5680-4d42-81ad-eeaa62c1364f
+      version: -1
+      name: smg-block-domain
+      description: Adds domain to the Local Bad Sender Domains group.
+      script: Symantec Messaging Gateway|||smg-block-domain
+      type: regular
+      iscommand: true
+      brand: Symantec Messaging Gateway
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      domain:
+        simple: www.${GeneratedUUID}.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 8aa3bb88-5d02-4112-85ba-9d65a0942df9
+    type: regular
+    task:
+      id: 8aa3bb88-5d02-4112-85ba-9d65a0942df9
+      version: -1
+      name: smg-unblock-domain
+      description: Removes domain from the Local Bad Sender Domains group.
+      script: Symantec Messaging Gateway|||smg-unblock-domain
+      type: regular
+      iscommand: true
+      brand: Symantec Messaging Gateway
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      domain:
+        simple: www.${GeneratedUUID}.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "5":
+    id: "5"
+    taskid: d752290e-6ffe-4793-8b7a-ba3a92dbe639
+    type: regular
+    task:
+      id: d752290e-6ffe-4793-8b7a-ba3a92dbe639
+      version: -1
+      name: smg-block-ip
+      description: Adds IP address to the Local Bad Sender IPs  group.
+      script: Symantec Messaging Gateway|||smg-block-ip
+      type: regular
+      iscommand: true
+      brand: Symantec Messaging Gateway
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ip:
+        simple: ${GeneratedIP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 22d423e1-120e-4d9d-88c7-1ea856f2f7d0
+    type: title
+    task:
+      id: 22d423e1-120e-4d9d-88c7-1ea856f2f7d0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+  "8":
+    id: "8"
+    taskid: b89a5c41-5ed7-4eaf-89a2-cb6b9a4f79f4
+    type: regular
+    task:
+      id: b89a5c41-5ed7-4eaf-89a2-cb6b9a4f79f4
+      version: -1
+      name: Verify Email Address
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      expectedValue:
+        simple: ${GeneratedUUID}@mail.com
+      fields: {}
+      path:
+        simple: Email.Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "9":
+    id: "9"
+    taskid: ef7b123d-8f48-4187-8db5-7c471fab470c
+    type: regular
+    task:
+      id: ef7b123d-8f48-4187-8db5-7c471fab470c
+      version: -1
+      name: Verify Blocked
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: Email.Blocked
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 1ad308c6-4c45-437c-8d26-17916e6a0f8e
+    type: regular
+    task:
+      id: 1ad308c6-4c45-437c-8d26-17916e6a0f8e
+      version: -1
+      name: Verify Unblocked
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue:
+        simple: "false"
+      fields: {}
+      path:
+        simple: Email.Blocked
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 54ba84a1-126e-49c5-85fe-66ce35bdab42
+    type: regular
+    task:
+      id: 54ba84a1-126e-49c5-85fe-66ce35bdab42
+      version: -1
+      name: Verify Domain
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      expectedValue:
+        simple: www.${GeneratedUUID}.com
+      fields: {}
+      path:
+        simple: Domain.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "12":
+    id: "12"
+    taskid: fe4ee2fd-cb4d-4fad-8d0f-9c5002734566
+    type: regular
+    task:
+      id: fe4ee2fd-cb4d-4fad-8d0f-9c5002734566
+      version: -1
+      name: Verify Blocked
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: Domain.Blocked
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "13":
+    id: "13"
+    taskid: fba5b92f-cbe7-42a2-8af7-ea4d083c731a
+    type: regular
+    task:
+      id: fba5b92f-cbe7-42a2-8af7-ea4d083c731a
+      version: -1
+      name: Verify Unblocked
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      expectedValue:
+        simple: "false"
+      fields: {}
+      path:
+        simple: Domain.Blocked
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 430873f6-25d0-4965-816f-1ce438d39e21
+    type: regular
+    task:
+      id: 430873f6-25d0-4965-816f-1ce438d39e21
+      version: -1
+      name: Verify IP Address
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue:
+        simple: ${GeneratedIP}
+      fields: {}
+      path:
+        simple: IP.Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 370ccbc5-2de4-4816-8457-0236e6605679
+    type: regular
+    task:
+      id: 370ccbc5-2de4-4816-8457-0236e6605679
+      version: -1
+      name: Verify Blocked
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: IP.Blocked
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+  "16":
+    id: "16"
+    taskid: eac73899-bfb2-46a3-8259-d45b89e62cc1
+    type: regular
+    task:
+      id: eac73899-bfb2-46a3-8259-d45b89e62cc1
+      version: -1
+      name: Verify Unblocked
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue:
+        simple: "false"
+      fields: {}
+      path:
+        simple: IP.Blocked
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 65a6a859-ec28-45d2-8746-2f923c64a365
+    type: regular
+    task:
+      id: 65a6a859-ec28-45d2-8746-2f923c64a365
+      version: -1
+      name: smg-unblock-ip
+      description: Removes IP address from the Local Bad Sender IPs  group.
+      script: Symantec Messaging Gateway|||smg-unblock-ip
+      type: regular
+      iscommand: true
+      brand: Symantec Messaging Gateway
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ip:
+        simple: ${GeneratedIP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 38241dd3-f8af-42d5-8682-98712ff151a7
+    type: regular
+    task:
+      id: 38241dd3-f8af-42d5-8682-98712ff151a7
+      version: -1
+      name: GenerateUUID
+      scriptName: GenerateUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "19":
+    id: "19"
+    taskid: dca5a26d-8575-447b-8d45-c0cddc77f9af
+    type: regular
+    task:
+      id: dca5a26d-8575-447b-8d45-c0cddc77f9af
+      version: -1
+      name: GenerateIP
+      scriptName: GenerateIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3185,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
