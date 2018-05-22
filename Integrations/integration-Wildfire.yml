@@ -150,9 +150,9 @@ script:
         var hash = md5 || argHash || file;
         if(!hash)
             throw 'Missing md5/hash argument.';
-        if (hash.length === 40) {
-            // SHA1 not supported.
-            return 'No results';
+        if ((argHash && !/^[A-Fa-f0-9]{64}$/.test(argHash)) ||
+           (md5 && !/^[A-Fa-f0-9]{32}$/.test(md5))) {
+            throw 'Invalid SHA256. Only SHA256 and MD5 are supported.';
         }
         var bodyXML = 'apikey='+TOKEN+'&format=xml&hash='+hash;
         var resXML = sendRequest(reportUrl, bodyXML, DEFAULT_HEADERS).Body;
@@ -409,3 +409,4 @@ script:
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Detonate file hosted on a website through WildFire
 hidden: false
+releaseNotes: "Verify MD5/SHA256 are valid"
