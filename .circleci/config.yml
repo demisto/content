@@ -58,3 +58,4 @@ jobs:
       - run:
           name: Destory Instances
           command: ./Tests/scripts/destroy_instances.sh
+          when: always
