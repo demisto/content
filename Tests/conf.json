@@ -308,15 +308,17 @@
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Cylance Protect v2 Test"
         }
     ],
     "skipped": [
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
-        }
-    ],
-    "skipped": [
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
