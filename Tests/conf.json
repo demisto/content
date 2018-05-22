@@ -6,6 +6,10 @@
             "playbookID": "test_url_regex"
         },
         {
+            "integrations": "Skyformation",
+            "playbookID": "TestSkyformation"
+        },
+        {
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
@@ -304,13 +308,17 @@
         {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
-        }
-    ],
-    "skipped": [
+        },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         },
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        }
+    ],
+    "skipped": [
         {
             "integrations": {
                 "name": "carbonblack-v2",
