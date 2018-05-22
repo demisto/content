@@ -56,7 +56,7 @@ jobs:
           name: Run Tests
           command: ./Tests/scripts/run_tests.sh
       - run:
-          name: Destory Instances
+          name: Destroy Instances
           command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
           when: always
       - store_artifacts:
