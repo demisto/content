@@ -270,7 +270,8 @@
         },
         {
             "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test"
+            "playbookID": "TruSTAR Test",
+            "nightly": true
         },
         {
             "integrations": [
@@ -306,19 +307,19 @@
             "playbookID": "sqs_test"
         },
         {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
+            "integrations": "urlscan.io",
+            "playbookID": "urlscan_malicious_Test"
         },
-        {
-            "integrations": "Cylance Protect v2",
-            "playbookID": "Cylance Protect v2 Test"
-        }
-    ],
-    "skipped": [
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         },
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        }
+    ],
+    "skipped": [
         {
             "integrations": {
                 "name": "carbonblack-v2",
