@@ -19,3 +19,4 @@ args:
 - name: fieldName
   required: true
 scripttarget: 0
+releaseNotes: "Add new SetDateField script"
