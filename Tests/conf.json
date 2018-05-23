@@ -270,8 +270,7 @@
         },
         {
             "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test",
-            "nightly": true
+            "playbookID": "TruSTAR Test"
         },
         {
             "integrations": [
@@ -317,6 +316,10 @@
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Cylance Protect v2 Test"
         }
     ],
     "skipped": [
