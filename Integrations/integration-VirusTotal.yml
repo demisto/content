@@ -781,4 +781,3 @@ script:
     description: Private API. Retrieve comments for a given resource
 hidden: false
 fromversion: 2.5.0
-releaseNotes: "Add indicators thresholds as instance parameters "
