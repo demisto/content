@@ -198,7 +198,3 @@ script:
       type: number
     description: Fetch the breach simulation results
   runonce: false
-releaseNotes: SafeBreach simulates attacks across the kill chain, to validate security
-  policy, configuration, and effectiveness. Quantify the real impact of a cyber attack
-  on your systems at any given moment. Identify remediation options. Stay ahead of
-  attackers.

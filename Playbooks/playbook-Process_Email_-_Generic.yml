@@ -3,7 +3,6 @@ version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
 releaseNotes: "-"
-releaseNotes: "Add support for EWS and Phishing default mapping"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"

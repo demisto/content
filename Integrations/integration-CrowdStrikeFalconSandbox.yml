@@ -1256,4 +1256,3 @@ script:
       description: File type of report to return
       defaultValue: pdf
     description: Detonates URL address through Falcon Sandbox (supported only in v2)
-releaseNotes: "Upgraded to API v2 and added commands: get-screenshots, submit-url, file and detonate-url"
