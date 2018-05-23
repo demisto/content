@@ -1,4 +1,5 @@
 {
+	"releaseNotes" : "Add default Vulnerability fields",
 	"incidentFields": [{
 		"id": "incident_attachmenthash",
 		"version": 1,
