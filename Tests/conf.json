@@ -308,6 +308,14 @@
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "ReversingLabs Titanium Cloud",
+            "playbookID": "ReversingLabsTCTest"
+        },
+        {
+            "integrations": "ReversingLabs A1000",
+            "playbookID": "ReversingLabsA1000Test"
         }
     ],
     "skipped": [
