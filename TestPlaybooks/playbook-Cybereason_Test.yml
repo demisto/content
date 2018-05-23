@@ -217,7 +217,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Name,Malicious,CreationTime,EndTime,CommandLine,SignedAndVerified,ProductType,Parent,OwnerMachine,User,ImageFile,Sha1,Md5
+        simple: Name,CreationTime,EndTime,Parent,OwnerMachine,User
       path:
         simple: Process
     reputationcalc: 0
