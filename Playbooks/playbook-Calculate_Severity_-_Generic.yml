@@ -820,7 +820,7 @@ tasks:
     task:
       id: 127f0e43-3179-4df7-8c4b-6a9877353e40
       version: -1
-      name: Chance severity based Qulays vulnerability score
+      name: Change severity based Qualys vulnerability score
       description: ""
       type: condition
       iscommand: false
