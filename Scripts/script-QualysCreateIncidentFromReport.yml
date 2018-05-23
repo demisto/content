@@ -4,22 +4,15 @@ commonfields:
 name: QualysCreateIncidentFromReport
 script: |-
   import json
-  incident_type = demisto.get(demisto.args(), 'incidentType')
-  if not incident_type:
-      incident_type = "Vulnerability"
 
-  max_file_size = demisto.get(demisto.args(), 'maxFileSize')
-  if max_file_size:
-      max_file_size = int(max_file_size)
-  else:
-      max_file_size = 1024**2
+  incident_type = demisto.args().get("incidentType", "Vulnerability")
+  max_file_size = int(demisto.args().get("maxFileSize", 1024**2))
+  min_severity = int(demisto.args().get("minSeverity", 1))
 
-  min_severity = demisto.get(demisto.args(), 'minSeverity') or 1
-  min_severity = int(min_severity)
-
-  res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
-  with open(res[0]['Contents']['path'], 'r') as f:
+  file_entry = demisto.getFilePath(demisto.args().get("entryID"))
+  with open(file_entry['path'], 'r') as f:
       data = f.read(max_file_size).decode('unicode_escape').encode('utf-8')
+
   if data:
       report = json.loads(xml2json(data))
 
@@ -28,8 +21,13 @@ script: |-
       #Get asset list
       asset_list = demisto.get(report, "ASSET_DATA_REPORT.HOST_LIST.HOST")
       if not asset_list:
-          demisto.results( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : 'No vulnerable assets were found' } )
+          demisto.results( {
+              "Type" : entryTypes["note"],
+              "ContentsFormat" : formats["text"],
+              "Contents" : 'No vulnerable assets were found'
+          } )
           sys.exit(0)
+
       if not isinstance(asset_list, list):
           asset_list = [asset_list]
 
@@ -38,13 +36,18 @@ script: |-
       if not isinstance(general_vulnerabilities, list):
           general_vulnerabilities = [general_vulnerabilities]
 
+      #Get list of QID with severity >= min_severity
       qid_severity = [demisto.get(vulnerability,"QID.#text") for vulnerability in general_vulnerabilities if demisto.get(vulnerability,'SEVERITY') and (int(demisto.get(vulnerability,'SEVERITY')) >= min_severity)]
 
       for asset in asset_list:
           # Get Asset ID from Qualys
           ip = demisto.get(asset,"IP")
           if not ip:
-              demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No IP was found for asset {0}'.format(str(asset)) } )
+              demisto.results( {
+                  "Type" : entryTypes["error"],
+                  "ContentsFormat" : formats["text"],
+                  "Contents" : 'No IP was found for asset {0}'.format(str(asset))
+              } )
               sys.exit(0)
 
           resp = demisto.executeCommand("qualys-host-list", {"ips": ip})
@@ -54,7 +57,11 @@ script: |-
 
           asset_id = demisto.get(resp[0],'Contents.HOST_LIST_OUTPUT.RESPONSE.HOST_LIST.HOST.ID')
           if not asset_id:
-              demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No ID was found for asset {0}'.format(str(asset)) } )
+              demisto.results( {
+                  "Type" : entryTypes["error"],
+                  "ContentsFormat" : formats["text"],
+                  "Contents" : 'No ID was found for asset {0}'.format(str(asset))
+              } )
               sys.exit(0)
 
           # Get Asset vulnerability list
@@ -64,9 +71,11 @@ script: |-
 
           qids = map(lambda vulnerability : demisto.get(vulnerability,"QID.#text"), vulnerabilities)
 
+          #Get only the QIDs that exists in asset and has severity >= min_severity
           qids = list(set(qids) & set(qid_severity))
 
           for qid in qids:
+              # Search for existing open incidents with the same Vendor ID and Asset ID. Will open a new incident only if such an incident not exists.
               resp = demisto.executeCommand("getIncidents", {"query" : "vendorid: {0} and assetid: {1} and --status:Closed".format(qid,asset_id)})
               if isError(resp[0]):
                   demisto.results(resp)
@@ -77,20 +86,29 @@ script: |-
               try:
                   incident_number = int(incident_number)
               except:
-                  demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Error whild searching the incident repository' } )
+                  demisto.results( {
+                      "Type" : entryTypes["error"],
+                      "ContentsFormat" : formats["text"],
+                      "Contents" : 'Error while searching the incident repository'
+                  } )
                   sys.exit(0)
 
               if incident_number == 0:
                   #Create incident
-                  demisto.executeCommand("createNewIncident", {"name": "Vulnerability - Asset {0} QID {1} - {2}".format(asset_id,qid,generation_date),
-                                                              "vendorid" : str(qid),
-                                                              "type": incident_type,
-                                                              "assetid" : str(asset_id)
-                                                              })
+                  demisto.executeCommand("createNewIncident", {
+                      "name": "Vulnerability - Asset {0} QID {1} - {2}".format(asset_id,qid,generation_date),
+                      "vendorid" : str(qid),
+                      "type": incident_type,
+                      "assetid" : str(asset_id)
+                  })
 
       demisto.results("Done.")
   else:
-      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No data could be read.' } )()
+      demisto.results( {
+          "Type" : entryTypes["error"],
+          "ContentsFormat" : formats["text"],
+          "Contents" : 'No data could be read.'
+      } )
 type: python
 tags:
 - qualys

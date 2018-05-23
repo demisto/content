@@ -3,15 +3,20 @@ commonfields:
   version: -1
 name: DisplayHTML
 script: |
-  html = demisto.get(demisto.args(),"html")
-  note = demisto.get(demisto.args(),"markAsNote")
-  header = demisto.get(demisto.args(),"header")
+  html = demisto.args().get("html")
+  note = demisto.args().get("markAsNote")
+  header = demisto.args().get("header")
 
-  note = True if note == "True" else False
+  note = True if note.lower() == "true" else False
   if header:
-      html = "<h1>{0}</h1>{1}".format(header,html)
+      html = "<h1>{0}</h1></br>{1}".format(header,html)
 
-  demisto.results( {'ContentsFormat': formats['html'], 'Type': entryTypes['note'], 'Contents': html, 'Note': note} )
+  demisto.results( {
+      'ContentsFormat': formats['html'],
+      'Type': entryTypes['note'],
+      'Contents': html,
+      'Note': note
+  } )
 type: python
 tags: []
 comment: Display HTML in the War Room.
@@ -23,8 +28,8 @@ args:
 - name: markAsNote
   auto: PREDEFINED
   predefined:
-  - "True"
-  - "False"
+  - "true"
+  - "false"
   description: Should the entry be marked as a note?
 - name: header
   description: Add a header text to the output

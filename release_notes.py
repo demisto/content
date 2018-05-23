@@ -64,8 +64,6 @@ class Content:
 
                     ans = self.addedReleaseNotes(cnt)
                     if ans is None:
-                        if not cnt.has_key("name"):
-                            print_error(rawContent)
                         print_error(cnt["name"] + " is missing releaseNotes entry")
                         missingReleaseNotes = True
 
