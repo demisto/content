@@ -485,7 +485,6 @@ def parse_change_list(file_path):
     with open(file_path, 'r') as f:
         data = f.read()
         return data.split("\n")
-    return []
 
 
 def get_deleted_content(full_file_name, data):
