@@ -2,6 +2,7 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
+releaseNotes: "-"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -229,6 +230,10 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    scriptarguments:
+      EmailID:
+        complex:
+          root: inputs.EmailID
     separatecontext: true
     view: |-
       {
