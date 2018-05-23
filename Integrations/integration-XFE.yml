@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: XFE
 display: IBM X-Force Exchange
-releaseNotes: "-"
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
 description: IBM X-Force Exchange lets you receive threat intelligence about applications,
@@ -14,6 +13,12 @@ detaileddescription: |-
   Login to XFE: https://exchange.xforce.ibmcloud.com/
   Select the “Show User Menu” icon
   Choose settings / API Access / Generate
+
+  Indicators threshold:
+  Configure the default threshold for each indicator type in the instance settings.
+  Note that it is also possible to specify the threshold when runing the command.
+  Indicators with risk score equal or bigger than the threshold will be considered malicious.
+  Indicators with risk score equal or bigger than half of the threshold value, and lower than the threshold, will be considered suspicious.
 configuration:
 - display: Language
   name: Language
@@ -34,6 +39,16 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
+- display: IP Threshold. Minimum risk score for the IP to be consodered malicious (ranges from 1 to 10).
+  name: ipThreshold
+  defaultvalue: "7"
+  type: 0
+  required: false
+- display: URL Threshold. Minimum risk score for the URL to be consodered malicious (ranges from 1 to 10).
+  name: urlThreshold
+  defaultvalue: "7"
+  type: 0
   required: false
 script:
   script: |
@@ -129,8 +144,9 @@ script:
 
     var doIP = function(ip, longFormat, threshold) {
         if (!threshold) {
-            threshold = 7;
+            threshold = params.ipThreshold || 7;
         }
+        threshold = parseInt(threshold)
         // Need to make sure to be backwards compatible with the JSON
         var res = {};
         var ipRes = doReq('GET', 'ipr/' + ip);
@@ -179,8 +195,9 @@ script:
 
     var doURL = function(url, longFormat, threshold) {
         if (!threshold) {
-            threshold = 7;
+            threshold = params.urlThreshold || 7;
         }
+        threshold = parseInt(threshold)
         // Need to make sure to be backwards compatible with the JSON
         var res = {};
         var resolutionRes = doReq('GET', 'resolve/' + url);
@@ -383,8 +400,7 @@ script:
       defaultValue: "false"
     - name: threshold
       deprecated: false
-      description: If the score is above the given threshold, will be considered malicious
-      defaultValue: "7"
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -459,8 +475,7 @@ script:
       defaultValue: "false"
     - name: threshold
       deprecated: false
-      description: If the score is above the given threshold, will be considered malicious
-      defaultValue: "7"
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: IP.Address
       description: Bad IP found
@@ -497,8 +512,7 @@ script:
       defaultValue: "false"
     - name: threshold
       deprecated: false
-      description: If the score is above the given threshold, will be considered malicious
-      defaultValue: "7"
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
