@@ -40,16 +40,14 @@ script:
     import re
     import os
 
-    base_url = demisto.params()['base']
-    if base_url[-1] == '/':
-        base_url = base_url[0:-1]
-    base_rl = demisto.params()['baserl']
-    if base_rl[-1] == '/':
-        base_rl = base_url[0:-1]
-    user = demisto.params()['credentials']['identifier']
-    password = demisto.params()['credentials']['password']
-    auth = HTTPBasicAuth(user, password)
-    extended = demisto.params()['extended']
+    BASE_URL = demisto.params()['base']
+    if BASE_URL[-1] == '/':
+        BASE_URL = BASE_URL[0:-1]
+    BASE_RL = demisto.params()['baserl']
+    if BASE_RL[-1] == '/':
+        BASE_RL = BASE_RL[0:-1]
+    AUTH = HTTPBasicAuth(demisto.params()['credentials']['identifier'], demisto.params()['credentials']['password'])
+    EXTENDED = demisto.params()['extended']
 
 
     if not demisto.params()['proxy']:
@@ -112,7 +110,7 @@ script:
         Get the extended RL data
         """
         endpoint = '/api/databrowser/rldata/query/{hash_type}/{hash_value}?format=json'.format(hash_value=hash_value, hash_type=hash_type)
-        ok, r = validate_http(requests.get(base_rl + endpoint, auth=auth))
+        ok, r = validate_http(requests.get(BASE_RL + endpoint, auth=AUTH))
         if not ok:
             return ok, r
 
@@ -166,7 +164,7 @@ script:
         Get the malware presence for the given hash
         """
         endpoint = '/api/databrowser/malware_presence/query/{hash_type}/{hash_value}?extended=true&format=json'.format(hash_value=hash_value, hash_type=hash_type)
-        ok, r = validate_http(requests.get(base_url + endpoint, auth=auth))
+        ok, r = validate_http(requests.get(BASE_URL + endpoint, auth=AUTH))
         if not ok:
             return ok, r
 
@@ -186,17 +184,30 @@ script:
 
         score = {'UNKNOWN':0, 'KNOWN': 1, 'SUSPICIOUS': 2, 'MALICIOUS': 3}[contents['status']]
         prop = contents['status'].title()
-        ec = {outputPaths['file']: {
-            hash_type.upper(): hash_value,
-            prop: {'Vendor': 'ReversingLabs', 'Detections': demisto.gets(contents, 'scanner_match'), 'TotalEngines': demisto.gets(contents, 'scanner_count')},
-            'properties_to_append': prop},
-            'DBotScore': [{'Indicator': hash_value, 'Type': 'hash', 'Vendor': 'ReversingLabs', 'Score': score}]
+        ec = {
+            outputPaths['file']: {
+                hash_type.upper(): hash_value,
+                prop: {
+                    'Vendor': 'ReversingLabs',
+                    'Detections': demisto.gets(contents, 'scanner_match'),
+                    'TotalEngines': demisto.gets(contents, 'scanner_count')
+                },
+                'properties_to_append': prop
+            },
+            'DBotScore': [
+                {
+                    'Indicator': hash_value,
+                    'Type': 'hash',
+                    'Vendor': 'ReversingLabs',
+                    'Score': score
+                }
+            ]
         }
         return True, (md, ec, r)
 
 
     if demisto.command() == 'test-module':
-        ok, r = validate_http(requests.get(base_url + '/api/databrowser/malware_presence/query/md5/6a95d3d00267c9fd80bd42122738e726?extended=true&format=json', auth=auth))
+        ok, r = validate_http(requests.get(BASE_URL + '/api/databrowser/malware_presence/query/md5/6a95d3d00267c9fd80bd42122738e726?extended=true&format=json', auth=AUTH))
         if ok:
             demisto.results('ok')
         else:
@@ -209,8 +220,8 @@ script:
             return_error(res)
         md, ec, r = res
         if demisto.get(demisto.args(), 'extended') != None:
-            extended = True if demisto.args()['extended'].lower() == 'true' else False
-        if extended:
+            EXTENDED = True if demisto.args()['extended'].lower() == 'true' else False
+        if EXTENDED:
             ok, extended_res = rldata(hash_type, hash_value)
             if ok:
                 md += '\n' + extended_res[0]

@@ -42,12 +42,11 @@ script:
     import shutil
     from zipfile import ZipFile
 
-    base_url = demisto.getParam('base')
-    if base_url[-1] == '/':
-        base_url = base_url[0:-1]
-    token = demisto.getParam('token')
-    headers = {'Authorization': 'Token ' + token}
-    extended = demisto.getParam('extended')
+    BASE_URL = demisto.getParam('base')
+    if BASE_URL[-1] == '/':
+        BASE_URL = BASE_URL[0:-1]
+    HEADERS = {'Authorization': 'Token ' + demisto.getParam('token')}
+    EXTENDED = demisto.getParam('extended')
 
     if not demisto.getParam('proxy'):
         del os.environ['HTTP_PROXY']
@@ -108,7 +107,7 @@ script:
         """
         Get the summary data from A1000 with most of the fields except TICORE
         """
-        ok, r = validate_http(requests.post(base_url + '/api/samples/list/', headers=headers, data={'hash_values': hash_value,
+        ok, r = validate_http(requests.post(BASE_URL + '/api/samples/list/', headers=HEADERS, data={'hash_values': hash_value,
             'fields': 'sha1,sha256,sha512,md5,category,file_type,file_subtype,identification_name,identification_version,file_size,' +
             'extracted_file_count,local_first_seen,local_last_seen,classification_origin,classification_reason,threat_status,trust_factor,' +
             'threat_level,threat_name,summary,ticloud,aliases'}))
@@ -123,7 +122,13 @@ script:
         status = res['threat_status']
         score = {'unknown': 0, 'known': 1, 'suspicious': 2, 'malicious': 3}[status]
         prop = status.title()
-        file_data = {prop: {'Vendor': 'ReversingLabs A1000', 'Status': status}, 'properties_to_append': prop}
+        file_data = {
+            prop: {
+                'Vendor': 'ReversingLabs A1000',
+                'Status': status
+            },
+            'properties_to_append': prop
+        }
         md = '## ReversingLabs A1000 reputation for: {}\n'.format(hash_value)
         ec = {'DBotScore': []}
 
@@ -190,7 +195,7 @@ script:
         """
         parent = demisto.getArg('hash')
         endpoint = '/api/samples/{}/extracted-files/'.format(parent)
-        ok, r = validate_http(requests.get(base_url + endpoint, headers=headers))
+        ok, r = validate_http(requests.get(BASE_URL + endpoint, headers=HEADERS))
         if not ok:
             return_error(r)
 
@@ -206,13 +211,31 @@ script:
             status = demisto.get(res, 'sample.threat_status')
             score = {'unknown': 0, 'known': 1, 'suspicious': 2, 'malicious': 3}[status]
             prop = status.title()
-            file_data = {'SHA1': sha1, 'Name': res.get('filename'), 'Info': demisto.get(res, 'sample.type_display'),
-                'Size': demisto.get(res, 'sample.file_size'), 'Path': res.get('path'), 'Local First': demisto.get(res, 'sample.local_first_seen'),
-                'Local Last': demisto.get(res, 'sample.local_last_seen'), 'Malware Status': status, 'Trust': demisto.get(res, 'sample.trust_factor'),
-                'Threat Name': demisto.get(res, 'sample.threat_name'), 'Threat Level': demisto.get(res, 'sample.threat_level')}
-            file_context = {'SHA1': sha1, 'Type': demisto.get(res, 'sample.file_type'), 'Name': res.get('filename'),
-                'Info': demisto.get(res, 'sample.type_display'), 'Size': demisto.get(res, 'sample.file_size'),
-                prop: {'Vendor': 'ReversingLabs A1000', 'Status': status}, 'properties_to_append': prop}
+            file_data = {
+                'SHA1': sha1,
+                'Name': res.get('filename'),
+                'Info': demisto.get(res, 'sample.type_display'),
+                'Size': demisto.get(res, 'sample.file_size'),
+                'Path': res.get('path'),
+                'Local First': demisto.get(res, 'sample.local_first_seen'),
+                'Local Last': demisto.get(res, 'sample.local_last_seen'),
+                'Malware Status': status,
+                'Trust': demisto.get(res, 'sample.trust_factor'),
+                'Threat Name': demisto.get(res, 'sample.threat_name'),
+                'Threat Level': demisto.get(res, 'sample.threat_level')
+            }
+            file_context = {
+                'SHA1': sha1,
+                'Type': demisto.get(res, 'sample.file_type'),
+                'Name': res.get('filename'),
+                'Info': demisto.get(res, 'sample.type_display'),
+                'Size': demisto.get(res, 'sample.file_size'),
+                prop: {
+                    'Vendor': 'ReversingLabs A1000',
+                    'Status': status
+                },
+                'properties_to_append': prop
+            }
             file_list.append(file_data)
             file_context_list.append(file_context)
             ec['DBotScore'].append({'Indicator': sha1, 'Type': 'hash', 'Vendor': 'ReversingLabs A1000', 'Score': score})
@@ -239,7 +262,7 @@ script:
             file_entry = demisto.getFilePath(demisto.getArg('entryId'))
             data['filename'] = file_entry['name']
             with open(file_entry['path'], 'rb') as f:
-                ok, r = validate_http(requests.post(base_url + '/api/uploads/', data=data, files={'file': f}, headers=headers))
+                ok, r = validate_http(requests.post(BASE_URL + '/api/uploads/', data=data, files={'file': f}, headers=HEADERS))
                 if not ok:
                     return_error(r)
                 md = '## ReversingLabs A1000 file upload\n'
@@ -256,7 +279,7 @@ script:
         """
         Delete a file from A1000
         """
-        ok, r = validate_http(requests.delete(base_url + '/api/samples/{}/'.format(demisto.getArg('hash')), headers=headers))
+        ok, r = validate_http(requests.delete(BASE_URL + '/api/samples/{}/'.format(demisto.getArg('hash')), headers=HEADERS))
         if not ok:
             return_error(r)
         res = r.get('results')
@@ -275,7 +298,7 @@ script:
         Download a sample from A1000
         """
         hash_value = demisto.getArg('hash')
-        r = requests.get(base_url + '/api/samples/{}/download/'.format(hash_value), headers=headers, stream=True)
+        r = requests.get(BASE_URL + '/api/samples/{}/download/'.format(hash_value), headers=HEADERS, stream=True)
         if r.status_code < 200 or r.status_code > 299:
             return_error('Bad HTTP response [{code}] - {body}'.format(code=r.status_code, body=r.text))
         filename = hash_value + '.bin'
@@ -289,7 +312,7 @@ script:
         """
         Re-Analyze a sample already existing on A1000
         """
-        ok, r = validate_http(requests.post(base_url + '/api/samples/{}/analyze/'.format(demisto.getArg('hash')), headers=headers, data={'analysis': 'cloud'}))
+        ok, r = validate_http(requests.post(BASE_URL + '/api/samples/{}/analyze/'.format(demisto.getArg('hash')), headers=HEADERS, data={'analysis': 'cloud'}))
         if not ok:
             return_error(r)
         md = '## ReversingLabs A1000 file re-analyze\n'
@@ -305,7 +328,7 @@ script:
         Download samples obtained through the unpacking process
         """
         hash_value = demisto.getArg('hash')
-        r = requests.get(base_url + '/api/samples/{}/unpacked/'.format(hash_value), headers=headers, stream=True)
+        r = requests.get(BASE_URL + '/api/samples/{}/unpacked/'.format(hash_value), headers=HEADERS, stream=True)
         if r.status_code < 200 or r.status_code > 299:
             return_error('Bad HTTP response [{code}] - {body}'.format(code=r.status_code, body=r.text))
         filename = hash_value + '.zip'
@@ -319,7 +342,7 @@ script:
 
 
     if demisto.command() == 'test-module':
-        ok, r = validate_http(requests.get(base_url + '/api/samples/21841b32c6165b27dddbd4d6eb3a672defe54271/ticloud/', headers=headers))
+        ok, r = validate_http(requests.get(BASE_URL + '/api/samples/21841b32c6165b27dddbd4d6eb3a672defe54271/ticloud/', headers=HEADERS))
         if ok:
             demisto.results('ok')
         else:
