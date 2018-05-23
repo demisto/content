@@ -273,10 +273,6 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test"
-        },
-        {
             "integrations": [
                 {
                     "name": "carbonblackliveresponse",
@@ -450,6 +446,10 @@
         {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
+        },
+        {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
         }
     ]
 }
