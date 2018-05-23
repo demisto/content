@@ -6,6 +6,10 @@
             "playbookID": "test_url_regex"
         },
         {
+            "integrations": "Skyformation",
+            "playbookID": "TestSkyformation"
+        },
+        {
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
@@ -300,13 +304,25 @@
         {
             "integrations": "SQS",
             "playbookID": "sqs_test"
-        }
-    ],
-    "skipped": [
+        },
+        {
+            "integrations": "urlscan.io",
+            "playbookID": "urlscan_malicious_Test"
+        },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
         },
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Cylance Protect v2 Test"
+        }
+    ],
+    "skipped": [
         {
             "integrations": {
                 "name": "carbonblack-v2",

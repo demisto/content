@@ -534,6 +534,3 @@ script:
     description: Retrieve a note for an offense
   isfetch: true
   runonce: false
-releaseNotes: |
-  * Added parameter to control number of offenses fetched per API call 
-  * Added pagination support for fetch-incidents to allow importing large amounts of offenses
