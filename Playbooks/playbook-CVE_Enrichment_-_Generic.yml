@@ -369,6 +369,7 @@ inputs:
   description: Should the playbook retrieve the reputation for the CVE?
 outputs:
 - contextPath: CVE
+  description: The CVE object
   type: unknown
 - contextPath: CVE.ID
   description: The ID of the CVE
