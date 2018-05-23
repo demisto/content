@@ -38,10 +38,10 @@ tasks:
       description: Allows a caller to request a page with a list of Console device
         resources belongings to a Tenant, sorted by registration (created) date in
         descending order (most recent device registered listed first)
-      script: Cylance Protect v2_copy|||cylance-protect-get-devices
+      script: Cylance Protect v2|||cylance-protect-get-devices
       type: regular
       iscommand: true
-      brand: Cylance Protect v2_copy
+      brand: Cylance Protect v2
     nexttasks:
       '#none#':
       - "2"
@@ -66,10 +66,10 @@ tasks:
       name: cylance-protect-get-device-threats
       description: Allows a caller to request a page with a list of threats found
         on a specific device
-      script: Cylance Protect v2_copy|||cylance-protect-get-device-threats
+      script: Cylance Protect v2|||cylance-protect-get-device-threats
       type: regular
       iscommand: true
-      brand: Cylance Protect v2_copy
+      brand: Cylance Protect v2
     nexttasks:
       '#none#':
       - "6"
@@ -107,10 +107,10 @@ tasks:
       version: -1
       name: cylance-protect-get-list
       description: Gets a list of global list resources for a tenant
-      script: Cylance Protect v2_copy|||cylance-protect-get-list
+      script: Cylance Protect v2|||cylance-protect-get-list
       type: regular
       iscommand: true
-      brand: Cylance Protect v2_copy
+      brand: Cylance Protect v2
     nexttasks:
       '#none#':
       - "10"
@@ -136,10 +136,10 @@ tasks:
       version: -1
       name: cylance-protect-get-policies
       description: Allows the caller to get a list of tenant policies
-      script: Cylance Protect v2_copy|||cylance-protect-get-policies
+      script: Cylance Protect v2|||cylance-protect-get-policies
       type: regular
       iscommand: true
-      brand: Cylance Protect v2_copy
+      brand: Cylance Protect v2
     nexttasks:
       '#none#':
       - "8"
@@ -164,10 +164,10 @@ tasks:
       name: cylance-protect-get-zones
       description: Request zone information for your organization. This will return
         the top 100 records
-      script: Cylance Protect v2_copy|||cylance-protect-get-zones
+      script: Cylance Protect v2|||cylance-protect-get-zones
       type: regular
       iscommand: true
-      brand: Cylance Protect v2_copy
+      brand: Cylance Protect v2
     nexttasks:
       '#none#':
       - "9"
@@ -191,10 +191,10 @@ tasks:
       version: -1
       name: cylance-protect-get-threat
       description: Request threat details for a specific threat
-      script: Cylance Protect v2_copy|||cylance-protect-get-threat
+      script: Cylance Protect v2|||cylance-protect-get-threat
       type: regular
       iscommand: true
-      brand: Cylance Protect v2_copy
+      brand: Cylance Protect v2
     nexttasks:
       '#none#':
       - "7"
