@@ -328,14 +328,6 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
-        },
-        {
-            "integrations": "Centreon",
-            "playbookID": "Centreon-Test-Playbook"
-        },
-        {
-            "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test"
         }
     ],
     "skipped": [
@@ -458,6 +450,14 @@
         {
             "integrations": "Phish.AI",
             "playbookID": "PhishAi-Test"
+        },
+        {
+            "integrations": "Centreon",
+            "playbookID": "Centreon-Test-Playbook"
+        },
+        {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
         }
     ]
 }
