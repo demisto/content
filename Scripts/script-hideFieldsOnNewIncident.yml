@@ -27,6 +27,8 @@ comment: This script once applied on an incident field, will hide those fields o
 enabled: true
 args:
 - name: incident
+  description: Incident object
 - name: field
+  description: Field definition object
 scripttarget: 0
 runonce: false
