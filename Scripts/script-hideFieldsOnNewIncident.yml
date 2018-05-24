@@ -1,0 +1,32 @@
+commonfields:
+  id: hideFieldsOnNewIncident
+  version: -1
+name: hideFieldsOnNewIncident
+fromVersion: 3.6.0
+script: |
+  field = demisto.args()['field']
+  incident = demisto.args()['incident']
+  ## Now you can create a condition on the incident, which is served as a json object
+  ## Also lok at the original field settings, to take relevant actions,
+  ## for example validate that the options are part of the global set in the field definition
+  if incident["id"] == "":
+      # This is a new incident, hide the field
+      demisto.results({"hidden": True, "options": []})
+  else:
+      # This is an existing incident, we want to show the field, to know which values to display
+      # we will take them from the field definition
+      options = []
+      if "Select" in demisto.get(field, "type"):
+          options = demisto.get(field, "selectValues")
+      demisto.results({"hidden": False, "options": options})
+type: python
+tags:
+- field-display
+comment: This script once applied on an incident field, will hide those fields on
+  a new incident, and display them on edit mode
+enabled: true
+args:
+- name: incident
+- name: field
+scripttarget: 0
+runonce: false
