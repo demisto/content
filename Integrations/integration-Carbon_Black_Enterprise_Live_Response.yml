@@ -13,11 +13,31 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: API Token
+- display: Use Cb Response
+  name: response
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: API Token (Cb Response)
   name: apitoken
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+- display: Use Cb Defense
+  name: defense
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: API Key (Cb Defense)
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Connector ID (Cb Defense)
+  name: connector
+  defaultvalue: ""
+  type: 0
+  required: false
 - display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: ""
@@ -34,11 +54,52 @@ script:
 
     /// Constants
     const SLEEP_BETWEEN_RETRIES = 5000;
+    const resource = (function() {
+        if (params.response) {
+            if (!params.apitoken) {
+                throw 'Please provide API token to use Cb Response';
+            }
+            return {
+                product: 'Response',
+                context: 'CbResponse',
+                auth: params.apitoken,
+                   api: 'api',
+                version: 'v1',
+                createSessionPath: function(sensorId) {
+                    return 'session';
+                },
+                closeSessionPath: function(sessionId) {
+                    return `session/${sessionId}`;
+                },
+                sessionStatus: {close: 'close'}
+            };
+        }
+        else if (params.defense) {
+            if (!params.apikey || !params.connector) {
+                throw 'Please provide both API key and connector ID to use Cb Defense';
+            }
+            return {
+                product: 'Defense',
+                context: 'CarbonBlackDefense',
+                auth: params.apikey + '/' + params.connector,
+                api: 'integrationServices',
+                version: 'v3',
+                createSessionPath: function(sensorId) {
+                    return `session/${sensorId}`;
+                },
+                closeSessionPath: function(sessionId) {
+                    return 'session';
+                },
+                sessionStatus: {close: 'CLOSE'}
+            };
+        }
+        throw 'Please select a product';
+    })();
 
     /// Base Functions
 
     function sendRequest(path, method, requestParams, headers, ignoredStatusCodes) {
-        let baseUrl = params.serverurl + '/api';
+        let baseUrl = `${params.serverurl}/${resource.api}`;
 
         if (!headers) {
             headers = {};
@@ -66,8 +127,6 @@ script:
             }
         }
 
-        //logInfo('HTTP Request: ' + JSON.stringify({path: path + querystring, req: request}));
-
         let result = http(baseUrl + path + querystring, request, params.insecure, params.proxy);
 
         if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) === -1) {
@@ -78,14 +137,11 @@ script:
                 throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${result.Body}.`;
             }
         }
-
-        //logInfo(`Result: ${result.Body}`);
-
         return result;
     }
 
     function sendFileRequest(path, fileId, requestParams, headers, ignoredStatusCodes) {
-        let baseUrl = params.serverurl + '/api';
+        let baseUrl = `${params.serverurl}/${resource.api}`;
 
         if (!headers) {
             headers = {};
@@ -124,7 +180,7 @@ script:
     /// Commands
 
     function testModule() {
-        let res = sendRequest('/v1/cblr/session', 'GET');
+        let res = sendRequest(`/${resource.version}/cblr/session`, 'GET');
         if (res.StatusCode === 200) {
             return 'ok';
         }
@@ -142,7 +198,7 @@ script:
     ];
 
     function getSessionsRequest(sessionId, sensorId, status) {
-        let path = '/v1/cblr/session';
+        let path = `/${resource.version}/cblr/session`;
         if (sessionId) {
             path += '/' + sessionId;
         }
@@ -199,7 +255,7 @@ script:
         if (keepaliveTimeout) {
             queryParams.sensor_wait_timeout = keepaliveTimeout;
         }
-        let response = sendRequest('/v1/cblr/session', 'POST', queryParams).Body;
+        let response = sendRequest(`/${resource.version}/cblr/${resource.createSessionPath(sensorId)}`, 'POST', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -271,7 +327,7 @@ script:
             status: 'close',
             session: sessionId
         };
-        let response = sendRequest(`/v1/cblr/session/${sessionId}`, 'PUT', queryParams).Body;
+        let response = sendRequest(`/${resource.version}/cblr/${resource.closeSessionPath(sessionId)}`, 'PUT', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -303,7 +359,7 @@ script:
     }
 
     function sessionKeepaliveRequest(sessionId) {
-        let response = sendRequest(`/v1/cblr/session/${sessionId}/keepalive`, 'GET', undefined, undefined, [404]);
+        let response = sendRequest(`/${resource.version}/cblr/session/${sessionId}/keepalive`, 'GET', undefined, undefined, [404]);
 
         if (response.StatusCode === 404) {
             throw `Session ${sessionId} has expired and is now closed. Create a new session to continue working.`;
@@ -404,7 +460,7 @@ script:
             queryParams.get_count = getCount;
         }
 
-        let response = sendRequest(`/v1/cblr/session/${sessionId}/command`, 'POST', queryParams).Body;
+        let response = sendRequest(`/${resource.version}/cblr/session/${sessionId}/command`, 'POST', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -540,7 +596,7 @@ script:
     }
 
     function getCommandsRequest(sessionId, commandId) {
-        let path = `/v1/cblr/session/${sessionId}/command`;
+        let path = `/${resource.version}/cblr/session/${sessionId}/command`;
         if (commandId) {
             path += '/' + commandId;
         }
@@ -604,7 +660,7 @@ script:
 
     function cancelCommandRequest(sessionId, commandId) {
         let queryParams = {cmdid: commandId};
-        let response = sendRequest(`/v1/cblr/session/${sessionId}/command/${commandId}`, 'PUT', queryParams).Body;
+        let response = sendRequest(`/${resource.version}/cblr/session/${sessionId}/command/${commandId}`, 'PUT', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -650,7 +706,7 @@ script:
         if (!sessionId) {
             throw 'Session ID is required';
         }
-        let path = `/v1/cblr/session/${sessionId}/file`;
+        let path = `/${resource.version}/cblr/session/${sessionId}/file`;
         if (fileId) {
             path += '/' + fileId;
         }
@@ -691,7 +747,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let path = `/v1/cblr/session/${sessionId}/file/${fileId}`;
+        let path = `/${resource.version}/cblr/session/${sessionId}/file/${fileId}`;
         return sendRequest(path + '/content', 'GET');
     }
 
@@ -714,7 +770,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let response = sendFileRequest(`/v1/cblr/session/${sessionId}/file`, fileId);
+        let response = sendFileRequest(`/${resource.version}/cblr/session/${sessionId}/file`, fileId);
         try {
             return JSON.parse(response.Body);
         } catch (err) {
@@ -751,7 +807,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let path = `/v1/cblr/session/${sessionId}/file/${fileId}`;
+        let path = `/${resource.version}/cblr/session/${sessionId}/file/${fileId}`;
         let response = sendRequest(path, 'DELETE').Body;
         try {
             return JSON.parse(response);
@@ -787,6 +843,10 @@ script:
             case 'test-module':
                 return testModule();
             case 'cb-list-sessions':
+                if (resource.product == 'Defense') {
+                    throw '\'cb-list-sessions\' is not available for Cb Defense.';
+                }
+              	return getSessions();
             case 'cb-session-info':
                 return getSessions();
             case 'cb-session-create':
@@ -798,6 +858,9 @@ script:
             case 'cb-keepalive':
                 return sessionKeepAlive();
             case 'cb-archive':
+                if (resource.product == 'Defense') {
+                    throw '\'cb-archive\' is not available for Cb Defense.';
+                }
                 return archiveSession();
             case 'cb-list-commands':
             case 'cb-command-info':
@@ -1278,3 +1341,4 @@ script:
       defaultValue: "20"
     description: Terminates a process at the sensor/endpoint
   runonce: false
+releaseNotes: 'Add option to configure instances with Cb Defense credentials'
