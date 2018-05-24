@@ -2,7 +2,7 @@ commonfields:
   id: hideFieldsOnNewIncident
   version: -1
 name: hideFieldsOnNewIncident
-fromVersion: 3.6.0
+fromversion: 3.6.0
 script: |
   field = demisto.args()['field']
   incident = demisto.args()['incident']
