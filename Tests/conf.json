@@ -320,6 +320,14 @@
         {
             "integrations": "Cylance Protect v2",
             "playbookID": "Cylance Protect v2 Test"
+        },
+        {
+            "integrations": "ReversingLabs Titanium Cloud",
+            "playbookID": "ReversingLabsTCTest"
+        },
+        {
+            "integrations": "ReversingLabs A1000",
+            "playbookID": "ReversingLabsA1000Test"
         }
     ],
     "skipped": [
