@@ -54,6 +54,7 @@ jobs:
               ./Tests/scripts/wait_until_server_ready.sh
       - run:
           name: Run Tests
+          shell: /bin/bash
           command: ./Tests/scripts/run_tests.sh
       - run:
           name: Destroy Instances
