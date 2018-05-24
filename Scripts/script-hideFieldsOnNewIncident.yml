@@ -6,9 +6,9 @@ fromversion: 3.6.0
 script: |
   field = demisto.args()['field']
   incident = demisto.args()['incident']
-  ## Now you can create a condition on the incident, which is served as a json object
-  ## Also lok at the original field settings, to take relevant actions,
-  ## for example validate that the options are part of the global set in the field definition
+  ## You can now create a condition for the incident, which is served as a JSON object.
+  ## You can now view the original field settings and take necessary action,
+  ## such as validate that the options are part of the global set in the field definition.
   if incident["id"] == "":
       # This is a new incident, hide the field
       demisto.results({"hidden": True, "options": []})
@@ -22,8 +22,7 @@ script: |
 type: python
 tags:
 - field-display
-comment: This script once applied on an incident field, will hide those fields on
-  a new incident, and display them on edit mode
+comment: When you apply this script to an incident field, that incident field is hidden for new incidents, and it displays in edit mode.
 enabled: true
 args:
 - name: incident
