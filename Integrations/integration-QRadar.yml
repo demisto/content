@@ -534,3 +534,4 @@ script:
     description: Retrieve a note for an offense
   isfetch: true
   runonce: false
+releaseNotes: "Fixed upgrade issue for fetch incidents"
