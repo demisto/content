@@ -15,7 +15,7 @@ script: |-
   var retries = parseInt(args.retries) || 10;
   for (i = 0 ; i < retries; i++) {
       res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
-      if (res[0].Type === entryTypes.error) {
+      if (isError(res[0])) {
           if (res[0].Contents.contains('[investigations] [investigation] (15)')) {
               wait(1);
               continue;
@@ -151,4 +151,4 @@ args:
   description: Indicates how many times to try and create an entitlement in case of failure
   defaultValue: "10"
 scripttarget: 0
-releaseNotes: Support script to run in parallel with itself
+releaseNotes: Added support for parallel execution of the script, with better error handling
