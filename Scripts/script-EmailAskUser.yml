@@ -12,7 +12,7 @@ script: |-
 
   // Get entitlement
   var entitlement;
-  var retries = parseInt(args.retries) || 10
+  var retries = parseInt(args.retries) || 10;
   for (i = 0 ; i < retries; i++) {
       res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
       if (res[0].Type === entryTypes.error) {
