@@ -1,7 +1,7 @@
 commonfields:
-  id: EmailAskUsert
+  id: EmailAskUser
   version: -1
-name: EmailAskUsert
+name: EmailAskUser
 fromversion: 3.5.0
 script: |-
   // email body type
