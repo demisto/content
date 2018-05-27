@@ -80,7 +80,7 @@ script:
         throw 'Please select a product';
     })();
 
-    const BASE_URL = `${params.serverurl}/${resource.api}`;
+    const BASE_URL = `${params.serverurl}/${resource.api}/${resource.version}/cblr`;
 
     /// Base Functions
 
@@ -164,7 +164,7 @@ script:
     /// Commands
 
     function testModule() {
-        let res = sendRequest(`/${resource.version}/cblr/session`, 'GET');
+        let res = sendRequest(`/session`, 'GET');
         if (res.StatusCode === 200) {
             return 'ok';
         }
@@ -182,7 +182,7 @@ script:
     ];
 
     function getSessionsRequest(sessionId, sensorId, status) {
-        let path = `/${resource.version}/cblr/session`;
+        let path = `/session`;
         if (sessionId) {
             path += '/' + sessionId;
         }
@@ -239,7 +239,7 @@ script:
         if (keepaliveTimeout) {
             queryParams.sensor_wait_timeout = keepaliveTimeout;
         }
-        let response = sendRequest(`/${resource.version}/cblr/${resource.createSessionPath(sensorId)}`, 'POST', queryParams).Body;
+        let response = sendRequest(`/${resource.createSessionPath(sensorId)}`, 'POST', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -311,7 +311,7 @@ script:
             status: 'close',
             session: sessionId
         };
-        let response = sendRequest(`/${resource.version}/cblr/${resource.closeSessionPath(sessionId)}`, 'PUT', queryParams).Body;
+        let response = sendRequest(`/${resource.closeSessionPath(sessionId)}`, 'PUT', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -343,7 +343,7 @@ script:
     }
 
     function sessionKeepaliveRequest(sessionId) {
-        let response = sendRequest(`/${resource.version}/cblr/session/${sessionId}/keepalive`, 'GET', undefined, undefined, [404]);
+        let response = sendRequest(`/session/${sessionId}/keepalive`, 'GET', undefined, undefined, [404]);
 
         if (response.StatusCode === 404) {
             throw `Session ${sessionId} has expired and is now closed. Create a new session to continue working.`;
@@ -375,7 +375,7 @@ script:
     }
 
     function archiveSessionRequest(sessionId) {
-        let response = sendRequest(`/v1/cblr/session/${sessionId}/archive`, 'GET', undefined, undefined, [500]);
+        let response = sendRequest(`/session/${sessionId}/archive`, 'GET', undefined, undefined, [500]);
         if (response.StatusCode === 500) {  // Current bug in CBResponse returns 500 for empty sessions
             throw `Session ${sessionId} is empty and so it has no archive.`;
         }
@@ -444,7 +444,7 @@ script:
             queryParams.get_count = getCount;
         }
 
-        let response = sendRequest(`/${resource.version}/cblr/session/${sessionId}/command`, 'POST', queryParams).Body;
+        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -580,7 +580,7 @@ script:
     }
 
     function getCommandsRequest(sessionId, commandId) {
-        let path = `/${resource.version}/cblr/session/${sessionId}/command`;
+        let path = `/session/${sessionId}/command`;
         if (commandId) {
             path += '/' + commandId;
         }
@@ -644,7 +644,7 @@ script:
 
     function cancelCommandRequest(sessionId, commandId) {
         let queryParams = {cmdid: commandId};
-        let response = sendRequest(`/${resource.version}/cblr/session/${sessionId}/command/${commandId}`, 'PUT', queryParams).Body;
+        let response = sendRequest(`/session/${sessionId}/command/${commandId}`, 'PUT', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -690,7 +690,7 @@ script:
         if (!sessionId) {
             throw 'Session ID is required';
         }
-        let path = `/${resource.version}/cblr/session/${sessionId}/file`;
+        let path = `/session/${sessionId}/file`;
         if (fileId) {
             path += '/' + fileId;
         }
@@ -731,7 +731,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let path = `/${resource.version}/cblr/session/${sessionId}/file/${fileId}`;
+        let path = `/session/${sessionId}/file/${fileId}`;
         return sendRequest(path + '/content', 'GET');
     }
 
@@ -754,7 +754,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let response = sendFileRequest(`/${resource.version}/cblr/session/${sessionId}/file`, fileId);
+        let response = sendFileRequest(`/session/${sessionId}/file`, fileId);
         try {
             return JSON.parse(response.Body);
         } catch (err) {
@@ -791,7 +791,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let path = `/${resource.version}/cblr/session/${sessionId}/file/${fileId}`;
+        let path = `/session/${sessionId}/file/${fileId}`;
         let response = sendRequest(path, 'DELETE').Body;
         try {
             return JSON.parse(response);
