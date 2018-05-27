@@ -125,11 +125,13 @@ script:
         response_json = response.json()
         # and check for errors
         if 'error' in response_json:
-            LOG.critical('Error: {!r} Description: {!r}'.format(response_json['error'], response_json['error_description']))
+            LOG('Error: {!r} Description: {!r}'.format(response_json['error'], response_json['error_description']))
             raise Exception('Error refreshing token')
         # if all good, just return the new access token
-        return response_json['access_token']
-
+        try:
+            return response_json['access_token']
+        except KeyError:
+            raise Exception("Problem with refreshing token in Palo Alto. Response from server was: " + json.dumps(response_json))
 
     def update_context_data(access_token):
         new_data = {
@@ -304,7 +306,7 @@ script:
         for key, value in log_contents.iteritems():
             log_contents[key] = str(value)
         incident = {
-            'name': 'Palo Alto Incident: ' + log['_id'],
+            'name': 'Wildfire file detected ' + str(log_contents.get('filedigest', None)),
             'rawJSON': json.dumps(log_contents, ensure_ascii=False),
             'labels':[
                 {
@@ -386,7 +388,7 @@ script:
             return app_to_table_dic[app_to_check]
         else:
             raise Exception('''Application to fetch from parameter of the integration should be one of the
-                following: Wildfire, Panorama''')
+                following: Wildfire''')
 
     ''' COMMANDS FUNCTIONS '''
 
