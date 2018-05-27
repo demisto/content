@@ -65,7 +65,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: |-
     var server = params.server.replace(/[\/]+$/, '');
 
     var commands = {
@@ -87,6 +87,7 @@ script:
       getFile: 'archer-get-file',
       uploadFile: 'archer-upload-file',
       addToDetailedAnalysis: 'archer-add-to-detailed-analysis',
+      getUserId: 'archer-get-user-id',
     };
 
     var urlDictionary = {};
@@ -107,6 +108,7 @@ script:
     urlDictionary[commands.searchRecordsByReport] = '/ws/search.asmx';
     urlDictionary[commands.getFile] = '/ws/record.asmx';
     urlDictionary[commands.uploadFile] = '/api/core/content/attachment';
+    urlDictionary[commands.getUserId] = '/ws/accesscontrol.asmx';
 
     var methodDictionary = {};
     methodDictionary.login = 'POST';
@@ -126,6 +128,7 @@ script:
     methodDictionary[commands.searchRecordsByReport] = 'POST';
     methodDictionary[commands.getFile] = 'POST';
     methodDictionary[commands.uploadFile] = 'POST';
+    methodDictionary[commands.getUserId] = 'POST';
 
     var GLOBAL_MAPPING = {};
     var dateRe = /(\d{1,2})\/(\d{1,2})\/(\d{4})\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/;
@@ -682,6 +685,20 @@ script:
         );
     }
 
+    function getUserIdSoapRequest(token, userName, userDomain) {
+        return (
+        '<?xml version="1.0" encoding="utf-8"?> ' +
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+        '   <soap:Body>' +
+        '       <LookupDomainUserId xmlns="http://archer-tech.com/webservices/">' +
+        '           <sessionToken>' + token + '</sessionToken>' +
+        '           <username>' + userName + '</username>' +
+        '           <usersDomain>' + userDomain +'</usersDomain>' +
+        '       </LookupDomainUserId>' +
+        '   </soap:Body>' +
+        '</soap:Envelope>'
+        );
+    }
     // helper functions
 
     function extractObjectFromXML(xml, path) {
@@ -1737,7 +1754,7 @@ script:
 
         return {
             Type: entryTypes.note,
-            Contents: response,
+            Contents: {"CreateRecordResult": contentId},
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, md),
             ReadableContentsFormat: formats.markdown,
@@ -1794,7 +1811,7 @@ script:
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
-            Contents: result,
+            Contents: {"updatedRecord": contentId},
             ReadableContentsFormat: formats.markdown,
             HumanReadable: 'content id = ' + contentId + ' was updated successfully'
         }
@@ -2398,6 +2415,34 @@ script:
         return "Detailed Analysis updated successfully";
     }
 
+    function getUserId(args){
+        // corresponds to 'archer-get-user-id' command. Retrieves a user id from Archer
+
+        var userInfo = args.userInfo.split("\\");
+        var userDomain = userInfo[0];
+        var userName = userInfo[1].toLowerCase();
+
+        var token = getAuthToken();
+        var soap = getUserIdSoapRequest(token, userName, userDomain);
+        var SOAPAction = 'http://archer-tech.com/webservices/LookupDomainUserId';
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+
+        destroyAuthToken(token);
+        var response = JSON.parse(x2j(rawResponse));
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+        }
+        var userId = response.Envelope.Body.LookupDomainUserIdResponse.LookupDomainUserIdResult;
+
+        return {
+            Type: entryTypes.note,
+            Contents: {"UserId": userId},
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: "User id for user " + userName + " is " + userId
+        };
+    }
+
     function test() {
         var isFetch = params.isFetch;
         if (isFetch && !params.fetchApplicationId && !params.fieldsToDisplay) {
@@ -2450,6 +2495,8 @@ script:
             return uploadFile(args);
         case commands.addToDetailedAnalysis:
             return addToDetailedAnalysis(args);
+        case commands.getUserId:
+            return getUserId(args);
         case 'fetch-incidents':
             return fetchIncidents(args);
         default:
@@ -2469,6 +2516,7 @@ script:
     outputs:
     - contextPath: Archer.Record.Id
       description: Content Id
+      type: number
     - contextPath: Archer.Record.Fields
       description: Content property fields
     description: Creates a new content record in the given application.
@@ -2704,5 +2752,12 @@ script:
       description: 'The value you want to add to Detailed Analysis. For example: value="test
         string"'
     description: Add data to Archer's Detailed Analysis field
+  - name: archer-get-user-id
+    arguments:
+    - name: userInfo
+      required: true
+      description: User information in the following format - "domain\\username". For example, userInfo="Demisto\\myusername"
+    description: Perform Archer Domain User Lookup and return its user id
   isfetch: true
   runonce: false
+releaseNotes: "-"
