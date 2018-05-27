@@ -13,27 +13,17 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Use Cb Response
-  name: response
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: API Token (Cb Response)
+- display: API Token (CB Response)
   name: apitoken
   defaultvalue: ""
   type: 4
   required: false
-- display: Use Cb Defense
-  name: defense
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: API Key (Cb Defense)
+- display: API Key (CB Defense)
   name: apikey
   defaultvalue: ""
   type: 4
   required: false
-- display: Connector ID (Cb Defense)
+- display: Connector ID (CB Defense)
   name: connector
   defaultvalue: ""
   type: 0
@@ -55,10 +45,7 @@ script:
     /// Constants
     const SLEEP_BETWEEN_RETRIES = 5000;
     const resource = (function() {
-        if (params.response) {
-            if (!params.apitoken) {
-                throw 'Please provide API token to use Cb Response';
-            }
+        if (params.apitoken) {
             return {
                 product: 'Response',
                 context: 'CbResponse',
@@ -74,10 +61,7 @@ script:
                 sessionStatus: {close: 'close'}
             };
         }
-        else if (params.defense) {
-            if (!params.apikey || !params.connector) {
-                throw 'Please provide both API key and connector ID to use Cb Defense';
-            }
+        else if (params.apikey && params.connector) {
             return {
                 product: 'Defense',
                 context: 'CarbonBlackDefense',
@@ -96,10 +80,11 @@ script:
         throw 'Please select a product';
     })();
 
+    const BASE_URL = `${params.serverurl}/${resource.api}`;
+
     /// Base Functions
 
     function sendRequest(path, method, requestParams, headers, ignoredStatusCodes) {
-        let baseUrl = `${params.serverurl}/${resource.api}`;
 
         if (!headers) {
             headers = {};
@@ -127,7 +112,7 @@ script:
             }
         }
 
-        let result = http(baseUrl + path + querystring, request, params.insecure, params.proxy);
+        let result = http(BASE_URL + path + querystring, request, params.insecure, params.proxy);
 
         if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) === -1) {
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
@@ -141,7 +126,6 @@ script:
     }
 
     function sendFileRequest(path, fileId, requestParams, headers, ignoredStatusCodes) {
-        let baseUrl = `${params.serverurl}/${resource.api}`;
 
         if (!headers) {
             headers = {};
@@ -163,7 +147,7 @@ script:
 
         //logInfo({path: path, req: request}, 'HTTP Request');
 
-        let result = httpMultipart(baseUrl + path, fileId, request, requestParams, params.insecure, params.proxy);
+        let result = httpMultipart(BASE_URL + path, fileId, request, requestParams, params.insecure, params.proxy);
 
         if (result.StatusCode < 200 || result.StatusCode >= 300) {
             if (result.StatusCode === 404) {
