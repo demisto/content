@@ -44,41 +44,43 @@ script:
 
     /// Constants
     const SLEEP_BETWEEN_RETRIES = 5000;
-    const resource = (function() {
-        if (params.apitoken) {
-            return {
-                product: 'Response',
-                context: 'CbResponse',
-                auth: params.apitoken,
-                   api: 'api',
-                version: 'v1',
-                createSessionPath: function(sensorId) {
-                    return 'session';
-                },
-                closeSessionPath: function(sessionId) {
-                    return `session/${sessionId}`;
-                },
-                sessionStatus: {close: 'close'}
-            };
-        }
-        else if (params.apikey && params.connector) {
-            return {
-                product: 'Defense',
-                context: 'CarbonBlackDefense',
-                auth: params.apikey + '/' + params.connector,
-                api: 'integrationServices',
-                version: 'v3',
-                createSessionPath: function(sensorId) {
-                    return `session/${sensorId}`;
-                },
-                closeSessionPath: function(sessionId) {
-                    return 'session';
-                },
-                sessionStatus: {close: 'CLOSE'}
-            };
-        }
-        throw 'Please select a product';
-    })();
+
+    let resource;
+    // set resource
+    if (params.apitoken) {
+        resource = {
+            product: 'Response',
+            context: 'CbResponse',
+            auth: params.apitoken,
+               api: 'api',
+            version: 'v1',
+            createSessionPath: function(sensorId) {
+                return 'session';
+            },
+            closeSessionPath: function(sessionId) {
+                return `session/${sessionId}`;
+            },
+            sessionStatus: {close: 'close'}
+        };
+    }
+    else if (params.apikey && params.connector) {
+        resource = {
+            product: 'Defense',
+            context: 'CarbonBlackDefense',
+            auth: params.apikey + '/' + params.connector,
+            api: 'integrationServices',
+            version: 'v3',
+            createSessionPath: function(sensorId) {
+                return `session/${sensorId}`;
+            },
+            closeSessionPath: function(sessionId) {
+                return 'session';
+            },
+            sessionStatus: {close: 'CLOSE'}
+        };
+    }
+    throw 'Please provide credentials';
+
 
     const BASE_URL = `${params.serverurl}/${resource.api}/${resource.version}/cblr`;
 
