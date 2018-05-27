@@ -79,8 +79,9 @@ script:
             sessionStatus: {close: 'CLOSE'}
         };
     }
-    throw 'Please provide credentials';
-
+    else {
+        throw 'Please provide credentials';
+    }
 
     const BASE_URL = `${params.serverurl}/${resource.api}/${resource.version}/cblr`;
 
