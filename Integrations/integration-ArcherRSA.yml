@@ -889,55 +889,62 @@ script:
     }
 
     function createFieldsContentsObject(fieldsToValue, mapping){
+        // This function prepares the payload for the REST API, specifically it creates an Object for each field in fieldsToValue, with its proper mapping
+        // Each field has an Archer type. For example, type 1 correlates for Text fields
+        // Example for fieldsToValue: {"Title":"Demisto","Date/Time Occurred":"3/23/2018 7:00 AM","Date/Time Identified":"3/23/2018 7:00 AM","Date/Time Reported":"3/23/2018 7:00 AM","Incident Summary":"test"}
+        // Example for mapping: "Title":{"Type":1,"Id":16132,"levelId":232},"Incident ID (DFM)":{"Type":6,"Id":16133,"levelId":232},
+        //                          "Target Asset Type":{"Type":4,"Id":16134,"levelId":232},"Date/Time Escalated":{"Type":3,"Id":16135,"levelId":232}...
+
         var fieldsContent = {};
-        for (var key in fieldsToValue) {
-            if (mapping[key] !== undefined) {
-                switch(mapping[key].Type){
+        for (var fieldName in fieldsToValue) {
+            if (mapping[fieldName] !== undefined) {
+                var fieldValue = fieldsToValue[fieldName];
+                var fieldNameMapping = mapping[fieldName];
+                switch(fieldNameMapping.Type){
                     case 1:
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 1,
-                            'FieldId': parseInt(mapping[key].Id),
-                            'Value': fieldsToValue[key]
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': fieldValue
                          }
                          break;
 
                     case 2:
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 2,
-                            'FieldId': parseInt(mapping[key].Id),
-                            'Value': fieldsToValue[key]
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': fieldValue
                         }
                         break;
 
                     case 3:
-                    // todo fix date format
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 3,
-                            'FieldId': parseInt(mapping[key].Id),
-                            'Value': fieldsToValue[key]
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': fieldValue
                         };
                         break;
 
                     case 4:
-                        //fieldsToValue[key] is of the form [value1, value2,...]
-                        var listValueIdtoName = getValueListForField(commands.valueListForField, {fieldID : mapping[key].Id});
+                        //fieldValue is of the form [value1, value2,...]
+                        var listValueIdtoName = getValueListForField(commands.valueListForField, {fieldID : fieldNameMapping.Id});
                         var valueList = []
                         if (listValueIdtoName !== {}){
-                            if (Array.isArray(fieldsToValue[key])){
-                                for(var i=0; i<fieldsToValue[key].length; i++){
-                                    valueList.push(listValueIdtoName[fieldsToValue[key][i]])
+                            if (Array.isArray(fieldValue)){
+                                for(var i=0; i<fieldValue.length; i++){
+                                    valueList.push(listValueIdtoName[fieldValue[i]])
                                 }
                             } else{
-                                valueList.push(listValueIdtoName[fieldsToValue[key]])
+                                valueList.push(listValueIdtoName[fieldValue])
                             }
                         } else {
-                            valueList.push(fieldsToValue[key]);
+                            valueList.push(fieldValue);
                         }
 
 
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 4,
-                            'FieldId': parseInt(mapping[key].Id),
+                            'FieldId': parseInt(fieldNameMapping.Id),
                             'Value': {
                                 'ValuesListIds': valueList,
                                 'OtherText': null
@@ -946,33 +953,33 @@ script:
                         break;
 
                     case 7:
-                        //fieldsToValue[key] is of the form [{value: ___ , link: ___}, {value: ___ , link: ___}, ...]
+                        //fieldValue is of the form [{value: ___ , link: ___}, {value: ___ , link: ___}, ...]
                         var valueList = []
 
                         valueList.push({
-                            'Name': fieldsToValue[key][0].value,
-                            'URL': fieldsToValue[key][0].link
+                            'Name': fieldValue[0].value,
+                            'URL': fieldValue[0].link
                         })
-                        for(var i=1; i<fieldsToValue[key].length; i++){
+                        for(var i=1; i<fieldValue.length; i++){
                             valueList.push({
-                                'Name': fieldsToValue[key][i].value,
-                                'URL': fieldsToValue[key][i].link
+                                'Name': fieldValue[i].value,
+                                'URL': fieldValue[i].link
                             })
                         }
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 7,
-                            'FieldId': parseInt(mapping[key].Id),
+                            'FieldId': parseInt(fieldNameMapping.Id),
                             'Value': valueList
                         };
                         break;
 
                     case 8:
-                    //fieldsToValue[key] is of the form {groups: [group1, group2,...], users : [user1, user2,...]}
-                        if(fieldsToValue[key] && fieldsToValue[key] !== undefined){
+                    //fieldValue is of the form {groups: [group1, group2,...], users : [user1, user2,...]}
+                        if(fieldValue && fieldValue !== undefined){
                             var valueObject = {};
                             var added = false;
-                            var groups = fieldsToValue[key].groups;
-                            var users = fieldsToValue[key].users;
+                            var groups = fieldValue.groups;
+                            var users = fieldValue.users;
                             if(groups && Array.isArray(groups) && groups.length > 0){
                                 var groupValueList = [];
                                 for(var i=0; i<groups.length; i++){
@@ -995,30 +1002,30 @@ script:
                             }
                             if (!added){
                                 valueObject['UserList'] = [{
-                                        "ID": fieldsToValue[key]
+                                        "ID": fieldValue
                                     }];
                             }
-                            fieldsContent[mapping[key].Id.toString()] = {
+                            fieldsContent[fieldNameMapping.Id.toString()] = {
                                 'Type': 8,
-                                'FieldId': parseInt(mapping[key].Id),
+                                'FieldId': parseInt(fieldNameMapping.Id),
                                 'Value': valueObject
                             };
                         }
                         break;
 
                     case 9:
-                        if(fieldsToValue[key] && fieldsToValue[key] !== undefined){
+                        if(fieldValue && fieldValue !== undefined){
                             contentIdsList = [];
-                            fieldsToValue[key] = verifyOrMakeArray(fieldsToValue[key]);
-                            for(var i=0; i<fieldsToValue[key].length; i++){
+                            fieldValue = verifyOrMakeArray(fieldValue);
+                            for(var i=0; i<fieldValue.length; i++){
                                 contentIdsList.push({
-                                    "ContentID": parseInt(fieldsToValue[key][i])
+                                    "ContentID": parseInt(fieldValue[i])
                                 })
                             }
 
-                            fieldsContent[mapping[key].Id.toString()] = {
+                            fieldsContent[fieldNameMapping.Id.toString()] = {
                                 'Type': 9,
-                                'FieldId': parseInt(mapping[key].Id),
+                                'FieldId': parseInt(fieldNameMapping.Id),
                                 'Value': contentIdsList
                             };
                         }
@@ -1026,59 +1033,59 @@ script:
 
                     case 11:
                         valueList = []
-                        if (Array.isArray(fieldsToValue[key])){
-                            for(var i=0; i<fieldsToValue[key].length; i++){
-                                valueList.push(fieldsToValue[key][i])
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
                             }
                         } else {
-                            valueList.push(fieldsToValue[key])
+                            valueList.push(fieldValue)
                         }
 
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 11,
-                            'FieldId': parseInt(mapping[key].Id),
+                            'FieldId': parseInt(fieldNameMapping.Id),
                             'Value': valueList
                         }
                         break;
 
                     case 12:
                         valueList = []
-                        if (Array.isArray(fieldsToValue[key])){
-                            for(var i=0; i<fieldsToValue[key].length; i++){
-                                valueList.push(fieldsToValue[key][i])
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
                             }
                         } else {
-                            valueList.push(fieldsToValue[key])
+                            valueList.push(fieldValue)
                         }
 
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 12,
-                            'FieldId': parseInt(mapping[key].Id),
+                            'FieldId': parseInt(fieldNameMapping.Id),
                             'Value': valueList
                         }
                         break;
 
                     case 19:
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 19,
-                            'FieldId': parseInt(mapping[key].Id),
-                            'IpAddressBytes': fieldsToValue[key]
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'IpAddressBytes': fieldValue
                          }
                         break;
 
                     case 18:
                         valueList = []
-                        if (Array.isArray(fieldsToValue[key])){
-                            for(var i=0; i<fieldsToValue[key].length; i++){
-                                valueList.push(fieldsToValue[key][i])
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
                             }
                         } else {
-                            valueList.push(fieldsToValue[key])
+                            valueList.push(fieldValue)
                         }
 
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 18,
-                            'FieldId': parseInt(mapping[key].Id),
+                            'FieldId': parseInt(fieldNameMapping.Id),
                             'Value': {'ValuesListIds': valueList, 'OtherText': null}
                         }
 
@@ -1086,38 +1093,38 @@ script:
 
                     case 23:
                         valueList = []
-                        if (Array.isArray(fieldsToValue[key])){
-                            for(var i=0; i<fieldsToValue[key].length; i++){
-                                valueList.push(fieldsToValue[key][i])
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
                             }
                         } else {
-                            valueList.push(fieldsToValue[key])
+                            valueList.push(fieldValue)
                         }
 
-                        fieldsContent[mapping[key].Id.toString()] = {
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
                             'Type': 23,
-                            'FieldId': parseInt(mapping[key].Id),
+                            'FieldId': parseInt(fieldNameMapping.Id),
                             'Value': valueList
                         }
 
                         break;
-                    case 24: // subform
+                    case 24: // subform - we need to create a sub record of another module id and then add its id to our record
                         // get subform id
                         valueList = []
-                        if (Array.isArray(fieldsToValue[key])){
-                            for(var i=0; i<fieldsToValue[key].length; i++){
-                                valueList.push(fieldsToValue[key][i])
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
                             }
-                            fieldsContent[mapping[key].Id.toString()] = {
+                            fieldsContent[fieldNameMapping.Id.toString()] = {
                                 'Type': 24,
-                                'FieldId': parseInt(mapping[key].Id),
+                                'FieldId': parseInt(fieldNameMapping.Id),
                                 'Value': valueList
                             }
                         } else {
-                            var idToCheck = mapping[key].Id;
-                            var secFields = '<Field id="29906" value="' + fieldsToValue[key] +'" />';
-                            var subFormId = getSubformId(idToCheck, 411, secFields, fieldsToValue[key]);
-                            fieldsContent[mapping[key].Id.toString()] = {
+                            var idToCheck = fieldNameMapping.Id;
+                            var secFields = '<Field id="29906" value="' + fieldValue +'" />';
+                            var subFormId = getSubformId(idToCheck, 411, secFields, fieldValue);
+                            fieldsContent[fieldNameMapping.Id.toString()] = {
                                 'Type': 24,
                                 'FieldId': parseInt(idToCheck),
                                 'Value': [subFormId]
@@ -1127,7 +1134,7 @@ script:
                 }
             }
         }
-
+        // example for fieldsContent: {"16132":{"Type":1,"FieldId":16132,"Value":"Demisto"},"16108":{"Type":1,"FieldId":16108,"Value":"test"}}
         return fieldsContent;
     }
 
@@ -1980,7 +1987,8 @@ script:
                 throw "Archer didn't create a new record. We received the following response " + JSON.stringify(resp)
             }
         } else {
-            // use the SOAP APIvar SOAPAction = 'http://archer-tech.com/webservices/CreateSubformRecord';
+            // use the SOAP API
+            var SOAPAction = 'http://archer-tech.com/webservices/CreateSubformRecord';
             var token = getAuthToken();
             var soap = getContentSubFormSoapRequest(token, applicationId, fieldId, fieldValues);
             var response = JSON.parse(x2j(sendSoapRequest(commands.getRecord, soap, SOAPAction)));
@@ -2775,7 +2783,10 @@ script:
             },
             ContentsFormat: formats.json,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: "User id for user " + userName + " is " + userId
+            HumanReadable: "User id for user " + userName + " is " + userId,
+            EntryContext: {
+                'Archer.getUserId(val.UserId==obj.UserId)': userId
+            }
         };
     }
 
@@ -3096,8 +3107,10 @@ script:
     arguments:
     - name: userInfo
       required: true
-      description: Username in the form of "Domain \\username". For example, userInfo="mydomain\
-        \myusername"
+      description: Username in the form of "Domain\\username". For example, userInfo="mydomain\\myusername"
+    outputs:
+    - contextPath: Archer.User.UserId
+      description: The user id of the Archer user
     description: Get the user id of an Archer user
   isfetch: true
   runonce: false
