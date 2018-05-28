@@ -523,21 +523,11 @@ script:
             ticketVersions: []
         };
 
-        var lastRun = getLastRun();
-        var now = new Date().getTime();
-        if(!lastRun || !lastRun.timestamp){
-            var lastHalfAnHour = now - (30 * MINUTE_IN_MS);
-            lastRun = {
-                timestamp: lastHalfAnHour
-            };
-        }
-
         var responseTickets = getTicketsUpdates(queryParams);
         responseTickets.forEach(function(responseTicket){
             if(statuses.indexOf(responseTicket.status) !== -1 &&
                 responseTicket.eventSource !== EVENT_SOURCE_HEALTH_TYPE &&
                 responseTicket.categorizationClass !== CATEGORIZATION_CLASS_HEALTH_TYPE &&
-                //responseTicket.dateCreated > lastRun.timestamp){
                 responseTicket[DIRTY_FIELD] !== DIRTY_VALUE){
                 convertTicketDates(responseTicket);
                 tickets.push(responseTicket);
@@ -565,10 +555,6 @@ script:
                 incidents.push(incident);
             });
         }
-
-        setLastRun({
-            timestamp: now
-        });
 
         return JSON.stringify(incidents);
     }
@@ -1081,4 +1067,6 @@ script:
       description: Ticket close codes
     description: Returns a list of close codes for a ticket.
   isfetch: true
-releaseNotes: "-"
+  runonce: false
+releaseNotes: "Added the ability to fetch new tickets, fixed ticket closing and improved human readable content"
+fromversion: 3.6.0
