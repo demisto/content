@@ -193,7 +193,7 @@ class PlaybookContent(Content):
         return "Playbooks"
 
     def added_release_notes(self, cnt):
-        rn = cnt.get("releaseNotes")
+        rn = cnt.get("description")
         if not rn:
             return None
         if rn == "-":
