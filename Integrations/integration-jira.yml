@@ -86,6 +86,11 @@ script:
         params.url = params.url + '/';
     }
 
+    // backward compatibility
+    if(!(params.proxy)){
+        params.proxy = false;
+    }
+
     var isOAuth;
     if(!params.consumerKey || !params.accessToken || !params.privateKey) {
         isOAuth = false;
@@ -154,7 +159,8 @@ script:
             },
             {
             },
-            params.insecure
+            params.insecure,
+            params.proxy
         );
         if (res.StatusCode !== 200) {
             return 'Failed to execute request:' + res.StatusCode + ', body: ' + res.Body;
