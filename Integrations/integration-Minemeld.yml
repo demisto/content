@@ -262,7 +262,8 @@ script:
       - amber
       - red
       defaultValue: red
-    description: Add a value to a miner.
+      description: Comment to the value.
+    description: The share-level of the value.
   - name: remove-from-miner
     arguments:
     - name: miner
