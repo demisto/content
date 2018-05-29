@@ -173,7 +173,7 @@ script:
 
     def str_to_unicode(obj):
         if isinstance(obj, dict):
-            obj = {k: str_to_unicode(v) for k,v in obj,iteritems()}
+            obj = {k: str_to_unicode(v) for k,v in obj.iteritems()}
         elif isinstance(obj, list):
             obj = map(str_to_unicode, obj)
         elif isinstance(obj, str):
