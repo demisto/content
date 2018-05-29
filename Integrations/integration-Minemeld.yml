@@ -282,3 +282,4 @@ script:
       description: The value  to remove.
     description: Remove a value from a miner.
   runonce: false
+releaseNotes: "Add new integration"
