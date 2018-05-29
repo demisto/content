@@ -819,7 +819,7 @@ script:
             case 'test-module':
                 return testModule();
             case 'cb-list-sessions':
-                if (resource.product == 'Defense') {
+                if (CB_PRODUCT == 'Defense') {
                     throw '\'cb-list-sessions\' is not available for Cb Defense.';
                 }
                   return getSessions();
@@ -834,7 +834,7 @@ script:
             case 'cb-keepalive':
                 return sessionKeepAlive();
             case 'cb-archive':
-                if (resource.product == 'Defense') {
+                if (CB_PRODUCT == 'Defense') {
                     throw '\'cb-archive\' is not available for Cb Defense.';
                 }
                 return archiveSession();
