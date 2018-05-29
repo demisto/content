@@ -78,7 +78,7 @@ configuration:
   required: false
 script:
   script: |
-    import sys, traceback, json, os
+    import sys, traceback, json, os, hashlib
     from datetime import timedelta
     from cStringIO import StringIO
     import logging, warnings
@@ -101,7 +101,7 @@ script:
     from exchangelib.util import create_element, add_xml_child
     from exchangelib.transport import MNS, TNS
     from exchangelib import IMPERSONATION, DELEGATE, Account, ServiceAccount, \
-        EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, \
+        EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, ItemAttachment, \
         Version, Folder, HTMLBody, Body
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
@@ -612,30 +612,65 @@ script:
         if item.attachments:
             incident['attachment'] = [];
             for attachment in item.attachments:
+                file_result = None
                 if isinstance(attachment, FileAttachment):
                     # file attachment
                     label_attachment_type = 'attachments'
                     label_attachment_id_type = 'attachmentId'
+
+                    # save the attachment
+                    file_result = fileResult(attachment.name, attachment.content)
+
+                    # check for error
+                    if file_result['Type'] == entryTypes['error']:
+                        demisto.error(file_result['Contents'])
+                        raise Exception(file_result['Contents'])
+
+                    # save attachment to incident
+                    incident['attachment'].append({
+                        'path': file_result['FileID'],
+                        'name': attachment.name
+                    })
+
                 else:
                     # other item attachment
                     label_attachment_type = 'attachmentItems'
                     label_attachment_id_type = 'attachmentItemsId'
+
+                    # save the attachment
+                    file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
+
+                    inner_file_result = None
+                    for inner_attachment in attachment.item.attachments:
+                        if isinstance(inner_attachment, FileAttachment):
+                            inner_file_result = fileResult(inner_attachment.name, inner_attachment.content)
+                            incident['attachment'].append({
+                                'path': inner_file_result['FileID'],
+                                'name': inner_attachment.name
+                            })
+                        else:
+                            inner_file_result = fileResult(inner_attachment.name + ".eml", inner_attachment.item.mime_content)
+                            incident['attachment'].append({
+                                'path': inner_file_result['FileID'],
+                                'name': inner_attachment.name + ".eml"
+                            })
+
+                    # check for error
+                    if file_result['Type'] == entryTypes['error']:
+                        demisto.error(file_result['Contents'])
+                        raise Exception(file_result['Contents'])
+
+                    # save attachment to incident
+                    incident['attachment'].append({
+                        'path': file_result['FileID'],
+                        'name': attachment.name + ".eml"
+                    })
+
+
                 labels.append({'type': label_attachment_type, 'value': attachment.name})
                 labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
-                # save the attachment
-                file_result = fileResult(attachment.name, attachment.content)
 
-                # check for error
-                if file_result['Type'] == entryTypes['error']:
-                    demisto.error(file_result['Contents'])
-                    raise Exception(file_result['Contents'])
-
-                # save attachment to incident
-                incident['attachment'].append({
-                    'path': file_result['FileID'],
-                    'name': attachment.name
-                })
 
         # handle headers
         if item.headers:
@@ -698,6 +733,7 @@ script:
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
             'attachmentName': attachment.name,
+            'attachmentSHA256': hashlib.sha256(attachment.content if isinstance(attachment, FileAttachment) else attachment.item.mime_content).hexdigest(),
             'attachmentContentType': attachment.content_type,
             'attachmentContentId': attachment.content_id,
             'attachmentContentLocation': attachment.content_location,
@@ -769,6 +805,15 @@ script:
 
         return entries
 
+    def get_inner_attachments(item_attachment):
+        entries = []
+        for attachment in item_attachment.item.attachments:
+            if isinstance(attachment, FileAttachment):
+                entries.append(fileResult(attachment.name, attachment.content))
+            else:
+                entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
+        return entries
+
 
     def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -779,6 +824,8 @@ script:
                 entries.append(get_entry_for_file_attachment(item_id, attachment))
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
+                entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
+                entries.extend(get_inner_attachments(attachment))
 
         return entries
 
@@ -1176,6 +1223,9 @@ script:
     - contextPath: EWS.Items.FileAttachments.attachmentName
       description: The attachment name. Used for file attachments only.
       type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentSHA256
+      description: The attached file SHA256.
+      type: string
     - contextPath: EWS.Items.FileAttachments.attachmentLastModifiedTime
       description: The attachment last modified time. Used for file attachments only.
       type: date
@@ -1209,6 +1259,15 @@ script:
       description: The attached email to recipients addresses (list)
     - contextPath: EWS.Items.ItemAttachments.body
       description: The attached email body (as HTML).
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.attachmentSHA256
+      description: The attached email SHA256 (as EML file).
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.FileAttachments.attachmentSHA256
+      description: SHA256 of the attached files inside of the attached email.
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.ItemAttachments.attachmentSHA256
+      description: SHA256 of the attached emails inside of the attached email.
       type: string
     description: Get the actual attachments from an item (email message). Usually
       use only item-id argument to get all the attachment of a message.
@@ -1681,4 +1740,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews
   isfetch: true
-releaseNotes: "Added command: ews-move-between-mailboxes. When fetching emails, email attachments will be saved in warroom"
+releaseNotes: "Added command: ews-move-between-mailboxes. When fetching emails, email attachments will be saved in warroom. ews-get-attachment on an attached email message (ItemAttachment) will now save it and all of it's attachments as downloadable files to the warroom."
