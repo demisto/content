@@ -189,6 +189,9 @@ script:
         var translated = mapObjFunction(translator)(countObject);
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get ticket count response' , translated);
+        entry.EntryContext = {
+            'SecureWorks': translated
+        }
 
         return entry;
     }
@@ -204,18 +207,24 @@ script:
         delete args['id'];
         var response = assignTicket(id, args);
 
+        if(!response){
+            return 'No data returned';
+        }
+
+        var data = response.assignTicketToSoc;
+
         var translator = [
             {to: 'AssignStatusCode', from: 'code'},
-            {to: 'ID', from: 'ticketID'}
+            {to: 'ID', from: 'ticketId'}
         ];
 
         var entry = {
             Type: entryTypes.note,
-            Contents: response,
+            Contents: data,
             ContentsFormat: formats.json
         };
 
-        var translated = cleanObject(mapObjFunction(translator)(response));
+        var translated = cleanObject(mapObjFunction(translator)(data));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works assign ticket response' , translated);
         entry.EntryContext = {
@@ -376,6 +385,9 @@ script:
         var translated = cleanObject(mapObjFunction(translator)(response));
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = tableToMarkdown('Secure works get tickets ids response' , translated);
+        entry.EntryContext = {
+            'SecureWorks': translated
+        };
 
         return entry;
     }
@@ -777,6 +789,9 @@ script:
       - INCIDENT
       - CHANGE
       description: The ticket type to filter
+    outputs:
+    - contextPath: SecureWorks.TicketCount
+      description: Count of tickets that have been updated and not yet acknowledged
     description: Retrieve a count of tickets that have been updated and not yet acknowledged
   - name: secure-works-get-ticket
     arguments:
@@ -874,7 +889,7 @@ script:
   - name: secure-works-assign-ticket
     arguments:
     - name: id
-      description: The Ticket ID of the ticket that you want the details for.
+      description: The id of the ticket that you want to assign to the SOC
     - name: worklog
       required: true
       description: Ticket worklog
@@ -900,11 +915,11 @@ script:
       - PM_PEND_RFC_AND_COST
       description: Valid for Change tickets only
     outputs:
-    - contextPath: SecureWorks.Tickets.AssignStatusCode
+    - contextPath: SecureWorks.Ticket.AssignStatusCode
       description: Assignment status code
-    - contextPath: SecureWorks.Tickets.ID
+    - contextPath: SecureWorks.Ticket.ID
       description: The ticket ID
-    description: Assign a ticket to the SecureWorks Counter Threat Operations Center
+    description: Assign a ticket to the Secureworks Security Operations Center (SOC).
   - name: secure-works-get-tickets-updates
     arguments:
     - name: limit
@@ -1053,6 +1068,9 @@ script:
       - SECURITY
       description: If provided, limit response to tickets matching the grouping type(s)
         identified
+    outputs:
+    - contextPath: SecureWorks.IDs
+      description: Ticket IDs
     description: Get a list of ticket IDs in the same order as the tickets returned
       by the GET /tickets/updates endpoint.
   - name: secure-works-get-close-codes
