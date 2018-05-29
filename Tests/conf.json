@@ -314,6 +314,11 @@
             "playbookID": "pyEWS_Test"
         },
         {
+
+            "integrations": "Netskope",
+            "playbookID": "Netskope Test"
+        },
+        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
@@ -328,6 +333,7 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
+
         }
     ],
     "skipped": [
