@@ -122,8 +122,5 @@ script:
       default: true
       description: Host IP address
     description: Returns all services that have been found on the given host IP.
-  - name: url
-    arguments:
-    - name: url
   runonce: false
 -releaseNotes: "Added error handling of 404 response and improved human readable output for ip command." 
