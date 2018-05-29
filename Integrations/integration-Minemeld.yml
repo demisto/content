@@ -262,6 +262,7 @@ script:
       - green
       - amber
       - red
+      description: The share-level of the value.
       defaultValue: red
     description: Add a value to a miner.
   - name: minemield-remove-from-miner
