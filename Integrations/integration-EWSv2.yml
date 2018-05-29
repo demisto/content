@@ -172,14 +172,13 @@ script:
     BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 
     def str_to_unicode(obj):
-        res_obj = None
         if isinstance(obj, dict):
-            res_obj = {k: str_to_unicode(v) for k, v in obj.iteritems()}
+            obj = {k: str_to_unicode(v) for k,v in obj,iteritems()}
         elif isinstance(obj, list):
-            res_obj = [str_to_unicode(e) for e in obj]
+            obj = map(str_to_unicode, obj)
         elif isinstance(obj, str):
-            res_obj = unicode(obj, "utf-8")
-        return res_obj if res_obj else obj
+            obj = unicode(obj, "utf-8")
+        return obj
 
     def filter_dict_null(d):
         if isinstance(d, dict):
