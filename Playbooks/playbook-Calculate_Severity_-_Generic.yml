@@ -2,6 +2,7 @@ id: Calculate Severity - Generic
 version: -1
 name: Calculate Severity - Generic
 fromversion: 3.5.0
+releaseNotes: "Add support for Qualys"
 description: |-
   Calculate incident severity by indicators reputation and user/endpoint membership in critical groups.
 
@@ -11,6 +12,7 @@ description: |-
   * CriticalUsers - Comma separated array with usernames of critical users
   * CriticalEndpoints - Comma separated array with hostnames of critical endpoints
   * CriticalGroups - Comma separated array with DN of critical Active Directory groups
+  * QualysSeverity - A Qualys severity score (1-5) to calculate severity from
 starttaskid: "0"
 tasks:
   "0":
@@ -26,12 +28,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "20"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 510,
           "y": 50
         }
       }
@@ -54,8 +56,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
-          "y": 195
+          "x": 60,
+          "y": 515
         }
       }
   "3":
@@ -135,8 +137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 515
+          "x": -64,
+          "y": 850
         }
       }
   "4":
@@ -206,8 +208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 135.5,
-          "y": 690
+          "x": 735,
+          "y": 1010
         }
       }
   "5":
@@ -277,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 690
+          "x": 1165,
+          "y": 1010
         }
       }
   "6":
@@ -348,8 +350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1105,
-          "y": 690
+          "x": 305,
+          "y": 1010
         }
       }
   "7":
@@ -372,8 +374,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 865
+          "x": 520,
+          "y": 1185
         }
       }
   "8":
@@ -402,7 +404,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1010
+          "y": 1330
         }
       }
   "9":
@@ -435,8 +437,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1185
+          "x": 172.5,
+          "y": 1505
         }
       }
   "10":
@@ -455,8 +457,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 1889
+          "x": 417.5,
+          "y": 2205
         }
       }
   "11":
@@ -523,8 +525,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 735,
-          "y": 1710
+          "x": 745,
+          "y": 2030
         }
       }
   "12":
@@ -553,8 +555,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1185,
-          "y": 1010
+          "x": 867.5,
+          "y": 1330
         }
       }
   "13":
@@ -588,8 +590,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1185,
-          "y": 1185
+          "x": 1195,
+          "y": 1505
         }
       }
   "15":
@@ -623,8 +625,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1554
+          "x": 172.5,
+          "y": 1855
         }
       }
   "16":
@@ -658,8 +660,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1185,
-          "y": 1535
+          "x": 1195,
+          "y": 1855
         }
       }
   "17":
@@ -687,8 +689,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1185,
-          "y": 1360
+          "x": 1082.5,
+          "y": 1680
         }
       }
   "18":
@@ -716,8 +718,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1360
+          "x": 60,
+          "y": 1680
         }
       }
   "19":
@@ -750,8 +752,154 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 60,
+          "y": 660
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 72dd5ec9-0650-41a5-8e7d-db6849db35ba
+    type: title
+    task:
+      id: 72dd5ec9-0650-41a5-8e7d-db6849db35ba
+      version: -1
+      name: Calculate from 3rd-party input
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 195
+        }
+      }
+  "21":
+    id: "21"
+    taskid: b003aaf2-586f-46a3-8bee-76c110d8bb75
+    type: condition
+    task:
+      id: b003aaf2-586f-46a3-8bee-76c110d8bb75
+      version: -1
+      name: Is there a Qualys severity?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.QualysSeverity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
           "y": 340
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 127f0e43-3179-4df7-8c4b-6a9877353e40
+    type: condition
+    task:
+      id: 127f0e43-3179-4df7-8c4b-6a9877353e40
+      version: -1
+      name: Change severity based Qualys vulnerability score
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      HIGH:
+      - "6"
+      LOW:
+      - "4"
+      MEDIUM:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: HIGH
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.QualysSeverity
+                filters:
+                - - operator: number.greaterThanOrEqual
+                    left:
+                      value:
+                        simple: inputs.QualysSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4"
+            iscontext: true
+    - label: MEDIUM
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.QualysSeverity
+                filters:
+                - - operator: number.greaterThanOrEqual
+                    left:
+                      value:
+                        simple: inputs.QualysSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                - - operator: number.lessThan
+                    left:
+                      value:
+                        simple: inputs.QualysSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4"
+            iscontext: true
+    - label: LOW
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.QualysSeverity
+                filters:
+                - - operator: number.lessThan
+                    left:
+                      value:
+                        simple: inputs.QualysSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 515
         }
       }
 view: |-
@@ -763,16 +911,16 @@ view: |-
       "15_11_yes": 0.15,
       "16_10_#default#": 0.36,
       "16_11_yes": 0.16,
-      "3_5_Medium": 0.57,
+      "3_5_Medium": 0.73,
       "3_7_#default#": 0.29,
       "8_10_#default#": 0.16,
       "9_11_yes": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 1904,
-        "width": 1515,
-        "x": 50,
+        "height": 2220,
+        "width": 1639,
+        "x": -64,
         "y": 50
       }
     }
@@ -790,4 +938,11 @@ inputs:
   value: {}
   required: false
   description: Critical active directory groups DN
+- key: QualysSeverity
+  value:
+    complex:
+      root: Qualys
+      accessor: Severity
+  required: false
+  description: Qualys Vulnerability Severity score (1-5)
 outputs: []
