@@ -171,6 +171,15 @@ script:
     IS_TEST_MODULE = False
     BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 
+    def str_to_unicode(obj):
+        if isinstance(obj, dict):
+            obj = {k: str_to_unicode(v) for k,v in obj.iteritems()}
+        elif isinstance(obj, list):
+            obj = map(str_to_unicode, obj)
+        elif isinstance(obj, str):
+            obj = unicode(obj, "utf-8")
+        return obj
+
     def filter_dict_null(d):
         if isinstance(d, dict):
             return dict((k, v) for k, v in d.items() if v is not None)
@@ -1130,6 +1139,9 @@ script:
         demisto.results('ok')
 
 
+    def encode_and_submit_results(obj):
+        demisto.results(str_to_unicode(obj))
+
     try:
         config = prepare()
         args = prepare_args(demisto.args())
@@ -1138,39 +1150,39 @@ script:
             test_module()
         elif demisto.command() == 'fetch-incidents':
             incidents = fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
-            demisto.incidents(incidents)
+            demisto.incidents(str_to_unicode(incidents))
         elif demisto.command() == 'ews-get-attachment':
-            demisto.results(fetch_attachments_for_message(**args))
+            encode_and_submit_results(fetch_attachments_for_message(**args))
         elif demisto.command() == 'ews-delete-attachment':
-            demisto.results(delete_attachments_for_message(**args))
+            encode_and_submit_results(delete_attachments_for_message(**args))
         elif demisto.command() == 'ews-get-searchable-mailboxes':
-            demisto.results(get_searchable_mailboxes(config.protocol))
+            encode_and_submit_results(get_searchable_mailboxes(config.protocol))
         elif demisto.command() == 'ews-search-mailboxes':
-            demisto.results(search_mailboxes(config.protocol, **args))
+            encode_and_submit_results(search_mailboxes(config.protocol, **args))
         elif demisto.command() == 'ews-move-item-between-mailboxes':
-            demisto.results(move_item_between_mailboxes(**args))
+            encode_and_submit_results(move_item_between_mailboxes(**args))
         elif demisto.command() == 'ews-move-item':
-            demisto.results(move_item(**args))
+            encode_and_submit_results(move_item(**args))
         elif demisto.command() == 'ews-delete-items':
-            demisto.results(delete_items(**args))
+            encode_and_submit_results(delete_items(**args))
         elif demisto.command() == 'ews-search-mailbox':
-            demisto.results(search_items_in_mailbox(**args))
+            encode_and_submit_results(search_items_in_mailbox(**args))
         elif demisto.command() == 'ews-get-contacts':
-            demisto.results(get_contacts(**args))
+            encode_and_submit_results(get_contacts(**args))
         elif demisto.command() == 'ews-get-out-of-office':
-            demisto.results(get_out_of_office_state(**args))
+            encode_and_submit_results(get_out_of_office_state(**args))
         elif demisto.command() == 'ews-recover-messages':
-            demisto.results(recover_soft_delete_item(**args))
+            encode_and_submit_results(recover_soft_delete_item(**args))
         elif demisto.command() == 'ews-create-folder':
-            demisto.results(create_folder(**args))
+            encode_and_submit_results(create_folder(**args))
         elif demisto.command() == 'ews-mark-item-as-junk':
-            demisto.results(mark_item_as_junk(**args))
+            encode_and_submit_results(mark_item_as_junk(**args))
         elif demisto.command() == 'ews-find-folders':
-            demisto.results(find_folders(**args))
+            encode_and_submit_results(find_folders(**args))
         elif demisto.command() == 'ews-get-items-from-folder':
-            demisto.results(get_items_from_folder(**args))
+            encode_and_submit_results(get_items_from_folder(**args))
         elif demisto.command() == 'ews-get-items':
-            demisto.results(get_items(**args))
+            encode_and_submit_results(get_items(**args))
 
 
     except Exception, e:
@@ -1740,4 +1752,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews
   isfetch: true
-releaseNotes: "Added command: ews-move-between-mailboxes. When fetching emails, email attachments will be saved in warroom. ews-get-attachment on an attached email message (ItemAttachment) will now save it and all of it's attachments as downloadable files to the warroom."
+releaseNotes: "Added command: ews-move-between-mailboxes. When fetching emails, email attachments will be saved in warroom. ews-get-attachment on an attached email message (ItemAttachment) will now save it and all of it's attachments as downloadable files to the warroom. Fixed encoding problem."
