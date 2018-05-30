@@ -1,8 +1,8 @@
 commonfields:
-  id: Rasterize
+  id: Rasterizet
   version: -1
-name: Rasterize
-display: Rasterize
+name: Rasterizet
+display: Rasterizet
 category: Utilities
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAA10lEQVR4Ae3TYQ3CQAwFYCQgAQlIOCmTMAnnYBJOAhImYRImYRJKSfrrBXoXDkrJtcnLEtaQr9fdiYhcJ4AugAHkIgdJAfwrYAC/eTO51nGAv1x7AAPoH2h4w02AXFdOfjyVngtnNQdyTdC3vOgr8j5ZA/dan5weSbYuICdLWoFHA3CBnqkHiKkBcZgbvD8/GWI3AcJ3mDmzrHPGATAmQDwpWGXBT8AcKKgkzw378bd3gFmJCpRVHtXBOoBq9D/FE/MHLBxyCfx0RgDaJ4AB9AJ0nAAOALwDFV7f8k1w4yAAAAAASUVORK5CYII=
 description: Rasterize URLs or emails given to it
@@ -25,39 +25,44 @@ script:
         http_proxy = os.environ["http_proxy"]
         https_proxy = os.environ["https_proxy"]
 
+    return_code = 0
+    error_message = ''
+
+    def rasterize_email(html):
+      friendlyName = 'email.png'
+      if demisto.get(demisto.args(), 'type') == 'pdf':
+          friendlyName = 'email.pdf'
+
+      f = open('htmlBody.html','w')
+      f.write('<html style="background:white";>' + html + '</html>')
+      f.close()
+
+      proxy_flag = ""
+      if proxy:
+          proxy_flag = "--proxy=" + http_proxy
+      demisto.debug('rasterize proxy settings: ' + proxy_flag)
+
+      command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
+      if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
+          command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
+      try:
+          error_message = subprocess.check_output(command)
+      except Exception as e:
+          return_code = -1
+          error_message = e.output
+
 
     if demisto.command() == 'test-module':
-        demisto.results('ok')
+        rasterize_email('test text')
+        if return_code == 0:
+            demisto.results('ok')
+        else:
+            demisto.results(error_message)
         sys.exit(0)
 
     if demisto.command() == 'rasterize-email':
         html = demisto.args()['htmlBody']
-
-        return_code = 0
-        error_message = ''
-
-        friendlyName = 'email.png'
-        if demisto.get(demisto.args(), 'type') == 'pdf':
-            friendlyName = 'email.pdf'
-
-        f = open('htmlBody.html','w')
-        f.write('<html style="background:white";>' + html + '</html>')
-        f.close()
-
-        proxy_flag = ""
-        if proxy:
-            proxy_flag = "--proxy=" + http_proxy
-        demisto.debug('rasterize proxy settings: ' + proxy_flag)
-
-        command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlBody.html', friendlyName]
-        if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
-            command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
-        try:
-            error_message = subprocess.check_output(command)
-        except Exception as e:
-            return_code = -1
-            error_message = e.output
-
+        rasterize_email(html)
         if return_code == 0:
             filename = demisto.uniqueFile()
             subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
