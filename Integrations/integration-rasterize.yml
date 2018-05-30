@@ -29,11 +29,7 @@ script:
     return_code = 0
     error_message = ''
 
-    def rasterize_email(html):
-      friendlyName = 'email.png'
-      if demisto.get(demisto.args(), 'type') == 'pdf':
-          friendlyName = 'email.pdf'
-
+    def rasterize_email(html, friendlyName):
       f = open('htmlBody.html','w')
       f.write('<html style="background:white";>' + html + '</html>')
       f.close()
@@ -54,7 +50,7 @@ script:
 
 
     if demisto.command() == 'test-module':
-        rasterize_email('test text')
+        rasterize_email('test text', 'email.png')
         if return_code == 0:
             demisto.results('ok')
         else:
@@ -63,7 +59,10 @@ script:
 
     if demisto.command() == 'rasterize-email':
         html = demisto.args()['htmlBody']
-        rasterize_email(html)
+        friendlyName = 'email.png'
+        if demisto.get(demisto.args(), 'type') == 'pdf':
+            friendlyName = 'email.pdf'
+        rasterize_email(html, friendlyName)
         if return_code == 0:
             filename = demisto.uniqueFile()
             subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
