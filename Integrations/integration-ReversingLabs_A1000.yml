@@ -11,7 +11,6 @@ detaileddescription: |-
   ```
   curl -X POST --form "username=your-username" --form 'password=your-password' https://a1000-server-name-or-ip/api-token-auth/
   ```
-releaseNotes: Integrate with A1000 to analyse samples
 configuration:
 - display: Base URL of the A1000 box
   name: base
