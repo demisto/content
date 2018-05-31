@@ -68,7 +68,6 @@ script:
     var EVENT_SOURCE_HEALTH_TYPE = "CTP_HEALTH";
     var CATEGORIZATION_CLASS_HEALTH_TYPE = "Health";
     var MAX_LIMIT = 500;
-    var MINUTE_IN_MS = 60 * 1000;
     var DIRTY_FIELD = 'customerMiscellaneous4';
     var DIRTY_VALUE = 'MARKED';
 
@@ -139,7 +138,6 @@ script:
 
         return response;
     }
-
 
     function updateTicketCommand(){
         var id = args['id'];
@@ -307,30 +305,21 @@ script:
         convertTicketDates(ticket);
 
         var translator = [
-            {to: 'ChangeApproval', from: 'changeApproval'},
-            {to: 'AttachmentInfo', from: 'attachmentInfo.name'},
-            {to: 'ChangeSlo', from: 'changeSlo'},
-            {to: 'ChangeWindowStart', from: 'changeWindowStart'},
-            {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
-            {to: 'Client', from: 'client.name'},
-            {to: 'Contact', from: 'contact.name'},
+            {to: 'Subject', from: 'symptomDescription'},
+            {to: 'Reference', from: 'externalTicketNum'},
+            {to: 'Currently Worked By', from: 'client.name'},
+            {to: 'Assigned Employee', from: 'contact.name'},
             {to: 'Created', from: 'dateCreated'},
             {to: 'Closed', from: 'dateClosed'},
             {to: 'Modified', from: 'dateModified'},
             {to: 'Description', from: 'detailedDescription'},
             {to: 'Device', from: 'devices.name'},
-            {to: 'Impact', from: 'impact'},
-            {to: 'Location', from: 'clientLocation.name'},
-            {to: 'Partner', from: 'partner'},
             {to: 'Priority', from: 'priority'},
+            {to: 'AttachmentInfo', from: 'attachmentInfo.name'},
             {to: 'Reason', from: 'reason'},
-            {to: 'RequestType', from: 'requestType'},
-            {to: 'RiskAssessment', from: 'riskAssessment'},
-            {to: 'Service', from: 'service'},
             {to: 'Status', from: 'status'},
-            {to: 'SymptomDescription', from: 'symptomDescription'},
             {to: 'ID', from: 'ticketId'},
-            {to: 'Type', from: 'ticketType'},
+            {to: 'Type', from: 'groupingType'},
             {to: 'Urgency', from: 'urgency'},
             {to: 'Watchers', from: 'watchers'}
         ];
@@ -406,32 +395,15 @@ script:
         convertTicketDates(tickets);
 
         var translator = [
-            {to: 'ChangeApproval', from: 'changeApproval'},
-            {to: 'AttachmentInfo', from: 'attachmentInfo.name'},
-            {to: 'ChangeSlo', from: 'changeSlo'},
-            {to: 'ChangeWindowStart', from: 'changeWindowStart'},
-            {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
-            {to: 'Client', from: 'client.name'},
-            {to: 'Contact', from: 'contact.name'},
+            {to: 'ID', from: 'ticketId'},
+            {to: 'Assigned Employee', from: 'contact.name'},
+            {to: 'Reference', from: 'externalTicketNum'},
+            {to: 'Status', from: 'status'},
             {to: 'Created', from: 'dateCreated'},
             {to: 'Closed', from: 'dateClosed'},
+            {to: 'Subject', from: 'symptomDescription'},
             {to: 'Modified', from: 'dateModified'},
-            {to: 'Description', from: 'detailedDescription'},
-            {to: 'Device', from: 'devices.name'},
-            {to: 'Impact', from: 'impact'},
-            {to: 'Location', from: 'clientLocation.name'},
-            {to: 'Partner', from: 'partner'},
-            {to: 'Priority', from: 'priority'},
-            {to: 'Reason', from: 'reason'},
-            {to: 'RequestType', from: 'requestType'},
-            {to: 'RiskAssessment', from: 'riskAssessment'},
-            {to: 'Service', from: 'service'},
-            {to: 'Status', from: 'status'},
-            {to: 'SymptomDescription', from: 'symptomDescription'},
-            {to: 'ID', from: 'ticketId'},
-            {to: 'Type', from: 'ticketType'},
-            {to: 'Urgency', from: 'urgency'},
-            {to: 'Watchers', from: 'watchers'}
+            {to: 'Devices', from: 'devices.name'},
         ];
 
         var entry = {
@@ -559,8 +531,35 @@ script:
         if (tickets.length > 0) {
             acknowledgeTickets(ticketVersionsObject);
             tickets.forEach(function(ticket){
+                var severity;
+                switch(ticket.priority){
+                    case 'LOW':
+                        severity = 1;
+                        break;
+                    case 'MEDIUM':
+                        severity = 2;
+                        break;
+                    case 'HIGH':
+                        severity = 3;
+                        break;
+                    case 'CRITICAL':
+                        severity = 4;
+                        break;
+                    default:
+                        severity = 0;
+                        break;
+                }
                 var incident = {
                     name: 'Secureworks - Ticket - ' + ticket.ticketId,
+                    status: ticket.status === 'Pending' ? 0 : 1,
+                    severity: severity,
+                    details: ticket.detailedDescription,
+                    labels: [
+                        {type: 'Reference', value: ticket.externalTicketNum},
+                        {type: 'Subject', value: ticket.symptomDescription},
+                        {type: 'Devices', value: dq(ticket.devices, 'name')},
+                        {type: 'Assigned employee', value: dq(ticket.contact, 'name')}
+                        ],
                     rawJSON: JSON.stringify(ticket)
                 };
 
@@ -624,13 +623,15 @@ script:
       required: true
       description: Request type
     - name: title
+      required: true
       description: Ticket title
     - name: externalTicket
       description: External ticket
     - name: deviceRef
       description: Device reference
-    - name: title
-      description: Ticket title
+    - name: detail
+      required: true
+      description: Ticket details
     - name: pocContactRef
       required: true
       description: Ticket POC contact reference
@@ -776,8 +777,10 @@ script:
   - name: secure-works-add-worklogs-ticket
     arguments:
     - name: content
+      required: true
       description: The work log message
     - name: id
+      required: true
       description: The Ticket ID of the ticket that you want the details for.
     description: Add worklog to a ticket
   - name: secure-works-get-ticket-count
