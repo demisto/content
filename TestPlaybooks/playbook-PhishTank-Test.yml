@@ -226,7 +226,7 @@ view: |-
   }
 inputs:
 - key: badUrl
-  value: http://intranet.saintdizier.com/images/2.html
+  value: http://sssecuritemail.000webhostapp.com/
   description: ""
 - key: goodUrl
   value: https://www.phishtank.com/
