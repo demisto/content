@@ -746,17 +746,20 @@ script:
         {to: 'DumpingInProgress', from: 'dumping'}
     ];
 
-    const regKeyData = [
+    const regKeysData = [
         {to: 'RegKeyType', from: 'value_type'},
         {to: 'RegKeyName', from: 'value_name'},
         {to: 'RegKeyData', from: 'value_data'}
     ];
 
-    function collectRegistryDataToGeneralContext(data, removeValueFromPath) {
+    const regKeyData = [
+        {to: 'RegKeyType', from: 'value.value_type'},
+        {to: 'RegKeyName', from: 'value.value_name'},
+        {to: 'RegKeyData', from: 'value.value_data'}
+    ];
+
+    function collectRegistryDataToGeneralContext(data) {
         let regKey = CB_PRODUCT === 'Response' ?  data.object : data.obj.object;
-        if (removeValueFromPath){
-            regKey = regKey.replace(".*(\\|/)", '');
-        }
         let RegistryKeys = [];
         for (let value in data.values) {
             let entry = {
@@ -842,7 +845,7 @@ script:
         'create process' : function(data) {
             let dataMap = COMMAND_DATA;
             if (data.status === 'complete') {
-                dataMap.concat(processData);
+                dataMap = dataMap.concat(processData);
             }
             let title = `CB ${CB_PRODUCT} - Execute Process: Command Status`;
             let contextKeys = ['CbLiveResponse.Commands.Processes.List(val.CbCommandID==obj.CbCommandID)'];
@@ -858,7 +861,7 @@ script:
          'memdump': function(data) {
             let dataMap = COMMAND_DATA;
             if (data.status === 'complete') {
-                dataMap.concat(memdumpData);
+                dataMap = dataMap.concat(memdumpData);
             }
             let title = `CB ${CB_PRODUCT} - Memdump: Command Status`;
             let contextKeys = ['CbLiveResponse.Commands.Memdump(val.CbCommandID==obj.CbCommandID)'];
@@ -911,17 +914,17 @@ script:
                 };
             }
 
-            let registryEntry = mapObjFunction(regKeyData)(data.values);
+            let registryEntry = mapObjFunction(regKeysData)(data.values);
             let registryMD = tableToMarkdown(
                 `Registry Values`,
                 registryEntry,
-                regKeyData.map(cn => cn.to),
+                regKeysData.map(cn => cn.to),
                 undefined,
                 splitCamelCase
             );
 
             //collect registry data for general context
-            let generalConetxt = collectRegistryDataToGeneralContext(data, false);
+            let generalConetxt = collectRegistryDataToGeneralContext(data);
 
             return {
                 Type: entryTypes.note,
@@ -937,9 +940,9 @@ script:
             };
         },
          'reg query value': function(data) {
-            let dataMap =  COMMAND_DATA;
-            if (data.status === 'complete'){
-                dataMap.push({to: 'SubKeys', from: 'sub_keys'});
+            let dataMap = COMMAND_DATA;
+            if (data.status === 'complete') {
+                dataMap = dataMap.concat(regKeyData);
             }
             let commandEntry = mapObjFunction(dataMap)(data);
             let commandMD = tableToMarkdown(
@@ -950,42 +953,19 @@ script:
                 splitCamelCase
             );
 
-            if (data.status !== 'complete' || !data.values) {
-                return {
-                    Type: entryTypes.note,
-                    Contents: data,
-                    ContentsType: formats.json,
-                    ReadableContentsFormat: formats.markdown,
-                    HumanReadable: commandMD,
-                    EntryContext: {
-                        'CbLiveResponse.Commands.Registry.QueryValue(val.CbCommandID==obj.CbCommandID)': commandEntry
-                    }
-                };
+            let context = {
+                'CbLiveResponse.Commands.Registry.QueryValue(val.CbCommandID==obj.CbCommandID)': commandEntry
+            };
+            if (data.status !== 'complete') {
+                context.RegistryKey = collectRegistryDataToGeneralContext(data);
             }
-
-            let registryEntry = mapObjFunction(regKeyData)(data.values);
-            let registryMD = tableToMarkdown(
-                `Registry Values`,
-                registryEntry,
-                regKeyData.map(cn => cn.to),
-                undefined,
-                splitCamelCase
-            );
-
-            //collect registry data for general context
-            let generalConetxt = collectRegistryDataToGeneralContext(data, true);
-
             return {
                 Type: entryTypes.note,
                 Contents: data,
                 ContentsType: formats.json,
                 ReadableContentsFormat: formats.markdown,
-                HumanReadable: commandMD + '\n\n' + registryMD,
-                EntryContext: {
-                    'CbLiveResponse.Commands.Registry.List(val.CbCommandID==obj.CbCommandID)': commandEntry,
-                    'CbLiveResponse.Commands.Registry.List(val.CbCommandID==obj.CbCommandID).Values': registryEntry,
-                    'RegistryKey': RegistryKeys
-                }
+                HumanReadable: commandMD,
+                EntryContext: context
             };
         },
          'reg create key': function(data) {
@@ -2360,7 +2340,7 @@ script:
       description: the name of the registry value.
     - contextPath: CbLiveResponse.Commands.Registry.List.Values.RegKeyData
       description: The data associated with the registry value.
-    - contextPath: CbLiveResponse.Commands.Registry.List.Values.SubKeys
+    - contextPath: CbLiveResponse.Commands.Registry.List.SubKeys
       description: List of subkey names.
     description: Enumerate registry values
   - name: cb-registry-query-value
@@ -2397,11 +2377,11 @@ script:
       description: the path of the key + the path of the value (ie HKEY_LOCAL_MACHINE\blah\key\value).
     - contextPath: CbLiveResponse.Commands.Registry.QueryValue.Values.RegKeyType
       description: Registry value type.
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.Values.RegKeyName
+    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.RegKeyName
       description: the name of the registry value.
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.Values.RegKeyData
+    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.RegKeyData
       description: The data associated with the registry value.
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.Values.SubKeys
+    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.SubKeys
       description: List of subkey names.
     description: Query for registry value.
   - name: cb-registry-create-key
