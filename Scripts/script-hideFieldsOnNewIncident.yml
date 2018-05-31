@@ -4,8 +4,8 @@ commonfields:
 name: hideFieldsOnNewIncident
 fromversion: 3.6.0
 script: |
+  incident = demisto.incidents()[0]
   field = demisto.args()['field']
-  incident = demisto.args()['incident']
   formType = demisto.args()['formType']
   ## You can create a condition for the incident, which is served as a JSON object.
   ## You can view the original field settings and take necessary action - such as validate that the options are part of the global set in the field definition.
