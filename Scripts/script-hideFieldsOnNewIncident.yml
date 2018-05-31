@@ -32,4 +32,3 @@ args:
   description: Field definition object
 scripttarget: 0
 runonce: false
-releaseNotes: "-"
