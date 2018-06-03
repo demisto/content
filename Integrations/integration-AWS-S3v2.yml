@@ -319,9 +319,6 @@ script:
       - public-read-write
       - authenticated-read
       description: ACL for S3 bucket
-    - name: region
-      description: AWS Region to create bucket (optional, e.g us-west-1) if no region
-        is selected the default region will be used
     - name: locationConstraint
       description: Specifies the region where the bucket will be created. If you don't
         specify a region, the bucket will be created in US Standard.
@@ -337,6 +334,16 @@ script:
         bucket.
     - name: grantWriteACP
       description: Allows grantee to write the ACL for the applicable bucket.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.S3.Bucket.BucketName
       description: The name of the bucket that was created
@@ -350,10 +357,29 @@ script:
     - name: bucket
       required: true
       description: Name of S3 bucket to delete
-      isArray: true
+    - name: region
+      description: The AWS Region, if not specified the default region will be used
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Delete AWS S3 bucket
   - name: aws-s3-list-buckets
-    arguments: []
+    arguments:
+    - name: region
+      description: The AWS Region, if not specified the default region will be used
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName
       description: The name of the bucket.
@@ -373,7 +399,16 @@ script:
     - name: bucketName
       required: true
       description: Name of bucket
-      isArray: true
+    - name: region
+      description: The AWS Region, if not specified the default region will be used
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.S3.Bucket.Policy.Version
       description: S3 Bucket Policy Version
@@ -408,19 +443,49 @@ script:
     - name: bucket
       required: true
       description: Name of S3 bucket
+    - name: region
+      description: The AWS Region, if not specified the default region will be used
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Deletes the policy from the bucket.
   - name: aws-s3-download-file
     arguments:
     - name: bucket
       description: The name of S3 bucket
     - name: key
-      description: The S3 object key to download
+      description: The S3 object key to download.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Download a file from S3 bucket to war room
   - name: aws-s3-list-bucket-objects
     arguments:
     - name: bucket
       required: true
-      description: The name of S3 bucket
+      description: The name of S3 bucket.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.S3.BucketObjects.Key
       description: The name of S3 object
@@ -444,5 +509,15 @@ script:
       - "False"
     description: Replaces a policy on a bucket. If the bucket already has a policy,
       the one in this request completely replaces it.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
   dockerimage: demisto/boto3
   runonce: false
