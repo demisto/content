@@ -4,28 +4,47 @@ commonfields:
 name: AWS - IAM
 display: AWS - IAM
 category: IT Services
-image: data:image/png;base64,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
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAGiZJREFUeAHtXAl8VNW5P+fcZSYJIRRkyzJLFhYjSqW1tm5YWkXUCnWjKDUPEcRa27q0fSrVV+1TK661LbVKW7eqaLW+/hB4FcENyiIKsodkJpkEIgETSGbmruf9v5tMmMSkEAhRnpwfyT333LN/2//7zgmcHcF05uSigsKR2eP7F2gLH5y2qvoIDnWs6y52gHdRfljF37w6HMyQvhnS4dNySzKH9M/Xd0pHzosnjMd/e/3a6GF1fqxxt3agRwl8ztThYVUV1zLGy1SVD7Itlw0K+tngcAYTgjHLdj/mrvhzQtpzH7tmZWW3Znqs8iHtQI8Q+DtXFhW7qm8WE+73haIc5zouk5Ix12VscAgEDmYwBy8cVFZVENpy6jnnf2l2+dzfTV9efkgzP9booHbgsAg84ZoRw5jFr+OCTVUU0T9F2NTILqg8BNJLBLZtULs17Se0u0fh8mnLlr97cMbKranvx549twOHROCxk0eEMv3sZkjhFYoq+nUkLEevJMGWwZg/U2G5xRmszwCVCUivdKX3jZbAwRmqRqqbNShSPmuYcs7Ds1ZEem55x3rClnc/+X3ySp9f+4FlOsxJk0zqyXU4sw3JzARjjiVZ8x6b7anZx/p8SWHHBXQ2IE9nvj4CRAahobYt0yN0P1+m+gPTSe5EF3d3f0bHWnS1A4dEYBJQx9kvidQ5F5zFG1xmNJEq5gySDSK6FupWS5cVNDe42t76BKvemGT9h2psaImPZYHoJOmoB7vMGZcK3rqdRCAQCAnXHSgVxUKqqq2tre/Qi8jPz/f5/X63vLwceoXxcDgc4IYhK2prq9LqZhcUFAxyXbehpqZmd1p5W7a4uLhvMpkMqqqahcIGPCtb+2yrEwqF/FmRSKd7axQXWx3ro2FfjDvQcRwLc6/Bu9PWGTJjGVPL8/O1nJwcZ8OGDRAJpmHNBZinEYvFqH6XqdNJdFm79QPo0G4CpHZJDau6whrrbFYfM6ub9tp/wWa/Ft+5b1O/3OwRTGjfUX2yTPMpBfsaTObbwVlWf+wRiJtKnDnt+k2Vd/UM5udPylB9t0guT+Iaz3Rh9P0+ZeewYPiVpHRur6qq+oTaFueHZuu6MtW2neZAXuBGvypuAjud7vr8clg4vMiUcobuuhcJVbsdmiUX9G8oDoWeKI9E7kJz2xt/+PDsQsO6DVrncp+mBzQhwFOugSlvKcwP/roiFn2W6o1hY7QGtvsVO1w0sm1tmCB941xy7jjrkJ2IH1p4n8JQ6FZ0NRmCkMtVzSwJFW0wbfv+aCz6N3ynxKOh0DMZQvlKoimxJZgb/JXPJx5Cj6WQIhNr/YfJ5Q2RSKShpXr7390m8JgZuZnC5AUSbk96Egpn2QM11j9XZwUj/a/dd/Xy2W3fN+xajfzqCWXDB2i6uI5UOxfthZVUNleUghl/yM18fGZtvK1tF5nCYPBiVSgvKoIL25WW68jNUBxBRYihXBHXMYvpaHqN15yzQi6UIsB6x6cp8zRVC5DW4BgTzS+VpjOEKcppilAElUOlZCpC/QUkcRM27nn0oRab5pO6ql1KRLNdd6fjuM0YuwjtT2QafyqUn18TicWWNhY3CubwIkVRgkxyRkCTkgAwIcwhHXsfvZeyUj0ZbH7Kp+qTWvvchflkqYo4lXNlPsaejrH/RHUVrgzTMX9L2n1VTTyjK1rYxTzQd5aqqVNd265EtTuobsfUgUwdP7d/P++qEfcPNXNWQh1fS8CqY6K9wUbDJcJKOklSCmwgPtBPh0Q+M2fy2mxRsPLmJ752f4fPHV8xBf5DDXYAm22ajn2+lpVxkmGZF8Mdg0CiL86+PXjwYFKjYCZmUxkkRcEHbiWNHzq240kcEUDTlTMw+BIzad3g2s5aakxJkfw0ekJqRgnGL6VSy7aXOgl+UsI2R9mO8yf6rqJjqOrxlIf6NR1TXmYmzbMTpnEm1nU9mNegcRzXYablPIxqbjx/32U+VW0hru0ucOLNJxiWPA2YZif1p3NxL4g8BHUhS643f5QPxMJtw0xeazn2a5iTZ96gGc6msTtLnRKis4pUho24GexUCs7sVruu+utYDhkWoFmpN07Hj+3fpem61xmGda5pW9+qrKr6X9gmGHJlMzbTkxDwUEY255npzUiKbEvevzUWfcxOxm+Euv3EK3PdvbZhXL0tVvkb03EfaGsjJWkBlnSSW0Gc01zLuIA79pXb67Z/DIJKl7P1qbowWjmteRmpiXxQHossVXy+lULlk6FVfDQO/P8/VMaiT1I9MOf3vPqYqOlaf9xeV/cxtZPMfZPKQcxBGmMe03j16BeYBMx807aqqj8YrvufDjCO982V2XgqXr7Dr24RihAz2dsjmUgDWOantUPHMWFfNzo226Io2mnDQ+FFw0LhLXqG8gEEtD9tRFdJ49KLicusLMPlvJnqoXajVlvr2WvsEvB/awKOpFxdXV3z9mj0PcOWSa5ot8Ju/8vH+HaNi3tSKjjVJP0pLOcxEOp0KoPkr1CrI7dQHoAvA/QuobxNC5ZyB+UpQflVteSQt9loL9+6HGirJHfdzVSm2moTHgQYYcy5WtoFgbttg6nDz0MKFRRcpKt8nqqo/W3HtrHKxVBYtVDIU5hg7SS33XwlDCMSABJXYBkpDy6XWyiDBCPyqT0pLS3Vzabm30PqplGQBuNVOUz+EyirALihU/VYlB+eAZM+nfoEYT42TTktypinXfyxmOaGwv6UyEG62zgaeIxQspcwwb6pPD0xWccWwgOi0FR4xb8DpG5J8AH68j6DM5nogLJT7WBJsC+pt0N/QgL6Ayg9Cunob9t2HGprwtZoxflbo5U/wbIB0LyFw+J3QHKHOGTz3uaLFVWdRt1atvVWwrFHl0cqr4LwPUeqlxIxSap7zO8UReNz6BswQVJazqzojuim1HdfaWkSkGuv104IDi2wnyEl96XqYR17KN8ywv7S7uQ+xa3daZxet3WdzExKtne3GR5/ZclMoMExg4v9oUEBfwSob01sQzxkYPttWI5WQUrv4qDzqpTDFM4DtKPQbzvJBlPjcH7+8diMFlsomc/QNJixw08g3pkpSQCTLqmKtbhfkNAvp3p3hGcHWW5u7nFAxvPAfNmkviFpkqn8hmGh0FSsebUhnVeAFzbCvVmLtqXEBCrXTkB+mdeXZJT3knDcdynTxjktxd363S0CkytEo9Gc080c7B7bXWuy+hoTESyHkPT5ul8/nxYI14NpmgJOFtcUHN+H2VBARhJaxuunTTN5kwYYabEkB1gRNqUZKtaDxRg7ryQUuhaIdqOmqnNUOLMOFIWqKgihyh+h4593a0c6qQxV6UkbfeIqn1QYCLyBoMpISKGngmmdcNkuBIOdiFx/ICqYREg19gXuUgaw41n0jjSRW/J6SHip5dqPc5dPwZoBLPmPwoHAVi7VEsSHxpHEInb/EcCgx7iHI8LdIrBjuW/ZBh/AhMzX/TynjciYUXNjSzyAJkcTgp/onSYRMLNNchFaiKkAl2YhIEKprT3yRNw9O8y9dtKO9c3TO0aivPqpX1+KDd68N7xnAZjnArg/PthSso8Y02kGmFmAI8sJVBdxBW8g2GadfFBKlpReGdlguBx+zzdlrp+q03cQC/vdUhcPD0XDR3lBdd1ZJJW6opwE4r5N7SzHWmXZTh9d00aCIgkp1UyhuKoLQAuEvg2eGVC23MG5DaXDApyJ0SD2cYi35VTW1b2NYMrdKPsFcEQJ1r+Yxqd+way1hu1eg1cCUmCT1DydjBbb6wkZVDvLaJmrQ/PvNHWLwAv+spk4UZ8wdfhsHAvenh6HxiwOLpHkdlIT7gTLzFEefeS21XfhcxvQ6KQqW8PWWHlmXhlT2U8wLnxYrgDfb8Suzi2PRj8oCYbvwz5t2xatfJzaI360xHYs2gTss/COJ4HCG4uCwefg9gx1JIEzlqS6IPtW1J2PLHwq/iaVRaPR9yG1E0DA6+DKhYCJmmBy3oAd/m1gSCAguLwpKeWcaE10U15eXr4u5Xifab6zDuib2qdS8ZAhA11F/1qfuuNqgM0ZImV3lOQHP3RUcRUc9CLghwTW8G6zbT4Wq4l580RbaUn3b4BXWxAebgJjehErV3cbEVd4CoAvG5TetgFCnxon/XmwZElvw84rG3Er1O6v2ghMvXRCNRLa9PPg9E6IIRAFgsS0SDaFOU3Tuu2Bq1f+d3q9I5GnAEiWro+sqK4mO+ih0iMxTld9FublDXNUdR8Yp809ohAnGJfm0t5uddXJQZansMNBVm+t1oaQQCWwnbTpYKEbXaCZBXnZW28zoxl+L7w5OoVCP8QqRzzlaP6zdM23CjHqM474YB0GCIVC/YTue1dlymPpn0gr4b1HiUv9d0tFpyZkxOWfDdNe7sRljmU4OdJRc7IH8at9fjEKAf9UtS6fuBzA4k3m+vf/2fik7lca/Vlq45Bi0ZjVn6fc0S7bHsIHJRgMDhOWcCtrK73+Le6qGegILpYsLCzMqaioIMkhe9cxKQBEOk5s9gc/WmugPAPlpBaJMB0T2flONQMdCoQLCq4AFtiZ1kjFKZXSySkTofJMnDCR+WhHfJL4uvw6NW1uJKy0+e0I0GMSg4OEZxG+m0LgKpW6UtEImANIuM/NmbbiilTd7j7DweAvAVCOr4hWXoajtiE+Rf2rbVu/QMB/WVEgMNMV4usAK3dlKuqT6Psr1L8UfFncNKcqTPlahq4usBz5Bm6UnAAkbtrSnbM9Enm0dR4iHA7/QON8Jvg1B4cAGx3Hvg0qfTWYZagPESzY9W+iPG4yORdEe7iwoHAaANYobCj5sSc7jngKiPhixzFnbo959rRPUSj0NIDg85DeCa7CNlVEIveSB4BTlhu4dDOhBec3W8YdIGg8nBseLnR2H+Y2BuPsBh749bZYxXPQAH7EyG9VBZ+MnfZD761A8P2niHCNAi4aKm1bBZDYoqjKLGCQSw5NRbfuQrsH/IN27wd4gSfjodkDVOvyMxberKnKxaEhoYCQ4lS/rp+JE5eLqQFw8HSYjiwcsf0GAGwYAvNjk9I9B7x9ul/R/kvB6VOL/ylHSpvfCCT+DhjkEUjWOdS+MC9wtk8oj8LNeg+nP7cD2RbDl3mB1CuY42m0/Q7A2WzEol/2C/WhcF7gEpwbfdWv6j9G3SuA3t9VXCcKNP9NrqqXUJ/o+xuqokwEANsL/3kcmKcU0bhzgf5/D3fjfZvJeXCpbs7SfD9H9T6aJl9VuBglpHsLjgZXc409DTfsFBAShxTKbGjK5wG8fgUseK7G2Fz0EUVkrQYMliGYuAIh5VNp3G4RhRr0VIIZ9/9w3pcHtvXXB/7xJ6L58ZlrDnhUSG0QZl+EI8d7dYWfgQOQ0UBrdNz4DUhYGIsaDmS8BMeGP4G78g9cDOrvw71dSOkmBEi+y4W6nBSZ5fDZFZAKaIClmVxM0pjyPXS9WNFEAK4XxYk/xD2E16SZXI6w2BAAjdF+n38cImf3ScN4PaEoS7J0/+UAiDMQANmOAwkACmcy/NfX0Y+G4MYWMMN3kb9XMGUSPm+3YupyLeyF9F0w5EzLdWN6tHIaULCJs+EwQg2nhPMDE+HTjzAc+zqZSCyxuG99RoZ6ueDqfwCX7qC5C9dew6qrlyRzgyvhSms4fCh3hKiG1vpXJnf9ruQPYdzPhsDe0SB3x/tcH9bVkrS4wlTFugdv3sRS5V091Qx1E478KuCpXgaVlGta1iYg87DP4TNwfAbXVUQh5RpU6TcA3U5yOEiLYzsErTc5Kgdmh4KXbgX1X13dt74kFK9FVCJE71B5C2kDcUngMcXlD+Igfr1hW78WTAMbYnMln4nLZtP7YKchMX5I0y5EHLPBVPWNVvItqoOEM2r+Mpzqn4Xy8kYjSHQOxn81wiINJbIQs0G8nIsS+LUbiLjUACr7athiDTr2l2RIcRx4N8a5C141fYaAs6FJ130Mwc0yVfe96oTCcfh+q8AI95BaR5104YhRo55T0dRbNxKC9jBldL7Z+qPygcKV3vntwXRDgASB7cVQY+MRIxmFgMO9kDBT6Mr1sE3r4S++T2oY/vFDW6sqhyNOPTzR4FyAu0azoMrq6SzV4Y4XyAiFmuHKMuAu14tYkfuyz0iOT1rmhWh/PyQvA6r0afR2Cu01DgT+05XOWQaTZyRN50xDusAS0gABLVDBowatwWD2q3jhiqrdAUbIRSj+FRR7pgn2lmJxJpjQYxqqX1hQMEYkrXE4NDcpOgZNMY3GMTk7HTHwM23TvAH++4a4ZZ7hWObl0Be/hwkqwkWEF8NDhwapj47pMyOwt1FYIVQo6AKS0MZ5AtFxil2/4xBpMYgIhnd3S028BhD1EUKGfWDf34GErwVKjuAu51TcXwrAVudlDdD/jqjRI4iqURgLZ7KezYYuZmMR2hyKGbxBoxUHC2/M9vkX4s7Wym2Vlbcbjnk7olhgBr4bZ7AmbNzocmw07mZV6br6gB9hWCIW1gA67k99+/b9EOtb51fVieg7CuC3GnYcEBN6hfFmAKTlaHAyEHkJoXJiIhy1/zxhO0uJOWGzR9I4uPrUBAD7pFB8FxYHw3MyVd8Tanb2q+XRypsxn99ibn2Z4h+8f+T9uc+OwPvnQESGCXF2c1XxojRpn/59VlFWAI1bADvryP3AJr9J4uMwexlJuOk614LogwCENvj8fAMYKAeA604IEQ547AQ2+ZLh4cIPfCp/CfZ2JSbxNA3oWvZKPIqUzKz1sKOv+1XfHxEb3owbWI8iuPMA3LyZJcHQe/0yM98HCj8F+nWhAgMJ8noagfqg1HJBTv4P0C1CtWwR5pg0TfAHIW3BfHHHehhE3pul6UvwsxLSGLKZfXdVTdUSw7b/irj6PSWh8NI+Ki4OIGZkcudN3KRZDt4cZzXHN+HbQmiw2ZbjLItb8TZz5w3e+uszJzDFoHEkMWNvk33CxuZ6L7SYPsF/lydVCkpNsiz2M6pnczmv2UhMho/5Nr1HqqsX7UsmxmB3yxDu+74dbxpTGYutxIHBWsSRzwUoOgNocyVu0twbt6zzUpf0Kmqr3rEt86sg5kJI+ni4y88kXGtc5ceVdeXVkdss05gCCTsJAvuxaZmnRmKRZTARb1M92EKDxk4l2My5uEo0w1X4g1RGPi2Mcxmk8mH4sOWGYZwFBbYVtlgHR46trK5ejGrS3yerDMzwY0j4mVLIdxKu+3W65IDLfS/DZTsV6m4rvp3jmO7dFpMT6VJCasz0J+r0TJpw1fAXcAHssoPxg9NHJAI7hnn2nFmrl6aXH8v3zA585hJMy4BBPCyfuGe24v9nL73uBxO4wY0PeAiwgERcCuhpAiire2l4oOg0mznvwNm5r7yqgoID7RLcjYHwSWug+jQMeN72yPaF7SrgBYDlJXyn4Ei838ABA9es+bQPPnbsWDVWEdkJ2z4AiPcfADYXduzn8/zeqwSGe4Fk73YtUQlw8RFePsTp7LpdexIEano0cduegtgHgjxQENK9Es9PEThtwMzGPXsuwPuLaWVeNhaJjCPidiw/Wt57jcB0wIALA2ubnMR5c2etq8cGdVtqu7OpQMxl0BHEOA0AJBNPPPHErHXr1nUGROJArzGArctR91MEBgK8DKomgmdOd8b/vNTtNRuMSz7460LVnX7O7YQyjyhxca31JBB4NE4ynwbxXoAEZsUb9k3qbNOhdsn+E2EnDMefp6TXGTNmjIZ+JiEo8hL66bW9Sp/D4eZ7bdL4uyCW7R9w8q5P9m1YuOqJ1xetevLON9Y9f96KD1/Ol3f2bEQNkacyEM5SfNrzGTLrFeQpFDi1s82CmVA1hb8I/vO7Saudfd1X3/AttPkSSDsfka6jEgj2GoFpcxEUF5rQ8zRdG+8IHIvt+mjBW1te+PCWwOlf7WzzD6WMQBHiRFNAsIVbt26tX1+1/hP0sxgaZFxpqHRIJ30qmysq1kNCt4DYpKbbEi7vQT3z6NbKypVo36t71TaJw8z0mg0mzGzZBivfsYrt2Rdje+P1iLUmAHBxt9k5+Bj0gdYbi0YnwOYOwgnTM211JXsB+QsMlqDToq4OM17EFH86BhcA1lRUNNJl92RT80Qg/Xlt/RyFmV7jSqhJ1pTczbbUvMfq91XjKM7AnSycrvaw5gNYKiM6IDpUUhQM30Q/GKjYo00LmvayHX9BTc+HBPsapLyIvplNiW9DC/TDUQFdwDtqU69JcMsO4Z4w/T8OrYnuWeMvAJhoAhzqgTRixIgBdsI4nwAdpPjuVJcgnJfF4+TiQPHx5VXlG1PfUk9S08XB0OZWNP0U2pB6rtpWue1fxJxHa+o5CcapDrlCB9oLAqOqjuNvhCgROF+HvxC8rVGNr+2JDbTixhQQBr2LCxG40NN/cIOT/Fwkm3ziThPCL/NhSr5NthosdxF89ZdB3Bbu6LTF579wvzgd5lxxkjPHMK0mcMwEbMpxrULTrlcivpTObtsUC6TrPLu79uNlf74zkmxX6TBeQIsyHOntygsHFi5dutRO7wouz+KGXbs/AQC7AkxwW2eE01XxIv5+d7Yh43Mx0xz8GcNRrZ5p/T1G4IVPbV6O/pZ/69LCgD/LtwBXFkrpGk0qkTqWtrtBce0J981cU5Uq76nnyKKiE0Cck8FEv+tIXBoDYUirKBD6OzisbFhh4Rkoeqvj2Ju2b//IU9Oww5Dk6m2RbSuOZvVM6+s5Fd26W/+cX1EFsu7pqKppo+BK7jkSxKWh8b/oldFTkeI5enaWoKZfonIAsE59Yq8NF63RrKNfPdN6jgh6mFA24h38pf5p+Gv6tr9sIFZCqPLdOdesON3byGO/emUHelyCW2fdFeN0Vd4ri/0iDnJECAxtHG+HqDEKXXaHFKff+vsi7nevr/mIEDghjOn4v57uwd3nOo+w0q0zDOeeRKLlvzTo9VV+gQc8oiqTEHX+Cf3OzQnzRY98v+eR8xeYbge99P8DPkYiqAGuQyEAAAAASUVORK5CYII=
 description: Amazon Web Services Identity and Access Management (IAM)
 configuration:
-- display: AWS Access Key
-  name: accesskey
+- display: Role Arn
+  name: roleArn
   defaultvalue: ""
   type: 0
-  required: true
-- display: AWS Secret Key
-  name: secretkey
+  required: false
+- display: Role Session Name
+  name: roleSessionName
   defaultvalue: ""
-  type: 4
-  required: true
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |+
     import boto3
-    from datetime import datetime
+    import datetime
 
-    AWS_ACCESS_KEY = demisto.params()['accesskey']
-    AWS_SECRET_KEY = demisto.params()['secretkey']
+    AWS_DEFAULT_REGION = None
+    AWS_roleArn = demisto.params()['roleArn']
+    AWS_roleSessionName = demisto.params()['roleSessionName']
+    AWS_roleSessionDuration = demisto.params()['sessionDuration']
+    AWS_rolePolicy = None
 
-    client = boto3.client('iam',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+    class DatetimeEncoder(json.JSONEncoder):
+      def default(self, obj):
+        if isinstance (obj, datetime.datetime):
+            return obj.strftime ('%Y-%m-%dT%H:%M:%S')
+        elif isinstance (obj, datetime.date):
+            return obj.strftime ('%Y-%m-%d')
+        elif isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S')
+        elif isinstance(obj, date):
+            return obj.strftime('%Y-%m-%d')
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
     def create_entry(title,data, ec):
         return {
@@ -37,281 +56,766 @@ script:
             'EntryContext': ec
         }
 
-    def create_user(args):
-        if args.get('path') is not None:
-            response = client.create_user(UserName=args.get('userName'),Path=args.get('path'))
-        else:
-            response = client.create_user(UserName=args.get('userName'))
-        user = response['User']
-        data = {
-            'UserName': user['UserName'],
-            'UserId': user['UserId'],
-            'Arn': user['Arn'],
-            'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
-            'Path': user['Path'],
+    def raise_error(error):
+        return {
+            'Type' : entryTypes['error'],
+            'ContentsFormat' : formats['text'],
+            'Contents' : str(error)
         }
-        if args.get('managementConsoleAccess') == 'Yes':
-            loginProfile = client.create_login_profile(
-                        UserName=args.get('userName'),
-                        Password=args.get('password'),
-                        PasswordResetRequired=True if args.get('passwordResetRequired') == 'True'  else False
-                    )
-            data.update({'ManegmentConsolePassword':args.get('password')})
-        if args.get('programmaticAccess') == 'Yes':
-            iam = client.create_access_key(UserName=args.get('userName'))
-            AccessKey = iam['AccessKey']
-            data.update({'AccessKey':{
+
+    def create_user(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {'UserName':args.get('userName')}
+            if args.get('path'):
+                kwargs.update({'Path':args.get('path')})
+
+            response = client.create_user(**kwargs)
+            user = response['User']
+            data = ({
+                'UserName': user['UserName'],
+                'UserId': user['UserId'],
+                'Arn': user['Arn'],
+                'CreateDate': datetime.datetime.strftime(user['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                'Path':user['Path'],
+            })
+            ec = {'AWS.IAM.Users': data}
+            return create_entry('AWS IAM Users', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def create_login_profile(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'UserName':args.get('userName'),
+                'Password':args.get('password')
+                }
+            if args.get('passwordResetRequired'):
+                kwargs.update({'PasswordResetRequired':True if args.get('passwordResetRequired') == 'True'  else False})
+
+            response = client.create_login_profile(**kwargs)
+            LoginProfile = response['LoginProfile']
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Login Profile Was Created For user {0} ".format(args.get('userName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def get_user(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.get_user(UserName=args.get('userName'))
+            user = response['User']
+            data = ({
+                'UserName': user['UserName'],
+                'UserId': user['UserId'],
+                'Arn': user['Arn'],
+                'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                'PasswordLastUsed': datetime.datetime.strftime(user['PasswordLastUsed'], '%Y-%m-%dT%H:%M:%S'),
+                'Path':user['Path'],
+            })
+            ec = {'AWS.IAM.Users': data}
+            return create_entry('AWS IAM Users', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_users():
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data = []
+            paginator = client.get_paginator('list_users')
+            for response in paginator.paginate():
+                for user in response['Users']:
+                    data.append ({
+                        'UserName': user['UserName'],
+                        'UserId': user['UserId'],
+                        'Arn': user['Arn'],
+                        'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
+                        'PasswordLastUsed': datetime.datetime.strftime(user['PasswordLastUsed'], '%Y-%m-%dT%H:%M:%S'),
+                        'Path': user['Path'],
+                    })
+            ec = {'AWS.IAM.Users': data}
+            return create_entry('AWS IAM Users', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def update_user(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {'UserName': args.get('oldUserName')}
+            if args.get('newUserName'):
+                kwargs.update({'NewUserName':args.get('newUserName')})
+            if args.get('newPath'):
+                kwargs.update({'NewPath':args.get('newPath')})
+
+            response = client.update_user(**kwargs)
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Changed UserName {0} To: {1}".format(args.get('oldUserName'), args.get('newUserName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def delete_user(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.delete_user(UserName=args.get('userName'))
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return 'The User {0} has been deleted'.format(args.get('userName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def update_login_profile(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.update_login_profile(
+                Password=args.get('newPassword'),
+                UserName=args.get('userName'),
+                 PasswordResetRequired=True if args.get('passwordResetRequired') == 'True'  else False
+                )
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The user {0} Password was changed".format(args.get('userName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def create_group(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {'GroupName':args.get('groupName')}
+            if args.get('path') is not None:
+                kwargs.update({'Path':args.get('path')})
+
+            response = client.create_group(**kwargs)
+            group = response['Group']
+            data = ({
+                'GroupName': group['GroupName'],
+                'GroupId': group['GroupId'],
+                'Arn': group['Arn'],
+                'CreateDate': datetime.datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                'Path': group['Path'],
+            })
+            ec = {'AWS.IAM.Groups': data}
+            return create_entry('AWS IAM Groups', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_groups():
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data = []
+            paginator = client.get_paginator('list_groups')
+            for response in paginator.paginate():
+                for group in response['Groups']:
+                    data.append ({
+                        'GroupName': group['GroupName'],
+                        'GroupId': group['GroupId'],
+                        'Arn': group['Arn'],
+                        'CreateDate': datetime.datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                        'Path': group['Path'],
+                    })
+            ec = {'AWS.IAM.Groups': data}
+            return create_entry('AWS IAM Groups', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_groups_for_user(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data=[]
+            response = client.list_groups_for_user(UserName=args.get('userName'))
+            for group in response['Groups']:
+                data.append ({
+                    'UserName': args.get('userName'),
+                    'GroupName': group['GroupName'],
+                    'GroupId': group['GroupId'],
+                    'Arn': group['Arn'],
+                    'CreateDate': datetime.datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                    'Path': group['Path'],
+                    })
+
+            ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).Groups': data}
+            return create_entry('AWS IAM User Groups', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def add_user_to_group(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.add_user_to_group(
+                GroupName=args.get('groupName'),
+                UserName=args.get('userName')
+            )
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The user {0} was added to the IAM group: {1}".format(args.get('userName'), args.get('groupName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def create_access_key(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.create_access_key(UserName=args.get('userName'))
+            AccessKey = response['AccessKey']
+            data = ({
                 'UserName': AccessKey['UserName'],
                 'AccessKeyId': AccessKey['AccessKeyId'],
                 'SecretAccessKey': AccessKey['SecretAccessKey'],
                 'Status': AccessKey['Status'],
-                'CreateDate': datetime.strftime(AccessKey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
-                }})
+                'CreateDate': datetime.datetime.strftime(AccessKey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
+            })
 
-        ec = {'AWS.IAM.Users': data}
-        return create_entry('AWS IAM Users', data, ec)
+            ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).AccessKeys': data}
+            return create_entry('AWS IAM Users', data, ec)
 
-    def get_user(args):
-        response = client.get_user(UserName=args.get('userName'))
-        user = response['User']
-        data = ({
-            'UserName': user['UserName'],
-            'UserId': user['UserId'],
-            'Arn': user['Arn'],
-            'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-            'Path':user['Path'],
-        })
-        ec = {'AWS.IAM.Users': data}
-        return create_entry('AWS IAM Users', data, ec)
-
-    def list_users():
-        data = []
-        paginator = client.get_paginator('list_users')
-        for response in paginator.paginate():
-            for user in response['Users']:
-                data.append ({
-                    'UserName': user['UserName'],
-                    'UserId': user['UserId'],
-                    'Arn': user['Arn'],
-                    'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
-                    'Path': user['Path'],
-                })
-        ec = {'AWS.IAM.Users': data}
-        return create_entry('AWS IAM Users', data, ec)
-
-    def update_user(args):
-        kwargs = {'UserName': args.get('oldUserName')}
-        if args.get('newUserName'):
-            kwargs.update({'NewUserName': args.get('newUserName')})
-        if args.get('newPath'):
-            kwargs.update({'NewPath': args.get('newPath')})
-
-        response = client.update_user(**kwargs)
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "Changed UserName {0} To: {1}".format(args.get('oldUserName'), args.get('newUserName'))
-
-    def delete_user(args):
-        response = client.delete_user(UserName=args.get('userName'))
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'The User {0} has been deleted'.format(args.get('userName'))
-
-    def change_user_password(args):
-        response = client.update_login_profile(
-            Password=args.get('newPassword'),
-            UserName=args.get('userName'),
-             PasswordResetRequired=True if args.get('passwordResetRequired') == 'True'  else False
-            )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "The user {0} Password was changed".format(args.get('userName'))
-
-    def create_group(args):
-        if args.get('path') is not None:
-            response = client.create_group(GroupName=args.get('groupName'),Path=args.get('path'))
-        else:
-            response = client.create_group(GroupName=args.get('groupName'))
-        group = response['Group']
-        data = ({
-            'GroupName': group['GroupName'],
-            'GroupId': group['GroupId'],
-            'Arn': group['Arn'],
-            'CreateDate': datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-            'Path': group['Path'],
-        })
-        ec = {'AWS.IAM.Groups': data}
-        return create_entry('AWS IAM Groups', data, ec)
-
-    def list_groups():
-        data = []
-        paginator = client.get_paginator('list_groups')
-        for response in paginator.paginate():
-            for group in response['Groups']:
-                data.append ({
-                    'GroupName': group['GroupName'],
-                    'GroupId': group['GroupId'],
-                    'Arn': group['Arn'],
-                    'CreateDate': datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-                    'Path': group['Path'],
-                })
-        ec = {'AWS.IAM.Groups': data}
-        return create_entry('AWS IAM Groups', data, ec)
-
-    def list_groups_for_user(args):
-        data=[]
-        response = client.list_groups_for_user(UserName=args.get('userName'))
-        for group in response['Groups']:
-            data.append ({
-                'UserName': args.get('userName'),
-                'GroupName': group['GroupName'],
-                'GroupId': group['GroupId'],
-                'Arn': group['Arn'],
-                'CreateDate': datetime.strftime(group['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-                'Path': group['Path'],
-                })
-
-        ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).Groups': data}
-        return create_entry('AWS IAM User Groups', data, ec)
-
-    def add_user_to_group(args):
-        response = client.add_user_to_group(
-            GroupName=args.get('groupName'),
-            UserName=args.get('userName')
-        )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "The user {0} was added to the IAM group: {1}".format(args.get('userName'), args.get('groupName'))
-
-    def create_access_key(args):
-        response = client.create_access_key(UserName=args.get('userName'))
-        AccessKey = response['AccessKey']
-        data = ({
-            'UserName': AccessKey['UserName'],
-            'AccessKeyId': AccessKey['AccessKeyId'],
-            'SecretAccessKey': AccessKey['SecretAccessKey'],
-            'Status': AccessKey['Status'],
-            'CreateDate': datetime.strftime(AccessKey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
-        })
-
-        ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).AccessKeys': data}
-        return create_entry('AWS IAM Users', data, ec)
+        except Exception as e:
+            return raise_error(e)
 
     def update_access_key(args):
-        response = client.update_access_key(
-            UserName=args.get('userName'),
-            AccessKeyId=args.get('accessKeyId'),
-            Status=args.get('status')
-            )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "Access Key with ID {0} was set to status {1}:".format(args.get('accessKeyId'),args.get('status'))
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.update_access_key(
+                UserName=args.get('userName'),
+                AccessKeyId=args.get('accessKeyId'),
+                Status=args.get('status')
+                )
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Access Key with ID {0} was set to status {1}:".format(args.get('accessKeyId'),args.get('status'))
+
+        except Exception as e:
+            return raise_error(e)
 
     def list_access_key_for_user(args):
-        data =[]
-        response = client.list_access_keys(UserName=args.get('userName'))
-        for accesskey in response['AccessKeyMetadata']:
-            data.append({
-                'UserName': accesskey['UserName'],
-                'AccessKeyId': accesskey['AccessKeyId'],
-                'Status': accesskey['Status'],
-                'CreateDate': datetime.strftime(accesskey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
-            })
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data =[]
+            response = client.list_access_keys(UserName=args.get('userName'))
+            for accesskey in response['AccessKeyMetadata']:
+                data.append({
+                    'UserName': accesskey['UserName'],
+                    'AccessKeyId': accesskey['AccessKeyId'],
+                    'Status': accesskey['Status'],
+                    'CreateDate': datetime.datetime.strftime(accesskey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
+                })
 
-        ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).AccessKeys': data}
-        return create_entry('AWS IAM Users Access Keys', data, ec)
+            ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).AccessKeys': data}
+            return create_entry('AWS IAM Users Access Keys', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
 
     def list_policies(args):
-        data = []
-        response = client.list_policies(
-            Scope=args.get('scope'),
-            OnlyAttached=True if args.get('onlyAttached') == 'True'  else False
-            )
-        for policy in response['Policies']:
-            data.append({
-                'PolicyName': policy['PolicyName'],
-                'PolicyId': policy['PolicyId'],
-                'Arn': policy['Arn'],
-                'Path': policy['Path'],
-                'DefaultVersionId': policy['DefaultVersionId'],
-                'IsAttachable': policy['IsAttachable'],
-                'AttachmentCount': policy['AttachmentCount'],
-                'CreateDate': datetime.strftime(policy['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-                'UpdateDate': datetime.strftime(policy['UpdateDate'], '%Y-%m-%dT%H:%M:%S'),
-            })
-        ec = {'AWS.IAM.Policies': data}
-        return create_entry('AWS IAM Policies', data, ec)
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data = []
+            response = client.list_policies(
+                Scope=args.get('scope'),
+                OnlyAttached=True if args.get('onlyAttached') == 'True'  else False
+                )
+            for policy in response['Policies']:
+                data.append({
+                    'PolicyName': policy['PolicyName'],
+                    'PolicyId': policy['PolicyId'],
+                    'Arn': policy['Arn'],
+                    'Path': policy['Path'],
+                    'DefaultVersionId': policy['DefaultVersionId'],
+                    'IsAttachable': policy['IsAttachable'],
+                    'AttachmentCount': policy['AttachmentCount'],
+                    'CreateDate': datetime.datetime.strftime(policy['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                    'UpdateDate': datetime.datetime.strftime(policy['UpdateDate'], '%Y-%m-%dT%H:%M:%S'),
+                })
+            ec = {'AWS.IAM.Policies': data}
+            return create_entry('AWS IAM Policies', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
 
     def list_roles(args):
-        data = []
-        paginator = client.get_paginator('list_roles')
-        for response in paginator.paginate():
-            for role in response['Roles']:
-                data.append ({
-                    'RoleName': role['RoleName'],
-                    'RoleId': role['RoleId'],
-                    'Arn': role['Arn'],
-                    'CreateDate': datetime.strftime(role['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-                    'Path': role['Path'],
-                    'AssumeRolePolicyDocument': role['AssumeRolePolicyDocument'],
-                    'Description': role['Description'],
-                    'MaxSessionDuration': role['MaxSessionDuration']
-                })
-        ec = {'AWS.IAM.Roles': data}
-        return create_entry('AWS IAM Roles', data, ec)
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data = []
+            paginator = client.get_paginator('list_roles')
+            for response in paginator.paginate():
+                for role in response['Roles']:
+                    data.append ({
+                        'RoleName': role['RoleName'],
+                        'RoleId': role['RoleId'],
+                        'Arn': role['Arn'],
+                        'CreateDate': datetime.datetime.strftime(role['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                        'Path': role['Path'],
+                        #'AssumeRolePolicyDocument': role['AssumeRolePolicyDocument'],
+                        #'Description': role['Description'],
+                        #'MaxSessionDuration': role['MaxSessionDuration']
+                    })
+
+            output,append(json.dumps(instanceProfile, cls=DatetimeEncoder))
+            raw = json.loads(output)
+            ec = {'AWS.IAM.Roles': raw}
+            return create_entry('AWS IAM Roles', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
 
     def attach_policy(args):
-        if args.get('type') == 'User':
-            response = client.attach_user_policy(
-                UserName=args.get('entityName'),
-                PolicyArn=args.get('policyArn')
-            )
-        if args.get('type') == 'Group':
-            response = client.attach_group_policy(
-                GroupName=args.get('entityName'),
-                PolicyArn=args.get('policyArn')
-            )
-        if args.get('type') == 'Role':
-            response = client.attach_role_policy(
-                RoleName=args.get('entityName'),
-                PolicyArn=args.get('policyArn')
-            )
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            if args.get('type') == 'User':
+                response = client.attach_user_policy(
+                    UserName=args.get('entityName'),
+                    PolicyArn=args.get('policyArn')
+                )
+            if args.get('type') == 'Group':
+                response = client.attach_group_policy(
+                    GroupName=args.get('entityName'),
+                    PolicyArn=args.get('policyArn')
+                )
+            if args.get('type') == 'Role':
+                response = client.attach_role_policy(
+                    RoleName=args.get('entityName'),
+                    PolicyArn=args.get('policyArn')
+                )
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "Policy was attached to {0}: {1} ".format(args.get('type'),args.get('entityName'))
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Policy was attached to {0}: {1} ".format(args.get('type'),args.get('entityName'))
 
+        except Exception as e:
+            return raise_error(e)
 
     def detach_policy(args):
-        if args.get('type') == 'User':
-            response = client.detach_user_policy(
-                UserName=args.get('entityName'),
-                PolicyArn=args.get('policyArn')
-            )
-        if args.get('type') == 'Group':
-            response = client.detach_group_policy(
-                GroupName=args.get('entityName'),
-                PolicyArn=args.get('policyArn')
-            )
-        if args.get('type') == 'Role':
-            response = client.detach_role_policy(
-                RoleName=args.get('entityName'),
-                PolicyArn=args.get('policyArn')
-            )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "Policy was deattached from {0}: {1} ".format(args.get('type'),args.get('entityName'))
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            if args.get('type') == 'User':
+                response = client.detach_user_policy(
+                    UserName=args.get('entityName'),
+                    PolicyArn=args.get('policyArn')
+                )
+            if args.get('type') == 'Group':
+                response = client.detach_group_policy(
+                    GroupName=args.get('entityName'),
+                    PolicyArn=args.get('policyArn')
+                )
+            if args.get('type') == 'Role':
+                response = client.detach_role_policy(
+                    RoleName=args.get('entityName'),
+                    PolicyArn=args.get('policyArn')
+                )
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "Policy was deattached from {0}: {1} ".format(args.get('type'),args.get('entityName'))
+
+        except Exception as e:
+            return raise_error(e)
 
     def delete_login_profile(args):
-        response = client.delete_login_profile(UserName=args.get('userName'))
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "The user {0} login profile has been deleted".format(args.get('userName'))
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.delete_login_profile(UserName=args.get('userName'))
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The user {0} login profile has been deleted".format(args.get('userName'))
+
+        except Exception as e:
+            return raise_error(e)
 
     def delete_group(args):
-        response = client.delete_group(GroupName=args.get('groupName'))
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "The Group {0} has been deleted".format(args.get('groupName'))
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.delete_group(GroupName=args.get('groupName'))
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Group {0} has been deleted".format(args.get('groupName'))
+
+        except Exception as e:
+            return raise_error(e)
 
     def remove_user_from_group(args):
-        response = client.remove_user_from_group(
-            GroupName=args.get('groupName'),
-            UserName=args.get('userName')
-        )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return "The User {0} has been removed from the group {1}".format(args.get('userName'),args.get('groupName'))
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.remove_user_from_group(
+                GroupName=args.get('groupName'),
+                UserName=args.get('userName')
+            )
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The User {0} has been removed from the group {1}".format(args.get('userName'),args.get('groupName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def delete_access_key(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'UserName':args.get('userName'),
+                'AccessKeyId':args.get('AccessKeyId')
+                }
+
+            response = client.delete_access_key(**kwargs)
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Access Key was deleted"
+
+        except Exception as e:
+            return raise_error(e)
+
+    def create_instance_profile(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {'InstanceProfileName':args.get('instanceProfileName')}
+            if args.get('path') is not None:
+                kwargs.update({'Path':args.get('path')})
+
+            response = client.create_instance_profile(**kwargs)
+            instanceProfile = response['InstanceProfile']
+            data = ({
+                'Path': instanceProfile['Path'],
+                'InstanceProfileName': instanceProfile['InstanceProfileName'],
+                'InstanceProfileId': instanceProfile['Path'],
+                'Arn': instanceProfile['Arn'],
+                'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+            })
+
+            ec = {'AWS.IAM.InstanceProfiles': data}
+            return create_entry('AWS IAM InstanceProfile', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def delete_instance_profile(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.delete_instance_profile(InstanceProfileName=args.get('instanceProfileName'))
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The InstanceProfile: {0} was deleted".format(args.get('instanceProfileName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_instance_profiles(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            output =[]
+            data = []
+            paginator = client.get_paginator('list_instance_profiles')
+            for response in paginator.paginate():
+                for instanceProfile in response['InstanceProfiles']:
+                    data.append ({
+                        'Path': instanceProfile['Path'],
+                        'InstanceProfileName': instanceProfile['InstanceProfileName'],
+                        'InstanceProfileId': instanceProfile['InstanceProfileId'],
+                        'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                        'Arn': instanceProfile['Arn'],
+                        'RoleName': instanceProfile['Roles']['RoleName'],
+                        'RoleId': instanceProfile['Roles']['RoleId'],
+                        'RoleArn': instanceProfile['Roles']['Arn'],
+                    })
+            output,append(json.dumps(instanceProfile, cls=DatetimeEncoder))
+            raw = json.loads(output)
+            ec = {'AWS.IAM.InstanceProfiles': raw}
+            return create_entry('AWS IAM Instance Profiles', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def add_role_to_instance_profile(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'InstanceProfileName':args.get('instanceProfileName'),
+                'RoleName':args.get('roleName')
+            }
+
+            response = client.add_role_to_instance_profile(**kwargs)
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Role: {0} was added to the Instance Profile: {1}".format(args.get('roleName'),args.get('instanceProfileName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def remove_role_from_instance_profile(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'InstanceProfileName':args.get('instanceProfileName'),
+                'RoleName':args.get('roleName')
+            }
+
+            response = client.remove_role_from_instance_profile(**kwargs)
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Role: {0} was removed from the Instance Profile: {1}".format(args.get('roleName'),args.get('instanceProfileName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_instance_profiles_for_role(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            output =[]
+            data = []
+            paginator = client.get_paginator('list_instance_profiles_for_role')
+            for response in paginator.paginate(RoleName=args.get('roleName')):
+                for instanceProfile in response['InstanceProfiles']:
+                    data.append ({
+                        'Path': instanceProfile['Path'],
+                        'InstanceProfileName': instanceProfile['InstanceProfileName'],
+                        'InstanceProfileId': instanceProfile['InstanceProfileId'],
+                        'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                        'Arn': instanceProfile['Arn'],
+                    })
+                output,append(json.dumps(instanceProfile, cls=DatetimeEncoder))
+            raw = json.loads(output)
+            ec = {'AWS.IAM.InstanceProfiles': raw}
+            return create_entry('AWS IAM Instance Profiles', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def get_instance_profile(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.get_instance_profile(InstanceProfileName=args.get('instanceProfileName'))
+            instanceProfile = response['InstanceProfile']
+            data = ({
+                'Path': instanceProfile['Path'],
+                'InstanceProfileName': instanceProfile['InstanceProfileName'],
+                'InstanceProfileId': instanceProfile['InstanceProfileId'],
+                'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                'Arn': instanceProfile['Arn'],
+                'RoleName': instanceProfile['Roles']['RoleName'],
+                'RoleId': instanceProfile['Roles']['RoleId'],
+                'RoleArn': instanceProfile['Roles']['Arn'],
+            })
+            output = (json.dumps(instanceProfile, cls=DatetimeEncoder))
+            raw = json.loads(output)
+            ec = {'AWS.IAM.InstanceProfiles': raw}
+            return create_entry('AWS IAM Instance Profiles', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def get_role(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.get_role(RoleName=args.get('roleName'))
+            role = response['Role']
+            data = ({
+                'RoleName': role['RoleName'],
+                'RoleId': role['RoleId'],
+                'Arn': role['Arn'],
+                'CreateDate': datetime.datetime.strftime(role['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                'Path': role['Path'],
+            })
+            output = (json.dumps(response['Role'], cls=DatetimeEncoder))
+            raw = json.loads(output)
+            ec = {'AWS.IAM.Roles': response['raw']}
+            return create_entry('AWS IAM Roles', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def delete_role(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.delete_role(RoleName=args.get('roleName'))
+
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Role: {0} was deleted".format(args.get('roleName'))
+
+        except Exception as e:
+            return raise_error(e)
+
+    def create_role(args):
+        try:
+            client = aws_session(
+                    service = 'iam',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'RoleName':args.get('roleName'),
+                'AssumeRolePolicyDocument':args.get('assumeRolePolicyDocumentName')
+            }
+            if args.get('path') is not None:
+                kwargs.update({'Path':args.get('path')})
+            if args.get('description') is not None:
+                kwargs.update({'Description':args.get('description')})
+            if args.get('maxSessionDuration') is not None:
+                kwargs.update({'MaxSessionDuration':int(args.get('maxSessionDuration'))})
+
+            response = client.create_role(**kwargs)
+            role = response['Role']
+            data = ({
+                'RoleName': role['RoleName'],
+                'RoleId': role['RoleId'],
+                'Arn': role['Arn'],
+                'Path': role['Path'],
+            })
+            output = (json.dumps(response['Role'], cls=DatetimeEncoder))
+            raw = json.loads(output)
+            ec = {'AWS.IAM.Roles': response['raw']}
+            return create_entry('AWS IAM Roles', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -321,6 +825,9 @@ script:
 
     if demisto.command() == 'aws-iam-create-user':
         result = create_user(demisto.args())
+
+    if demisto.command() == 'aws-iam-create-login-profile':
+        result = create_login_profile(demisto.args())
 
     if demisto.command() == 'aws-iam-get-user':
         result = get_user(demisto.args())
@@ -334,8 +841,8 @@ script:
     if demisto.command() == 'aws-iam-delete-user':
         result = delete_user(demisto.args())
 
-    if demisto.command() == 'aws-iam-change-user-password':
-        result = change_user_password(demisto.args())
+    if demisto.command() == 'aws-iam-update-login-profile':
+        result = update_login_profile(demisto.args())
 
     if demisto.command() == 'aws-iam-create-group':
         result = create_group(demisto.args())
@@ -379,6 +886,39 @@ script:
     if demisto.command() == 'aws-iam-remove-user-from-group':
         result = remove_user_from_group(demisto.args())
 
+    if demisto.command() == 'aws-iam-delete-access-key':
+        result = delete_access_key(demisto.args())
+
+    if demisto.command() == 'aws-iam-create-instance-profile':
+        result = create_instance_profile(demisto.args())
+
+    if demisto.command() == 'aws-iam-delete-instance-profile':
+        result = delete_instance_profile(demisto.args())
+
+    if demisto.command() == 'aws-iam-list-instance-profiles':
+        result = list_instance_profiles(demisto.args())
+
+    if demisto.command() == 'aws-iam-add-role-to-instance-profile':
+        result = add_role_to_instance_profile(demisto.args())
+
+    if demisto.command() == 'aws-iam-remove-role-from-instance-profile':
+        result = remove_role_from_instance_profile(demisto.args())
+
+    if demisto.command() == 'aws-iam-list-instance-profiles-for-role':
+        result = list_instance_profiles_for_role(demisto.args())
+
+    if demisto.command() == 'aws-iam-get-instance-profile':
+        result = get_instance_profile(demisto.args())
+
+    if demisto.command() == 'aws-iam-get-role':
+        result = get_role(demisto.args())
+
+    if demisto.command() == 'aws-iam-delete-role':
+        result = delete_role(demisto.args())
+
+    if demisto.command() == 'aws-iam-create_role':
+        result = create_role(demisto.args())
+
     demisto.results(result)
     sys.exit(0)
 
@@ -391,30 +931,14 @@ script:
     - name: path
       description: The path for the user name. This parameter is optional. If it is
         not included, it defaults to a slash (/).
-    - name: managementConsoleAccess
-      auto: PREDEFINED
-      predefined:
-      - "Yes"
-      - "No"
-      description: Enables a password that allows users to sign-in to the AWS Management
-        Console.
-    - name: programmaticAccess
-      auto: PREDEFINED
-      predefined:
-      - "Yes"
-      - "No"
-      description: Enables an access key ID and secret access key for the AWS API,
-        CLI, SDK, and other development tools.
-    - name: password
-      description: Set Management Console Password. Only use if managementConsoleAccess
-        is set to 'Yes"
-    - name: passwordResetRequired
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: Specifies whether the user is required to set a new password on
-        next sign-in. Only use if managementConsoleAccess is set to 'Yes"
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Users.UserName
       description: The friendly name identifying the user.
@@ -435,8 +959,16 @@ script:
   - name: aws-iam-get-user
     arguments:
     - name: userName
-      description: 'The name of the user to get information about.  This parameter
-        is optional. If it is not included, it defaults to the user making the request. '
+      required: true
+      description: The name of the user to get information about.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Users.UserName
       description: The friendly name identifying the user.
@@ -453,12 +985,22 @@ script:
     - contextPath: AWS.IAM.Users.Path
       description: The path to the user
       type: string
+    - contextPath: AWS.IAM.Users.PasswordLastUsed
+      description: The date and time,  when the user's password was last used to sign
+        in to an AWS website.
+      type: date
     description: Retrieves information about the specified IAM user, including the
-      user's creation date, path, unique ID, and ARN.  If you do not specify a user
-      name, IAM determines the user name implicitly based on the AWS access key ID
-      used to sign the request to this API.
+      user's creation date, path, unique ID, and ARN.
   - name: aws-iam-list-users
-    arguments: []
+    arguments:
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Users.UserName
       description: The friendly name identifying the user.
@@ -487,15 +1029,31 @@ script:
     - name: newPath
       description: New path for the IAM user. Include this parameter only if you're
         changing the user's path.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Updates the name and/or the path of the specified IAM user.
   - name: aws-iam-delete-user
     arguments:
     - name: userName
       required: true
       description: The name of the user to delete.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Deletes the specified IAM user. The user must not belong to any groups
       or have any access keys, signing certificates, or attached policies.
-  - name: aws-iam-change-user-password
+  - name: aws-iam-update-login-profile
     arguments:
     - name: userName
       description: The name of the user whose password you want to update.
@@ -508,6 +1066,14 @@ script:
       - "False"
       description: Allows this new password to be used only once by requiring the
         specified IAM user to set a new password on next sign-in.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Changes the password for the specified IAM user.
   - name: aws-iam-create-group
     arguments:
@@ -516,6 +1082,14 @@ script:
         value.
     - name: path
       description: The path to the group.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Groups.GroupName
       description: The friendly name that identifies the group.
@@ -534,7 +1108,15 @@ script:
       type: string
     description: Creates a new iam group.
   - name: aws-iam-list-groups
-    arguments: []
+    arguments:
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Groups.GroupName
       description: The friendly name that identifies the group.
@@ -557,6 +1139,14 @@ script:
     - name: userName
       required: true
       description: The name of the user to list groups for.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Users.Groups.GroupName
       description: The friendly name that identifies the group.
@@ -580,11 +1170,27 @@ script:
       description: The name of the user to add.
     - name: groupName
       description: The name of the group to update.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Adds the specified user to the specified group.
   - name: aws-iam-create-access-key
     arguments:
     - name: userName
       description: The name of the IAM user that the new key will belong to.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
       description: The ID for this access key.
@@ -617,6 +1223,14 @@ script:
       description: The status you want to assign to the secret access key. Active
         means that the key can be used for API calls to AWS, while Inactive means
         that the key cannot be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Changes the status of the specified access key from Active to Inactive,
       or vice versa. This operation can be used to disable a user's key as part of
       a key rotation workflow.
@@ -625,6 +1239,14 @@ script:
     - name: userName
       required: true
       description: The name of the user.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
       description: The ID for this access key.
@@ -663,6 +1285,14 @@ script:
         attached to an IAM user, group, or role. When OnlyAttached is false , or when
         the parameter is not included, all policies are returned.
       defaultValue: "False"
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Policies.PolicyName
       description: The friendly name (not ARN) identifying the policy.
@@ -697,7 +1327,15 @@ script:
     description: Lists all the managed policies that are available in your AWS account,
       including your own customer-defined managed policies and all AWS managed policies.
   - name: aws-iam-list-roles
-    arguments: []
+    arguments:
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.IAM.Roles.RoleName
       description: The friendly name that identifies the role.
@@ -757,12 +1395,28 @@ script:
         policy from.
     - name: policyArn
       description: The Amazon Resource Name (ARN) of the IAM policy you want to detach.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Removes the specified managed policy from the specified IAM Entity.
   - name: aws-iam-delete-login-profile
     arguments:
     - name: userName
       required: true
       description: The name of the user whose password you want to delete.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Deletes the password for the specified IAM user, which terminates
       the user's ability to access AWS services through the AWS Management Console.
   - name: aws-iam-delete-group
@@ -770,6 +1424,14 @@ script:
     - name: groupName
       required: true
       description: The name of the IAM group to delete.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Deletes the specified IAM group. The group must not contain any users
       or have any attached policies.
   - name: aws-iam-remove-user-from-group
@@ -780,6 +1442,407 @@ script:
     - name: groupName
       required: true
       description: The name of the group to update.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Removes the specified user from the specified group.
+  - name: aws-iam-create-login-profile
+    arguments:
+    - name: userName
+      required: true
+      description: The name of the IAM user to create a password for. The user must
+        already exist.
+    - name: password
+      required: true
+      description: The new password for the user.
+    - name: passwordResetRequired
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether the user is required to set a new password on
+        next sign-in.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Creates a password for the specified user, giving the user the ability
+      to access AWS services through the AWS Management Console.
+  - name: aws-iam-delete-access-key
+    arguments:
+    - name: userName
+      required: true
+      description: he name of the user whose access key pair you want to delete.
+    - name: AccessKeyId
+      description: The access key ID for the access key ID and secret access key you
+        want to delete.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Deletes the access key pair associated with the specified IAM user.
+  - name: aws-iam-create-instance-profile
+    arguments:
+    - name: instanceProfileName
+      required: true
+      description: The name of the instance profile to create.
+    - name: path
+      description: The path to the instance profile.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.IAM.InstanceProfiles.Path
+      description: The path to the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileName
+      description: The name identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileId
+      description: 'The stable and unique string identifying the instance profile. '
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Arn
+      description: 'The Amazon Resource Name (ARN) specifying the instance profile. '
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.CreateDate
+      description: The date when the instance profile was created.
+      type: date
+    description: Creates a new instance profile.
+  - name: aws-iam-delete-instance-profile
+    arguments:
+    - name: instanceProfileName
+      required: true
+      description: The name of the instance profile to delete.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Deletes the specified instance profile. The instance profile must
+      not have an associated role.
+  - name: aws-iam-list-instance-profiles
+    arguments:
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.IAM.InstanceProfiles.Path
+      description: The path to the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileName
+      description: The name identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileId
+      description: The stable and unique string identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Arn
+      description: The Amazon Resource Name (ARN) specifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.CreateDate
+      description: The date when the instance profile was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Path
+      description: The path to the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleName
+      description: The friendly name that identifies the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleId
+      description: The stable and unique string identifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Arn
+      description: The Amazon Resource Name (ARN) specifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.CreateDate
+      description: The date and time, when the role was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.AssumeRolePolicyDocument
+      description: The policy that grants an entity permission to assume the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Description
+      description: A description of the role that you provide.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.MaxSessionDuration
+      description: The maximum session duration (in seconds) for the specified role.
+      type: number
+    description: Lists all the instance profiles tin your AWS account
+  - name: aws-iam-add-role-to-instance-profile
+    arguments:
+    - name: instanceProfileName
+      required: true
+      description: The name of the instance profile to update.
+    - name: roleName
+      required: true
+      description: The name of the role to add.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.IAM.InstanceProfiles.Path
+      description: The path to the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileName
+      description: The name identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileId
+      description: The stable and unique string identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Arn
+      description: The Amazon Resource Name (ARN) specifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.CreateDate
+      description: The date when the instance profile was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Path
+      description: The path to the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleName
+      description: The friendly name that identifies the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleId
+      description: The stable and unique string identifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Arn
+      description: The Amazon Resource Name (ARN) specifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.CreateDate
+      description: The date and time, when the role was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.AssumeRolePolicyDocument
+      description: The policy that grants an entity permission to assume the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Description
+      description: A description of the role that you provide.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.MaxSessionDuration
+      description: The maximum session duration (in seconds) for the specified role.
+      type: number
+    description: Adds the specified IAM role to the specified instance profile. An
+      instance profile can contain only one role, and this limit cannot be increased.
+      You can remove the existing role and then add a different role to an instance
+      profile.
+  - name: aws-iam-remove-role-from-instance-profile
+    arguments:
+    - name: instanceProfileName
+      required: true
+      description: The name of the instance profile to update.
+    - name: roleName
+      required: true
+      description: The name of the role to remove.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Removes the specified IAM role from the specified EC2 instance profile.
+  - name: aws-iam-list-instance-profiles-for-role
+    arguments:
+    - name: roleName
+      required: true
+      description: The name of the role to list instance profiles for.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Lists the instance profiles that have the specified associated IAM
+      role.
+  - name: aws-iam-get-instance-profile
+    arguments:
+    - name: instanceProfileName
+      required: true
+      description: The name of the instance profile to get information about.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.IAM.InstanceProfiles.Path
+      description: The path to the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileName
+      description: The name identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileId
+      description: The stable and unique string identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Arn
+      description: The Amazon Resource Name (ARN) specifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.CreateDate
+      description: The date when the instance profile was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Path
+      description: 'The path to the role. '
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleName
+      description: The friendly name that identifies the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleId
+      description: 'The stable and unique string identifying the role. '
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Arn
+      description: The Amazon Resource Name (ARN) specifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.CreateDate
+      description: The date and time, when the role was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.AssumeRolePolicyDocument
+      description: The policy that grants an entity permission to assume the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Description
+      description: A description of the role that you provide.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles. MaxSessionDuration
+      description: The maximum session duration (in seconds) for the specified role.
+      type: number
+    description: Retrieves information about the specified instance profile.
+  - name: aws-iam-get-role
+    arguments:
+    - name: roleName
+      required: true
+      description: The name of the IAM role to get information about.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.IAM.Roles.Path
+      description: The path to the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.RoleName
+      description: The friendly name that identifies the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.RoleId
+      description: The stable and unique string identifying the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.Arn
+      description: 'The Amazon Resource Name (ARN) specifying the role. '
+      type: string
+    - contextPath: AWS.IAM.Roles.CreateDate
+      description: The date and time, when the role was created.
+      type: date
+    - contextPath: AWS.IAM.Roles.AssumeRolePolicyDocument
+      description: The policy that grants an entity permission to assume the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.Description
+      description: A description of the role that you provide.
+      type: string
+    - contextPath: AWS.IAM.Roles.MaxSessionDuration
+      description: 'The maximum session duration (in seconds) for the specified role. '
+      type: number
+    description: Retrieves information about the specified role.
+  - name: aws-iam-delete-role
+    arguments:
+    - name: roleName
+      required: true
+      description: The name of the role to delete.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: 'Deletes the specified role. The role must not have any policies
+      attached. '
+  - name: aws-iam-create_role
+    arguments:
+    - name: roleName
+      required: true
+      description: The name of the role to create.
+    - name: assumeRolePolicyDocumentName
+      required: true
+      description: The trust relationship policy document that grants an entity permission
+        to assume the role.
+    - name: path
+      description: The path to the role.
+    - name: description
+      description: A description of the role.
+    - name: maxSessionDuration
+      description: The maximum session duration (in seconds) that you want to set
+        for the specified role. If you do not specify a value for this setting, the
+        default maximum of one hour is applied. This setting can have a value from
+        1 hour to 12 hours.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.IAM.Roles.RoleName
+      description: The friendly name that identifies the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.RoleId
+      description: The stable and unique string identifying the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.Arn
+      description: 'The Amazon Resource Name (ARN) specifying the role. '
+      type: string
+    - contextPath: AWS.IAM.Roles.CreateDate
+      description: The date and time, when the role was created.
+      type: date
+    - contextPath: AWS.IAM.Roles.Path
+      description: The path to the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.AssumeRolePolicyDocument
+      description: he policy that grants an entity permission to assume the role.
+      type: string
+    - contextPath: AWS.IAM.Roles.Description
+      description: A description of the role that you provide.
+      type: string
+    - contextPath: AWS.IAM.Roles.MaxSessionDuration
+      description: The maximum session duration (in seconds) for the specified role.
+      type: number
+    description: Creates a new role for your AWS account.
   dockerimage: demisto/boto3
   runonce: false
