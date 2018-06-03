@@ -37,6 +37,10 @@
 				"details": {
 					"simple": "event.DetectDescription",
 					"complex": null
+				},
+				"name": {
+					"simple": "event.DetectName",
+					"complex": null
 				}
 			},
 			"dontMapEventToLabels": false
