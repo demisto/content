@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4a503314-a015-41b1-8f43-e9567a025321
+    taskid: b0bb57b5-689e-4abc-87cc-3556f38da503
     type: start
     task:
-      id: 4a503314-a015-41b1-8f43-e9567a025321
+      id: b0bb57b5-689e-4abc-87cc-3556f38da503
       version: -1
       name: ""
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: c012ccd1-f708-4784-806f-d3ba32b6d203
+    taskid: e9583b84-5688-4d4b-840d-ad43ed84a6df
     type: regular
     task:
-      id: c012ccd1-f708-4784-806f-d3ba32b6d203
+      id: e9583b84-5688-4d4b-840d-ad43ed84a6df
       version: -1
       name: Get Environments
       description: Get a list of all available environments
@@ -50,10 +50,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: d85ad451-be9c-4361-8138-1531137fec9d
+    taskid: 387dbfa4-5039-4930-811f-55c2bf1cc265
     type: regular
     task:
-      id: d85ad451-be9c-4361-8138-1531137fec9d
+      id: 387dbfa4-5039-4930-811f-55c2bf1cc265
       version: -1
       name: 'Verify Context get-environments '
       description: |-
@@ -85,10 +85,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 3383be9f-dff3-49d8-846a-49fa0bdc30a8
+    taskid: 2a315c49-86db-4292-81ad-8256c19bd3b6
     type: regular
     task:
-      id: 3383be9f-dff3-49d8-846a-49fa0bdc30a8
+      id: 2a315c49-86db-4292-81ad-8256c19bd3b6
       version: -1
       name: Search
       description: Search the database using the VXStream search syntax
@@ -130,10 +130,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: fdf919f6-36b7-493b-89e1-388cf17c7dca
+    taskid: 062a0984-3a67-4d62-8570-9e8a83d29bf8
     type: regular
     task:
-      id: fdf919f6-36b7-493b-89e1-388cf17c7dca
+      id: 062a0984-3a67-4d62-8570-9e8a83d29bf8
       version: -1
       name: Verify Context search
       description: |-
@@ -165,10 +165,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 5d2f9523-a55d-41ae-86c0-c46b024036a0
+    taskid: 38b26c63-ce85-4291-8c4f-f3cf5dccd88e
     type: regular
     task:
-      id: 5d2f9523-a55d-41ae-86c0-c46b024036a0
+      id: 38b26c63-ce85-4291-8c4f-f3cf5dccd88e
       version: -1
       name: Scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
@@ -193,10 +193,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: c982d510-b745-4a0c-89e4-b92a0fba8513
+    taskid: c049eaec-367b-4581-8501-d15dcb1f04e3
     type: regular
     task:
-      id: c982d510-b745-4a0c-89e4-b92a0fba8513
+      id: c049eaec-367b-4581-8501-d15dcb1f04e3
       version: -1
       name: Verify Context scan
       description: |-
@@ -209,6 +209,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -223,12 +226,143 @@ tasks:
           "y": 1070
         }
       }
+  "7":
+    id: "7"
+    taskid: 0c07c374-da36-4e3b-8aad-7c667a94eb4f
+    type: regular
+    task:
+      id: 0c07c374-da36-4e3b-8aad-7c667a94eb4f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 045ec012-3acb-40e6-844c-1262a02086a9
+    type: regular
+    task:
+      id: 045ec012-3acb-40e6-844c-1262a02086a9
+      version: -1
+      name: Download PDF file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test.pdf
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 966f611b-adaa-4847-8d43-9c1c1da8255c
+    type: regular
+    task:
+      id: 966f611b-adaa-4847-8d43-9c1c1da8255c
+      version: -1
+      name: crowdstrike-detonate-file
+      description: Detonate file through Falcon Sandbox
+      script: VxStream|||crowdstrike-detonate-file
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      delay: {}
+      entryId:
+        simple: ${File.EntryID}
+      environmentID:
+        simple: "100"
+      timeout:
+        simple: "300"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "10":
+    id: "10"
+    taskid: e6d48be8-7e42-4c31-8ab6-288d39b53af5
+    type: regular
+    task:
+      id: e6d48be8-7e42-4c31-8ab6-288d39b53af5
+      version: -1
+      name: VerifyContext Detonate-File
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: size,SHA1,SHA256,environmentDescription,verdict,MD5,type,threat_level
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1775
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 1820,
         "width": 380,
         "x": 50,
         "y": 50
