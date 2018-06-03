@@ -81,7 +81,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: ID,Timestamp,Hostname
+        simple: ID,Timestamp
       path:
         simple: Netskope.Alerts
     reputationcalc: 0
