@@ -702,4 +702,3 @@ script:
       type: string
     description: Stops isolation of a machine
     execution: true
-releaseNotes: "Improved the query sent in query-connections, added outputs to is-probe-connected and removed login command"

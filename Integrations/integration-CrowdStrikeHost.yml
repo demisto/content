@@ -202,7 +202,9 @@ script:
         var res = doReq('GET', 'devices/entities/devices/v1', {ids: ids});
         var md = '## Falcon Host Device Details\n';
         var found = false;
+        var ec = {};
         if (res.obj.resources) {
+            ec.FalconHostDetails = res.obj.resources;
             for (var i=0; i<res.obj.resources.length; i++) {
                 var o = res.obj.resources[i];
                 var cleanObj = {};
@@ -226,7 +228,7 @@ script:
         if (!found) {
             md += 'No result found';
         }
-        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.obj, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
     var deviceCountIOC = function() {
@@ -553,7 +555,11 @@ script:
     - name: ids
       required: true
       deprecated: false
+      description: "-"
       default: true
+    outputs:
+    - contextPath: FalconHostDetails
+      description: Device details found by device search
       description: The ID to retrieve details. Supports multiple IDs separated by
         comma.
     description: Get details on one or more devices, given a device ID
