@@ -251,7 +251,7 @@ script:
             else:
                 demisto.info(error_message + "\nFull debug log:\n" + debug_log)
 
-    raise Exception(error_message)
+        raise Exception(error_message)
   type: python
   commands:
   - name: send-mail
@@ -281,3 +281,4 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
+releaseNotes: "Fixed 'error_message not defined' issue"
