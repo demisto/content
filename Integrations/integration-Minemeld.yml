@@ -13,17 +13,17 @@ configuration:
   type: 0
   required: true
 - display: Username
-  name: username
+  name: credentials
   defaultvalue: ""
-  type: 0
+  type: 9
   required: true
-- display: Password
-  name: password
-  defaultvalue: ""
-  type: 4
-  required: true
+- display: Use proxy
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
-  script: |-
+  script: |+
     import logging
     import argparse
     import urllib2
@@ -31,6 +31,7 @@ script:
     import base64
     import ssl
     import os.path
+    import os
     from urlparse import urljoin
     import sys
 
@@ -178,36 +179,51 @@ script:
                 method='PUT'
             )
 
-    ADD_ACTION = 'add'
-    REMOVE_ACTION = 'remove'
+    ADD_ACTION = 'minemeld-add-to-miner'
+    REMOVE_ACTION = 'minemeld-remove-from-miner'
 
-    def preform_action(MM, miner, type_, value, action, comment='', share_level='red'):
+    def get_miner_list(MM, miner, type_):
         if not MM.check(miner=miner, type_=type_):
             raise Exception('Cannot get miner %s with type %s' % (miner, type_))
 
         current_list = MM.retrieve_list(miner=miner)
+
+        return current_list
+
+    def preform_action(MM, miner, type_, values, action, comment='', share_level='red'):
+        current_list = get_miner_list(MM, miner, type_)
         current = {e['indicator']: json.dumps(e, sort_keys=True) for e in current_list}
+        if not isinstance(values, list):
+            values = values.split(',')
 
         if action == ADD_ACTION:
-            current[value] = json.dumps({
-                'indicator': value, 'comment': comment, 'share_level': share_level
-            })
+            for value in values:
+                current[value] = json.dumps({
+                    'indicator': value, 'comment': comment, 'share_level': share_level
+                })
         elif action == REMOVE_ACTION:
-            value_from_list = current.pop(value, None)
-            if not value_from_list:
-                raise Exception('Did not found value %s on miner %s' % (value, miner))
+            for value in values:
+                value_from_list = current.pop(value, None)
+                if not value_from_list:
+                    raise Exception('Did not found value %s on miner %s' % (value, miner))
         else:
             raise Exception('Action %s does not supported' % action)
 
 
-        # demisto.results(json.dumps('[{}]'.format(','.join(current.values()))))
         MM.upload(miner, '[{}]'.format(','.join(current.values())))
 
+    SERVER_URL = demisto.params()['url']
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    USE_PROXY = demisto.params()['proxy']
+
+    if not USE_PROXY:
+        os.environ['NO_PROXY'] = SERVER_URL
 
     MM = MineMeldAPIClient(
-        url=demisto.params()['url'],
-        username=demisto.params()['username'],
-        password=demisto.params()['password'],
+        url=SERVER_URL,
+        username=USERNAME,
+        password=PASSWORD,
         capath=None
     )
 
@@ -215,7 +231,7 @@ script:
         if MM.connection_check():
             demisto.results('ok')
 
-    if demisto.command() == 'minemield-add-to-miner' or demisto.command() == 'minemield-remove-from-miner':
+    if demisto.command() == ADD_ACTION or demisto.command() == REMOVE_ACTION
         miner = demisto.args()['miner']
         type_ = demisto.args()['type']
         value = demisto.args()['value']
@@ -225,16 +241,30 @@ script:
         comment = demisto.args().get('comment','')
         share_level = demisto.args().get('share_level','red')
 
-        if demisto.command() == 'minemield-add-to-miner':
-            action = ADD_ACTION
-        elif demisto.command() == 'minemield-remove-from-miner':
-            action = REMOVE_ACTION
-
-        preform_action(MM, miner, type_, value, action, comment, share_level)
+        preform_action(MM, miner, type_, value, demisto.command(), comment, share_level)
         demisto.results('Performed action successfully')
+
+    if demisto.command() == 'minemeld-retrieve-list':
+        miner = demisto.args()['miner']
+        type_ = demisto.args()['type']
+        current_list = get_miner_list(MM, miner, type_)
+        miner_context_key = miner.replace(' ', '_') + "(val.indicator == obj.indicator)"
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': current_list,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Minemeld indicators %s' % miner, current_list, ['indicator', 'comment', 'share_level']),
+            'EntryContext': {
+                'Minemeld': {
+                    miner_context_key: current_list
+                }
+            }
+        })
+
   type: python
   commands:
-  - name: minemield-add-to-miner
+  - name: minemeld-add-to-miner
     arguments:
     - name: miner
       required: true
@@ -251,7 +281,8 @@ script:
       description: Miner type.
     - name: value
       required: true
-      description: The value to add.
+      description: The value to add. Support list \ comma-separated values.
+      isArray: true
     - name: comment
       required: true
       description: Comment to the value.
@@ -265,7 +296,7 @@ script:
       description: The share-level of the value.
       defaultValue: red
     description: Add a value to a miner.
-  - name: minemield-remove-from-miner
+  - name: minemeld-remove-from-miner
     arguments:
     - name: miner
       required: true
@@ -284,5 +315,18 @@ script:
       required: true
       description: The value  to remove.
     description: Remove a value from a miner.
+  - name: minemeld-retrieve-list
+    arguments:
+    - name: miner
+      description: Miner name.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - IPv4
+      - IPv6
+      - domain
+      - URL
+      description: Miner type.
+    description: Get miner indicators list.
   runonce: false
 releaseNotes: "Add new integration"
