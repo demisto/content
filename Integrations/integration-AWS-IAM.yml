@@ -128,7 +128,6 @@ script:
                 'UserId': user['UserId'],
                 'Arn': user['Arn'],
                 'CreateDate': datetime.datetime.strftime(user['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-                'PasswordLastUsed': datetime.datetime.strftime(user['PasswordLastUsed'], '%Y-%m-%dT%H:%M:%S'),
                 'Path':user['Path'],
             })
             ec = {'AWS.IAM.Users': data}
