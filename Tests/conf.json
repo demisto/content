@@ -285,7 +285,11 @@
         {
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
-        }
+        },
+        {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD"
+        },
     ],
     "skipped": [
         {
