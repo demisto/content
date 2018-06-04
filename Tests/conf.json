@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "decodemimeheader_-_test"
+        },
+        {
             "integrations": "CVE Search",
             "playbookID": "cve_enrichment_-_generic_-_test"
         },
