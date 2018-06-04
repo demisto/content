@@ -2,8 +2,6 @@ commonfields:
   id: McAfee Advanced Threat Defense
   version: -1
 name: McAfee Advanced Threat Defense
-fromversion: 3.5.0
-toversion: 3.5.0
 display: McAfee Advanced Threat Defense
 releaseNotes: "-"
 category: Forensics & Malware Analysis
