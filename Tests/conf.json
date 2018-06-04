@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {
@@ -336,11 +340,8 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
-        },
-        {
-            "integrations": "McAfee Advanced Threat Defense",
-            "playbookID": "Test Playbook McAfee ATD"
         }
+
     ],
     "skipped": [
         {
