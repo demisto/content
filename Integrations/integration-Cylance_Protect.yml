@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: Cylance Protect
 display: Cylance Protect
+releaseNotes: "-"
 category: Endpoint
 system: true
 fromversion: 2.0.1
@@ -27,7 +28,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8

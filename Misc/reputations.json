@@ -1,6 +1,5 @@
 {
   "name": "reputations",
-  "releaseNotes": "Add Domain type",
   "reputations": [
     {
       "id": "fileRep",
