@@ -2637,4 +2637,4 @@ script:
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
   runonce: false
-releaeNotes: 'add explicit CB live Response commands'
+releaseNotes: 'add explicit CB live Response commands'
