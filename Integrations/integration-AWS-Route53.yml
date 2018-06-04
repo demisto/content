@@ -124,7 +124,6 @@ script:
                                     'ResourceRecordSet': {
                                         'Name': args.get('source'),
                                         'Type': args.get('type'),
-                                        'TTL': int(args.get('ttl')),
                                         'ResourceRecords': [{'Value': args.get('target')}]
                                 }
                             }]
@@ -352,6 +351,34 @@ script:
     description: Creates a resource record set
   - name: aws-route53-delete-a-record
     arguments:
+    - name: source
+      required: true
+      description: The name of the domain you want to Create. i.e. www.example.com
+    - name: target
+      required: true
+      description: The DNS record value
+    - name: hostedZoneId
+      required: true
+      description: Specify the hosted zone ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TX
+      description: The type of the record to create
+    - name: comment
+      description: Any comments you want to include.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -362,6 +389,18 @@ script:
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the request.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that this request
+        has not yet been applied to all Amazon Route 53 DNS servers.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: A complex type that describes change information about changes
+        made to your hosted zone.
+      type: string
     description: Deletes a resource record set
   - name: aws-route53-list-hosted-zones
     arguments:
