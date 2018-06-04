@@ -1657,4 +1657,3 @@ script:
     description: Get logs by providing optional filters
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "-"

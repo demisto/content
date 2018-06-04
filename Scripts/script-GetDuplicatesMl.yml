@@ -580,4 +580,3 @@ outputs:
 scripttarget: 0
 dockerimage: demisto/machine-learning
 fromversion: 3.5.0
-releaseNotes: "fix GetDuplicatesMl docker image name"

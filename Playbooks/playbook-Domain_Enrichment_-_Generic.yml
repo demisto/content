@@ -1,16 +1,16 @@
 id: domain_enrichment_generic
 version: -1
-fromversion: 3.5.0
 name: Domain Enrichment - Generic
+fromversion: 3.6.0
 description: Enrich Domain using one or more integrations
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    taskid: 7a84d33e-867f-4033-82d7-7a37c3324ffd
     type: start
     task:
-      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      id: 7a84d33e-867f-4033-82d7-7a37c3324ffd
       version: -1
       name: ""
       description: ""
@@ -18,21 +18,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "25"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
   "16":
     id: "16"
-    taskid: 55a34733-b900-4566-88d7-30365d4e3866
+    taskid: cdbe7d29-d014-4ecd-8323-1ad5541cab78
     type: condition
     task:
-      id: 55a34733-b900-4566-88d7-30365d4e3866
+      id: cdbe7d29-d014-4ecd-8323-1ad5541cab78
       version: -1
       name: Are there Domains to check?
       description: Determines wether the playbook's input contains a domain name.
@@ -81,15 +81,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
   "20":
     id: "20"
-    taskid: eb63c499-8a19-481b-8140-aa34e63342b0
+    taskid: 8f93bffc-8ad6-4ee9-87c6-20ffd680adeb
     type: regular
     task:
-      id: eb63c499-8a19-481b-8140-aa34e63342b0
+      id: 8f93bffc-8ad6-4ee9-87c6-20ffd680adeb
       version: -1
       name: Get Domain Reputation
       description: Gets domain reputation by invoking domain related engines. Returns
@@ -110,16 +110,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 179,
-          "y": 368
+          "x": 162.5,
+          "y": 545
         }
       }
   "24":
     id: "24"
-    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    taskid: ed51e036-5b59-4c5f-8ef5-7e7f2e836f24
     type: title
     task:
-      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      id: ed51e036-5b59-4c5f-8ef5-7e7f2e836f24
       version: -1
       name: Done
       description: ""
@@ -130,8 +130,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 3ea38a6c-f306-4e01-8b42-dcb026d0ffc4
+    type: condition
+    task:
+      id: 3ea38a6c-f306-4e01-8b42-dcb026d0ffc4
+      version: -1
+      name: Should the system get the Domain Reputation?
+      description: "Should the system retrieve the domain reputation from all of the
+        relevant integration?\nDefault: True\n "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
         }
       }
 view: |-
@@ -141,8 +180,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 509,
+        "height": 735,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
@@ -151,9 +190,16 @@ view: |-
 inputs:
 - key: Domain
   value:
-    simple: ${Domain.Name}
+    complex:
+      root: Domain
+      accessor: Name
   required: false
   description: The domain name to enrich
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook get reputation for the Domain
 outputs:
 - contextPath: Domain
   description: The domain objects
