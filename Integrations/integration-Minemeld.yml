@@ -231,7 +231,7 @@ script:
         if MM.connection_check():
             demisto.results('ok')
 
-    if demisto.command() == ADD_ACTION or demisto.command() == REMOVE_ACTION
+    if demisto.command() == ADD_ACTION or demisto.command() == REMOVE_ACTION:
         miner = demisto.args()['miner']
         type_ = demisto.args()['type']
         value = demisto.args()['value']
@@ -248,7 +248,9 @@ script:
         miner = demisto.args()['miner']
         type_ = demisto.args()['type']
         current_list = get_miner_list(MM, miner, type_)
-        miner_context_key = miner.replace(' ', '_') + "(val.indicator == obj.indicator)"
+        for x in current_list:
+            x['miner'] = miner
+        miner_context_key = "Minemeld(val.indicator == obj.indicator && val.miner == obj.miner)"
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': current_list,
@@ -256,9 +258,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Minemeld indicators %s' % miner, current_list, ['indicator', 'comment', 'share_level']),
             'EntryContext': {
-                'Minemeld': {
-                    miner_context_key: current_list
-                }
+                miner_context_key: current_list
             }
         })
 
@@ -318,8 +318,10 @@ script:
   - name: minemeld-retrieve-list
     arguments:
     - name: miner
+      required: true
       description: Miner name.
     - name: type
+      required: true
       auto: PREDEFINED
       predefined:
       - IPv4
@@ -327,6 +329,19 @@ script:
       - domain
       - URL
       description: Miner type.
+    outputs:
+    - contextPath: Minemeld.indicator
+      description: Indicator value
+      type: string
+    - contextPath: Minemeld.comment
+      description: Indicator comment
+      type: string
+    - contextPath: Minemeld.miner
+      description: Miner name
+      type: string
+    - contextPath: Minemeld.share_level
+      description: Indicator share level
+      type: string
     description: Get miner indicators list.
   runonce: false
 releaseNotes: "Add new integration"
