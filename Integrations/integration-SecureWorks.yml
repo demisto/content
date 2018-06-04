@@ -20,7 +20,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -102,6 +102,7 @@ script:
         if(!(response instanceof Array)){
             response = [response];
         }
+
         response.forEach(function(element){
             element.dateCreated = new Date(element.dateCreated).toString();
             element.dateModified = element.dateModified ? new Date(element.dateModified).toString() : '';
@@ -111,6 +112,10 @@ script:
 
     function createTicketCommand(){
         var response = createTicket(args);
+
+        if(!response){
+            return 'No data returned';
+        }
 
         var translator = [
             {to: 'CreationStatusCode', from: 'code'},
@@ -144,6 +149,10 @@ script:
         delete args['id'];
         var response = updateTicket(id, args);
 
+        if(!response){
+            return 'No data returned';
+        }
+
         var translator = [
             {to: 'UpdateStatusCode', from: 'code'},
             {to: 'ID', from: 'ticketID'}
@@ -173,6 +182,10 @@ script:
 
     function getTicketCountCommand(){
         var countObject = getTicketCount();
+
+        if(!countObject){
+            return 'No data returned';
+        }
 
         var translator = [
             {to: 'TicketCount', from: 'ticketCount'}
@@ -243,6 +256,10 @@ script:
         delete args['id'];
         var response = closeTicket(id, args);
 
+        if(!response){
+            return 'No data returned';
+        }
+
         var translator = [
             {to: 'ClosureStatusCode', from: 'code'},
             {to: 'ID', from: 'ticketID'}
@@ -275,6 +292,10 @@ script:
         delete args['id'];
         var response = addTicketWorklog(id, args);
 
+        if(!response){
+            return 'No data returned';
+        }
+
         var translator = [
             {to: 'WorklogAdditionStatusCode', from: 'code'},
             {to: 'ID', from: 'ticketId'}
@@ -302,26 +323,29 @@ script:
     function getTicketCommand() {
         var ticket = getTicket(args['id'], args);
 
+        if(!ticket){
+            return 'No data returned';
+        }
+
         convertTicketDates(ticket);
 
         var translator = [
-            {to: 'Subject', from: 'symptomDescription'},
-            {to: 'Reference', from: 'externalTicketNum'},
-            {to: 'Currently Worked By', from: 'client.name'},
-            {to: 'Assigned Employee', from: 'contact.name'},
-            {to: 'Created', from: 'dateCreated'},
-            {to: 'Closed', from: 'dateClosed'},
-            {to: 'Modified', from: 'dateModified'},
-            {to: 'Description', from: 'detailedDescription'},
-            {to: 'Device', from: 'devices.name'},
-            {to: 'Priority', from: 'priority'},
-            {to: 'AttachmentInfo', from: 'attachmentInfo.name'},
-            {to: 'Reason', from: 'reason'},
-            {to: 'Status', from: 'status'},
             {to: 'ID', from: 'ticketId'},
+            {to: 'Subject', from: 'symptomDescription'},
+            {to: 'Description', from: 'detailedDescription'},
+            {to: 'Status', from: 'status'},
+            {to: 'Created', from: 'dateCreated'},
+            {to: 'Modified', from: 'dateModified'},
+            {to: 'Closed', from: 'dateClosed'},
+            {to: 'Reason', from: 'reason'},
+            {to: 'Priority', from: 'priority'},
+            {to: 'Reference', from: 'externalTicketNum'},
+            {to: 'Device', from: 'devices.name'},
+            {to: 'Assigned Employee', from: 'contact.name'},
+            {to: 'Watchers', from: 'watchers'},
+            {to: 'Currently Worked By', from: 'client.name'},
+            {to: 'AttachmentInfo', from: 'attachmentInfo.name'},
             {to: 'Type', from: 'groupingType'},
-            {to: 'Urgency', from: 'urgency'},
-            {to: 'Watchers', from: 'watchers'}
         ];
 
         if(ticket.worklogs){
@@ -341,7 +365,7 @@ script:
         };
 
         var translated = cleanObject(mapObjFunction(translator)(ticket));
-        var md = tableToMarkdown('Secure works get ticket response', translated);
+        var md = tableToMarkdown('Secure works get ticket response', translated, Object.keys(translated));
         md += (worklogsTranslated && worklogsTranslated.length > 0) ? tableToMarkdown('Worklogs', worklogsTranslated) : '';
         entry.ReadableContentsFormat = formats.markdown;
         entry.HumanReadable = md,
@@ -360,6 +384,10 @@ script:
 
     function getTicketsIdsCommand() {
         var response = getTicketsIds(args);
+
+        if(!response || response.length == 0){
+            return 'No results found';
+        }
 
         var translator = [
             {to: 'IDs', from: 'ticketIds'}
@@ -392,18 +420,22 @@ script:
         delete args.acknowledge;
         var tickets = getTicketsUpdates(args, acknowledge);
 
+        if(!tickets || tickets.length == 0){
+            return 'No results found';
+        }
+
         convertTicketDates(tickets);
 
         var translator = [
             {to: 'ID', from: 'ticketId'},
-            {to: 'Assigned Employee', from: 'contact.name'},
             {to: 'Reference', from: 'externalTicketNum'},
-            {to: 'Status', from: 'status'},
             {to: 'Created', from: 'dateCreated'},
-            {to: 'Closed', from: 'dateClosed'},
+            {to: 'Status', from: 'status'},
             {to: 'Subject', from: 'symptomDescription'},
-            {to: 'Modified', from: 'dateModified'},
             {to: 'Devices', from: 'devices.name'},
+            {to: 'Assigned Employee', from: 'contact.name'},
+            {to: 'Modified', from: 'dateModified'},
+            {to: 'Closed', from: 'dateClosed'},
         ];
 
         var entry = {
@@ -414,7 +446,7 @@ script:
 
         var translated = cleanObject(mapObjFunction(translator)(tickets));
         entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Secure works get tickets updates response', translated);
+        entry.HumanReadable = tableToMarkdown('Secure works get tickets updates response', translated, Object.keys(translated[0]));
         entry.EntryContext = {
             'SecureWorks.Ticket(val.ticketId==obj.ticketId)': tickets
         };
@@ -424,6 +456,10 @@ script:
 
     function getTicketsUpdates(queryParams, acknowledge) {
         var response = sendRequest('tickets/updates', 'POST', queryParams);
+
+        if(!response){
+            return response;
+        }
 
         var responseTickets = response.tickets;
         var tickets = [];
@@ -456,7 +492,7 @@ script:
         delete args['id'];
         var response = getCloseCodes(id);
 
-        if(!response || !(response.closeCodes)){
+        if(!response){
             return 'No results found';
         }
 
@@ -551,7 +587,6 @@ script:
                 }
                 var incident = {
                     name: 'Secureworks - Ticket - ' + ticket.ticketId,
-                    status: ticket.status === 'Pending' ? 0 : 1,
                     severity: severity,
                     details: ticket.detailedDescription,
                     labels: [
@@ -716,7 +751,7 @@ script:
       description: Ticket ID in secure works
     - contextPath: SecureWorks.Ticket.CreationStatusCode
       description: Ticket creation status code
-    description: Allows creation of a new ticket
+    description: Create a new ticket
   - name: secure-works-update-ticket
     arguments:
     - name: id
@@ -747,7 +782,7 @@ script:
       description: Ticket ID in Secureworks
     - contextPath: SecureWorks.Ticket.UpdateStatusCode
       description: Ticket update status code
-    description: Allows creation of a new ticket
+    description: Update an existing ticket
   - name: secure-works-close-ticket
     arguments:
     - name: id
@@ -922,7 +957,7 @@ script:
       description: Assignment status code
     - contextPath: SecureWorks.Ticket.ID
       description: The ticket ID
-    description: Assign a ticket to the Secureworks Security Operations Center (SOC).
+    description: Assign a ticket to the Secureworks Security Operations Center (SOC)
   - name: secure-works-get-tickets-updates
     arguments:
     - name: limit
@@ -1042,13 +1077,13 @@ script:
       description: Ticket worklog type
     - contextPath: SecureWorks.Ticket.closeCodes
       description: Ticket close codes
-    description: retrieves 10 tickets from 24 hours prior to when the POST /tickets/updates
+    description: Retrieves 10 tickets from 24 hours prior to when the POST /tickets/updates
       endpoint is executed. If the limit is specified, it will retrieve up to that
       many tickets (max is 500 tickets). Tickets must be updated within the last 24
       hours to be visible in POST /tickets/updates. When accessing this endpoint you
       also receive the ticket worklogs. In order to view the attachment information
       of a specific ticket, you must use the GET /tickets/{id} endpoint. This endpoint
-      will return the list of attachments available for that particular ticket.
+      will return the list of attachments available for that particular ticket
   - name: secure-works-get-tickets-ids
     arguments:
     - name: ticketType
@@ -1075,7 +1110,7 @@ script:
     - contextPath: SecureWorks.IDs
       description: Ticket IDs
     description: Get a list of ticket IDs in the same order as the tickets returned
-      by the GET /tickets/updates endpoint.
+      by the GET /tickets/updates endpoint
   - name: secure-works-get-close-codes
     arguments:
     - name: id
@@ -1086,7 +1121,7 @@ script:
       description: Ticket ID
     - contextPath: SecureWorks.Ticket.closeCodes
       description: Ticket close codes
-    description: Returns a list of close codes for a ticket.
+    description: Returns a list of close codes for a ticket
   isfetch: true
   runonce: false
 releaseNotes: "Added the ability to fetch new tickets, fixed ticket closing and improved human readable content"
