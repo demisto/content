@@ -1,8 +1,8 @@
 id: File Enrichment - Generic
 version: -1
 name: File Enrichment - Generic
-fromversion: 3.5.0
 description: Get file reputation using one or more integrations
+fromversion: 3.6.0
 starttaskid: "0"
 tasks:
   "0":
@@ -18,12 +18,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 930,
           "y": 50
         }
       }
@@ -49,7 +49,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 195
+          "y": 370
         }
       }
   "5":
@@ -77,8 +77,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 49,
-          "y": 515
+          "x": 50,
+          "y": 690
         }
       }
   "7":
@@ -97,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 690
+          "x": 705,
+          "y": 865
         }
       }
   "14":
@@ -135,7 +135,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 340
+          "y": 515
         }
       }
   "15":
@@ -172,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 340
+          "y": 515
         }
       }
   "16":
@@ -201,7 +201,7 @@ tasks:
       {
         "position": {
           "x": 705,
-          "y": 515
+          "y": 690
         }
       }
   "17":
@@ -238,7 +238,7 @@ tasks:
       {
         "position": {
           "x": 1042.5,
-          "y": 340
+          "y": 515
         }
       }
   "18":
@@ -267,7 +267,47 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 515
+          "y": 690
+        }
+      }
+  "19":
+    id: "19"
+    taskid: f1c17fd6-bc64-422f-8776-2754a45c4f6d
+    type: condition
+    task:
+      id: f1c17fd6-bc64-422f-8776-2754a45c4f6d
+      version: -1
+      name: Should the system get the File Reputation?
+      description: |
+        Should the system retrieve the file reputation from all of the relevant integration?
+        Default: True
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 195
         }
       }
 view: |-
@@ -278,9 +318,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 705,
-        "width": 1486,
-        "x": 49,
+        "height": 880,
+        "width": 1485,
+        "x": 50,
         "y": 50
       }
     }
@@ -307,6 +347,11 @@ inputs:
       accessor: SHA1
   required: false
   description: File SHA1 to enrich
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook get reputation for the File
 outputs:
 - contextPath: File
   description: The file's object

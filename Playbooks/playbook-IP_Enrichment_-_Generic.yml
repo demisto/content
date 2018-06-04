@@ -1,8 +1,8 @@
 id: ip_enrichment_generic
 version: -1
-fromversion: 3.5.0
 name: IP Enrichment - Generic
 description: Enrich IP using one or more integrations
+fromversion: 3.6.0
 starttaskid: "0"
 tasks:
   "0":
@@ -45,7 +45,7 @@ tasks:
       '#default#':
       - "24"
       "yes":
-      - "19"
+      - "30"
     scriptarguments:
       extend-context: {}
       value:
@@ -66,7 +66,7 @@ tasks:
       {
         "position": {
           "x": -467,
-          "y": 559
+          "y": 459
         }
       }
   "19":
@@ -107,8 +107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -552,
-          "y": 785
+          "x": -494,
+          "y": 840
         }
       }
   "24":
@@ -162,8 +162,8 @@ tasks:
       id: c57e91b0-706a-40a2-8a30-e2fb9cfabba6
       version: -1
       name: Check external IP addresses
-      description: ""
       type: title
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -241,14 +241,53 @@ tasks:
           "y": 169
         }
       }
+  "30":
+    id: "30"
+    taskid: 195d997e-47ad-4be1-8766-272775fe62a0
+    type: condition
+    task:
+      id: 195d997e-47ad-4be1-8766-272775fe62a0
+      version: -1
+      name: Should the system get the IP Reputation?
+      description: "Should the system retrieve the IPs reputation from all of the
+        relevant integration?\nDefault: True\n "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -733,
+          "y": 633
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1252,
-        "width": 1450,
-        "x": -552,
+        "width": 1631,
+        "x": -733,
         "y": -153
       }
     }
@@ -256,13 +295,20 @@ view: |-
 inputs:
 - key: IP
   value:
-    simple: ${IP.Address}
+    complex:
+      root: IP
+      accessor: Address
   required: false
   description: The IP addresses to enrich
 - key: InternalRange
   value: {}
   required: false
   description: The internal range to check against the IPs
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook get reputation for the IPs
 outputs:
 - contextPath: IP
   description: The IP objects

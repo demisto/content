@@ -578,5 +578,5 @@ outputs:
 - contextPath: duplicateCandidateList
   description: Duplicate incident candidates list.
 scripttarget: 0
-dockerimage: demisto/machine-learning:latest
+dockerimage: demisto/machine-learning
 fromversion: 3.5.0

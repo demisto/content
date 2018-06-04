@@ -1,6 +1,6 @@
 commonfields:
   id: TestPYCommonServer
-  version: -1
+  version: 53
 name: TestPYCommonServer
 script: |-
   INFO = {'b' : 1,
@@ -132,6 +132,15 @@ script: |-
   ||[url](https:\\demisto.com)|a3|
   '''
 
+      table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
+      expected_single_column_tbl = '''### tableToMarkdown test with single column
+  |header_1|
+  |-|
+  |a1|
+  |a2|
+  |a3|
+  '''
+
       demisto.results(toEntry(table))
       demisto.results(toEntry(expected_tbl))
       demisto.results(toEntry(table_tranform))
@@ -140,12 +149,15 @@ script: |-
       demisto.results(toEntry(expected_multiline_tbl))
       demisto.results(toEntry(table_url_missing_info))
       demisto.results(toEntry(expected_url_missing_info_tbl))
+      demisto.results(toEntry(table_single_column))
+      demisto.results(toEntry(expected_single_column_tbl))
 
 
       results = [table == expected_tbl,
           table_tranform == expected_transform_tbl,
           table_multiline == expected_multiline_tbl,
-          table_url_missing_info == expected_url_missing_info_tbl
+          table_url_missing_info == expected_url_missing_info_tbl,
+          table_single_column == expected_single_column_tbl,
           ]
 
       if all(results):
