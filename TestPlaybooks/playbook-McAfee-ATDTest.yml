@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: c368be17-dbe4-45d2-881a-ef5dee099d36
+    taskid: 2611454a-d0f3-4e8b-860c-92dfb8d81ea2
     type: regular
     task:
-      id: c368be17-dbe4-45d2-881a-ef5dee099d36
+      id: 2611454a-d0f3-4e8b-860c-92dfb8d81ea2
       version: -1
       name: atd-login
       description: Returns a logon result for ATD
@@ -132,10 +132,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 5aa03526-62f6-4ea5-8fca-c49f78069cb7
+    taskid: b15e504b-63f1-4aa7-8021-7eef98a797d8
     type: regular
     task:
-      id: 5aa03526-62f6-4ea5-8fca-c49f78069cb7
+      id: b15e504b-63f1-4aa7-8021-7eef98a797d8
       version: -1
       name: atd-list-user
       description: ' displays the user profile information present on the McAfee Advanced
@@ -159,10 +159,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 1eae3835-69f3-4328-89b8-9e776ce53c04
+    taskid: c4f0ce37-2185-4716-880f-96934b8e2e9c
     type: condition
     task:
-      id: 1eae3835-69f3-4328-89b8-9e776ce53c04
+      id: c4f0ce37-2185-4716-880f-96934b8e2e9c
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -202,10 +202,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 65da500b-6b50-49be-87ed-f7e4462f4981
+    taskid: d1a7a8d5-e2ea-4a50-84af-6c9a57ca44d8
     type: regular
     task:
-      id: 65da500b-6b50-49be-87ed-f7e4462f4981
+      id: d1a7a8d5-e2ea-4a50-84af-6c9a57ca44d8
       version: -1
       name: atd-list-analyzer-profiles
       description: ' display the analyzer profiles. Only the analyzer profiles to
@@ -255,10 +255,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 73e5ca65-94e3-412d-8e2d-87049051f955
+    taskid: 4ed42f5b-ae2f-479e-8e78-9d4774655bc2
     type: regular
     task:
-      id: 73e5ca65-94e3-412d-8e2d-87049051f955
+      id: 4ed42f5b-ae2f-479e-8e78-9d4774655bc2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -280,10 +280,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 2828fb5b-90dc-47f5-841b-238a759ee51b
+    taskid: ac02cb5a-143a-4ac1-8491-95e96dfb5d9a
     type: regular
     task:
-      id: 2828fb5b-90dc-47f5-841b-238a759ee51b
+      id: ac02cb5a-143a-4ac1-8491-95e96dfb5d9a
       version: -1
       name: detonate-url
       description: Detonate URL through McAfee ATD
@@ -297,6 +297,7 @@ tasks:
     scriptarguments:
       format:
         simple: json
+      threshold: {}
       timeout: {}
       url:
         simple: https://demisto.com
