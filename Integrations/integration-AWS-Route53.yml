@@ -16,7 +16,7 @@ configuration:
   name: roleSessionName
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
 - display: Role Session Duration
   name: sessionDuration
   defaultvalue: ""
