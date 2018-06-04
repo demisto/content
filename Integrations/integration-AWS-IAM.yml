@@ -127,7 +127,7 @@ script:
                 'UserName': user['UserName'],
                 'UserId': user['UserId'],
                 'Arn': user['Arn'],
-                'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
+                'CreateDate': datetime.datetime.strftime(user['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
                 'PasswordLastUsed': datetime.datetime.strftime(user['PasswordLastUsed'], '%Y-%m-%dT%H:%M:%S'),
                 'Path':user['Path'],
             })
@@ -137,7 +137,7 @@ script:
         except Exception as e:
             return raise_error(e)
 
-    def list_users():
+    def list_users(args):
         try:
             client = aws_session(
                     service = 'iam',
@@ -153,8 +153,7 @@ script:
                         'UserName': user['UserName'],
                         'UserId': user['UserId'],
                         'Arn': user['Arn'],
-                        'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
-                        'PasswordLastUsed': datetime.datetime.strftime(user['PasswordLastUsed'], '%Y-%m-%dT%H:%M:%S'),
+                        'CreateDate': datetime.datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
                         'Path': user['Path'],
                     })
             ec = {'AWS.IAM.Users': data}
@@ -245,7 +244,7 @@ script:
         except Exception as e:
             return raise_error(e)
 
-    def list_groups():
+    def list_groups(args):
         try:
             client = aws_session(
                     service = 'iam',
@@ -352,7 +351,7 @@ script:
                 Status=args.get('status')
                 )
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                return "Access Key with ID {0} was set to status {1}:".format(args.get('accessKeyId'),args.get('status'))
+                return "Access Key with ID {0} was set to status: {1}".format(args.get('accessKeyId'),args.get('status'))
 
         except Exception as e:
             return raise_error(e)
@@ -421,6 +420,7 @@ script:
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
             data = []
+            output = []
             paginator = client.get_paginator('list_roles')
             for response in paginator.paginate():
                 for role in response['Roles']:
@@ -430,13 +430,10 @@ script:
                         'Arn': role['Arn'],
                         'CreateDate': datetime.datetime.strftime(role['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
                         'Path': role['Path'],
-                        #'AssumeRolePolicyDocument': role['AssumeRolePolicyDocument'],
-                        #'Description': role['Description'],
-                        #'MaxSessionDuration': role['MaxSessionDuration']
                     })
+                    output.append(role)
 
-            output,append(json.dumps(instanceProfile, cls=DatetimeEncoder))
-            raw = json.loads(output)
+            raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
             ec = {'AWS.IAM.Roles': raw}
             return create_entry('AWS IAM Roles', data, ec)
 
@@ -627,18 +624,19 @@ script:
             paginator = client.get_paginator('list_instance_profiles')
             for response in paginator.paginate():
                 for instanceProfile in response['InstanceProfiles']:
-                    data.append ({
+                    data.append({
                         'Path': instanceProfile['Path'],
                         'InstanceProfileName': instanceProfile['InstanceProfileName'],
                         'InstanceProfileId': instanceProfile['InstanceProfileId'],
                         'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
                         'Arn': instanceProfile['Arn'],
-                        'RoleName': instanceProfile['Roles']['RoleName'],
-                        'RoleId': instanceProfile['Roles']['RoleId'],
-                        'RoleArn': instanceProfile['Roles']['Arn'],
+                        'RoleName': instanceProfile['Roles'][0]['RoleName'],
+                        'RoleId': instanceProfile['Roles'][0]['RoleId'],
+                        'RoleArn': instanceProfile['Roles'][0]['Arn'],
                     })
-            output,append(json.dumps(instanceProfile, cls=DatetimeEncoder))
-            raw = json.loads(output)
+                    output.append(instanceProfile)
+
+            raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
             ec = {'AWS.IAM.InstanceProfiles': raw}
             return create_entry('AWS IAM Instance Profiles', data, ec)
 
@@ -705,8 +703,9 @@ script:
                         'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
                         'Arn': instanceProfile['Arn'],
                     })
-                output,append(json.dumps(instanceProfile, cls=DatetimeEncoder))
-            raw = json.loads(output)
+                    output.append(instanceProfile)
+
+            raw = json.loads(json.dumps(instanceProfile, cls=DatetimeEncoder))
             ec = {'AWS.IAM.InstanceProfiles': raw}
             return create_entry('AWS IAM Instance Profiles', data, ec)
 
@@ -729,12 +728,12 @@ script:
                 'InstanceProfileId': instanceProfile['InstanceProfileId'],
                 'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
                 'Arn': instanceProfile['Arn'],
-                'RoleName': instanceProfile['Roles']['RoleName'],
-                'RoleId': instanceProfile['Roles']['RoleId'],
-                'RoleArn': instanceProfile['Roles']['Arn'],
+                'RoleName': instanceProfile['Roles'][0]['RoleName'],
+                'RoleId': instanceProfile['Roles'][0]['RoleId'],
+                'RoleArn': instanceProfile['Roles'][0]['Arn'],
             })
-            output = (json.dumps(instanceProfile, cls=DatetimeEncoder))
-            raw = json.loads(output)
+
+            raw = json.loads(json.dumps(instanceProfile, cls=DatetimeEncoder))
             ec = {'AWS.IAM.InstanceProfiles': raw}
             return create_entry('AWS IAM Instance Profiles', data, ec)
 
@@ -758,9 +757,9 @@ script:
                 'CreateDate': datetime.datetime.strftime(role['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
                 'Path': role['Path'],
             })
-            output = (json.dumps(response['Role'], cls=DatetimeEncoder))
-            raw = json.loads(output)
-            ec = {'AWS.IAM.Roles': response['raw']}
+
+            raw = json.loads(json.dumps(response['Role'], cls=DatetimeEncoder))
+            ec = {'AWS.IAM.Roles': raw}
             return create_entry('AWS IAM Roles', data, ec)
 
         except Exception as e:
@@ -809,19 +808,26 @@ script:
                 'Arn': role['Arn'],
                 'Path': role['Path'],
             })
-            output = (json.dumps(response['Role'], cls=DatetimeEncoder))
-            raw = json.loads(output)
-            ec = {'AWS.IAM.Roles': response['raw']}
+
+            raw = json.loads(json.dumps(response['Role'], cls=DatetimeEncoder))
+            ec = {'AWS.IAM.Roles': raw}
             return create_entry('AWS IAM Roles', data, ec)
 
         except Exception as e:
             return raise_error(e)
 
+    def test_function():
+        try:
+            client = aws_session(service = 'iam')
+            response = client.list_users()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return 'ok'
+        except Exception as e:
+            return raise_error(e)
+
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
-        response = list_groups()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-          result = ('ok')
+        result = test_function()
 
     if demisto.command() == 'aws-iam-create-user':
         result = create_user(demisto.args())
@@ -833,7 +839,7 @@ script:
         result = get_user(demisto.args())
 
     if demisto.command() == 'aws-iam-list-users':
-        result = list_users()
+        result = list_users(demisto.args())
 
     if demisto.command() == 'aws-iam-update-user':
         result = update_user(demisto.args())
@@ -848,7 +854,7 @@ script:
         result = create_group(demisto.args())
 
     if demisto.command() == 'aws-iam-list-groups':
-        result = list_groups()
+        result = list_groups(demisto.args())
 
     if demisto.command() == 'aws-iam-list-groups-for-user':
         result = list_groups_for_user(demisto.args())
@@ -916,7 +922,7 @@ script:
     if demisto.command() == 'aws-iam-delete-role':
         result = delete_role(demisto.args())
 
-    if demisto.command() == 'aws-iam-create_role':
+    if demisto.command() == 'aws-iam-create-role':
         result = create_role(demisto.args())
 
     demisto.results(result)
@@ -927,6 +933,7 @@ script:
   - name: aws-iam-create-user
     arguments:
     - name: userName
+      required: true
       description: The name of the user to create.
     - name: path
       description: The path for the user name. This parameter is optional. If it is
@@ -947,7 +954,7 @@ script:
       description: The stable and unique string identifying the user.
       type: string
     - contextPath: AWS.IAM.Users.Arn
-      description: 'The Amazon Resource Name (ARN) that identifies the user. '
+      description: The Amazon Resource Name (ARN) that identifies the user.
       type: string
     - contextPath: AWS.IAM.Users.CreateDate
       description: The date and time, when the user was created.
@@ -983,7 +990,7 @@ script:
       description: The date and time when the user was created.
       type: date
     - contextPath: AWS.IAM.Users.Path
-      description: The path to the user
+      description: The path to the user.
       type: string
     - contextPath: AWS.IAM.Users.PasswordLastUsed
       description: The date and time,  when the user's password was last used to sign
@@ -1015,7 +1022,7 @@ script:
       description: The date and time when the user was created.
       type: date
     - contextPath: AWS.IAM.Users.Path
-      description: The path to the user
+      description: The path to the user.
       type: string
     description: Lists the IAM users, returns all users in the AWS account.
   - name: aws-iam-update-user
@@ -1056,10 +1063,13 @@ script:
   - name: aws-iam-update-login-profile
     arguments:
     - name: userName
+      required: true
       description: The name of the user whose password you want to update.
     - name: newPassword
+      required: true
       description: The new password for the specified IAM user.
     - name: passwordResetRequired
+      required: true
       auto: PREDEFINED
       predefined:
       - "True"
@@ -1122,7 +1132,7 @@ script:
       description: The friendly name that identifies the group.
       type: string
     - contextPath: AWS.IAM.Groups.GroupId
-      description: 'The stable and unique string identifying the group. '
+      description: The stable and unique string identifying the group.
       type: string
     - contextPath: AWS.IAM.Groups.Arn
       description: The Amazon Resource Name (ARN) specifying the group.
@@ -1131,7 +1141,7 @@ script:
       description: The date and time when the group was created.
       type: date
     - contextPath: AWS.IAM.Groups.Path
-      description: 'The path to the group. '
+      description: The path to the group.
       type: string
     description: Lists all the IAM groups in the AWS account
   - name: aws-iam-list-groups-for-user
@@ -1167,8 +1177,10 @@ script:
   - name: aws-iam-add-user-to-group
     arguments:
     - name: userName
+      required: true
       description: The name of the user to add.
     - name: groupName
+      required: true
       description: The name of the group to update.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
@@ -1182,6 +1194,7 @@ script:
   - name: aws-iam-create-access-key
     arguments:
     - name: userName
+      required: true
       description: The name of the IAM user that the new key will belong to.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
@@ -1210,6 +1223,7 @@ script:
   - name: aws-iam-update-access-key
     arguments:
     - name: userName
+      required: true
       description: The name of the user whose key you want to update.
     - name: accessKeyId
       required: true
@@ -1271,9 +1285,9 @@ script:
       - All
       - AWS
       - Local
-      description: The scope to use for filtering the results.  To list only AWS managed
-        policies, set Scope to AWS . To list only the customer managed policies in
-        your AWS account, set Scope to Local .
+      description: The scope to use for filtering the results. To list only AWS managed
+        policies, set Scope to AWS. To list only the customer managed policies in
+        your AWS account, set Scope to Local.
       defaultValue: All
     - name: onlyAttached
       auto: PREDEFINED
@@ -1301,7 +1315,7 @@ script:
       description: The stable and unique string identifying the policy.
       type: string
     - contextPath: AWS.IAM.Policies.Arn
-      description: 'The Amazon Resource Name (ARN). '
+      description: The Amazon Resource Name (ARN).
       type: string
     - contextPath: AWS.IAM.Policies.Path
       description: The path to the policy.
@@ -1517,10 +1531,10 @@ script:
       description: The name identifying the instance profile.
       type: string
     - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileId
-      description: 'The stable and unique string identifying the instance profile. '
+      description: The stable and unique string identifying the instance profile.
       type: string
     - contextPath: AWS.IAM.InstanceProfiles.Arn
-      description: 'The Amazon Resource Name (ARN) specifying the instance profile. '
+      description: The Amazon Resource Name (ARN) specifying the instance profile.
       type: string
     - contextPath: AWS.IAM.InstanceProfiles.CreateDate
       description: The date when the instance profile was created.
@@ -1591,7 +1605,7 @@ script:
     - contextPath: AWS.IAM.InstanceProfiles.Roles.MaxSessionDuration
       description: The maximum session duration (in seconds) for the specified role.
       type: number
-    description: Lists all the instance profiles tin your AWS account
+    description: Lists all the instance profiles tin your AWS account.
   - name: aws-iam-add-role-to-instance-profile
     arguments:
     - name: instanceProfileName
@@ -1714,13 +1728,13 @@ script:
       description: The date when the instance profile was created.
       type: date
     - contextPath: AWS.IAM.InstanceProfiles.Roles.Path
-      description: 'The path to the role. '
+      description: The path to the role.
       type: string
     - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleName
       description: The friendly name that identifies the role.
       type: string
     - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleId
-      description: 'The stable and unique string identifying the role. '
+      description: The stable and unique string identifying the role.
       type: string
     - contextPath: AWS.IAM.InstanceProfiles.Roles.Arn
       description: The Amazon Resource Name (ARN) specifying the role.
@@ -1762,7 +1776,7 @@ script:
       description: The stable and unique string identifying the role.
       type: string
     - contextPath: AWS.IAM.Roles.Arn
-      description: 'The Amazon Resource Name (ARN) specifying the role. '
+      description: The Amazon Resource Name (ARN) specifying the role.
       type: string
     - contextPath: AWS.IAM.Roles.CreateDate
       description: The date and time, when the role was created.
@@ -1774,7 +1788,7 @@ script:
       description: A description of the role that you provide.
       type: string
     - contextPath: AWS.IAM.Roles.MaxSessionDuration
-      description: 'The maximum session duration (in seconds) for the specified role. '
+      description: The maximum session duration (in seconds) for the specified role.
       type: number
     description: Retrieves information about the specified role.
   - name: aws-iam-delete-role
@@ -1792,7 +1806,7 @@ script:
         the role.
     description: 'Deletes the specified role. The role must not have any policies
       attached. '
-  - name: aws-iam-create_role
+  - name: aws-iam-create-role
     arguments:
     - name: roleName
       required: true
@@ -1826,7 +1840,7 @@ script:
       description: The stable and unique string identifying the role.
       type: string
     - contextPath: AWS.IAM.Roles.Arn
-      description: 'The Amazon Resource Name (ARN) specifying the role. '
+      description: The Amazon Resource Name (ARN) specifying the role.
       type: string
     - contextPath: AWS.IAM.Roles.CreateDate
       description: The date and time, when the role was created.
