@@ -6,7 +6,7 @@ script: |-
   results = demisto.executeCommand('file', {'file': demisto.get(demisto.args(),'file')})
 
   for item in results:
-      if item['Type'] == 4:
+      if isError(item):
           item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
 
   demisto.results(results)
