@@ -334,7 +334,6 @@ script:
 
     function closeSession() {
         let result = closeSessionRequest(args.session);
-        result = getSessionsRequest(result.id);
         let title = `CB ${CB_PRODUCT} - Session Closed`;
         let dataMap = sessionData;
         //keep CbResponse context for backward competability
