@@ -369,7 +369,7 @@ script:
     }
 
     function fileUploadRaw(body, fileEntryId) {
-        uri = '/php/fileupload.php'
+        var uri = '/php/fileupload.php'
         var filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileEntryId +'")=val.Name');
         var filename = undefined;
 
@@ -425,7 +425,7 @@ script:
         data.filePriorityQ = filePriorityQ ? filePriorityQ : 'run_now';
 
         body.data = JSON.stringify(data);
-        file = (submitType == '0') ? sample : undefined;
+        var file = (submitType == '0') ? sample : undefined;
         var resultObj = JSON.parse(fileUploadRaw(body, file));
         return{
             taskId: resultObj.results[0].taskId,
@@ -753,24 +753,34 @@ script:
     outputs:
     - contextPath: ATD.Task.taskId
       description: The task ID of the sample uploaded
+      type: number
     - contextPath: ATD.Task.jobId
       description: The job ID of the sample uploaded
+      type: number
     - contextPath: ATD.Task.messageId
       description: The message Id relevant to the sample uploaded
+      type: string
     - contextPath: ATD.Task.url
       description: The URL detonated
+      type: string
     - contextPath: ATD.Task.srcIp
       description: Source IPv4 address
+      type: string
     - contextPath: ATD.Task.destIp
       description: Destination IPv4 address
+      type: string
     - contextPath: ATD.Task.MD5
       description: MD5 of the sample uploaded
+      type: string
     - contextPath: ATD.Task.SHA1
       description: SHA1 of the sample uploaded
+      type: string
     - contextPath: ATD.Task.SHA256
       description: SHA256 of the sample uploaded
+      type: string
     - contextPath: ATD.taskId
       description: The task ID of the sample uploaded
+      type: number
     description: upload a file/web URL for dynamic analysis by using the provided
       Analyzer Profile. Only single file/web URL can be submitted at a time.
   - name: atd-get-task-ids
@@ -782,8 +792,10 @@ script:
     outputs:
     - contextPath: ATD.Task.jobId
       description: The corresponding taskId of the jobId sent
+      type: number
     - contextPath: ATD.Task.jobId
       description: The jobId sent
+      type: number
     description: fetches the list of task id's associated with a job id
   - name: atd-get-report
     arguments:
@@ -827,42 +839,59 @@ script:
     outputs:
     - contextPath: File.Name
       description: Filename (only in case of report type=json)
+      type: string
     - contextPath: File.Type
       description: File type e.g. "PE" (only in case of report type=json)
+      type: string
     - contextPath: File.Size
       description: File size (only in case of report type=json)
+      type: number
     - contextPath: File.MD5
       description: MD5 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.SHA1
       description: SHA1 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.SHA256
       description: SHA256 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
+      type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator we tested (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Type
       description: The type of the indicator (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Score
       description: The actual score (only in case of report type=json)
+      type: number
     - contextPath: File.EntryID
       description: The Entry ID of the sample
+      type: string
     - contextPath: IP.Address
       description: IP's relevant to the sample
+      type: string
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
     arguments: []
     outputs:
     - contextPath: ATD.ListAnalyzerProfiles.Name
       description: The Analyzer's profile name
+      type: string
     - contextPath: ATD.ListAnalyzerProfiles.AnalyzerProfileId
       description: The Analyzer's profile id
+      type: number
     - contextPath: ATD.ListAnalyzerProfiles.Description
       description: The Analyzer's profile description
+      type: string
     - contextPath: ATD.ListAnalyzerProfiles.Sandbox
       description: If the Analyzer's profile has access to the sandbox
       type: boolean
@@ -890,12 +919,16 @@ script:
     outputs:
     - contextPath: ATD.Users.FullName
       description: The user's fullname
+      type: string
     - contextPath: ATD.Users.UserId
       description: The user's id
+      type: number
     - contextPath: ATD.Users.LoginId
       description: The user's login id
+      type: string
     - contextPath: ATD.Users.UserType
       description: The user type
+      type: string
     description: ' displays the user profile information present on the McAfee Advanced
       Threat Defense.'
   - name: atd-login
@@ -903,13 +936,16 @@ script:
     outputs:
     - contextPath: ATD.Session.APIVersion
       description: The API version used in the session
+      type: string
     - contextPath: ATD.Session.IsAdmin
       description: If the current user is admin
       type: boolean
     - contextPath: ATD.Session.SessionId
       description: The session id
+      type: string
     - contextPath: ATD.Session.UserId
       description: The UserId of the User logged in in the session
+      type: number
     description: Returns the current session details
   - name: detonate-file
     arguments:
@@ -947,52 +983,75 @@ script:
     outputs:
     - contextPath: File.Name
       description: Filename (only in case of report type=json)
+      type: string
     - contextPath: File.Type
       description: File type e.g. "PE" (only in case of report type=json)
+      type: string
     - contextPath: File.Size
       description: File size (only in case of report type=json)
+      type: number
     - contextPath: File.MD5
       description: MD5 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.SHA1
       description: SHA1 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.SHA256
       description: SHA256 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
+      type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator we tested (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Type
       description: The type of the indicator (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Score
       description: The actual score (only in case of report type=json)
+      type: number
     - contextPath: ATD.Task.taskId
       description: This is the returned TaskId value in the submission step, previously
         returned value in the File/URL submission step
+      type: number
     - contextPath: ATD.Task.jobId
       description: This is the returned JobId value in the submission step, previously
         returned value in the File/URL submission step
+      type: number
     - contextPath: ATD.Task.status
       description: The task ID status (Completed or Analyzing)
+      type: string
     - contextPath: ATD.Task.messageId
       description: The message Id relevant to the sample uploaded
+      type: string
     - contextPath: ATD.Task.url
       description: The URL detonated
+      type: string
     - contextPath: ATD.Task.srcIp
       description: Source IPv4 address
+      type: string
     - contextPath: ATD.Task.destIp
       description: Destination IPv4 address
+      type: string
     - contextPath: ATD.Task.MD5
       description: MD5 of the sample uploaded
+      type: string
     - contextPath: ATD.Task.SHA256
       description: SHA256 of the sample uploaded
+      type: string
     - contextPath: ATD.Task.SHA1
       description: SHA1 of the sample uploaded
+      type: string
     - contextPath: IP.Address
       description: IP's relevant to the sample
+      type: string
     description: Detonate file through McAfee ATD
   - name: detonate-url
     arguments:
@@ -1030,52 +1089,75 @@ script:
     outputs:
     - contextPath: File.Name
       description: Filename (only in case of report type=json)
+      type: string
     - contextPath: File.Type
       description: File type e.g. "PE" (only in case of report type=json)
+      type: string
     - contextPath: File.Size
       description: File size (only in case of report type=json)
+      type: number
     - contextPath: File.MD5
       description: MD5 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.SHA1
       description: SHA1 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.SHA256
       description: SHA256 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
+      type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator we tested (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Type
       description: The type of the indicator (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Score
       description: The actual score (only in case of report type=json)
+      type: number
     - contextPath: ATD.Task.taskId
       description: This is the returned TaskId value in the submission step, previously
         returned value in the File/URL submission step
+      type: number
     - contextPath: ATD.Task.jobId
       description: This is the returned JobId value in the submission step, previously
         returned value in the File/URL submission step
+      type: number
     - contextPath: ATD.Task.status
       description: The task ID status (Completed or Analyzing)
+      type: string
     - contextPath: ATD.Task.messageId
       description: The message Id relevant to the sample uploaded
+      type: string
     - contextPath: ATD.Task.url
       description: The URL detonated
+      type: string
     - contextPath: ATD.Task.srcIp
       description: Source IPv4 address
+      type: string
     - contextPath: ATD.Task.destIp
       description: Destination IPv4 address
+      type: string
     - contextPath: ATD.Task.MD5
       description: MD5 of the sample uploaded
+      type: string
     - contextPath: ATD.Task.SHA256
       description: SHA256 of the sample uploaded
+      type: string
     - contextPath: ATD.Task.SHA1
       description: SHA1 of the sample uploaded
+      type: string
     - contextPath: IP.Address
       description: IP's relevant to the sample
+      type: string
     description: Detonate URL through McAfee ATD
   - name: atd-check-status
     arguments:
@@ -1089,20 +1171,26 @@ script:
     outputs:
     - contextPath: ATD.status
       description: The task ID status (Completed or Analyzing)
+      type: string
     - contextPath: ATD.Task.taskId
       description: This is the returned TaskId value in the submission step, previously
         returned value in the File/URL submission step
+      type: number
     - contextPath: ATD.Task.jobId
       description: This is the returned JobId value in the submission step, previously
         returned value in the File/URL submission step
+      type: number
     - contextPath: ATD.Task.status
       description: The task ID status (Completed or Analyzing)
+      type: string
     - contextPath: ATD.Task.filename
       description: The name of the uploaded sample
+      type: string
     - contextPath: ATD.Task.MD5
       description: The MD5 of the sample
+      type: string
     - contextPath: ATD.Task.submitTime
       description: Submission time of the sample
+      type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-
