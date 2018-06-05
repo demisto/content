@@ -1,10 +1,16 @@
 commonfields:
-  id: EmailReputation
-  version: -1
+  id: bdbb19ad-6362-42df-83cd-1aa9024e53f3
+  version: 4
 name: EmailReputation
 script: |-
-  return executeCommand('email', {email: args.email});
-type: javascript
+  results = demisto.executeCommand('email', {'email': demisto.get(demisto.args(),'email')})
+
+  for item in results:
+      if item['Type'] == 4:
+          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+
+  demisto.results(results)
+type: python
 tags:
 - enhancement
 comment: A context script for Email entities
@@ -15,3 +21,4 @@ args:
   default: true
   description: Email address to look up
 scripttarget: 0
+runonce: false
