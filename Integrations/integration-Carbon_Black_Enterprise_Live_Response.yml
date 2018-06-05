@@ -186,7 +186,8 @@ script:
         let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, headerTransformer);
         let contextData = createContext(translatedData);
         let context = {};
-        for (let key in contextKeys) {
+        for (let i = 0 ; i < contextKeys.length; i++) {
+            let key = contextKeys[i];
             context[key] = contextData;
         }
         return {
