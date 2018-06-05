@@ -1,21 +1,24 @@
 commonfields:
-  id: FileReputation
-  version: -1
-name: FileReputation
+  id: a59feae5-0d9a-4741-8239-faeed27fabc0
+  version: 31
+name: FileReputationBar
 script: |-
-  return executeCommand('file', {file: args.file});
-type: javascript
+  results = demisto.executeCommand('file', {'file': demisto.get(demisto.args(),'file')})
+
+  for item in results:
+      if item['Type'] == 4:
+          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+
+  demisto.results(results)
+type: python
 tags:
 - enhancement
 comment: A context script for hash entities
-system: true
+enabled: true
 args:
 - name: file
   required: true
   default: true
   description: File hash to look up - supports MD5, SHA1 and SHA256
 scripttarget: 0
-dependson:
-  must:
-  - file
-timeout: 0s
+runonce: false
