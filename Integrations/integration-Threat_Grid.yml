@@ -268,6 +268,64 @@ script:
         'threat-grid-get-specific-feed': 'feeds/%feed-name%-%feed-period%.%output-type%',
     };
 
+    var SHORTCUT_DATA = "[InternetShortcut]\nURL=";
+
+    function get_sample_state(id) {
+        var rawResponse = sendRequest(
+            'GET',
+            'samples/' + id + '/state',
+            args,
+            null
+        );
+        return rawResponse.data.state;
+    }
+
+    function wait_for_report(id, delay, timeout) {
+        var time = 0;
+        var done = false;
+        do {
+            var state = get_sample_state(id);
+            if (state == 'fail')
+                throw "Threat Grid failed to process the sample (sample state: fail).";
+            done = state == 'succ';
+            if (done)
+                break;
+            wait(delay);
+            time += delay;
+        } while (!done && time < timeout);
+        if (!done) {
+            throw "Timeout while waiting for report. Sample ID: " + id;
+        }
+    }
+
+    function get_report(id, type) { //Complete
+        if (type == 'html') {
+            rawResponse = sendRequest(
+                'GET',
+                'samples/' + id + '/report.html',
+                args,
+                id + '-report.html'
+            );
+            var fileId = rawResponse.FileID;
+            return ({Type: 3, FileID: fileId, File: 'ThreatGridReport.html', Contents: 'ThreatGridReport.html'});
+        }
+        rawResponse = sendRequest(
+            'GET',
+            'samples/' + id + '/analysis.json',
+            args,
+            null
+        );
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: rawResponse,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: createHR(command, returnObject),
+            EntryContext: (contextData && returnObject && ec) ? ec : undefined
+        };
+    }
+
+
     var rawResponse;
     var id = args.id;
     switch (command) {
@@ -275,6 +333,43 @@ script:
         args.limit = 1;
         sendRequest(methodDictionary['test-module'], urlDict['test-module'], args);
         return 'ok';
+
+      case 'threat-grid-url-to-file':
+        var url = args['url'];
+        delete(args['url']);
+        return { Type: 3, FileID: saveFile(SHORTCUT_DATA + url), File: 'url_as_file', Contents: 'url_as_file' };
+
+      case 'threat-grid-detonate-file':
+        args['api_key'] = params.token;
+        var entryId = args['file-entry-id'];
+        delete(args['file-entry-id']);
+        var res = httpMultipart(
+                url + 'samples',
+                entryId,
+                {
+                    Method: 'POST',
+                },
+                args,
+                params.insecure,
+                params.proxy,
+                undefined,
+                'sample',
+                args.filename
+            );
+        if (res.StatusCode == 503) {
+            throw 'Sample upload failed: File was already uploaded.';
+        }
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Sample upload failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        rawResponse = JSON.parse(res.Body);
+        sampleId = rawResponse.data.id;
+        wait_for_report(sampleId, parseInt(args.delay), parseInt(args.timeout));
+        var type = args['report-file-type'];
+        delete(args['report-file-type']);
+        return get_report(sampleId, type);
+
+
       case 'threat-grid-upload-sample':
         args['api_key'] = params.token;
         var fileId = args['file-id'];
@@ -931,3 +1026,33 @@ script:
       description: The output type
       defaultValue: json
     description: Gets a specific threat feed
+  - name: threat-grid-detonate-file
+    arguments:
+    - name: file-entry-id
+      required: true
+      default: true
+      description: Entry ID of the uploaded file (e.g. the message in the war room
+        with the uploaded file's details).
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "20"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "660"
+    - name: report-file-type
+      auto: PREDEFINED
+      predefined:
+      - html
+      - json
+      description: File type of report to return
+      defaultValue: html
+    description: Detonates URL address through Threat Grid
+  - name: threat-grid-url-to-file
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to convert.
+    description: Convert a URL into a file for Threat Grid file detonation.
+  runonce: false
+releaseNotes: "Added threat-grid-detonate-file and threat-grid-url-to-file commands."
