@@ -22,3 +22,4 @@ args:
   description: File hash to look up - supports MD5, SHA1 and SHA256
 scripttarget: 0
 runonce: false
+releaseNotes: "error type entry handling"
