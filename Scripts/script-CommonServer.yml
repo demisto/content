@@ -237,6 +237,10 @@ script: |-
           t = [t];
       }
 
+      if(headers && !(headers instanceof Array)){
+        headers = [headers];
+      }
+
       //in case of headers was not provided (backward compatibility)
       if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
           headers = GetAllObjectsProperties(t);
@@ -271,6 +275,14 @@ script: |-
               sep[0] = sep[0]+'|';
           }
           mdResults += sep.join('|') + '\n';
+          for(var j = 0; j < t.length; j++){
+            if(typeof(t[j]) !== 'object' && !(Array.isArray(t[j]))){
+                var obj = {};
+                obj[headers[0]] = t[j];
+                t[j] = obj;
+            }
+        }
+
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
@@ -1326,6 +1338,9 @@ script: |-
    * @return {Object} the formatted object (key-value format)
    */
   var treeToFlattenObject = function(object) {
+        if(typeof object !== 'object' && !(Array.isArray(object))){
+            return object;
+        }
       var retVal = {};
 
       for (var i in object) {
