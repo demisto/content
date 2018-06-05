@@ -342,4 +342,4 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
-releaseNotes: "Fix date parsing bug"
+releaseNotes: "Fix bugs: 1. handle exception for empty results, 2. support more that one incident keys. 3. support multiple date formats"
