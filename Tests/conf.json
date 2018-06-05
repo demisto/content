@@ -276,17 +276,12 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": [
-                {
-                    "name": "carbonblackliveresponse",
-                    "byoi": true
-                },
-                {
-                    "name": "carbonblack-v2",
-                    "byoi": true
-                }
-            ],
-            "playbookID": "CarbonBlackLiveResponseTest"
+            "playbookID": "CarbonBlackLiveResponseTest",
+            "integrations": "carbonblack-v2"
+        },
+        {
+            "playbookID": "CarbonBlackLiveResponseTestV2",
+            "integrations": "carbonblackliveresponse"
         },
         {
             "playbookID": "TestSafeBreach",
