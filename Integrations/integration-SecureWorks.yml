@@ -419,7 +419,6 @@ script:
         return response;
     }
 
-
     function assignTicketCommand(){
         var id = args['id'];
         var response = assignTicket(id,
@@ -584,6 +583,8 @@ script:
             {to: 'Closed', from: 'dateClosed'},
             {to: 'Priority', from: 'priority'},
             {to: 'Reference', from: 'externalTicketNum'},
+            {to: 'Location', from: 'clientLocation.name'},
+            {to: 'Categorization', from: 'categorizationClass'},
             {to: 'Device', from: 'devices.name'},
             {to: 'Assigned Employee', from: 'contact.name'},
             {to: 'Watchers', from: 'watchers'},
@@ -763,6 +764,13 @@ script:
         return response;
     }
 
+    function markTicket(ticketId){
+           var updateBody = {};
+           updateBody[DIRTY_FIELD] = DIRTY_VALUE;
+
+           sendRequest('tickets/' + ticketId, 'POST', '', updateBody);
+    }
+
     function fetchIncidents(){
         var queryParams = {};
         if(params.ticketType){
@@ -786,7 +794,12 @@ script:
             ticketVersions: []
         };
 
-        var responseTickets = getTicketsUpdates(queryParams);
+        var responseTickets = getTicketsUpdates(false,
+        queryParams.limit,
+        queryParams.ticketType,
+        queryParams.worklogs,
+        queryParams.groupingType);
+
         responseTickets.forEach(function(responseTicket){
             // Exclude health tickets
             var excludeHealthFilter = responseTicket.eventSource !== EVENT_SOURCE_HEALTH_TYPE &&
@@ -794,8 +807,7 @@ script:
             // Exclude tickets that were marked using the designated field
             var excludeMarkedTickets = responseTicket[DIRTY_FIELD] !== DIRTY_VALUE;
 
-            if(statuses.indexOf(responseTicket.status) !== -1
-                && excludeHealthFilter && excludeMarkedTickets){
+            if(statuses.indexOf(responseTicket.status) !== -1 && excludeHealthFilter && excludeMarkedTickets){
                 convertTicketDates(responseTicket);
                 tickets.push(responseTicket);
                 ticketVersionsObject.ticketVersions.push({
@@ -804,9 +816,7 @@ script:
                 });
 
                 // Mark the designated field, so it's excluded next time
-                var updateBody = {};
-                updateBody[DIRTY_FIELD] = DIRTY_VALUE;
-                updateTicket(responseTicket.ticketId, updateBody);
+                markTicket(responseTicket.ticketId);
             }
         });
 
