@@ -25,8 +25,9 @@ configuration:
 script:
   script: |-
     import boto3
+    import datetime
 
-    AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
+    AWS_DEFAULT_REGION = None
     AWS_roleArn = demisto.params()['roleArn']
     AWS_roleSessionName = demisto.params()['roleSessionName']
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
@@ -66,14 +67,13 @@ script:
     def create_record(args):
         try:
             client = aws_session(
-                    service = 'ec2',
-                    region = args.get('Region'),
+                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
             kwargs = {
-                'HostedZoneId':args.get('HostedZoneId'),
+                'HostedZoneId':args.get('hostedZoneId'),
                 'ChangeBatch':{
                             'Changes': [
                                 {
@@ -84,17 +84,19 @@ script:
                                         'TTL': int(args.get('ttl')),
                                         'ResourceRecords': [{'Value': args.get('target')}]
                                 }
-                            }]
-                })
-            if args.get('comment') is not None:
-                kwargs['ChangeBatch'].update({'Comment':comment})
+                            }
+                        ]
+                }
+            }
 
-            response = route53.change_resource_record_sets(**kwargs)
+            if args.get('comment') is not None:
+                kwargs['ChangeBatch'].update({'Comment':args.get('comment')})
+
+            response = client.change_resource_record_sets(**kwargs)
             record = response['ChangeInfo']
             data = ({
                 'Id': record['Id'],
-                'Status': record['Status']',
-                'Comment': record['Comment']
+                'Status': record['Status']
             })
 
             output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
@@ -109,14 +111,13 @@ script:
     def delete_record(args):
         try:
             client = aws_session(
-                    service = 'ec2',
-                    region = args.get('Region'),
+                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
             kwargs = {
-                'HostedZoneId':args.get('HostedZoneId'),
+                'HostedZoneId':args.get('hostedZoneId'),
                 'ChangeBatch':{
                             'Changes': [
                                 {
@@ -126,17 +127,16 @@ script:
                                         'Type': args.get('type'),
                                         'ResourceRecords': [{'Value': args.get('target')}]
                                 }
-                            }]
-                })
-            if args.get('comment') is not None:
-                kwargs['ChangeBatch'].update({'Comment':args.get('comment')})
+                            }
+                        ]
+                }
+            }
 
-            response = route53.change_resource_record_sets(**kwargs)
+            response = client.change_resource_record_sets(**kwargs)
             record = response['ChangeInfo']
             data = ({
                 'Id': record['Id'],
-                'Status': record['Status']',
-                'Comment': record['Comment']
+                'Status': record['Status']
             })
 
             output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
@@ -151,14 +151,13 @@ script:
     def list_hosted_zones(args):
         try:
             client = aws_session(
-                    service = 'ec2',
-                    region = args.get('Region'),
+                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
             data = []
-            response = route53.list_hosted_zones()
+            response = client.list_hosted_zones()
             for hostedzone in response['HostedZones']:
                 data.append ({
                     'Name': hostedzone['Name'],
@@ -176,8 +175,7 @@ script:
     def list_resource_record_sets(args):
         try:
             client = aws_session(
-                    service = 'ec2',
-                    region = args.get('Region'),
+                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -192,7 +190,7 @@ script:
                 kwargs.update({'StartRecordIdentifier':args.get('startRecordIdentifier')})
 
             data = []
-            response = route53.list_resource_record_sets(**kwargs)
+            response = client.list_resource_record_sets(**kwargs)
             records = response['ResourceRecordSets']
             for record in records:
                 data.append({
@@ -212,8 +210,7 @@ script:
     def waiter_resource_record_sets_changed(args):
         try:
             client = aws_session(
-                    service = 'ec2',
-                    region = args.get('Region'),
+                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -234,8 +231,7 @@ script:
     def test_dns_answer(args):
         try:
             client = aws_session(
-                    service = 'ec2',
-                    region = args.get('Region'),
+                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -247,10 +243,6 @@ script:
                 }
             if args.get('resolverIP') is not None:
                 kwargs.update({'ResolverIP':args.get('resolverIP')})
-            if args.get('EDNS0ClientSubnetIP') is not None:
-                kwargs.update({'EDNS0ClientSubnetIP':args.get('EDNS0ClientSubnetIP')})
-            if args.get('EDNS0ClientSubnetMask') is not None:
-                kwargs.update({'EDNS0ClientSubnetMask':args.get('EDNS0ClientSubnetMask')})
 
             response = client.test_dns_answer(**kwargs)
             data = ({
@@ -326,8 +318,6 @@ script:
       description: The type of the record to create
     - name: comment
       description: Any comments you want to include.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -377,10 +367,6 @@ script:
       - SRV
       - TX
       description: The type of the record to create
-    - name: comment
-      description: Any comments you want to include.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -404,8 +390,6 @@ script:
     description: Deletes a resource record set
   - name: aws-route53-list-hosted-zones
     arguments:
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -472,8 +456,6 @@ script:
       description: The type of resource record set to begin the record listing from.
     - name: startRecordIdentifier
       description: Weighted resource record sets only.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -581,19 +563,6 @@ script:
         specify the IP address for that resolver. If you omit this value, TestDnsAnswer
         uses the IP address of a DNS resolver in the AWS US East (N. Virginia) Region
         (us-east-1 ).
-    - name: EDNS0ClientSubnetIP
-      description: If the resolver that you specified for resolverip supports EDNS0,
-        specify the IPv4 or IPv6 address of a client in the applicable location, for
-        example, 192.0.2.44 or 2001:db8:85a3::8a2e:370:7334 .
-    - name: EDNS0ClientSubnetMask
-      description: If you specify an IP address for edns0clientsubnetip , you can
-        optionally specify the number of bits of the IP address that you want the
-        checking tool to include in the DNS query. For example, if you specify 192.0.2.44
-        for edns0clientsubnetip and 24 for edns0clientsubnetmask , the checking tool
-        will simulate a request from 192.0.2.0/24. The default value is 24 bits for
-        IPv4 addresses and 64 bits for IPv6 addresses.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
