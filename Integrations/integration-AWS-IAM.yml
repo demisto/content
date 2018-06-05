@@ -288,7 +288,7 @@ script:
                     'Path': group['Path'],
                     })
 
-            ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).Groups': data}
+            ec = {'AWS.IAM.Users(val.UserName === obj.UserName).Groups': data}
             return create_entry('AWS IAM User Groups', data, ec)
 
         except Exception as e:
@@ -330,7 +330,7 @@ script:
                 'CreateDate': datetime.datetime.strftime(AccessKey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
             })
 
-            ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).AccessKeys': data}
+            ec = {'AWS.IAM.Users(val.UserName === obj.UserName).AccessKeys': data}
             return create_entry('AWS IAM Users', data, ec)
 
         except Exception as e:
@@ -373,7 +373,7 @@ script:
                     'CreateDate': datetime.datetime.strftime(accesskey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
                 })
 
-            ec = {'AWS.IAM.Users.(val.UserName === obj.UserName).AccessKeys': data}
+            ec = {'AWS.IAM.Users(val.UserName === obj.UserName).AccessKeys': data}
             return create_entry('AWS IAM Users Access Keys', data, ec)
 
         except Exception as e:
@@ -494,7 +494,7 @@ script:
                     PolicyArn=args.get('policyArn')
                 )
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                return "Policy was deattached from {0}: {1} ".format(args.get('type'),args.get('entityName'))
+                return "Policy was detached from {0}: {1} ".format(args.get('type'),args.get('entityName'))
 
         except Exception as e:
             return raise_error(e)
@@ -790,7 +790,7 @@ script:
                 )
             kwargs = {
                 'RoleName':args.get('roleName'),
-                'AssumeRolePolicyDocument':args.get('assumeRolePolicyDocumentName')
+                'AssumeRolePolicyDocument':args.get('assumeRolePolicyDocument')
             }
             if args.get('path') is not None:
                 kwargs.update({'Path':args.get('path')})
@@ -864,7 +864,7 @@ script:
     if demisto.command() == 'aws-iam-update-access-key':
         result = update_access_key(demisto.args())
 
-    if demisto.command() == 'aws-iam-list-access-key':
+    if demisto.command() == 'aws-iam-list-access-keys-for-user':
         result = list_access_key_for_user(demisto.args())
 
     if demisto.command() == 'aws-iam-list-policies':
@@ -1247,7 +1247,7 @@ script:
     description: Changes the status of the specified access key from Active to Inactive,
       or vice versa. This operation can be used to disable a user's key as part of
       a key rotation workflow.
-  - name: aws-iam-list-access-key
+  - name: aws-iam-list-access-keys-for-user
     arguments:
     - name: userName
       required: true
@@ -1496,6 +1496,7 @@ script:
       required: true
       description: he name of the user whose access key pair you want to delete.
     - name: AccessKeyId
+      required: true
       description: The access key ID for the access key ID and secret access key you
         want to delete.
     - name: roleArn
@@ -1681,6 +1682,46 @@ script:
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+    outputs:
+    - contextPath: AWS.IAM.InstanceProfiles.Path
+      description: The path to the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileName
+      description: The name identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileId
+      description: The stable and unique string identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Arn
+      description: The Amazon Resource Name (ARN) specifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.CreateDate
+      description: The date when the instance profile was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Path
+      description: The path to the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleName
+      description: The friendly name that identifies the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleId
+      description: The stable and unique string identifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Arn
+      description: The Amazon Resource Name (ARN) specifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.CreateDate
+      description: The date and time, when the role was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.AssumeRolePolicyDocument
+      description: The policy that grants an entity permission to assume the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Description
+      description: A description of the role that you provide.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.MaxSessionDuration
+      description: The maximum session duration (in seconds) for the specified role.
+      type: number
     description: Removes the specified IAM role from the specified EC2 instance profile.
   - name: aws-iam-list-instance-profiles-for-role
     arguments:
@@ -1810,7 +1851,7 @@ script:
     - name: roleName
       required: true
       description: The name of the role to create.
-    - name: assumeRolePolicyDocumentName
+    - name: assumeRolePolicyDocument
       required: true
       description: The trust relationship policy document that grants an entity permission
         to assume the role.
