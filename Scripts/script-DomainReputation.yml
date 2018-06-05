@@ -1,6 +1,6 @@
 commonfields:
   id: 0b117e6b-2628-4e46-84b3-be46e9ef399d
-  version: 4
+  version: -1
 name: DomainReputation
 script: |-
   results = demisto.executeCommand('domain', {'domain': demisto.get(demisto.args(),'domain')})

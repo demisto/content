@@ -1,6 +1,6 @@
 commonfields:
   id: bdbb19ad-6362-42df-83cd-1aa9024e53f3
-  version: 4
+  version: -1
 name: EmailReputation
 script: |-
   results = demisto.executeCommand('email', {'email': demisto.get(demisto.args(),'email')})

@@ -1,6 +1,6 @@
 commonfields:
   id: a59feae5-0d9a-4741-8239-faeed27fabc0
-  version: 31
+  version: -1
 name: FileReputation
 script: |-
   results = demisto.executeCommand('file', {'file': demisto.get(demisto.args(),'file')})
