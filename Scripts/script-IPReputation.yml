@@ -1,5 +1,5 @@
 commonfields:
-  id: 41141840-f17b-4d0b-80de-db1c13bace3a
+  id: IPReputation
   version: -1
 name: IPReputation
 script: |-

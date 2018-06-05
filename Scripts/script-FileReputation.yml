@@ -1,5 +1,5 @@
 commonfields:
-  id: a59feae5-0d9a-4741-8239-faeed27fabc0
+  id: FileReputation
   version: -1
 name: FileReputation
 script: |-
