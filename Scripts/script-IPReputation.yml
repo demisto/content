@@ -1,21 +1,24 @@
 commonfields:
-  id: IPReputation
-  version: -1
+  id: 41141840-f17b-4d0b-80de-db1c13bace3a
+  version: 4
 name: IPReputation
 script: |-
-  return executeCommand('ip', {ip: args.ip});
-type: javascript
+  results = demisto.executeCommand('ip', {'ip': demisto.get(demisto.args(),'ip')})
+
+  for item in results:
+      if item['Type'] == 4:
+          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+
+  demisto.results(results)
+type: python
 tags:
 - enhancement
 comment: A context script for IP entities
-system: true
+enabled: true
 args:
 - name: ip
   required: true
   default: true
   description: IP address to look up
 scripttarget: 0
-dependson:
-  must:
-  - ip
-timeout: 0s
+runonce: false
