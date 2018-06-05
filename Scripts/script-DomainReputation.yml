@@ -1,5 +1,5 @@
 commonfields:
-  id: 0b117e6b-2628-4e46-84b3-be46e9ef399d
+  id: DomainReputation
   version: -1
 name: DomainReputation
 script: |-

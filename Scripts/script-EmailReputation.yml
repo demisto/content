@@ -1,5 +1,5 @@
 commonfields:
-  id: bdbb19ad-6362-42df-83cd-1aa9024e53f3
+  id: EmailReputation
   version: -1
 name: EmailReputation
 script: |-

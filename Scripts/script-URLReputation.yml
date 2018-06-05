@@ -1,5 +1,5 @@
 commonfields:
-  id: c0ae3aa9-d839-46c6-8361-3e87646ab9ab
+  id: URLReputation
   version: -1
 name: URLReputation
 script: |-
