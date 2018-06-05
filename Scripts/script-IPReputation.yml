@@ -1,6 +1,6 @@
 commonfields:
   id: 41141840-f17b-4d0b-80de-db1c13bace3a
-  version: 4
+  version: -1
 name: IPReputation
 script: |-
   results = demisto.executeCommand('ip', {'ip': demisto.get(demisto.args(),'ip')})
