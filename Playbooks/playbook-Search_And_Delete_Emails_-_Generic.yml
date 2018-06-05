@@ -1,0 +1,88 @@
+id: search_and_delete_emails_-_generic
+version: -1
+name: Search And Delete Emails - Generic
+fromversion: 3.6.0
+description: This playbook searches and delete emails with similar attributes of a
+  malicious email.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 808e9cce-8112-49d4-8624-907a6fbeb394
+    type: start
+    task:
+      id: 808e9cce-8112-49d4-8624-907a6fbeb394
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 35563f2d-6cec-455c-8ccb-c8880fd0ad10
+    type: playbook
+    task:
+      id: 35563f2d-6cec-455c-8ccb-c8880fd0ad10
+      version: -1
+      name: Search And Delete Emails - EWS
+      description: ""
+      playbookName: Search And Delete Emails - EWS
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
+    type: title
+    task:
+      id: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
