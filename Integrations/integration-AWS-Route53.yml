@@ -148,6 +148,50 @@ script:
         except Exception as e:
             return raise_error(e)
 
+    def upsert_record(args):
+        try:
+            client = aws_session(
+                    service = 'route53',
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'HostedZoneId':args.get('hostedZoneId'),
+                'ChangeBatch':{
+                            'Changes': [
+                                {
+                                    'Action': 'UPSERT',
+                                    'ResourceRecordSet': {
+                                        'Name': args.get('source'),
+                                        'Type': args.get('type'),
+                                        'TTL': int(args.get('ttl')),
+                                        'ResourceRecords': [{'Value': args.get('target')}]
+                                }
+                            }
+                        ]
+                }
+            }
+
+            if args.get('comment') is not None:
+                kwargs['ChangeBatch'].update({'Comment':args.get('comment')})
+
+            response = client.change_resource_record_sets(**kwargs)
+            record = response['ChangeInfo']
+            data = ({
+                'Id': record['Id'],
+                'Status': record['Status']
+            })
+
+            output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            ec = {'AWS.Route53.RecordSetsChange': raw}
+            return  create_entry('AWS Route53 record Upsert',data, ec)
+
+
+        except Exception as e:
+            return raise_error(e)
+
     def list_hosted_zones(args):
         try:
             client = aws_session(
@@ -259,12 +303,25 @@ script:
         except Exception as error:
             return error
 
+    def test_function():
+        try:
+            client = aws_session(service = 'route53')
+            response = client.list_hosted_zones()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return 'ok'
+
+        except Exception as error:
+            return error
+
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        demisto.results('ok')
+        result = test_function()
 
     if demisto.command() == 'aws-route53-create-record':
         result = create_record(demisto.args())
+
+    if demisto.command() == 'aws-route53-upsert-record':
+        result = upsert_record(demisto.args())
 
     if demisto.command() == 'aws-route53-delete-record':
         result = delete_record(demisto.args())
@@ -338,7 +395,8 @@ script:
       description: A complex type that describes change information about changes
         made to your hosted zone.
       type: string
-    description: Creates a resource record set
+    description: Creates a resource record set. Creates a resource record set that
+      has the specified values.
   - name: aws-route53-delete-a-record
     arguments:
     - name: source
@@ -387,7 +445,8 @@ script:
       description: A complex type that describes change information about changes
         made to your hosted zone.
       type: string
-    description: Deletes a resource record set
+    description: Deletes a resource record set. Deletes an existing resource record
+      set that has the specified values.
   - name: aws-route53-list-hosted-zones
     arguments:
     - name: roleArn
@@ -598,5 +657,61 @@ script:
       request for a specified record name and type. You can optionally specify the
       IP address of a DNS resolver, an EDNS0 client subnet IP address, and a subnet
       mask.
+  - name: aws-route53-upsert-record
+    arguments:
+    - name: source
+      required: true
+      description: The name of the domain you want to Create. i.e. www.example.com
+    - name: target
+      required: true
+      description: The DNS record value
+    - name: ttl
+      required: true
+      description: The resource record cache time to live (TTL), in seconds.
+    - name: hostedZoneId
+      required: true
+      description: Specify the hosted zone ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TX
+      description: The type of the record to create
+    - name: comment
+      description: Any comments you want to include.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the request.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that this request
+        has not yet been applied to all Amazon Route 53 DNS servers.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: A complex type that describes change information about changes
+        made to your hosted zone.
+      type: string
+    description: Upsert a resource record set. If a resource record set does not already
+      exist, AWS creates it. If a resource set does exist, Amazon Route 53 updates
+      it with the values in the request.
   dockerimage: demisto/boto3
   runonce: false
