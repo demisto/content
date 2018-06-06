@@ -1,0 +1,17 @@
+commonfields:
+  id: Round
+  version: -1
+name: Round
+script: demisto.results(int(round(float(demisto.args()["value"]))))
+type: python
+tags:
+- transformer
+- number
+comment: Round number
+enabled: true
+args:
+- name: value
+  required: true
+  description: 'Float number like 3.2'
+scripttarget: 0
+runonce: false
