@@ -287,7 +287,6 @@ enabled: true
 args:
 - name: similarIncidentKeys
   description: Identical incident keys. Comma separated value
-  defaultValue: type
 - name: similarLabelsKeys
   description: 'Similar label keys. Comma separated value. It''s also possible to
     let X different words between labels, within the following way: label_name:X,
@@ -322,7 +321,7 @@ args:
   - created
   - modified
   description: Filter incidents by this time field.
-  defaultValue: occurred
+  defaultValue: created
 - name: maxResults
   description: Maximum number of results to display.
   defaultValue: "10"
