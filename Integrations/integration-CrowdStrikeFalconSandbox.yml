@@ -693,7 +693,7 @@ script:
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
 
-    function submitFileByUrlCmd(url, environmentID) {
+    function submitFileByUrlCommad(url, environmentID) {
         if (version === 'v1') {
             throw 'This command is supported only in API v2.'
         }
@@ -760,7 +760,7 @@ script:
         case 'crowdstrike-detonate-url':
             return detonateUrl(args.url, args.delay, args.timeout, args['file-type']);
         case 'crowdstrike-submit-file-by-url':
-            return submitFileByUrlCmd(args.url, args.environmentID);
+            return submitFileByUrlCommad(args.url, args.environmentID);
     }
 
   type: javascript
