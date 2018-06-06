@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {
