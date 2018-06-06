@@ -125,6 +125,7 @@ script:
                                     'ResourceRecordSet': {
                                         'Name': args.get('source'),
                                         'Type': args.get('type'),
+                                        'TTL': int(args.get('ttl')),
                                         'ResourceRecords': [{'Value': args.get('target')}]
                                 }
                             }
@@ -243,7 +244,7 @@ script:
                     'TTL': record['TTL'],
                     'ResourceRecords': record['ResourceRecords'][0]['Value']
                 })
-            output = json.dumps(response['HostedZones'], cls=DatetimeEncoder)
+            output = json.dumps(response['ResourceRecordSets'], cls=DatetimeEncoder)
             raw = json.loads(output)
             ec = {'AWS.Rout53.RecordSets': raw}
             return create_entry('AWS Route53 Record Sets', data, ec)
@@ -282,7 +283,7 @@ script:
                 )
             kwargs = {
                 'HostedZoneId':args.get('hostedZoneId'),
-                'recordName':args.get('recordName'),
+                'RecordName':args.get('recordName'),
                 'RecordType':args.get('recordType'),
                 }
             if args.get('resolverIP') is not None:
@@ -397,7 +398,7 @@ script:
       type: string
     description: Creates a resource record set. Creates a resource record set that
       has the specified values.
-  - name: aws-route53-delete-a-record
+  - name: aws-route53-delete-record
     arguments:
     - name: source
       required: true
@@ -405,6 +406,9 @@ script:
     - name: target
       required: true
       description: The DNS record value
+    - name: ttl
+      required: true
+      description: The resource record cache time to live (TTL), in seconds.
     - name: hostedZoneId
       required: true
       description: Specify the hosted zone ID
@@ -592,7 +596,7 @@ script:
     description: A waiter function that waits until record set change is successful
   - name: aws-route53-test-dns-answer
     arguments:
-    - name: HostedZoneId
+    - name: hostedZoneId
       required: true
       description: The ID of the hosted zone that you want Amazon Route 53 to simulate
         a query for.
@@ -600,7 +604,7 @@ script:
       required: true
       description: The name of the resource record set that you want Amazon Route
         53 to simulate a query for.
-    - name: RecordType
+    - name: recordType
       required: true
       auto: PREDEFINED
       predefined:
