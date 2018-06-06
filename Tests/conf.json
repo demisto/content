@@ -458,6 +458,10 @@
         {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": "MineMeld",
+            "playbookID": "minemeld_test"
         }
     ]
 }
