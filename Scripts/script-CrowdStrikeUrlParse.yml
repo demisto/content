@@ -77,4 +77,3 @@ outputs:
   description: Detection ID for CrowdStrike alert
 scripttarget: 0
 runonce: false
-sensitive: true
