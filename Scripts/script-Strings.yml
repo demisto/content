@@ -69,3 +69,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: Better handling of text files
