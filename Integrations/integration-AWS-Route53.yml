@@ -211,7 +211,7 @@ script:
                 })
             output = json.dumps(response['HostedZones'], cls=DatetimeEncoder)
             raw = json.loads(output)
-            ec = {'AWS.Rout53.HostedZones': raw}
+            ec = {'AWS.Route53.HostedZones': raw}
             return create_entry('AWS Route53 Hosted Zones', data, ec)
 
         except Exception as e:
@@ -246,7 +246,7 @@ script:
                 })
             output = json.dumps(response['ResourceRecordSets'], cls=DatetimeEncoder)
             raw = json.loads(output)
-            ec = {'AWS.Rout53.RecordSets': raw}
+            ec = {'AWS.Route53.RecordSets': raw}
             return create_entry('AWS Route53 Record Sets', data, ec)
 
         except Exception as error:
@@ -298,7 +298,7 @@ script:
                 'Protocol': response['Protocol']
             })
 
-            ec = {'AWS.Rout53.TestDNSAnswer': esponse}
+            ec = {'AWS.Route53.TestDNSAnswer': esponse}
             return create_entry('AWS Route53 Test DNS Answer', data, ec)
 
         except Exception as error:
@@ -462,31 +462,31 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: AWS.Rout53.HostedZones.Id
+    - contextPath: AWS.Route53.HostedZones.Id
       description: The ID that Amazon Route 53 assigned to the hosted zone when you
         created it.
       type: string
-    - contextPath: AWS.Rout53.HostedZones.Name
+    - contextPath: AWS.Route53.HostedZones.Name
       description: The name of the domain.
       type: string
-    - contextPath: AWS.Rout53.HostedZones.CallerReference
+    - contextPath: AWS.Route53.HostedZones.CallerReference
       description: The value that you specified for CallerReference when you created
         the hosted zone.
       type: string
-    - contextPath: AWS.Rout53.HostedZones.Config.Comment
+    - contextPath: AWS.Route53.HostedZones.Config.Comment
       description: Any comments that you want to include about the hosted zone.
       type: string
-    - contextPath: AWS.Rout53.HostedZones.Config.PrivateZone
+    - contextPath: AWS.Route53.HostedZones.Config.PrivateZone
       description: A value that indicates whether this is a private hosted zone.
       type: string
-    - contextPath: AWS.Rout53.HostedZones.ResourceRecordSetCount
+    - contextPath: AWS.Route53.HostedZones.ResourceRecordSetCount
       description: The number of resource record sets in the hosted zone.
       type: number
-    - contextPath: AWS.Rout53.HostedZones.LinkedService.ServicePrincipal
+    - contextPath: AWS.Route53.HostedZones.LinkedService.ServicePrincipal
       description: 'If the health check or hosted zone was created by another service,
         the service that created the resource. '
       type: string
-    - contextPath: AWS.Rout53.HostedZones.LinkedService.Description
+    - contextPath: AWS.Route53.HostedZones.LinkedService.Description
       description: 'If the health check or hosted zone was created by another service,
         an optional description that can be provided by the other service. '
       type: string
@@ -528,57 +528,57 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: AWS.Rout53.RecordSets.Name
+    - contextPath: AWS.Route53.RecordSets.Name
       description: The name of the domain.
       type: string
-    - contextPath: AWS.Rout53.RecordSets.Type
+    - contextPath: AWS.Route53.RecordSets.Type
       description: The DNS record type.
       type: string
-    - contextPath: AWS.Rout53.RecordSets.SetIdentifier
+    - contextPath: AWS.Route53.RecordSets.SetIdentifier
       description: 'An identifier that differentiates among multiple resource record
         sets that have the same combination of DNS name and type. '
       type: string
-    - contextPath: AWS.Rout53.RecordSets.Weight
+    - contextPath: AWS.Route53.RecordSets.Weight
       description: Weighted resource record sets only.
       type: number
-    - contextPath: AWS.Rout53.RecordSets.Region
+    - contextPath: AWS.Route53.RecordSets.Region
       description: Latency-based resource record sets only
       type: string
-    - contextPath: AWS.Rout53.RecordSets.GeoLocation.ContinentCode
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.ContinentCode
       description: The two-letter code for the continent.
       type: string
-    - contextPath: AWS.Rout53.RecordSets.GeoLocation.CountryCode
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.CountryCode
       description: The two-letter code for the country.
       type: string
-    - contextPath: AWS.Rout53.RecordSets.GeoLocation.SubdivisionCode
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.SubdivisionCode
       description: The code for the subdivision, for example, a state in the United
         States or a province in Canada.
       type: string
-    - contextPath: AWS.Rout53.RecordSets.Failover
+    - contextPath: AWS.Route53.RecordSets.Failover
       description: Failover resource record sets only
       type: string
-    - contextPath: AWS.Rout53.RecordSets.MultiValueAnswer
+    - contextPath: AWS.Route53.RecordSets.MultiValueAnswer
       description: Multivalue answer resource record sets only
       type: string
-    - contextPath: AWS.Rout53.RecordSets.TTL
+    - contextPath: AWS.Route53.RecordSets.TTL
       description: The resource record cache time to live (TTL), in seconds.
       type: string
-    - contextPath: AWS.Rout53.RecordSets.ResourceRecords.Value
+    - contextPath: AWS.Route53.RecordSets.ResourceRecords.Value
       description: The current  record value.
       type: string
-    - contextPath: AWS.Rout53.RecordSets.AliasTarget.HostedZoneId
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.HostedZoneId
       description: Alias resource record sets only
       type: string
-    - contextPath: AWS.Rout53.RecordSets.AliasTarget.DNSName
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.DNSName
       description: Alias resource record sets only
       type: string
-    - contextPath: AWS.Rout53.RecordSets.AliasTarget.EvaluateTargetHealth
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.EvaluateTargetHealth
       description: Alias resource record sets only
       type: string
-    - contextPath: AWS.Rout53.RecordSets.HealthCheckId
+    - contextPath: AWS.Route53.RecordSets.HealthCheckId
       description: ID of the applicable health check.
       type: string
-    - contextPath: AWS.Rout53.RecordSets.TrafficPolicyInstanceId
+    - contextPath: AWS.Route53.RecordSets.TrafficPolicyInstanceId
       description: the ID of the traffic policy instance that Amazon Route 53 created
         this resource record set for.
       type: string
@@ -635,25 +635,25 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: AWS.Rout53.TestDNSAnswer.Nameserver
+    - contextPath: AWS.Route53.TestDNSAnswer.Nameserver
       description: The Amazon Route 53 name server used to respond to the request.
       type: string
-    - contextPath: AWS.Rout53.TestDNSAnswer.RecordName
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordName
       description: The name of the resource record set that you submitted a request
         for.
       type: string
-    - contextPath: AWS.Rout53.TestDNSAnswer.RecordType
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordType
       description: The type of the resource record set that you submitted a request
         for.
       type: string
-    - contextPath: AWS.Rout53.TestDNSAnswer.ResponseCode
+    - contextPath: AWS.Route53.TestDNSAnswer.ResponseCode
       description: A list that contains values that Amazon Route 53 returned for this
         resource record set.
       type: string
-    - contextPath: AWS.Rout53.TestDNSAnswer.Protocol
+    - contextPath: AWS.Route53.TestDNSAnswer.Protocol
       description: A code that indicates whether the request is valid or not.
       type: string
-    - contextPath: AWS.Rout53.TestDNSAnswer.RecordData
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordData
       description: The protocol that Amazon Route 53 used to respond to the request,
         either UDP or TCP .
       type: string
