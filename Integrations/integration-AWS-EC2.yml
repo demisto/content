@@ -2739,7 +2739,7 @@ script:
         in EC2-Classic (standard ) or instances in a VPC (vpc).
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Region
-    description: The aws region where the elastic IP is located
+      description: The aws region where the elastic IP is located
   - name: aws-ec2-associate-address
     arguments:
     - name: allocationId
@@ -3127,12 +3127,10 @@ script:
       - gp2
       - sc1
       - st1
-      description: The volume type. This can be gp2 for General Purpose SSD, io1 for
-        Provisioned IOPS SSD, st1 for Throughput Optimized HDD, sc1 for Cold HDD,
-        or standard for Magnetic volumes.
+      description: The volume type.
     - name: tags
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
