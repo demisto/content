@@ -626,11 +626,20 @@ script:
         except Exception as e:
             return raise_error(e)
 
+    def test_function():
+        try:
+            client = aws_session(service = 'guardduty')
+            response = client.list_detectors()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return 'ok'
 
+        except Exception as e:
+            return raise_error(e)
+            
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        demisto.results('ok')
+        result =test_function()
 
     if demisto.command() == 'aws-gd-create-detector':
         result = create_detector(demisto.args())
@@ -715,10 +724,10 @@ script:
       predefined:
       - "True"
       - "False"
-      description: A boolean value that specifies whether the detector is to be enabled
+      description: A boolean value that specifies whether the detector is to be enabled.
       defaultValue: "True"
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -739,7 +748,7 @@ script:
       required: true
       description: The unique ID that specifies the detector that you want to delete.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
