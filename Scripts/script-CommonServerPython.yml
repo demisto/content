@@ -367,6 +367,15 @@ script: |-
       return strRegistryPath
 
 
+  def scoreToReputation(score):
+      to_str = {
+          3 : 'Bad',
+          2 : 'Suspicious',
+          1 : 'Good',
+      }
+      return to_str.get(score, 'None')
+
+
   class IntegrationLogger(object):
       """
         a logger for python integrations:
@@ -419,6 +428,7 @@ script: |-
       else:
           return flattenCell(data, is_pretty)
 
+
   def flattenCell(data, is_pretty=True):
       """
          Flattens a markdown table cell content into a single string
@@ -435,8 +445,11 @@ script: |-
       indent = 4 if is_pretty else None
       if type(data) in STRING_TYPES:
           return data
+      elif isinstance(data, list):
+          return ',\n'.join(str(d) for d in data)
       else:
           return json.dumps(data, indent=indent)
+
 
   def FormatIso8601(t):
       """
@@ -449,6 +462,7 @@ script: |-
          :rtype: ``str``
       """
       return t.strftime("%Y-%m-%dT%H:%M:%S")
+
 
   def argToList(arg):
       """
