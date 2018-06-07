@@ -1038,3 +1038,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+ReleaseNotes: "Added scoreToReputation function"
