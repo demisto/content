@@ -2739,7 +2739,8 @@ script:
         in EC2-Classic (standard ) or instances in a VPC (vpc).
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Region
-      description: The aws region where the elastic IP is located
+      description: The aws region where the elastic IP is located.
+    description: Allocates an Elastic IP address.
   - name: aws-ec2-associate-address
     arguments:
     - name: allocationId
@@ -3129,6 +3130,7 @@ script:
       - st1
       description: The volume type.
     - name: tags
+      description: One or more tags.Example key=Name,value=test;key=Owner,value=Bob
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
