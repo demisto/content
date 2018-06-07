@@ -8,6 +8,10 @@ script: |-
   '}';
   var hrSimple = "### Simple\nkey|\n-|\nvalue|\n";
 
+  var simpleArray = '["a0","a1","a2","a3"]';
+
+  var hrArray = "### Simple Array\nArray|\n-|\na0|\na1|\na2|\na3|\n";
+
   var dataWithEscapeCharacters = '{'+
       '"key1": "value1\\r\\nvalue1",'+
       '"key2": "value2\\nvalue2",'+
@@ -29,6 +33,11 @@ script: |-
 
   var h = tableToMarkdown("Simple", JSON.parse(simpleData))
   if ( h!== hrSimple) {
+      throw "Simple Data failed to be converted to RIGHT Human Redable fotmat. Got: " + h;
+  }
+
+  h = tableToMarkdown2("Simple Array", JSON.parse(simpleArray), 'Array');
+  if( h !== hrArray){
       throw "Simple Data failed to be converted to RIGHT Human Redable fotmat. Got: " + h;
   }
 
@@ -67,3 +76,4 @@ type: javascript
 tags: []
 enabled: true
 scripttarget: 0
+runonce: false
