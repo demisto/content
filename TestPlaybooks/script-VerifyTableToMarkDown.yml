@@ -41,6 +41,11 @@ script: |-
       throw "Simple Data failed to be converted to RIGHT Human Redable fotmat. Got: " + h;
   }
 
+  h = tableToMarkdown("Simple Array", JSON.parse(simpleArray), ['Array']);
+  if( h !== hrArray){
+      throw "Simple Data failed to be converted to RIGHT Human Redable fotmat. Got: " + h;
+  }
+
   h = tableToMarkdown("Escape", JSON.parse(dataWithEscapeCharacters))
   if(h !== hrWithEscapeCharacters){
           throw "Data with escape characters failed to be converted to RIGHT Human Redable fotmat. Got: " + h;
