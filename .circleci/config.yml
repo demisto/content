@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: circleci/node:9.11
     environment:
-      CONTENT_VERSION: "18.5.3"
+      CONTENT_VERSION: "18.5.4"
     steps:
       - checkout
       - run:
@@ -32,7 +32,7 @@ jobs:
               ./Tests/scripts/validate_files_structure.sh
       - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM e12d62f51368e113a1f1f200a80ac3ccbdd822ba $CONTENT_VERSION
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM f564478b7d13cbbd989ed947243af26b1cdfccea $CONTENT_VERSION
       - run:
           name: Common Server Documentation
           command: ./Docs/commonServerDocs.sh

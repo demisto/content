@@ -1,0 +1,313 @@
+id: calculate_severity_-_3rd-party_integrations
+version: -1
+name: Calculate Severity - 3rd-party integrations
+fromversion: 3.6.0
+description: Calculates the incident severity level according to the methodology of
+  a 3rd-party integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    type: start
+    task:
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 5f92bc72-085f-4c03-8404-82f83dac6c62
+    type: regular
+    task:
+      id: 5f92bc72-085f-4c03-8404-82f83dac6c62
+      version: -1
+      name: 'Set severity to "High"'
+      description: Set the severity level to High.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: high
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 45,
+          "y": 690
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    type: title
+    task:
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+  "21":
+    id: "21"
+    taskid: a91ad8e7-d063-4466-8137-711519c902f2
+    type: condition
+    task:
+      id: a91ad8e7-d063-4466-8137-711519c902f2
+      version: -1
+      name: Is there a Qualys severity?
+      description: Check if there is a “QualysSeverity” in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.QualysSeverity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 340
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 52fae7c2-b907-4877-8a6a-ed1fbf0ad988
+    type: condition
+    task:
+      id: 52fae7c2-b907-4877-8a6a-ed1fbf0ad988
+      version: -1
+      name: Assign severity level based on Qualys vulnerability score
+      description: |-
+        Severity level is assigned according to:
+
+        * High = 4+
+        * Medium = 2-3
+        * Low = 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      HIGH:
+      - "6"
+      LOW:
+      - "24"
+      MEDIUM:
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: HIGH
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.QualysSeverity
+                filters:
+                - - operator: number.greaterThanOrEqual
+                    left:
+                      value:
+                        simple: inputs.QualysSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4"
+            iscontext: true
+    - label: MEDIUM
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.QualysSeverity
+                filters:
+                - - operator: number.greaterThanOrEqual
+                    left:
+                      value:
+                        simple: inputs.QualysSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                - - operator: number.lessThan
+                    left:
+                      value:
+                        simple: inputs.QualysSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4"
+            iscontext: true
+    - label: LOW
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.QualysSeverity
+                filters:
+                - - operator: number.lessThan
+                    left:
+                      value:
+                        simple: inputs.QualysSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  "23":
+    id: "23"
+    taskid: 89c78898-8fef-4807-8a3d-1c4f042c4eb2
+    type: regular
+    task:
+      id: 89c78898-8fef-4807-8a3d-1c4f042c4eb2
+      version: -1
+      name: 'Set severity to "Medium"'
+      description: Set the severity level to Medium.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: medium
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 84f71501-bcb9-481c-85d5-2efa59f1c1a4
+    type: regular
+    task:
+      id: 84f71501-bcb9-481c-85d5-2efa59f1c1a4
+      version: -1
+      name: 'Set severity to "Low"'
+      description: Set the severity level to Low.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917,
+          "y": 690
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 1487586f-f1f8-4136-8d7e-444a34750493
+    type: title
+    task:
+      id: 1487586f-f1f8-4136-8d7e-444a34750493
+      version: -1
+      name: 'Calculate using Qualys Vulnerability Management'
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 1252,
+        "x": 45,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: QualysSeverity
+  value:
+    complex:
+      root: Qualys
+      accessor: Severity
+  required: false
+  description: Qualys Vulnerability Severity score (1-5)
+outputs:
+- contextPath: Severity
+  description: The output severity
+  type: string

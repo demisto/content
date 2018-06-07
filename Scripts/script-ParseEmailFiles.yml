@@ -455,7 +455,10 @@ script: |-
       md += "* {0}:\t{1}\n".format('To',emailData['To'])
       md += "* {0}:\t{1}\n".format('CC', emailData['CC'])
       md += u"* {0}:\t{1}\n".format('Subject', emailData['Subject'])
-      md += u"* {0}:\t{1}\n".format('Body', emailData['Text'])
+      if emailData['Text']:
+          md += u"* {0}:\t{1}\n".format('Body/Text', emailData['Text'])
+      if emailData['HTML']:
+          md += u"* {0}:\t{1}\n".format('Body/HTML', emailData['HTML'])
       md += "* {0}:\t{1}\n".format('Attachments', emailData['Attachments'])
       md += "* {0}:\t{1}\n".format('Headers', emailData['Headers'])
       return md
@@ -637,3 +640,4 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
+releaseNotes: Print both text and HTML body parts in War Room entry

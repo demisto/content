@@ -2,7 +2,7 @@ commonfields:
   id: DocumentationAutomation
   version: -1
 name: DocumentationAutomation
-script: |+
+script: |-
   import yaml
   import sys
 
@@ -22,19 +22,18 @@ script: |+
   dataMap = yaml.safe_load(yamlFile)
   yamlFile.close()
 
-  def addLines(str):
+  def addLines(line):
       output = ''
       lastDigit = 0
-      for i in range(len(str)):
-          if str[i].isdigit():
-              if str[i+1] == '.':
-                  output += str[lastDigit:i] + '\n'
+      for i in range(len(line)):
+          if line[i].isdigit():
+              if line[i+1] == '.':
+                  output += line[lastDigit:i] + '\n'
                   lastDigit = i
-      output += str[lastDigit:len(str)] + '\n'
+      output += line[lastDigit:len(line)] + '\n'
       return output
 
   name = dataMap['name']
-
   doc = ''
 
   # Overview
@@ -58,6 +57,7 @@ script: |+
   You should configure the following settings:
   1.Name: a textual name for the integration instance.
   '''
+
   j=2
   for i in range(len(dataMap['configuration'])):
       doc += str(j) + '.' + dataMap['configuration'][i]['display'] +'\n'
@@ -65,7 +65,6 @@ script: |+
   doc += str(j) + '.Test: Checks correctness of URLs and token.' +'\n'
 
   # Top Use-cases
-
   doc += '\n# Top Use-cases:'
 
   if 'useCases' in demisto.args():
@@ -110,7 +109,8 @@ script: |+
 
   doc += '\n## Additional information:\n'
 
-  doc += addLines('This integration was integrated and tested with version x.x of ' + name) + '\n'
+  doc += 'This integration was integrated and tested with version xx of ' + name + '\n'
+
   if 'addInfo' in demisto.args():
       doc +=addLines(demisto.args()['addInfo']) + '\n'
 
@@ -129,8 +129,6 @@ script: |+
 
   filename = name + '-documantation.txt'
   demisto.results(fileResult(filename, doc))
-
-
 type: python
 tags: []
 comment: 'Automates integration documentation'
@@ -155,4 +153,6 @@ args:
 - name: limit
   description: Known limitations. Number the steps by 'x.' (i.e. '1.')
 scripttarget: 0
+runonce: false
 dockerimage: demisto/python
+releaseNotes: "-"
