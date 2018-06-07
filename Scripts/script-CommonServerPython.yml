@@ -368,6 +368,15 @@ script: |-
 
 
   def scoreToReputation(score):
+      """
+         Converts score (in number format) to human readable reputation format
+
+         :type score: ``int``
+         :param score: The score to be formatted (required)
+
+         :return: The formatted score
+         :rtype: ``str``
+      """
       to_str = {
           3 : 'Bad',
           2 : 'Suspicious',
