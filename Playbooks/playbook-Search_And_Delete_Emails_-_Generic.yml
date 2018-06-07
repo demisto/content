@@ -30,13 +30,14 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 35563f2d-6cec-455c-8ccb-c8880fd0ad10
+    taskid: f2699240-6fe1-40ae-8da6-8017aabf41ff
     type: playbook
     task:
-      id: 35563f2d-6cec-455c-8ccb-c8880fd0ad10
+      id: f2699240-6fe1-40ae-8da6-8017aabf41ff
       version: -1
       name: Search And Delete Emails - EWS
-      description: ""
+      description: This playbook searches EWS to identify and delete emails with similar
+        attributes of a malicious email.
       playbookName: Search And Delete Emails - EWS
       type: playbook
       iscommand: false
@@ -44,7 +45,27 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      AttachmentName:
+        complex:
+          root: inputs.AttachmentName
+      DeleteType:
+        simple: trash
+      From:
+        complex:
+          root: inputs.From
+      Limit:
+        simple: "20"
+      SearchThisWeek:
+        simple: "true"
+      Subject:
+        complex:
+          root: inputs.Subject
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -84,5 +105,26 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: From
+  value:
+    complex:
+      root: incident
+      accessor: emailfrom
+  required: false
+  description: The value of the malicious email's "From" attribute.
+- key: Subject
+  value:
+    complex:
+      root: incident
+      accessor: emailsubject
+  required: false
+  description: The value of the malicious email's "Subject" attribute.
+- key: AttachmentName
+  value:
+    complex:
+      root: incident
+      accessor: attachmentname
+  required: false
+  description: The value of the malicious email's "AttachmentName" attribute.
 outputs: []

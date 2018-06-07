@@ -17,7 +17,7 @@ script: |-
 
   query = " AND ".join('{0}:"{1}"'.format(key,value) for (key,value) in args.items())
 
-  search_last_week = True if demisto.args().get("SearchThisWeek").lower() == "true" else False
+  search_last_week = True if demisto.args().get("searchThisWeek").lower() == "true" else False
   if search_last_week:
       query = query + ' AND Received:"this week"'
 
@@ -43,7 +43,7 @@ args:
   description: The value of the email's "attachmentName" attribute.
 - name: body
   description: The value of the email's "Body" attribute.
-- name: SearchThisWeek
+- name: searchThisWeek
   auto: PREDEFINED
   predefined:
   - "true"
