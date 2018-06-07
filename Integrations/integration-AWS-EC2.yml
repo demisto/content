@@ -4020,7 +4020,7 @@ script:
       description: The name of the source security group. You cant specify this
         parameter in combination with the following parameters: the CIDR IP address
         range, the start of the port range, the IP protocol, and the end of the port
-        range. Creates rules that grant full ICMP, UDP, and TCP access.  The source
+        range. Creates rules that grant full ICMP, UDP, and TCP access. The source
         security group must be in the same VPC.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
@@ -4050,7 +4050,7 @@ script:
       description: The name of the source security group. You cant specify this
         parameter in combination with the following parameters: the CIDR IP address
         range, the start of the port range, the IP protocol, and the end of the port
-        range. Creates rules that grant full ICMP, UDP, and TCP access.  The source
+        range. Creates rules that grant full ICMP, UDP, and TCP access. The source
         security group must be in the same VPC.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
