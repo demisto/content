@@ -229,6 +229,10 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    scriptarguments:
+      EmailID:
+        complex:
+          root: inputs.EmailID
     separatecontext: true
     view: |-
       {

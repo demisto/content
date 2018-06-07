@@ -782,4 +782,3 @@ view: |-
     }
   }
 inputs: []
-releaseNotes: "added domaintools test playbook"
