@@ -275,16 +275,15 @@ script: |-
               sep[0] = sep[0]+'|';
           }
           mdResults += sep.join('|') + '\n';
-          for(var j = 0; j < t.length; j++){
-            if(typeof(t[j]) !== 'object' && !(Array.isArray(t[j]))){
-                var obj = {};
-                obj[headers[0]] = t[j];
-                t[j] = obj;
-            }
-        }
+
 
           t.forEach(function(entry){
               var vals = [];
+              if(typeof(entry) !== 'object' && !(entry instanceof Array)){
+                var obj = {};
+                obj[headers[0]] = entry;
+                entry = obj;
+              }
               headers.forEach(function(h){
                   if(entry[h] === null || entry[h] === undefined) {
                       vals.push(' ');
