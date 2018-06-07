@@ -578,7 +578,7 @@ script: |-
       temp1, temp2 = handleEml(filePath)
       res += temp1
       res += temp2
-  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType or 'ASCII text, with CRLF, LF line terminators' in fileType:
+  elif 'ASCII text' in fileType:
       try:
           # Try to open the email as-is
           with open(filePath, 'rb') as f:
