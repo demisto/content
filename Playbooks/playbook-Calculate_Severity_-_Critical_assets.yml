@@ -4,7 +4,7 @@ name: Calculate Severity - Critical assets
 fromversion: 3.6.0
 description: "Determines if a critical assest is associated with the invesigation.
   The playbook returns a severity level of \"Critical\" if a critical asset is associated
-  with the investigation.\n\nThis playbook verifies if a User Account or an Endpoint
+  with the investigation.\n\nThis playbook verifies if a user account or an endpoint
   is part of a critical list or a critical AD group. "
 starttaskid: "0"
 tasks:
@@ -128,8 +128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 515
+          "x": 50,
+          "y": 529
         }
       }
   "10":
@@ -148,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1215
+          "x": 612.5,
+          "y": 1291
         }
       }
   "11":
@@ -179,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 735,
-          "y": 1040
+          "x": 612.5,
+          "y": 747
         }
       }
   "12":
@@ -210,7 +210,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
+          "x": 1185,
           "y": 340
         }
       }
@@ -257,7 +257,7 @@ tasks:
       {
         "position": {
           "x": 1185,
-          "y": 515
+          "y": 529
         }
       }
   "15":
@@ -304,8 +304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 865
+          "x": 50,
+          "y": 977
         }
       }
   "16":
@@ -352,7 +352,7 @@ tasks:
       {
         "position": {
           "x": 1185,
-          "y": 865
+          "y": 977
         }
       }
   "17":
@@ -382,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1072.5,
-          "y": 690
+          "x": 1185,
+          "y": 734
         }
       }
   "18":
@@ -414,24 +414,24 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 747
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
       "12_10_#default#": 0.31,
-      "13_11_yes": 0.16,
+      "13_11_yes": 0.51,
       "15_10_#default#": 0.17,
       "15_11_yes": 0.15,
       "16_10_#default#": 0.36,
       "16_11_yes": 0.16,
       "8_10_#default#": 0.16,
-      "9_11_yes": 0.1
+      "9_11_yes": 0.41
     },
     "paper": {
       "dimensions": {
-        "height": 1230,
+        "height": 1306,
         "width": 1515,
         "x": 50,
         "y": 50
@@ -456,13 +456,13 @@ inputs:
     complex:
       root: Account
   required: false
-  description: A User account to check against the critical lists.
+  description: A user account to check against the critical lists.
 - key: Endpoint
   value:
     complex:
       root: Endpoint
   required: false
-  description: A Endpoint to check against the critical lists.
+  description: An endpoint to check against the critical lists.
 outputs:
 - contextPath: Severity
   description: The output severity
