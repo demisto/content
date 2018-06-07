@@ -1955,4 +1955,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "handle simple value arrays in tableToMarkdown and ToTable"
+releaseNotes: "Handle simple value arrays in tableToMarkdown and ToTable"
