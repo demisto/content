@@ -119,8 +119,6 @@ script:
                 )
             data = []
             kwargs = {}
-            if args.get('filters') is not None:
-                kwargs.update({'Filters':parse_filter_field(args.get('filters'))})
             if args.get('regionNames') is not None:
                 kwargs.update({'RegionNames':parse_resource_ids(args.get('regionNames'))})
 
@@ -131,7 +129,7 @@ script:
                     'RegionName': region['RegionName']
                     })
 
-            ec = {'AWS.Regions': raw}
+            ec = {'AWS.Regions(val.RegionName === obj.RegionName)': data}
             return  create_entry('AWS Regions',data, ec)
 
         except Exception as e:
@@ -178,7 +176,7 @@ script:
             output = json.dumps(reservation['Instances'], cls=DatetimeEncoder)
             raw = json.loads(output)
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.Instances': raw}
+            ec = {'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)': raw}
             return  create_entry('AWS Instances',data, ec)
 
         except Exception as e:
@@ -212,12 +210,12 @@ script:
                     'CreationDate': image['CreationDate'],
                     'ImageId': image['ImageId'],
                     'Public': image['Public'],
-                     'Description': image['Description'],
-                    'EnaSupport': image['EnaSupport'],
                     'Name': image['Name'],
                     'State': image['State'],
                     'Region': obj['_user_provided_options']['region_name'],
                 })
+                if 'Description' in address: data[i].update({'Description': 'Description': image['Description']})
+                if 'EnaSupport' in address: data[i].update({'EnaSupport': 'Description': image['EnaSupport']})
                 if 'Tags' in image:
                     for tag in image['Tags']:
                         data[i].update ({
@@ -227,7 +225,7 @@ script:
             output = json.dumps(response['Images'], cls=DatetimeEncoder)
             raw = json.loads(output)
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.Images': raw}
+            ec = {'AWS.EC2.Images(val.ImageId === obj.ImageId)': raw}
             return  create_entry('AWS EC2 Images',data, ec)
 
         except Exception as e:
@@ -263,11 +261,11 @@ script:
                     'Domain': address['Domain'],
                     'Region': obj['_user_provided_options']['region_name'],
                 })
-                if 'InstanceId' in address: data[i].update({'InstanceId': address['InstanceId']}),
-                if 'AssociationId' in address: data[i].update({'AssociationId': address['AssociationId']}),
-                if 'NetworkInterfaceId' in address: data[i].update({'NetworkInterfaceId': address['NetworkInterfaceId']}),
-                if 'PrivateIpAddress' in address: data[i].update({'InstanceId': address['PrivateIpAddress']}),
-                if not address['Tags']:
+                if 'InstanceId' in address: data[i].update({'InstanceId': address['InstanceId']})
+                if 'AssociationId' in address: data[i].update({'AssociationId': address['AssociationId']})
+                if 'NetworkInterfaceId' in address: data[i].update({'NetworkInterfaceId': address['NetworkInterfaceId']})
+                if 'PrivateIpAddress' in address: data[i].update({'PrivateIpAddress': address['PrivateIpAddress']})
+                if 'Tags' in address:
                     for tag in address['Tags']:
                        data[i].update ({
                            tag['Key']: tag['Value']
@@ -275,7 +273,7 @@ script:
 
             raw = response['Addresses']
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.ElasticIPs': raw}
+            ec = {'AWS.EC2.ElasticIPs(val.AllocationId === obj.AllocationId)': raw}
             return  create_entry('AWS EC2 ElasticIPs',data, ec)
 
         except Exception as e:
@@ -328,7 +326,7 @@ script:
             output = json.dumps(response['Snapshots'], cls=DatetimeEncoder)
             raw = json.loads(output)
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.Snapshots': raw}
+            ec = {'AWS.EC2.Snapshots(val.SnapshotId === obj.SnapshotId)': raw}
             return  create_entry('AWS EC2 Snapshots',data, ec)
 
         except Exception as e:
@@ -373,7 +371,7 @@ script:
             output = json.dumps(response['Volumes'], cls=DatetimeEncoder)
             raw = json.loads(output)
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.Volumes': raw}
+            ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId)': raw}
             return  create_entry('AWS EC2 Volumes',data, ec)
 
         except Exception as e:
@@ -409,7 +407,7 @@ script:
                     'CreatedBy': template['CreatedBy'],
                     'DefaultVersionNumber': template['DefaultVersionNumber'],
                     'LatestVersionNumber': template['LatestVersionNumber'],
-                    'CreateTime': datetime.datetime.strftime(snapshot['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
+                    'CreateTime': datetime.datetime.strftime(template['CreateTime'], '%Y-%m-%dT%H:%M:%SZ'),
                     'Region': obj['_user_provided_options']['region_name'],
                 })
 
@@ -422,7 +420,7 @@ script:
             output = json.dumps(response['LaunchTemplates'], cls=DatetimeEncoder)
             raw = json.loads(output)
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.LaunchTemplates': raw}
+            ec = {'AWS.EC2.LaunchTemplates(val.LaunchTemplateId === obj.LaunchTemplateId)': raw}
             return  create_entry('AWS EC2 LaunchTemplates',data, ec)
 
         except Exception as e:
@@ -451,12 +449,12 @@ script:
 
             for key in response['KeyPairs']:
                 data.append({
-                    'KeyFingerprint': template['KeyFingerprint'],
-                    'KeyName': template['KeyName'],
+                    'KeyFingerprint': key['KeyFingerprint'],
+                    'KeyName': key['KeyName'],
                     'Region': obj['_user_provided_options']['region_name'],
                 })
 
-            ec = {'AWS.EC2.KeyPairs': data}
+            ec = {'AWS.EC2.KeyPairs(val.KeyName === obj.KeyName)': data}
             return  create_entry('AWS EC2 Key Pairs',data, ec)
 
         except Exception as e:
@@ -503,7 +501,7 @@ script:
             output = json.dumps(response['Vpcs'], cls=DatetimeEncoder)
             raw = json.loads(output)
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.Vpcs': raw}
+            ec = {'AWS.EC2.Vpcs(val.VpcId === obj.VpcId)': raw}
             return  create_entry('AWS EC2 Vpcs',data, ec)
 
         except Exception as e:
@@ -551,7 +549,7 @@ script:
             output = json.dumps(response['Subnets'], cls=DatetimeEncoder)
             raw = json.loads(output)
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.Subnets': raw}
+            ec = {'AWS.EC2.Subnets(val.SubnetId === obj.SubnetId)': raw}
             return  create_entry('AWS EC2 Subnets',data, ec)
 
         except Exception as e:
@@ -582,7 +580,7 @@ script:
 
             for i, sg in enumerate(response['SecurityGroups']):
                 data.append({
-                    'Description': sgt['Description'],
+                    'Description': sg['Description'],
                     'GroupName': sg['GroupName'],
                     'OwnerId': sg['OwnerId'],
                     'GroupId': sg['GroupId'],
@@ -590,8 +588,8 @@ script:
                     'Region': obj['_user_provided_options']['region_name'],
                 })
 
-                if 'Tags' in subnet:
-                    for tag in subnet['Tags']:
+                if 'Tags' in sg:
+                    for tag in sg['Tags']:
                         data[i].update ({
                             tag['Key']: tag['Value']
                         })
@@ -599,7 +597,7 @@ script:
             output = json.dumps(response['SecurityGroups'], cls=DatetimeEncoder)
             raw = json.loads(output)
             raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.SecurityGroups': raw}
+            ec = {'AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)': raw}
             return  create_entry('AWS EC2 SecurityGroups',data, ec)
 
         except Exception as e:
@@ -743,7 +741,7 @@ script:
             if args.get('noReboot') is not None:
                 kwargs.update({'NoReboot':True if args.get('noReboot') == 'True'  else False})
 
-            response = client.create_snapshot(**kwargs)
+            response = client.create_image(**kwargs)
 
             data = ({
                 'ImageId': response['ImageId'],
@@ -770,7 +768,7 @@ script:
 
             response = client.deregister_image(ImageId=args.get('imageId'))
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                return "The AMI with ID: {0} was deregistered".format(args.get('snapshotId'))
+                return "The AMI with ID: {0} was deregistered".format(args.get('imageId'))
 
         except Exception as e:
             return raise_error(e)
@@ -795,7 +793,7 @@ script:
             if args.get('iops') is not None:
                 kwargs.update({'Iops':int(args.get('iops'))})
 
-            response = client.create_snapshot(**kwargs)
+            response = client.modify_volume(**kwargs)
             volumeModification = response['VolumeModification']
 
             data = ({
@@ -807,7 +805,7 @@ script:
                 'OriginalSize': volumeModification['OriginalSize'],
                 'OriginalIops': volumeModification['OriginalIops'],
                 'OriginalVolumeType': volumeModification['OriginalVolumeType'],
-                'StartTime': volumeModification['StartTime'],
+                'StartTime': datetime.datetime.strftime(volumeModification['StartTime'], '%Y-%m-%dT%H:%M:%SZ'),
                 'Progress': volumeModification['Progress'],
                 'Region': obj['_user_provided_options']['region_name'],
                 })
@@ -946,7 +944,7 @@ script:
             if args.get('kmsKeyId') is not None:
                 kwargs.update({'KmsKeyId':args.get('kmsKeyId')})
             if args.get('size') is not None:
-                kwargs.update({'Size':args.get('size')})
+                kwargs.update({'Size':int(args.get('size'))})
             if args.get('snapshotId') is not None:
                 kwargs.update({'SnapshotId':args.get('snapshotId')})
             if args.get('volumeType') is not None:
@@ -1012,9 +1010,10 @@ script:
                 'InstanceId': response['InstanceId'],
                 'State': response['State'],
                 'VolumeId': response['VolumeId'],
-                'DeleteOnTermination': response['DeleteOnTermination'],
                 })
-            ec = {'AWS.EC2.Volumes.(val.VolumeId === obj.VolumeId).Attachments': data}
+            if 'DeleteOnTermination' in response: data.update({'DeleteOnTermination': response['DeleteOnTermination']})
+
+            ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data}
             return  create_entry('AWS EC2 Volume Attachments',data, ec)
 
         except Exception as e:
@@ -1046,9 +1045,10 @@ script:
                 'InstanceId': response['InstanceId'],
                 'State': response['State'],
                 'VolumeId': response['VolumeId'],
-                'DeleteOnTermination': response['DeleteOnTermination'],
                 })
-            ec = {'AWS.EC2.Volumes.(val.VolumeId === obj.VolumeId).Attachments': data}
+            if 'DeleteOnTermination' in response: data.update({'DeleteOnTermination': response['DeleteOnTermination']})
+
+            ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data}
             return  create_entry('AWS EC2 Volume Attachments',data, ec)
 
         except Exception as e:
@@ -1066,28 +1066,6 @@ script:
             response = client.delete_volume(VolumeId=args.get('volumeId'))
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return "The Volume was deleted"
-
-        except Exception as e:
-            return raise_error(e)
-
-    def detach_network_interface(args):
-        try:
-            client = aws_session(
-                    service = 'ec2',
-                    region = args.get('region'),
-                    roleArn = args.get('roleArn'),
-                    roleSessionName = args.get('roleSessionName'),
-                    roleSessionDuration = args.get('roleSessionDuration'),
-                )
-
-            kwargs = {'AttachmentId':args.get('attachmentId')}
-            if args.get('force') is not None:
-                kwargs.update({'Force':True if args.get('force') == 'True'  else False})
-
-            response = client.detach_network_interface(**kwargs)
-
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                return "The Network interface was detached"
 
         except Exception as e:
             return raise_error(e)
@@ -1199,54 +1177,6 @@ script:
 
         except Exception as e:
             return raise_error(e)
-
-    def get_console_output(args):
-        try:
-            client = aws_session(
-                    service = 'ec2',
-                    region = args.get('region'),
-                    roleArn = args.get('roleArn'),
-                    roleSessionName = args.get('roleSessionName'),
-                    roleSessionDuration = args.get('roleSessionDuration'),
-                )
-            kwargs = {'InstanceId':args.get('instanceId')}
-            if args.get('latest') is not None:
-                kwargs.update({'Latest':True if args.get('latest') == 'True'  else False})
-            response = client.get_console_output(**kwargs)
-
-            output = json.dumps(response, cls=DatetimeEncoder)
-            raw = json.loads(output)
-            ec = {'AWS.EC2.Instances.(val.InstanceId === obj.InstanceId).ConsoleOutput': raw}
-            return  create_entry('AWS Instance: (obj.InstanceId) Console Output',response['Output'], ec)
-
-        except Exception as e:
-            return raise_error
-
-    def get_console_screenshot(args):
-        try:
-            client = aws_session(
-                    service = 'ec2',
-                    region = args.get('region'),
-                    roleArn = args.get('roleArn'),
-                    roleSessionName = args.get('roleSessionName'),
-                    roleSessionDuration = args.get('roleSessionDuration'),
-                )
-            kwargs = {'InstanceId':args.get('instanceId')}
-            if args.get('wakeUp') is not None:
-                kwargs.update({'WakeUp':True if args.get('wakeUp') == 'True'  else False})
-
-            response = client.get_console_screenshot(**kwargs)
-
-            ec = {'AWS.EC2.Instances.(val.InstanceId === obj.InstanceId).ConsoleScreenshoot': response}
-            return {
-                'ContentsFormat': formats['markdown'],
-                'Type': entryTypes['note'],
-                'Contents': response['ImageData'],
-                'EntryContext': ec
-            }
-
-        except Exception as e:
-            return raise_error
 
     def waiter_instance_running(args):
         try:
@@ -1417,55 +1347,6 @@ script:
 
         except Exception as e:
             return raise_error
-
-    def describe_images(args):
-        try:
-            client = aws_session(
-                service = 'ec2',
-                region = args.get('region'),
-                roleArn = args.get('roleArn'),
-                roleSessionName = args.get('roleSessionName'),
-                roleSessionDuration = args.get('roleSessionDuration'),
-            )
-            obj = vars(client._client_config)
-            kwargs = {}
-            data = []
-
-            if args.get('filters') is not None:
-                kwargs.update({'Filters':parse_filter_field(args.get('filters'))})
-            if args.get('imageIds') is not None:
-                kwargs.update({'ImageIds':parse_resource_ids(args.get('imageIds'))})
-            if args.get('owners') is not None:
-                kwargs.update({'Owners':parse_resource_ids(args.get('owners'))})
-            if args.get('executableUsers') is not None:
-                kwargs.update({'ExecutableUsers':parse_resource_ids(args.get('executableUsers'))})
-
-            response = client.describe_images(**kwargs)
-            for i, image in enumerate(response['Images']):
-                data.append({
-                    'CreationDate': image['CreationDate'],
-                    'ImageId': image['ImageId'],
-                    'Public': image['Public'],
-                    'Description': image['Description'],
-                    #'EnaSupport': image['EnaSupport'],
-                    'Name': image['Name'],
-                    'State': image['State'],
-                    'Region': obj['_user_provided_options']['region_name'],
-                })
-                if 'Tags' in image:
-                    for tag in image['Tags']:
-                        data[i].update ({
-                            tag['Key']: tag['Value']
-                        })
-
-            output = json.dumps(response['Images'], cls=DatetimeEncoder)
-            raw = json.loads(output)
-            raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.Images': raw}
-            return  create_entry('AWS EC2 Images',data, ec)
-
-        except Exception as e:
-            return raise_error(e)
 
     def get_latest_ami(args):
         try:
@@ -1769,17 +1650,8 @@ script:
     if demisto.command() == 'aws-ec2-delete-volume':
         result = delete_volume(demisto.args())
 
-    if demisto.command() == 'aws-ec2-detach-network-interfacee':
-        result = detach_network_interface(demisto.args())
-
     if demisto.command() == 'aws-ec2-run-instances':
         result = run_instances(demisto.args())
-
-    if demisto.command() == 'aws-ec2-get-console-output':
-        result = get_console_output(demisto.args())
-
-    if demisto.command() == 'aws-ec2-get-console-screenshot':
-        result = get_console_screenshot(demisto.args())
 
     if demisto.command() == 'aws-ec2-waiter-instance-running':
         result = waiter_instance_running(demisto.args())
@@ -1831,12 +1703,10 @@ script:
   commands:
   - name: aws-ec2-describe-instances
     arguments:
-    - name: filter
-      description: 'One or more filters. Example filter: "name=instance-type,values=t2.small,t2.large".
-        You can use multiple filter by seprating with ";" Example:"name=instance-type,values=t2.small,t2.large;name=key-name,values=test".
-        See documentation for details & filter options.'
+    - name: filters
+      description: One or more filters.See documentation for details & filter options.
     - name: instanceIds
-      description: One or more instance IDs. Seprated by comma
+      description: One or more instance IDs. Seprated by comma.
     - name: region
       description: The AWS Region, if not specified the default region will be used
     - name: roleArn
@@ -1938,7 +1808,7 @@ script:
       description: The architecture of the image.
       type: string
     - contextPath: AWS.EC2.Instances.BlockDeviceMappings.DeviceName
-      description: The device name (for example, /dev/sdh or xvdh ).
+      description: The device name (for example, /dev/sdh or xvdh).
       type: string
     - contextPath: AWS.EC2.Instances.BlockDeviceMappings.Ebs.AttachTime
       description: The time stamp when the attachment initiated.
@@ -2075,8 +1945,7 @@ script:
       description: The ID of the VPC.
       type: string
     - contextPath: AWS.EC2.Instances.RootDeviceName
-      description: The device name of the root device volume (for example, /dev/sda1
-        ).
+      description: The device name of the root device volume (for example, /dev/sda1).
       type: string
     - contextPath: AWS.EC2.Instances.RootDeviceType
       description: The root device type used by the AMI. The AMI can use an EBS volume
@@ -2089,8 +1958,7 @@ script:
       description: The ID of the security group.
       type: string
     - contextPath: AWS.EC2.Instances.SourceDestCheck
-      description: Specifies whether to enable an instance launched in a VPC to perform
-        NAT.
+      description: Specifies whether to enable an instance launched in a VPC to perform NAT.
       type: boolean
     - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
       description: If the request is a Spot Instance request, the ID of the request.
@@ -2120,7 +1988,7 @@ script:
     - name: filters
       description: One or more filters.
     - name: imageIds
-      description: One or more image IDs
+      description: One or more image IDs, Seperated by comma
     - name: owners
       description: Filters the images by the owner. Specify an AWS account ID, self
         (owner is the sender of the request), or an AWS owner alias (valid values
@@ -2130,7 +1998,7 @@ script:
       description: Scopes the images by users with explicit launch permissions. Specify
         an AWS account ID, self (the sender of the request), or all (public AMIs).
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2185,7 +2053,7 @@ script:
         is successfully registered and can be used to launch an instance.
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.DeviceName
-      description: The device name (for example, /dev/sdh or xvdh ).
+      description: The device name (for example, /dev/sdh or xvdh).
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.VirtualName
       description: The virtual device name (ephemeral N).
@@ -2211,7 +2079,7 @@ script:
       description: The size of the volume, in GiB.
       type: number
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType
-      description: The volume type
+      description: The volume type.
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.NoDevice
       description: Suppresses the specified device included in the block device mapping
@@ -2265,10 +2133,10 @@ script:
       launch permissions.
   - name: aws-ec2-describe-regions
     arguments:
-    - name: filter
     - name: regionNames
+      description: The name of the region (for example, us-east-1 ).
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2277,17 +2145,24 @@ script:
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+    outputs:
+    - contextPath: AWS.Regions.Endpoint
+      description: The region service endpoint.
+      type: string
+    - contextPath: AWS.Regions.RegionName
+      description: The name of the region.
+      type: string
     description: Describes one or more regions that are currently available to you.
   - name: aws-ec2-describe-addresses
     arguments:
     - name: filters
-      description: One or more filters. Filter names and values are case-sensitive.
+      description: One or more filters. See documentation for filters list.
     - name: publicIps
       description: One or more Elastic IP addresses.
     - name: allocationIds
       description: One or more allocation IDs.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2314,10 +2189,10 @@ script:
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Domain
       description: dicates whether this Elastic IP address is for use with instances
-        in EC2-Classic (standard ) or instances in a VPC (vpc ).
+        in EC2-Classic (standard) or instances in a VPC.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.NetworkInterfaceId
-      description: The ID of the network interface
+      description: The ID of the network interface.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.NetworkInterfaceOwnerId
       description: The ID of the AWS account that owns the network interface.
@@ -2326,7 +2201,7 @@ script:
       description: The private IP address associated with the Elastic IP address.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Region
-      description: The aws region were the elastic ip is located
+      description: The aws region were the elastic ip is located.
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Tags.Key
       description: The key of the tag.
@@ -2338,16 +2213,16 @@ script:
   - name: aws-ec2-describe-snapshots
     arguments:
     - name: filters
-      description: One or more filters.
+      description: One or more filters. See documentation for filters list.
     - name: ownerIds
       description: Returns the snapshots owned by the specified owner. Multiple owners
         can be specified.
     - name: snapshotIds
-      description: One or more snapshot IDs.
+      description: One or more snapshot IDs. Seperated by commas
     - name: restorableByUserIds
       description: One or more AWS accounts IDs that can create volumes from the snapshot.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2412,13 +2287,13 @@ script:
   - name: aws-ec2-describe-launch-templates
     arguments:
     - name: Filters
-      description: One or more filters.
+      description: One or more filters.See documentation for filters list.
     - name: LaunchTemplateNames
-      description: One or more launch template names.
+      description: One or more launch template names. Sepereted by comma.
     - name: LaunchTemplateIds
-      description: One or more launch template IDs.
+      description: One or more launch template IDs. Sepereted by comma.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2459,11 +2334,11 @@ script:
   - name: aws-ec2-describe-key-pairs
     arguments:
     - name: filters
-      description: One or more filters.
+      description: One or more filters. See documentation for filters list.
     - name: keyNames
-      description: One or more key pair names.
+      description: One or more key pair names. Sepereted by comma.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2486,11 +2361,11 @@ script:
   - name: aws-ec2-describe-volumes
     arguments:
     - name: filters
-      description: One or more filters.
+      description: One or more filters. See documentation for filters list.
     - name: volumeIds
-      description: One or more volume IDs.
+      description: One or more volume IDs. Sepereted by comma.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2559,11 +2434,11 @@ script:
   - name: aws-ec2-describe-vpcs
     arguments:
     - name: filters
-      description: One or more filters.
+      description: One or more filters. See documentation for filters list.
     - name: vpcIds
-      description: One or more VPC IDs.
+      description: One or more VPC IDs. Sepereted by comma.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2626,11 +2501,11 @@ script:
   - name: aws-ec2-describe-subnets
     arguments:
     - name: filters
-      description: One or more filters.
+      description: One or more filters. See documetation for filters list.
     - name: subnetIds
-      description: One or more subnet IDs.
+      description: One or more subnet IDs. Sepereted by comma.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2669,7 +2544,7 @@ script:
       type: string
     - contextPath: AWS.EC2.Subnets.AssignIpv6AddressOnCreation
       description: Indicates whether a network interface created in this subnet (including
-        a network interface created by RunInstances ) receives an IPv6 address.
+        a network interface created by RunInstances) receives an IPv6 address.
       type: boolean
     - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId
       description: The association ID for the CIDR block.
@@ -2693,14 +2568,14 @@ script:
   - name: aws-ec2-describe-security-groups
     arguments:
     - name: filters
-      description: One or more filters.
+      description: One or more filters. See documetation for filters list.
     - name: groupIds
       description: One or more security group IDs. Required for security groups in
-        a nondefault VPC.
+        a nondefault VPC. Sepereted by comma.
     - name: groupNames
-      description: One or more security group names.
+      description: One or more security group names. Sepereted by comma.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2718,13 +2593,13 @@ script:
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.FromPort
       description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
-        type number. A value of -1 indicates all ICMP/ICMPv6 types. I
+        type number. A value of -1 indicates all ICMP/ICMPv6 types.
       type: number
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpProtocol
-      description: The IP protocol name (tcp , udp , icmp ) or number
+      description: The IP protocol name (tcp , udp , icmp ) or number.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp
-      description: The IPv4 CIDR range
+      description: The IPv4 CIDR range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.Description
       description: A description for the security group rule that references this
@@ -2781,10 +2656,10 @@ script:
         type number.
       type: number
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpProtocol
-      description: The IP protocol name (tcp , udp , icmp ) or number.
+      description: The IP protocol name (tcp , udp , icmp) or number.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpRanges.CidrIp
-      description: The IPv4 CIDR range
+      description: The IPv4 CIDR range.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpRanges.Description
       description: A description for the security group rule that references this
@@ -2843,7 +2718,7 @@ script:
   - name: aws-ec2-allocate-address
     arguments:
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2861,10 +2736,10 @@ script:
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Domain
       description: Indicates whether this Elastic IP address is for use with instances
-        in EC2-Classic (standard ) or instances in a VPC (vpc ).
+        in EC2-Classic (standard ) or instances in a VPC (vpc).
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Region
-    description: Allocates an Elastic IP address.
+    description: The aws region where the elastic IP is located
   - name: aws-ec2-associate-address
     arguments:
     - name: allocationId
@@ -2894,7 +2769,7 @@ script:
         Elastic IP address. If no private IP address is specified, the Elastic IP
         address is associated with the primary private IP address.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2919,7 +2794,7 @@ script:
     - name: tags
       description: The tags to apply to the snapshot during creation.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -2983,9 +2858,10 @@ script:
   - name: aws-ec2-delete-snapshot
     arguments:
     - name: snapshotId
+      required: true
       description: The ID of the EBS snapshot.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3015,7 +2891,7 @@ script:
         shut down the instance before creating the image. When this option is used,
         file system integrity on the created image cant be guaranteed.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3035,6 +2911,7 @@ script:
       description: The ID of the instance.
       type: string
     - contextPath: AWS.EC2.Images.Region
+      description: The aws region where the image is located
       type: string
     description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
       that is either running or stopped.
@@ -3043,7 +2920,7 @@ script:
     - name: imageId
       description: The ID of the AMI.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3059,7 +2936,7 @@ script:
       required: true
       description: The ID of the volume.
     - name: size
-      description: 'Target size in GiB of the volume to be modified. '
+      description: Target size in GiB of the volume to be modified.
     - name: volumeType
       description: Target EBS volume type of the volume to be modified  The API does
         not support modifications for volume type standard . You also cannot change
@@ -3067,21 +2944,21 @@ script:
     - name: iops
       description: Target IOPS rate of the volume to be modified.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
     outputs:
     - contextPath: AWS.EC2.Volumes.Modification.VolumeId
       description: ID of the volume being modified.
       type: string
     - contextPath: AWS.EC2.Volumes.Modification.ModificationState
-      description: Current state of modification. Modification state is null for unmodified
+      description: Current state of modification. Modification state is null for unmodified.
         volumes.
       type: string
     - contextPath: AWS.EC2.Volumes.Modification.StatusMessage
@@ -3109,7 +2986,7 @@ script:
       description: Modification progress from 0 to 100%.
       type: string
     - contextPath: AWS.EC2.Volumes.Modification.StartTime
-      description: Modification start time
+      description: Modification start time.
       type: date
     - contextPath: AWS.EC2.Volumes.Modification.EndTime
       description: Modification completion or failure time.
@@ -3123,7 +3000,7 @@ script:
     - name: tags
       description: One or more tags.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3140,7 +3017,7 @@ script:
       required: true
       description: The association ID.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3157,7 +3034,7 @@ script:
       required: true
       description: The allocation ID.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3171,9 +3048,9 @@ script:
     arguments:
     - name: instanceIds
       required: true
-      description: One or more instance IDs.
+      description: One or more instance IDs. Sepereted by comma.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3312,7 +3189,7 @@ script:
     arguments:
     - name: device
       required: true
-      description: The device name (for example, /dev/sdh or xvdh ).
+      description: The device name (for example, /dev/sdh or xvdh).
     - name: instanceId
       required: true
       description: The ID of the instance.
@@ -3321,7 +3198,7 @@ script:
       description: The ID of the EBS volume. The volume and instance must be within
         the same Availability Zone.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3361,11 +3238,11 @@ script:
         cleanly. This option can lead to data loss or a corrupted file system. Use
         this option only as a last resort to detach a volume from a failed instance.
     - name: device
-      description: The device name.
+      description: The device name (for example, /dev/sdh or xvdh).
     - name: instanceId
       description: The ID of the instance.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3400,7 +3277,7 @@ script:
       required: true
       description: The ID of the volume.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3411,32 +3288,11 @@ script:
         the role.
     description: Deletes the specified EBS volume. The volume must be in the available
       state (not attached to an instance).
-  - name: aws-ec2-detach-network-interface
-    arguments:
-    - name: attachmentId
-      description: The ID of the attachment.
-    - name: force
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: Specifies whether to force a detachment.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
-    description: Detaches a network interface from an instance.
   - name: aws-ec2-run-instances
     arguments:
     - name: count
       required: true
-      description: The number of instances to launch. must be grater then 0
+      description: The number of instances to launch. must be grater then 0.
       defaultValue: "1"
     - name: imageId
       description: The ID of the AMI, which you can get by calling DescribeImages
@@ -3445,7 +3301,7 @@ script:
     - name: instanceType
       description: 'The instance type. for example: t2.large'
     - name: securityGroupIds
-      description: One or more security group IDs.
+      description: One or more security group IDs. Sepereted by comma.
     - name: securityGroups
       description: One or more security group names. For a nondefault VPC, you must
         use security group IDs instead.
@@ -3461,15 +3317,15 @@ script:
       - "True"
       - "False"
       description: If you set this parameter to true , you cant terminate the instance
-        using the Amazon EC2 console, CLI, or API
+        using the Amazon EC2 console, CLI, or API.
     - name: iamInstanceProfileArn
       description: The Amazon Resource Name (ARN) of the instance profile. Both iamInstanceProfileArn
         and iamInstanceProfile are required if you would like to associate an instance
-        profile
+        profile.
     - name: iamInstanceProfileName
       description: The name of the instance profile. Both iamInstanceProfileArn and
         iamInstanceProfile are required if you would like to associate an instance
-        profile
+        profile.
     - name: keyName
       description: The name of the key pair. Warning - If you do not specify a key
         pair, you cant connect to the instance unless you choose an AMI that is configured
@@ -3481,7 +3337,7 @@ script:
       - "False"
       description: Indicates whether the instance is optimized for Amazon EBS I/O.
     - name: deviceName
-      description: The device name (for example, /dev/sdh or xvdh ).
+      description: The device name (for example, /dev/sdh or xvdh).
     - name: ebsVolumeSize
       description: The size of the volume, in GiB.
     - name: ebsVolumeType
@@ -3522,9 +3378,9 @@ script:
     - name: launchTemplateVersion
       description: The version number of the launch template.
     - name: tags
-      description: The tags to apply to the instance
+      description: The tags to apply to the instance.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3624,7 +3480,7 @@ script:
       description: The architecture of the image.
       type: string
     - contextPath: AWS.EC2.Instances.BlockDeviceMappings.DeviceName
-      description: The device name (for example, /dev/sdh or xvdh ).
+      description: The device name (for example, /dev/sdh or xvdh).
       type: string
     - contextPath: AWS.EC2.Instances.BlockDeviceMappings.Ebs.AttachTime
       description: The time stamp when the attachment initiated.
@@ -3761,8 +3617,7 @@ script:
       description: The ID of the VPC.
       type: string
     - contextPath: AWS.EC2.Instances.RootDeviceName
-      description: The device name of the root device volume (for example, /dev/sda1
-        ).
+      description: The device name of the root device volume (for example, /dev/sda1).
       type: string
     - contextPath: AWS.EC2.Instances.RootDeviceType
       description: The root device type used by the AMI. The AMI can use an EBS volume
@@ -3775,8 +3630,7 @@ script:
       description: The ID of the security group.
       type: string
     - contextPath: AWS.EC2.Instances.SourceDestCheck
-      description: Specifies whether to enable an instance launched in a VPC to perform
-        NAT.
+      description: Specifies whether to enable an instance launched in a VPC to perform NAT.
       type: boolean
     - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
       description: If the request is a Spot Instance request, the ID of the request.
@@ -3804,72 +3658,20 @@ script:
       you have permissions. You can create a launch template , which is a resource
       that contains the parameters to launch an instance. When you launch an instance
       using RunInstances , you can specify the launch template instead of specifying
-      the launch parameters. An instance is ready for you to use when it''s in the
+      the launch parameters. An instance is ready for you to use when its in the
       running state. You can check the state of your instance using DescribeInstances.
-  - name: aws-ec2-get-console-output
-    arguments:
-    - name: instanceId
-      required: true
-      description: The ID of the instance.
-    - name: latest
-      description: When enabled, retrieves the latest console output for the instance.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
-    outputs:
-    - contextPath: AWS.EC2.Instances.ConsoleOutput.Output
-      description: The console output
-      type: string
-    - contextPath: AWS.EC2.Instances.ConsoleOutput.Timestamp
-      description: The time at which the output was last updated.
-      type: string
-    description: Gets the console output for the specified instance. For Linux instances,
-      the instance console output displays the exact console output that would normally
-      be displayed on a physical monitor attached to a computer. For Windows instances,
-      the instance console output includes output from the EC2Config service.
-  - name: aws-ec2-get-console-screenshot
-    arguments:
-    - name: instanceId
-      required: true
-      description: The ID of the instance.
-    - name: wakeUp
-      description: When set to true , acts as keystroke input and wakes up an instance.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
-    outputs:
-    - contextPath: AWS.EC2.Instances.ConsoleScreenshoot.ImageData
-      description: The data that comprises the image.
-      type: string
-    description: etrieve a JPG-format screenshot of a running instance to help with
-      troubleshooting.
   - name: aws-ec2-waiter-instance-running
     arguments:
     - name: filter
       description: One or more filters. See documentation for details & filter options.
     - name: instanceIds
-      description: One or more instance IDs. Seprated by comma
+      description: One or more instance IDs. Sepreted by comma.
     - name: waiterDelay
-      description: 'The amount of time in seconds to wait between attempts. Default:
-        15'
+      description: The amount of time in seconds to wait between attempts. Default 15
     - name: waiterMaxAttempts
-      description: 'The maximum number of attempts to be made. Default: 40'
+      description: The maximum number of attempts to be made. Default 40
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3879,20 +3681,20 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: A waiter function that runs every 15  seconds until a successful
-      state is reached
+      state is reached.
   - name: aws-ec2-waiter-instance-status-ok
     arguments:
     - name: filter
       description: One or more filters. See documentation for details & filter options.
     - name: instanceIds
-      description: One or more instance IDs. Seprated by comma
+      description: One or more instance IDs. Seprated by comma.
     - name: waiterDelay
       description: The amount of time in seconds to wait between attempts. Default
         15
     - name: waiterMaxAttempts
-      description: The maximum number of attempts to be made. Default 40
+      description: The maximum number of attempts to be made. Default 40.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3908,14 +3710,13 @@ script:
     - name: filter
       description: One or more filters. See documentation for details & filter options.
     - name: instanceIds
-      description: One or more instance IDs. Seprated by comma
+      description: One or more instance IDs. Seprated by comma.
     - name: waiterDelay
-      description: 'The amount of time in seconds to wait between attempts. Default:
-        15'
+      description: The amount of time in seconds to wait between attempts. Default 15
     - name: waiterMaxAttempts
-      description: 'The maximum number of attempts to be made. Default: 40'
+      description: The maximum number of attempts to be made. Default 40
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3931,14 +3732,13 @@ script:
     - name: filter
       description: One or more filters. See documentation for details & filter options.
     - name: instanceIds
-      description: One or more instance IDs. Seprated by comma
+      description: One or more instance IDs. Seprated by comma.
     - name: waiterDelay
-      description: 'The amount of time in seconds to wait between attempts. Default:
-        15'
+      description: The amount of time in seconds to wait between attempts. Default 15
     - name: waiterMaxAttempts
-      description: 'The maximum number of attempts to be made. Default: 40'
+      description: The maximum number of attempts to be made. Default 40
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3954,7 +3754,7 @@ script:
     - name: filters
       description: One or more filters. See documentation for available filters.
     - name: imageIds
-      description: One or more image IDs. Sperated by comma
+      description: One or more image IDs. Sperated by comma.
     - name: owners
       description: Filters the images by the owner. Specify an AWS account ID, self
         (owner is the sender of the request), or an AWS owner alias (valid values
@@ -3964,12 +3764,11 @@ script:
       description: Scopes the images by users with explicit launch permissions. Specify
         an AWS account ID, self (the sender of the request), or all (public AMIs).
     - name: waiterDelay
-      description: 'The amount of time in seconds to wait between attempts. Default:
-        15'
+      description: The amount of time in seconds to wait between attempts. Default 15
     - name: waiterMaxAttempts
-      description: 'The maximum number of attempts to be made. Default: 40'
+      description: The maximum number of attempts to be made. Default 40
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -3991,12 +3790,11 @@ script:
     - name: restorableByUserIds
       description: One or more AWS accounts IDs that can create volumes from the snapshot.
     - name: waiterDelay
-      description: 'The amount of time in seconds to wait between attempts. Default:
-        15'
+      description: The amount of time in seconds to wait between attempts. Default 15
     - name: waiterMaxAttempts
-      description: 'The maximum number of attempts to be made. Default: 40'
+      description: The maximum number of attempts to be made. Default 40
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -4010,8 +3808,6 @@ script:
     arguments:
     - name: filters
       description: One or more filters. See documentation for available filters.
-    - name: imageIds
-      description: One or more image IDs. Sperated by comma.
     - name: owners
       description: Filters the images by the owner. Specify an AWS account ID, self
         (owner is the sender of the request), or an AWS owner alias (valid values
@@ -4163,7 +3959,7 @@ script:
       required: true
       description: The ID of the VPC.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -4194,7 +3990,7 @@ script:
       description: default VPC only.  The name of the security group. You can specify
         either the security group name or the security group ID.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -4218,16 +4014,16 @@ script:
     - name: cidrIp
       description: The CIDR IPv4 address range.
     - name: ipProtocol
-      description: The IP protocol name (tcp , udp , icmp ) or number.  Use -1 to
+      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to
         specify all protocols.
     - name: sourceSecurityGroupName
-      description: 'The name of the source security group. You can''t specify this
+      description: The name of the source security group. You cant specify this
         parameter in combination with the following parameters: the CIDR IP address
         range, the start of the port range, the IP protocol, and the end of the port
         range. Creates rules that grant full ICMP, UDP, and TCP access.  The source
-        security group must be in the same VPC.'
+        security group must be in the same VPC.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -4237,37 +4033,6 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Adds ingress rule to a security group.
-  - name: aws-ec2-authorize-security-group-egress-rule
-    arguments:
-    - name: groupId
-      required: true
-      description: The ID of the security group.
-    - name: fromPort
-      description: The start of port range for the TCP and UDP protocols.
-    - name: toPort
-      description: The start of port range for the TCP and UDP protocols.
-    - name: cidrIp
-      description: The CIDR IPv4 address range.
-    - name: ipProtocol
-      description: The IP protocol name (tcp , udp , icmp ) or number.  Use -1 to
-        specify all protocols.
-    - name: sourceSecurityGroupName
-      description: 'The name of the source security group. You can''t specify this
-        parameter in combination with the following parameters: the CIDR IP address
-        range, the start of the port range, the IP protocol, and the end of the port
-        range. Creates rules that grant full ICMP, UDP, and TCP access.  The source
-        security group must be in the same VPC.'
-    - name: region
-      description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
-    description: 'Adds  egress rule to a security group '
   - name: aws-ec2-revoke-security-group-ingress-rule
     arguments:
     - name: groupId
@@ -4276,20 +4041,19 @@ script:
     - name: fromPort
       description: The start of port range for the TCP and UDP protocols.
     - name: toPort
-      description: The start of port range for the TCP and UDP protocols.
+      description: The end of port range for the TCP and UDP protocols.
     - name: cidrIp
       description: The CIDR IPv4 address range.
     - name: ipProtocol
-      description: The IP protocol name (tcp , udp , icmp ) or number.  Use -1 to
-        specify all protocols.
+      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify all protocols.
     - name: sourceSecurityGroupName
-      description: 'The name of the source security group. You can''t specify this
+      description: The name of the source security group. You cant specify this
         parameter in combination with the following parameters: the CIDR IP address
         range, the start of the port range, the IP protocol, and the end of the port
         range. Creates rules that grant full ICMP, UDP, and TCP access.  The source
-        security group must be in the same VPC.'
+        security group must be in the same VPC.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -4299,39 +4063,6 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Removes egress rule from a security group. To remove a rule, the
-      values that you specify (for example, ports) must match the existing rule's
-      values exactly.
-  - name: aws-ec2-revoke-security-group-egress-rule
-    arguments:
-    - name: groupId
-      required: true
-      description: The ID of the security group.
-    - name: fromPort
-      description: The start of port range for the TCP and UDP protocols.
-    - name: toPort
-      description: The start of port range for the TCP and UDP protocols.
-    - name: cidrIp
-      description: The CIDR IPv4 address range.
-    - name: ipProtocol
-      description: The IP protocol name (tcp , udp , icmp ) or number.  Use -1 to
-        specify all protocols.
-    - name: sourceSecurityGroupName
-      description: 'The name of the source security group. You can''t specify this
-        parameter in combination with the following parameters: the CIDR IP address
-        range, the start of the port range, the IP protocol, and the end of the port
-        range. Creates rules that grant full ICMP, UDP, and TCP access.  The source
-        security group must be in the same VPC.'
-    - name: region
-      description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
-    description: Removes  egress rule from a security group. To remove a rule, the
       values that you specify (for example, ports) must match the existing rule's
       values exactly.
   dockerimage: demisto/boto3
