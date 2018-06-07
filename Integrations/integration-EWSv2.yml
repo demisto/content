@@ -1751,5 +1751,5 @@ script:
       description: The action, value will be 'moved'.
       type: string
     description: Move an item from one mailbox to another.
-  dockerimage: demisto/py-ews
+  dockerimage: demisto/py-ews:2.0
   isfetch: true
