@@ -1030,8 +1030,7 @@ script:
       required: true
       description: Name of the user to update.
     - name: newUserName
-      description: New name for the user. Include this parameter only if you're changing
-        the user's name.
+      description: New name for the user. Include this parameter only if you're changing the user's name.
     - name: newPath
       description: New path for the IAM user. Include this parameter only if you're
         changing the user's path.
