@@ -226,7 +226,7 @@ view: |-
   }
 inputs:
 - key: badUrl
-  value: http://dbsmobileibslogin.com
+  value: http://rse.tigocloudbo.com/wa.php
   description: ""
 - key: goodUrl
   value: https://www.phishtank.com/
