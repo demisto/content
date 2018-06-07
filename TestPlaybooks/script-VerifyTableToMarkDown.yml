@@ -36,7 +36,7 @@ script: |-
       throw "Simple Data failed to be converted to RIGHT Human Redable fotmat. Got: " + h;
   }
 
-  h = tableToMarkdown2("Simple Array", JSON.parse(simpleArray), 'Array');
+  h = tableToMarkdown("Simple Array", JSON.parse(simpleArray), 'Array');
   if( h !== hrArray){
       throw "Simple Data failed to be converted to RIGHT Human Redable fotmat. Got: " + h;
   }
