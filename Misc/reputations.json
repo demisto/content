@@ -1,5 +1,6 @@
 {
   "name": "reputations",
+  "releaseNotes": "Adding ssdeep reputation",
   "reputations": [
     {
       "id": "fileRep",
