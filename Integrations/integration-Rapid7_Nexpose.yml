@@ -1,0 +1,653 @@
+commonfields:
+  id: Rapid7 Nexpose
+  version: -1
+name: Rapid7 Nexpose
+display: Rapid7 Nexpose
+category: Vulnerability Management
+image: data:image/png;base64,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
+description: Rapid7’s on-premise vulnerability management solution, Nexpose, helps
+  you reduce your threat exposure by enabling you to assess and respond to changes
+  in your environment real time and prioritizing risk across vulnerabilities, configurations,
+  and controls.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1:8080)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: 2FA token
+  name: token
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |
+    var BASE_URL = params.server.replace(/[\/]+$/, '');
+    var SERVER_URL = BASE_URL + '/api/3/';
+    var AUTH = basicAuth(params.credentials.identifier, params.credentials.password);
+    var TOKEN = params.token;
+    var SITE_COOKIE = 'time-zone-offset=-180; _pendo_accountId.77c79869-0135-481b-7c93-53f43e8ae3d8=21c87447-3796-4bea-848b-660358b7e1da; _pendo_visitorId.77c79869-0135-481b-7c93-53f43e8ae3d8=21c87447-3796-4bea-848b-660358b7e1da-1; i18next=en-US; hide-dashboard-tour=shown; _pendo_meta.77c79869-0135-481b-7c93-53f43e8ae3d8=2114032251; nexposeCCSessionID=5D476D9DA8DA829E607FBF8E3B4BC7ED20A29DA4; TIMEOUT=session-alive';
+    var SESSION = '5D476D9DA8DA829E607FBF8E3B4BC7ED20A29DA4';
+
+    function getHeaders(){
+        var headers = {
+                    'Authorization': [AUTH],
+                    'Content-Type': ['application/json'],
+                };
+        if(TOKEN){
+            headers['Token'] = [TOKEN];
+        }
+
+        return headers;
+    }
+
+    function getSiteHeaders(){
+        var headers = getHeaders();
+
+        headers['Cookie'] = [SITE_COOKIE];
+        headers['nexposeCCSessionID'] = [SESSION];
+
+        return headers;
+    }
+
+    function sendRequest(path, method, queryParams, body){
+        var query = '';
+        if(queryParams){
+            query = encodeToURLQuery(queryParams);
+        }
+
+        var url = SERVER_URL.concat(path, query);
+        var res = http(
+            url,
+            {
+                Method: method ? method : 'GET',
+                Headers: getHeaders(),
+                Body: body ? JSON.stringify(body) : body
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed on request ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        return JSON.parse(res.Body);
+    }
+
+    function getListResponse(path, queryParams){
+        var finalResult = [];
+        var pageDiff = 0;
+        var pageNumber = 0;
+        var queryParams = queryParams || {};
+
+        do{
+            queryParams.page = pageNumber++;
+            var response = sendRequest(path, 'GET', queryParams);
+            if(!response){
+                break;
+            }
+            if(response.resources){
+                finalResult = finalResult.concat(response.resources);
+            }
+            if(response.page){
+                pageDiff = response.page.totalPages - response.page.number;
+            }
+        }while(pageDiff > 1 && !queryParams.size);
+
+        return finalResult;
+    }
+
+    function getLastScan(asset){
+        if(!asset.history){
+            return "-";
+        }
+        var sorted = asset.history.sort(function(a,b){
+            return new Date(b.date) - new Date(a.date);
+        });
+
+        return sorted[0] ? sorted[0].date : '-';
+
+    }
+    function getAssetsCommand(){
+        var assets = getAssets(args);
+
+        if(!assets || assets.length === 0){
+            return "No assets found";
+        }
+
+        var hrAssets = [];
+        assets.forEach(function(asset){
+            var hrAsset = {
+                Id: asset.id,
+                Address: asset.ip,
+                Name: asset.hostName,
+                Site: getSite(asset.id).name,
+                Exploits: dq(asset.vulnerabilities, 'exploits'),
+                Malware: dq(asset.vulnerabilities, 'malwareKits'),
+                OperatingSystem: asset.os,
+                Vulnerabilities: dq(asset.vulnerabilities, 'total'),
+                Risk: asset.riskScore,
+                Assessed: asset.assessedForVulnerabilities,
+                LastScan: getLastScan(asset),
+            }
+
+            hrAssets.push(hrAsset);
+        });
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: assets,
+            ContentsFormat: formats.json
+        };
+
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('Assets' , hrAssets);
+        entry.EntryContext = {
+            'Nexpose.Asset(val.id==obj.id)': hrAssets
+        };
+
+        return entry;
+    }
+
+    function getSite(assetId){
+        var path = '/data/assets/' + assetId + '/scans';
+
+        var url = BASE_URL.concat(path);
+        var res = http(
+            url,
+            {
+                Method: 'POST',
+                Headers: getSiteHeaders(),
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed on request ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+
+        var response = JSON.parse(res.Body);
+
+        if(response.records && response.records.length > 0){
+            return {
+                id: response.records[0].siteID,
+                name: response.records[0].siteName,
+                ip: response.records[0].ipAddress
+            }
+        }
+
+        return '';
+    }
+
+    function getAssetCommand(){
+        var asset = getAssets(args, args.id);
+        delete(args.id);
+
+        if(!asset){
+            return "Asset not found";
+        }
+
+        var hrAsset = {
+            Addresses: dq(asset.addresses, 'ip'),
+            Hardware: dq(asset.addresses, 'mac'),
+            Aliases: dq(asset.hostNames, 'name'),
+            HostType: asset.type,
+            Site: '',
+            OS: asset.os,
+            CPE: dq(asset, 'cpe.v2.3'),
+            LastScan: getLastScan(asset),
+            RiskScore: asset.riskScore
+        }
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: asset,
+            ContentsFormat: formats.json
+        };
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('Asset' , hrAsset);
+        entry.EntryContext = {
+            'Nexpose.Asset(val.id==obj.id)': asset
+        }
+
+        return entry;
+    }
+
+    function getAssets(queryParams, id){
+        var path = 'assets';
+        if(id){
+            path += "/" + id;
+        }
+        else{
+            return getListResponse(path, queryParams);
+        }
+
+        return sendRequest(path, 'GET', queryParams);
+    }
+
+    function getVulnerabilitiesCommand(){
+        var assetId = args.id;
+        delete(args.id);
+
+        var vulnerabilities = getVulnerabilities(assetId, args);
+
+        if(!vulnerabilities || vulnerabilities.length === 0){
+            return "No vulnerabilities found";
+        }
+
+        var hrVulnerabilities = [];
+        var asset = {
+            id: assetId,
+            Vulnerability: []
+        };
+        vulnerabilities.forEach(function(v){
+            var vulnerability = getVulnerability(v.id);
+            asset.Vulnerability.push(vulnerability);
+            var hrVulnerability = {
+                Title: vulnerability.title,
+                Malware: vulnerability.malwareKits,
+                Exploit: vulnerability.exploits,
+                CVSS: dq(vulnerability.cvss, 'v3.score'),
+                Risk: vulnerability.riskScore,
+                PublishedOn: vulnerability.published,
+                ModifiedOn: vulnerability.modified,
+                Severity: vulnerability.severity,
+                Instances: v.instances,
+               // Exceptions: dq(v.results, 'exceptions')
+            };
+
+            hrVulnerabilities.push(hrVulnerability);
+        });
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: vulnerabilities,
+            ContentsFormat: formats.json
+        };
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('Asset ' + assetId + ' Vulnerabilities' , hrVulnerabilities);
+        entry.EntryContext = {
+            'Nexpose.Asset(val.id==obj.id)': asset
+        }
+
+        return entry;
+    }
+
+    function getVulnerabilities(assetId, queryParams){
+        var path = 'assets/' + assetId + '/vulnerabilities';
+
+        return getListResponse(path, queryParams);
+    }
+
+    function getVulnerability(vulnerabilityId){
+        var path = 'vulnerabilities/' + vulnerabilityId;
+
+        return sendRequest(path, 'GET');
+    }
+
+    function getSoftwareCommand(){
+        var assetId = args.id;
+        delete(args.id);
+        var software = getSoftware(assetId, args);
+
+        if(!software || software.length === 0){
+            return "No software found";
+        }
+        var asset = {
+            id: assetId,
+            Software: []
+        }
+        var hrSoftware = [];
+        software.forEach(function(s){
+            asset.Software.push(s);
+           var hrs = {
+               Software: s.description,
+               version: s.version
+           };
+           hrSoftware.push(hrs);
+        });
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: software,
+            ContentsFormat: formats.json
+        };
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('Asset ' + assetId + ' Installed software' , hrSoftware);
+        entry.EntryContext = {
+            'Nexpose.Asset(val.id==obj.id)': asset
+        }
+
+        return entry;
+    }
+
+    function getSoftware(assetId, queryParams){
+        var path = 'assets/' + assetId + '/software';
+
+        return getListResponse(path, queryParams);
+    }
+
+    function getServicesCommand(){
+        var assetId = args.id;
+        delete(args.id);
+        var services = getServices(assetId, args);
+
+        if(!services || services.length === 0){
+            return "No services found";
+        }
+
+        var asset = {
+            id: assetId,
+            Service: []
+        }
+
+        var hrServices = [];
+        services.forEach(function(s){
+            if(s.protocol && s.port){
+                var service = getService(assetId, s.protocol, s.port);
+                asset.Service.push(service);
+                var vulnerabilities = getServiceVulnerabilities(assetId, s.protocol, s.port);
+                var hrService = {
+                    ServiceName: service.name,
+                    Product: service.product,
+                    Port: service.port,
+                    Vulnerabilities: vulnerabilities ? vulnerabilities.length : '0',
+                    Users: service.users ? service.users.length : '0',
+                    Groups: service.userGroups ? service.userGroups.length : '0',
+                };
+
+                hrServices.push(hrService);
+            }
+        });
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: services,
+            ContentsFormat: formats.json
+        };
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('Asset ' + assetId + ' Services' , hrServices);
+        entry.EntryContext = {
+            'Nexpose.Asset(val.id==obj.id)': asset
+        }
+
+        return entry;
+    }
+
+    function getServices(assetId, queryParams){
+        var path = 'assets/' + assetId + '/services';
+
+        return getListResponse(path, queryParams);
+    }
+
+    function getService(assetId, protocol, port){
+        var path = 'assets/' + assetId + '/services/' + protocol + '/' + port;
+
+        return sendRequest(path, 'GET');
+    }
+
+    function getServiceVulnerabilities(assetId, protocol, port){
+        var path = 'assets/' + assetId + '/services/' + protocol + '/' + port + '/vulnerabilities';
+
+        return getListResponse(path);
+    }
+
+    function getUserCommand(){
+        var userId = args.id;
+        delete(args.id);
+
+        var user = getUser(userId);
+
+        if(!user){
+            return "User not found";
+        }
+
+        var groups = getUserGroups(userId);
+        var sites = getUserSites(userId);
+
+        var hrUser = {
+            Authenticator: dq(user.authentication, 'id'),
+            UserName: dq(user.authentication, 'name'),
+            FullName: user.name,
+            Email: user.email,
+            Administrator: '',
+            UserRole: dq(user.role, 'name'),
+            LastLogon: '',
+            PasswordExpires: '',
+            Disabled: '',
+            Sites: sites ? sites.length : 0,
+            Groups: groups ? groups.length : 0
+        };
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: user,
+            ContentsFormat: formats.json
+        };
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('User', hrUser);
+        entry.EntryContext = {
+            'Nexpose.User(val.id==obj.id)': user
+        }
+
+        return entry;
+    }
+
+    function getUser(userId){
+        var path = 'users/' + userId;
+
+        return sendRequest(path, 'GET');
+    }
+
+    function getUserGroups(userId){
+        var path = 'users/' + userId + '/asset_groups';
+
+        return getListResponse(path);
+    }
+
+    function getUserSites(userId){
+        var path = 'users/' + userId + '/sites'
+
+        return getListResponse(path);
+    }
+
+    function getScanCommand(){
+        var scanId = args.id;
+        delete(args.id);
+
+        var scan = getScan(scanId);
+
+        if(!scan){
+            return 'Scan not found';
+        }
+
+        var vulnerabilitiesCount = 0;
+        for(key in scan.vulnerabilities){
+            vulnerabilitiesCount += scan.vulnerabilities[key];
+        }
+
+        var hrScan = {
+            Site: '',
+            ScanType: scan.scanType,
+            ScanName: scan.scanName,
+            StartedBy: scan.startedBy,
+            Assets: scan.assets,
+            Vulnerabilities: vulnerabilitiesCount,
+            TotalTime: scan.duration,
+            Completed: scan.endTime,
+            Status: scan.status,
+            Engine: scan.engineName
+        }
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: scan,
+            ContentsFormat: formats.json
+        };
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('Scan', hrScan);
+        entry.EntryContext = {
+            'Nexpose.Scan(val.id==obj.id)': scan
+        }
+
+        return entry;
+    }
+
+    function getScan(scanId){
+        var path = 'scans/' + scanId;
+
+        return sendRequest(path, 'GET');
+    }
+
+    function getAssetVulnerabilitySolutionsCommand(){
+        var assetId = args.id;
+        var vulnerabilityId = args.vulnerabilityId;
+        delete(args.assetId);
+        delete(args.vulnerabilityId);
+
+        var solutions = getVulnerabilitySolutions(assetId, vulnerabilityId);
+
+        if(!solutions || solutions.length === 0){
+            return "No solutions found";
+        }
+
+        var vulnerability = {
+            id: vulnerabilityId,
+            Solution: []
+        }
+        var hrSolutions = [];
+
+        solutions.forEach(function(solution){
+            //var solution = getSolution(s);
+            vulnerability.Solution.push(solution);
+            var hrSolution = {
+                AdditionalInformation: solution.additionalInformation,
+                Estimate: solution.estimate,
+                Steps: dq(solution.steps, 'text'),
+                Summary: dq(solution.summary, 'text'),
+                Type: solution.type
+            }
+
+            hrSolutions.push(hrSolution);
+        });
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: solutions,
+            ContentsFormat: formats.json
+        };
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('Solutions for vulnerability ' + vulnerabilityId, hrSolutions);
+        entry.EntryContext = {
+            'Nexpose.Asset.Vulnerability(val.id==obj.id)': vulnerability
+        }
+
+        return entry;
+    }
+
+    function getVulnerabilitySolutions(assetId, vulnerabilityId){
+        var path = 'assets/' + assetId + '/vulnerabilities/' + vulnerabilityId + '/solution';
+
+        return getListResponse(path);
+    }
+
+    function getSolution(solutionId){
+        var path = 'solutions/' + solutionId;
+
+        return sendRequest(path, 'GET');
+    }
+    var entry;
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            return 'ok';
+        case 'fetch-incidents':
+            // JSON of the incident type created by this integration
+            // You can store the last run as a string using set last run.
+            setLastRun({'time': 'now'});
+            // And you can retrieve it in any other call...
+            var now = getLastRun();
+            // now is an object with field time, that has value 'now'.
+            return JSON.stringify([{"Name":"Incident #1"},{"Name":"Incident #2"}]);
+        case 'nexpose-get-assets':
+            var entry = getAssetsCommand();
+            break;
+        case 'nexpose-get-asset':
+            var entry = getAssetCommand();
+            break;
+        case 'nexpose-get-asset-vulnerabilities':
+            var entry = getVulnerabilitiesCommand();
+            break;
+        case 'nexpose-get-asset-software':
+            var entry = getSoftwareCommand();
+            break;
+        case 'nexpose-get-asset-services':
+            var entry = getServicesCommand();
+            break;
+        case 'nexpose-get-user':
+            var entry = getUserCommand();
+            break;
+        case 'nexpose-get-scan':
+            var entry = getScanCommand();
+            break;
+        case 'nexpose-get-asset-vulnerability-solution':
+            var entry = getAssetVulnerabilitySolutionsCommand();
+            break;
+    }
+
+    return entry;
+  type: javascript
+  commands:
+  - name: nexpose-get-assets
+    arguments:
+    - name: sort
+      description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
+        The default sort order is ascending. Multiple sort criteria can be specified
+        using multiple sort query parameters.'
+      isArray: true
+    - name: size
+      description: integer <int32> The number of records per page to retrieve.
+    description: Returns all assets for which you have access.
+  - name: nexpose-get-asset
+    arguments:
+    - name: id
+      required: true
+      description: integer <int64> The identifier of the asset.
+    description: Returns the specified asset.
+  - name: nexpose-get-user
+    arguments:
+    - name: id
+      required: true
+      description: integer <int32> The identifier of the user.
+    description: 'Returns the details for a user. PRIVILEGES: Global Administrator,
+      Current User'
+  - name: nexpose-get-scan
+    arguments:
+    - name: id
+      required: true
+      description: integer <int64> The identifier of the scan.
+    description: Returns the specified scan.
+  - name: nexpose-get-asset-vulnerability-solution
+    arguments:
+    - name: id
+      required: true
+      description: integer <int64> The identifier of the asset.
+    - name: vulnerabilityId
+      required: true
+      description: <string> The identifier of the vulnerability.
+    description: Returns the details for solutions that can remediate a given vulnerability.
+  runonce: false
