@@ -2,7 +2,7 @@ id: url_enrichment_-_generic
 version: -1
 name: URL Enrichment - Generic
 description: Enrich URL using one or more integrations
-fromversion: 3.5.0
+fromversion: 3.6.0
 starttaskid: "0"
 tasks:
   "0":
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 50
+          "x": 490,
+          "y": -39
         }
       }
   "16":
@@ -59,8 +59,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 195
+          "x": 490,
+          "y": 165
         }
       }
   "20":
@@ -90,7 +90,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 684,
+          "x": 817.5,
           "y": 1010
         }
       }
@@ -110,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -176,
-          "y": 1170
+          "x": 490,
+          "y": 1185
         }
       }
   "25":
@@ -157,7 +157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": -80.5,
           "y": 835
         }
       }
@@ -187,7 +187,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 283,
+          "x": 163,
           "y": 1010
         }
       }
@@ -216,7 +216,7 @@ tasks:
           left:
             value:
               complex:
-                root: 'inputs.Rasterize'
+                root: inputs.Rasterize
             iscontext: true
           right:
             value:
@@ -250,7 +250,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 817.5,
           "y": 370
         }
       }
@@ -274,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 524
+          "y": 515
         }
       }
   "30":
@@ -291,13 +291,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "34"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 684,
-          "y": 524
+          "x": 817.5,
+          "y": 515
         }
       }
   "31":
@@ -319,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1122,
-          "y": 524
+          "x": 1329.5,
+          "y": 515
         }
       }
   "32":
@@ -346,7 +346,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1122,
+          "x": 1329.5,
           "y": 1010
         }
       }
@@ -384,8 +384,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1122,
-          "y": 680
+          "x": 1329.5,
+          "y": 708
+        }
+      }
+  "34":
+    id: "34"
+    taskid: 42af52d5-6b48-4ce2-87bd-73a7901a5929
+    type: condition
+    task:
+      id: 42af52d5-6b48-4ce2-87bd-73a7901a5929
+      version: -1
+      name: Should the system get the URL Reputation?
+      description: "Should the system retrieve the url reputation from all of the
+        relevant integration?\nDefault: True\n "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 708
         }
       }
 view: |-
@@ -393,22 +432,24 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1185,
-        "width": 1678,
-        "x": -176,
-        "y": 50
+        "height": 1289,
+        "width": 1790,
+        "x": -80.5,
+        "y": -39
       }
     }
   }
 inputs:
 - key: url
   value:
-    simple: ${URL.Data}
+    complex:
+      root: URL
+      accessor: Data
   required: false
   description: url to enrich
-- key: 'Rasterize'
+- key: Rasterize
   value:
-    simple: False
+    simple: "False"
   required: false
   description: Should the system take safe screenshots of input URLs?
 - key: VerifyURL
@@ -416,6 +457,11 @@ inputs:
     simple: "False"
   required: false
   description: Should the system verify the input URLs?
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook get reputation for the URL
 outputs:
 - contextPath: URL
   description: The URL's object
