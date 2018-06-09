@@ -141,6 +141,16 @@ script: |-
   |a3|
   '''
 
+
+      table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
+      expected_string_array_tbl = '''### tableToMarkdown test with string array
+  |header_1|
+  |-|
+  |foo|
+  |bar|
+  |kat|
+  '''
+
       demisto.results(toEntry(table))
       demisto.results(toEntry(expected_tbl))
       demisto.results(toEntry(table_tranform))
@@ -151,6 +161,7 @@ script: |-
       demisto.results(toEntry(expected_url_missing_info_tbl))
       demisto.results(toEntry(table_single_column))
       demisto.results(toEntry(expected_single_column_tbl))
+      demisto.results(toEntry(expected_string_array_tbl))
 
 
       results = [table == expected_tbl,
