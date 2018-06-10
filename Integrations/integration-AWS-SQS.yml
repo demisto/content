@@ -126,9 +126,9 @@ script:
                 'MessageBody':args.get('messageBody'),
                 }
             if args.get('delaySeconds') is not None:
-                kwargs.update({'DelaySeconds':int(args.get('delaySeconds'))}
+                kwargs.update({'DelaySeconds':int(args.get('delaySeconds'))})
             if args.get('messageGroupId') is not None:
-                kwargs.update({'MessageGroupId':int(args.get('messageGroupId'))}
+                kwargs.update({'MessageGroupId':int(args.get('messageGroupId'))})
 
             response = client.send_message(**kwargs)
             data = ({
@@ -157,21 +157,21 @@ script:
             attributes = {}
             kwargs = {'QueueName':args.get('queueName')}
             if args.get('delaySeconds') is not None:
-                Attributes.update({'DelaySeconds':int(args.get('delaySeconds'))}
+                Attributes.update({'DelaySeconds':int(args.get('delaySeconds'))})
             if args.get('maximumMessageSize') is not None:
-                Attributes.update({'MaximumMessageSize':int(args.get('maximumMessageSize'))}
+                Attributes.update({'MaximumMessageSize':int(args.get('maximumMessageSize'))})
             if args.get('messageRetentionPeriod') is not None:
-                Attributes.update({'MessageRetentionPeriod':int(args.get('messageRetentionPeriod'))}
+                Attributes.update({'MessageRetentionPeriod':int(args.get('messageRetentionPeriod'))})
             if args.get('receiveMessageWaitTimeSeconds') is not None:
-                Attributes.update({'ReceiveMessageWaitTimeSeconds':int(args.get('receiveMessageWaitTimeSeconds'))}
+                Attributes.update({'ReceiveMessageWaitTimeSeconds':int(args.get('receiveMessageWaitTimeSeconds'))})
             if args.get('visibilityTimeout') is not None:
-                Attributes.update({'VisibilityTimeout':int(args.get('visibilityTimeout'))}
+                Attributes.update({'VisibilityTimeout':int(args.get('visibilityTimeout'))})
             if args.get('kmsDataKeyReusePeriodSeconds') is not None:
-                Attributes.update({'KmsDataKeyReusePeriodSeconds':int(args.get('kmsDataKeyReusePeriodSeconds'))}
+                Attributes.update({'KmsDataKeyReusePeriodSeconds':int(args.get('kmsDataKeyReusePeriodSeconds'))})
             if args.get('kmsMasterKeyId') is not None:
-                Attributes.update({'KmsMasterKeyId':args.get('kmsMasterKeyId')}
+                Attributes.update({'KmsMasterKeyId':args.get('kmsMasterKeyId')})
             if args.get('policy') is not None:
-                Attributes.update({'Policy':args.get('policy')}
+                Attributes.update({'Policy':args.get('policy')})
             if args.get('fifoQueue') is not None:
                 Attributes.update({'FifoQueue':True if args.get('fifoQueue') == 'True'  else False})
             if args.get('contentBasedDeduplication') is not None:
@@ -229,7 +229,7 @@ script:
     def fetch_incidents():
         try:
             client = aws_session(service = 'sqs')
-             messages = client.receive_message(
+            messages = client.receive_message(
                 QueueUrl=AWS_QUEUEURL,
                 MaxNumberOfMessages=10,
                 VisibilityTimeout=5,
@@ -261,13 +261,9 @@ script:
     def test_function():
         try:
             client = aws_session(service = 'sqs')
-            messages = client.receive_message(
-                QueueUrl=AWS_QUEUEURL,
-                MaxNumberOfMessages=2,
-                VisibilityTimeout=5,
-                WaitTimeSeconds=5,
-                )
-            return "ok"
+            response = client.list_queues()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "ok"
         except Exception as e:
             return raise_error(e)
 
