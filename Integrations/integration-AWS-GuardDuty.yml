@@ -37,6 +37,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Guard Duty Severity level
+  name: gs_severity
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |+
     import boto3
@@ -48,6 +53,7 @@ script:
     AWS_roleSessionName = demisto.params()['roleSessionName']
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
     AWS_rolePolicy = None
+    AWS_GD_SEVERITY = demisto.params()['gs_severity']
 
     def aws_session(service='guardduty',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
         kwargs = {}
@@ -490,6 +496,18 @@ script:
 
         return demistoSevirity
 
+    def gd_severity_mapping(severity):
+        if severity == 'Low':
+            gdSevirity = 1
+        elif severity == 'Medium':
+            gdSevirity = 4
+        elif severity == 'High':
+            gdSevirity = 7
+        else:
+            gdSevirity = 1
+
+        return gdSevirity
+
     def list_findings(args):
         try:
             client = aws_session(
@@ -564,9 +582,11 @@ script:
 
             list_findings = client.list_findings(DetectorId=detector[0],FindingCriteria={
             'Criterion': {
-                'service.archived': {
-                    'Eq': ['false','false']}
-                }})
+                    'service.archived': {'Eq': ['false','false']},
+                    'severity': {'Gt': gd_severity_mapping(AWS_GD_SEVERITY)}
+                    }
+                }
+            )
 
             get_findings = client.get_findings(DetectorId=detector[0], FindingIds=list_findings['FindingIds'])
 
@@ -667,6 +687,7 @@ script:
         except Exception as e:
             return raise_error(e)
 
+
     def test_function():
         try:
             client = aws_session()
@@ -676,7 +697,7 @@ script:
 
         except Exception as e:
             return raise_error(e)
-            
+
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
@@ -744,9 +765,6 @@ script:
 
     if demisto.command() == 'aws-gd-update-findings-feedback':
         result = update_findings_feedback(demisto.args())
-
-    if demisto.command() == 'aws-gd-test':
-        result = fetch_incidents()
 
     if demisto.command() == 'fetch-incidents':
         fetch_incidents()
@@ -899,8 +917,8 @@ script:
     outputs:
     - contextPath: AWS.GuardDuty.IPSet.IpSetId
       description: The unique identifier for an IP Set.
-    description: A list of trusted IP addresses that have been
-      whitelisted for secure communication with AWS infrastructure and applications.
+    description: A list of trusted IP addresses that have been whitelisted for secure
+      communication with AWS infrastructure and applications.
   - name: aws-gd-delete-ip-set
     arguments:
     - name: detectorId
@@ -1230,7 +1248,8 @@ script:
       required: true
       description: The ID of the detector to create sample findings for.
     - name: findingTypes
-      description: Types of sample findings that you want to generate. Separated by comma.
+      description: Types of sample findings that you want to generate. Separated by
+        comma.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
