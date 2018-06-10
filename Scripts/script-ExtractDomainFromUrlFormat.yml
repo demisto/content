@@ -1,7 +1,7 @@
 commonfields:
-  id: ExtractDomainFromUrlFormat
+  id: ExtractDomainFromUrlAndEmail
   version: -1
-name: ExtractDomainFromUrlFormat
+name: ExtractDomainFromUrlAndEmail
 script: |-
   var extractHostname = function(url) {
       var hostname;
@@ -30,6 +30,13 @@ script: |-
 
   var url = args.input;
 
+  var emailStringRegex = emailRegex.toString().substring(1,(emailRegex.toString().length - 1));
+  var gmi = 'gmi';
+  var reg = new RegExp(emailStringRegex, gmi);
+  var email = reg.exec(url);
+  if ((email) && (email.length>0)){
+      return email[0].replace(/.*@/, "");
+  }
   return extractRootDomain(url);
 type: javascript
 tags:
@@ -39,6 +46,6 @@ args:
 - name: input
   required: true
   default: true
-  description: The URL to process
+  description: The URL or Email to process
 scripttarget: 0
-comment: Extract Domain from a URL
+comment: Extract Domain from a URL or Email
