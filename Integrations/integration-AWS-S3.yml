@@ -35,6 +35,56 @@ script:
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
     AWS_rolePolicy = None
 
+    def aws_session(service='s3',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':roleArn,
+                'RoleSessionName':roleSessionName,
+                })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':AWS_roleArn,
+                'RoleSessionName':AWS_roleSessionName,
+                })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':roleSessionDuration})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy':rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy':AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service,region_name=region)
+            else:
+                client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+
+        return client
+
     def convert_size(size_bytes):
        if size_bytes == 0:
            return "0B"
@@ -77,7 +127,6 @@ script:
     def create_bucket(args):
         try:
             client = aws_session(
-                    service = 's3',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -116,7 +165,6 @@ script:
     def delete_bucket(args):
         try:
             client = aws_session(
-                    service = 's3',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -133,7 +181,6 @@ script:
     def list_buckets(args):
         try:
             client = aws_session(
-                    service = 's3',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -155,7 +202,6 @@ script:
     def get_bucket_policy(args):
         try:
             client = aws_session(
-                    service = 's3',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -189,7 +235,6 @@ script:
     def put_bucket_policy(args):
         try:
             client = aws_session(
-                    service = 's3',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -212,7 +257,6 @@ script:
     def delete_bucket_policy(args):
         try:
             client = aws_session(
-                    service = 's3',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -227,7 +271,6 @@ script:
     def download_file(args):
         try:
             client = aws_session(
-                    service = 's3',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -244,7 +287,6 @@ script:
     def list_objects(args):
         try:
             client = aws_session(
-                    service = 's3',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
