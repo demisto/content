@@ -199,7 +199,7 @@ script:
               kwargs.update({'Activate':True if args.get('activate') == 'True' else False})
             if args.get('format') is not None:
               kwargs.update({'Format':args.get('format')})
-            if args.get('location')) is not None:
+            if args.get('location') is not None:
               kwargs.update({'Location':args.get('location')})
             if args.get('name') is not None:
               kwargs.update({'Name':args.get('name')})
