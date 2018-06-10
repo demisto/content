@@ -49,6 +49,55 @@ script:
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
     AWS_rolePolicy = None
 
+    def aws_session(service='guardduty',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':roleArn,
+                'RoleSessionName':roleSessionName,
+                })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':AWS_roleArn,
+                'RoleSessionName':AWS_roleSessionName,
+                })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':roleSessionDuration})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy':rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy':AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service,region_name=region)
+            else:
+                client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+
+        return client
 
     def parse_finding_ids(finding_ids):
         id_list = finding_ids.replace(" ", "")
@@ -108,7 +157,6 @@ script:
     def delete_detector(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -124,7 +172,6 @@ script:
     def get_detector(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -148,7 +195,6 @@ script:
     def update_detector(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -167,7 +213,6 @@ script:
     def list_detectors(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -187,7 +232,6 @@ script:
     def create_ip_set(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -219,7 +263,6 @@ script:
     def delete_ip_set(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -238,7 +281,6 @@ script:
     def update_ip_set():
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -266,7 +308,6 @@ script:
     def get_ip_set(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -294,7 +335,6 @@ script:
     def list_ip_sets(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -318,7 +358,6 @@ script:
     def create_threat_intel_set(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -349,7 +388,6 @@ script:
     def delete_threat_intel_set(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -369,7 +407,6 @@ script:
     def get_threat_intel_set(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -396,7 +433,6 @@ script:
     def list_threat_intel_sets(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -420,7 +456,6 @@ script:
     def update_threat_intel_set(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -458,7 +493,6 @@ script:
     def list_findings(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -481,7 +515,6 @@ script:
     def get_findings(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -523,7 +556,7 @@ script:
 
     def fetch_incidents():
         try:
-            client = aws_session(service = 'guardduty')
+            client = aws_session()
             findingIds = []
             incidents = []
             response = client.list_detectors()
@@ -553,7 +586,6 @@ script:
     def create_sample_findings(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -574,7 +606,6 @@ script:
     def archive_findings(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -595,7 +626,6 @@ script:
     def unarchive_findings(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -616,7 +646,6 @@ script:
     def update_findings_feedback(args):
         try:
             client = aws_session(
-                    service = 'guardduty',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -640,7 +669,7 @@ script:
 
     def test_function():
         try:
-            client = aws_session(service = 'guardduty')
+            client = aws_session()
             response = client.list_detectors()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return 'ok'
