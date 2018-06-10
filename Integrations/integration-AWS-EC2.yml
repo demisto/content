@@ -1084,7 +1084,7 @@ script:
                 'MinCount':int(args.get('count')),
                 'MaxCount': int(args.get('count'))
             }
-
+            BlockDeviceMappings = None
             if args.get('imageId') is not None:
                 kwargs.update({'ImageId':(args.get('imageId'))})
             if args.get('instanceType') is not None:
@@ -1120,7 +1120,8 @@ script:
                 BlockDeviceMappings['Ebs'].update({'SnapshotId':args.get('ebsSnapshotId')})
             if args.get('ebsEncrypted') is not None:
                 BlockDeviceMappings['Ebs'].update({'Encrypted':True if args.get('ebsEncrypted') == 'True'  else False})
-            kwargs.update({'BlockDeviceMappings':[BlockDeviceMappings]})
+            if BlockDeviceMappings:
+                kwargs.update({'BlockDeviceMappings':[BlockDeviceMappings]})
 
             if args.get('iamInstanceProfileArn') and args.get('iamInstanceProfileName') is not None:
                 kwargs.update({
@@ -1420,7 +1421,7 @@ script:
                 'VpcId':args.get('vpcId'),
                 'GroupId':response['GroupId']
             })
-            ec = {'AWS.EC2.SecurityGroups': rdata}
+            ec = {'AWS.EC2.SecurityGroups': data}
             return  create_entry('AWS EC2 Security Groups',data, ec)
 
         except Exception as e:
@@ -1460,11 +1461,11 @@ script:
             kwargs = {'GroupId':args.get('groupId')}
 
             if args.get('fromPort') is not None:
-                kwargs.update({'FromPort':args.get('fromPort')})
+                kwargs.update({'FromPort':int(args.get('fromPort'))})
             if args.get('cidrIp') is not None:
                 kwargs.update({'CidrIp':args.get('cidrIp')})
             if args.get('toPort') is not None:
-                kwargs.update({'ToPort':args.get('toPort')})
+                kwargs.update({'ToPort':int(args.get('toPort'))})
             if args.get('ipProtocol') is not None:
                 kwargs.update({'IpProtocol':args.get('ipProtocol')})
             if args.get('sourceSecurityGroupName') is not None:
@@ -1473,35 +1474,6 @@ script:
             response = client.authorize_security_group_ingress(**kwargs)
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return "The Security Group ingress rule was created"
-
-        except Exception as e:
-            return raise_error(e)
-
-    def authorize_security_group_egress(args):
-        try:
-            client = aws_session(
-                service = 'ec2',
-                region = args.get('region'),
-                roleArn = args.get('roleArn'),
-                roleSessionName = args.get('roleSessionName'),
-                roleSessionDuration = args.get('roleSessionDuration'),
-            )
-            kwargs = {'GroupId':args.get('groupId')}
-
-            if args.get('fromPort') is not None:
-                kwargs.update({'FromPort':args.get('fromPort')})
-            if args.get('cidrIp') is not None:
-                kwargs.update({'CidrIp':args.get('cidrIp')})
-            if args.get('toPort') is not None:
-                kwargs.update({'ToPort':args.get('toPort')})
-            if args.get('ipProtocol') is not None:
-                kwargs.update({'IpProtocol':args.get('ipProtocol')})
-            if args.get('sourceSecurityGroupName') is not None:
-                kwargs.update({'SourceSecurityGroupName':args.get('sourceSecurityGroupName')})
-
-            response = client.authorize_security_group_egress(**kwargs)
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                return "The Security Group egress rule was created"
 
         except Exception as e:
             return raise_error(e)
@@ -1518,11 +1490,11 @@ script:
             kwargs = {'GroupId':args.get('groupId')}
 
             if args.get('fromPort') is not None:
-                kwargs.update({'FromPort':args.get('fromPort')})
+                kwargs.update({'FromPort':int(args.get('fromPort'))})
             if args.get('cidrIp') is not None:
                 kwargs.update({'CidrIp':args.get('cidrIp')})
             if args.get('toPort') is not None:
-                kwargs.update({'ToPort':args.get('toPort')})
+                kwargs.update({'ToPort':int(args.get('toPort'))})
             if args.get('ipProtocol') is not None:
                 kwargs.update({'IpProtocol':args.get('ipProtocol')})
             if args.get('sourceSecurityGroupName') is not None:
@@ -1531,35 +1503,6 @@ script:
             response = client.revoke_security_group_ingress(**kwargs)
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return "The Security Group ingress rule was revoked"
-
-        except Exception as e:
-            return raise_error(e)
-
-    def revoke_security_group_egress(args):
-        try:
-            client = aws_session(
-                service = 'ec2',
-                region = args.get('region'),
-                roleArn = args.get('roleArn'),
-                roleSessionName = args.get('roleSessionName'),
-                roleSessionDuration = args.get('roleSessionDuration'),
-            )
-            kwargs = {'GroupId':args.get('groupId')}
-
-            if args.get('fromPort') is not None:
-                kwargs.update({'FromPort':args.get('fromPort')})
-            if args.get('cidrIp') is not None:
-                kwargs.update({'CidrIp':args.get('cidrIp')})
-            if args.get('toPort') is not None:
-                kwargs.update({'ToPort':args.get('toPort')})
-            if args.get('ipProtocol') is not None:
-                kwargs.update({'IpProtocol':args.get('ipProtocol')})
-            if args.get('sourceSecurityGroupName') is not None:
-                kwargs.update({'SourceSecurityGroupName':args.get('sourceSecurityGroupName')})
-
-            response = client.revoke_security_group_egress(**kwargs)
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                return "The Security Group egress rule was revoked"
 
         except Exception as e:
             return raise_error(e)
@@ -1684,16 +1627,10 @@ script:
         result = delete_security_group(demisto.args())
 
     if demisto.command() == 'aws-ec2-authorize-security-group-ingress-rule':
-        result = authorize_security_group_ingres(demisto.args())
-
-    if demisto.command() == 'aws-ec2-authorize-security-group-egress-rule':
-        result = authorize_security_group_egress(demisto.args())
+        result = authorize_security_group_ingress(demisto.args())
 
     if demisto.command() == 'aws-ec2-revoke-security-group-ingress-rule':
         result = revoke_security_group_ingress(demisto.args())
-
-    if demisto.command() == 'aws-ec2-revoke-security-group-egress-rule':
-        result = revoke_security_group_egress(demisto.args())
 
     demisto.results(result)
     sys.exit(0)
