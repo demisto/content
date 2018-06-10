@@ -40,6 +40,55 @@ script:
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
     AWS_rolePolicy = None
 
+    def aws_session(service='ec2',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':roleArn,
+                'RoleSessionName':roleSessionName,
+                })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':AWS_roleArn,
+                'RoleSessionName':AWS_roleSessionName,
+                })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':roleSessionDuration})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy':rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy':AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service,region_name=region)
+            else:
+                client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+
+        return client
 
     def parse_filter_field(filter_str):
         filters = []
@@ -111,7 +160,6 @@ script:
     def describe_regions(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -138,8 +186,7 @@ script:
 
     def describe_instances(args):
         try:
-            client = aws_session(
-                service = 'ec2',
+            client = aws_session(       
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -185,7 +232,6 @@ script:
     def describe_images(args):
         try:
             client = aws_session(
-                service = 'ec2',
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -234,7 +280,6 @@ script:
     def describe_addresses(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -282,7 +327,6 @@ script:
     def describe_snapshots(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -335,7 +379,6 @@ script:
     def describe_volumes(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -380,7 +423,6 @@ script:
     def describe_launch_templates(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -429,7 +471,6 @@ script:
     def describe_key_pairs(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -463,7 +504,6 @@ script:
     def describe_vpcs(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -510,7 +550,6 @@ script:
     def describe_subnets(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -558,7 +597,6 @@ script:
     def describe_security_groups(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -606,7 +644,6 @@ script:
     def allocate_address(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -626,7 +663,6 @@ script:
     def associate_address(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -657,7 +693,6 @@ script:
     def create_snapshot(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -708,7 +743,6 @@ script:
     def delete_snapshot(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -724,7 +758,6 @@ script:
     def create_image(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -759,7 +792,6 @@ script:
     def deregister_image(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -776,7 +808,6 @@ script:
     def modify_volume(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -823,7 +854,6 @@ script:
     def create_tags(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -843,7 +873,6 @@ script:
     def disassociate_address(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -860,7 +889,6 @@ script:
     def release_address(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -877,7 +905,6 @@ script:
     def start_instances(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -894,7 +921,6 @@ script:
     def stop_instances(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -911,7 +937,6 @@ script:
     def terminate_instances(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -928,7 +953,6 @@ script:
     def create_volume(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -991,7 +1015,6 @@ script:
     def attach_volume(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1022,7 +1045,6 @@ script:
     def detach_volume(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1057,7 +1079,6 @@ script:
     def delete_volume(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1073,7 +1094,6 @@ script:
     def run_instances(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1182,7 +1202,6 @@ script:
     def waiter_instance_running(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1209,7 +1228,6 @@ script:
     def waiter_instance_status_ok(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1236,7 +1254,6 @@ script:
     def waiter_instance_stopped(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1263,7 +1280,6 @@ script:
     def waiter_instance_terminated(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1290,7 +1306,6 @@ script:
     def waiter_image_available(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1321,7 +1336,6 @@ script:
     def waiter_snapshot_completed(args):
         try:
             client = aws_session(
-                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -1352,7 +1366,6 @@ script:
     def get_latest_ami(args):
         try:
             client = aws_session(
-                service = 'ec2',
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -1403,7 +1416,6 @@ script:
     def create_security_group(args):
         try:
             client = aws_session(
-                service = 'ec2',
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -1430,7 +1442,6 @@ script:
     def delete_security_group(args):
         try:
             client = aws_session(
-                service = 'ec2',
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -1452,7 +1463,6 @@ script:
     def authorize_security_group_ingress(args):
         try:
             client = aws_session(
-                service = 'ec2',
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -1481,7 +1491,6 @@ script:
     def revoke_security_group_ingress(args):
         try:
             client = aws_session(
-                service = 'ec2',
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -1510,7 +1519,7 @@ script:
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        client = aws_session(service = 'ec2')
+        client = aws_session()
         response = client.describe_regions()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
           result = ('ok')
