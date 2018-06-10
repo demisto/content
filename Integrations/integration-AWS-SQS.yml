@@ -101,7 +101,10 @@ script:
                 )
 
             data = []
-            response = client.list_queues(QueueNamePrefix=args.get('queueNamePrefix'))
+            kwargs = {}
+            if args.get('queueNamePrefix') is not None:
+                kwargs.update({'QueueNamePrefix':args.get('queueNamePrefix')})
+            response = client.list_queues(**kwargs)
             for queue in response['QueueUrls']:
                 data.append({'QueueUrl':queue})
 
@@ -133,11 +136,11 @@ script:
             response = client.send_message(**kwargs)
             data = ({
                 'QueueUrl': args.get('queueUrl'),
-                'MD5OfMessageBody': response['MD5OfMessageBody'],
-                'MD5OfMessageAttributes': response['MD5OfMessageAttributes'],
                 'MessageId': response['MessageId'],
-                'SequenceNumber': response['SequenceNumber']
             })
+            if 'SequenceNumber' in response: data.update({'SequenceNumber': response['SequenceNumber']})
+            if 'MD5OfMessageBody' in response: data.update({'MD5OfMessageBody': response['MD5OfMessageBody']})
+            if 'MD5OfMessageAttributes' in response: data.update({'MD5OfMessageAttributes': response['MD5OfMessageAttributes']})
 
             ec = {'AWS.SQS.Queues.(obj.QueueUrl==val.QueueUrl).SentMessages': data}
             return  create_entry('AWS SQS Queues sent messages',data, ec)
@@ -157,25 +160,25 @@ script:
             attributes = {}
             kwargs = {'QueueName':args.get('queueName')}
             if args.get('delaySeconds') is not None:
-                Attributes.update({'DelaySeconds':int(args.get('delaySeconds'))})
+                attributes.update({'DelaySeconds':args.get('delaySeconds')})
             if args.get('maximumMessageSize') is not None:
-                Attributes.update({'MaximumMessageSize':int(args.get('maximumMessageSize'))})
+                attributes.update({'MaximumMessageSize':args.get('maximumMessageSize')})
             if args.get('messageRetentionPeriod') is not None:
-                Attributes.update({'MessageRetentionPeriod':int(args.get('messageRetentionPeriod'))})
+                attributes.update({'MessageRetentionPeriod':args.get('messageRetentionPeriod')})
             if args.get('receiveMessageWaitTimeSeconds') is not None:
-                Attributes.update({'ReceiveMessageWaitTimeSeconds':int(args.get('receiveMessageWaitTimeSeconds'))})
+                attributes.update({'ReceiveMessageWaitTimeSeconds':args.get('receiveMessageWaitTimeSeconds')})
             if args.get('visibilityTimeout') is not None:
-                Attributes.update({'VisibilityTimeout':int(args.get('visibilityTimeout'))})
+                attributes.update({'VisibilityTimeout':int(args.get('visibilityTimeout'))})
             if args.get('kmsDataKeyReusePeriodSeconds') is not None:
-                Attributes.update({'KmsDataKeyReusePeriodSeconds':int(args.get('kmsDataKeyReusePeriodSeconds'))})
+                attributes.update({'KmsDataKeyReusePeriodSeconds':args.get('kmsDataKeyReusePeriodSeconds')})
             if args.get('kmsMasterKeyId') is not None:
-                Attributes.update({'KmsMasterKeyId':args.get('kmsMasterKeyId')})
+                attributes.update({'KmsMasterKeyId':args.get('kmsMasterKeyId')})
             if args.get('policy') is not None:
-                Attributes.update({'Policy':args.get('policy')})
+                attributes.update({'Policy':args.get('policy')})
             if args.get('fifoQueue') is not None:
-                Attributes.update({'FifoQueue':True if args.get('fifoQueue') == 'True'  else False})
+                attributes.update({'FifoQueue':args.get('fifoQueue')})
             if args.get('contentBasedDeduplication') is not None:
-                Attributes.update({'ContentBasedDeduplication':True if args.get('contentBasedDeduplication') == 'True'  else False})
+                attributes.update({'ContentBasedDeduplication':args.get('contentBasedDeduplication')})
             if attributes:
                 kwargs.update({'Attributes':attributes})
 
