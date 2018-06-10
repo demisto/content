@@ -133,7 +133,7 @@ script: |-
   '''
 
       table_string_header = tableToMarkdown('tableToMarkdown string header', data, 'header_1')
-      expected_string_header = '''### tableToMarkdown string header
+      expected_string_header_tbl = '''### tableToMarkdown string header
   |header_1|
   |-|
   |a1|
@@ -170,6 +170,9 @@ script: |-
       demisto.results(toEntry(expected_url_missing_info_tbl))
       demisto.results(toEntry(table_single_column))
       demisto.results(toEntry(expected_single_column_tbl))
+      demisto.results(toEntry(table_string_header))
+      demisto.results(toEntry(expected_string_header_tbl))
+      demisto.results(toEntry(table_string_array))
       demisto.results(toEntry(expected_string_array_tbl))
 
 
@@ -178,6 +181,8 @@ script: |-
           table_multiline == expected_multiline_tbl,
           table_url_missing_info == expected_url_missing_info_tbl,
           table_single_column == expected_single_column_tbl,
+          table_string_header == expected_string_header_tbl,
+          table_string_array == expected_string_array_tbl,
           ]
 
       if all(results):
