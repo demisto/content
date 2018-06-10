@@ -341,6 +341,10 @@
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
 
+        },
+        {
+            "integrations": "MineMeld",
+            "playbookID": "minemeld_test"
         }
     ],
     "skipped": [
@@ -471,10 +475,6 @@
         {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
-        },
-        {
-            "integrations": "MineMeld",
-            "playbookID": "minemeld_test"
         }
     ]
 }
