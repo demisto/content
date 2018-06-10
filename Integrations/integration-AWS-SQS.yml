@@ -362,7 +362,7 @@ script:
       description: The message to send. The maximum string size is 256 KB.
     - name: delaySeconds
       description: The length of time, in seconds, for which to delay a specific
-        message. Valid values 0 to 900. Maximum: 15 minutes.
+        message. Valid values 0 to 900. Maximum 15 minutes.
     - name: messageGroupId
       description: This parameter applies only to FIFO queues. The tag that specifies
         that a message belongs to a specific message group.
