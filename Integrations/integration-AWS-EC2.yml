@@ -214,8 +214,8 @@ script:
                     'State': image['State'],
                     'Region': obj['_user_provided_options']['region_name'],
                 })
-                if 'Description' in address: data[i].update({'Description': 'Description': image['Description']})
-                if 'EnaSupport' in address: data[i].update({'EnaSupport': 'Description': image['EnaSupport']})
+                if 'Description' in address: data[i].update({'Description': image['Description']})
+                if 'EnaSupport' in address: data[i].update({'EnaSupport': image['EnaSupport']})
                 if 'Tags' in image:
                     for tag in image['Tags']:
                         data[i].update ({
