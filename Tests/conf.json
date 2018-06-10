@@ -196,6 +196,9 @@
             "playbookID": "ExtractURL Test"
         },
         {
+            "playbookID": "strings-test"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {
