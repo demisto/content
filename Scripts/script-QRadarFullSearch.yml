@@ -94,3 +94,8 @@ args:
 - name: headers
   description: Table headers
 scripttarget: 0
+dependson:
+  must:
+  - qradar-searches
+  - qradar-get-search
+  - qradar-get-search-results

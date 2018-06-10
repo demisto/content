@@ -55,3 +55,4 @@ dependson:
   must:
   - googleapps-gmail-search
 timeout: 0s
+deprecated: true

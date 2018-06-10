@@ -2,6 +2,7 @@ id: WildFire - Detonate file
 version: -1
 name: WildFire - Detonate file
 toversion: 3.1.0
+fromversion: ""
 description: ""
 starttaskid: "0"
 tasks:

@@ -2,8 +2,8 @@ id: email_address_enrichment_-_generic
 version: -1
 name: Email Address Enrichment - Generic
 description: Get email address reputation using one or more integrations
+fromversion: 3.6.0
 starttaskid: "0"
-fromversion: 3.5.0
 tasks:
   "0":
     id: "0"
@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 387.5,
           "y": 50
         }
       }
@@ -64,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1387
+          "x": 592.5,
+          "y": 1390
         }
       }
   "5":
@@ -97,7 +97,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 387.5,
           "y": 195
         }
       }
@@ -136,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -589,
-          "y": 960
+          "x": 592.5,
+          "y": 1215
         }
       }
   "9":
@@ -169,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 635,
-          "y": 377
+          "x": 500,
+          "y": 370
         }
       }
   "10":
@@ -192,8 +192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 720
+          "x": 1175,
+          "y": 735
         }
       }
   "11":
@@ -210,14 +210,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
       - "18"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -294,
-          "y": 732
+          "x": 377.5,
+          "y": 895
         }
       }
   "12":
@@ -264,7 +264,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 1287.5,
           "y": 1215
         }
       }
@@ -304,8 +304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 125,
-          "y": 545
+          "x": 265,
+          "y": 720
         }
       }
   "14":
@@ -344,7 +344,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 1062.5,
           "y": 545
         }
       }
@@ -387,8 +387,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -322,
-          "y": 1167
+          "x": 140.5,
+          "y": 1215
         }
       }
   "16":
@@ -410,8 +410,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 880
+          "x": 1175,
+          "y": 895
         }
       }
   "17":
@@ -458,7 +458,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
+          "x": 1175,
           "y": 1040
         }
       }
@@ -488,8 +488,49 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -147,
-          "y": 960
+          "x": -32,
+          "y": 1040
+        }
+      }
+  "19":
+    id: "19"
+    taskid: b0e3026b-ae43-4032-8074-381bfd0f8fa3
+    type: condition
+    task:
+      id: b0e3026b-ae43-4032-8074-381bfd0f8fa3
+      version: -1
+      name: Should the system get the Email Addresses reputation?
+      description: |2-
+
+        Should the system retrieve the  Email Addresses reputation from all of the relevant integration?
+        Default: True
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1040
         }
       }
 view: |-
@@ -499,9 +540,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1402,
-        "width": 2011.5,
-        "x": -589,
+        "height": 1405,
+        "width": 1699.5,
+        "x": -32,
         "y": 50
       }
     }
@@ -513,13 +554,20 @@ inputs:
   description: A list of internal domains
 - key: Email
   value:
-    simple: ${Account.Email.Address}
+    complex:
+      root: Account
+      accessor: Email.Address
   required: false
   description: The email addresses to enrich
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook get reputation for the Email Address
 outputs:
 - contextPath: Account
   description: The Account's object
-  type: unknown  
+  type: unknown
 - contextPath: Account.Email.Address
   description: The Email account full address
   type: string

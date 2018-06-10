@@ -2,7 +2,6 @@ id: 'QRadar - Get offense correlations '
 version: -1
 name: QRadar - Get offense correlations
 fromversion: 3.5.0
-releaseNotes: "Converted playbook to new conventions"
 description: |-
   Run on a QRadar offense to get more information
 

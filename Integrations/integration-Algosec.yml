@@ -2,6 +2,7 @@ commonfields:
   id: AlgoSec
   version: -1
 name: AlgoSec
+releaseNotes: "-"
 display: AlgoSec
 system: true
 category: Network Security
@@ -18,7 +19,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8

@@ -22,6 +22,9 @@ USER="centos"
 echo "wait 90 seconds to ensure server is ready for ssh"
 sleep 90s
 
+echo "add instance to known hosts"
+ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
+
 echo "create installer files folder"
 ssh ${USER}@${PUBLIC_IP} 'mkdir -p ~/installer_files'
 

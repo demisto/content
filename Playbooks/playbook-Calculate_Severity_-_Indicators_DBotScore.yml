@@ -1,0 +1,314 @@
+id: calculate_severity_-_indicators_dbotscore
+version: -1
+name: Calculate Severity - Indicators DBotScore
+fromversion: 3.6.0
+description: Calculates the incident severity level according to the highest indicator
+  DBotScore.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    type: start
+    task:
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 82b8a6ea-cf8a-4637-84ac-392ea9461a05
+    type: condition
+    task:
+      id: 82b8a6ea-cf8a-4637-84ac-392ea9461a05
+      version: -1
+      name: Assign severity level based on indicators DBotScore
+      description: |-
+        Severity level is assigned according to:
+
+        * High = 3
+        * Medium = 2
+        * Low = 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      High:
+      - "6"
+      Low:
+      - "21"
+      Medium:
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: number.greaterThan
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+            iscontext: true
+    - label: Medium
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: number.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+            iscontext: true
+    - label: Low
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: aaf529b9-0621-40db-8b44-4894fb2acab2
+    type: regular
+    task:
+      id: aaf529b9-0621-40db-8b44-4894fb2acab2
+      version: -1
+      name: 'Set severity to "High" '
+      description: Set the severity level to High (indicator had a malicious reputation).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: high
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    type: title
+    task:
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "20":
+    id: "20"
+    taskid: d3642b7d-204b-4a95-853f-3fe3957dcf6a
+    type: regular
+    task:
+      id: d3642b7d-204b-4a95-853f-3fe3957dcf6a
+      version: -1
+      name: 'Set severity to "Medium" '
+      description: Set the severity level to Medium (indicator had a suspicious reputation).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: medium
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "21":
+    id: "21"
+    taskid: 63d15a24-dfb3-45f6-8782-b8e54d1c5b16
+    type: regular
+    task:
+      id: 63d15a24-dfb3-45f6-8782-b8e54d1c5b16
+      version: -1
+      name: 'Set severity to "Low" '
+      description: Set the severity level to Low (indicator had a good reputation).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 5943c193-e53b-4399-8408-f402c98f7c7e
+    type: regular
+    task:
+      id: 5943c193-e53b-4399-8408-f402c98f7c7e
+      version: -1
+      name: Set context
+      description: |
+        Set the DBotsScore into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: DBotScore
+      value:
+        complex:
+          root: inputs.DBotScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "23":
+    id: "23"
+    taskid: bc537b91-59eb-4e1d-84c5-06ee46cc72c8
+    type: condition
+    task:
+      id: bc537b91-59eb-4e1d-84c5-06ee46cc72c8
+      version: -1
+      name: Is there a DBotScore?
+      description: Check if there is a “DBotScore” in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.DBotScore
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: DBotScore
+  value:
+    complex:
+      root: DBotScore
+  required: false
+  description: 'Array of all indicators associated with the incident. '
+outputs:
+- contextPath: Severity
+  description: The severity level associated with the highest indicator score.
+  type: string

@@ -105,7 +105,7 @@ tasks:
       key:
         simple: File.SHA256
       value:
-        simple: fd81fe12fab5cddf4ee5ca33bfbc033280afedb94bac8bf351a65a679f3f0dbe
+        simple: 42dfb222ce97c7517bc0b6333a1881bfa91539f457d261e6626d662995b97df5
     separatecontext: false
     view: |-
       {

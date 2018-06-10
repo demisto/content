@@ -1,0 +1,176 @@
+id: 9518d013-a2f3-48a0-8c49-e4e741812be5
+version: 6
+name: RSA NetWitness Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ec608982-5234-4259-8d17-4fee6d7e9870
+    type: start
+    task:
+      id: ec608982-5234-4259-8d17-4fee6d7e9870
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 9fb87047-7c61-41ee-8d9d-2abdcc018afa
+    type: regular
+    task:
+      id: 9fb87047-7c61-41ee-8d9d-2abdcc018afa
+      version: -1
+      name: Get incidents created on 15/03/18
+      script: RSA NetWitness v11.1|||NetWitness-get-incidents
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness v11.1
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      lastDays: {}
+      limit:
+        simple: "2"
+      since:
+        simple: 2018-03-15T00:00:00.000Z
+      until:
+        simple: 2018-03-15T23:55:00.000Z
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 184
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 13f5c729-b2a3-421c-8a3c-fb5ac286ac60
+    type: condition
+    task:
+      id: 13f5c729-b2a3-421c-8a3c-fb5ac286ac60
+      version: -1
+      name: Validate results are returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isNotEmpty
+          left:
+            value:
+              simple: NetWitness.Incidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 334
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ac5c9be3-abe0-4aa2-824b-17a73d6d79af
+    type: regular
+    task:
+      id: ac5c9be3-abe0-4aa2-824b-17a73d6d79af
+      version: -1
+      name: Get incident
+      script: RSA NetWitness v11.1|||NetWitness-get-incident
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness v11.1
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incidentId:
+        simple: ${NetWitness.Incidents.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 502
+        }
+      }
+  "5":
+    id: "5"
+    taskid: ae1316d4-3069-4b7b-8757-8f9f8f8a3703
+    type: condition
+    task:
+      id: ae1316d4-3069-4b7b-8757-8f9f8f8a3703
+      version: -1
+      name: Validate results are returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isNotEmpty
+          left:
+            value:
+              simple: NetWitness.Alerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 655
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 45ef5062-50d1-4f43-8865-6f6f035f2680
+    type: title
+    task:
+      id: 45ef5062-50d1-4f43-8865-6f6f035f2680
+      version: -1
+      name: Test passed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 825
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 840,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

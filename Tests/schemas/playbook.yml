@@ -124,12 +124,15 @@ mapping:
               - type: str
           continueonerror:
             type: bool
+          reputationcalc:
+            type: int
           separatecontext:
             type: bool
   system:
     type: bool
   fromversion:
     type: text
+    required: yes
   toversion:
     type: text
   releaseNotes:

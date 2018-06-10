@@ -35,7 +35,7 @@ script: |-
   };
 type: javascript
 tags:
-- Utilitiy
+- Utility
 comment: |-
   Replaces regex match/es in string.
   Returns the string after replace was preformed.

@@ -18,4 +18,3 @@ args:
   description: Duplicate incident id
 scripttarget: 0
 runonce: false
-releaseNotes: Add close investigation as duplicate automation
