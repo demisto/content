@@ -179,7 +179,7 @@ script:
             data = ({
                 'DetectorId': detector[0]
             })
-            ec = {'AWS.GuardDuty.Detectors': data}
+            ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
             return create_entry('AWS GuardDuty Detectors', data, ec)
         except Exception as e:
             return raise_error(e)
@@ -193,18 +193,24 @@ script:
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
-            response = client.create_ip_set(
-                Activate=True if args.get('activate') == 'True' else False,
-                DetectorId=args.get('detectorId'),
-                Format=args.get('format'),
-                Location=args.get('location'),
-                Name=args.get('name')
-            )
+
+            kwargs = {'DetectorId':args.get('detectorId')}
+            if args.get('activate') is not None:
+              kwargs.update({'Activate':True if args.get('activate') == 'True' else False})
+            if args.get('format') is not None:
+              kwargs.update({'Format':args.get('format')})
+            if args.get('location')) is not None:
+              kwargs.update({'Location':args.get('location')})
+            if args.get('name') is not None:
+              kwargs.update({'Name':args.get('name')})
+
+            response = client.create_ip_set(**kwargs)
 
             data = ({
+                'DetectorId':args.get('detectorId'),
                 'IpSetId': response['IpSetId']
             })
-            ec = {"AWS.GuardDuty.Detectors.(val.DetectorId === args.get('detectorId')).IPSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet": data}
             return create_entry('AWS GuardDuty IPSets', data, ec)
 
         except Exception as e:
@@ -278,7 +284,7 @@ script:
                 'Name': response['Name'],
                 'Status': response['Status']
             })
-            ec = {"AWS.GuardDuty.Detectors.(val.DetectorId === obj.DetectorId).IPSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet": data}
             return create_entry('AWS GuardDuty IPSets', data, ec)
 
         except Exception as e:
@@ -303,7 +309,7 @@ script:
                 data.append({
                     'IpSetId': ipset
                 })
-            ec = {"AWS.GuardDuty.Detectors.(val.DetectorId === obj.DetectorId).IPSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet": data}
             return create_entry('AWS GuardDuty IPSets', data, ec)
 
         except Exception as e:
@@ -318,17 +324,23 @@ script:
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
-            response = client.create_threat_intel_set(
-                Activate=True if args.get('activate') == 'True' else False,
-                DetectorId=args.get('detectorId'),
-                Format=args.get('format'),
-                Location=args.get('location'),
-                Name=args.get('name')
-            )
+            kwargs = {'DetectorId':args.get('detectorId')}
+            if args.get('activate') is not None:
+              kwargs.update({'Activate':True if args.get('activate') == 'True' else False})
+            if args.get('format') is not None:
+              kwargs.update({'Format':args.get('format')})
+            if args.get('location') is not None:
+              kwargs.update({'Location':args.get('location')})
+            if args.get('name') is not None:
+              kwargs.update({'Name':args.get('name')})
+
+            response = client.create_threat_intel_set(**kwargs)
+
             data =({
+                'DetectorId':args.get('detectorId'),
                 'ThreatIntelSetId': response['ThreatIntelSetId']
             })
-            ec = {"AWS.GuardDuty.Detectors.(val.DetectorId === args.get('detectorId')).ThreatIntelSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet": data}
             return create_entry('AWS GuardDuty ThreatIntel Set', data, ec)
 
         except Exception as e:
@@ -375,7 +387,7 @@ script:
                 'Name': response['Format'],
                 'Status': response['Format']
             })
-            ec = {"AWS.GuardDuty.Detectors.(val.DetectorId === obj.DetectorId).ThreatIntelSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet": data}
             return create_entry('AWS GuardDuty ThreatIntel Set', data, ec)
 
         except Exception as e:
@@ -741,7 +753,7 @@ script:
       description: The unique ID of the created detector.
       type: string
     description: Create an AWS Guard Duty Detector on the integration instance specified
-      aws account
+      aws account.
   - name: aws-gd-delete-detector
     arguments:
     - name: detectorId
@@ -764,7 +776,7 @@ script:
       required: true
       description: The unique ID of the detector that you want to retrieve.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -778,16 +790,16 @@ script:
       description: The unique ID of the created detector.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.CreatedAt
-      description: The first time a resource was created
+      description: The first time a resource was created.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.ServiceRole
-      description: Customer serviceRole name or ARN for accessing customer resources
+      description: Customer serviceRole name or ARN for accessing customer resources.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.Status
       description: The status of detector.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.UpdatedAt
-      description: The time a resource was last updated
+      description: The time a resource was last updated.
       type: string
     description: Retrieves an Amazon GuardDuty detector specified by the detectorId.
   - name: aws-gd-update-detector
@@ -805,7 +817,7 @@ script:
         detector is enabled.
       defaultValue: "True"
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -818,7 +830,6 @@ script:
   - name: aws-gd-create-ip-set
     arguments:
     - name: activate
-      required: true
       auto: PREDEFINED
       predefined:
       - "True"
@@ -841,15 +852,13 @@ script:
       - FIRE_EYE
       description: The format of the file that contains the IPSet.
     - name: location
-      required: true
       description: The URI of the file that contains the IPSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key)
     - name: name
-      required: true
       description: The user friendly name to identify the IPSet. This name is displayed
         in all findings that are triggered by activity that involves IP addresses
         included in this IPSet.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -861,7 +870,7 @@ script:
     outputs:
     - contextPath: AWS.GuardDuty.IPSet.IpSetId
       description: The unique identifier for an IP Set.
-    description: Creates a new IPSet - a list of trusted IP addresses that have been
+    description: A list of trusted IP addresses that have been
       whitelisted for secure communication with AWS infrastructure and applications.
   - name: aws-gd-delete-ip-set
     arguments:
@@ -873,7 +882,7 @@ script:
       required: true
       description: The unique ID that specifies the IPSet that you want to delete.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -886,7 +895,7 @@ script:
   - name: aws-gd-list-detectors
     arguments:
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -920,9 +929,9 @@ script:
       description: The updated URI of the file that contains the IPSet. For example
         (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
     - name: name
-      description: The unique ID that specifies the IPSet that you want to update.
+      description: The user friendly name to identify the IPSet.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -942,7 +951,7 @@ script:
       required: true
       description: The unique ID that specifies the IPSet that you want to describe.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -974,7 +983,7 @@ script:
       required: true
       description: The unique ID of the detector that you want to retrieve.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -984,7 +993,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: WS.GuardDuty.Detectors.IPSet.IpSetId
+    - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
       description: The unique identifier for an IP Set
     description: Lists the IPSets of the GuardDuty service specified by the detector
       ID.
@@ -1022,7 +1031,7 @@ script:
       description: A user-friendly ThreatIntelSet name that is displayed in all finding
         generated by activity that involves IP addresses included in this ThreatIntelSet.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -1033,7 +1042,7 @@ script:
         the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
-      description: The unique identifier for an threat intel set
+      description: The unique identifier for an threat intel set.
       type: string
     description: Create a new ThreatIntelSet. ThreatIntelSets consist of known malicious
       IP addresses. GuardDuty generates findings based on ThreatIntelSets.
@@ -1048,7 +1057,7 @@ script:
       description: The unique ID that specifies the ThreatIntelSet that you want to
         delete.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -1068,7 +1077,7 @@ script:
       description: The unique ID that specifies the ThreatIntelSet that you want to
         describe.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -1079,18 +1088,18 @@ script:
         the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
-      description: The unique ID that specifies the ThreatIntelSet
+      description: The unique ID that specifies the ThreatIntelSet.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Format
       description: The format of the threatIntelSet.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Location.Name
-      description: 'The URI of the file that contains the ThreatIntelSet. '
+      description: The URI of the file that contains the ThreatIntelSet.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Name
+      description: A user-friendly ThreatIntelSet name.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Status
-      description: ' A user-friendly ThreatIntelSet name'
-      type: string
-    - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet
       description: The status of threatIntelSet file uploaded.
       type: string
     description: Retrieves the ThreatIntelSet that is specified by the ThreatIntelSet
@@ -1102,7 +1111,7 @@ script:
       description: The detectorID that specifies the GuardDuty service whose ThreatIntelSets
         you want to list.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -1113,7 +1122,7 @@ script:
         the role.
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
-      description: ' The unique identifier for an threat intel set'
+      description: The unique identifier for an threat intel set
       type: string
     description: Lists the ThreatIntelSets of the GuardDuty service specified by the
       detector ID.
@@ -1131,12 +1140,11 @@ script:
         is active or not.
     - name: location
       description: The updated URI of the file that contains the ThreateIntelSet.
-        For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key)
+        For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
     - name: name
-      description: The unique ID that specifies the ThreatIntelSet that you want to
-        update.
+      description: The user-friendly ThreatIntelSet name.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -1153,7 +1161,7 @@ script:
       description: The ID of the detector that specifies the GuardDuty service whose
         findings you want to list.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -1177,7 +1185,7 @@ script:
       required: true
       description: IDs of the findings that you want to retrieve.
     - name: region
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -1193,8 +1201,17 @@ script:
       required: true
       description: The ID of the detector to create sample findings for.
     - name: findingTypes
-      description: Types of sample findings that you want to generate. Separated by
-        comma
+      description: Types of sample findings that you want to generate. Separated by comma.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Generates example findings of types specified by the list of finding
       types. If 'NULL' is specified for findingTypes, the API generates example findings
       of all supported finding types.
@@ -1202,10 +1219,20 @@ script:
     arguments:
     - name: detectorId
       required: true
-      description: he ID of the detector that specifies the GuardDuty service whose
+      description: The ID of the detector that specifies the GuardDuty service whose
         findings you want to archive.
     - name: findingIds
-      description: IDs of the findings that you want to archive. Separated by comma
+      description: IDs of the findings that you want to archive. Separated by comma.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Archives Amazon GuardDuty findings specified by the list of finding
       IDs.
   - name: aws-gd-unarchive-findings
@@ -1227,15 +1254,24 @@ script:
     - name: findingIds
       description: IDs of the findings that you want to mark as useful or not useful.
     - name: comments
-      description: ' Additional feedback about the GuardDuty findings.'
+      description: Additional feedback about the GuardDuty findings.
     - name: feedback
       auto: PREDEFINED
       predefined:
       - USEFUL
       - NOT_USEFUL
+      description: Valid values: USEFUL | NOT_USEFUL.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Marks specified Amazon GuardDuty findings as useful or not useful.
-  - name: aws-gd-test
-    arguments: []
   dockerimage: demisto/boto3
   isfetch: true
   runonce: false
