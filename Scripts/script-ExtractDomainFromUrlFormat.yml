@@ -1,0 +1,43 @@
+commonfields:
+  id: ExtractDomainFromUrlFormat
+  version: -1
+name: ExtractDomainFromUrlFormat
+script: |-
+  var extractHostname = function(url) {
+      var hostname;
+      if (url.indexOf("://") > -1) {
+          hostname = url.split('/')[2];
+      }
+      else {
+          hostname = url.split('/')[0];
+      }
+      hostname = hostname.split(':')[0];
+      hostname = hostname.split('?')[0];
+      return hostname;
+  };
+
+  var extractRootDomain = function(url) {
+      var domain = extractHostname(url),
+          splitArr = domain.split('.'),
+          arrLen = splitArr.length;
+
+      if (arrLen > 2) {
+          domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+      }
+      return domain;
+  };
+
+
+  var url = args.input;
+
+  return extractRootDomain(url);
+type: javascript
+tags:
+- indicator-format
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: The URL to process
+scripttarget: 0
