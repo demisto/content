@@ -41,3 +41,4 @@ args:
   default: true
   description: The URL to process
 scripttarget: 0
+comment: Extract Domain from a URL
