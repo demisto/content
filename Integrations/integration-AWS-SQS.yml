@@ -50,6 +50,56 @@ script:
     AWS_rolePolicy = None
     AWS_QUEUEURL = demisto.params()['queueUrl']
 
+    def aws_session(service='sqs',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':roleArn,
+                'RoleSessionName':roleSessionName,
+                })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':AWS_roleArn,
+                'RoleSessionName':AWS_roleSessionName,
+                })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':roleSessionDuration})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy':rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy':AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service,region_name=region)
+            else:
+                client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+
+        return client
+
     def create_entry(title,data, ec):
         return {
             'ContentsFormat': formats['json'],
@@ -70,7 +120,6 @@ script:
     def get_queue_url(args):
         try:
             client = aws_session(
-                    service = 'sqs',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -93,7 +142,6 @@ script:
     def list_queues(args):
         try:
             client = aws_session(
-                    service = 'sqs',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -117,7 +165,6 @@ script:
     def send_message(args):
         try:
             client = aws_session(
-                    service = 'sqs',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -151,7 +198,6 @@ script:
     def create_queue(args):
         try:
             client = aws_session(
-                    service = 'sqs',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -193,7 +239,6 @@ script:
     def delete_queue(args):
         try:
             client = aws_session(
-                    service = 'sqs',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -209,7 +254,6 @@ script:
     def purge_queue(args):
         try:
             client = aws_session(
-                    service = 'sqs',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -231,7 +275,7 @@ script:
 
     def fetch_incidents():
         try:
-            client = aws_session(service = 'sqs')
+            client = aws_session()
             messages = client.receive_message(
                 QueueUrl=AWS_QUEUEURL,
                 MaxNumberOfMessages=10,
@@ -263,7 +307,7 @@ script:
 
     def test_function():
         try:
-            client = aws_session(service = 'sqs')
+            client = aws_session()
             response = client.list_queues()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return "ok"
