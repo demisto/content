@@ -106,6 +106,8 @@ script:
     PROXY = load_proxy()
     FILE_THRESHOLD = demisto.params()['file_threshold']
 
+
+
     # HELPERS
     def generate_jwt_times():
         '''
@@ -734,7 +736,7 @@ script:
 
             ec = {
                 'File':  context_file,
-                'Devices(val.id && val.id === obj.id)': context_device
+                'Endpoint(val.id && val.id === obj.id)': context_device
             }
 
             title = 'Cylance Protect Threat ' + threat_hash + ' Devices'
@@ -1293,31 +1295,31 @@ script:
       default: true
       description: The SHA256 hash of the threat
     outputs:
-    - contextPath: Devices.Id
+    - contextPath: Endpoint.Id
       description: The device ID.
       type: string
-    - contextPath: Devices.DateFound
+    - contextPath: Endpoint.DateFound
       description: The date and time (in UTC) when the threat was found on the device.
       type: string
-    - contextPath: Devices.AgentVersion
+    - contextPath: Endpoint.AgentVersion
       description: The agent version installed on the device.
       type: string
-    - contextPath: Devices.FileStatus
+    - contextPath: Endpoint.FileStatus
       description: Current quarantine status of the file on the device. Default (0),Quarantined
         (1),Whitelisted (2),Suspicious (3),FileRemoved (4),Corrupt (5)
       type: number
-    - contextPath: Devices.IpAddresses
+    - contextPath: Endpoint.IpAddresses
       description: The list of IP addresses for the device.
-    - contextPath: Devices.MacAddresses
+    - contextPath: Endpoint.MacAddresses
       description: The list of MAC addresses for the device.
-    - contextPath: Devices.Name
+    - contextPath: Endpoint.Name
       description: The device name for the device.
       type: string
-    - contextPath: Devices.PolicyId
+    - contextPath: Endpoint.PolicyId
       description: The unique identifier of the policy assigned to the device, or
         null if no policy is assigned.
       type: string
-    - contextPath: Devices.State
+    - contextPath: Endpoint.State
       description: The state of the device (Offline,Online).
       type: string
     - contextPath: File.Sha256
@@ -1460,3 +1462,4 @@ script:
     description: Gets a list of global list resources for a tenant
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
+releaseNotes: "Moved device data outputs to be under path Endpoint"
