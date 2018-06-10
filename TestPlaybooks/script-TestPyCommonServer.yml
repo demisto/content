@@ -132,8 +132,17 @@ script: |-
   ||[url](https:\\demisto.com)|a3|
   '''
 
-      table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
-      expected_single_column_tbl = '''### tableToMarkdown test with single column
+      table_string_header = tableToMarkdown('tableToMarkdown string header', data, 'header_1')
+      expected_string_header = '''### tableToMarkdown string header
+  |header_1|
+  |-|
+  |a1|
+  |a2|
+  |a3|
+  '''
+
+  table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
+  expected_single_column_tbl = '''### tableToMarkdown test with single column
   |header_1|
   |-|
   |a1|
