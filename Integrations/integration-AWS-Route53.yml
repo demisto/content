@@ -33,6 +33,55 @@ script:
     AWS_roleSessionDuration = demisto.params()['sessionDuration']
     AWS_rolePolicy = None
 
+    def aws_session(service='route53',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':roleArn,
+                'RoleSessionName':roleSessionName,
+                })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':AWS_roleArn,
+                'RoleSessionName':AWS_roleSessionName,
+                })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':roleSessionDuration})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy':rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy':AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service,region_name=region)
+            else:
+                client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+
+        return client
     class DatetimeEncoder(json.JSONEncoder):
       def default(self, obj):
         if isinstance (obj, datetime.datetime):
@@ -67,7 +116,6 @@ script:
     def create_record(args):
         try:
             client = aws_session(
-                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -111,7 +159,6 @@ script:
     def delete_record(args):
         try:
             client = aws_session(
-                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -152,7 +199,6 @@ script:
     def upsert_record(args):
         try:
             client = aws_session(
-                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -196,7 +242,6 @@ script:
     def list_hosted_zones(args):
         try:
             client = aws_session(
-                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -220,7 +265,6 @@ script:
     def list_resource_record_sets(args):
         try:
             client = aws_session(
-                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -255,7 +299,6 @@ script:
     def waiter_resource_record_sets_changed(args):
         try:
             client = aws_session(
-                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -276,7 +319,6 @@ script:
     def test_dns_answer(args):
         try:
             client = aws_session(
-                    service = 'route53',
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
@@ -306,7 +348,7 @@ script:
 
     def test_function():
         try:
-            client = aws_session(service = 'route53')
+            client = aws_session()
             response = client.list_hosted_zones()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return 'ok'
