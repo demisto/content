@@ -471,6 +471,9 @@
         {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
+        },
+        {
+            "playbookID": "test-domain-indicator"
         }
     ]
 }

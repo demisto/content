@@ -1,0 +1,233 @@
+id: test-domain-indicator
+version: -1
+name: test-domain-indicator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d73eea89-9664-4cbb-8716-b020ddec169d
+    type: start
+    task:
+      id: d73eea89-9664-4cbb-8716-b020ddec169d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 88b9c62b-1518-4c89-8fc8-aea9e3fec8ab
+    type: regular
+    task:
+      id: 88b9c62b-1518-4c89-8fc8-aea9e3fec8ab
+      version: -1
+      name: Print domains
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: |-
+          https://www.exit.com
+          trump@usa.com
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 228
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 98da1a97-9421-4473-8e5e-f040a764ab66
+    type: condition
+    task:
+      id: 98da1a97-9421-4473-8e5e-f040a764ab66
+      version: -1
+      name: Found 2 domains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.hasLength
+          left:
+            value:
+              simple: ${DBotScore(val.Type=='domain')}
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 456
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 27a7642d-7001-4617-8b73-5f3f0b5a44e7
+    type: regular
+    task:
+      id: 27a7642d-7001-4617-8b73-5f3f0b5a44e7
+      version: -1
+      name: good
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1051,
+          "y": 1449
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 5901297f-ebcd-46f8-8e03-bc5d0b057ef2
+    type: regular
+    task:
+      id: 5901297f-ebcd-46f8-8e03-bc5d0b057ef2
+      version: -1
+      name: Join domains
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: domain-result
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          accessor: Indicator
+          transformers:
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 778,
+          "y": 703
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 4a50fe99-2f20-4dd2-805a-a7ffb0603f07
+    type: condition
+    task:
+      id: 4a50fe99-2f20-4dd2-805a-a7ffb0603f07
+      version: -1
+      name: Has usa.com domain?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.contains
+          left:
+            value:
+              simple: domain-result
+            iscontext: true
+          right:
+            value:
+              simple: usa.com
+    view: |-
+      {
+        "position": {
+          "x": 778,
+          "y": 905
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 7ec1c3ac-231c-496b-8c69-f00563237b38
+    type: condition
+    task:
+      id: 7ec1c3ac-231c-496b-8c69-f00563237b38
+      version: -1
+      name: Has exit.com domain ?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.contains
+          left:
+            value:
+              simple: domain-result
+            iscontext: true
+          right:
+            value:
+              simple: exit.com
+    view: |-
+      {
+        "position": {
+          "x": 775,
+          "y": 1119
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1494,
+        "width": 981,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
