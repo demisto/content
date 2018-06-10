@@ -298,7 +298,7 @@ script:
                 'Protocol': response['Protocol']
             })
 
-            ec = {'AWS.Route53.TestDNSAnswer': esponse}
+            ec = {'AWS.Route53.TestDNSAnswer': response}
             return create_entry('AWS Route53 Test DNS Answer', data, ec)
 
         except Exception as error:
