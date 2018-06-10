@@ -1260,7 +1260,7 @@ script:
       predefined:
       - USEFUL
       - NOT_USEFUL
-      description: Valid values: USEFUL | NOT_USEFUL.
+      description: Valid values: USEFUL or NOT_USEFUL.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
