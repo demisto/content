@@ -1,0 +1,985 @@
+id: DemistoLockingTest
+version: -1
+name: DemistoLockingTest
+description: Test playbook for Demisto Locking integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2ada7137-85ee-41db-8a6d-2aa92c6d6ea2
+    type: start
+    task:
+      id: 2ada7137-85ee-41db-8a6d-2aa92c6d6ea2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 53762fdb-4f4d-4143-8f6f-23c45e6e1eb3
+    type: regular
+    task:
+      id: 53762fdb-4f4d-4143-8f6f-23c45e6e1eb3
+      version: -1
+      name: lock-info
+      description: Show information on a locks
+      script: Demisto Locking|||lock-info
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      name: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 9c81fdcc-4997-4d68-80ed-2314b8c6ed2d
+    type: regular
+    task:
+      id: 9c81fdcc-4997-4d68-80ed-2314b8c6ed2d
+      version: -1
+      name: lock-get
+      description: Get lock. If the lock is already in use - will wait until it is
+        released or until timeout is reached
+      script: Demisto Locking|||lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "4"
+      - "3"
+    scriptarguments:
+      info: {}
+      name: {}
+      timeout: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 865
+        }
+      }
+  "3":
+    id: "3"
+    taskid: eca1651f-e830-49f2-8211-ab8c8783f1e9
+    type: regular
+    task:
+      id: eca1651f-e830-49f2-8211-ab8c8783f1e9
+      version: -1
+      name: lock-get
+      description: Get lock. If the lock is already in use - will wait until it is
+        released or until timeout is reached
+      script: Demisto Locking|||lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      info: {}
+      name: {}
+      timeout: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1040
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 759476d7-cb8a-487f-8b3e-55c296af5b77
+    type: regular
+    task:
+      id: 759476d7-cb8a-487f-8b3e-55c296af5b77
+      version: -1
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1215
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 28f82819-7d1e-45aa-876f-65d04e600bbb
+    type: regular
+    task:
+      id: 28f82819-7d1e-45aa-876f-65d04e600bbb
+      version: -1
+      name: Set context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: key
+      value:
+        simple: ok
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1390
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 589d4d3b-7156-4fe7-8b9d-6f63a107949c
+    type: regular
+    task:
+      id: 589d4d3b-7156-4fe7-8b9d-6f63a107949c
+      version: -1
+      name: lock-release
+      description: Release a lock
+      script: Demisto Locking|||lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      name: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1565
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 0f8a0578-b570-479c-8ce5-19bb3137b81e
+    type: regular
+    task:
+      id: 0f8a0578-b570-479c-8ce5-19bb3137b81e
+      version: -1
+      name: Print
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      value:
+        simple: ${key}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1215
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 4511d1ec-0785-4c6c-8b3c-e9573795b05e
+    type: regular
+    task:
+      id: 4511d1ec-0785-4c6c-8b3c-e9573795b05e
+      version: -1
+      name: lock-release
+      description: Release a lock
+      script: Demisto Locking|||lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      name: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1565
+        }
+      }
+  "9":
+    id: "9"
+    taskid: ac4a3791-b65e-4ae6-8386-72be5a35e4cb
+    type: regular
+    task:
+      id: ac4a3791-b65e-4ae6-8386-72be5a35e4cb
+      version: -1
+      name: lock-info
+      description: Show information on a locks
+      script: Demisto Locking|||lock-info
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      name: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1390
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 446d979d-1ecd-4174-86f3-44fa34194b8a
+    type: regular
+    task:
+      id: 446d979d-1ecd-4174-86f3-44fa34194b8a
+      version: -1
+      name: closeInvestigation
+      description: Close the current investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4130
+        }
+      }
+  "11":
+    id: "11"
+    taskid: ff2c9e06-c7ca-4007-8c25-77e4e197b958
+    type: regular
+    task:
+      id: ff2c9e06-c7ca-4007-8c25-77e4e197b958
+      version: -1
+      name: lock-release-all
+      description: Release all locks
+      script: Demisto Locking|||lock-release-all
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+  "12":
+    id: "12"
+    taskid: b74d92fe-fd60-4749-8b80-d6bb631597a7
+    type: regular
+    task:
+      id: b74d92fe-fd60-4749-8b80-d6bb631597a7
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+  "13":
+    id: "13"
+    taskid: ea352eb7-0ca1-40df-8835-fdda45ae3545
+    type: title
+    task:
+      id: ea352eb7-0ca1-40df-8835-fdda45ae3545
+      version: -1
+      name: Check timeout
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1740
+        }
+      }
+  "14":
+    id: "14"
+    taskid: aabb15ad-37fe-4c6e-8c31-957429629ba7
+    type: title
+    task:
+      id: aabb15ad-37fe-4c6e-8c31-957429629ba7
+      version: -1
+      name: Check successful lock
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "15":
+    id: "15"
+    taskid: dbe53250-b8ed-4261-8c29-0c499012bcfa
+    type: regular
+    task:
+      id: dbe53250-b8ed-4261-8c29-0c499012bcfa
+      version: -1
+      name: get-lock
+      script: Demisto Locking|||lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+    scriptarguments:
+      info: {}
+      name:
+        simple: timeout
+      timeout: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1885
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 1d13607f-4ec3-4e97-8dea-a71a4e89ebcb
+    type: regular
+    task:
+      id: 1d13607f-4ec3-4e97-8dea-a71a4e89ebcb
+      version: -1
+      name: get-lock
+      script: Demisto Locking|||lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      info: {}
+      name:
+        simple: timeout
+      timeout:
+        simple: "10"
+    reputationcalc: 0
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2060
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 723e443d-96aa-4a5b-8d99-ce16ab225bd9
+    type: regular
+    task:
+      id: 723e443d-96aa-4a5b-8d99-ce16ab225bd9
+      version: -1
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      seconds:
+        simple: "20"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2235
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 02c44b17-94bf-42b6-8be2-fbb9907eaf09
+    type: condition
+    task:
+      id: 02c44b17-94bf-42b6-8be2-fbb9907eaf09
+      version: -1
+      name: Timeout?
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2235
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 70e7906a-fa50-4959-8234-319865537f49
+    type: regular
+    task:
+      id: 70e7906a-fa50-4959-8234-319865537f49
+      version: -1
+      name: lock-release-all
+      script: Demisto Locking|||lock-release-all
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "28"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2410
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 297a89b3-04da-4bc6-870e-986dc8c0551c
+    type: title
+    task:
+      id: 297a89b3-04da-4bc6-870e-986dc8c0551c
+      version: -1
+      name: Check parallel
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+      - "22"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2760
+        }
+      }
+  "21":
+    id: "21"
+    taskid: 338164fc-2407-417f-8bb7-124fca5ef496
+    type: regular
+    task:
+      id: 338164fc-2407-417f-8bb7-124fca5ef496
+      version: -1
+      name: lock-get
+      description: Get lock. If the lock is already in use - will wait until it is
+        released or until timeout is reached
+      script: Demisto Locking|||lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      info: {}
+      name: {}
+      timeout: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2905
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 807ff392-2af2-4cb2-8791-a55a7a9e3c43
+    type: regular
+    task:
+      id: 807ff392-2af2-4cb2-8791-a55a7a9e3c43
+      version: -1
+      name: lock-get
+      description: Get lock. If the lock is already in use - will wait until it is
+        released or until timeout is reached
+      script: Demisto Locking|||lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      info: {}
+      name: {}
+      timeout: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 2905
+        }
+      }
+  "23":
+    id: "23"
+    taskid: 15020654-8161-46c8-8293-fb3e56ccdaff
+    type: regular
+    task:
+      id: 15020654-8161-46c8-8293-fb3e56ccdaff
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 3255
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 8a4d0165-2b8b-43b9-8341-857a11568791
+    type: regular
+    task:
+      id: 8a4d0165-2b8b-43b9-8341-857a11568791
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 95072997-cfbd-422a-8855-d92baa57e643
+    type: regular
+    task:
+      id: 95072997-cfbd-422a-8855-d92baa57e643
+      version: -1
+      name: lock-release
+      description: Release a lock
+      script: Demisto Locking|||lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      name: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 6c5d78da-af3c-484a-8d34-8fc0ebe4952e
+    type: regular
+    task:
+      id: 6c5d78da-af3c-484a-8d34-8fc0ebe4952e
+      version: -1
+      name: lock-release
+      description: Release a lock
+      script: Demisto Locking|||lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      name: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 3780
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 9c9bcd61-c35d-4617-8e2f-7ba057c9d393
+    type: regular
+    task:
+      id: 9c9bcd61-c35d-4617-8e2f-7ba057c9d393
+      version: -1
+      name: lock-release-all
+      script: Demisto Locking|||lock-release-all
+      type: regular
+      iscommand: true
+      brand: Demisto Locking
+    nexttasks:
+      '#none#':
+      - "10"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 3955
+        }
+      }
+  "28":
+    id: "28"
+    taskid: c06cc601-de90-4b30-81f3-0656b253f3cb
+    type: regular
+    task:
+      id: c06cc601-de90-4b30-81f3-0656b253f3cb
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2585
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 598e44ca-36d3-401c-8512-3f45689367b5
+    type: regular
+    task:
+      id: 598e44ca-36d3-401c-8512-3f45689367b5
+      version: -1
+      name: Set 1
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append: {}
+      key:
+        simple: key1
+      value:
+        simple: key1
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 98ea0dae-4745-42b2-8c0c-071c0a522168
+    type: regular
+    task:
+      id: 98ea0dae-4745-42b2-8c0c-071c0a522168
+      version: -1
+      name: Set 2
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append: {}
+      key:
+        simple: key2
+      value:
+        simple: key2
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 3080
+        }
+      }
+  "31":
+    id: "31"
+    taskid: 64203cfe-f10e-4bc6-87ed-a878737ee55b
+    type: condition
+    task:
+      id: 64203cfe-f10e-4bc6-87ed-a878737ee55b
+      version: -1
+      name: Check if key 1 is set
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      - "33"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: key1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 3430
+        }
+      }
+  "32":
+    id: "32"
+    taskid: 28860329-efab-4186-856a-c1ac8c168f51
+    type: condition
+    task:
+      id: 28860329-efab-4186-856a-c1ac8c168f51
+      version: -1
+      name: Check if key 2 is set
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      - "34"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: key2
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 3c6743af-47a9-4067-876b-fecd43f5c6dd
+    type: regular
+    task:
+      id: 3c6743af-47a9-4067-876b-fecd43f5c6dd
+      version: -1
+      name: Delete key 2
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all: {}
+      key:
+        simple: key2
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3605
+        }
+      }
+  "34":
+    id: "34"
+    taskid: 25fae19c-3e3e-4b48-86f8-b8e38d89264a
+    type: regular
+    task:
+      id: 25fae19c-3e3e-4b48-86f8-b8e38d89264a
+      version: -1
+      name: Delete key 1
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all: {}
+      key:
+        simple: key1
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3605
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4175,
+        "width": 942.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,154 @@
+commonfields:
+  id: Demisto Locking
+  version: -1
+name: Demisto Locking
+display: Demisto Locking
+category: Utilities
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAACzBJREFUeJzt3XmMXlUZx/HvdKYrZaDGliJdaBudCLXF0mgjxJJBIyYEawtUY5FgItho9B81UfwD1Coxalwa4hKCUgspBveNqjVGEUSoKLTpCN1YIkulU6YLndIZ/zgDodCemfvOvc9z7rm/T/KEP0pynnvO/c1d3vvetw1pRQcwD+h6Wc0FTgFOHqrJwElAW8W9DAIHgP1A31DtA3YAPcC2of/uAF6ouJfsVL14uRgLvBXoHqolwHjXjoo7DNwNbBqqv6PAyCiMBy4Hfk746zyYWfUBPwMupX5hF0fnAd8D9uK/E1vVXuC7wNtKmD/JUBuwHLgf/53Vu/4BLEOn3wK0A6uALfjvmKnVg8D7h+ZIGmgpCsZIg3J+i3MsNXQasA7/Ha9ONQD8AJhafLqlTq4GevHf4epazwIfKjzrkrxO4Hb8d7Bc6lbCh6GSgUXAI/jvVLlVD7CwwDpIgq4Cnsd/Z8q1DgFXjHg1JCmfxX8HakINAJ8a4ZpIAtqAb+C/4zStvoo+XExeO/Aj/HeWptYtwJhhV0ncfB//naTp9Z1hV0lcrMF/51CFui6+VGLt4/jvFKpja3V0xcTMxYQ7Kd47hOrYOgpcFFm3Wqj7XYeZwAPAa7wbkeN6Bngz8IR3I62q8x2HDmADCkfKpgK3UeNH5mvbOHADsNK7CRnWbMIfs03ejTTJeei6o041QHjpRe3U8RqkA9gMvMm7ESlkM/AWwsV7bdTxFOsTwAe9m5DCTidctN/r3UgRdTuCvI7wIrSUvotwGLgH+DOwlfAY+JOEVwUdIJxiVKmN8IK6yYSdsAs4i/CV4iXAuIrHL2Ifob+nvBvJ1U34n08PAv2E92WtACZWusWjMwm4DPglcAT/eRskvF5IKjCLsGN6Lu5B4FuEz1/qZhawlvAdDs85PAycUfG2NtJafBf2x8CMyreyejOBn+A7l9+sfCsbZjp+f/meITzOkptLgD34zOlBYFr1m9gcN+CzkH8l79OBmYQXWnvM7RqD7WuEduC/2C/gT4EJBtvnbSLwC+zn93Hq/ahTMi7CfvFq/fxQC158rs16nt9psXG5uxXbRfsd4fdAmmYc8Hts53qdyZZl7GTCBZ3VgvUQPnBrqk5s3yG2n/Ahp7RoJXaLdQhYYLNZSVuE7bvELrXZrNakfpF0oeFYnwf+bTheqjYDXzQcr9twrOxYHe630szrjhMZTzjdtDqtlRbMwu4w/x6jbaqT5djNf86fNVXmSmwW50Hq91SzhTbsfmAo2ff7pnwNsthonK8TFkmONUiYGwvnGo2TlY1U/5frAM2+rTucTmxus//WaoOKSvkI0mUwxou/gS7H9xzwK4NxLNa6JakGZBI237nYaDBG3VnM0Wya8dxbaRZic3E422qDamwONmuR5Es4Uj2CTDcYYw+w22CcutsJ7DUY5zSDMQpLNSAWL2XQB1QjZzFXKb2I4yWpBsTiztJ2gzFyYTFXCkgBFpO1z2CMXPQajKGAFGAxWbq9O3J9BmN0GoxRWKoBsXjZWb/BGLk4bDDGeIMxCks1ICJJUEBEIhQQkQgFRCRCARGJUEBEIhQQkQgFRCRCARGJUEBEIhQQkQgFRCRCARGJUEBEIhQQkQgFRCRCARGJUEBEIhQQkQgFRCRCARGJUEBEIhQQkQgFRCRCARGJUEBEIhQQkQgFRCRCARGJUEBEIhQQkQgFRCRCARGJUEBEIhQQkQgFRCSiw7sBRxcA1zn3UBcXeDfgpckBWTpUIiekUyyRCAVEJKLdu4FXaAM+BlxLoj8sL5VZBPQB93k3kqrpwB+AQVWjayNwGnKMxcAT+C+OKo16jHBEEeAdwH78F0WVVvUB3TRcN3AI/8VQpVkHgbfjqM1x7PnA34CTHXuQ9O0DlgDbPAb3CsgpwGZgrtP4Ui8PA+cSTrtMeX0OciMKh4zc64G13k1YuRj/c1tVPevdGLM+xRoHbAXmGY+bmt3AJuB+oAfYTjjX3j/075MJp6HzgC7CbfBuYJZ5p2l5GDgbOOLdSFU+iv9fIa/aAVwPvGEU89cFfAHYmcD2eNU1o5i/pLUDu/CfYOvaDKyg3Ou9McBlwAMJbJ91PUKmzxBegv/kWtaTwKpSZi7uSuAph+3zLPNrEQt34D+xVrWecA1hZQqwoYLtSLU2lDNt6ZhAMx4nOQx8uKQ5a8VHgP7j9JVb9ZHZ097d+E+qxaJdWNaEjcK7aMYfo6VlTViM1cXO+UbjeNlPCMcfvRsB7iQ8AHrAu5GKmexTVgFZYDSOh35gGXCvdyMvcw+wnIw/LyCzfSrn25Ge1xzDWY3//FRVm0ucJ3dP4z+hVdT6MiepIrne3XqyzEk6EatHTZ4ns7sOhM8eugiPiKRsCuFxlqnejZTsEDCp6kGsrkFyCwfAJ0k/HAB7gU97N1GBCRaDWB1BBo3GsfJP6vWd6TbCdWBWF7YY7L9ZPtNiYI13AwUNAl/ybqKOdAQpbifhMfS6bdMYwhPFs70bKZGOIAlaR/3CATBAPe66JUVHkOK6gP94N9GiNxK+sJaLyvdfBaSYXcAc7yZG6TFghncTJdEpVmL+5N1ACTZ5N1AnCkgx93s3UIIctsGMAlJMj3cDJchhG8woIMVs926gBDlsgxkFpJg6PFoynF7vBupEASlm//D/S/LMX99ZZwpIMQPeDZQgh20wo4AUY/IEacUqf0Q8JwpIMdO8GyhBDttgRgEpZqZ3AyXIYRvMKCDFnO3dQAnmezdQJwpIMYu9GyhBDttgRgEp5gLvBkqw1LuBOlFAiplDvU+zFqLfGClEASlupXcDo1Dn3l3o+yDFPQ6cCRx17qOoDuBR4HTvRkqk74MkaAb1/Ev8AfIKhwkdQVqzlfAKnbocRTqAhwhfF86JjiCJOou038n7SteQXzhM6AjSul7CSxBM3hE7CmcQjnid3o1UQEeQhJ0K3Iz9T2kXMQb4IXmGIyvebwKvsj5X4jyV7Xr856fKyob3RFZZA8D7ypuq0qzCf24UkBHynsiqq5/wM9epeC/h16W850UBGSHvibSoI8AVZU3YKFwFvID/fCggBXhPpGV9GWgvZ9oKaQe+0kK/da5seE+kdf0FmFvKzI3MPOCuCrYj9cqG90R61EHCr99WbdnQWN7bm2VA9DlIdSYC5xiMc87QWFIBBUQkQgERiVBARCIUEJEIBUQkQgERiVBARCIUEJEIBUQkQgERiVBARCIUEJEIBUQkQgERiVBARCIUEJEIBUQkQgERiVBARCIUEJEIBUQkQgERiVBARCIUEJEIBUQkQgERiVBARCKsfl+vHxhrNJY0Qz8wvupBrI4gfUbjSHM8ZzGIVUD2GY0jzdFrMYhVQLYbjSPNYbJPWQWkx2gcaQ6TfcoqIPcZjSPNYbJPWd3Fmg3sMhpLmmEG8ETVg1gdQXaj0ywpzxYMwgG2HxSuNxxL8ma2L1mdYgGcSbjzoE/vZTQGgDnAoxaDWe6su4A7DMeTPN2OUTjA9ggCsBB4wHhMyccgYR960GpA69OdfwG3GI8p+bgZw3CA/REEYBqwDZjiMLbU17NAF7DHclCPC+angdUO40q9XY1xOADarQccsgWYDix2Gl/qZS3wNe8mrI0F7iRceKlUJ6pfAx001GTgbvwXQZVm3QVMouFOQkcS1avrNygcLxkL3Ij/oqjSqG/T4NOqmMsJt/O8F0jlU/8DViBRUwkfCA3gv2AqmxoAbgJei4zYAmADcBT/BVRVU0eB24D5SMtmA9cCW/FfUFU59RDwGWAWifN41GQ0ZgDdwLmExw7mAacCncA4x77k1foJr+bpJXzNoYfwNdlNGH3ZqQz/Byo9pdChIyMRAAAAAElFTkSuQmCC
+description: Locking mechanism to prevent parallel execution of different tasks where
+  needed
+detaileddescription: "The Demisto Locking integration allows prevention of parallel
+  execution of scripts or commands where needed by providing a wait-lock-release flow.
+  \nUse the lock name argument to support more than one locks in different flows."
+configuration:
+- display: Default timeout to wait on locks
+  name: timeout
+  defaultvalue: "60"
+  type: 0
+  required: true
+script:
+  script: |
+    function guid() {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+      }
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    }
+
+    var setLock = function(guid, info) {
+        var integrationContext = getIntegrationContext();
+        integrationContext[lockName] = {guid: guid, info: info};
+        setIntegrationContext(integrationContext);
+    };
+    var getLock = function() {
+        var integrationContext = getIntegrationContext();
+        if (!integrationContext[lockName]) {
+            integrationContext[lockName] = {};
+        }
+        return integrationContext[lockName];
+    };
+
+    var lockName = (args.name) ? args.name : 'Default';
+
+    switch (command) {
+        case 'test-module':
+            return 'ok';
+
+        case 'lock-get':
+            var lockTimeout = (args.timeout) ? args.timeout : params.timeout;
+            var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
+            lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
+
+            var guid = guid();
+            var time = 0;
+            var lock = getLock();
+
+            while (lock.guid !== guid && time++ < lockTimeout) {
+                wait(1);
+                lock = getLock();
+                if (lock.guid === guid) {
+                    continue;
+                }
+                if (!lock.guid) {
+                    setLock(guid, lockInfo);
+                }
+            }
+
+            if (lock.guid === guid) {
+                var md = '### Demisto Locking Mechanism\n';
+                md += 'Lock acquired successfully\n';
+                md += 'GUID: ' + guid;
+                return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+            } else {
+                var md = 'Timeout waiting for lock\n';
+                md += 'Lock name: ' + lockName + '\n';
+                md += 'Lock info: ' + lock.info + '\n';
+                return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
+            }
+            break;
+
+        case 'lock-release':
+            integrationContext = getIntegrationContext();
+            integrationContext[lockName] = {};
+            setIntegrationContext(integrationContext);
+
+            var md = '### Demisto Locking Mechanism\n';
+            md += 'Lock released successfully';
+            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+
+        case 'lock-release-all':
+            integrationContext = getIntegrationContext();
+            integrationContext = {};
+            setIntegrationContext(integrationContext);
+
+            var md = '### Demisto Locking Mechanism\n';
+            md += 'All locks released successfully';
+            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+
+        case 'lock-info':
+            integrationContext = getIntegrationContext();
+
+            var res;
+            var md = '### Demisto Locking Mechanism\n';
+            var locks = (lockName === 'Default') ? Object.keys(integrationContext) : [lockName];
+
+
+            locks.forEach(function(lock){
+                md += 'Lock name: ' + lock + ' - ';
+                if (integrationContext[lock] && integrationContext[lock].guid) {
+                    md += 'Locked.\n';
+                    md += '- GUID: ' + integrationContext[lock].guid + '\n';
+                    md += '- Info: ' + integrationContext[lock].info + '\n\n';
+                } else {
+                    md += 'Not locked\n\n';
+                }
+
+            });
+            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+
+        default:
+            var md = 'Unknown command ' + command;
+            return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
+    }
+  type: javascript
+  commands:
+  - name: lock-get
+    arguments:
+    - name: name
+      default: true
+      description: Name of lock. When omitted, Default is used.
+    - name: info
+      description: Additional information to provide on lock
+    - name: timeout
+      description: Timeout to wait on lock to be freed
+    description: Get lock. If the lock is already in use - will wait until it is released
+      or until timeout is reached
+  - name: lock-release
+    arguments:
+    - name: name
+      default: true
+      description: Name of lock to release. When omitted Default is used
+    description: Release a lock
+  - name: lock-info
+    arguments:
+    - name: name
+      default: true
+      description: Name of lock to release. When omitted Default is used
+    description: Show information on a locks
+  - name: lock-release-all
+    arguments: []
+    description: Release all locks
+  runonce: false
+  
