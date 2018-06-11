@@ -231,7 +231,7 @@
       "enhancementScriptNames": [
         "DomainReputation"
       ],
-      "toVersion": "4.0"
+      "toVersion": "3.6"
     },
     {
       "id": "domainRep",
@@ -243,7 +243,7 @@
         "DomainReputation"
       ],
       "formatScript": "ExtractDomainFromUrls",
-      "fromVersion": "4.0"
+      "fromVersion": "3.6"
     }
   ]
 }
