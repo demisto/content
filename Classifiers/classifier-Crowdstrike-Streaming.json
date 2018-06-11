@@ -43,7 +43,7 @@
 					"complex": null
 				}
 			},
-			"dontMapEventToLabels": false
+			"dontMapEventToLabels": true
 		}
 	},
 	"unclassifiedCases": {},
