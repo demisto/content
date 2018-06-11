@@ -189,7 +189,7 @@ script:
             if 'MD5OfMessageBody' in response: data.update({'MD5OfMessageBody': response['MD5OfMessageBody']})
             if 'MD5OfMessageAttributes' in response: data.update({'MD5OfMessageAttributes': response['MD5OfMessageAttributes']})
 
-            ec = {'AWS.SQS.Queues.(obj.QueueUrl==val.QueueUrl).SentMessages': data}
+            ec = {'AWS.SQS.Queues(obj.QueueUrl === val.QueueUrl).SentMessages': data}
             return  create_entry('AWS SQS Queues sent messages',data, ec)
 
         except Exception as e:
