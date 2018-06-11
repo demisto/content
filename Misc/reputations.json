@@ -242,7 +242,7 @@
       "enhancementScriptNames": [
         "DomainReputation"
       ],
-      "formatScript": "ExtractDomainFromUrls",
+      "formatScript": "ExtractDomainFromUrlAndEmail",
       "fromVersion": "3.6"
     }
   ]
