@@ -19,12 +19,12 @@ configuration:
   type: 4
   required: true
 - display: Use system proxy settings
-  name: Proxy
+  name: proxy
   defaultvalue: ""
   type: 8
   required: false
-- display: Do not validate server certificate (insecure)
-  name: Insecure
+- display: Trust any certificate (unsecure)
+  name: insecure
   defaultvalue: ""
   type: 8
   required: false
@@ -42,13 +42,12 @@ script:
                     Accept: ['application/json']
                 }
             },
-            params.Insecure,
-            params.Proxy
+            params.insecure,
+            params.proxy
         );
 
         if (!res || res.StatusCode < 200 || res.StatusCode >= 300) {
             var errorString = '';
-            var body = JSON.parse(res.Body);
 
             if (res.StatusCode === 401 || res.StatusCode === 403) {
                 errorString = '\n\nError: Invalid API key\n';
@@ -61,11 +60,11 @@ script:
             throw errorString;
         }
 
-        var resBody = JSON.parse(res.Body);
-        if (resBody === undefined) {
-           throw 'Request Failed, couldn\'t parse JSON response';
+        try {
+            return JSON.parse(res.Body);
+        } catch (err) {
+            throw 'Failed to parse JSON response: ' + res.Body + '\n';
         }
-        return resBody;
     };
 
     var extractDomainName = function(url) {
