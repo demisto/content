@@ -123,8 +123,5 @@ script:
       description: Host IP address
     description: Returns all services that have been found on the given host IP.
   runonce: false
-<<<<<<< HEAD
 releaseNotes: "Added error handling of 404 response and improved human readable output for ip command." 
-=======
--releaseNotes: "Added error handling of 404 response and improved human readable output for ip command." 
->>>>>>> 30d02ae2e817f7817e9be933c5280cf04ca4e77c
+
