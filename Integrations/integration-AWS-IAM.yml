@@ -1747,6 +1747,46 @@ script:
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+    outputs:
+    - contextPath: AWS.IAM.InstanceProfiles.Path
+      description: The path to the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileName
+      description: The name identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.InstanceProfileId
+      description: The stable and unique string identifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Arn
+      description: The Amazon Resource Name (ARN) specifying the instance profile.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.CreateDate
+      description: The date when the instance profile was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Path
+      description: The path to the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleName
+      description: The friendly name that identifies the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.RoleId
+      description: The stable and unique string identifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Arn
+      description: The Amazon Resource Name (ARN) specifying the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.CreateDate
+      description: The date and time, when the role was created.
+      type: date
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.AssumeRolePolicyDocument
+      description: The policy that grants an entity permission to assume the role.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.Description
+      description: A description of the role that you provide.
+      type: string
+    - contextPath: AWS.IAM.InstanceProfiles.Roles.MaxSessionDuration
+      description: The maximum session duration (in seconds) for the specified role.
+      type: number
     description: Lists the instance profiles that have the specified associated IAM
       role.
   - name: aws-iam-get-instance-profile
