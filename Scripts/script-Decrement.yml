@@ -1,0 +1,16 @@
+commonfields:
+  id: Decrement
+  version: -1
+name: Decrement
+script: demisto.results(int(demisto.args()["value"])-1)
+type: python
+tags:
+- transformer
+- number
+comment: Decrement integer value by 1
+enabled: true
+args:
+- name: value
+  required: true
+scripttarget: 0
+runonce: false
