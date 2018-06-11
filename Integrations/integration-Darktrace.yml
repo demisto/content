@@ -97,10 +97,12 @@ script:
             labels.append({'type': label_key, 'value': str(value)})
 
     def parse_event_to_incident(event):
+        event_json = json.dumps(event)
         incident = {
             'name': 'Darktrace - ' + event['model']['now']['name'],
-            'details': json.dumps(event),
-            'occurred': from_unixtime_mili(event['time']).isoformat() + '.000Z'
+            'details': event_json,
+            'occurred': from_unixtime_mili(event['time']).isoformat() + '.000Z',
+            'rawJSON': event_json
         }
 
         labels = []
