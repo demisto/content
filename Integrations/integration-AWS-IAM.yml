@@ -653,10 +653,6 @@ script:
                         'InstanceProfileName': instanceProfile['InstanceProfileName'],
                         'InstanceProfileId': instanceProfile['InstanceProfileId'],
                         'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-                        'Arn': instanceProfile['Arn'],
-                        'RoleName': instanceProfile['Roles'][0]['RoleName'],
-                        'RoleId': instanceProfile['Roles'][0]['RoleId'],
-                        'RoleArn': instanceProfile['Roles'][0]['Arn'],
                     })
                     output.append(instanceProfile)
 
@@ -747,10 +743,6 @@ script:
                 'InstanceProfileName': instanceProfile['InstanceProfileName'],
                 'InstanceProfileId': instanceProfile['InstanceProfileId'],
                 'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
-                'Arn': instanceProfile['Arn'],
-                'RoleName': instanceProfile['Roles'][0]['RoleName'],
-                'RoleId': instanceProfile['Roles'][0]['RoleId'],
-                'RoleArn': instanceProfile['Roles'][0]['Arn'],
             })
 
             raw = json.loads(json.dumps(instanceProfile, cls=DatetimeEncoder))
@@ -806,9 +798,10 @@ script:
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
+
             kwargs = {
                 'RoleName':args.get('roleName'),
-                'AssumeRolePolicyDocument':args.get('assumeRolePolicyDocument')
+                'AssumeRolePolicyDocument':json.dumps(json.loads(args.get('assumeRolePolicyDocument')))
             }
             if args.get('path') is not None:
                 kwargs.update({'Path':args.get('path')})
@@ -816,7 +809,7 @@ script:
                 kwargs.update({'Description':args.get('description')})
             if args.get('maxSessionDuration') is not None:
                 kwargs.update({'MaxSessionDuration':int(args.get('maxSessionDuration'))})
-
+            #return kwargs
             response = client.create_role(**kwargs)
             role = response['Role']
             data = ({
@@ -1048,7 +1041,8 @@ script:
       required: true
       description: Name of the user to update.
     - name: newUserName
-      description: New name for the user. Include this parameter only if you're changing the user's name.
+      description: New name for the user. Include this parameter only if you're changing
+        the user's name.
     - name: newPath
       description: New path for the IAM user. Include this parameter only if you're
         changing the user's path.
