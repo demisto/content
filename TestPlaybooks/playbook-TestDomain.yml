@@ -55,10 +55,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 98da1a97-9421-4473-8e5e-f040a764ab66
+    taskid: dcf039cc-40cd-4a48-8efe-a75f652213c4
     type: condition
     task:
-      id: 98da1a97-9421-4473-8e5e-f040a764ab66
+      id: dcf039cc-40cd-4a48-8efe-a75f652213c4
       version: -1
       name: Found 2 domains
       type: condition
@@ -74,7 +74,17 @@ tasks:
       - - operator: general.hasLength
           left:
             value:
-              simple: ${DBotScore(val.Type=='domain')}
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
             iscontext: true
           right:
             value:
@@ -88,15 +98,19 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 27a7642d-7001-4617-8b73-5f3f0b5a44e7
+    taskid: 9f769751-b3c2-4371-82e1-fbc2faf81f37
     type: regular
     task:
-      id: 27a7642d-7001-4617-8b73-5f3f0b5a44e7
+      id: 9f769751-b3c2-4371-82e1-fbc2faf81f37
       version: -1
       name: good
+      scriptName: Print
       type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      value:
+        simple: Good!!
     separatecontext: false
     view: |-
       {
