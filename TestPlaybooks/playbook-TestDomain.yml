@@ -107,18 +107,17 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: 8a152973-e77e-406d-82d4-2872db5bfd91
-    type: regular
+    taskid: 927a80fd-7959-4f62-8111-4309ee52a2cd
+    type: condition
     task:
-      id: 8a152973-e77e-406d-82d4-2872db5bfd91
+      id: 927a80fd-7959-4f62-8111-4309ee52a2cd
       version: -1
-      name: Has usa.com indicator
-      scriptName: VerifyContext
-      type: regular
+      name: Has exit.com indicator
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "11"
     scriptarguments:
       expectedValue:
@@ -127,37 +126,106 @@ tasks:
       path:
         simple: DBotScore.[3].Indicator
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: exit.com
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: exit.com
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 701
+          "y": 696
         }
       }
   "11":
     id: "11"
-    taskid: 334808ca-c5d1-4862-8c4b-42bae4765756
-    type: regular
+    taskid: b8bf7eff-4e48-46de-8e72-59a1a7aa2854
+    type: condition
     task:
-      id: 334808ca-c5d1-4862-8c4b-42bae4765756
+      id: b8bf7eff-4e48-46de-8e72-59a1a7aa2854
       version: -1
-      name: Has exit.com indicator
-      scriptName: VerifyContext
-      type: regular
+      name: Has usa.com indicator
+      type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "12"
     scriptarguments:
       expectedValue:
-        simple: exit.com
+        simple: usa.com
       fields: {}
       path:
-        simple: DBotScore.[4].Indicator
+        simple: DBotScore.[3].Indicator
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: usa.com
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: usa.com
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 885
+          "y": 881
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 2d75dd08-c2cd-42ca-832b-91638c6d9ade
+    type: regular
+    task:
+      id: 2d75dd08-c2cd-42ca-832b-91638c6d9ade
+      version: -1
+      name: All Good
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: ALL GOOD
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 445,
+          "y": 1101
         }
       }
 view: |-
@@ -165,9 +233,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 930,
-        "width": 384,
-        "x": 446,
+        "height": 1146,
+        "width": 385,
+        "x": 445,
         "y": 50
       }
     }
