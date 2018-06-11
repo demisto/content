@@ -36,581 +36,360 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
-    var BASE_URL = params.server.replace(/[\/]+$/, '');
-    var SERVER_URL = BASE_URL + '/api/3/';
-    var AUTH = basicAuth(params.credentials.identifier, params.credentials.password);
-    var TOKEN = params.token;
-    var SITE_COOKIE = 'time-zone-offset=-180; _pendo_accountId.77c79869-0135-481b-7c93-53f43e8ae3d8=21c87447-3796-4bea-848b-660358b7e1da; _pendo_visitorId.77c79869-0135-481b-7c93-53f43e8ae3d8=21c87447-3796-4bea-848b-660358b7e1da-1; i18next=en-US; hide-dashboard-tour=shown; _pendo_meta.77c79869-0135-481b-7c93-53f43e8ae3d8=2114032251; nexposeCCSessionID=5D476D9DA8DA829E607FBF8E3B4BC7ED20A29DA4; TIMEOUT=session-alive';
-    var SESSION = '5D476D9DA8DA829E607FBF8E3B4BC7ED20A29DA4';
+  script: |-
+    from pprint import pprint
+    import time
+    import re
+    import requests
+    import json
 
-    function getHeaders(){
-        var headers = {
-                    'Authorization': [AUTH],
-                    'Content-Type': ['application/json'],
-                };
-        if(TOKEN){
-            headers['Token'] = [TOKEN];
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    SITE_COOKIE = "time-zone-offset=-180; _pendo_accountId.77c79869-0135-481b-7c93-53f43e8ae3d8=21c87447-3796-4bea-848b-660358b7e1da; _pendo_visitorId.77c79869-0135-481b-7c93-53f43e8ae3d8=21c87447-3796-4bea-848b-660358b7e1da-1; i18next=en-US; hide-dashboard-tour=shown; _pendo_meta.77c79869-0135-481b-7c93-53f43e8ae3d8=2114032251; nexposeCCSessionID=5D476D9DA8DA829E607FBF8E3B4BC7ED20A29DA4; TIMEOUT=session-alive'"
+    SESSION = "5D476D9DA8DA829E607FBF8E3B4BC7ED20A29DA4"
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    VERIFY_SSL = not demisto.params().get('insecure', False)
+    TOKEN = demisto.params().get('token', None)
+
+
+
+    def get_server_url():
+        url = demisto.params()['server']
+        url = re.sub('/[\/]+$/', '', url)
+        url = re.sub('\/$', '', url)
+        return url
+
+
+    def load_proxy():
+        proxy = {}
+        if "proxy" in demisto.params():
+            proxy["http"] = os.environ["http_proxy"]
+            proxy["https"] = os.environ["https_proxy"]
+        return proxy
+
+    BASE_URL = get_server_url()
+    SERVER_URL = BASE_URL + '/api/3'
+    PROXY = load_proxy()
+
+
+    def get_headers():
+        headers = {
+           'Content-Type': 'application/json'
         }
 
-        return headers;
-    }
+        if TOKEN is not None:
+            headers['Token'] = TOKEN
+        return headers
 
-    function getSiteHeaders(){
-        var headers = getHeaders();
 
-        headers['Cookie'] = [SITE_COOKIE];
-        headers['nexposeCCSessionID'] = [SESSION];
+    def get_site_headers():
+        headers = get_headers()
 
-        return headers;
-    }
+        headers['Cookie'] = SITE_COOKIE
+        headers['nexposeCCSessionID'] = SESSION
 
-    function sendRequest(path, method, queryParams, body){
-        var query = '';
-        if(queryParams){
-            query = encodeToURLQuery(queryParams);
+        return headers
+
+
+    def send_request(path, method = 'get', body = {}, params = {}):
+        url = '%s/%s' % (SERVER_URL, path)
+        headers = get_headers()
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies = PROXY)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+        return res.json()
+
+    def dq(obj, path):
+      '''
+      return a value in an object path. in case of multiple objects in path, searches them all.
+      @param obj - dictionary tree to search in
+      @param path (list) - a path of the desired value in the object. for example: ['root', 'key', 'subkey']
+      '''
+      if len(path) == 0:
+          return obj
+
+      if isinstance(obj, dict):
+          if path[0] in obj:
+              return dq(obj[path[0]], path[1:])
+      elif isinstance(obj, list):
+          # in case current obj has multiple objects, search them all.
+          l = [dq(o, path) for o in obj]
+          return [k for k in l if k is not None]
+
+      # in case of error in the path
+      return None
+
+
+    def translate_single_object(obj, map_fields, filter_func=None):
+      if filter_func is None:
+          filter_func = lambda mf: True
+
+      d = {}
+      for f in map_fields:
+          if filter_func(f):
+              d[f['to']] = dq(obj, f['from'].split('.'))
+
+      return d
+
+
+    def translate_object(content, map_fields, filter_func=None):
+      '''
+      Converts object fields according to mapping dictionary
+      @param content - original content to copy
+      @param mapFields - an object assosiating source and destination object fields
+      @filter_func - function to filter out fields
+      @returns the mapped object
+      '''
+      if isinstance(content, (list, tuple)):
+          return [translate_single_object(item, map_fields, filter_func) for item in content]
+      else:
+          return translate_single_object(content, map_fields, filter_func)
+
+
+    def get_site(asset_id):
+        url = BASE_URL + '/data/assets/' + str(asset_id) + '/scans'
+        headers = get_site_headers()
+        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+        response = res.json()
+        if response is None or response['records'] is None or len(response['records']) == 0:
+            return ''
+
+        return {
+            'id': response['records'][0]['siteID'],
+            'name': response['records'][0]['siteName'],
+            'ip': response['records'][0]['ipAddress']
         }
 
-        var url = SERVER_URL.concat(path, query);
-        var res = http(
-            url,
-            {
-                Method: method ? method : 'GET',
-                Headers: getHeaders(),
-                Body: body ? JSON.stringify(body) : body
-            },
-            params.insecure,
-            params.proxy
-        );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed on request ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+    def get_list_response(path, limit=None, sort=None):
+        final_result = []
+        page_diff = 0
+        page_number = 0
+        params = {}
+
+        while True:
+            page = page_number
+            page_number += 1
+            params['page'] = page
+            if limit is not None:
+                params['size'] = limit
+            if sort is not None:
+                params['sort'] = sort
+            response = send_request(path, params=params)
+            if not response:
+                break
+            if response['resources'] is not None:
+                final_result = final_result + response['resources']
+            if response['page'] is not None:
+                page_diff = response['page']['totalPages'] - response['page']['number']
+            if page_diff < 1 or limit is not None:
+                break
+
+        return final_result
+
+
+    def get_last_scan(asset):
+        if asset['history'] is None:
+            return "-"
+        sorted_dates = sorted(asset['history'], key=lambda h: time.strptime(h['date'], "%Y-%m-%dT%H:%M:%S.%fZ"), reverse=True)
+
+        return sorted_dates[0]['date'] if sorted_dates[0] is not None else "-"
+
+    def get_asset_command():
+        asset = get_asset(demisto.args()['id'])
+
+        if asset is None:
+            return "Asset not found"
+        asset['LastScan'] = get_last_scan(asset)
+        asset['Site'] = get_site(asset['id'])['name']
+
+        assetHeaders = [
+        'AssetId',
+        'Addresses',
+        'Hardware',
+        'Aliases',
+        'HostType',
+        'Site',
+        'OperatingSystem',
+        'CPE',
+        'LastScan',
+        'RiskScore',
+        ]
+
+        assetOutput = translate_object(asset, [
+            {'from': 'id', 'to': 'AssetId'},
+            {'from': 'addresses.ip', 'to': 'Addresses'},
+            {'from': 'addresses.mac', 'to': 'Hardware'},
+            {'from': 'hostNames.name', 'to': 'Aliases'},
+            {'from': 'type', 'to': 'HostType'},
+            {'from': 'Site', 'to': 'Site'},
+            {'from': 'os', 'to': 'OperatingSystem'},
+            {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
+            {'from': 'cpe.v2.3', 'to': 'CPE'},
+            {'from': 'LastScan', 'to': 'LastScan'},
+            {'from': 'riskScore', 'to': 'RiskScore'}
+        ])
+
+        softwareHeaders = [
+            'Software',
+            'Version'
+            ]
+
+        softwareOutput = translate_object(asset['software'], [
+            {'from': 'description', 'to': 'Software'},
+            {'from': 'version', 'to': 'Version'}
+        ])
+
+        serviceHeaders = [
+            'Name',
+            'Port',
+            'Product',
+            'Protocol'
+            ]
+
+        servicesOutput = translate_object(asset['services'], [
+            {'from': 'name', 'to': 'Name'},
+            {'from': 'port', 'to': 'Port'},
+            {'from': 'product', 'to': 'Product'},
+            {'from': 'protocol', 'to': 'Protocol'}
+        ])
+
+        userHeaders = [
+            'FullName',
+            'Name',
+            'UserId'
+            ]
+
+        usersOutput = translate_object(asset['users'], [
+            {'from': 'name', 'to': 'Name'},
+            {'from': 'fullName', 'to': 'FullName'},
+            {'from': 'id', 'to': 'UserId'},
+        ])
+
+        assetMd = tableToMarkdown('Nexpose asset ' + str(asset['id']), assetOutput, assetHeaders, removeNull=True)
+        softwareMd = tableToMarkdown('Software', softwareOutput, softwareHeaders, removeNull=True)
+        servicesMd = tableToMarkdown('Services', servicesOutput, serviceHeaders, removeNull=True)
+        usersMd = tableToMarkdown('Users', usersOutput, userHeaders, removeNull=True)
+
+        md = assetMd + softwareMd + servicesMd + usersMd
+
+        endpoint =  {
+            'IP': assetOutput['Addresses'],
+            'MAC': assetOutput['Hardware'],
+            'HostName': assetOutput['Aliases'],
+            'OS': assetOutput['OperatingSystem']
         }
-        return JSON.parse(res.Body);
-    }
 
-    function getListResponse(path, queryParams){
-        var finalResult = [];
-        var pageDiff = 0;
-        var pageNumber = 0;
-        var queryParams = queryParams || {};
-
-        do{
-            queryParams.page = pageNumber++;
-            var response = sendRequest(path, 'GET', queryParams);
-            if(!response){
-                break;
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': asset,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                  'Nexpose.Asset(val.AssetId==obj.AssetId)': assetOutput,
+                  'Endpoint(val.IP==obj.IP)': endpoint
             }
-            if(response.resources){
-                finalResult = finalResult.concat(response.resources);
-            }
-            if(response.page){
-                pageDiff = response.page.totalPages - response.page.number;
-            }
-        }while(pageDiff > 1 && !queryParams.size);
-
-        return finalResult;
-    }
-
-    function getLastScan(asset){
-        if(!asset.history){
-            return "-";
-        }
-        var sorted = asset.history.sort(function(a,b){
-            return new Date(b.date) - new Date(a.date);
-        });
-
-        return sorted[0] ? sorted[0].date : '-';
-
-    }
-    function getAssetsCommand(){
-        var assets = getAssets(args);
-
-        if(!assets || assets.length === 0){
-            return "No assets found";
         }
 
-        var hrAssets = [];
-        assets.forEach(function(asset){
-            var hrAsset = {
-                Id: asset.id,
-                Address: asset.ip,
-                Name: asset.hostName,
-                Site: getSite(asset.id).name,
-                Exploits: dq(asset.vulnerabilities, 'exploits'),
-                Malware: dq(asset.vulnerabilities, 'malwareKits'),
-                OperatingSystem: asset.os,
-                Vulnerabilities: dq(asset.vulnerabilities, 'total'),
-                Risk: asset.riskScore,
-                Assessed: asset.assessedForVulnerabilities,
-                LastScan: getLastScan(asset),
-            }
+        return entry
 
-            hrAssets.push(hrAsset);
-        });
 
-        var entry = {
-            Type: entryTypes.note,
-            Contents: assets,
-            ContentsFormat: formats.json
-        };
+    def get_asset(asset_id):
+        path = 'assets/' + str(asset_id)
+        return send_request(path)
 
-        entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Assets' , hrAssets);
-        entry.EntryContext = {
-            'Nexpose.Asset(val.id==obj.id)': hrAssets
-        };
+    def get_user(user_id):
+        path = 'users/' + str(user_id)
+        return send_request(path)
 
-        return entry;
-    }
+    def get_user_groups(user_id):
+        path = 'users/' + str(user_id) + '/asset_groups'
+        return get_list_response(path)
 
-    function getSite(assetId){
-        var path = '/data/assets/' + assetId + '/scans';
+    def get_user_sites(user_id):
+        path = 'users/' + str(user_id) + '/sites'
+        return get_list_response(path)
 
-        var url = BASE_URL.concat(path);
-        var res = http(
-            url,
-            {
-                Method: 'POST',
-                Headers: getSiteHeaders(),
-            },
-            params.insecure,
-            params.proxy
-        );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed on request ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
+    def get_assets_command():
+        limit = demisto.args().get('limit', None)
+        sort = demisto.args().get('sort', None)
+        assets = get_assets(limit, sort)
 
-        var response = JSON.parse(res.Body);
+        if(assets is None or len(assets) == 0):
+            return 'No assets found'
 
-        if(response.records && response.records.length > 0){
-            return {
-                id: response.records[0].siteID,
-                name: response.records[0].siteName,
-                ip: response.records[0].ipAddress
+        for asset in assets:
+            asset['LastScan'] = get_last_scan(asset)
+            site = get_site(asset['id'])
+            asset['Site'] = site['name'] if site != '' else ''
+
+        headers = [
+        'AssetId',
+        'Address',
+        'Name',
+        'Site',
+        'Exploits',
+        'Malware',
+        'OperatingSystem',
+        'RiskScore',
+        'Assessed',
+        'LastScan'
+        ]
+
+        outputs = translate_object(assets, [
+            {'from': 'id', 'to': 'AssetId'},
+            {'from': 'ip', 'to': 'Address'},
+            {'from': 'hostName', 'to': 'Name'},
+            {'from': 'Site', 'to': 'Site'},
+            {'from': 'vulnerabilities.exploits', 'to': 'Exploits'},
+            {'from': 'vulnerabilities.malwareKits', 'to': 'Malware'},
+            {'from': 'os', 'to': 'OperatingSystem'},
+            {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
+            {'from': 'riskScore', 'to': 'RiskScore'},
+            {'from': 'assessedForVulnerabilities', 'to': 'Assessed'},
+            {'from': 'LastScan', 'to': 'LastScan'}
+        ])
+
+        endpoint = map(lambda o: {
+            'IP': o['Address'],
+            'HostName': o['Name'],
+            'OS': o['OperatingSystem']
+        }, outputs)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': assets,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Nexpose assets', outputs, headers,removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Asset(val.AssetId==obj.AssetId)': outputs,
+                  'Endpoint(val.IP==obj.IP)': endpoint
             }
         }
 
-        return '';
-    }
-
-    function getAssetCommand(){
-        var asset = getAssets(args, args.id);
-        delete(args.id);
-
-        if(!asset){
-            return "Asset not found";
-        }
-
-        var hrAsset = {
-            Addresses: dq(asset.addresses, 'ip'),
-            Hardware: dq(asset.addresses, 'mac'),
-            Aliases: dq(asset.hostNames, 'name'),
-            HostType: asset.type,
-            Site: '',
-            OS: asset.os,
-            CPE: dq(asset, 'cpe.v2.3'),
-            LastScan: getLastScan(asset),
-            RiskScore: asset.riskScore
-        }
-
-        var entry = {
-            Type: entryTypes.note,
-            Contents: asset,
-            ContentsFormat: formats.json
-        };
-        entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Asset' , hrAsset);
-        entry.EntryContext = {
-            'Nexpose.Asset(val.id==obj.id)': asset
-        }
-
-        return entry;
-    }
-
-    function getAssets(queryParams, id){
-        var path = 'assets';
-        if(id){
-            path += "/" + id;
-        }
-        else{
-            return getListResponse(path, queryParams);
-        }
-
-        return sendRequest(path, 'GET', queryParams);
-    }
-
-    function getVulnerabilitiesCommand(){
-        var assetId = args.id;
-        delete(args.id);
-
-        var vulnerabilities = getVulnerabilities(assetId, args);
-
-        if(!vulnerabilities || vulnerabilities.length === 0){
-            return "No vulnerabilities found";
-        }
-
-        var hrVulnerabilities = [];
-        var asset = {
-            id: assetId,
-            Vulnerability: []
-        };
-        vulnerabilities.forEach(function(v){
-            var vulnerability = getVulnerability(v.id);
-            asset.Vulnerability.push(vulnerability);
-            var hrVulnerability = {
-                Title: vulnerability.title,
-                Malware: vulnerability.malwareKits,
-                Exploit: vulnerability.exploits,
-                CVSS: dq(vulnerability.cvss, 'v3.score'),
-                Risk: vulnerability.riskScore,
-                PublishedOn: vulnerability.published,
-                ModifiedOn: vulnerability.modified,
-                Severity: vulnerability.severity,
-                Instances: v.instances,
-               // Exceptions: dq(v.results, 'exceptions')
-            };
-
-            hrVulnerabilities.push(hrVulnerability);
-        });
-
-        var entry = {
-            Type: entryTypes.note,
-            Contents: vulnerabilities,
-            ContentsFormat: formats.json
-        };
-        entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Asset ' + assetId + ' Vulnerabilities' , hrVulnerabilities);
-        entry.EntryContext = {
-            'Nexpose.Asset(val.id==obj.id)': asset
-        }
-
-        return entry;
-    }
-
-    function getVulnerabilities(assetId, queryParams){
-        var path = 'assets/' + assetId + '/vulnerabilities';
-
-        return getListResponse(path, queryParams);
-    }
-
-    function getVulnerability(vulnerabilityId){
-        var path = 'vulnerabilities/' + vulnerabilityId;
-
-        return sendRequest(path, 'GET');
-    }
-
-    function getSoftwareCommand(){
-        var assetId = args.id;
-        delete(args.id);
-        var software = getSoftware(assetId, args);
-
-        if(!software || software.length === 0){
-            return "No software found";
-        }
-        var asset = {
-            id: assetId,
-            Software: []
-        }
-        var hrSoftware = [];
-        software.forEach(function(s){
-            asset.Software.push(s);
-           var hrs = {
-               Software: s.description,
-               version: s.version
-           };
-           hrSoftware.push(hrs);
-        });
-
-        var entry = {
-            Type: entryTypes.note,
-            Contents: software,
-            ContentsFormat: formats.json
-        };
-        entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Asset ' + assetId + ' Installed software' , hrSoftware);
-        entry.EntryContext = {
-            'Nexpose.Asset(val.id==obj.id)': asset
-        }
-
-        return entry;
-    }
-
-    function getSoftware(assetId, queryParams){
-        var path = 'assets/' + assetId + '/software';
-
-        return getListResponse(path, queryParams);
-    }
-
-    function getServicesCommand(){
-        var assetId = args.id;
-        delete(args.id);
-        var services = getServices(assetId, args);
-
-        if(!services || services.length === 0){
-            return "No services found";
-        }
-
-        var asset = {
-            id: assetId,
-            Service: []
-        }
-
-        var hrServices = [];
-        services.forEach(function(s){
-            if(s.protocol && s.port){
-                var service = getService(assetId, s.protocol, s.port);
-                asset.Service.push(service);
-                var vulnerabilities = getServiceVulnerabilities(assetId, s.protocol, s.port);
-                var hrService = {
-                    ServiceName: service.name,
-                    Product: service.product,
-                    Port: service.port,
-                    Vulnerabilities: vulnerabilities ? vulnerabilities.length : '0',
-                    Users: service.users ? service.users.length : '0',
-                    Groups: service.userGroups ? service.userGroups.length : '0',
-                };
-
-                hrServices.push(hrService);
-            }
-        });
-
-        var entry = {
-            Type: entryTypes.note,
-            Contents: services,
-            ContentsFormat: formats.json
-        };
-        entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Asset ' + assetId + ' Services' , hrServices);
-        entry.EntryContext = {
-            'Nexpose.Asset(val.id==obj.id)': asset
-        }
-
-        return entry;
-    }
-
-    function getServices(assetId, queryParams){
-        var path = 'assets/' + assetId + '/services';
-
-        return getListResponse(path, queryParams);
-    }
-
-    function getService(assetId, protocol, port){
-        var path = 'assets/' + assetId + '/services/' + protocol + '/' + port;
-
-        return sendRequest(path, 'GET');
-    }
-
-    function getServiceVulnerabilities(assetId, protocol, port){
-        var path = 'assets/' + assetId + '/services/' + protocol + '/' + port + '/vulnerabilities';
-
-        return getListResponse(path);
-    }
-
-    function getUserCommand(){
-        var userId = args.id;
-        delete(args.id);
-
-        var user = getUser(userId);
-
-        if(!user){
-            return "User not found";
-        }
-
-        var groups = getUserGroups(userId);
-        var sites = getUserSites(userId);
-
-        var hrUser = {
-            Authenticator: dq(user.authentication, 'id'),
-            UserName: dq(user.authentication, 'name'),
-            FullName: user.name,
-            Email: user.email,
-            Administrator: '',
-            UserRole: dq(user.role, 'name'),
-            LastLogon: '',
-            PasswordExpires: '',
-            Disabled: '',
-            Sites: sites ? sites.length : 0,
-            Groups: groups ? groups.length : 0
-        };
-
-        var entry = {
-            Type: entryTypes.note,
-            Contents: user,
-            ContentsFormat: formats.json
-        };
-        entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('User', hrUser);
-        entry.EntryContext = {
-            'Nexpose.User(val.id==obj.id)': user
-        }
-
-        return entry;
-    }
-
-    function getUser(userId){
-        var path = 'users/' + userId;
-
-        return sendRequest(path, 'GET');
-    }
-
-    function getUserGroups(userId){
-        var path = 'users/' + userId + '/asset_groups';
-
-        return getListResponse(path);
-    }
-
-    function getUserSites(userId){
-        var path = 'users/' + userId + '/sites'
-
-        return getListResponse(path);
-    }
-
-    function getScanCommand(){
-        var scanId = args.id;
-        delete(args.id);
-
-        var scan = getScan(scanId);
-
-        if(!scan){
-            return 'Scan not found';
-        }
-
-        var vulnerabilitiesCount = 0;
-        for(key in scan.vulnerabilities){
-            vulnerabilitiesCount += scan.vulnerabilities[key];
-        }
-
-        var hrScan = {
-            Site: '',
-            ScanType: scan.scanType,
-            ScanName: scan.scanName,
-            StartedBy: scan.startedBy,
-            Assets: scan.assets,
-            Vulnerabilities: vulnerabilitiesCount,
-            TotalTime: scan.duration,
-            Completed: scan.endTime,
-            Status: scan.status,
-            Engine: scan.engineName
-        }
-
-        var entry = {
-            Type: entryTypes.note,
-            Contents: scan,
-            ContentsFormat: formats.json
-        };
-        entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Scan', hrScan);
-        entry.EntryContext = {
-            'Nexpose.Scan(val.id==obj.id)': scan
-        }
-
-        return entry;
-    }
-
-    function getScan(scanId){
-        var path = 'scans/' + scanId;
-
-        return sendRequest(path, 'GET');
-    }
-
-    function getAssetVulnerabilitySolutionsCommand(){
-        var assetId = args.id;
-        var vulnerabilityId = args.vulnerabilityId;
-        delete(args.assetId);
-        delete(args.vulnerabilityId);
-
-        var solutions = getVulnerabilitySolutions(assetId, vulnerabilityId);
-
-        if(!solutions || solutions.length === 0){
-            return "No solutions found";
-        }
-
-        var vulnerability = {
-            id: vulnerabilityId,
-            Solution: []
-        }
-        var hrSolutions = [];
-
-        solutions.forEach(function(solution){
-            //var solution = getSolution(s);
-            vulnerability.Solution.push(solution);
-            var hrSolution = {
-                AdditionalInformation: solution.additionalInformation,
-                Estimate: solution.estimate,
-                Steps: dq(solution.steps, 'text'),
-                Summary: dq(solution.summary, 'text'),
-                Type: solution.type
-            }
-
-            hrSolutions.push(hrSolution);
-        });
-
-        var entry = {
-            Type: entryTypes.note,
-            Contents: solutions,
-            ContentsFormat: formats.json
-        };
-        entry.ReadableContentsFormat = formats.markdown;
-        entry.HumanReadable = tableToMarkdown('Solutions for vulnerability ' + vulnerabilityId, hrSolutions);
-        entry.EntryContext = {
-            'Nexpose.Asset.Vulnerability(val.id==obj.id)': vulnerability
-        }
-
-        return entry;
-    }
-
-    function getVulnerabilitySolutions(assetId, vulnerabilityId){
-        var path = 'assets/' + assetId + '/vulnerabilities/' + vulnerabilityId + '/solution';
-
-        return getListResponse(path);
-    }
-
-    function getSolution(solutionId){
-        var path = 'solutions/' + solutionId;
-
-        return sendRequest(path, 'GET');
-    }
-    var entry;
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            return 'ok';
-        case 'fetch-incidents':
-            // JSON of the incident type created by this integration
-            // You can store the last run as a string using set last run.
-            setLastRun({'time': 'now'});
-            // And you can retrieve it in any other call...
-            var now = getLastRun();
-            // now is an object with field time, that has value 'now'.
-            return JSON.stringify([{"Name":"Incident #1"},{"Name":"Incident #2"}]);
-        case 'nexpose-get-assets':
-            var entry = getAssetsCommand();
-            break;
-        case 'nexpose-get-asset':
-            var entry = getAssetCommand();
-            break;
-        case 'nexpose-get-asset-vulnerabilities':
-            var entry = getVulnerabilitiesCommand();
-            break;
-        case 'nexpose-get-asset-software':
-            var entry = getSoftwareCommand();
-            break;
-        case 'nexpose-get-asset-services':
-            var entry = getServicesCommand();
-            break;
-        case 'nexpose-get-user':
-            var entry = getUserCommand();
-            break;
-        case 'nexpose-get-scan':
-            var entry = getScanCommand();
-            break;
-        case 'nexpose-get-asset-vulnerability-solution':
-            var entry = getAssetVulnerabilitySolutionsCommand();
-            break;
-    }
-
-    return entry;
-  type: javascript
+        return entry
+
+    def get_assets(limit=None, sort=None):
+        return get_list_response('/assets', limit, sort)
+
+    try:
+        if demisto.command() == 'test-module':
+            get_assets(limit=1)
+            demisto.results('ok')
+        if demisto.command() == 'nexpose-get-assets':
+            demisto.results(get_assets_command())
+        if demisto.command() == 'nexpose-get-asset':
+            demisto.results(get_asset_command())
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
   commands:
   - name: nexpose-get-assets
     arguments:
@@ -619,7 +398,7 @@ script:
         The default sort order is ascending. Multiple sort criteria can be specified
         using multiple sort query parameters.'
       isArray: true
-    - name: size
+    - name: limit
       description: integer <int32> The number of records per page to retrieve.
     description: Returns all assets for which you have access.
   - name: nexpose-get-asset
