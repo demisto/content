@@ -7,7 +7,7 @@ script: |-
 
   field_name = demisto.args()['fieldName']
 
-  t = strftime("%b %d %H:%M:%S")
+  t = strftime("%a, %d %b %Y %H:%M:%S %Z")
   res = demisto.executeCommand("IncidentSet", {"customFieldName":field_name,"customFieldValue":t})
   demisto.results(res)
 type: python
@@ -20,3 +20,4 @@ args:
   required: true
   description: "The name of the incident custom field of type date"
 scripttarget: 0
+releaseNotes: "Change SetDateField time format, to include year properlly"
