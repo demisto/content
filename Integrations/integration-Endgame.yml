@@ -486,7 +486,7 @@ script:
             var entry = {
                 Type: entryTypes.note,
                 Contents: results,
-                ContentsFormat: formats.json
+                ContentsFormat: formats.json,
                 ReadableContentsFormat : formats.markdown,
                 EntryContext : {}
             };
