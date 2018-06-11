@@ -753,8 +753,7 @@ script:
         has not yet been applied to all Amazon Route 53 DNS servers.
       type: string
     - contextPath: AWS.Route53.RecordSetsChange.Comment
-      description: A complex type that describes change information about changes
-        made to your hosted zone.
+      description: A complex type that describes change information about changes made to your hosted zone.
       type: string
     description: Upsert a resource record set. If a resource record set does not already
       exist, AWS creates it. If a resource set does exist, Amazon Route 53 updates
