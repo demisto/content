@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -38,7 +38,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "13"
     scriptarguments:
       value:
         simple: |-
@@ -49,8 +49,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 159
+          "x": 50,
+          "y": 195
         }
       }
   "8":
@@ -75,8 +75,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 326
+          "x": 50,
+          "y": 545
         }
       }
   "9":
@@ -101,8 +101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 446,
-          "y": 495
+          "x": 50,
+          "y": 720
         }
       }
   "10":
@@ -151,8 +151,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 696
+          "x": 50,
+          "y": 895
         }
       }
   "11":
@@ -201,8 +201,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 881
+          "x": 50,
+          "y": 1070
         }
       }
   "12":
@@ -224,8 +224,35 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 445,
-          "y": 1101
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "13":
+    id: "13"
+    taskid: ca818786-d32b-492a-8b3e-ef5cd62fabe8
+    type: regular
+    task:
+      id: ca818786-d32b-492a-8b3e-ef5cd62fabe8
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
 view: |-
@@ -233,9 +260,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1146,
-        "width": 385,
-        "x": 445,
+        "height": 1290,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
