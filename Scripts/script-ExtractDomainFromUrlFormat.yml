@@ -3,44 +3,25 @@ commonfields:
   version: -1
 name: ExtractDomainFromUrlAndEmail
 script: |-
-  var extractHostname = function(url) {
-      var hostname;
-      if (url.indexOf("://") > -1) {
-          hostname = url.split('/')[2];
-      }
-      else {
-          hostname = url.split('/')[0];
-      }
-      hostname = hostname.split(':')[0];
-      hostname = hostname.split('?')[0];
-      return hostname;
-  };
-
-  var extractRootDomain = function(url) {
-      var domain = extractHostname(url),
-          splitArr = domain.split('.'),
-          arrLen = splitArr.length;
-
-      if (arrLen > 2) {
-          domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
-      }
-      return domain;
-  };
+  from tld import get_tld
+  from validate_email import validate_email
+  import re
 
 
-  var url = args.input;
+  inp = demisto.args()['input']
 
-  var emailStringRegex = emailRegex.toString().substring(1,(emailRegex.toString().length - 1));
-  var gmi = 'gmi';
-  var reg = new RegExp(emailStringRegex, gmi);
-  var email = reg.exec(url);
-  if ((email) && (email.length>0)){
-      return email[0].replace(/.*@/, "");
-  }
-  return extractRootDomain(url);
-type: javascript
+  is_email = validate_email(inp)
+  if is_email:
+      domain = re.search("@[\w.]+", inp)
+      if len(domain.group()) > 0:
+          demisto.results(domain.group()[1:])
+  else:
+      domain = get_tld(inp)
+      demisto.results(domain)
+type: python
 tags:
 - indicator-format
+comment: Extract Domain from a URL or Email
 enabled: true
 args:
 - name: input
@@ -48,4 +29,4 @@ args:
   default: true
   description: The URL or Email to process
 scripttarget: 0
-comment: Extract Domain from a URL or Email
+dockerimage: demisto/tld
