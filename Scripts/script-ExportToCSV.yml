@@ -107,3 +107,4 @@ args:
     list.
   isArray: true
 scripttarget: 0
+releaseNotes: "Add option to pass headers as script argument"
