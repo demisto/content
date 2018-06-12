@@ -762,7 +762,7 @@ script:
     function collectRegistryDataToGeneralContext(data) {
         let regKey = CB_PRODUCT === 'Response' ?  data.object : data.obj.object;
         let RegistryKeys = [];
-        for (let value in data.values) {
+        for (let value of data.values) {
             let entry = {
                 Path: regKey,
                 Name: value.value_name,
@@ -1042,25 +1042,25 @@ script:
                     }
                 };
             }
-            let processesData = mapObjFunction(processData)(data);
+            let processes = mapObjFunction(processesData)(data.processes);
             let processesMD = tableToMarkdown(
                 `CB ${CB_PRODUCT} - Processes`,
-                processesData,
+                processes,
                 processesData.map(cn => cn.to),
                 undefined,
                 splitCamelCase
             );
 
             // collect processes data for general context
-            let processes = [];
-            for (let process in data.processes) {
-                let entry = {
+            let processesCollection = [];
+            for (let process of data.processes) {
+                processesCollection.push({
                     'PID': process.pid,
                     'CommandLine': process.command_line,
                     'Path': process.path,
                     'Start Time': process.create_time,
                     'Parent': process.parent
-                };
+                });
             }
 
             return {
@@ -1071,8 +1071,8 @@ script:
                 HumanReadable: commandMD + '\n\n' + processesMD,
                 EntryContext: {
                     'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData,
-                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Process': processesData,
-                    'Process': processes
+                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Process': processes,
+                    'Process': processesCollection
                 }
             };
         }
