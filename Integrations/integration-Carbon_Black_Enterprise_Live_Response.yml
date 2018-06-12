@@ -103,7 +103,7 @@ script:
 
     /// Base Functions
 
-    let splitCamelCase = function (str) {
+    function splitCamelCase = function (str) {
         return str
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace('.', ' ');
@@ -203,7 +203,7 @@ script:
     /// Cb Live Response Session
 
     function testModule() {
-        let res = sendRequest(`/session`, 'GET');
+        let res = sendRequest('/session', 'GET');
         if (res.StatusCode === 200) {
             return 'ok';
         }
@@ -588,7 +588,7 @@ script:
         let dataMap = COMMAND_DATA;
         let contextKeys = [
             'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)',
-            'CbLiveResponse.Commands.Other(val.CbCommandID==obj.CbCommandID)'
+            'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'
         ];
         return createEntry(title, command, dataMap, contextKeys, splitCamelCase);
     }
@@ -620,7 +620,7 @@ script:
         //keep CbResponse context for backward competability
         let contextKeys = [
             'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)',
-            'CbLiveResponse.Commands.List(val.CbCommandID==obj.CbCommandID)'
+            'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'
         ];
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
@@ -705,7 +705,7 @@ script:
         //keep CbResponse context for backward competability
         let contextKeys = [
             'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)',
-            'CbLiveResponse.Commands.List(val.CbCommandID==obj.CbCommandID)'
+            'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'
         ];
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
@@ -777,7 +777,7 @@ script:
         'directory list' : function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Directory Listing: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands.DirectoryList(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -791,7 +791,7 @@ script:
             //create entry to hold directory data
             dataMap = directoryData;
             title = `CB ${CB_PRODUCT} - Directory Listing`;
-            contextKeys = ['CbLiveResponse.Commands.DirectoryList(val.CbCommandID==obj.CbCommandID).Files'];
+            contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Files'];
             let directoryListEntry = createEntry(
                 title,
                 data.files,
@@ -804,7 +804,7 @@ script:
         'put file': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Push File: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands.Files.Upload(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -817,7 +817,7 @@ script:
         'get file': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Get File From Path ${args.path}: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands.Files.Get(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             if (data.status === 'complete') {
                 dataMap.push({to: 'FileID', from: 'file_id'});
             }
@@ -833,7 +833,7 @@ script:
         'kill': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Kill Process ${args.pid}: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands.Processes.Kill(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -849,7 +849,7 @@ script:
                 dataMap = dataMap.concat(processData);
             }
             let title = `CB ${CB_PRODUCT} - Execute Process: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands.Processes.List(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -865,7 +865,7 @@ script:
                 dataMap = dataMap.concat(memdumpData);
             }
             let title = `CB ${CB_PRODUCT} - Memdump: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands.Memdump(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -878,7 +878,7 @@ script:
          'delete file': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Delete File From Endpoint: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands.Files.Delete(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -893,10 +893,10 @@ script:
             if (data.status === 'complete'){
                 dataMap.push({to: 'SubKeys', from: 'sub_keys'});
             }
-            let commandEntry = mapObjFunction(dataMap)(data);
+            let commandData = mapObjFunction(dataMap)(data);
             let commandMD = tableToMarkdown(
                 `CB ${CB_PRODUCT} - Registry Keys: Command Status`,
-                commandEntry,
+                commandData,
                 dataMap.map(cn => cn.to),
                 undefined,
                 splitCamelCase
@@ -910,7 +910,7 @@ script:
                     ReadableContentsFormat: formats.markdown,
                     HumanReadable: commandMD,
                     EntryContext: {
-                        'CbLiveResponse.Commands.Registry.List(val.CbCommandID==obj.CbCommandID)': commandEntry
+                        'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData
                     }
                 };
             }
@@ -934,8 +934,8 @@ script:
                 ReadableContentsFormat: formats.markdown,
                 HumanReadable: commandMD + '\n\n' + registryMD,
                 EntryContext: {
-                    'CbLiveResponse.Commands.Registry.List(val.CbCommandID==obj.CbCommandID)': commandEntry,
-                    'CbLiveResponse.Commands.Registry.List(val.CbCommandID==obj.CbCommandID).Values': registryEntry,
+                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandEntry,
+                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Values': registryEntry,
                     'RegistryKey': generalConetxt
                 }
             };
@@ -945,17 +945,17 @@ script:
             if (data.status === 'complete') {
                 dataMap = dataMap.concat(regKeyData);
             }
-            let commandEntry = mapObjFunction(dataMap)(data);
+            let commandData = mapObjFunction(dataMap)(data);
             let commandMD = tableToMarkdown(
                 `CB ${CB_PRODUCT} - Query Registry Value: Command Status`,
-                commandEntry,
+                commandData,
                 dataMap.map(cn => cn.to),
                 undefined,
                 splitCamelCase
             );
 
             let context = {
-                'CbLiveResponse.Commands.Registry.QueryValue(val.CbCommandID==obj.CbCommandID)': commandEntry
+                'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData
             };
             if (data.status !== 'complete') {
                 context.RegistryKey = collectRegistryDataToGeneralContext(data);
@@ -972,7 +972,7 @@ script:
          'reg create key': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Create Registry Key: Command Status`;;
-            let contextKeys = ['CbLiveResponse.Commands.Registry.Create(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -985,7 +985,7 @@ script:
          'reg delete key': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Create Registry Key: Command Status`;;
-            let contextKeys = ['CbLiveResponse.Commands.Registry.DeleteKey(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -998,7 +998,7 @@ script:
          'reg delete values': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Delete Registry Value: Command Status`;;
-            let contextKeys =  ['CbLiveResponse.Commands.Registry.DeleteValue(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -1011,7 +1011,7 @@ script:
          'reg set values': function(data) {
             let dataMap = COMMAND_DATA;
             let title = `CB ${CB_PRODUCT} - Delete Registry Value: Command Status`;;
-            let contextKeys =  ['CbLiveResponse.Commands.Registry.SetValue(val.CbCommandID==obj.CbCommandID)'];
+            let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'];
             let commandInfoEntry = createEntry(
                 title,
                 data,
@@ -1022,10 +1022,10 @@ script:
             return commandInfoEntry;
         },
         'process list' : function(data) {
-            let commandEntry = mapObjFunction(COMMAND_DATA)(data);
+            let commandData = mapObjFunction(COMMAND_DATA)(data);
             let commandMD = tableToMarkdown(
                 `CB ${CB_PRODUCT} - List Processes: Command Status`,
-                commandEntry,
+                commandData,
                 COMMAND_DATA.map(cn => cn.to),
                 undefined,
                 splitCamelCase
@@ -1038,15 +1038,15 @@ script:
                     ReadableContentsFormat: formats.markdown,
                     HumanReadable: commandMD,
                     EntryContext: {
-                       'CbLiveResponse.Commands.Processes.List(val.CbCommandID==obj.CbCommandID)': commandEntry
+                       'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData
                     }
                 };
             }
-            let processesEntry = mapObjFunction(processData)(data);
+            let processesData = mapObjFunction(processData)(data);
             let processesMD = tableToMarkdown(
                 `CB ${CB_PRODUCT} - Processes`,
-                processesEntry,
-                processesMD.map(cn => cn.to),
+                processesData,
+                processesData.map(cn => cn.to),
                 undefined,
                 splitCamelCase
             );
@@ -1070,8 +1070,8 @@ script:
                 ReadableContentsFormat: formats.markdown,
                 HumanReadable: commandMD + '\n\n' + registryMD,
                 EntryContext: {
-                    'CbLiveResponse.Commands.Processes.List(val.CbCommandID==obj.CbCommandID)': commandEntry,
-                    'CbLiveResponse.Commands.Processes.List(val.CbCommandID==obj.CbCommandID).Process': processesEntry,
+                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData,
+                    'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Process': processesData,
                     'Process': processes
                 }
             };
@@ -1089,7 +1089,7 @@ script:
         //keep CbResponse context for backward competability
         let contextKeys = [
             'CbResponse.Commands(val.CbCommandID==obj.CbCommandID)',
-            'CbLiveResponse.Commands.List(val.CbCommandID==obj.CbCommandID)'
+            'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)'
         ];
         return createEntry(
             title,
@@ -1133,7 +1133,7 @@ script:
             if (result.status === 'complete') {
                 let title = `CB Response - Terminate Process ${args.pid}`;
                 let dataMap = COMMAND_DATA;
-                let headers = dataMap.map(cn => cn.titleo);
+                let headers = dataMap.map(cn => cn.to);
                 let translatedData = mapObjFunction(dataMap)(result);
                 let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
                 let context = {
@@ -1696,30 +1696,30 @@ script:
       required: true
       description: Command ID to cancel
     outputs:
-    - contextPath: CbLiveResponse.Commands.List.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The Command Status
-    - contextPath: CbLiveResponse.Commands.List.Hostname
+    - contextPath: CbLiveResponse.Commands.Hostname
       description: The Hostname running the command
-    - contextPath: CbLiveResponse.Commands.List.CbLiveResponse.Commands.CbSensorID
+    - contextPath: CbLiveResponse.Commands.CbSensorID
       description: The Sensor ID
-    - contextPath: CbLiveResponse.Commands.List.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The Command name
-    - contextPath: CbLiveResponse.Commands.List.CbSessionID
+    - contextPath: CbLiveResponse.Commands.CbSessionID
       description: The Session ID
-    - contextPath: CbLiveResponse.Commands.List.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: The Command ID
-    - contextPath: CbLiveResponse.Commands.List.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: 'Object argument for the CbLive command - e.g. for ''directory
         list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
-    - contextPath: CbLiveResponse.Commands.List.CreateTime
+    - contextPath: CbLiveResponse.Commands.CreateTime
       description: Command create time
-    - contextPath: CbLiveResponse.Commands.List.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The time the command completed or 0 if still in progres.
-    - contextPath: CbLiveResponse.Commands.List.Result.Desc
+    - contextPath: CbLiveResponse.Commands.Result.Desc
       description: Result description
-    - contextPath: CbLiveResponse.Commands.List.esult.Type
+    - contextPath: CbLiveResponse.Commands.esult.Type
       description: Result type
-    - contextPath: CbLiveResponse.Commands.List.Result.Code
+    - contextPath: CbLiveResponse.Commands.Result.Code
       description: Result code
     description: Cancel the given command. Only pending commands can be canceled.
   - name: cb-command-info
@@ -1979,16 +1979,16 @@ script:
       description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Processes.Kill.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Processes.Kill.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Processes.Kill.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Processes.Kill.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Processes.Kill.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The process ID.
     description: Terminates a process at the sensor/endpoint
   - name: cb-directory-listing
@@ -2012,28 +2012,28 @@ script:
       description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.Status
+    - contextPath: CbLiveResponse.Commands.DirectoryList.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: the directory listing filter (or path).
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.Files.FileAttributes
+    - contextPath: CbLiveResponse.Commands.Files.FileAttributes
       description: List of file attributes.
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.Files.CreateTime
+    - contextPath: CbLiveResponse.Commands.Files.CreateTime
       description: Create time in unix time format.
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.Files.LastAccessTime
+    - contextPath: CbLiveResponse.Commands.Files.LastAccessTime
       description: Last access time in unix time format.
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.Files.LastWriteTime
+    - contextPath: CbLiveResponse.Commands.Files.LastWriteTime
       description: Last write time in unix time format.
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.Files.FileSize
+    - contextPath: CbLiveResponse.Commands.Files.FileSize
       description: The file size.
-    - contextPath: CbLiveResponse.Commands.Commands.DirectoryList.Files.FileName
+    - contextPath: CbLiveResponse.Commands.Files.FileName
       description: The file name.
     description: List directories on the endpoint.
   - name: cb-process-execute
@@ -2067,20 +2067,20 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Processes.Create.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Processes.Create.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Processes.Create.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Processes.Create.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Processes.Create.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The path and command line of the executable.
-    - contextPath: CbLiveResponse.Commands.Processes.Create.ReturnCode
+    - contextPath: CbLiveResponse.Commands.ReturnCode
       description: the return code of the process (if wait was set to “true”).
-    - contextPath: CbLiveResponse.Commands.Processes.Create.ProcessID
+    - contextPath: CbLiveResponse.Commands.ProcessID
       description: The pid of the executed process.
     description: Run executable on the endpoint.
   - name: cb-memdeump
@@ -2106,26 +2106,26 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Memdump.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Memdump.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Memdump.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Memdump.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Memdump.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The path to save the resulting memory dump (on the endpoint).
-    - contextPath: CbLiveResponse.Commands.Memdump.ReturnCode
+    - contextPath: CbLiveResponse.Commands.ReturnCode
       description: Return code of the memory dump process.
-    - contextPath: CbLiveResponse.Commands.Memdump.CompressingEnabled
+    - contextPath: CbLiveResponse.Commands.CompressingEnabled
       description: Boolean flag indicating if compression is enabled.
-    - contextPath: CbLiveResponse.Commands.Memdump.Complete
+    - contextPath: CbLiveResponse.Commands.Complete
       description: Boolean flag indicating if memory dump is completed.
-    - contextPath: CbLiveResponse.Commands.Memdump.PercentDone
+    - contextPath: CbLiveResponse.Commands.PercentDone
       description: Percent of the process completed
-    - contextPath: CbLiveResponse.Commands.Memdump.DumpingInProgress
+    - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Boolean flag indicating if memory dump is in progress.
     description: Endpoint memory dump.
   - name: cb-command-create
@@ -2178,30 +2178,30 @@ script:
       required: true
       description: Session ID to create command for
     outputs:
-    - contextPath: CbLiveResponse.Commands.List.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The Command Status
-    - contextPath: CbLiveResponse.Commands.List.Hostname
+    - contextPath: CbLiveResponse.Commands.Hostname
       description: The Hostname running the command
-    - contextPath: CbLiveResponse.Commands.List.CbLiveResponse.Commands.CbSensorID
+    - contextPath: CbLiveResponse.Commands.CbLiveResponse.Commands.CbSensorID
       description: The Sensor ID
-    - contextPath: CbLiveResponse.Commands.List.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The Command name
-    - contextPath: CbLiveResponse.Commands.List.CbSessionID
+    - contextPath: CbLiveResponse.Commands.CbSessionID
       description: The Session ID
-    - contextPath: CbLiveResponse.Commands.List.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: The Command ID
-    - contextPath: CbLiveResponse.Commands.List.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: 'Object argument for the CbLive command - e.g. for ''directory
         list'' this is the path of the dir to list. Full docs: https://github.com/carbonblack/cbapi/tree/master/sensor_apis#command-objects'
-    - contextPath: CbLiveResponse.Commands.List.CreateTime
+    - contextPath: CbLiveResponse.Commands.CreateTime
       description: Command create time
-    - contextPath: CbLiveResponse.Commands.List.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The time the command completed or 0 if still in progres.
-    - contextPath: CbLiveResponse.Commands.List.Result.Desc
+    - contextPath: CbLiveResponse.Commands.Result.Desc
       description: Result description
-    - contextPath: CbLiveResponse.Commands.List.Result.Type
+    - contextPath: CbLiveResponse.Commands.Result.Type
       description: Result type
-    - contextPath: CbLiveResponse.Commands.List.Result.Code
+    - contextPath: CbLiveResponse.Commands.Result.Code
       description: Result code
     description: Create a live response command
   - name: cb-command-create-and-wait
@@ -2291,16 +2291,16 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Files.Delete.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Files.Delete.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Files.Delete.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Files.Delete.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Files.Delete.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The source path of the object to delete.
     description: Delete a file from the endpoint.
   - name: cb-registry-get-values
@@ -2324,24 +2324,24 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Registry.List.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Registry.List.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Registry.List.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Registry.List.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Registry.List.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The path of the key to queried.
-    - contextPath: CbLiveResponse.Commands.Registry.List.Values.RegKeyType
+    - contextPath: CbLiveResponse.Commands.Values.RegKeyType
       description: Registry value type.
-    - contextPath: CbLiveResponse.Commands.Registry.List.Values.RegKeyName
+    - contextPath: CbLiveResponse.Commands.Values.RegKeyName
       description: the name of the registry value.
-    - contextPath: CbLiveResponse.Commands.Registry.List.Values.RegKeyData
+    - contextPath: CbLiveResponse.Commands.Values.RegKeyData
       description: The data associated with the registry value.
-    - contextPath: CbLiveResponse.Commands.Registry.List.SubKeys
+    - contextPath: CbLiveResponse.Commands.SubKeys
       description: List of subkey names.
     description: Enumerate registry values
   - name: cb-registry-query-value
@@ -2365,24 +2365,24 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: the path of the key + the path of the value (ie HKEY_LOCAL_MACHINE\blah\key\value).
     - contextPath: CbLiveResponse.Commands.Registry.QueryValue.Values.RegKeyType
       description: Registry value type.
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.RegKeyName
+    - contextPath: CbLiveResponse.Commands.RegKeyName
       description: the name of the registry value.
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.RegKeyData
+    - contextPath: CbLiveResponse.Commands.RegKeyData
       description: The data associated with the registry value.
-    - contextPath: CbLiveResponse.Commands.Registry.QueryValue.SubKeys
+    - contextPath: CbLiveResponse.Commands.SubKeys
       description: List of subkey names.
     description: Query for registry value.
   - name: cb-registry-create-key
@@ -2406,16 +2406,16 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Registry.Create.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Registry.Create.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Registry.Create.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Registry.Create.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Registry.Create.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The key path.
     description: Create a new registry key.
   - name: cb-registry-delete-key
@@ -2439,16 +2439,16 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteKey.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteKey.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteKey.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteKey.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteKey.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: the key path.
     description: Delete registry key.
   - name: cb-registry-delete-value
@@ -2472,16 +2472,16 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteValue.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteValue.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteValue.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteValue.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Registry.DeleteValue.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The key path.
     description: Delete registry value.
   - name: cb-registry-set-value
@@ -2521,16 +2521,16 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Registry.SetValue.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Registry.SetValue.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Registry.SetValue.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Registry.SetValue.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Registry.SetValue.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The key path.
     description: Set registry value.
   - name: cb-process-list
@@ -2551,30 +2551,30 @@ script:
       - "no"
       description: Cancel the command if still 'pending' after timeout.
     outputs:
-    - contextPath: CbLiveResponse.Commands.Processes.List.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Processes.List.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Processes.List.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Processes.List.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Processes.List.Processes.ProcessID
+    - contextPath: CbLiveResponse.Commands.Processes.ProcessID
       description: Process ID.
-    - contextPath: CbLiveResponse.Commands.Processes.List.Processes.CreateTime
+    - contextPath: CbLiveResponse.Commands.Processes.CreateTime
       description: The creation time of the process in unix time.
-    - contextPath: CbLiveResponse.Commands.Processes.List.Processes.ProcessGuid
+    - contextPath: CbLiveResponse.Commands.Processes.ProcessGuid
       description: The process guid of the process.
-    - contextPath: CbLiveResponse.Commands.Processes.List.Processes.Path
+    - contextPath: CbLiveResponse.Commands.Processes.Path
       description: The execution path of the process.
-    - contextPath: CbLiveResponse.Commands.Processes.List.Processes.SecurityIdentifier
+    - contextPath: CbLiveResponse.Commands.Processes.SecurityIdentifier
       description: The Security Identifier (SID) of the default process token.
-    - contextPath: CbLiveResponse.Commands.Processes.List.Processes.Username
+    - contextPath: CbLiveResponse.Commands.Processes.Username
       description: The username of the default process token.
-    - contextPath: CbLiveResponse.Commands.Processes.List.Processes.Parent
+    - contextPath: CbLiveResponse.Commands.Processes.Parent
       description: The pid (process id ) of the parent.
-    - contextPath: CbLiveResponse.Commands.Processes.List.Processes.ParentGuid
+    - contextPath: CbLiveResponse.Commands.Processes.ParentGuid
       description: The process guid of the parent process.
     description: 'List processes running on the endpoint. '
   - name: cb-get-file-from-endpoint
@@ -2592,18 +2592,18 @@ script:
         status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
     outputs:
-    - contextPath: CbLiveResponse.Commands.Files.Get.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Files.Get.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Files.Get.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Files.Get.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Files.Get.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The source path of the file.
-    - contextPath: CbLiveResponse.Commands.Files.Get.FileID
+    - contextPath: CbLiveResponse.Commands.FileID
       description: Unique file ID.
     description: Retrieve a file from a path on the endpoint.
   - name: cb-push-file-to-endpoint
@@ -2625,16 +2625,16 @@ script:
       description: The destination path of the file. Include file name and type (e.g.
         "c:\\Users\\USER\\Desktop\\log.txt").
     outputs:
-    - contextPath: CbLiveResponse.Commands.Files.Upload.CbCommandID
+    - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.Files.Upload.CommandName
+    - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
-    - contextPath: CbLiveResponse.Commands.Files.Upload.Status
+    - contextPath: CbLiveResponse.Commands.Status
       description: The command Status ('pending', 'in progress', 'complete', 'error',
         'canceled').
-    - contextPath: CbLiveResponse.Commands.Files.Upload.CommandCompletionTime
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.Files.Upload.OperandObject
+    - contextPath: CbLiveResponse.Commands.OperandObject
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
   runonce: false
