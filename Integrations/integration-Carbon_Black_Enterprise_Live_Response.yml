@@ -103,11 +103,11 @@ script:
 
     /// Base Functions
 
-    function splitCamelCase = function (str) {
+    function splitCamelCase(str) {
         return str
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace('.', ' ');
-    };
+    }
 
     function sendRequest(path, method, requestParams, headers, ignoredStatusCodes) {
 
