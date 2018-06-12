@@ -722,6 +722,9 @@ script:
 
             file_paths = []
             for threat in threats_context:
+                threat['hostname'] = threat.pop('name')
+                threat['I_p_address'] = threat.pop('ip_addresses')
+                threat['M_a_c_address'] = threat.pop('mac_addresses')
                 file_path = threat.pop('file_path')
                 file_paths.append({
                     'FilePath': file_path
@@ -1308,11 +1311,11 @@ script:
       description: Current quarantine status of the file on the device. Default (0),Quarantined
         (1),Whitelisted (2),Suspicious (3),FileRemoved (4),Corrupt (5)
       type: number
-    - contextPath: Endpoint.IpAddresses
+    - contextPath: Endpoint.IPAddress
       description: The list of IP addresses for the device.
-    - contextPath: Endpoint.MacAddresses
+    - contextPath: Endpoint.MACAddress
       description: The list of MAC addresses for the device.
-    - contextPath: Endpoint.Name
+    - contextPath: Endpoint.Hostname
       description: The device name for the device.
       type: string
     - contextPath: Endpoint.PolicyId
