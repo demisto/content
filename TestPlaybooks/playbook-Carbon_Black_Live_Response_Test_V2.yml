@@ -84,10 +84,10 @@ tasks:
       id: 55eb7ed2-9b57-4c7b-818a-9980ba7fc718
       version: -1
       name: 'Create a session for sensor #1'
-      script: carbonblackliveresponse_cpy|||cb-session-create-and-wait
+      script: carbonblackliveresponse|||cb-session-create-and-wait
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     nexttasks:
       '#none#':
       - "70"
@@ -116,10 +116,10 @@ tasks:
       id: 042fee6f-72f7-4b0d-8c93-ed88c16e92c1
       version: -1
       name: 'List open sessions for sensor #1'
-      script: carbonblackliveresponse_cpy|||cb-list-sessions
+      script: carbonblackliveresponse|||cb-list-sessions
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     nexttasks:
       '#none#':
       - "56"
@@ -212,10 +212,10 @@ tasks:
       id: 4a0a1dc1-2184-4b22-85d7-ee02c7092e67
       version: -1
       name: 'Upload test file to sensor #2'
-      script: carbonblackliveresponse_cpy|||cb-push-file-to-endpoint
+      script: carbonblackliveresponse|||cb-push-file-to-endpoint
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     nexttasks:
       '#none#':
       - "60"
@@ -245,10 +245,10 @@ tasks:
       id: 65a95d01-466e-4cb1-87df-fd6b6688f3c8
       version: -1
       name: Download uploaded file from the sensor
-      script: carbonblackliveresponse_cpy|||cb-get-file-from-endpoint
+      script: carbonblackliveresponse|||cb-get-file-from-endpoint
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     nexttasks:
       '#none#':
       - "61"
@@ -276,10 +276,10 @@ tasks:
       id: b5979d01-3a0d-43f3-8474-cd80c8582ff2
       version: -1
       name: Delete uploaded file from the endpoint
-      script: carbonblackliveresponse_cpy|||cb-file-delete-from-endpoint
+      script: carbonblackliveresponse|||cb-file-delete-from-endpoint
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     scriptarguments:
       cancel-on-timeout: {}
       path:
@@ -371,10 +371,10 @@ tasks:
       id: bd2e48be-0d82-4afb-8555-849f2b3f490b
       version: -1
       name: 'List open sessions for sensor #2'
-      script: carbonblackliveresponse_cpy|||cb-list-sessions
+      script: carbonblackliveresponse|||cb-list-sessions
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     nexttasks:
       '#none#':
       - "74"
@@ -399,10 +399,10 @@ tasks:
       id: 411ab548-459b-4ad3-8749-091900b28b0e
       version: -1
       name: 'List ''c:\Users'' Directory '
-      script: carbonblackliveresponse_cpy|||cb-command-create-and-wait
+      script: carbonblackliveresponse|||cb-command-create-and-wait
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     nexttasks:
       '#none#':
       - "30"
@@ -440,10 +440,10 @@ tasks:
       id: e2a06656-646e-493b-88b6-87121924dcaa
       version: -1
       name: Keep Session Alive
-      script: carbonblackliveresponse_cpy|||cb-keepalive
+      script: carbonblackliveresponse|||cb-keepalive
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     nexttasks:
       '#none#':
       - "73"
@@ -492,10 +492,10 @@ tasks:
       id: 056d4138-d043-4c0f-8523-13144f2706b6
       version: -1
       name: 'List ''c:\Users'' Directory '
-      script: carbonblackliveresponse_cpy|||cb-command-create-and-wait
+      script: carbonblackliveresponse|||cb-command-create-and-wait
       type: regular
       iscommand: true
-      brand: carbonblackliveresponse_cpy
+      brand: carbonblackliveresponse
     scriptarguments:
       compress: {}
       get-count: {}
