@@ -312,10 +312,6 @@
             "playbookID": "Preempt Test"
         },
         {
-            "integrations": "SQS",
-            "playbookID": "sqs_test"
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
         },
