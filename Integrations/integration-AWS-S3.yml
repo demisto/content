@@ -170,7 +170,7 @@ script:
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
-            
+
             response = client.delete_bucket(Bucket=args.get('bucket').lower())
             if response['ResponseMetadata']['HTTPStatusCode'] == 204:
                 return "the Bucket %s was Deleted " % args.get('bucket')
@@ -193,7 +193,7 @@ script:
                     'BucketName': bucket['Name'],
                     'CreationDate': datetime.datetime.strftime(bucket['CreationDate'], '%Y-%m-%dT%H:%M:%S')
                 })
-            ec = {'AWS.S3.Buckets': data}
+            ec = {'AWS.S3.Buckets(val.BucketName === obj.BucketName)': data}
             return create_entry('AWS S3 Buckets', data, ec)
 
         except Exception as e:
@@ -213,20 +213,18 @@ script:
             statements = policy['Statement']
             for statement in statements:
                     data.append({
-                        'BucketName':args.get('bucketName'),
+                        'BucketName':args.get('bucket'),
                         'PolicyId': policy['Id'],
                         'PolicyVersion': policy['Version'],
                         'Sid': statement['Sid'],
                         'Action': statement['Action'],
                         'Principal': statement['Principal'],
                         'Resource': statement['Resource'],
-                        'Effect': statement['Effect']
+                        'Effect': statement['Effect'],
+                        'Json': response['Policy']
                         })
 
-            ec = {
-                'AWS.S3.Buckets(val.BucketName === obj.BucketName).Policy': data,
-                'AWS.S3.Buckets(val.BucketName === obj.BucketName).Policy.json': response['Policy']
-            }
+            ec = {'AWS.S3.Buckets(val.BucketName === obj.BucketName).Policy': data}
             return create_entry('AWS S3 Bucket Policy', data, ec)
 
         except Exception as e:
@@ -247,7 +245,7 @@ script:
             if args.get('confirmRemoveSelfBucketAccess') is not None:
                 kwargs.update({'ConfirmRemoveSelfBucketAccess':True if args.get('confirmRemoveSelfBucketAccess') == 'True'  else False})
 
-            client.put_bucket_policy(**kwargs)
+            response = client.put_bucket_policy(**kwargs)
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return 'Successfully applied Bucket policy to %s bucket' % args.get('BucketName')
 
@@ -300,7 +298,7 @@ script:
                     'Size': convert_size(key['Size']),
                     'LastModified': datetime.datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
                 })
-            ec = {'AWS.S3.Buckets(val.BucketName === args.get('bucket')).Objects': data}
+            ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
             return create_entry('AWS S3 Bucket Objects', data, ec)
 
         except Exception as e:
@@ -308,7 +306,8 @@ script:
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
-        response = s3.list_buckets()
+        client = aws_session()
+        response = client.list_buckets()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
           result = ('ok')
 
@@ -382,10 +381,10 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: AWS.S3.Bucket.BucketName
+    - contextPath: AWS.S3.Buckets.BucketName
       description: The name of the bucket that was created.
       type: string
-    - contextPath: AWS.S3.Bucket.Location
+    - contextPath: AWS.S3.Buckets.Location
       description: The AWS Region the bucket was created.
       type: string
     description: Create AWS S3 bucket.
@@ -441,31 +440,31 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: AWS.S3.Bucket.Policy.Version
+    - contextPath: AWS.S3.Buckets.Policy.Version
       description: S3 Bucket Policy Version.
       type: string
-    - contextPath: AWS.S3.Bucket.Policy.PolicyID
+    - contextPath: AWS.S3.Buckets.Policy.PolicyId
       description: S3 Bucket Policy ID.
       type: string
-    - contextPath: AWS.S3.Bucket.Policy.Sid
+    - contextPath: AWS.S3.Buckets.Policy.Sid
       description: S3 Bucket Policy Statment ID.
       type: string
-    - contextPath: AWS.S3.Bucket.Policy.Action
+    - contextPath: AWS.S3.Buckets.Policy.Action
       description: S3 Bucket Policy Statment Action.
       type: string
-    - contextPath: AWS.S3.Bucket.Policy.Principal
+    - contextPath: AWS.S3.Buckets.Policy.Principal
       description: S3 Bucket Policy Statment Principal.
       type: string
-    - contextPath: AWS.S3.Bucket.Policy.Resource
+    - contextPath: AWS.S3.Buckets.Policy.Resource
       description: S3 Bucket Policy Statment Resource.
       type: string
-    - contextPath: AWS.S3.Bucket.Policy.Effect
+    - contextPath: AWS.S3.Buckets.Policy.Effect
       description: S3 Bucket Policy Statment Effect.
       type: string
-    - contextPath: AWS.S3.Bucket.Policy.Json
+    - contextPath: AWS.S3.Buckets.Policy.Json
       description: AWS S3 Policy Json output.
       type: string
-    - contextPath: AWS.S3.Bucket.Policy.BucketName
+    - contextPath: AWS.S3.Buckets.Policy.BucketName
       description: S3 Bucket Name.
       type: string
     description: Get AWS S3 Bucket Policy
@@ -518,11 +517,11 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: AWS.S3.BucketObjects.Key
+    - contextPath: AWS.S3.Buckets.Objects.Key
       description: The name of S3 object.
-    - contextPath: AWS.S3.BucketObjects.Size
+    - contextPath: AWS.S3.Buckets.Objects.Size
       description: Object size.
-    - contextPath: AWS.S3.BucketObjects.LastModified
+    - contextPath: AWS.S3.Buckets.Objects.LastModified
       description: Last date object was modified.
     description: List object in S3 bucket.
   - name: aws-s3-put-bucket-policy
@@ -538,7 +537,8 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Set this parameter to true to confirm that you want to remove your permissions to change this bucket policy in the future.
+      description: Set this parameter to true to confirm that you want to remove your
+        permissions to change this bucket policy in the future.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -553,4 +553,3 @@ script:
       the one in this request completely replaces it.
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Added STS assume role capability"
