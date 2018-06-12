@@ -92,7 +92,7 @@ script:
 
     def parse_filter_field(filter_str):
         filters = []
-        regex = re.compile(r'name=([\w\d_:.-]+),values=([/\w\d_,.\*-]+)', flags=re.I)
+        regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d_,.\*-]+)', flags=re.I)
         for f in filter_str.split(';'):
             match = regex.match(f)
             if match is None:
@@ -186,7 +186,7 @@ script:
 
     def describe_instances(args):
         try:
-            client = aws_session(       
+            client = aws_session(
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -653,9 +653,14 @@ script:
             obj = vars(client._client_config)
 
             response = client.allocate_address(Domain='vpc')
-            response.append({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.ElasticIPs': response}
-            return  create_entry('AWS EC2 ElasticIP', response, ec)
+            data = ({
+                'PublicIp': response['PublicIp'],
+                'AllocationId': response['AllocationId'],
+                'Domain': response['Domain'],
+                'Region': obj['_user_provided_options']['region_name']
+            })
+            ec = {'AWS.EC2.ElasticIPs': data}
+            return  create_entry('AWS EC2 ElasticIP', data, ec)
 
         except Exception as e:
             return raise_error(e)
@@ -663,6 +668,7 @@ script:
     def associate_address(args):
         try:
             client = aws_session(
+                    service = 'ec2',
                     region = args.get('region'),
                     roleArn = args.get('roleArn'),
                     roleSessionName = args.get('roleSessionName'),
@@ -682,10 +688,14 @@ script:
                 kwargs.update({'PrivateIpAddress':args.get('privateIpAddress')})
 
             response = client.associate_address(**kwargs)
-            response.append({'AllocationId': args.get('allocationId')})
-            del response['ResponseMetadata']
-            ec = {"AWS.EC2.ElasticIPs.(val.AllocationId === obj.AllocationId)": response}
-            return  create_entry('AWS EC2 ElasticIP', response, ec)
+            data = ({
+                'AllocationId': args.get('allocationId'),
+                'AssociationId': response['AssociationId'],
+                'Region':obj['_user_provided_options']['region_name']
+            })
+
+            ec = {"AWS.EC2.ElasticIPs(val.AllocationId === obj.AllocationId)": data}
+            return  create_entry('AWS EC2 ElasticIP', data, ec)
 
         except Exception as e:
             return raise_error(e)
@@ -845,7 +855,7 @@ script:
             raw = json.loads(output)
             raw.update({'Region': obj['_user_provided_options']['region_name']})
 
-            ec = {'AWS.EC2.Volumes.(val.VolumeId === obj.VolumeId).Modification': raw}
+            ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Modification': raw}
             return  create_entry('AWS EC2 Volume Modification ',data, ec)
 
         except Exception as e:
@@ -1366,6 +1376,7 @@ script:
     def get_latest_ami(args):
         try:
             client = aws_session(
+                service = 'ec2',
                 region = args.get('region'),
                 roleArn = args.get('roleArn'),
                 roleSessionName = args.get('roleSessionName'),
@@ -1383,7 +1394,6 @@ script:
                 kwargs.update({'Owners':parse_resource_ids(args.get('owners'))})
             if args.get('executableUsers') is not None:
                 kwargs.update({'ExecutableUsers':parse_resource_ids(args.get('executableUsers'))})
-
             response = client.describe_images(**kwargs)
             amis = sorted(response['Images'],
                       key=lambda x: x['CreationDate'],
@@ -1393,21 +1403,21 @@ script:
                 'CreationDate': image['CreationDate'],
                 'ImageId': image['ImageId'],
                 'Public': image['Public'],
-                'Description': image['Description'],
                 'Name': image['Name'],
                 'State': image['State'],
                 'Region': obj['_user_provided_options']['region_name'],
                 })
+            if 'Description' in image:
+                data.update({'Description': image['Description']})
             if 'Tags' in image:
                 for tag in image['Tags']:
                     data.update ({
                         tag['Key']: tag['Value']
                     })
 
-            output = json.dumps(image, cls=DatetimeEncoder)
-            raw = json.loads(output)
-            raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-            ec = {'AWS.EC2.Images': raw}
+            raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
+            raw.update({'Region': obj['_user_provided_options']['region_name']})
+            ec = {'AWS.EC2.Images': image}
             return  create_entry('AWS EC2 Images',data, ec)
 
         except Exception as e:
@@ -1556,6 +1566,12 @@ script:
 
     if demisto.command() == 'aws-ec2-describe-security-groups':
         result = describe_security_groups(demisto.args())
+
+    if demisto.command() == 'aws-ec2-allocate-address':
+        result = allocate_address(demisto.args())
+
+    if demisto.command() == 'aws-ec2-associate-address':
+        result = associate_address(demisto.args())
 
     if demisto.command() == 'aws-ec2-create-snapshot':
         result = create_snapshot(demisto.args())
@@ -1904,7 +1920,8 @@ script:
       description: The ID of the security group.
       type: string
     - contextPath: AWS.EC2.Instances.SourceDestCheck
-      description: Specifies whether to enable an instance launched in a VPC to perform NAT.
+      description: Specifies whether to enable an instance launched in a VPC to perform
+        NAT.
       type: boolean
     - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
       description: If the request is a Spot Instance request, the ID of the request.
@@ -3576,7 +3593,8 @@ script:
       description: The ID of the security group.
       type: string
     - contextPath: AWS.EC2.Instances.SourceDestCheck
-      description: Specifies whether to enable an instance launched in a VPC to perform NAT.
+      description: Specifies whether to enable an instance launched in a VPC to perform
+        NAT.
       type: boolean
     - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
       description: If the request is a Spot Instance request, the ID of the request.
@@ -3604,8 +3622,8 @@ script:
       you have permissions. You can create a launch template , which is a resource
       that contains the parameters to launch an instance. When you launch an instance
       using RunInstances , you can specify the launch template instead of specifying
-      the launch parameters. An instance is ready for you to use when its in the
-      running state. You can check the state of your instance using DescribeInstances.
+      the launch parameters. An instance is ready for you to use when its in the running
+      state. You can check the state of your instance using DescribeInstances.
   - name: aws-ec2-waiter-instance-running
     arguments:
     - name: filter
@@ -3613,7 +3631,8 @@ script:
     - name: instanceIds
       description: One or more instance IDs. Sepreted by comma.
     - name: waiterDelay
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
     - name: waiterMaxAttempts
       description: The maximum number of attempts to be made. Default 40
     - name: region
@@ -3658,7 +3677,8 @@ script:
     - name: instanceIds
       description: One or more instance IDs. Seprated by comma.
     - name: waiterDelay
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
     - name: waiterMaxAttempts
       description: The maximum number of attempts to be made. Default 40
     - name: region
@@ -3680,7 +3700,8 @@ script:
     - name: instanceIds
       description: One or more instance IDs. Seprated by comma.
     - name: waiterDelay
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
     - name: waiterMaxAttempts
       description: The maximum number of attempts to be made. Default 40
     - name: region
@@ -3710,7 +3731,8 @@ script:
       description: Scopes the images by users with explicit launch permissions. Specify
         an AWS account ID, self (the sender of the request), or all (public AMIs).
     - name: waiterDelay
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
     - name: waiterMaxAttempts
       description: The maximum number of attempts to be made. Default 40
     - name: region
@@ -3736,7 +3758,8 @@ script:
     - name: restorableByUserIds
       description: One or more AWS accounts IDs that can create volumes from the snapshot.
     - name: waiterDelay
-      description: The amount of time in seconds to wait between attempts. Default 15
+      description: The amount of time in seconds to wait between attempts. Default
+        15
     - name: waiterMaxAttempts
       description: The maximum number of attempts to be made. Default 40
     - name: region
@@ -3960,10 +3983,11 @@ script:
     - name: cidrIp
       description: The CIDR IPv4 address range.
     - name: ipProtocol
-      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to
-        specify all protocols.
+      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify
+        all protocols.
     - name: sourceSecurityGroupName
-      description: The name of the source security group. The source security group must be in the same VPC.
+      description: The name of the source security group. The source security group
+        must be in the same VPC.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -3987,9 +4011,11 @@ script:
     - name: cidrIp
       description: The CIDR IPv4 address range.
     - name: ipProtocol
-      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify all protocols.
+      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify
+        all protocols.
     - name: sourceSecurityGroupName
-      description: The name of the source security group. The source security group must be in the same VPC.
+      description: The name of the source security group. The source security group
+        must be in the same VPC.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
