@@ -1,8 +1,8 @@
 commonfields:
-  id: Rapid7 Nexpose
+  id: Rapid7 Nexpose_python
   version: -1
-name: Rapid7 Nexpose
-display: Rapid7 Nexpose
+name: Rapid7 Nexpose_python
+display: Rapid7 Nexpose_python
 category: Vulnerability Management
 image: data:image/png;base64,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
 description: Rapid7's on-premise vulnerability management solution, Nexpose, helps
@@ -43,58 +43,8 @@ script:
     import requests
     import json
 
-    range_operators = ['in-range', 'is-between', 'not-in-range']
-    '''
-    search_map = {
-        'alternate-address-type':['in']
-        'container-image':['is', 'is not', 'starts with', 'ends with', 'contains', 'does not contain', 'is like', 'not like']
-        'container-status':['is', 'is not']
-        'containers':['are']
-        'criticality-tag':['is','is not', 'is greater than', 'is less than', 'is applied' 'is not applied']
-        'custom-tag':['is','is not','starts with','ends with', 'contains', 'does not contain', 'is applied', 'is not applied']
-        'cve':['is', 'is not', 'contains', 'does not contain']
-        cvss-access-complexity    is is not
-        cvss-authentication-required    is is not
-        cvss-access-vector    is is not
-        cvss-availability-impact    is is not
-        cvss-confidentiality-impact    is is not
-        cvss-integrity-impact    is is not
-        cvss-v3-confidentiality-impact    is is not
-        cvss-v3-integrity-impact    is is not
-        cvss-v3-availability-impact    is is not
-        cvss-v3-attack-vector    is is not
-        cvss-v3-attack-complexity    is is not
-        cvss-v3-user-interaction    is is not
-        cvss-v3-privileges-required    is is not
-        host-name    is is not starts with ends with contains does not contain is empty is not empty is like not like
-        host-type    in not in
-        ip-address    is is not in range not in range is like not like
-        ip-address-type    in not in
-        last-scan-date    is-on-or-before is on or after is between is earlier than is within the last
-        location-tag    is is not starts with ends with contains does not contain is applied is not applied
-        mobile-device-last-sync-time    is-within-the-last is earlier than
-        open-ports    is is not in range
-        operating-system    contains does not contain is empty is not empty
-        owner-tag    is is not starts with ends with contains does not contain is applied is not applied
-        pci-compliance    is
-        risk-score    is is not in range greater than less than
-        service-name    contains does not contain
-        site-id    in not in
-        software    contains does not contain
-        vAsset-cluster    is is not contains does not contain starts with
-        vAsset-datacenter    is is not
-        vAsset-host-name    is is not contains does not contain starts with
-        vAsset-power-state    in not in
-        vAsset-resource-pool-path    contains does not contain
-        vulnerability-assessed    is-on-or-before is on or after is between is earlier than is within the last
-        vulnerability-category    is is not starts with ends with contains does not contain
-        vulnerability-cvss-v3-score    is is not
-        vulnerability-cvss-score    is is not in range is greater than is less than
-        vulnerability-exposures    includes does not include
-        vulnerability-title    contains does not contain is is not starts with ends with
-        vulnerability-validated-status    are
-    }
-    '''
+    RANGE_OPERATORS = ['in-range', 'is-between', 'not-in-range']
+
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -145,13 +95,13 @@ script:
         return headers
 
 
-    def send_request(path, method = 'get', body = {}, params = {}):
+    def send_request(path, method = 'get', body = {}, params = {}, headers = None, is_file=False):
         url = '%s/%s' % (SERVER_URL, path)
-        headers = get_headers()
+        headers = headers if headers is not None else get_headers()
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies = PROXY)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception('Body: ' + json.dumps(body) + ' Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
-        return res.json()
+        return res.json() if is_file is False else res.content
 
     def dq(obj, path):
       '''
@@ -642,7 +592,7 @@ script:
                 'operator': operator,
             }
             if len(value) > 1:
-                if operator in range_operators:
+                if operator in RANGE_OPERATORS:
                     flt['lower'] = value[0]
                     flt['upper'] = value[1]
                 else:
@@ -876,6 +826,76 @@ script:
 
         return send_request(path)
 
+    def create_assets_report_command():
+        assets = demisto.args()['assets']
+        template = demisto.args().get('template', None)
+        name = demisto.args().get('name','report ' + str(datetime.now()))
+
+        scope = {
+            'assets': assets
+        }
+
+
+        report_id = create_report(scope, name, template)
+
+        return download_report(report_id, name)
+
+    def create_sites_report_command():
+        assets = demisto.args()['sites']
+        template = demisto.args().get('template', None)
+        name = demisto.args().get('name','report ' + str(datetime.now()))
+
+        scope = {
+            'sites': sites
+        }
+
+        report_id = create_report(scope, template)
+
+
+        return download_report(report_id)
+
+    def create_report(scope, name, template=None):
+        if template is None:
+            templates = get_report_templates()
+            if(templates is None or len(templates) == 0 or 'resources' not in templates):
+                return 'No templates found'
+            template = templates['resources'][0]['id']
+        for i, (k,v) in enumerate(scope.items()):
+            if not isinstance(v, list):
+                valueArray = [v]
+                scope[k] = valueArray
+            for i, v in enumerate(scope[k]):
+               scope[k][i] = int(v)
+        path = 'reports'
+        body = {
+            'scope': scope,
+            'template': template,
+            'name': name,
+            'format': "nexpose-simple-xml"
+        }
+
+        result = send_request(path, 'post', body=body)
+        if result is None:
+            return 'Failed to create report'
+
+        return result['id']
+
+    def download_report(report_id, name):
+        path = 'reports/' + str(report_id) +' /generate'
+        instance = send_request(path, 'post')
+        if(instance is None):
+            return 'Failed to generate report'
+
+        headers = {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+        }
+
+        path = 'reports/' + str(report_id) + '/history/' + str(instance['id']) + '/output'
+        report = send_request(path, headers=headers, is_file=True)
+
+        return fileResult(name, report)
+
     try:
         if demisto.command() == 'test-module':
             get_assets(limit=1)
@@ -894,6 +914,10 @@ script:
             demisto.results(get_sites_command())
         if demisto.command() == 'nexpose-get-report-templates':
             demisto.results(get_report_templates_command())
+        if demisto.command() == 'nexpose-create-assets-report':
+            demisto.results(create_assets_report_command())
+        if demisto.command() == 'nexpose-create-sites-report':
+            demisto.results(create_sites_report_command())
     except Exception as e:
         LOG(e.message)
         LOG.print_log()
@@ -966,5 +990,27 @@ script:
   - name: nexpose-get-report-templates
     arguments: []
     description: Returns all available report templates.
+  - name: nexpose-create-assets-report
+    arguments:
+    - name: assets
+      required: true
+      description: Asset ids to create the report on
+    - name: template
+      description: Report template id to create the report with
+    - name: name
+      description: The report name
+    description: Generates a new report on given assets according to a template and
+      arguments.
+  - name: nexpose-create-sites-report
+    arguments:
+    - name: sites
+      required: true
+      description: Site ids to create the report on
+    - name: template
+      description: Report template id to create the report with
+    - name: name
+      defaultValue: The report name
+    description: Generates a new report on given sites according to a template and
+      arguments.
   runonce: false
 releaseNotes: "-"
