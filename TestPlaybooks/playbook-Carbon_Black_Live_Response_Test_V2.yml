@@ -1,5 +1,5 @@
 id: CarbonBlackLiveResponseTestV2
-version: 14
+version: -1
 name: Carbon Black Live Response Test
 description: Tests carbon black enterprise response selected use cases and commands
 starttaskid: "0"
