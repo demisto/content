@@ -1068,7 +1068,7 @@ script:
                 Contents: data,
                 ContentsType: formats.json,
                 ReadableContentsFormat: formats.markdown,
-                HumanReadable: commandMD + '\n\n' + registryMD,
+                HumanReadable: commandMD + '\n\n' + processesMD,
                 EntryContext: {
                     'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID)': commandData,
                     'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID).Process': processesData,
