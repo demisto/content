@@ -213,7 +213,7 @@ script:
     const sessionData = [
         {to: 'CbSensorID', from: 'sensor_id'},
         {to: 'CbSessionID', from: 'id'},
-        {to: 'HostName', from: 'hostname'},
+        {to: 'Hostname', from: 'hostname'},
         {to: 'Status', from: 'status'},
         {to: 'WaitTimeout', from: 'sensor_wait_timeout'},
         {to: 'SessionTimeout', from: 'session_timeout'},
