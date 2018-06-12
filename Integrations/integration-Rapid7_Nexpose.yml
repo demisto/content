@@ -43,6 +43,58 @@ script:
     import requests
     import json
 
+    range_operators = ['in-range', 'is-between', 'not-in-range']
+    '''
+    search_map = {
+        'alternate-address-type':['in']
+        'container-image':['is', 'is not', 'starts with', 'ends with', 'contains', 'does not contain', 'is like', 'not like']
+        'container-status':['is', 'is not']
+        'containers':['are']
+        'criticality-tag':['is','is not', 'is greater than', 'is less than', 'is applied' 'is not applied']
+        'custom-tag':['is','is not','starts with','ends with', 'contains', 'does not contain', 'is applied', 'is not applied']
+        'cve':['is', 'is not', 'contains', 'does not contain']
+        cvss-access-complexity    is is not
+        cvss-authentication-required    is is not
+        cvss-access-vector    is is not
+        cvss-availability-impact    is is not
+        cvss-confidentiality-impact    is is not
+        cvss-integrity-impact    is is not
+        cvss-v3-confidentiality-impact    is is not
+        cvss-v3-integrity-impact    is is not
+        cvss-v3-availability-impact    is is not
+        cvss-v3-attack-vector    is is not
+        cvss-v3-attack-complexity    is is not
+        cvss-v3-user-interaction    is is not
+        cvss-v3-privileges-required    is is not
+        host-name    is is not starts with ends with contains does not contain is empty is not empty is like not like
+        host-type    in not in
+        ip-address    is is not in range not in range is like not like
+        ip-address-type    in not in
+        last-scan-date    is-on-or-before is on or after is between is earlier than is within the last
+        location-tag    is is not starts with ends with contains does not contain is applied is not applied
+        mobile-device-last-sync-time    is-within-the-last is earlier than
+        open-ports    is is not in range
+        operating-system    contains does not contain is empty is not empty
+        owner-tag    is is not starts with ends with contains does not contain is applied is not applied
+        pci-compliance    is
+        risk-score    is is not in range greater than less than
+        service-name    contains does not contain
+        site-id    in not in
+        software    contains does not contain
+        vAsset-cluster    is is not contains does not contain starts with
+        vAsset-datacenter    is is not
+        vAsset-host-name    is is not contains does not contain starts with
+        vAsset-power-state    in not in
+        vAsset-resource-pool-path    contains does not contain
+        vulnerability-assessed    is-on-or-before is on or after is between is earlier than is within the last
+        vulnerability-category    is is not starts with ends with contains does not contain
+        vulnerability-cvss-v3-score    is is not
+        vulnerability-cvss-score    is is not in range is greater than is less than
+        vulnerability-exposures    includes does not include
+        vulnerability-title    contains does not contain is is not starts with ends with
+        vulnerability-validated-status    are
+    }
+    '''
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -98,7 +150,7 @@ script:
         headers = get_headers()
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies = PROXY)
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+            raise Exception('Body: ' + json.dumps(body) + ' Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return res.json()
 
     def dq(obj, path):
@@ -164,11 +216,10 @@ script:
             'ip': response['records'][0]['ipAddress']
         }
 
-    def get_list_response(path, limit=None, sort=None):
+    def get_list_response(path, method='get', limit=None, body={}, params={}):
         final_result = []
         page_diff = 0
         page_number = 0
-        params = {}
 
         while True:
             page = page_number
@@ -176,9 +227,7 @@ script:
             params['page'] = page
             if limit is not None:
                 params['size'] = limit
-            if sort is not None:
-                params['sort'] = sort
-            response = send_request(path, params=params)
+            response = send_request(path,method=method,body=body, params=params)
             if not response:
                 break
             if response['resources'] is not None:
@@ -196,14 +245,25 @@ script:
             return "-"
         sorted_dates = sorted(asset['history'], key=lambda h: time.strptime(h['date'], "%Y-%m-%dT%H:%M:%S.%fZ"), reverse=True)
 
-        return sorted_dates[0]['date'] if sorted_dates[0] is not None else "-"
+        if sorted_dates[0] is not None:
+            return {
+                    'date': sorted_dates[0]['date'] if 'date' in sorted_dates[0] else '-',
+                    'id': sorted_dates[0]['scanId'] if 'scanId' in sorted_dates[0] else '-'
+                }
+        else:
+            return {
+                    'date': '-',
+                    'id': '-'
+                }
 
     def get_asset_command():
         asset = get_asset(demisto.args()['id'])
 
         if asset is None:
             return "Asset not found"
-        asset['LastScan'] = get_last_scan(asset)
+        last_scan = get_last_scan(asset)
+        asset['LastScanDate'] = last_scan['date']
+        asset['LastScanId'] = last_scan['id']
         asset['Site'] = get_site(asset['id'])['name']
 
         assetHeaders = [
@@ -215,8 +275,9 @@ script:
         'Site',
         'OperatingSystem',
         'CPE',
-        'LastScan',
-        'RiskScore',
+        'LastScanDate',
+        'LastScanId',
+        'RiskScore'
         ]
 
         assetOutput = translate_object(asset, [
@@ -229,52 +290,101 @@ script:
             {'from': 'os', 'to': 'OperatingSystem'},
             {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
             {'from': 'cpe.v2.3', 'to': 'CPE'},
-            {'from': 'LastScan', 'to': 'LastScan'},
+            {'from': 'LastScanDate', 'to': 'LastScanDate'},
+            {'from': 'LastScanId', 'to': 'LastScanId'},
             {'from': 'riskScore', 'to': 'RiskScore'}
         ])
 
-        softwareHeaders = [
-            'Software',
-            'Version'
+        softwareOutput = None
+        servicesOutput = None
+        usersOutput = None
+
+        if 'software' in asset and len(asset['software']) > 0:
+            softwareHeaders = [
+                'Software',
+                'Version'
+                ]
+
+            softwareOutput = translate_object(asset['software'], [
+                {'from': 'description', 'to': 'Software'},
+                {'from': 'version', 'to': 'Version'}
+            ])
+
+        if 'services' in asset and len(asset['services']) > 0:
+            serviceHeaders = [
+                'Name',
+                'Port',
+                'Product',
+                'Protocol'
+                ]
+
+            servicesOutput = translate_object(asset['services'], [
+                {'from': 'name', 'to': 'Name'},
+                {'from': 'port', 'to': 'Port'},
+                {'from': 'product', 'to': 'Product'},
+                {'from': 'protocol', 'to': 'Protocol'}
+            ])
+
+        if 'users' in asset and len(asset['users']) > 0:
+            userHeaders = [
+                'FullName',
+                'Name',
+                'UserId'
+                ]
+
+            usersOutput = translate_object(asset['users'], [
+                {'from': 'name', 'to': 'Name'},
+                {'from': 'fullName', 'to': 'FullName'},
+                {'from': 'id', 'to': 'UserId'},
+            ])
+
+        vulnerabilityHeaders = [
+            'Id',
+            'Title',
+            'Malware',
+            'Exploit',
+            'CVSS',
+            'Risk',
+            'PublishedOn',
+            'ModifiedOn',
+            'Severity',
+            'Instances',
             ]
 
-        softwareOutput = translate_object(asset['software'], [
-            {'from': 'description', 'to': 'Software'},
-            {'from': 'version', 'to': 'Version'}
-        ])
+        vulnerabilities = get_vulnerabilities(asset['id'])
+        vulnerabilitiesOutput = []
+        for v in vulnerabilities:
+            detailedVuln = get_vulnerability(v['id'])
+            cvss = dq(detailedVuln['cvss'], ['v3', 'score'])
+            if cvss is None:
+                cvss = dq(detailedVuln['cvss'], ['v2','score'])
+            outputVuln = {
+                'Id': v['id'],
+                'Title': detailedVuln['title'],
+                'Malware': detailedVuln['malwareKits'],
+                'Exploit': detailedVuln['exploits'],
+                'CVSS': cvss,
+                'Risk': detailedVuln['riskScore'],
+                'PublishedOn': detailedVuln['published'],
+                'ModifiedOn': detailedVuln['modified'],
+                'Severity': detailedVuln['severity'],
+                'Instances': v['instances'],
+            }
 
-        serviceHeaders = [
-            'Name',
-            'Port',
-            'Product',
-            'Protocol'
-            ]
-
-        servicesOutput = translate_object(asset['services'], [
-            {'from': 'name', 'to': 'Name'},
-            {'from': 'port', 'to': 'Port'},
-            {'from': 'product', 'to': 'Product'},
-            {'from': 'protocol', 'to': 'Protocol'}
-        ])
-
-        userHeaders = [
-            'FullName',
-            'Name',
-            'UserId'
-            ]
-
-        usersOutput = translate_object(asset['users'], [
-            {'from': 'name', 'to': 'Name'},
-            {'from': 'fullName', 'to': 'FullName'},
-            {'from': 'id', 'to': 'UserId'},
-        ])
+            vulnerabilitiesOutput.append(outputVuln)
 
         assetMd = tableToMarkdown('Nexpose asset ' + str(asset['id']), assetOutput, assetHeaders, removeNull=True)
-        softwareMd = tableToMarkdown('Software', softwareOutput, softwareHeaders, removeNull=True)
-        servicesMd = tableToMarkdown('Services', servicesOutput, serviceHeaders, removeNull=True)
-        usersMd = tableToMarkdown('Users', usersOutput, userHeaders, removeNull=True)
+        vulnerabilitiesMd = tableToMarkdown('Vulnerabilities', vulnerabilitiesOutput, vulnerabilityHeaders, removeNull=True) if len(vulnerabilitiesOutput) > 0 else ''
+        softwareMd = tableToMarkdown('Software', softwareOutput, softwareHeaders, removeNull=True) if softwareOutput is not None else ''
+        servicesMd = tableToMarkdown('Services', servicesOutput, serviceHeaders, removeNull=True) if servicesOutput is not None else ''
+        usersMd = tableToMarkdown('Users', usersOutput, userHeaders, removeNull=True) if usersOutput is not None else ''
 
-        md = assetMd + softwareMd + servicesMd + usersMd
+        md = assetMd + vulnerabilitiesMd + softwareMd + servicesMd + usersMd
+
+        assetOutput['Vulnerability'] = vulnerabilitiesOutput
+        assetOutput['Software'] = softwareOutput
+        assetOutput['Service'] = servicesOutput
+        assetOutput['User'] = usersOutput
 
         endpoint =  {
             'IP': assetOutput['Addresses'],
@@ -297,33 +407,168 @@ script:
 
         return entry
 
-
     def get_asset(asset_id):
         path = 'assets/' + str(asset_id)
         return send_request(path)
 
-    def get_user(user_id):
-        path = 'users/' + str(user_id)
+    def get_asset_vulnerability_command():
+        v = get_asset_vulnerability(demisto.args()['id'] ,demisto.args()['vulnerabilityId'])
+
+        if v is None:
+            return 'Vulnerability not found'
+
+        vulnHeaders = [
+            'Id',
+            'Title',
+            'Severity',
+            'RiskScore',
+            'CVSS',
+            'CVSSV3',
+            'Published',
+            'Added',
+            'Modified',
+            'CVSSScore',
+            'CVSSV3Score',
+            'Categories',
+            'CVES'
+        ]
+
+        detailedVuln = get_vulnerability(v['id'])
+        vulnOutputs = translate_object(detailedVuln, [
+            {'from': 'id', 'to': 'Id'},
+            {'from': 'title', 'to': 'Title'},
+            {'from': 'severity', 'to': 'Severity'},
+            {'from': 'riskScore', 'to': 'RiskScore'},
+            {'from': 'cvss.v2.vector', 'to': 'CVSS'},
+            {'from': 'cvss.v3.vector', 'to': 'CVSSV3'},
+            {'from': 'published', 'to': 'Published'},
+            {'from': 'added', 'to': 'Added'},
+            {'from': 'modified', 'to': 'Modified'},
+            {'from': 'cvss.v2.score', 'to': 'CVSSScore'},
+            {'from': 'cvss.v3.score', 'to': 'CVSSV3Score'},
+            {'from': 'categories', 'to': 'Categories'},
+            {'from': 'cves', 'to': 'CVES'}
+        ])
+
+        resultsHeaders = [
+            "Port",
+            "Protocol",
+            "Since",
+            "Proof",
+            "Status"
+        ]
+
+        resultsOutput = []
+        if 'results' in v and len(v['results']) > 0:
+            resultsOutput = translate_object(v['results'], [
+            {'from': 'port', 'to': 'Port'},
+            {'from': 'protocol', 'to':'Protocol'},
+            {'from': 'since', 'to': 'Since'},
+            {'from': 'proof', 'to': 'Proof'},
+            {'from': 'status', 'to':'Status'}
+        ])
+
+        # Remove HTML tags
+        for r in resultsOutput:
+            r['Proof'] = re.sub('<.*?>', '', r['Proof'])
+
+        solutionsHeaders = [
+            'Type',
+            'Summary',
+            'Steps',
+            'Estimate',
+            'AdditionalInformation'
+        ]
+
+        solutionsOutput = None
+        solutions = get_vulnerability_solutions(demisto.args()['id'] ,demisto.args()['vulnerabilityId'])
+        if solutions is not None and len(solutions) > 0:
+            solutionsOutput = translate_object(solutions['resources'], [
+                {'from': 'type', 'to': 'Type'},
+                {'from': 'summary.text', 'to': 'Summary'},
+                {'from': 'steps.text', 'to': 'Steps'},
+                {'from': 'estimate', 'to': 'Estimate'},
+                {'from': 'additionalInformation', 'to': 'AdditionalInformation'}
+            ])
+
+        vulnerabilitiesMd = tableToMarkdown('Vulnerability ' + demisto.args()['vulnerabilityId'], vulnOutputs, vulnHeaders, removeNull=True)
+        resultsMd = tableToMarkdown('Checks', resultsOutput, resultsHeaders, removeNull=True) if len(resultsOutput) > 0 else ''
+        solutionsMd = tableToMarkdown('Solutions', solutionsOutput, solutionsHeaders, removeNull=True) if solutionsOutput is not None else ''
+        md = vulnerabilitiesMd + resultsMd + solutionsMd
+
+        vulnOutputs['Checks'] = resultsOutput
+        vulnOutputs['Solutions'] = solutionsOutput
+        asset = {
+            'AssetId': demisto.args()['id'],
+            'Vulnerability': [vulnOutputs]
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': v,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                  'Nexpose.Asset(val.AssetId==obj.AssetId)': asset
+            }
+        }
+
+        return entry
+
+
+    def get_vulnerabilities(asset_id):
+        path = 'assets/' + str(asset_id) + '/vulnerabilities'
+        return get_list_response(path)
+
+    def get_asset_vulnerability(asset_id, vulnerability_id):
+        path = 'assets/' + str(asset_id) + '/vulnerabilities/' + str(vulnerability_id)
         return send_request(path)
 
-    def get_user_groups(user_id):
-        path = 'users/' + str(user_id) + '/asset_groups'
-        return get_list_response(path)
+    def get_vulnerability(vulnerability_id):
+        path = 'vulnerabilities/' + str(vulnerability_id)
+        return send_request(path)
 
-    def get_user_sites(user_id):
-        path = 'users/' + str(user_id) + '/sites'
-        return get_list_response(path)
+    def get_vulnerability_solutions(asset_id, vulnerability_id):
+        path = 'assets/' + str(asset_id) + '/vulnerabilities/' + str(vulnerability_id) + '/solution'
 
-    def get_assets_command():
-        limit = demisto.args().get('limit', None)
-        sort = demisto.args().get('sort', None)
-        assets = get_assets(limit, sort)
+        return send_request(path)
+
+    def search_assets_command():
+        textFilters = None
+        queries = demisto.args().get('query', None)
+        if queries is not None:
+            textFilters = queries.split(';')
+        ip_address = demisto.args().get('ipAddressIs', None)
+        if ip_address is not None:
+            textFilters = ['ip-address is ' + ip_address]
+        host_name = demisto.args().get('hostNameIs', None)
+        if host_name is not None:
+            textFilters = ['host-name is ' + host_name]
+        risk_score = demisto.args().get('riskScoreHigherThan', None)
+        if risk_score is not None:
+            textFilters = ['risk-score is-greater-than ' + risk_score]
+        vulnerability_title = demisto.args().get('vulnerabilityTitleContains', None)
+        if vulnerability_title is not None:
+            textFilters = ['vulnerability-title contains ' + vulnerability_title]
+        siteIds = demisto.args().get('siteIdIn', None)
+        if siteIds is not None:
+            textFilters = ['site-id in ' + siteIds]
+
+        if(textFilters is None):
+            return 'No query provided for search'
+
+        filters = get_search_filters(textFilters)
+
+        assets = search_assets(filters, demisto.args().get('limit', None), demisto.args().get('sort', None))
 
         if(assets is None or len(assets) == 0):
             return 'No assets found'
 
         for asset in assets:
-            asset['LastScan'] = get_last_scan(asset)
+            last_scan = get_last_scan(asset)
+            asset['LastScanDate'] = last_scan['date']
+            asset['LastScanId'] = last_scan['id']
             site = get_site(asset['id'])
             asset['Site'] = site['name'] if site != '' else ''
 
@@ -337,7 +582,8 @@ script:
         'OperatingSystem',
         'RiskScore',
         'Assessed',
-        'LastScan'
+        'LastScanDate',
+        'LastScanId'
         ]
 
         outputs = translate_object(assets, [
@@ -351,7 +597,117 @@ script:
             {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
             {'from': 'riskScore', 'to': 'RiskScore'},
             {'from': 'assessedForVulnerabilities', 'to': 'Assessed'},
-            {'from': 'LastScan', 'to': 'LastScan'}
+            {'from': 'LastScanDate', 'to': 'LastScanDate'},
+            {'from': 'LastScanId', 'to': 'LastScanId'}
+        ])
+
+        endpoint = map(lambda o: {
+            'IP': o['Address'],
+            'HostName': o['Name'],
+            'OS': o['OperatingSystem']
+        }, outputs)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': assets,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Nexpose assets', outputs, headers,removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Asset(val.AssetId==obj.AssetId)': outputs,
+                  'Endpoint(val.IP==obj.IP)': endpoint
+            }
+        }
+
+        return entry
+
+    def get_search_filters(textFilters):
+        filters = []
+        for text in textFilters:
+            components = text.split(' ')
+            field = components[0]
+            operator = components[1]
+            value = components[2].split(',')
+            # Convert numbers to floats if necessary
+            for i, v in enumerate(value):
+                currVal = None
+                try:
+                    currVal = float(v)
+                except:
+                    currVal = v
+                value[i] = currVal
+
+            flt = {
+                'field': field,
+                'operator': operator,
+            }
+            if len(value) > 1:
+                if operator in range_operators:
+                    flt['lower'] = value[0]
+                    flt['upper'] = value[1]
+                else:
+                    flt['values'] = value
+            else:
+                flt['value'] = value[0]
+            filters.append(flt)
+        return filters
+
+    def search_assets(filters, limit=None, sort=None):
+        search_body = {
+            'filters': filters,
+            'match': 'all'
+        }
+
+        path = 'assets/search'
+        params = {}
+        if sort is not None:
+            params['sort'] = sort
+
+        return get_list_response(path, method='post', limit=limit, body=search_body, params=params)
+
+    def get_assets_command():
+        limit = demisto.args().get('limit', None)
+        sort = demisto.args().get('sort', None)
+        assets = get_assets(limit=limit, sort=sort)
+
+        if(assets is None or len(assets) == 0):
+            return 'No assets found'
+
+        for asset in assets:
+            last_scan = get_last_scan(asset)
+            asset['LastScanDate'] = last_scan['date']
+            asset['LastScanId'] = last_scan['id']
+            site = get_site(asset['id'])
+            asset['Site'] = site['name'] if site != '' else ''
+
+        headers = [
+        'AssetId',
+        'Address',
+        'Name',
+        'Site',
+        'Exploits',
+        'Malware',
+        'OperatingSystem',
+        'Vulnerabilities',
+        'RiskScore',
+        'Assessed',
+        'LastScanDate',
+        'LastScanId'
+        ]
+
+        outputs = translate_object(assets, [
+            {'from': 'id', 'to': 'AssetId'},
+            {'from': 'ip', 'to': 'Address'},
+            {'from': 'hostName', 'to': 'Name'},
+            {'from': 'Site', 'to': 'Site'},
+            {'from': 'vulnerabilities.exploits', 'to': 'Exploits'},
+            {'from': 'vulnerabilities.malwareKits', 'to': 'Malware'},
+            {'from': 'os', 'to': 'OperatingSystem'},
+            {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
+            {'from': 'riskScore', 'to': 'RiskScore'},
+            {'from': 'assessedForVulnerabilities', 'to': 'Assessed'},
+            {'from': 'LastScanDate', 'to': 'LastScanDate'},
+            {'from': 'LastScanId', 'to': 'LastScanId'}
         ])
 
         endpoint = map(lambda o: {
@@ -375,7 +731,150 @@ script:
         return entry
 
     def get_assets(limit=None, sort=None):
-        return get_list_response('/assets', limit, sort)
+        params = {}
+        if sort is not None:
+            params['sort'] = sort
+        return get_list_response('assets', limit=limit, params=params)
+
+    def get_scan_command():
+        scan = get_scan(demisto.args()['id'])
+
+        if(scan is None):
+            return 'Scan not found'
+        vulnerabilities_count = 0
+        for i, (k,v) in enumerate(scan['vulnerabilities'].items()):
+            vulnerabilities_count += v
+
+        headers = [
+            'Id',
+            'ScanType',
+            'ScanName',
+            'StartedBy',
+            'Assets',
+            'Vulnerabilities',
+            'TotalTime',
+            'Completed',
+            'Status',
+            'Engine'
+        ]
+
+        output = translate_object(scan, [
+            {'from': 'id', 'to': 'Id'},
+            {'from': 'scanType', 'to': 'ScanType'},
+            {'from': 'scanName', 'to': 'ScanName'},
+            {'from': 'startedBy', 'to': 'StartedBy'},
+            {'from': 'assets', 'to': 'Assets'},
+            {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
+            {'from': 'duration', 'to': 'TotalTime'},
+            {'from': 'endTime', 'to': 'Completed'},
+            {'from': 'status', 'to': 'Status'},
+            {'from': 'engineName', 'to': 'Engine'}
+        ])
+
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': scan,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Nexpose scan ' + str(demisto.args()['id']), output, headers,removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Scan(val.Id==obj.Id)': output,
+            }
+        }
+
+        return entry
+
+    def get_scan(scan_id):
+        path = 'scans/' + str(scan_id)
+        return send_request(path)
+
+    def get_sites_command():
+        sites = get_sites(limit=demisto.args().get('limit', None),sort=demisto.args().get('sort', None))
+
+        if(sites is None or len(sites) == 0):
+            return 'No sites found'
+
+        headers = [
+            'Id',
+            'Name',
+            'Assets',
+            'Vulnerabilities',
+            'Risk',
+            'Type',
+            'LastScan'
+        ]
+
+        outputs = translate_object(sites, [
+            {'from': 'id', 'to': 'Id'},
+            {'from': 'name', 'to': 'Name'},
+            {'from': 'assets', 'to': 'Assets'},
+            {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
+            {'from': 'riskScore', 'to': 'Risk'},
+            {'from': 'type', 'to': 'Type'},
+            {'from': 'lastScanTime', 'to': 'LastScan'}
+        ])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': sites,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Nexpose sites', outputs, headers,removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Site(val.Id==obj.Id)': outputs,
+            }
+        }
+
+        return entry
+
+    def get_sites(limit=None, sort=None):
+        path = 'sites'
+        params = {}
+        if sort is not None:
+            params['sort'] = sort
+        return get_list_response(path, limit=limit, params=params)
+
+    def start_scan(site_id):
+        template = 'cis'
+
+    def get_report_templates_command():
+        templates = get_report_templates()
+
+        if(templates is None or len(templates) == 0 or 'resources' not in templates):
+            return 'No templates found'
+
+        headers = [
+            'Id',
+            'Name',
+            'Description',
+            'Type'
+        ]
+
+        outputs = translate_object(templates['resources'], [
+            {'from': 'id', 'to': 'Id'},
+            {'from': 'name', 'to': 'Name'},
+            {'from': 'description', 'to': 'Description'},
+            {'from': 'type', 'to': 'Type'},
+        ])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': templates,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Nexpose templates', outputs, headers,removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Template(val.Id==obj.Id)': outputs,
+            }
+        }
+
+        return entry
+
+    def get_report_templates():
+        path = 'report_templates'
+
+        return send_request(path)
 
     try:
         if demisto.command() == 'test-module':
@@ -385,6 +884,16 @@ script:
             demisto.results(get_assets_command())
         if demisto.command() == 'nexpose-get-asset':
             demisto.results(get_asset_command())
+        if demisto.command() == 'nexpose-get-asset-vulnerability':
+            demisto.results(get_asset_vulnerability_command())
+        if demisto.command() == 'nexpose-search-assets':
+            demisto.results(search_assets_command())
+        if demisto.command() == 'nexpose-get-scan':
+            demisto.results(get_scan_command())
+        if demisto.command() == 'nexpose-get-sites':
+            demisto.results(get_sites_command())
+        if demisto.command() == 'nexpose-get-report-templates':
+            demisto.results(get_report_templates_command())
     except Exception as e:
         LOG(e.message)
         LOG.print_log()
@@ -407,20 +916,36 @@ script:
       required: true
       description: integer <int64> The identifier of the asset.
     description: Returns the specified asset.
-  - name: nexpose-get-user
+  - name: nexpose-search-assets
     arguments:
-    - name: id
-      required: true
-      description: integer <int32> The identifier of the user.
-    description: 'Returns the details for a user. PRIVILEGES: Global Administrator,
-      Current User'
+    - name: query
+      description: Filter to match assets, multiple filters can be provided using
+        ';' separator.
+    - name: limit
+      description: integer <int32> The number of records per page to retrieve.
+    - name: sort
+      description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
+        The default sort order is ascending. Multiple sort criteria can be specified
+        using multiple sort query parameters.'
+    - name: ipAddressIs
+      description: Search by a specific IP address
+    - name: hostNameIs
+      description: Search by a specific host name
+    - name: riskScoreHigherThan
+      description: Get all assets whose risk score is higher
+    - name: vulnerabilityTitleContains
+      description: Search by vulnerability title
+    - name: siteIdIn
+      description: Search by site ids
+    description: Returns all assets for which you have access that match the given
+      search criteria.
   - name: nexpose-get-scan
     arguments:
     - name: id
       required: true
       description: integer <int64> The identifier of the scan.
     description: Returns the specified scan.
-  - name: nexpose-get-asset-vulnerability-solution
+  - name: nexpose-get-asset-vulnerability
     arguments:
     - name: id
       required: true
@@ -429,4 +954,17 @@ script:
       required: true
       description: <string> The identifier of the vulnerability.
     description: Returns the details for solutions that can remediate a given vulnerability.
+  - name: nexpose-get-sites
+    arguments:
+    - name: limit
+      description: integer <int32> The number of records per page to retrieve.
+    - name: sort
+      description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
+        The default sort order is ascending. Multiple sort criteria can be specified
+        using multiple sort query parameters.'
+    description: Retrieves accessible sites.
+  - name: nexpose-get-report-templates
+    arguments: []
+    description: Returns all available report templates.
   runonce: false
+releaseNotes: "-"
