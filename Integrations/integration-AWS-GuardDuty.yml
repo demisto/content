@@ -149,11 +149,12 @@ script:
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
-            response = client.create_detector(Enable= True if args.get('enable') == 'True' else False)
+            kwargs = {'Enable':True if args.get('enable') == 'True' else False}
+            response = client.create_detector(**kwargs)
             data =({
                 'DetectorId': response['DetectorId']
             })
-            ec = {'AWS.GuardDuty.Detectors': data}
+            ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
             return create_entry('AWS GuardDuty Detectors', data, ec)
 
         except Exception as e:
@@ -192,7 +193,7 @@ script:
                 'Status': response['Status'],
                 'UpdatedAt': response['UpdatedAt'],
             })
-            ec = {'AWS.GuardDuty.Detectors': data}
+            ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
             return create_entry('AWS GuardDuty Detectors', data, ec)
 
         except Exception as e:
@@ -260,11 +261,11 @@ script:
                 'DetectorId':args.get('detectorId'),
                 'IpSetId': response['IpSetId']
             })
-            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
             return create_entry('AWS GuardDuty IPSets', data, ec)
 
         except Exception as e:
-            return raise_error(e)
+            return e#raise_error(e)
 
     def delete_ip_set(args):
         try:
@@ -284,7 +285,7 @@ script:
         except Exception as e:
             return raise_error(e)
 
-    def update_ip_set():
+    def update_ip_set(args):
         try:
             client = aws_session(
                     region = args.get('region'),
@@ -331,7 +332,7 @@ script:
                 'Name': response['Name'],
                 'Status': response['Status']
             })
-            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
             return create_entry('AWS GuardDuty IPSets', data, ec)
 
         except Exception as e:
@@ -355,7 +356,7 @@ script:
                 data.append({
                     'IpSetId': ipset
                 })
-            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
             return create_entry('AWS GuardDuty IPSets', data, ec)
 
         except Exception as e:
@@ -385,7 +386,7 @@ script:
                 'DetectorId':args.get('detectorId'),
                 'ThreatIntelSetId': response['ThreatIntelSetId']
             })
-            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
             return create_entry('AWS GuardDuty ThreatIntel Set', data, ec)
 
         except Exception as e:
@@ -426,11 +427,11 @@ script:
                 'DetectorId':args.get('detectorId'),
                 'ThreatIntelSetId':args.get('threatIntelSetId'),
                 'Format': response['Format'],
-                'Location': response['Format'],
-                'Name': response['Format'],
-                'Status': response['Format']
+                'Location': response['Location'],
+                'Name': response['Name'],
+                'Status': response['Status']
             })
-            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
             return create_entry('AWS GuardDuty ThreatIntel Set', data, ec)
 
         except Exception as e:
@@ -453,7 +454,7 @@ script:
                 data.append({
                     'ThreatIntelSetId':threatintelset
                 })
-            ec = {"AWS.GuardDuty.Detectors.(val.DetectorId === obj.DetectorId).ThreatIntelSet": data}
+            ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
             return create_entry('AWS GuardDuty IPSets', data, ec)
 
         except Exception as e:
@@ -701,7 +702,7 @@ script:
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        result =test_function()
+        result = test_function()
 
     if demisto.command() == 'aws-gd-create-detector':
         result = create_detector(demisto.args())
@@ -915,7 +916,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     outputs:
-    - contextPath: AWS.GuardDuty.IPSet.IpSetId
+    - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
       description: The unique identifier for an IP Set.
     description: A list of trusted IP addresses that have been whitelisted for secure
       communication with AWS infrastructure and applications.
@@ -1121,6 +1122,7 @@ script:
       description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
         you want to describe.
     - name: threatIntelSetId
+      required: true
       description: The unique ID that specifies the ThreatIntelSet that you want to
         describe.
     - name: region
@@ -1140,7 +1142,7 @@ script:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Format
       description: The format of the threatIntelSet.
       type: string
-    - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Location.Name
+    - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Location
       description: The URI of the file that contains the ThreatIntelSet.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.Name
@@ -1183,6 +1185,10 @@ script:
       description: The unique ID that specifies the ThreatIntelSet that you want to
         update.
     - name: activate
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
       description: The updated boolean value that specifies whether the ThreateIntelSet
         is active or not.
     - name: location
