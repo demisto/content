@@ -640,4 +640,3 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
-releaseNotes: Print both text and HTML body parts in War Room entry
