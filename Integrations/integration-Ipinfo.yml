@@ -37,7 +37,8 @@ script:
     }
 
     var base = 'http://ipinfo.io/';
-    var jsonSuffix = '/json?token=' + params.token;
+    var token = params.token;    
+    var jsonSuffix = '/json?token=' + token;
     switch (command) {
         case 'test-module':
             if (sendRequest(base+'8.8.8.8'+jsonSuffix, true)) {
@@ -55,7 +56,7 @@ script:
             }
             return reply;
         case 'ipinfo_field':
-            return sendRequest(base+args.ip+'/'+args.field+'?token='+args.token, false);
+            return sendRequest(base + args.ip + '/' + args.field + '?token=' + token, false);
     }
   type: javascript
   commands:
