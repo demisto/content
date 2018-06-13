@@ -1,7 +1,6 @@
 id: minemeld_test
 version: -1
 name: Minemeld Test
-fromversion: "3.5.0"
 description: This is a playbook test for Palo Alto minemeld Node's indicators integration.
 starttaskid: "0"
 tasks:
