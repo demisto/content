@@ -12,6 +12,7 @@ detaileddescription: |-
   - Most fields are optional and we allow empty subject and empty body
   - If both body and htmlBody are provided, we will create an alternative envelope
   - Preconfigured template attachments can be supported by using [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs)
+  - Support for template replacement variables using {var} syntax
 
   Implemented in Python to support extensions.
 configuration:
@@ -54,6 +55,7 @@ script:
     from email.mime.text import MIMEText
     from smtplib import SMTP
     import base64
+    import json
     import mimetypes
     from email import encoders
     import re
@@ -224,6 +226,26 @@ script:
         return attachments
 
 
+    def template_params():
+        """
+        Translate the template params if they exist from the context
+        """
+        actualParams = {}
+        paramsStr = demisto.getArg('templateParams')
+        if paramsStr:
+            try:
+                params = json.loads(paramsStr)
+            except ValueError as e:
+                return_error('Unable to parse templateParams: %s' % (str(e)))
+            # Build a simple key/value
+            for p in params:
+                if params[p].get('value'):
+                    actualParams[p] = params[p]['value']
+                elif params[p].get('key'):
+                    actualParams[p] = demisto.dt(demisto.context(), params[p]['key'])
+        return actualParams
+
+
     if demisto.command() == 'test-module':
         msg = MIMEText('This is a test mail from Demisto\nRegards\nDBot')
         msg['Subject'] = 'Test mail from Demisto'
@@ -237,12 +259,14 @@ script:
         to = argToList(demisto.getArg('to'))
         cc = argToList(demisto.getArg('cc'))
         bcc = argToList(demisto.getArg('bcc'))
-        subject = demisto.getArg('subject')
-        subject = '' if subject == None else subject
-        body = demisto.getArg('body')
-        body = '' if body == None else body
-        htmlBody = demisto.getArg('htmlBody')
+        subject = demisto.getArg('subject') or ''
+        body = demisto.getArg('body') or ''
+        htmlBody = demisto.getArg('htmlBody') or ''
         replyTo = demisto.getArg('replyTo')
+        templateParams = template_params()
+        if templateParams:
+            body = body.format(**templateParams)
+            htmlBody = htmlBody.format(**templateParams)
 
         # Basic validation - we allow pretty much everything but you have to have at least a recipient
         # We allow messages without subject and also without body
@@ -345,5 +369,10 @@ script:
         supported. (e.g. transientFile.1="t1.txt" transientFileContent.1="test 2"
         transientFileCID.1="t1.txt@xxx.yyy" transientFile.2="t3.txt" transientFileContent.2="test
         3")
+    - name: templateParams
+      description: 'Replace {varname} variables with values from this argument. Expected
+        values are in the form of a JSON document like {"varname": {"value": "some
+        value", "key": "context key"}}. Each var name can either be provided with
+        the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
