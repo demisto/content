@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"`
+      - "2"
     separatecontext: false
     view: |-
       {
