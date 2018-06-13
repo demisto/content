@@ -1953,4 +1953,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Handle simple value arrays in tableToMarkdown and ToTable"

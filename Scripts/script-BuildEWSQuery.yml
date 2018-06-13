@@ -2,7 +2,6 @@ commonfields:
   id: BuildEWSQuery
   version: -1
 name: BuildEWSQuery
-releaseNotes: "Convert to python, add output context, and support for query limitation"
 script: |-
   args = {}
 
