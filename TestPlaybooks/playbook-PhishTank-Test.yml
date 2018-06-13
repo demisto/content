@@ -5,17 +5,18 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 524747e4-ee8b-4338-82a4-9d921ed10a37
+    taskid: ca2db178-a9b7-48fc-86d7-3506d56c586e
     type: start
     task:
-      id: 524747e4-ee8b-4338-82a4-9d921ed10a37
+      id: ca2db178-a9b7-48fc-86d7-3506d56c586e
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,12 +26,12 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 34ff5e44-4f52-44fa-8e8b-16dcf47b540e
+    taskid: bed2c57d-784b-43af-8a0e-c1c0af7844e2
     type: regular
     task:
-      id: 34ff5e44-4f52-44fa-8e8b-16dcf47b540e
+      id: bed2c57d-784b-43af-8a0e-c1c0af7844e2
       version: -1
-      name: Check good URL
+      name: Check URL
       script: PhishTank|||url
       type: regular
       iscommand: true
@@ -38,173 +39,11 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      url: ${inputs.goodUrl}
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 8b890b91-cb1d-44a2-8bed-bb91075ccf47
-    type: condition
-    task:
-      id: 8b890b91-cb1d-44a2-8bed-bb91075ccf47
-      version: -1
-      name: Check if url is malicious
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "4"
-      "yes":
       - "3"
     scriptarguments:
-      value: ${URL.Malicious}
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 98b3a92c-4216-4f45-863a-157ca1172cad
-    type: regular
-    task:
-      id: 98b3a92c-4216-4f45-863a-157ca1172cad
-      version: -1
-      name: Problem
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      value: ${nothing}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 3257bd0b-af96-4de9-8eec-b03736dbf932
-    type: regular
-    task:
-      id: 3257bd0b-af96-4de9-8eec-b03736dbf932
-      version: -1
-      name: Check bad URL
-      script: PhishTank|||url
-      type: regular
-      iscommand: true
-      brand: PhishTank
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      url: ${inputs.badUrl}
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-  "5":
-    id: "5"
-    taskid: cc29f97e-0581-44bf-8f5a-d36f4e5107c0
-    type: condition
-    task:
-      id: cc29f97e-0581-44bf-8f5a-d36f4e5107c0
-      version: -1
-      name: Check if url is malicious
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "6"
-      "yes":
-      - "7"
-    scriptarguments:
-      value: ${URL.Malicious}
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-  "6":
-    id: "6"
-    taskid: fde8b6d4-ad4e-4a29-87d4-c61541c9b7a8
-    type: regular
-    task:
-      id: fde8b6d4-ad4e-4a29-87d4-c61541c9b7a8
-      version: -1
-      name: Problem
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      value: ${nothing}
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1070
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 1f0f7dfc-2c6e-4520-883c-75df2651c73b
-    type: regular
-    task:
-      id: 1f0f7dfc-2c6e-4520-883c-75df2651c73b
-      version: -1
-      name: Close
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes: ""
-      reason: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1070
-        }
-      }
-  "8":
-    id: "8"
-    taskid: 94c6dc41-433d-435f-8eb3-be16e1f796dd
-    type: regular
-    task:
-      id: 94c6dc41-433d-435f-8eb3-be16e1f796dd
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all: "yes"
-      key: ""
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -212,22 +51,111 @@ tasks:
           "y": 195
         }
       }
+  "2":
+    id: "2"
+    taskid: 88d1ecda-f3b5-4452-861b-4daea55f55f6
+    type: regular
+    task:
+      id: 88d1ecda-f3b5-4452-861b-4daea55f55f6
+      version: -1
+      name: Verify URL Data
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Data
+      path:
+        simple: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 4ec20db8-f447-4c51-8c38-3fca82738b83
+    type: regular
+    task:
+      id: 4ec20db8-f447-4c51-8c38-3fca82738b83
+      version: -1
+      name: Verify DBotScore
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator,Score,Type,Vendor
+      path:
+        simple: DBotScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 97bd194b-75f9-4d75-8fde-7e3b572a5452
+    type: title
+    task:
+      id: 97bd194b-75f9-4d75-8fde-7e3b572a5452
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 1025,
+        "height": 560,
+        "width": 810,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs:
-- key: badUrl
-  value: http://intranet.saintdizier.com/images/2.html
+- key: url
+  value:
+    simple: https://marcomontemagno.net/ho-testato-per-voi-bitcoin-news-trader
+  required: false
   description: ""
-- key: goodUrl
-  value: https://www.phishtank.com/
-  description: ""
+outputs: []

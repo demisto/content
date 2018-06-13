@@ -1460,4 +1460,3 @@ script:
     description: Gets a list of global list resources for a tenant
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
-releaseNotes: "Added DBotScore support including file threshold to set malicious files"

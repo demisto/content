@@ -151,4 +151,3 @@ args:
   description: Indicates how many times to try and create an entitlement in case of failure
   defaultValue: "10"
 scripttarget: 0
-releaseNotes: Added support for parallel execution of the script, with better error handling

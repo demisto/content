@@ -3,6 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test"
+        },
+        {
+            "playbookID": "decodemimeheader_-_test"
+        },
+        {
             "integrations": "CVE Search",
             "playbookID": "cve_enrichment_-_generic_-_test"
         },
@@ -193,6 +200,9 @@
             "playbookID": "ExtractURL Test"
         },
         {
+            "playbookID": "strings-test"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -302,16 +312,17 @@
             "playbookID": "Preempt Test"
         },
         {
-            "integrations": "SQS",
-            "playbookID": "sqs_test"
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
+        },
+        {
+
+            "integrations": "Netskope",
+            "playbookID": "Netskope Test"
         },
         {
             "integrations": "Cybereason",
@@ -328,6 +339,7 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
+
         }
     ],
     "skipped": [
