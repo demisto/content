@@ -194,8 +194,8 @@ script:
             }
         }
 
-        if (categorization.status === 1) {
-            domainContext.Malicious = {Vendor: 'Cisco Umbrella', Description: 'Categorized as 1'};
+        if (categorization.status === -1) {
+            domainContext.Malicious = {Vendor: 'Cisco Umbrella', Description: securityCategories};
         }
         // build context
         var context = {};
@@ -1094,3 +1094,4 @@ script:
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
 hidden: false
+releaseNotes: "Fixed categorization false positive."
