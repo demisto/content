@@ -55,7 +55,7 @@ script:
             }
             return reply;
         case 'ipinfo_field':
-            return sendRequest(base+args.ip+'/'+args.field, false);
+            return sendRequest(base+args.ip+'/'+args.field+'?token='+args.token, false);
     }
   type: javascript
   commands:
