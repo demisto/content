@@ -96,7 +96,7 @@ script:
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-        ErrorFolderNotFound
+        ErrorFolderNotFound, ErrorToFolderNotFound
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -844,7 +844,12 @@ script:
         destination_account = get_account(destination_mailbox or ACCOUNT_EMAIL)
         destination_folder = get_folder_by_path(destination_account, destination_folder_path)
         item = get_item_from_mailbox(source_account, item_id)
-        source_account.bulk_move(ids=[item], to_folder=destination_folder)
+        try:
+          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+        except ErrorToFolderNotFound:
+          source_account = get_account(source_mailbox or ACCOUNT_EMAIL, access_type=DELEGATE)
+          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+
         move_result = {
             MOVED_TO_MAILBOX: destination_mailbox,
             MOVED_TO_FOLDER: destination_folder_path,
@@ -1751,5 +1756,6 @@ script:
       description: The action, value will be 'moved'.
       type: string
     description: Move an item from one mailbox to another.
-  dockerimage: demisto/py-ews
+  dockerimage: demisto/py-ews:2.0
   isfetch: true
+releaseNotes: "Fixed error when moving and item between mailboxes using impersonation."

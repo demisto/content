@@ -78,3 +78,5 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+deprecated: true
+releaseNotes: "Deprecate IncidentSet - use the setIncident command instead"

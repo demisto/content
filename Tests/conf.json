@@ -204,6 +204,9 @@
             "playbookID": "ExtractURL Test"
         },
         {
+            "playbookID": "strings-test"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -311,10 +314,6 @@
         {
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
-        },
-        {
-            "integrations": "SQS",
-            "playbookID": "sqs_test"
         },
         {
             "integrations": "urlscan.io",
