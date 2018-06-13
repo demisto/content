@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
@@ -341,10 +345,6 @@
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
 
-        },
-        {
-            "integrations": "MineMeld",
-            "playbookID": "minemeld_test"
         }
     ],
     "skipped": [
