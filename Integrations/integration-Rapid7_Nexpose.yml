@@ -98,7 +98,8 @@ script:
     def send_request(path, method = 'get', body = {}, params = {}, headers = None, is_file=False):
         url = '%s/%s' % (SERVER_URL, path)
         headers = headers if headers is not None else get_headers()
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies = PROXY)
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
+        verify=VERIFY_SSL, proxies = PROXY)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception('Body: ' + json.dumps(body) + ' Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return res.json() if is_file is False else res.content
@@ -509,8 +510,7 @@ script:
             return 'No query provided for search'
 
         filters = get_search_filters(textFilters)
-
-        assets = search_assets(filters, demisto.args().get('limit', None), demisto.args().get('sort', None))
+        assets = search_assets(filters, demisto.args()['match'], demisto.args().get('limit', None), demisto.args().get('sort', None))
 
         if(assets is None or len(assets) == 0):
             return 'No assets found'
@@ -602,10 +602,10 @@ script:
             filters.append(flt)
         return filters
 
-    def search_assets(filters, limit=None, sort=None):
+    def search_assets(filters, match, limit=None, sort=None):
         search_body = {
             'filters': filters,
-            'match': 'all'
+            'match': match
         }
 
         path = 'assets/search'
@@ -691,45 +691,59 @@ script:
 
         if(scan is None):
             return 'Scan not found'
-        vulnerabilities_count = 0
-        for i, (k,v) in enumerate(scan['vulnerabilities'].items()):
-            vulnerabilities_count += v
 
-        headers = [
+        scanHeaders = [
             'Id',
             'ScanType',
             'ScanName',
             'StartedBy',
             'Assets',
-            'Vulnerabilities',
             'TotalTime',
             'Completed',
             'Status',
-            'Engine'
+            'Message'
         ]
 
-        output = translate_object(scan, [
+        scanOutput = translate_object(scan, [
             {'from': 'id', 'to': 'Id'},
             {'from': 'scanType', 'to': 'ScanType'},
             {'from': 'scanName', 'to': 'ScanName'},
             {'from': 'startedBy', 'to': 'StartedBy'},
             {'from': 'assets', 'to': 'Assets'},
-            {'from': 'vulnerabilities.total', 'to': 'Vulnerabilities'},
             {'from': 'duration', 'to': 'TotalTime'},
             {'from': 'endTime', 'to': 'Completed'},
             {'from': 'status', 'to': 'Status'},
-            {'from': 'engineName', 'to': 'Engine'}
+            {'from': 'message', 'to': 'Message'}
         ])
 
+        vulnHeaders = [
+            'Critical',
+            'Severe',
+            'Moderate',
+            'Total'
+        ]
+
+        vulnOutput = translate_object(scan['vulnerabilities'], [
+            {'from': 'critical', 'to': 'Critical'},
+            {'from': 'severe', 'to': 'Severe'},
+            {'from': 'moderate', 'to': 'Moderate'},
+            {'from': 'total', 'to': 'Total'}
+        ])
+
+        scanMd = tableToMarkdown('Nexpose scan ' + str(demisto.args()['id']), scanOutput, scanHeaders,removeNull=True)
+        vulnMd = tableToMarkdown('Vulnerabilities', vulnOutput, vulnHeaders, removeNull=True)
+        md = scanMd + vulnMd
+
+        scanOutput['Vulnerabilities'] = vulnOutput
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': scan,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Nexpose scan ' + str(demisto.args()['id']), output, headers,removeNull=True),
+            'HumanReadable': md,
             'EntryContext': {
-                  'Nexpose.Scan(val.Id==obj.Id)': output,
+                  'Nexpose.Scan(val.Id==obj.Id)': scanOutput,
             }
         }
 
@@ -785,9 +799,6 @@ script:
             params['sort'] = sort
         return get_list_response(path, limit=limit, params=params)
 
-    def start_scan(site_id):
-        template = 'cis'
-
     def get_report_templates_command():
         templates = get_report_templates()
 
@@ -827,7 +838,7 @@ script:
         return send_request(path)
 
     def create_assets_report_command():
-        assets = demisto.args()['assets']
+        assets = demisto.args()['assets'].split(',')
         template = demisto.args().get('template', None)
         name = demisto.args().get('name','report ' + str(datetime.now()))
 
@@ -835,13 +846,12 @@ script:
             'assets': assets
         }
 
-
         report_id = create_report(scope, name, template)
 
         return download_report(report_id, name)
 
     def create_sites_report_command():
-        assets = demisto.args()['sites']
+        sites = demisto.args()['sites'].split(',')
         template = demisto.args().get('template', None)
         name = demisto.args().get('name','report ' + str(datetime.now()))
 
@@ -849,10 +859,24 @@ script:
             'sites': sites
         }
 
-        report_id = create_report(scope, template)
+        report_id = create_report(scope, name, template)
 
 
-        return download_report(report_id)
+        return download_report(report_id, name)
+
+    def create_scan_report_command():
+        scan = demisto.args()['scan']
+        template = demisto.args().get('template', None)
+        name = demisto.args().get('name','report ' + str(datetime.now()))
+
+        scope = {
+            'scan': scan
+        }
+
+        report_id = create_report(scope, name, template)
+
+
+        return download_report(report_id, name)
 
     def create_report(scope, name, template=None):
         if template is None:
@@ -862,16 +886,16 @@ script:
             template = templates['resources'][0]['id']
         for i, (k,v) in enumerate(scope.items()):
             if not isinstance(v, list):
-                valueArray = [v]
-                scope[k] = valueArray
-            for i, v in enumerate(scope[k]):
-               scope[k][i] = int(v)
+               scope[k] = int(v)
+            else:
+                for i, v in enumerate(scope[k]):
+                    scope[k][i] = int(v)
         path = 'reports'
         body = {
             'scope': scope,
             'template': template,
             'name': name,
-            'format': "nexpose-simple-xml"
+            'format': "pdf"
         }
 
         result = send_request(path, 'post', body=body)
@@ -881,6 +905,7 @@ script:
         return result['id']
 
     def download_report(report_id, name):
+        # Generate the report
         path = 'reports/' + str(report_id) +' /generate'
         instance = send_request(path, 'post')
         if(instance is None):
@@ -891,10 +916,66 @@ script:
             'Accept-Encoding': 'gzip, deflate, br'
         }
 
+        # Wait for the report to be completed
+        time.sleep(10)
+
+        # Download
         path = 'reports/' + str(report_id) + '/history/' + str(instance['id']) + '/output'
         report = send_request(path, headers=headers, is_file=True)
 
-        return fileResult(name, report)
+        return fileResult(name + '.pdf', report)
+
+    def start_assets_scan_command():
+        ips = demisto.args().get('IPs', '').split(',')
+        hostNames = demisto.args().get('hostNames', '').split(',')
+        name = demisto.args().get('name', 'scan ' + str(datetime.now()))
+
+        textFilters = None
+        if len(ips) > 0:
+            textFilters = ['ip-address is ' + ips[0]]
+        elif len(hostNames) > 0:
+            textFilters = ['host-name is ' + hostNames[0]]
+
+        if textFilters is None:
+            return 'No IPs or hosts provided'
+
+        filters = get_search_filters(textFilters)
+        asset = search_assets(filters, match='all')
+
+        if asset is None or len(asset) == 0:
+            return 'Could not find assets'
+
+        site = get_site(asset[0]['id'])
+        if site is None or 'id' not in site:
+            return 'Could not find site'
+
+        hosts = ips + hostNames
+        scan = start_scan(site['id'], hosts, name)
+
+        return scan['id']
+
+    def start_site_scan_command():
+        site = demisto.args()['site']
+        name = demisto.args().get('name', 'scan ' + str(datetime.now()))
+        hosts = demisto.args().get('hosts', '')
+
+        scan = start_scan(site, hosts.split(','), name)
+
+        if(scan is None):
+            return 'Failed to start scan'
+
+        return scan['id']
+
+    def start_scan(site, hosts, name):
+        path = 'sites/' + str(site) + '/scans'
+        body = {
+            #'engineId' = 1,
+            #'tempalteId' = 1,
+            'name': name,
+            'hosts': hosts
+        }
+
+        return send_request(path, 'post', body=body)
 
     try:
         if demisto.command() == 'test-module':
@@ -918,6 +999,12 @@ script:
             demisto.results(create_assets_report_command())
         if demisto.command() == 'nexpose-create-sites-report':
             demisto.results(create_sites_report_command())
+        if demisto.command() == 'nexpose-create-scan-report':
+            demisto.results(create_scan_report_command())
+        if demisto.command() == 'nexpose-start-site-scan':
+            demisto.results(start_site_scan_command())
+        if demisto.command() == 'nexpose-start-assets-scan':
+            demisto.results(start_assets_scan_command())
     except Exception as e:
         LOG(e.message)
         LOG.print_log()
@@ -961,6 +1048,15 @@ script:
       description: Search by vulnerability title
     - name: siteIdIn
       description: Search by site ids
+    - name: match
+      auto: PREDEFINED
+      predefined:
+      - all
+      - any
+      description: Operator to determine how to match filters. all requires that all
+        filters match for an asset to be included. any requires only one filter to
+        match for an asset to be included.
+      defaultValue: all
     description: Returns all assets for which you have access that match the given
       search criteria.
   - name: nexpose-get-scan
@@ -1009,8 +1105,39 @@ script:
     - name: template
       description: Report template id to create the report with
     - name: name
-      defaultValue: The report name
+      description: The report name
     description: Generates a new report on given sites according to a template and
       arguments.
+  - name: nexpose-create-scan-report
+    arguments:
+    - name: scan
+      required: true
+      description: Id of the scan
+    - name: template
+      description: Report template id to create the report with
+    - name: name
+      description: The report name
+    description: Generates a new report for a specified scan
+  - name: nexpose-start-site-scan
+    arguments:
+    - name: site
+      required: true
+      description: integer <int32> The identifier of the site.
+    - name: hosts
+      description: The hosts that should be included as a part of the scan. This should
+        be a mixture of IP Addresses and Hostnames as a comma separated string array.
+    - name: name
+      description: The user-driven scan name for the scan.
+    description: Starts a scan for the specified site.
+  - name: nexpose-start-assets-scan
+    arguments:
+    - name: IPs
+      description: IP addresses of assets
+    - name: hostNames
+      description: Host names of assets
+    - name: name
+      description: The user-driven scan name for the scan.
+    description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 releaseNotes: "-"
+fromversion: 3.6.0
