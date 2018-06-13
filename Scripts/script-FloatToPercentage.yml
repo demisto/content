@@ -1,0 +1,17 @@
+commonfields:
+  id: FloatToPercentage
+  version: -1
+name: FloatToPercentage
+script: demisto.results(round((abs(demisto.args()["value"])*100),0))
+type: python
+tags:
+- transformer
+- number
+comment: 'Convert a float between -1 and 1 to percentage i.e. |x|*100 ... e.g. |-0.86|*100
+  = 86 '
+enabled: true
+args:
+- name: value
+  required: true
+scripttarget: 0
+runonce: false

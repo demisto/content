@@ -1,0 +1,72 @@
+commonfields:
+  id: FILEtoCSV
+  version: -1
+name: FILEtoCSV
+script: |-
+  import json
+
+  outfilename = demisto.args()['filename']
+  res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryid']})
+
+  # Check to see if valid file entryid was provided as input
+  if res[0]['Type'] == entryTypes['error']:
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'Failed to get the file path for entry: ' + fileEntryID +' the error message was '+ res[0]['Contents']
+    })
+    sys.exit(0)
+  filePath = res[0]['Contents']['path']
+
+  # open file and read data
+  with open(filePath, 'r') as f:
+      data = f.read()
+
+  dictlist = json.loads(data)
+
+  delim = demisto.args()['delimiter']
+  newline = "\n"
+  csv_out = ""
+  count = 0
+
+  for d in dictlist:
+
+  #get CSV column names and add delim
+      if count == 0:
+          for k, v in d.items():
+              csv_out += k + delim
+  #remove last delim
+          csv_out = csv_out[:-len(delim)]
+  #add newline for next row
+          csv_out += newline
+          count += 1
+
+  #get values and add delim
+      for k, v in d.items():
+          csv_out += v + delim
+  #remove last delim
+      csv_out = csv_out[:-len(delim)]
+  #add newline for next row
+      csv_out += newline
+
+  #output cvs as a file to warroom
+  demisto.results(fileResult(outfilename,csv_out.encode("utf-8")))
+  sys.exit(0)
+type: python
+tags: []
+comment: Script to convert a JSON File waroom output to a CSV file.
+enabled: true
+args:
+- name: entryid
+  required: true
+  description: entry id of json
+- name: filename
+  required: true
+  description: output csv filename
+- name: delimiter
+  default: true
+  description: CSV Delimiter.
+  defaultValue: '|'
+scripttarget: 0
+timeout: 600ns
+runonce: false
