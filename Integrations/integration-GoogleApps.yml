@@ -4,7 +4,7 @@ commonfields:
 name: GoogleApps API
 display: GoogleApps API
 category: Authentication
-image: data:image/png;base64,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
+image: data:image/png;base64,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
 description: Google apps Admin API, or GSuite
 detaileddescription: "This API enables the usage of Google Admin API. In order to
   enable it, you will need to create an account service private key json file and
@@ -128,7 +128,7 @@ script:
         return body, html, attachments
 
 
-    def get_email_context(email_data):
+    def get_email_context(email_data, mailbox):
         headers = dict([(h['name'].lower(), h['value']) for h in email_data.get('payload', {}).get('headers', [])])
         body = demisto.get(email_data, 'payload.body.data')
         body = body.encode('ascii') if body is not None else ''
@@ -136,6 +136,7 @@ script:
 
         context = {
             'Type' : 'Gmail',
+            'Mailbox' : mailbox,
             'ID' : email_data['id'],
             'ThreadId' : email_data['threadId'],
             'Labels' : ', '.join(email_data['labelIds']),
@@ -196,17 +197,17 @@ script:
         return labels
 
 
-    def emails_to_entry(title, raw_emails, format_data):
+    def emails_to_entry(title, raw_emails, format_data, mailbox):
         emails = []
         for email_data in raw_emails:
-            context, _ = get_email_context(email_data)
+            context, _ = get_email_context(email_data, mailbox)
             emails.append(context)
 
         headers = {
-            'minimal' : ['Type', 'ID', 'Labels', 'Headers', 'Attachments', ],
-            'raw' : ['Type', 'ID', 'Labels', 'Headers', 'Attachments', 'RawData'],
-            'metadata' : ['Type', 'ID', 'Labels', 'Headers', 'Attachments', 'Format', 'Subject', 'From', 'To'],
-            'full' : ['Type', 'ID', 'Labels', 'Headers', 'Attachments', 'Format', 'Subject', 'From', 'To', 'Body'],
+            'minimal' : ['Mailbox', 'ID', 'Labels', 'Headers', 'Attachments', ],
+            'raw' : ['MailBox', 'ID', 'Labels', 'Headers', 'Attachments', 'RawData'],
+            'metadata' : ['MailBox', 'ID', 'Labels', 'Headers', 'Attachments', 'Format', 'Subject', 'From', 'To'],
+            'full' : ['Mailbox', 'ID', 'Labels', 'Headers', 'Attachments', 'Format', 'Subject', 'From', 'To', 'Body'],
         }
 
         return {
@@ -220,7 +221,7 @@ script:
 
 
     def mail_to_incident(msg, service, user_key):
-        parsed_msg, headers = get_email_context(msg)
+        parsed_msg, headers = get_email_context(msg, user_key)
 
         file_names = []
         command_args = {
@@ -274,6 +275,7 @@ script:
                 'CustomerId' : user_data['customerId'],
             })
         headers = ['Type', 'ID', 'UserName', 'DisplayName', 'Email', 'Group', 'CustomerId']
+
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -296,6 +298,7 @@ script:
                 'OrgUnitId' : role_data.get('orgUnitId', ''),
             })
         headers = ['ID', 'AssignedTo', 'RoleAssignmentId', 'ScopeType', 'Kind', 'OrgUnitId']
+
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -318,6 +321,7 @@ script:
             })
 
         headers = ['DisplayText', 'ClientId', 'Kind', 'Scopes', 'UserKey']
+
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -362,6 +366,7 @@ script:
             'Applications Versions', 'Application Permissions', 'Kind', 'BootloaderVersion', 'BuildNumber', 'DefaultLanguage',
             'DeviceCompromisedStatus', 'DeviceId', 'Brand', 'DevicePasswordStatus', 'Email', 'Imei', 'Hardware',
             'KernelVersion', 'Type', 'SerialNumber', 'Model', 'Name', 'Os', 'Status', 'WifiMacAddress',]
+
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -405,6 +410,7 @@ script:
             'DeviceId', 'LastEnrollmentTime', 'Meid', 'Notes', 'OrderNumber', 'OrgUnitPath', 'PlatformVersion', 'SerialNumber',
             'Model', 'SupportEndDate', 'OsVersion', 'Status', 'MacAddress', 'LastSync',
         ]
+
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -431,9 +437,6 @@ script:
         command_args['viewType'] = args.get('view-type-public-domain', 'admin_view')
         if command_args['projection'] == 'custom':
             command_args['customFieldMask'] = args.get('custom_field_mask')
-
-        # if command_args['domain'] is None and command_args['customer'] is None:
-        #     raise ValueError('Either the customer or the domain parameter must be provided.')
 
         credentials = get_credentials()
         service = discovery.build('admin', 'directory_v1', credentials=credentials)
@@ -540,11 +543,28 @@ script:
         return 'Role has been deleted.'
 
 
-    def gmail_search():
+    def gmail_search_all_mailboxes():
+        command_args = {
+            'maxResults' : 100,
+            'domain' : ADMIN_EMAIL.split('@')[1],
+        }
+
+        credentials = get_credentials()
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.users().list(**command_args).execute()
+
+        entries = []
+        for user in result['users']:
+            entries.append(gmail_search(user['primaryEmail']))
+
+        return entries
+
+
+    def gmail_search(mailbox=None):
         command_args = {}
         args = demisto.args()
 
-        command_args['userId'] = args.get('user-key')
+        command_args['userId'] = args.get('user-key') if mailbox is None else mailbox
         command_args['q'] = args.get('query')
         command_args['maxResults'] = int(args.get('max-results', 100))
         command_args['fields'] = args.get('fields') #TODO
@@ -555,7 +575,7 @@ script:
         if command_args['maxResults'] > 500:
             raise ValueError('maxResults must be lower than 500, got %s' % (command_args['maxResults'], ))
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',])
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], command_args['userId'])
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().list(**command_args).execute()
 
@@ -568,8 +588,8 @@ script:
             mail_args['id'] = mail['id']
             mails.append(service.users().messages().get(**mail_args).execute())
 
-        # return email_list_to_entry('Email Search:', result['messages'])
-        return emails_to_entry('Email Search: %s' % (command_args['q'], ), mails, mail_args['format'])
+        return emails_to_entry('Search in %s: %s' % (command_args['userId'], command_args['q'], ),
+            mails, mail_args['format'], command_args['userId'])
 
 
     def gmail_get_mail():
@@ -585,7 +605,7 @@ script:
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().get(**command_args).execute()
 
-        return emails_to_entry('Email:', [result], command_args['format'])
+        return emails_to_entry('Email:', [result], command_args['format'], command_args['userId'])
 
 
     def gmail_get_attachment():
@@ -764,6 +784,8 @@ script:
             demisto.results(get_user_role())
         elif demisto.command() == 'googleapps-revoke-user-role':
             demisto.results(revoke_user_roles())
+        elif demisto.command() == 'googleapps-gmail-search-all-mailboxes':
+            demisto.results(gmail_search_all_mailboxes())
         elif demisto.command() == 'googleapps-gmail-search':
             demisto.results(gmail_search())
         elif demisto.command() == 'googleapps-gmail-get-mail':
@@ -1132,7 +1154,71 @@ script:
     - contextPath: Email.Headers
       description: All headers of specific mail
       type: string
-    description: Search the messages in the user's mailbox.
+    description: Search for messages in the user's mailbox.
+  - name: googleapps-gmail-search-all-mailboxes
+    arguments:
+    - name: query
+      description: 'Only return messages matching the specified query. Supports the
+        same query format as the Gmail search box. For example, "from:someuser@example.com
+        rfc822msgid: is:unread" , for syntax see: "https://support.google.com/mail/answer/7190?hl=en"'
+    - name: max-results
+      description: Maximum number of results to return. Default is 100. Maximum is
+        500. Acceptable values are 1 to 500, inclusive.
+      defaultValue: "100"
+    - name: fields
+      description: Fields allows partial responses to be retrieved. See https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+        for more information. (comma separated list)
+    - name: labels-ids
+      description: Only return messages with labels that match all of the specified
+        label IDs. (comma separated list)
+    - name: page-token
+      description: Page token to retrieve a specific page of results in the list.
+    - name: include-spam-trash
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: ' Include messages from SPAM and TRASH in the results. (Default:
+        false)'
+      defaultValue: "False"
+    outputs:
+    - contextPath: Email.ID
+      description: Inner Id of mail in gmail
+      type: string
+    - contextPath: Email.ThreadId
+      description: The thread ID
+      type: string
+    - contextPath: Email.Format
+      description: MIME type of mail
+      type: string
+    - contextPath: Email.Labels
+      description: Labels of specific mail
+      type: string
+    - contextPath: Email.To
+      description: Email Address of receiver
+      type: string
+    - contextPath: Email.From
+      description: Email Address of sender
+      type: string
+    - contextPath: Email.Cc
+      description: Carbon Copying
+      type: string
+    - contextPath: Email.Bcc
+      description: Blind Carbon Copy
+      type: string
+    - contextPath: Email.Subject
+      description: Subject of specific mail
+      type: string
+    - contextPath: Email.Body
+      description: The content of mail
+      type: string
+    - contextPath: Email.Attachments
+      description: Attachments ids separated by ','
+      type: unknown
+    - contextPath: Email.Headers
+      description: All headers of specific mail
+      type: string
+    description: Search for messages in all mailboxes.
   - name: googleapps-list-users
     arguments:
     - name: projection
