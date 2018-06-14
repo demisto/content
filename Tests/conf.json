@@ -288,10 +288,6 @@
         },
         {
             "playbookID": "CarbonBlackLiveResponseTest",
-            "integrations": "carbonblack-v2"
-        },
-        {
-            "playbookID": "CarbonBlackLiveResponseTestV2",
             "integrations": "carbonblackliveresponse"
         },
         {
