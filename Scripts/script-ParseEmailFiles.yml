@@ -501,6 +501,8 @@ script: |-
           'EntryContext': {'Email': emailData}}]
 
   def getUtfString(text, field):
+      if text is None:
+        text = ''
       try:
           utfString = text.encode('utf-8')
       except Exception as ex:
@@ -640,3 +642,5 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
+runonce: false
+releaseNotes: "-"
