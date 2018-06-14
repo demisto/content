@@ -456,16 +456,6 @@ script:
         let fileContentResponse = downloadFileRequest(sessionId, fileId);
         let fileEntryId = saveFile(fileContentResponse.Body);
         let fileName = fileInfo.file_name.split('\\').pop();
-        let context = {
-            File: {
-                Name: fileName,
-                EntryID: fileEntryId,
-                Size: fileInfo.size,
-                Extension: fileName.split('.').pop(),
-                Path: fileInfo.file_name,
-                ProductName: `Carbon Black ${CB_PRODUCT} - Live Response`
-            }
-        };
         return {
             Type: entryTypes.file,
             FileID: fileEntryId,
@@ -1753,6 +1743,7 @@ script:
       description: Whether the file was deleted or not
     description: Delete a given file in the session from Cb server.
   - name: cb-file-get
+    deprecated: true
     arguments:
     - name: session
       required: true
@@ -1760,7 +1751,7 @@ script:
     - name: file-id
       required: true
       description: File ID
-    description: Retrieve a file from Cb server  in a given session
+    description: Download a file from Cb server in a given session. Use cb-command-create with name=get-file to push the file from a path on the endpint to Cb server before executing cb-file-get.
   - name: cb-file-info
     arguments:
     - name: session
@@ -1782,6 +1773,7 @@ script:
       description: Whether the file was deleted or not
     description: Get file info for a given file in a session
   - name: cb-file-upload
+    deprecated: true
     arguments:
     - name: session
       required: true
@@ -1800,7 +1792,7 @@ script:
       description: File status (0 if no error, another number otherwise)
     - contextPath: CbLiveResponse.Files.Delete
       description: Whether the file was deleted or not
-    description: Uploads the file to the Cb server.
+    description: Uploads the file to the Cb server. Use cb-command-create with name=put-file to push the file from Cb server to a path on the endpoint.
   - name: cb-keepalive
     arguments:
     - name: session
@@ -2605,6 +2597,26 @@ script:
       description: The source path of the file.
     - contextPath: CbLiveResponse.Commands.FileID
       description: Unique file ID.
+    - contextPath: CbLiveResponse.File.Size
+      description: File size.
+    - contextPath: CbLiveResponse.File.SHA1
+      description: File SHA1.
+    - contextPath: CbLiveResponse.File.SHA256
+      description: File SHA256.
+    - contextPath: CbLiveResponse.File.Name
+      description: File name.
+    - contextPath: CbLiveResponse.File.SSDeep
+      description: File SSDeep.
+    - contextPath: CbLiveResponse.File.EntryID
+      description: File EntryID.
+    - contextPath: CbLiveResponse.File.Info
+      description: File info.
+    - contextPath: CbLiveResponse.File.Type
+      description: File type.
+    - contextPath: CbLiveResponse.File.MD5
+      description: File MD5.
+    - contextPath: CbLiveResponse.File.Extension
+      description: File extension.
     description: Retrieve a file from a path on the endpoint.
   - name: cb-push-file-to-endpoint
     arguments:
