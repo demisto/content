@@ -37,7 +37,7 @@ script:
     }
 
     var base = 'http://ipinfo.io/';
-    var token = params.token ? "?token=" + params.token : "";
+    var token = params.token ? '?token=' + params.token : '';
     var jsonSuffix = '/json' + token;
     switch (command) {
         case 'test-module':
