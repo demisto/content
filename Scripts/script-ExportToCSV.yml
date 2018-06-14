@@ -30,9 +30,15 @@ script: |-
   }
 
   function convertToCSV(objArray, headers) {
+      // if objArray is an array of strings then return a single line of values
+      if (typeof objArray[0] === 'string') {
+          return objArray.join();
+      }
+      // create file headers
       if (!headers) {
           headers = extractHeaders(objArray);
       }
+      // collect values into rows
       var rows = [];
       for (var obj of objArray) {
           if (typeof obj !== 'object') {
