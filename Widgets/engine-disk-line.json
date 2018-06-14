@@ -1,13 +1,18 @@
 {
-    "id": "workers-percentage-trend",
+    "id": "engine-disk-line",
     "version": -1,
     "fromVersion": "3.5.1",
     "modified": "2018-03-14T17:42:44.919467+02:00",
-    "name": "Workers Use Trend",
+    "name": "Disk Usage per Engine (%)",
     "dataType": "system",
     "widgetType": "line",
-    "query": "workers.usedPercent",
+    "query": "engine.disk",
     "isPredefined": true,
+    "params": {
+        "groupBy": ["engine"],
+        "timeFrame": "minutes"
+    },
+    "size": 61,
     "dateRange": {
         "period": {
             "byTo": "",
@@ -16,9 +21,5 @@
             "fromValue": 60,
             "field": ""
         }
-    },
-    "params": {
-        "timeFrame": "minutes"
-    },
-    "size": 61
+    }
 }

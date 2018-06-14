@@ -1,0 +1,25 @@
+{
+    "id": "engine-memory-line",
+    "version": -1,
+    "fromVersion": "3.5.1",
+    "modified": "2018-03-14T17:42:44.919467+02:00",
+    "name": "Memory Usage per Engine (%)",
+    "dataType": "system",
+    "widgetType": "line",
+    "query": "engine.memory",
+    "isPredefined": true,
+    "params": {
+        "groupBy": ["engine"],
+        "timeFrame": "minutes"
+    },
+    "size": 61,
+    "dateRange": {
+        "period": {
+            "byTo": "",
+            "byFrom": "minutes",
+            "toValue": null,
+            "fromValue": 60,
+            "field": ""
+        }
+    }
+}

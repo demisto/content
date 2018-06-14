@@ -1,0 +1,15 @@
+{
+    "id": "engine-busy-workers-percent-bar",
+    "version": -1,
+    "fromVersion": "3.5.1",
+    "modified": "2018-03-14T17:42:44.919467+02:00",
+    "name": "Busy Workers per Engine (%)",
+    "dataType": "system",
+    "widgetType": "bar",
+    "query": "engine.workers.usedPercent",
+    "isPredefined": true,
+    "params": {
+        "groupBy": ["engine"]
+    },
+    "size": 61
+}

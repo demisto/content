@@ -1,0 +1,15 @@
+{
+    "id": "engine-memory-bar",
+    "version": -1,
+    "fromVersion": "3.5.1",
+    "modified": "2018-03-14T17:42:44.919467+02:00",
+    "name": "Engine Memory Usage (%)",
+    "dataType": "system",
+    "widgetType": "bar",
+    "query": "engine.memory",
+    "isPredefined": true,
+    "params": {
+        "groupBy": ["engine"]
+    },
+    "size": 61
+}
