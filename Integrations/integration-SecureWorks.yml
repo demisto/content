@@ -1336,5 +1336,4 @@ script:
     description: Returns a list of close codes for a ticket
   isfetch: true
   runonce: false
-releaseNotes: "Added the ability to fetch new tickets, fixed ticket closing and improved human readable content"
 fromversion: 3.6.0

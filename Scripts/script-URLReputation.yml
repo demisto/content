@@ -22,4 +22,3 @@ args:
   description: URL to look up
 scripttarget: 0
 runonce: false
-releaseNotes: "error type entry handling"

@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: Cylance Protect
 display: Cylance Protect
-releaseNotes: "-"
 category: Endpoint
 system: true
 fromversion: 2.0.1
