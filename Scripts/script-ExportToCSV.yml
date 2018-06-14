@@ -4,7 +4,10 @@ commonfields:
 name: ExportToCSV
 script: |-
   function valueToValidString(value) {
-      if (typeof value === 'object') {
+      if (typeof value === 'number' || typeof value === 'boolean' ) {
+          value = value.toString();
+      }
+      else if (typeof value === 'object') {
           value = JSON.stringify(value);
       }
       value = value.trim().replace(/\n/g, '\\n').replace(/"/g, '""');
