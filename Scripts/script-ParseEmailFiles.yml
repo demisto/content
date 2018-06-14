@@ -572,7 +572,7 @@ script: |-
   except Exception, ex:
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)}]
 
-  if 'Composite Document File V2 Document'.lower() in fileType.lower():
+  if 'Composite Document File V2 Document'.lower() or 'CDFV2 Microsoft Outlook Message'.lower() in fileType.lower():
       temp1, temp2 =  handleMsg(filePath)
       res += temp1
       res += temp2
