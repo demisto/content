@@ -10,7 +10,7 @@ configuration:
 - display: API Key
   name: api_key
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Trust any certificate (unsecure)
   name: insecure
@@ -354,7 +354,13 @@ script:
             demisto.results(analysis_info())
         elif demisto.command() == 'joe-analysis-submit-url':
             demisto.results(analyse_url())
+        elif demisto.command() == 'joe-detonate-url':
+            demisto.args()['should_wait'] = 'True'
+            demisto.results(analyse_url())
         elif demisto.command() == 'joe-analysis-submit-sample':
+            demisto.results(analyse_sample())
+        elif demisto.command() == 'joe-detonate-file':
+            demisto.args()['should_wait'] = 'True'
             demisto.results(analyse_sample())
         elif demisto.command() == 'joe-download-report':
             demisto.results(download_report())
@@ -392,6 +398,63 @@ script:
       - "False"
       description: Should the command poll for the result of the analysis
       defaultValue: "False"
+    - name: comments
+      description: 'Comments for the analysis '
+    - name: systems
+      description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      defaultValue: w7x64
+    - name: internet-access
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Enable full internet access. Default is True
+      defaultValue: "True"
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Application used for analysis
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: unknown
+    - contextPath: Joe.Analysis.RunErrors
+      description: Raised errors during sampling
+    - contextPath: Joe.Analysis.RunSystems
+      description: Analysis OS
+    - contextPath: Joe.Analysis.md5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.sha1
+      description: sha1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.sha256
+      description: sha256 of analysis sample
+      type: string
+    description: Submit a url for analysis.
+  - name: joe-detonate-url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: sample url
     - name: comments
       description: 'Comments for the analysis '
     - name: systems
@@ -539,6 +602,44 @@ script:
       defaultValue: html
     description: Download a resource belonging to a report. This can be the full report,
       dropped binaries, etc.
+  - name: joe-detonate-file
+    arguments:
+    - name: file_id
+      default: true
+      description: War Room entry of a file (for example, 3245@4)
+    - name: sample_url
+      description: Url to a sample file
+    - name: comments
+      description: Comments for the analysis
+    - name: systems
+      description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+    - name: internet-access
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Enable full internet access. Default is True
+      defaultValue: "True"
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+    - contextPath: Joe.Analysis.Runs
+      description: Application used for analysis
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+    description: Submit a sample for analysis.
   - name: joe-search
     arguments:
     - name: query
