@@ -1,0 +1,1295 @@
+commonfields:
+  id: GoogleApps API
+  version: -1
+name: GoogleApps API
+display: GoogleApps API
+category: Authentication
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAF8ElEQVRo3tVaa2wUVRQ+lUeolLZQHwQxEUIi/GgpakvTst2d7fax7RaEUFOIRW2x7e7cme220BawNSQ1MQZFgYaH8gvlFVAxUYIIJPxRA7FSLCpBJMYnL5FEyh8cvzttodvd6e527izpJCezO3Pn3Pvde853zzkzRKKPAmUOScp+Kg/MoVF7FCiZJLHz5JA1nL8jlzxzxLoklgw908iBc5xBZKPTSzqIAcmvPU3Ltk+NSc/S5vGUz9YASBd0XIXOb2jpKm+cQDAnOvw9CAQXm1ej0ubj9PW5yVHpaXplLJU3bKN83xA9+F+gtJAnkGAdCIm50dm1EBADYgeYrJrDlF0d2UTscj7ZfXcMdN2kJW2PWwPCIZdC/jYEESwHATopwsquHVZHgb9IPAinvhI3owTRJ5L8ITm8xisjye8N+7xLtQk2JyUHPnElJhB3CcB7hCpff9TATI8bPmfzXUCfqeJAuPyzoPinEYEYkMKGr8jtnztkhbmZ3gr1MYiTXaPFgWKRFDuenMpBUyD0wemsBGqVt2EVWmgRmMoh3wjTthdAdlGpP120cz8EO/7FNJBQswm95mR7qKTBoujAqUzADJ4QDiREWDe5lInWbn5FgWysyiEAOmNgDuZFkt+N107+AGw3hUrU6VSsLsTvo4LBHMFEJVDcD7syBh1vEQikFz5SRPflkNRU2PY5cebF/oBPLjM/sMWBVEShKpRuJxeLjsMdyibx/sL2UUXHCNmrtiUZ9n/0bhSaW3uL1A2RuVxiqy1ismvQvR7ycKxx1GuUP0hRdo1GLVvfjsK8NlpMzRdhbowKlSmRQVSumg/kt4csr0Y5dZepyvuEMXh/Ctr1kA1t56vDC28jmaLnbkQZ9VSoJhqxzzh08rmhguyXPqI9xxINzOotPsDkhbXavMZlWmZgeVjh93gbHYx5//kWYFZQkfLg0P2hAg3+M3xwQb1GFe0nacVaDz3XOB3m9xiU5UP64i/M9rzG5dq+6xnanqsZ2u4rc4OEX+P3eBt9ZYQRgnf/4IAwERe7IsyARnl1PBTX9IRKYteD7mNwfNb5gD+4nKG9/9fcIOHX+D3eRggQbp42Pp616wYBUVeaVtwPhM8+H/iuPzODhF/j94QB4RNaFviR1h1K6wPxYkcyZvqHUQckC2y6utN3bzWatzDKqtZGHZDcuh56oWNSH4h3dqRRSdP5frsfXUAkVn1vNTxyO+V5zfG6GGe/ohMIn1BOKFJEej5NBfKEwfHRAWE0OBL6ldh+0H4ussRpOqVXrfFQRdtJneqN+7qD+G9J8N7hbkzEalRBusynrDFuiE7lzbCbK990s6s/Ns732WGkweMMQgxs95JSB0BnzPF61CHKWVC+cY1rZWAG5fmuhs1Vlq96JprsbzLyZRmoL1gaADrZGxHHsiSwKagwwUtDLmV9rBEwKiasvb9sY0FezgIRx/BsUybCoN5Bz32G2CppZLlJTfNssrO94sEoG6MrCLIytN8KS/EB/CQBNS1WCflNIJgeOHvKfcrLlULd2YT5ibwZ5zHxB+JAicbBjgg1MV5KcjcuIk/TdFBrKnwzTsCcyk6LmIynBd04f0Lu1qctNi05CZ2dtbxkKiknyNmQaA0Il5qOTkLDmZyXrQDzMyRNLACPmgmlu+Ebt0MTG991Yhs6sUM34n6nvufYTfsMJ4G9VMjGigNR0+LRbTf84P4lW31wWdOtZlCx8qUpMPw9fZEyUxyI1rYpCA8uGQ5Kkr8I+5y39RFa4Ds8QiCXwVpZYk2q1C9FeIexw/BZm5yMmY01PbgBJ7egcF3oLxnWjl1Kc4Ty6USAPRBDSbTYGpZqacMGJf8TvnqBxEaS8yLqyKpJhnyqfzRgHPrzzzQsfIWweE0CuHw12euHMpVG5f7N+Nwiuh2Yf77hbj6mf84Rap6/YoO1x2cnL3m1Dp2e0h1RwtkuB5CSxhZGPL9zKj4UONX/NncAxEWS/E/FOcaSJ+mfHDlNhNFlrTP0l5x9weL38LF0GrWHq2m2/uLGpT4pWvX/zRDqQjZWrVoAAAAASUVORK5CYII=
+description: Google apps Admin API, or GSuite
+detaileddescription: "This API enables the usage of Google Admin API. In order to
+  enable it, you will need to create an account service private key json file and
+  copy its content.\nFollow the steps here to create such a private key and authorize
+  the API for usage: [https://developers.google.com/admin-sdk/directory/v1/guides/delegation](https://developers.google.com/admin-sdk/directory/v1/guides/delegation)\n\nIt
+  is necessary to authorize the next API’s for that service account:\n[https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly)\n\nIn
+  order to fetch user roles, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly](https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly)\n\nIn
+  order to revoke user roles, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.rolemanagement](https://www.googleapis.com/auth/admin.directory.rolemanagement)\n\nIn
+  order to search user mailboxes, please authorize this api too: [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly)\n\nIn
+  order to delete emails from user mailbox, please authorize this api too: \n[https://mail.google.com](https://mail.google.com),
+  \n[https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify)\n\nIn
+  order to to fetch user security tokens, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security)\n\nIn
+  order to to fetch mobile info, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.readonly](https://www.googleapis.com/auth/admin.directory.device.mobile.readonly)\n\nIn
+  order to to preform actions on mobile devices, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.action](https://www.googleapis.com/auth/admin.directory.device.mobile.action)\n\nIn
+  order to to preform actions on chorme devices, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.chromeos](https://www.googleapis.com/auth/admin.directory.device.chromeos)\n\nFor
+  the email user param, please choose a user with admin permissions and make sure
+  that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.\n\nIn
+  order to revoke/fetch user role, you will need the Immutable Google Apps ID param.\nTo
+  get an Immutable Google Apps ID (or customerId):\n1. Go to [https://admin.google.com](https://admin.google.com)\n2.
+  Security -> Set up single sign-on (SSO)\n\nYou will see there URLs in the format:\n[https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx](https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx)\nCxxxxxxxx
+  is your Immutable Google Apps ID (customerId)."
+configuration:
+- display: Email of user with admin capabilities
+  name: adminEmail
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Immutable Google Apps Id
+  name: gappsID
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Events query (e.g. "from:Demisto")
+  name: query
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Events user key (e.g. example@demisto.com)
+  name: queryUserKey
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Require users to enter additional password
+  name: additionalPassword
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+    import re
+    import json
+    import base64
+    import datetime
+    from distutils.util import strtobool
+
+    import html2text
+    from apiclient import discovery
+    from oauth2client import client, service_account
+
+
+    ''' GLOBAL VARS '''
+    ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
+    PRIVATE_KEY_CONTENT = demisto.params()['adminEmail'].get('password', '{}')
+    GAPPS_ID = demisto.params().get('gappsID')
+    SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
+
+    ''' HELPER FUNCTIONS '''
+    def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
+        """Gets valid user credentials from storage.
+
+        If nothing has been stored, or if the stored credentials are invalid,
+        the OAuth2 flow is completed to obtain the new credentials.
+
+        Returns:
+            Credentials, the obtained credential.
+        """
+        scopes = SCOPES
+        if additional_scopes is not None:
+            scopes += additional_scopes
+
+        cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
+            scopes=scopes)
+
+        return cred.create_delegated(delegated_user)
+
+
+    def parse_mail_parts(parts):
+        body = u''
+        html = u''
+        attachments = []
+        for part in parts:
+            if 'multipart' in part['mimeType']:
+                part_body, part_html, part_attachments = parse_mail_parts(part['parts'])
+                body += part_body
+                html += part_html
+                attachments.extend(part_attachments)
+            elif len(part['filename']) == 0:
+                text = unicode(base64.urlsafe_b64decode(part['body'].get('data', '').encode('ascii')), 'utf-8')
+                if 'text/html' in part['mimeType']:
+                    html += text
+                else:
+                    body += text
+
+            else:
+                attachments.append({
+                    'ID' : part['body']['attachmentId'],
+                    'Name' : part['filename']
+                })
+
+        return body, html, attachments
+
+
+    def get_email_context(email_data):
+        headers = dict([(h['name'].lower(), h['value']) for h in email_data.get('payload', {}).get('headers', [])])
+        body = demisto.get(email_data, 'payload.body.data')
+        body = body.encode('ascii') if body is not None else ''
+        parsed_body = base64.urlsafe_b64decode(body)
+
+        context = {
+            'Type' : 'Gmail',
+            'ID' : email_data['id'],
+            'ThreadId' : email_data['threadId'],
+            'Labels' : ', '.join(email_data['labelIds']),
+            'Headers' : ', '.join(headers.keys()),
+            'Attachments' : email_data.get('payload', {}).get('filename', ''),
+            # only for format 'raw'
+            'RawData' : email_data.get('raw'),
+            # only for format 'full' and 'metadata'
+            'Format' : headers.get('content-type', '').split(';')[0],
+            'Subject' : headers.get('subject'),
+            'From' : headers.get('from'),
+            'To' : headers.get('to'),
+            # only for format 'full'
+            'Body' : unicode(parsed_body, 'utf-8'),
+
+            # only for incident
+            'Cc' : headers.get('cc', []),
+            'Bcc' : headers.get('bcc', []),
+            'Date' : headers.get('date', ''),
+            'Html' : None,
+        }
+
+        if 'text/html' in context['Format']:
+            context['Html'] = context['Body']
+            context['Body'] = html2text.html2text(context['Body'])
+
+        if 'multipart' in context['Format']:
+            context['Body'], context['Html'], context['Attachments'] = parse_mail_parts(email_data.get('payload', {}).get('parts', []))
+
+        return context, headers
+
+
+    def parse_time(t):
+        m = re.match('([\w,\d: ]*) ([+-]{1})(\d{2})(\d{2})[\s\w\(\)]*', t)
+        if m is None:
+            return datetime.datetime.strptime(t, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
+        else:
+            base_time, sign, hours, minutes = m.groups()
+            seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
+            parsed_time = datetime.datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S') + datetime.timedelta(seconds=seconds)
+            return parsed_time.isoformat() + 'Z'
+
+
+    def create_incident_labels(parsed_msg, headers):
+        labels = [
+            {'type' : 'Email/ID', 'value' : parsed_msg['ID']},
+            {'type' : 'Email/subject', 'value' : parsed_msg['Subject']},
+            {'type' : 'Email/text', 'value' : parsed_msg['Body']},
+            {'type' : 'Email/from', 'value' : parsed_msg['From']},
+            {'type' : 'Email/html', 'value' : parsed_msg['Html']},
+        ]
+        labels.extend([{'type' : 'Email/to', 'value' : to} for to in headers.get('To', '').split(',')])
+        labels.extend([{'type' : 'Email/cc', 'value' : cc} for cc in headers.get('Cc', '').split(',')])
+        labels.extend([{'type' : 'Email/bcc', 'value' : bcc} for bcc in headers.get('Bcc', '').split(',')])
+        for key, val in headers.items():
+            labels.append({'type' : 'Email/Header/' + key, 'value' : val})
+
+        return labels
+
+
+    def emails_to_entry(title, raw_emails, format_data):
+        emails = []
+        for email_data in raw_emails:
+            context, _ = get_email_context(email_data)
+            emails.append(context)
+
+        headers = {
+            'minimal' : ['Type', 'ID', 'Labels', 'Headers', 'Attachments', ],
+            'raw' : ['Type', 'ID', 'Labels', 'Headers', 'Attachments', 'RawData'],
+            'metadata' : ['Type', 'ID', 'Labels', 'Headers', 'Attachments', 'Format', 'Subject', 'From', 'To'],
+            'full' : ['Type', 'ID', 'Labels', 'Headers', 'Attachments', 'Format', 'Subject', 'From', 'To', 'Body'],
+        }
+
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': emails,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, emails, headers[format_data]),
+            'EntryContext': {'Email(val.ID && val.ID == obj.ID)' : emails}
+        }
+
+
+    def mail_to_incident(msg, service, user_key):
+        parsed_msg, headers = get_email_context(msg)
+
+        file_names = []
+        command_args = {
+            'messageId' : parsed_msg['ID'],
+            'userId' : user_key,
+        }
+
+        for attachment in parsed_msg['Attachments']:
+            command_args['id'] = attachment['ID']
+            result = service.users().messages().attachments().get(**command_args).execute()
+            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+            try:
+                file_data = unicode(file_data, 'utf-8')
+            except:
+                pass
+
+            # save the attachment
+            file_result = fileResult(attachment['Name'], file_data)
+
+            # check for error
+            if file_result['Type'] == entryTypes['error']:
+                demisto.error(file_result['Contents'])
+                raise Exception(file_result['Contents'])
+
+            file_names.append({
+                'path': file_result['FileID'],
+                'name': attachment['Name'],
+            })
+
+        return {
+            # 'type' : 'Gmail',
+            'name' : parsed_msg['Subject'],
+            'details' : parsed_msg['Body'],
+            'labels' : create_incident_labels(parsed_msg, headers),
+            'occurred' : parse_time(parsed_msg['Date']),
+            'attachment' : file_names,
+            'rawJSON' : json.dumps(parsed_msg),
+        }
+
+
+    def users_to_entry(title, response):
+        context = []
+        for user_data in response:
+            context.append({
+                'Type' : 'Google',
+                'ID' : user_data['id'],
+                'UserName' : user_data['name']['givenName'],
+                'DisplayName' : user_data['name']['fullName'],
+                'Email' : {'Address' : user_data['primaryEmail']},
+                'Group' : user_data['kind'],
+                'CustomerId' : user_data['customerId'],
+            })
+        headers = ['Type', 'ID', 'UserName', 'DisplayName', 'Email', 'Group', 'CustomerId']
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, context, headers),
+            'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)' : context}
+        }
+
+
+    def roles_to_entry(title, response):
+        context = []
+        for role_data in response:
+            context.append({
+                'ID' : role_data['roleId'],
+                'AssignedTo' : role_data['assignedTo'],
+                'RoleAssignmentId' : role_data['roleAssignmentId'],
+                'ScopeType' : role_data['scopeType'],
+                'Kind' : role_data['kind'],
+                'OrgUnitId' : role_data.get('orgUnitId', ''),
+            })
+        headers = ['ID', 'AssignedTo', 'RoleAssignmentId', 'ScopeType', 'Kind', 'OrgUnitId']
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, context, headers),
+            'EntryContext': {'GoogleApps.Role(val.ID && val.ID == obj.ID)' : context}
+        }
+
+
+    def tokens_to_entry(title, response):
+        context = []
+        for token_data in response:
+            context.append({
+                'DisplayText' : token_data.get('displayText'),
+                'ClientId' : token_data.get('clientId'),
+                'Kind' : token_data.get('kind'),
+                'Scopes' : ''.join(token_data.get('scopes',[])),
+                'UserKey' : token_data.get('userKey'),
+            })
+
+        headers = ['DisplayText', 'ClientId', 'Kind', 'Scopes', 'UserKey']
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, context, headers),
+            'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)' : context}
+        }
+
+
+    def devices_to_entry(title, response):
+        context = []
+        for device_data in response:
+            context.append({
+                'ResourceId' : device_data.get('resourceId'),
+                'Applications' : ','.join([app['displayName'] for app in device_data.get('applications', [])]),
+                'Packges' : ','.join([app['packageName'] for app in device_data.get('applications', [])]),
+                'Applications Versions' : ','.join([app['versionName'] for app in device_data.get('applications', [])]),
+                'Application Permissions' : ','.join([app['permission'] for app in device_data.get('applications', [])]),
+                'Kind' : device_data.get('kind'),
+                'BootloaderVersion' : device_data.get('bootloaderVersion'),
+                'BuildNumber' : device_data.get('buildNumber'),
+                'DefaultLanguage' : device_data.get('defaultLanguage'),
+                'DeviceCompromisedStatus' : device_data.get('deviceCompromisedStatus'),
+                'DeviceId' : device_data.get('deviceId'),
+                'Brand' : device_data.get('brand'),
+                'DevicePasswordStatus' : device_data.get('devicePasswordStatus'),
+                'Email' : ','.join(device_data.get('email', [])),
+                'Imei' : device_data.get('imei'),
+                'Hardware' : device_data.get('hardwareId'),
+                'KernelVersion' : device_data.get('kernelVersion'),
+                'Type' : device_data.get('type'),
+                'SerialNumber' : device_data.get('serialNumber'),
+                'Model' : device_data.get('model'),
+                'Name' : device_data.get('name'),
+                'Os' : device_data.get('os'),
+                'Status' : device_data.get('status'),
+                'WifiMacAddress' : device_data.get('wifiMacAddress'),
+            })
+
+        headers = ['ResourceId', 'Applications', 'Packges',
+            'Applications Versions', 'Application Permissions', 'Kind', 'BootloaderVersion', 'BuildNumber', 'DefaultLanguage',
+            'DeviceCompromisedStatus', 'DeviceId', 'Brand', 'DevicePasswordStatus', 'Email', 'Imei', 'Hardware',
+            'KernelVersion', 'Type', 'SerialNumber', 'Model', 'Name', 'Os', 'Status', 'WifiMacAddress',]
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, context, headers),
+            'EntryContext': {'Device(val.DeviceId && val.DeviceId == obj.DeviceId)' : context}
+        }
+
+
+    def chrome_devices_to_entry(title, response):
+        context = []
+        for device_data in response:
+            context.append({
+                'Kind' : device_data.get('kind'),
+                'BootMode' : device_data.get('bootMode'),
+                'ActiveTimeRanges' : ','.join([time['date'] for time in device_data.get('activeTimeRanges', [])]),
+                'recentUsersEmails' : ','.join([user['email'] for user in device_data.get('recentUsers', [])]),
+                'recentUsersTypes' : ','.join([user['type'] for user in device_data.get('recentUsers', [])]),
+                'AnnotatedAssetId' : device_data.get('AnnotatedAssetId'),
+                'AnnotatedLocation' : device_data.get('annotatedLocation'),
+                'EthernetMacAddress' : device_data.get('ethernetMacAddress'),
+                'FirmwareVersion' : device_data.get('firmwareVersion'),
+                'DeviceId' : device_data.get('deviceId'),
+                'LastEnrollmentTime' : device_data.get('lastEnrollmentTime'),
+                'Meid' : device_data.get('meid'),
+                'Notes' : device_data.get('notes'),
+                'OrderNumber' : device_data.get('orderNumber'),
+                'OrgUnitPath' : device_data.get('orgUnitPath'),
+                'PlatformVersion' : device_data.get('platformVersion'),
+                'SerialNumber' : device_data.get('serialNumber'),
+                'Model' : device_data.get('model'),
+                'SupportEndDate' : device_data.get('supportEndDate'),
+                'OsVersion' : device_data.get('osVersion'),
+                'Status' : device_data.get('status'),
+                'MacAddress' : device_data.get('macAddress'),
+                'LastSync' : device_data.get('lastSync'),
+            })
+        headers = ['Kind', 'BootMode', 'ActiveTimeRanges', 'recentUsersEmails',
+            'recentUsersTypes', 'AnnotatedAssetId', 'AnnotatedLocation', 'EthernetMacAddress', 'FirmwareVersion',
+            'DeviceId', 'LastEnrollmentTime', 'Meid', 'Notes', 'OrderNumber', 'OrgUnitPath', 'PlatformVersion', 'SerialNumber',
+            'Model', 'SupportEndDate', 'OsVersion', 'Status', 'MacAddress', 'LastSync',
+        ]
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, context, headers),
+            'EntryContext': {'ChromeDevice(val.DeviceId && val.DeviceId == obj.DeviceId)' : context}
+        }
+
+
+    ''' FUNCTIONS '''
+    def list_users():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['maxResults'] = args.get('max-results', 100)
+        command_args['domain'] = args.get('domain', ADMIN_EMAIL.split('@')[1])
+        command_args['customer'] = args.get('customer')
+        command_args['event'] = args.get('event')
+        command_args['sortOrder'] = args.get('sort-order')
+        command_args['projection'] = args.get('projection', 'basic')
+        command_args['query'] = args.get('query')
+        command_args['showDeleted'] = bool(strtobool(args.get('show-deleted', 'false')))
+        command_args['viewType'] = args.get('view-type-public-domain', 'admin_view')
+        if command_args['projection'] == 'custom':
+            command_args['customFieldMask'] = args.get('custom_field_mask')
+
+        # if command_args['domain'] is None and command_args['customer'] is None:
+        #     raise ValueError('Either the customer or the domain parameter must be provided.')
+
+        credentials = get_credentials()
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.users().list(**command_args).execute()
+
+        return users_to_entry('Users:', result['users'])
+
+
+    def get_user():
+        command_args = {}
+        args = demisto.args()
+        command_args['userKey'] = args.get('user-key')
+        command_args['projection'] = args.get('projection')
+        command_args['viewType'] = args.get('view-type-public-domain')
+        if command_args['projection'] == 'custom':
+            command_args['customFieldMask'] = args.get('custom_field_mask')
+
+        if command_args['userKey'] == 'me':
+            command_args['userKey'] = ADMIN_EMAIL
+        credentials = get_credentials()
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.users().get(**command_args).execute()
+
+        return users_to_entry('User %s:' % (command_args['userKey'], ), [result])
+
+
+    def insert_user():
+        command_args = {}
+        args = demisto.args()
+        command_args['primaryEmail'] = args['email']
+        command_args['name'] = {
+            'givenName' : args['given-name'],
+            'familyName' : args['family-name'],
+            'fullName' : args['given-name'] + args['family-name'],
+        }
+        command_args['password'] = args.get('password', '')
+
+        if len(command_args['password']) > 100 or len(command_args['password']) < 8:
+            raise ValueError('password must be over between 8 and 100 characters')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.user'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.users().insert(body=command_args).execute()
+
+
+        return users_to_entry('New User:', [result])
+
+
+    def delete_user():
+        command_args = {}
+        args = demisto.args()
+        command_args['userKey'] = args.get('user-key')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.user'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        service.users().delete(**command_args).execute()
+
+        return 'User %s have been deleted.' % (command_args['userKey'], )
+
+
+    def get_user_role():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['customer'] = GAPPS_ID
+        command_args['maxResults'] = 100
+        user_key = args['user-key']
+
+        if GAPPS_ID is None:
+            raise ValueError('Must provide Immutable GoogleApps Id')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
+            'https://www.googleapis.com/auth/admin.directory.rolemanagement'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.roleAssignments().list(**command_args).execute()
+
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        user_data = service.users().get(userKey=user_key).execute()
+
+        result = [role for role in result['items'] if role['assignedTo'] == user_data['id']]
+        return roles_to_entry('User Roles of %s:' % (user_key, ), result)
+
+
+    def revoke_user_roles():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['customer'] = GAPPS_ID
+        command_args['roleAssignmentId'] = args['role-assignment-id']
+        user_key = args.get('user-key')
+        token = args.get('token')
+
+        if GAPPS_ID is None:
+            raise ValueError('Must provide Immutable GoogleApps Id')
+
+        if token is not None:
+            # TODO implement this option
+            pass
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.rolemanagement'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.roleAssignments().delete(**command_args).execute()
+
+        return 'Role has been deleted.'
+
+
+    def gmail_search():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['userId'] = args.get('user-key')
+        command_args['q'] = args.get('query')
+        command_args['maxResults'] = int(args.get('max-results', 100))
+        command_args['fields'] = args.get('fields') #TODO
+        command_args['labelIds'] = [l for l in args.get('labels-ids', '').split(',') if l != '']
+        command_args['pageToken'] = args.get('page-token')
+        command_args['includeSpamTrash'] = args.get('include-spam-trash', False)
+
+        if command_args['maxResults'] > 500:
+            raise ValueError('maxResults must be lower than 500, got %s' % (command_args['maxResults'], ))
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',])
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+        result = service.users().messages().list(**command_args).execute()
+
+        mails = []
+        mail_args = {
+            'userId' : command_args['userId'],
+            'format' : 'full'
+        }
+        for mail in result['messages']:
+            mail_args['id'] = mail['id']
+            mails.append(service.users().messages().get(**mail_args).execute())
+
+        # return email_list_to_entry('Email Search:', result['messages'])
+        return emails_to_entry('Email Search: %s' % (command_args['q'], ), mails, mail_args['format'])
+
+
+    def gmail_get_mail():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['userId'] = args.get('user-key')
+        command_args['id'] = args.get('message-id')
+        command_args['format'] = args.get('format')
+        command_args['fields'] = args.get('fields') #TODO
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',])
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+        result = service.users().messages().get(**command_args).execute()
+
+        return emails_to_entry('Email:', [result], command_args['format'])
+
+
+    def gmail_get_attachment():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['messageId'] = args.get('message-id')
+        command_args['id'] = args.get('attachment-id')
+        command_args['userId'] = args.get('user-key')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',])
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+        result = service.users().messages().attachments().get(**command_args).execute()
+
+        file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+        return fileResult('Gmail_Attachment', file_data)
+
+
+    def gmail_delete_mail():
+        command_args = {}
+        args = demisto.args()
+        permanent = bool(strtobool(args.get('permanent', 'false')))
+
+        command_args['userId'] = args.get('user-key')
+        command_args['id'] = args.get('message-id')
+
+        credentials = get_credentials(['https://mail.google.com',
+            'https://www.googleapis.com/auth/gmail.modify',])
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+        if permanent:
+            result = service.users().messages().delete(**command_args).execute()
+            return 'Email has been successfully deleted.'
+        else:
+            result = service.users().messages().trash(**command_args).execute()
+            return 'Email has been successfully moved to trash.'
+
+
+    def get_user_tokens():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['userKey'] = args.get('user-key')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.user.security'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.tokens().list(**command_args).execute()
+
+        return tokens_to_entry('Tokens:', result['items'])
+
+
+    def get_user_devices():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['customerId'] = GAPPS_ID
+        command_args['query'] = args.get('query')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.mobiledevices().list(**command_args).execute()
+
+        return devices_to_entry('Devices:', result['mobiledevices'])
+
+
+    def device_action():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['customerId'] = args['customerId']
+        command_args['resouceId'] = args['resource-id']
+        command_args['action'] = args['action']
+
+        command_args['user-key'] = args.get('user-key')
+        command_args['token'] = args.get('token')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.device.mobile'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.mobiledevices().action(**command_args).execute()
+
+        return 'action "%s" on mobile device executed.' % (args['action'], )
+
+
+    def get_user_chrome_devices():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['customerId'] = GAPPS_ID
+        command_args['query'] = args.get('query')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.chromeosdevices().list(**command_args).execute()
+
+        return chrome_devices_to_entry('Chrome Devices:', result['chromeosdevices'])
+
+
+    def chrome_devices_action():
+        command_args = {}
+        args = demisto.args()
+
+        command_args['customerId'] = args['customerId']
+        command_args['resouceId'] = args['resource-id']
+        command_args['action'] = args['action']
+
+        command_args['user-key'] = args.get('user-key')
+        command_args['token'] = args.get('token')
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'])
+        service = discovery.build('admin', 'directory_v1', credentials=credentials)
+        result = service.chromeosdevices().action(**command_args).execute()
+
+        return 'action "%s" on chrome device executed.' % (args['action'], )
+
+
+    def fetch_incidents():
+        params = demisto.params()
+        user_key = params['queryUserKey']
+        query = '' if params['query'] is None else params['query']
+        last_run = demisto.getLastRun()
+        last_fetch = last_run.get('time')
+
+        # handle first time fetch
+        if last_fetch is None:
+            last_fetch = datetime.datetime.now() - datetime.timedelta(days=1)
+        else:
+            last_fetch = datetime.datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+        current_fetch = last_fetch
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], user_key)
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+
+        query += last_fetch.strftime(' after:%Y/%m/%d')
+        LOG('fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' % (user_key, query, last_fetch, ))
+        result = service.users().messages().list(userId=user_key, maxResults=100, q=query).execute()
+
+        incidents = []
+        # so far, so good
+        LOG('possible new incidents are %s' % (result, ))
+        for msg in result.get('messages', []):
+            msg_result = service.users().messages().get(id=msg['id'], userId=user_key).execute()
+            incident = mail_to_incident(msg_result, service, user_key)
+            temp_date = datetime.datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+
+            # update last run
+            if temp_date > last_fetch:
+                last_fetch = temp_date + datetime.timedelta(seconds=1)
+
+            # avoid duplication due to weak time query
+            if temp_date > current_fetch:
+                incidents.append(incident)
+
+        demisto.setLastRun({'time' : last_fetch.isoformat() + 'Z'})
+        return incidents
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            list_users()
+            demisto.results('ok')
+            sys.exit(0)
+
+        if demisto.command() == 'fetch-incidents':
+            demisto.incidents(fetch_incidents())
+            sys.exit(0)
+        elif demisto.command() == 'googleapps-list-users':
+            demisto.results(list_users())
+        elif demisto.command() == 'googleapps-get-user':
+            demisto.results(get_user())
+        elif demisto.command() == 'googleapps-insert-user':
+            demisto.results(insert_user())
+        elif demisto.command() == 'googleapps-delete-user':
+            demisto.results(delete_user())
+        elif demisto.command() == 'googleapps-get-user-roles':
+            demisto.results(get_user_role())
+        elif demisto.command() == 'googleapps-revoke-user-role':
+            demisto.results(revoke_user_roles())
+        elif demisto.command() == 'googleapps-gmail-search':
+            demisto.results(gmail_search())
+        elif demisto.command() == 'googleapps-gmail-get-mail':
+            demisto.results(gmail_get_mail())
+        elif demisto.command() == 'googleapps-gmail-get-attachment':
+            demisto.results(gmail_get_attachment())
+        elif demisto.command() == 'googleapps-gmail-delete-mail':
+            demisto.results(gmail_delete_mail())
+        elif demisto.command() == 'googleapps-get-tokens-for-user':
+            demisto.results(get_user_tokens())
+        elif demisto.command() == 'googleapps-get-devices-for-user':
+            demisto.results(get_user_devices())
+        elif demisto.command() == 'googleapps-device-action':
+            demisto.results(device_action())
+        elif demisto.command() == 'googleapps-get-chrome-devices-for-user':
+            demisto.results(get_user_chrome_devices())
+        elif demisto.command() == 'googleapps-chrome-device-action':
+            demisto.results(chrome_devices_action())
+
+    except Exception, e:
+        LOG('%s: %s' % (type(e), e.message, ))
+        if demisto.command() != 'test-module':
+            LOG.print_log()
+
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'error has occured: %s' % (e.message, ),
+        })
+        raise
+  type: python
+  commands:
+  - name: googleapps-chrome-device-action
+    arguments:
+    - name: costumerId
+      required: true
+      default: true
+      description: Unique identifier of the customer's Google account. use !googleapps-get-user
+        to get this argument using user key, default is "my_customer"
+      defaultValue: my_customer
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - deprovision
+      - disable
+      - reenable
+      description: 'Action to be taken on the Chrome OS device. Acceptable values
+        are: "deprovision": Remove a device from management that is no longer active,
+        being resold, or is being submitted for return / repair, use the deprovision
+        action to dissociate it from management.  "disable": If you believe a device
+        in your organization has been lost or stolen, you can disable the device so
+        that no one else can use it.  "reenable": Re-enable a disabled device when
+        a misplaced device is found or a lost device is returned.'
+    - name: deprovision-reason
+      required: true
+      description: Only used when the action is deprovision. With the deprovision
+        action, this field is required
+    - name: resource-id
+      required: true
+      description: The unique ID the API service uses to identify the mobile device.
+    - name: token
+      description: Token to authorize and authenticate the action
+    - name: user-key
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+    description: Action to be taken on the Chrome OS Device
+  - name: googleapps-delete-user
+    arguments:
+    - name: user-key
+      required: true
+      default: true
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+    description: Delete a User
+  - name: googleapps-device-action
+    arguments:
+    - name: customerId
+      required: true
+      default: true
+      description: Unique identifier of the customer's Google account. use !googleapps-get-user
+        to get this argument using user key, default is "my_customer"
+      defaultValue: my_customer
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - admin_account_wipe
+      - admin_remote_wipe
+      - approve
+      - block
+      - cancel_remote_wipe_then_activate
+      - cancel_remote_wipe_then_block
+      description: 'The action to be performed on the device. Acceptable values are:
+        "admin_account_wipe": Remotely wipes only G Suite data from the device.  "admin_remote_wipe":
+        Remotely wipes all data on the device.  "approve": Approves the device.  "block":
+        Blocks access to G Suite data (mail, calendar, and contacts) on the device.
+        The user can still access their mail, calendar, and contacts from a desktop
+        computer or mobile browser.  "cancel_remote_wipe_then_activate": Cancels a
+        remote wipe of the device and then reactivates it.  "cancel_remote_wipe_then_block":
+        Cancels a remote wipe of the device and then blocks it.'
+    - name: resource-id
+      required: true
+      description: The unique ID the API service uses to identify the mobile device.
+    - name: token
+      description: Token to authorize and authenticate the action
+    - name: user-key
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+    description: Takes an action that affects a mobile device. For example, remotely
+      wiping a device.
+  - name: googleapps-get-chrome-devices-for-user
+    arguments:
+    - name: customerId
+      required: true
+      default: true
+      description: Unique identifier of the customer's Google account. use !googleapps-get-user
+        to get this argument using user key, default is "my_customer"
+      defaultValue: my_customer
+    - name: query
+      description: Query string search. Should be of the form "". Complete documentation
+        is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users
+    description: Retrieve all Chrome OS Devices of a customer.
+  - name: googleapps-get-devices-for-user
+    arguments:
+    - name: customerId
+      description: Unique identifier of the customer's Google account. use !googleapps-get-user
+        to get this argument using user key, default is "my_customer"
+      defaultValue: my_customer
+    - name: query
+      description: Query string search. Should be of the form "". Complete documentation
+        is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users
+    description: Retrieve all Mobile Devices of a customer.
+  - name: googleapps-get-tokens-for-user
+    arguments:
+    - name: user-key
+      required: true
+      default: true
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+    description: Returns the set of tokens specified user has issued to 3rd party
+      applications.
+  - name: googleapps-get-user
+    arguments:
+    - name: user-key
+      required: true
+      default: true
+      description: ' Identifies the user in the API request. The value can be the
+        user''s primary email address, alias email address, or unique user ID.'
+    - name: projection
+      auto: PREDEFINED
+      predefined:
+      - basic
+      - custom
+      - full
+      description: 'What subset of fields to fetch for this user, Acceptable values
+        are: "basic": Do not include any custom fields for the user. (default), "custom":
+        Include custom fields from schemas requested in customFieldMask, "full": Include
+        all fields associated with this user.'
+      defaultValue: basic
+    - name: view-type-public-domain
+      auto: PREDEFINED
+      predefined:
+      - admin_view
+      - domain_public
+      description: Whether to fetch the administrator-only or domain-wide public view
+        of the user, will use admin_view(Results include both administrator-only and
+        domain-public fields for the user) by default, if true will use "domain_public"(Results
+        only include fields for the user that are publicly visible to other users
+        in the domain)
+      defaultValue: admin_view
+    - name: custom-field-mask
+      description: A comma-separated list of schema names. All fields from these schemas
+        are fetched. This should only be set when projection=custom.
+    outputs:
+    - contextPath: Account.Type
+      description: Type of account like Google, facebook
+      type: string
+    - contextPath: Account.ID
+      description: Unique Id of current account
+      type: string
+    - contextPath: Account.UserName
+      description: Username of user with current account
+      type: string
+    - contextPath: Account.DisplayName
+      description: Name to display in current account
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email assigned with current account
+      type: string
+    - contextPath: Account.Group
+      description: Group associated with current account
+      type: string
+    description: Fetch info on specific user
+  - name: googleapps-get-user-roles
+    arguments:
+    - name: user-key
+      required: true
+      default: true
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+    outputs:
+    - contextPath: GoogleApps.Role.RoleAssignmentId
+      description: unique id of role assignment
+      type: string
+    - contextPath: GoogleApps.Role.ScopeType
+      description: Scope type of the role
+      type: string
+    - contextPath: GoogleApps.Role.Kind
+      description: Kind of the Role
+      type: string
+    - contextPath: GoogleApps.Role.OrgUnitId
+      description: Organization in which user was assigned
+      type: string
+    - contextPath: GoogleApps.Role.ID
+      description: The inner role id
+      type: string
+    - contextPath: GoogleApps.Role.AssignedTo
+      description: User Id who was assigned to role
+      type: string
+    description: Retrieves a list of all roleAssignments.
+  - name: googleapps-gmail-get-attachment
+    arguments:
+    - name: message-id
+      required: true
+      description: The ID of the message to retrieve
+    - name: attachment-id
+      required: true
+      description: The ID of the attachment to retrieve
+    - name: user-key
+      required: true
+      description: ' Identifies the user in the API request. The value can be the
+        user''s primary email address, alias email address, or unique user ID.'
+    description: Gets the specified attachment.
+  - name: googleapps-gmail-get-mail
+    arguments:
+    - name: user-key
+      required: true
+      default: true
+      description: ' Identifies the user in the API request. The value can be the
+        user''s primary email address, alias email address, or unique user ID.'
+    - name: message-id
+      required: true
+      description: The ID of the message to retrieve
+    - name: fields
+      description: Fields allows partial responses to be retrieved. See https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+        for more information. (comma separated list)
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - full
+      - metadata
+      - minimal
+      - raw
+      description: 'The format to return the message in. Acceptable values are: "full":
+        Returns the full email message data with body content parsed in the payload
+        field; the raw field is not used. (default) / "metadata": Returns only email
+        message ID, labels, and email headers / "minimal": Returns only email message
+        ID and labels; does not return the email headers, body, or payload / "raw":
+        Returns the full email message data with body content in the raw field as
+        a base64url encoded string; the payload field is not used'
+      defaultValue: full
+    outputs:
+    - contextPath: Email.ID
+      description: Inner Id of mail in gmail
+      type: string
+    - contextPath: Email.ThreadId
+      description: The thread ID
+      type: string
+    - contextPath: Email.Format
+      description: MIME type of mail
+      type: string
+    - contextPath: Email.Labels
+      description: Labels of specific mail
+      type: string
+    - contextPath: Email.To
+      description: Email Address of receiver
+      type: string
+    - contextPath: Email.From
+      description: Email Address of sender
+      type: string
+    - contextPath: Email.Cc
+      description: Carbon Copying
+      type: string
+    - contextPath: Email.Bcc
+      description: Blind Carbon Copy
+      type: string
+    - contextPath: Email.Subject
+      description: Subject of specific mail
+      type: string
+    - contextPath: Email.Body
+      description: The content of mail
+      type: string
+    - contextPath: Email.Attachments
+      description: Attachments ids separated by ','
+      type: unknown
+    - contextPath: Email.Headers
+      description: All headers of specific mail
+      type: string
+    description: Gets the specified message.
+  - name: googleapps-gmail-search
+    arguments:
+    - name: user-key
+      required: true
+      default: true
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+    - name: query
+      description: 'Only return messages matching the specified query. Supports the
+        same query format as the Gmail search box. For example, "from:someuser@example.com
+        rfc822msgid: is:unread" , for syntax see: "https://support.google.com/mail/answer/7190?hl=en"'
+    - name: max-results
+      description: Maximum number of results to return. Default is 100. Maximum is
+        500. Acceptable values are 1 to 500, inclusive.
+      defaultValue: "100"
+    - name: fields
+      description: Fields allows partial responses to be retrieved. See https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
+        for more information. (comma separated list)
+    - name: labels-ids
+      description: Only return messages with labels that match all of the specified
+        label IDs. (comma separated list)
+    - name: page-token
+      description: Page token to retrieve a specific page of results in the list.
+    - name: include-spam-trash
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: ' Include messages from SPAM and TRASH in the results. (Default:
+        false)'
+      defaultValue: "False"
+    outputs:
+    - contextPath: Email.ID
+      description: Inner Id of mail in gmail
+      type: string
+    - contextPath: Email.ThreadId
+      description: The thread ID
+      type: string
+    - contextPath: Email.Format
+      description: MIME type of mail
+      type: string
+    - contextPath: Email.Labels
+      description: Labels of specific mail
+      type: string
+    - contextPath: Email.To
+      description: Email Address of receiver
+      type: string
+    - contextPath: Email.From
+      description: Email Address of sender
+      type: string
+    - contextPath: Email.Cc
+      description: Carbon Copying
+      type: string
+    - contextPath: Email.Bcc
+      description: Blind Carbon Copy
+      type: string
+    - contextPath: Email.Subject
+      description: Subject of specific mail
+      type: string
+    - contextPath: Email.Body
+      description: The content of mail
+      type: string
+    - contextPath: Email.Attachments
+      description: Attachments ids separated by ','
+      type: unknown
+    - contextPath: Email.Headers
+      description: All headers of specific mail
+      type: string
+    description: Search the messages in the user's mailbox.
+  - name: googleapps-list-users
+    arguments:
+    - name: projection
+      auto: PREDEFINED
+      predefined:
+      - basic
+      - custom
+      - full
+      description: 'What subset of fields to fetch for this user, Acceptable values
+        are: "basic": Do not include any custom fields for the user. (default), "custom":
+        Include custom fields from schemas requested in customFieldMask, "full": Include
+        all fields associated with this user.'
+    - name: domain
+      default: true
+      description: The domain name. Use this field to get fields from only one domain.
+        To return all domains for a customer account, use the customer query parameter
+        instead. Either the customer or the domain parameter must be provided.
+    - name: customer
+      description: The unique ID for the customers Google account, by default will
+        use the value in the integration page. In case of a multi-domain account,
+        to fetch all groups for a customer, fill this field instead of domain. As
+        an account administrator, you can also use the my_customer alias to represent
+        your accounts customerId. The customerId is also returned as part of the Users
+        resource. Either the customer or the domain parameter must be provided.
+    - name: event
+      auto: PREDEFINED
+      predefined:
+      - add
+      - delete
+      - makeAdmin
+      - undelete
+      - update
+      description: 'Event sets the optional parameter "event": Event on which subscription
+        is intended (if subscribing), Possible values: add/delete/makeAdmin/undelete/update'
+    - name: max-results
+      description: Maximum number of results to return. Default is 100. Maximum is
+        500. Acceptable values are 1 to 500, inclusive.
+    - name: custom-field-mask
+      description: A comma-separated list of schema names. All fields from these schemas
+        are fetched. This should only be set when projection=custom.
+    - name: query
+      description: Query string search. Should be of the form "". Complete documentation
+        is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users
+    - name: show-deleted
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: If set to true, retrieves the list of deleted users. Default is
+        false.
+    - name: sort-order
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: 'Whether to return results in ascending or descending order. possible
+        values : ASCENDING/DESCENDING'
+    - name: token
+      description: Token to authorize and authenticate the action
+    - name: view-type-public-domain
+      auto: PREDEFINED
+      predefined:
+      - admin_view
+      - domain_public
+      description: Whether to fetch the administrator-only or domain-wide public view
+        of the user, will use admin_view(Results include both administrator-only and
+        domain-public fields for the user) by default, if true will use "domain_public"(Results
+        only include fields for the user that are publicly visible to other users
+        in the domain)
+    outputs:
+    - contextPath: Account.Type
+      description: Type of account like Google, facebook
+      type: string
+    - contextPath: Account.ID
+      description: Unique Id of current account
+      type: string
+    - contextPath: Account.UserName
+      description: Username of user with current account
+      type: string
+    - contextPath: Account.DisplayName
+      description: Name to display in current account
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email assigned with current account
+      type: string
+    - contextPath: Account.Group
+      description: Group associated with current accout
+      type: string
+    description: Retrieves a paginated list of either deleted users or all users in
+      a domain
+  - name: googleapps-revoke-user-role
+    arguments:
+    - name: role-assignment-id
+      required: true
+      description: Immutable ID of the role assignment.
+    - name: token
+      description: Token to authorize and authenticate the action
+    - name: user-key
+      description: Identifies the user in the API request. The value can be the user's
+        primary email address, alias email address, or unique user ID.
+    description: Deletes a role assignment.
+  - name: googleapps-insert-user
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: The user's primary email address. The primaryEmail must be unique
+        and cannot be an alias of another user.
+    - name: given-name
+      required: true
+      description: The user's first name.
+    - name: family-name
+      required: true
+      description: The user's last name.
+    - name: password
+      required: true
+      description: Stores the password for the user account. A password can contain
+        any combination of ASCII characters. A minimum of 8 characters is required.
+        The maximum length is 100 characters.
+    outputs:
+    - contextPath: Account.Type
+      description: Type of account like Google, facebook
+      type: string
+    - contextPath: Account.ID
+      description: Unique Id of current account
+      type: string
+    - contextPath: Account.UserName
+      description: Username of user with current account
+      type: string
+    - contextPath: Account.DisplayName
+      description: Name to display in current account
+      type: string
+    - contextPath: Account.Email.Address
+      description: Email assigned with current account
+      type: string
+    - contextPath: Account.Group
+      description: Group associated with current accout
+      type: string
+    description: Creates a user.
+  - name: googleapps-gmail-delete-mail
+    arguments:
+    - name: user-key
+      required: true
+      default: true
+      description: ' Identifies the user in the API request. The value can be the
+        user''s primary email address, alias email address, or unique user ID.'
+    - name: message-id
+      required: true
+      description: The ID of the message to retrieve
+    - name: permanent
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Should move to trash (default) or delete permanently
+    description: Delete a mail in the user's mailbox.
+  dockerimage: demisto/google-api:1.0
+  isfetch: true
+  runonce: false
+releaseNotes: "new BYOI Google Apps integration"
