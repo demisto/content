@@ -329,10 +329,6 @@
             "playbookID": "Netskope Test"
         },
         {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
-        },
-        {
             "integrations": "Cylance Protect v2",
             "playbookID": "Cylance Protect v2 Test"
         },
@@ -347,6 +343,10 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
