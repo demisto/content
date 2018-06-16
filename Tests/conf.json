@@ -342,7 +342,7 @@
 
         },
 	{
-	    "integrations": "Demisto Locking",
+	    "integrations": "Demisto Lock",
 	    "playbookID": "DemistoLockingTest"
 	}
     ],
