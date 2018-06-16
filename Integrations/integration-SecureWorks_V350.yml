@@ -753,6 +753,5 @@ script:
     description: Get a list of ticket IDs in the same order as the tickets returned
       by the GET /tickets/updates endpoint.
   isfetch: true
-releaseNotes: '-'
 fromversion: 3.1.0
 toversion: 3.5.1
