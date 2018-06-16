@@ -1,0 +1,390 @@
+commonfields:
+  id: BigFix
+  version: -1
+name: BigFix
+display: BigFix
+category: Authentication
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYQAAACCCAMAAABxTU9IAAAAw1BMVEX///9vmb0AAACrxFCRkZFqlrt5n8FYWFhUVFQgICCGhoZnlLpkkrmmvtRolbq1tbXU1NRnZ2cvLy9NTU15eXmcnJzj4+PNzc3y8vL3+fvs7OyNjY2OrsqlpaXG1eO1ydt/pMTr8PU3NzemwUK/v7/U3+qBgYEMDAzb29sVFRWurq5GRkbM2uZhYWHe5++qwdaUss3k7MzZ5LYyMjInJyfD1Yi0ymbz9+ivx1nf6MHT4KrK2phxcXHu89/k7Mv4+vG80HmFQn/9AAAKLUlEQVR4nO2da3vaOBCFcRJys6FpmoQADpcADSEE6L1N2m3//69aA5awrTNjyzbhaTrvh93WlWVbR5qRRhcqFUEQBEEQBEEQBEEQSqQ/6nRrC9/v+f5i3p3Omrt+oX+OTs/zXNetKoI/e1W/O9v1e/1T1FzHpFr3XL8jLeKlqFWBCCshXM+f7vrt/hFIEVY6OF1pDi8AJ0JA3a2JDFsnRQTHcevzXb/jqydVhEAGR3zDdskgguN4vtik8qiZV7KIELhoaQwlMXMc41o2EYLGYOon5KDjVQ+Ni1lFcOqHYpKKU/Mcp4AIgUnq7+CtXxeLZXyiiAiBSZKIUjH8VYyomAiON9rBm78eFus4XUERRIUihBoUFkEsUn7mKl5dWASnKt45Hx1PFWEJIjjSU83DTGtQgghO1d/BJ/z1NCMlWIIIjtfdwUf87fiRYi5DBHHO9mwcQlkigAiUwNKMakCIsFxisVpwsfpfugauBPPsWMQKFYgQFLvfHfXXfZ7+rFM7dNECjBhikKyYxRoCEmFhDIL7nV5Ke6j2XuLdXw2H8dIzRcDMFrwMnszxZGeasCxZRQiag+/h8rfNSDgsUHZTh2kMXmdr7/zaSDYEuwrc9BkPLU0hK71kXbYsujltklwJamdjZtRk2/rbIVXYVQip2bq6au3m0fkwR8PWRoRWweNj2sP2QZzLm+EZU3o3q0TtIZdno/2wF3J0MGYSHhBcGikn+LGt0/UN7Sv4UWY+NGVY8i6lQp2P473fQ9yTr/9unaBN53iZzGtCJr2DDw9uoR57kLx+FN5xG73YUvmwVSXOyCy/HO60VidU6LG3nRLlsNfA6Y+J0lAMQVafqdZwQjz7s5HyiHhsU91yYybe+8l+eRwQm8vTpzG8ewi/AoYUYQ9X4BQRLnBeRJUsLkLljbrnWl8ampfSSQ4ScorQJwySyw4VaBH2zlB6XoR3VF64XZUggnqhvbf6yn145Q333QlmoPBy9e67eLjA948YEc5RelaEIzozWCspEUyfQItwndRZfdER99lJusCY5xtigSa1gpttDl/5YXKz5rL9U9UkaEQ4EQ50KX66bLRaravJsb7yiG4IRXhsn8Yxc6dFqEzCJ9yt/3qlnmjVQV4AW55PhA5uCmxAOxThbfSaKkzk2BgRxurz7zbqnenKjpzzCS12AkaEiuoPn67+piziDUpKgupvzmADbgqsU0AiVB7D5gHSMyKowniItrzmeXj1AtwRipDBeHMi6Lq/HCwoR43enaaJ/Cktwq+PT09P//3G/4i9QpWbYIMiNNYXT0B6WoTwpqQr0Z12kFk5IuiRyW2ky3oFU1KMUMERIvx+2h+s+fMB/XsTi9BjHg9FGOuPMqBFeCTsTnt19d0FcM0liVC5DR890V1kchyDgYYci/BjMNhXDP6g1uDjsQLzeK4lWPkEVQeNm1rH7SFRL8sSQXsjNURAbZhjnlmE540EK76ZSbBr9pjuERQhrE9WvSP1/XB0QVCWCGFr22DzEktQ5wiK8JTQYH9gtgU8YONieEiE0LmZvfUKI8J75iaK0kSofI5pgDoBLNCCABE+JDXY3/9qpoL9I5fpo4YiHLWulozHZ42J6uTBniMpwu36H+B4gKI8Ec5iIti8wwoY8gEiGBIETeGjkQpKyu1WoEfMOJBKihDexYRXTUIRTs6jnCBN0kSIBa0sgqchPVR3TRF+mA0hwEgGF+px+2opEe6I6kmJoPyy1RgJhy1Q5DBVBB0xSvq3TEADYorwFWkwMDqqKAbCjtYoEajCpERQw4FNCV4/vIvyAAqwTBF07PTOJngakk2E37AhDJ6T6WD3KI8IlAwWIiTyA96yTBF+bl+EX1CE/T/JdFPUPconAg5DUiKoIt+VCJHJJKu+wZpsPgH0jZZ8T6YDs3SZfML97YpP5/eR0kAqpDnmjTvPLQJqgqkiRGdKbSYS1mTromYVwVjBtBIhvXcUdWbjA6Y40kTYDJizi3AwPouCYtBpIsRn9KwNEhysGYEGwhwZIwXoE7hYNhwxM0E3UoRwdLGJXmYXofg4oRF/lNV8zhLYqawmAw3YMe8bjhnGUW1HzJuAsDkrSYqgms+mFjbWnB1vX4SoEc2YYwxYbObkPO6i/pdMhscJtrEjZuhFitAgv//t1kVQ63butSG13LoKrbg5xv2ImsLAyC3j0G8DIcI5VXB0KDv8fHM2Zesi6JjFUAe1LXtIaJ7fcc0VW0CEwVMyURPkxc/0EyLc24twoUsiwdZFUNG7o2hQOz3PCHBmDZQbiFsYfSOsaJU7oRCLoDzzqZGeFkF/f7J387hlEXQc+zr5l+zA0ZrhmSuVL0kVBuaEAnYw1nPMevhpFg8zx6yWVpzEVVDFsi0RtPjrQZ5qFnYRJOhL0T6nhAqDX2YS6BLYJcFIhKbudZvViRFBT7hHS3WiOy7bEkGtJAidke6tWhkk2LWHdjw6rTP4CibWoDXitzOrdUc3l4pTdrEQt+5osxT48+VZ67p1NYyOobYkgu4QqSlUpgbRWMyGfXserKaZB4PvP1BWeMyx4J7OxI7gkgV2Bd4jl5npX8oQQTc/HS/RCy6sDBKeDSPWqXx4ev7y/BFYogq12CL3WlTO8BMddmYd5HuQvAQRbsPsIwttdCzPxiDNYeCCG2FRGWERcq7KxjUpZVU23u4QOGu4Iri4CNoCRhfa6AZpYZCwJWeXbEGwXUvZL0WLgMs5bX9CA0VGT4h9IoVF0MYoZut01MrGIOHVi9ZnIuBFR7w1IqvuBbFUKH2nzptPiaweif0mOv6cQQRip86tUjl+Wa0RtjFIcE7SekEqsW0NjDiiJPesBd2jmwm1WKuSbc/a+PIo7Jje3Z4OGZsQbjjLsEoIP3Z8SuSgPyc9ZwWxvaNuZZD6xO4Etm+0Pa6XK2j+qu2beE7Bbjv+IZGHHPSSEWKQZXO8KbEKVU7Cyw5RhNlVWBB7N+WU2uxQTYGdo4/gExrIgUc2UE0h05mOfcIfiEewg9r/GrSF1J9omZIHT+2qa/S3Qm7Id6r8cKu5oI944TYmCACyJIPG0CPda7Pr0UdOpQyWBQO4dk5X6R500P25RzYg8cp5wDFQLUO1Noobl36357G3yM+65IA6IURVbM/rLbrT0Ww2mnbmvuPV+fRyEmQe+umH/q7PCHY9t5qaVo4HzgfrFiyReEVe6EPUrDWQX1vLDXmImq0Gjjjl/DCHa1qJIBoUoQwVqqJBQYpbJPlNo+LAvX8WuL1df8FrYMadQJ6K/BZwObAnkPOkhFwFC7pZfjIH4PbEJZdHv5ejMVTBBh+hCB2HiVJDPF+aQdk05+k/HxWVgJ75EQrQrHFzNjFD5B1K4HpbNLsOM32pcD1fWsFWGS08tqvkeodd8QXbZ1Rz4DRO1XW9nijwYvQ7td6yzN36cmZt+Z/AXSy6M4kSvTTN2ajTXdGZzvpS/oIgCIIgCIIgCIIgCIIgCIIgCIIgCK+f/wFFC7Z9cbrtAAAAAABJRU5ErkJggg==
+configuration:
+- display: Server url (e.g https://192.168.10.1:52311)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust all certificates (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |+
+    import requests
+    requests.packages.urllib3.disable_warnings()
+
+    BASE_URL = demisto.params().get('url')
+    VERIFY_CERTIFICATE = not demisto.params().get('unsecure')
+
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    def return_error_and_exit(message, err):
+        if err is not None:
+            demisto.error(err)
+
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': message
+        })
+        sys.exit(0)
+
+    def get_sites():
+        fullurl = BASE_URL + '/api/sites'
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit(
+                'Failed to get sites',
+                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
+                )
+
+        raw_sites = json.loads(xml2json(res.content))
+
+        if (not raw_sites or not raw_sites.has_key('BESAPI')):
+            return []
+
+        sites = []
+        master_sites = demisto.get(raw_sites, 'BESAPI.ActionSite')
+
+        if master_sites and not isinstance(master_sites, list):
+            master_sites = [master_sites]
+        if master_sites:
+            for idx, site in enumerate(master_sites):
+                master_sites[idx]['Type'] = 'master'
+                master_sites[idx]['Resource'] = master_sites[idx]['@Resource']
+                del master_sites[idx]['@Resource']
+        else:
+            master_sites = []
+
+
+        external_sites = demisto.get(raw_sites, 'BESAPI.ExternalSite')
+        if external_sites and not isinstance(external_sites, list):
+            external_sites = [external_sites]
+        if external_sites:
+            for idx, site in enumerate(external_sites):
+                external_sites[idx]['Type'] = 'external'
+                external_sites[idx]['Resource'] = external_sites[idx]['@Resource']
+                del external_sites[idx]['@Resource']
+        else:
+            external_sites = []
+
+
+        operator_sites = demisto.get(raw_sites, 'BESAPI.OperatorSite')
+        if operator_sites and not isinstance(operator_sites, list):
+            operator_sites = [operator_sites]
+        if operator_sites:
+            for idx, site in enumerate(operator_sites):
+                operator_sites[idx]['Type'] = 'operator'
+                operator_sites[idx]['Resource'] = operator_sites[idx]['@Resource']
+                del operator_sites[idx]['@Resource']
+        else:
+            operator_sites = []
+
+
+        custom_sites = demisto.get(raw_sites, 'BESAPI.CustomSite')
+        if custom_sites and not isinstance(custom_sites, list):
+            custom_sites = [custom_sites]
+
+        if custom_sites:
+            for idx, site in enumerate(custom_sites):
+                custom_sites[idx]['Type'] = 'custom'
+                custom_sites[idx]['Resource'] = custom_sites[idx]['@Resource']
+                del custom_sites[idx]['@Resource']
+        else:
+            custom_sites = []
+
+        sites = master_sites + external_sites + operator_sites + custom_sites
+        for idx, site in enumerate(sites):
+            site_details = get_site(site['Type'], site['Name'])
+            sites[idx] = site_details
+
+        return sites
+
+    def get_sites_command():
+        sites = get_sites()
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': sites,
+            'HumanReadable': tableToMarkdown('BigFix Sites', sites),
+            'EntryContext': {
+                'Bigfix.Site(val.Resource==obj.Resource)': sites
+            }
+        })
+
+
+    def get_site(site_type, site_name):
+        fullurl = BASE_URL + '/api/site/' + site_type
+        if site_type != 'master':
+            # if site name is not empty the add to url
+            fullurl += '/' + site_name
+
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit(
+                'Failed to get site',
+                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
+                )
+
+        raw_site = json.loads(xml2json(res.content))
+
+        if (not raw_site or not raw_site.has_key('BES')):
+            return None
+
+        site = None
+        if site_type == 'master':
+            site = demisto.get(raw_site, 'BES.ActionSite')
+        elif site_type == 'external':
+            site = demisto.get(raw_site, 'BES.ExternalSite')
+        elif site_type == 'custom':
+            site = demisto.get(raw_site, 'BES.CustomSite')
+        elif site_type == 'operator':
+            site = demisto.get(raw_site, 'BES.OperatorSite')
+
+        if site is not None:
+            site['Type'] = site_type
+            site['Resource'] = BASE_URL + '/api/site/{}/{}'.format(site_type, site_name)
+
+        return site
+
+    def get_site_command():
+        site_name = demisto.args().get('site_name')
+        site_type = demisto.args().get('site_type')
+        site = get_site(site_type, site_name)
+
+        if site is None:
+            demisto.results('No site found')
+            sys.exit(0)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': site,
+            'HumanReadable': tableToMarkdown('BigFix Site: {} - {}'.format(site_type, site_name) , [site]),
+            'EntryContext': {
+                'Bigfix.Site(val.Resource==obj.Resource)': site
+            }
+        })
+
+
+    def get_endpoints():
+        fullurl = BASE_URL + '/api/computers'
+
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit(
+                'Failed to get endpoints',
+                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
+                )
+
+        raw_endpoints = json.loads(xml2json(res.content))
+        demisto.info('####' + str(res.content))
+        if (not raw_endpoints or not raw_endpoints.has_key('BESAPI')):
+            return None
+
+        raw_endpoints = demisto.get(raw_endpoints, 'BESAPI.Computer')
+        if raw_endpoints and not isinstance(raw_endpoints, list):
+            raw_endpoints = [raw_endpoints]
+
+        for idx, endpoint in enumerate(raw_endpoints):
+            raw_endpoints[idx]['Resource'] = raw_endpoints[idx]['@Resource']
+            del raw_endpoints[idx]['@Resource']
+
+        return raw_endpoints
+
+    def get_endpoints_command():
+        endpoints = get_endpoints()
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': endpoints,
+            'HumanReadable': tableToMarkdown('BigFix Computers' , endpoints),
+            'EntryContext': {
+                'Bigfix.Endpoint(val.ID==obj.ID)': endpoints
+            }
+        })
+
+
+    # do requets to /api/help
+    # should be good indicator for test connectivity
+    def test():
+        fullurl = BASE_URL + '/api/help'
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+        res.raise_for_status()
+
+    if demisto.command() == 'test-module':
+        # do requets to /api/help
+        # should be good indicator for test connectivity
+        test()
+        demisto.results('ok')
+
+    elif demisto.command() == 'bigfix-get-sites':
+        get_sites_command()
+
+    elif demisto.command() == 'bigfix-get-site':
+        get_site_command()
+
+    elif demisto.command() == 'bigfix-get-endpoints':
+        get_endpoints_command()
+
+
+
+  type: python
+  commands:
+  - name: bigfix-get-sites
+    arguments: []
+    outputs:
+    - contextPath: Bigfix.Site
+      description: Site
+      type: unknown
+    - contextPath: Bigfix.Site.Name
+      description: Name of the site
+      type: string
+    - contextPath: Bigfix.Site.Description
+      description: Description of the site
+      type: string
+    - contextPath: Bigfix.Site.Resource
+      description: URL of the site
+      type: string
+    - contextPath: Bigfix.Site.Type
+      description: Type of the site (master,custom,external,operator)
+      type: string
+    - contextPath: Bigfix.Site.Domain
+      type: string
+    - contextPath: Bigfix.Site.GatherURL
+      type: string
+    - contextPath: Bigfix.Site.GlobalReadPermission
+      type: string
+    description: Retrieves all the sites
+  - name: bigfix-get-site
+    arguments:
+    - name: site_name
+      description: Name of the site. If the site is external or operator then site
+        must be provided
+    - name: site_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - external
+      - operator
+      - master
+      - custom
+      description: 'Type of the site. One of the following options: external,operator,master,custom'
+      defaultValue: master
+    outputs:
+    - contextPath: Bigfix.Site
+    - contextPath: Bigfix.Site.Name
+    - contextPath: Bigfix.Site.Description
+    - contextPath: Bigfix.Site.Type
+    - contextPath: Bigfix.Site.Domain
+    - contextPath: Bigfix.Site.GatherURL
+    - contextPath: Bigfix.Site.GlobalReadPermission
+    description: Retrieve single site by name and type
+  - name: bigfix-get-patches
+    arguments:
+    - name: site_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - external
+      - operator
+      - master
+      - custom
+      description: 'Type of the site. One of the following options: external,operator,master,custom'
+      defaultValue: master
+    - name: site_name
+      description: Name of the site. If the site is external or operator then site
+        must be provided
+    outputs:
+    - contextPath: Bigfix.Patch
+      description: Patch (fixlet)
+    - contextPath: Bigfix.Patch.ID
+      description: 'The ID of patch '
+      type: string
+    - contextPath: Bigfix.Patch.LastModified
+      type: date
+    - contextPath: Bigfix.Patch.Name
+      description: The name of the patch
+      type: string
+    - contextPath: Bigfix.Patch.Resource
+      description: The link for the patch
+      type: string
+    description: Retrieve all the patches (fixlets) of site
+  - name: bigfix-get-endpoints
+    arguments: []
+    outputs:
+    - contextPath: Bigfix.Endpoint
+      description: Endpoint (computer)
+    - contextPath: Bigfix.Endpoint.ID
+      description: The if of the endpoint (computer ID)
+    - contextPath: Bigfix.Endpoint.Resource
+      description: URL to the endpoint details
+    - contextPath: Bigfix.Endpoint.LastReportTime
+      description: Last report time of the endpoint
+    description: Retrieve all the endpoints (computers)
+  - name: bigfix-deploy-patch
+    arguments:
+    - name: site_name
+      description: Name of the site. If the site is external or operator then site
+        must be provided
+    - name: site_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - external
+      - operator
+      - master
+      - custom
+      description: 'Type of the site. One of the following options: external,operator,master,custom'
+      defaultValue: master
+    - name: computer_ids
+      required: true
+      description: Provide ids of computers to deploy the patch. Pass 'all' to deploy
+        to all the computers
+      isArray: true
+    description: Deploy patch on site
+  runonce: false
