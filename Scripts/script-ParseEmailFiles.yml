@@ -455,7 +455,10 @@ script: |-
       md += "* {0}:\t{1}\n".format('To',emailData['To'])
       md += "* {0}:\t{1}\n".format('CC', emailData['CC'])
       md += u"* {0}:\t{1}\n".format('Subject', emailData['Subject'])
-      md += u"* {0}:\t{1}\n".format('Body', emailData['Text'])
+      if emailData['Text']:
+          md += u"* {0}:\t{1}\n".format('Body/Text', emailData['Text'])
+      if emailData['HTML']:
+          md += u"* {0}:\t{1}\n".format('Body/HTML', emailData['HTML'])
       md += "* {0}:\t{1}\n".format('Attachments', emailData['Attachments'])
       md += "* {0}:\t{1}\n".format('Headers', emailData['Headers'])
       return md
@@ -575,7 +578,7 @@ script: |-
       temp1, temp2 = handleEml(filePath)
       res += temp1
       res += temp2
-  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType or 'ASCII text, with CRLF, LF line terminators' in fileType:
+  elif 'ASCII text' in fileType:
       try:
           # Try to open the email as-is
           with open(filePath, 'rb') as f:

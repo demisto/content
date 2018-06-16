@@ -29,7 +29,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -219,7 +219,7 @@ script:
         var res = sendRequest("POST","threat/search",tmpargs);
         var threats = res.data.threats;
         var ec = {};
-        var md = "## PhishMe IP Reputation for: "+str+"\n";
+        var md = "## PhishMe Hash Reputation for: "+str+"\n";
         var dbotScore = 0;
         var threatArray = [];
         if (threats.length !== 0) {

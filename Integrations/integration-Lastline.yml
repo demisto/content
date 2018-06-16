@@ -27,7 +27,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "false"
   type: 8

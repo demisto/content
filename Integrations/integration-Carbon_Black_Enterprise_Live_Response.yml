@@ -13,12 +13,22 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: API Token
+- display: API Token (CB Response)
   name: apitoken
   defaultvalue: ""
   type: 4
-  required: true
-- display: Do not validate server certificate (insecure)
+  required: false
+- display: API Key (CB Defense)
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Connector ID (CB Defense)
+  name: connector
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -32,19 +42,60 @@ script:
   script: |-
     "use strict";
 
-    /// Constants
-    const SLEEP_BETWEEN_RETRIES = 5000;
+    /// Global Vars
+    let CB_PRODUCT;
+    let BASE_URL;
+    let AUTH;
+    let COMMAND_DATA;
+    let SLEEP_BETWEEN_RETRIES = 5000;
+    let ERROR_MESSAGE = 'Use Live Response for Cb Defense or Cb Response.\nFor Cb Defense: Provide \'Live Response\' API key and connector.\nFor Cb Response: Provide API Token.';
+
+    //validate the credentials are provided to match only one of the products
+    if (params.apitoken && (params.apikey || params.connector) ) {
+        throw ERROR_MESSAGE;
+    }
+    //determain Cb product
+    if (params.apitoken) {
+        CB_PRODUCT = 'Response';
+        BASE_URL = `${params.serverurl}/api/v1/cblr`;
+        AUTH = params.apitoken;
+        COMMAND_DATA = [
+            {to: 'CbSensorID', from: 'sensor_id'},
+            {to: 'CbSessionID', from: 'session_id'},
+            {to: 'CbCommandID', from: 'id'},
+            {to: 'CommandName', from: 'name'},
+            {to: 'Status', from: 'status'},
+            {to: 'CreateTime', from: 'create_time'},
+            {to: 'CommandCompletionTime', from: 'completion'},
+            {to: 'OperandObject', from: 'object'}
+        ];
+    } else if (params.apikey && params.connector){
+        CB_PRODUCT = 'Defense';
+        BASE_URL = `${params.serverurl}/integrationServices/v3/cblr`
+        AUTH = params.apikey + '/' + params.connector;
+        COMMAND_DATA = [
+            {to: 'CbSensorID', from: 'sensor_id'},
+            {to: 'CbSessionID', from: 'session_id'},
+            {to: 'CbCommandID', from: 'id'},
+            {to: 'CommandName', from: 'name'},
+            {to: 'Status', from: 'status'},
+            {to: 'CreateTime', from: 'create_time'},
+            {to: 'CommandCompletionTime', from: 'completion_time'},
+            {to: 'OperandObject', from: 'obj.object'}
+        ];
+    } else {
+        throw ERROR_MESSAGE;
+    }
 
     /// Base Functions
 
     function sendRequest(path, method, requestParams, headers, ignoredStatusCodes) {
-        let baseUrl = params.serverurl + '/api';
 
         if (!headers) {
             headers = {};
         }
         if (!headers['X-Auth-Token']) {
-            headers['X-Auth-Token'] = [params.apitoken];
+            headers['X-Auth-Token'] = [AUTH];
         }
         if (!headers['Accept']) {
             headers['Accept'] = ['application/json'];
@@ -65,10 +116,7 @@ script:
                 request.Body = JSON.stringify(requestParams);
             }
         }
-
-        //logInfo('HTTP Request: ' + JSON.stringify({path: path + querystring, req: request}));
-
-        let result = http(baseUrl + path + querystring, request, params.insecure, params.proxy);
+        let result = http(BASE_URL + path + querystring, request, params.insecure, params.proxy);
 
         if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) === -1) {
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
@@ -78,20 +126,16 @@ script:
                 throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${result.Body}.`;
             }
         }
-
-        //logInfo(`Result: ${result.Body}`);
-
         return result;
     }
 
     function sendFileRequest(path, fileId, requestParams, headers, ignoredStatusCodes) {
-        let baseUrl = params.serverurl + '/api';
 
         if (!headers) {
             headers = {};
         }
         if (!headers['X-Auth-Token']) {
-            headers['X-Auth-Token'] = [params.apitoken];
+            headers['X-Auth-Token'] = [AUTH];
         }
         if (!headers['Accept']) {
             headers['Accept'] = ['application/json'];
@@ -105,9 +149,7 @@ script:
             Headers: headers
         };
 
-        //logInfo({path: path, req: request}, 'HTTP Request');
-
-        let result = httpMultipart(baseUrl + path, fileId, request, requestParams, params.insecure, params.proxy);
+        let result = httpMultipart(BASE_URL + path, fileId, request, requestParams, params.insecure, params.proxy);
 
         if (result.StatusCode < 200 || result.StatusCode >= 300) {
             if (result.StatusCode === 404) {
@@ -116,15 +158,13 @@ script:
             throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${JSON.stringify(result.Body)}`;
         }
 
-        //logInfo(result, 'Result');
-
         return result;
     }
 
     /// Commands
 
     function testModule() {
-        let res = sendRequest('/v1/cblr/session', 'GET');
+        let res = sendRequest('/session', 'GET');
         if (res.StatusCode === 200) {
             return 'ok';
         }
@@ -142,7 +182,7 @@ script:
     ];
 
     function getSessionsRequest(sessionId, sensorId, status) {
-        let path = '/v1/cblr/session';
+        let path = `/session`;
         if (sessionId) {
             path += '/' + sessionId;
         }
@@ -199,7 +239,8 @@ script:
         if (keepaliveTimeout) {
             queryParams.sensor_wait_timeout = keepaliveTimeout;
         }
-        let response = sendRequest('/v1/cblr/session', 'POST', queryParams).Body;
+        let path = CB_PRODUCT === 'Response' ?  '/session' : `/session/${sensorId}`;
+        let response = sendRequest(path, 'POST', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -268,10 +309,11 @@ script:
 
     function closeSessionRequest(sessionId) {
         let queryParams = {
-            status: 'close',
             session: sessionId
         };
-        let response = sendRequest(`/v1/cblr/session/${sessionId}`, 'PUT', queryParams).Body;
+        queryParams.status = CB_PRODUCT === 'Response' ? 'close' : 'CLOSE';
+        let path = CB_PRODUCT === 'Response' ? `/session/${sessionId}` : '/session';
+        let response = sendRequest(path, 'PUT', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -303,7 +345,7 @@ script:
     }
 
     function sessionKeepaliveRequest(sessionId) {
-        let response = sendRequest(`/v1/cblr/session/${sessionId}/keepalive`, 'GET', undefined, undefined, [404]);
+        let response = sendRequest(`/session/${sessionId}/keepalive`, 'GET', undefined, undefined, [404]);
 
         if (response.StatusCode === 404) {
             throw `Session ${sessionId} has expired and is now closed. Create a new session to continue working.`;
@@ -335,7 +377,7 @@ script:
     }
 
     function archiveSessionRequest(sessionId) {
-        let response = sendRequest(`/v1/cblr/session/${sessionId}/archive`, 'GET', undefined, undefined, [500]);
+        let response = sendRequest(`/session/${sessionId}/archive`, 'GET', undefined, undefined, [500]);
         if (response.StatusCode === 500) {  // Current bug in CBResponse returns 500 for empty sessions
             throw `Session ${sessionId} is empty and so it has no archive.`;
         }
@@ -353,16 +395,6 @@ script:
             Contents: fileName
         };
     }
-
-    const commandData = [
-        {to: 'CbSensorID', from: 'sensor_id'},
-        {to: 'CbSessionID', from: 'session_id'},
-        {to: 'CbCommandID', from: 'id'},
-        {to: 'CommandName', from: 'name'},
-        {to: 'Status', from: 'status'},
-        {to: 'CreateTime', from: 'create_time'},
-        {to: 'OperandObject', from: 'object'}
-    ];
 
     function createCommandRequest(sessionId, name, timeout, object, compress, wait, workingDir, outputFile, valueData,
                                   valueType, overwrite, offset, getCount) {
@@ -404,7 +436,7 @@ script:
             queryParams.get_count = getCount;
         }
 
-        let response = sendRequest(`/v1/cblr/session/${sessionId}/command`, 'POST', queryParams).Body;
+        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -419,7 +451,7 @@ script:
             args['get-count']);
 
         let title = `CB Response - Run Command ${args.name}`;
-        let dataMap = commandData;
+        let dataMap = COMMAND_DATA;
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
         let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
@@ -453,7 +485,7 @@ script:
             if (result.status === 'complete') {
                 let entries = [];
                 let title = 'CB Response - Execute Command And Wait';
-                let dataMap = commandData.concat([
+                let dataMap = COMMAND_DATA.concat([
                     {to: 'Result.Desc', from: 'result_desc'},
                     {to: 'Result.Type', from: 'result_type'},
                     {to: 'Result.Code', from: 'result_code'}
@@ -515,7 +547,7 @@ script:
             let result = getCommandsRequest(args.session, commandId);
             if (result.status === 'complete') {
                 let title = `CB Response - Terminate Process ${args.pid}`;
-                let dataMap = commandData;
+                let dataMap = COMMAND_DATA;
                 let headers = dataMap.map(cn => cn.to);
                 let translatedData = mapObjFunction(dataMap)(result);
                 let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
@@ -540,7 +572,7 @@ script:
     }
 
     function getCommandsRequest(sessionId, commandId) {
-        let path = `/v1/cblr/session/${sessionId}/command`;
+        let path = `/session/${sessionId}/command`;
         if (commandId) {
             path += '/' + commandId;
         }
@@ -558,7 +590,7 @@ script:
         let entries = [];
 
         let title = 'CB Response - Get Commands';
-        let dataMap = commandData.concat([
+        let dataMap = COMMAND_DATA.concat([
             {to: 'Result.Desc', from: 'result_desc'},
             {to: 'Result.Type', from: 'result_type'},
             {to: 'Result.Code', from: 'result_code'}
@@ -604,7 +636,7 @@ script:
 
     function cancelCommandRequest(sessionId, commandId) {
         let queryParams = {cmdid: commandId};
-        let response = sendRequest(`/v1/cblr/session/${sessionId}/command/${commandId}`, 'PUT', queryParams).Body;
+        let response = sendRequest(`/session/${sessionId}/command/${commandId}`, 'PUT', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
@@ -616,7 +648,7 @@ script:
         let result = cancelCommandRequest(args.session, args.command);
 
         let title = 'CB Response - Cancel Command';
-        let dataMap = commandData.concat([
+        let dataMap = COMMAND_DATA.concat([
             {to: 'Result.Desc', from: 'result_desc'},
             {to: 'Result.Type', from: 'result_type'},
             {to: 'Result.Code', from: 'result_code'}
@@ -650,7 +682,7 @@ script:
         if (!sessionId) {
             throw 'Session ID is required';
         }
-        let path = `/v1/cblr/session/${sessionId}/file`;
+        let path = `/session/${sessionId}/file`;
         if (fileId) {
             path += '/' + fileId;
         }
@@ -691,7 +723,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let path = `/v1/cblr/session/${sessionId}/file/${fileId}`;
+        let path = `/session/${sessionId}/file/${fileId}`;
         return sendRequest(path + '/content', 'GET');
     }
 
@@ -714,7 +746,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let response = sendFileRequest(`/v1/cblr/session/${sessionId}/file`, fileId);
+        let response = sendFileRequest(`/session/${sessionId}/file`, fileId);
         try {
             return JSON.parse(response.Body);
         } catch (err) {
@@ -751,7 +783,7 @@ script:
         if (!fileId) {
             throw 'File ID is required';
         }
-        let path = `/v1/cblr/session/${sessionId}/file/${fileId}`;
+        let path = `/session/${sessionId}/file/${fileId}`;
         let response = sendRequest(path, 'DELETE').Body;
         try {
             return JSON.parse(response);
@@ -787,6 +819,10 @@ script:
             case 'test-module':
                 return testModule();
             case 'cb-list-sessions':
+                if (CB_PRODUCT == 'Defense') {
+                    throw '\'cb-list-sessions\' is not available for Cb Defense.';
+                }
+                  return getSessions();
             case 'cb-session-info':
                 return getSessions();
             case 'cb-session-create':
@@ -798,6 +834,9 @@ script:
             case 'cb-keepalive':
                 return sessionKeepAlive();
             case 'cb-archive':
+                if (CB_PRODUCT == 'Defense') {
+                    throw '\'cb-archive\' is not available for Cb Defense.';
+                }
                 return archiveSession();
             case 'cb-list-commands':
             case 'cb-command-info':
@@ -829,7 +868,7 @@ script:
             ContentsType: formats.json,
             ReadableContentsFormat: formats.text,
             HumanReadable: err
-        }
+        };
     }
 
     /// Util methods

@@ -29,7 +29,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Do not validate sever certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8

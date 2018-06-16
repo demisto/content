@@ -1,0 +1,145 @@
+id: cve_enrichment_-_generic_-_test
+version: -1
+name: CVE Enrichment - Generic - Test
+fromversion: 3.6.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 919accd1-fe51-4921-8aa2-4b6406591252
+    type: start
+    task:
+      id: 919accd1-fe51-4921-8aa2-4b6406591252
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 3e4f00e5-d358-4059-8f17-96c20f5a2388
+    type: regular
+    task:
+      id: 3e4f00e5-d358-4059-8f17-96c20f5a2388
+      version: -1
+      name: Set CVE
+      description: ""
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CVE.ID
+      value:
+        simple: CVE-2013-2566
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 0c99df3b-66b6-4aa5-89b9-b619b2d8a54d
+    type: playbook
+    task:
+      id: 0c99df3b-66b6-4aa5-89b9-b619b2d8a54d
+      version: -1
+      name: CVE Enrichment - Generic
+      description: ""
+      playbookName: CVE Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: ea6d15cd-ec2c-4d1e-827f-c00e64e401d6
+    type: regular
+    task:
+      id: ea6d15cd-ec2c-4d1e-827f-c00e64e401d6
+      version: -1
+      name: Verify
+      description: ""
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: CVE.CVSS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 23bf7baa-7431-4835-819e-2d9ce96ad057
+    type: title
+    task:
+      id: 23bf7baa-7431-4835-819e-2d9ce96ad057
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

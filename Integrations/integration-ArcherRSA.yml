@@ -23,7 +23,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -64,6 +64,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Use Archer's REST API instead of its SOAP API
+  name: useRest
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |
     var server = params.server.replace(/[\/]+$/, '');
@@ -87,6 +92,8 @@ script:
       getFile: 'archer-get-file',
       uploadFile: 'archer-upload-file',
       addToDetailedAnalysis: 'archer-add-to-detailed-analysis',
+      getUserId: 'archer-get-user-id',
+      getSubformId: 'archer-get-subform-id',
     };
 
     var urlDictionary = {};
@@ -107,6 +114,7 @@ script:
     urlDictionary[commands.searchRecordsByReport] = '/ws/search.asmx';
     urlDictionary[commands.getFile] = '/ws/record.asmx';
     urlDictionary[commands.uploadFile] = '/api/core/content/attachment';
+    urlDictionary[commands.getUserId] = '/ws/accesscontrol.asmx';
 
     var methodDictionary = {};
     methodDictionary.login = 'POST';
@@ -115,6 +123,7 @@ script:
     methodDictionary.fieldByLevelId = 'POST';
     methodDictionary[commands.createRecord] = 'POST';
     methodDictionary[commands.updateRecord] = 'POST';
+    methodDictionary[commands.updateRecordREST] = 'PUT';
     methodDictionary[commands.getRecord] = 'POST';
     methodDictionary[commands.searchApps] = 'POST';
     methodDictionary[commands.searchRecords] = 'POST';
@@ -126,6 +135,8 @@ script:
     methodDictionary[commands.searchRecordsByReport] = 'POST';
     methodDictionary[commands.getFile] = 'POST';
     methodDictionary[commands.uploadFile] = 'POST';
+    methodDictionary[commands.getUserId] = 'POST';
+    methodDictionary[commands.getSubformId] = 'POST';
 
     var GLOBAL_MAPPING = {};
     var dateRe = /(\d{1,2})\/(\d{1,2})\/(\d{4})\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/;
@@ -682,6 +693,20 @@ script:
         );
     }
 
+    function getUserIdSoapRequest(token, userName, userDomain) {
+        return (
+        '<?xml version="1.0" encoding="utf-8"?> ' +
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
+        '   <soap:Body>' +
+        '       <LookupDomainUserId xmlns="http://archer-tech.com/webservices/">' +
+        '           <sessionToken>' + token + '</sessionToken>' +
+        '           <username>' + userName + '</username>' +
+        '           <usersDomain>' + userDomain +'</usersDomain>' +
+        '       </LookupDomainUserId>' +
+        '   </soap:Body>' +
+        '</soap:Envelope>'
+        );
+    }
     // helper functions
 
     function extractObjectFromXML(xml, path) {
@@ -861,6 +886,256 @@ script:
             }
         }
         return fields;
+    }
+
+    function createFieldsContentsObject(fieldsToValue, mapping){
+        // This function prepares the payload for the REST API, specifically it creates an Object for each field in fieldsToValue, with its proper mapping
+        // Each field has an Archer type. For example, type 1 correlates for Text fields
+        // Example for fieldsToValue: {"Title":"Demisto","Date/Time Occurred":"3/23/2018 7:00 AM","Date/Time Identified":"3/23/2018 7:00 AM","Date/Time Reported":"3/23/2018 7:00 AM","Incident Summary":"test"}
+        // Example for mapping: "Title":{"Type":1,"Id":16132,"levelId":232},"Incident ID (DFM)":{"Type":6,"Id":16133,"levelId":232},
+        //                          "Target Asset Type":{"Type":4,"Id":16134,"levelId":232},"Date/Time Escalated":{"Type":3,"Id":16135,"levelId":232}...
+
+        var fieldsContent = {};
+        for (var fieldName in fieldsToValue) {
+            if (mapping[fieldName] !== undefined) {
+                var fieldValue = fieldsToValue[fieldName];
+                var fieldNameMapping = mapping[fieldName];
+                switch(fieldNameMapping.Type){
+                    case 1:
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 1,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': fieldValue
+                         }
+                         break;
+
+                    case 2:
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 2,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': fieldValue
+                        }
+                        break;
+
+                    case 3:
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 3,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': fieldValue
+                        };
+                        break;
+
+                    case 4:
+                        //fieldValue is of the form [value1, value2,...]
+                        var listValueIdtoName = getValueListForField(commands.valueListForField, {fieldID : fieldNameMapping.Id});
+                        var valueList = []
+                        if (listValueIdtoName !== {}){
+                            if (Array.isArray(fieldValue)){
+                                for(var i=0; i<fieldValue.length; i++){
+                                    valueList.push(listValueIdtoName[fieldValue[i]])
+                                }
+                            } else{
+                                valueList.push(listValueIdtoName[fieldValue])
+                            }
+                        } else {
+                            valueList.push(fieldValue);
+                        }
+
+
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 4,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': {
+                                'ValuesListIds': valueList,
+                                'OtherText': null
+                            }
+                        };
+                        break;
+
+                    case 7:
+                        //fieldValue is of the form [{value: ___ , link: ___}, {value: ___ , link: ___}, ...]
+                        var valueList = []
+
+                        valueList.push({
+                            'Name': fieldValue[0].value,
+                            'URL': fieldValue[0].link
+                        })
+                        for(var i=1; i<fieldValue.length; i++){
+                            valueList.push({
+                                'Name': fieldValue[i].value,
+                                'URL': fieldValue[i].link
+                            })
+                        }
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 7,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': valueList
+                        };
+                        break;
+
+                    case 8:
+                    //fieldValue is of the form {groups: [group1, group2,...], users : [user1, user2,...]}
+                        if(fieldValue && fieldValue !== undefined){
+                            var valueObject = {};
+                            var added = false;
+                            var groups = fieldValue.groups;
+                            var users = fieldValue.users;
+                            if(groups && Array.isArray(groups) && groups.length > 0){
+                                var groupValueList = [];
+                                for(var i=0; i<groups.length; i++){
+                                    groupValueList.push({
+                                        "ID": parseInt(groups[i])
+                                    });
+                                }
+                                valueObject['GroupList'] = groupValueList;
+                                added = true;
+                            }
+                            if(users && Array.isArray(users) && users.length > 0){
+                                var usersValueList = [];
+                                for(var i=0; i<users.length; i++){
+                                    usersValueList.push({
+                                        "ID": parseInt(users[i])
+                                    });
+                                }
+                                valueObject['UserList'] = usersValueList;
+                                added = true;
+                            }
+                            if (!added){
+                                valueObject['UserList'] = [{
+                                        "ID": fieldValue
+                                    }];
+                            }
+                            fieldsContent[fieldNameMapping.Id.toString()] = {
+                                'Type': 8,
+                                'FieldId': parseInt(fieldNameMapping.Id),
+                                'Value': valueObject
+                            };
+                        }
+                        break;
+
+                    case 9:
+                        if(fieldValue && fieldValue !== undefined){
+                            contentIdsList = [];
+                            fieldValue = verifyOrMakeArray(fieldValue);
+                            for(var i=0; i<fieldValue.length; i++){
+                                contentIdsList.push({
+                                    "ContentID": parseInt(fieldValue[i])
+                                })
+                            }
+
+                            fieldsContent[fieldNameMapping.Id.toString()] = {
+                                'Type': 9,
+                                'FieldId': parseInt(fieldNameMapping.Id),
+                                'Value': contentIdsList
+                            };
+                        }
+                        break;
+
+                    case 11:
+                        valueList = []
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
+                            }
+                        } else {
+                            valueList.push(fieldValue)
+                        }
+
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 11,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': valueList
+                        }
+                        break;
+
+                    case 12:
+                        valueList = []
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
+                            }
+                        } else {
+                            valueList.push(fieldValue)
+                        }
+
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 12,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': valueList
+                        }
+                        break;
+
+                    case 19:
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 19,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'IpAddressBytes': fieldValue
+                         }
+                        break;
+
+                    case 18:
+                        valueList = []
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
+                            }
+                        } else {
+                            valueList.push(fieldValue)
+                        }
+
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 18,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': {'ValuesListIds': valueList, 'OtherText': null}
+                        }
+
+                        break;
+
+                    case 23:
+                        valueList = []
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
+                            }
+                        } else {
+                            valueList.push(fieldValue)
+                        }
+
+                        fieldsContent[fieldNameMapping.Id.toString()] = {
+                            'Type': 23,
+                            'FieldId': parseInt(fieldNameMapping.Id),
+                            'Value': valueList
+                        }
+
+                        break;
+                    case 24: // subform - we need to create a sub record of another module id and then add its id to our record
+                        // get subform id
+                        valueList = []
+                        if (Array.isArray(fieldValue)){
+                            for(var i=0; i<fieldValue.length; i++){
+                                valueList.push(fieldValue[i])
+                            }
+                            fieldsContent[fieldNameMapping.Id.toString()] = {
+                                'Type': 24,
+                                'FieldId': parseInt(fieldNameMapping.Id),
+                                'Value': valueList
+                            }
+                        } else {
+                            var idToCheck = fieldNameMapping.Id;
+                            var secFields = '<Field id="29906" value="' + fieldValue +'" />';
+                            var subFormId = getSubformId(idToCheck, 411, secFields, fieldValue);
+                            fieldsContent[fieldNameMapping.Id.toString()] = {
+                                'Type': 24,
+                                'FieldId': parseInt(idToCheck),
+                                'Value': [subFormId]
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+        // example for fieldsContent: {"16132":{"Type":1,"FieldId":16132,"Value":"Demisto"},"16108":{"Type":1,"FieldId":16108,"Value":"test"}}
+        return fieldsContent;
     }
 
     function getSearchRecords(parsedJSON) {
@@ -1675,7 +1950,6 @@ script:
         var response = getContentIdsByIncIdsSendSoapRequest(applicationId, displayFields, incidentIdsString, levelId, nameToFieldMapping[displayFields].Id);
         var rawResponse = JSON.parse(x2j(response));
         var parsedJSON = extractObjectFromXML(rawResponse, 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult');
-
         if (!Array.isArray(parsedJSON)){
             var recordsArr = verifyOrMakeArray(parsedJSON.Records.Record);
             recordsArr.forEach(function (record){
@@ -1686,15 +1960,41 @@ script:
         return contentIdsArr;
     }
 
-    function getSubformId(fieldId, applicationId, fieldValues) {
+    function getSubformId(fieldId, applicationId, fieldValues, valueForSubform) {
+        var result;
         /* Used to get the id of a subform field*/
+        if (params.useRest){
+        // in case that the user wants to use the REST API
+            var levels = getLevelsByApplicationId(applicationId);
+            var content = {
+                "Content": {
+                    "LevelId": levels[0],
+                    "FieldContents": {
+                        "29906": {
+                            'Type': 1,
+                            'FieldId': 29906,
+                            'Value': valueForSubform
+                         }
+                    }
+                },
+                "SubformFieldId": fieldId
+            };
 
-        var SOAPAction = 'http://archer-tech.com/webservices/CreateSubformRecord';
-        var token = getAuthToken();
-        var soap = getContentSubFormSoapRequest(token, applicationId, fieldId, fieldValues);
-        var response = JSON.parse(x2j(sendSoapRequest(commands.getRecord, soap, SOAPAction)));
-        destroyAuthToken(token);
-        var result = dq(response, 'Envelope.Body.CreateSubformRecordResponse.CreateSubformRecordResult');
+            var resp = sendRestRequest('/api/core/content', commands.getSubformId, content, false);
+            try {
+                result = resp['RequestedObject']['Id'];
+            } catch (err) {
+                throw "Archer didn't create a new record. We received the following response " + JSON.stringify(resp)
+            }
+        } else {
+            // use the SOAP API
+            var SOAPAction = 'http://archer-tech.com/webservices/CreateSubformRecord';
+            var token = getAuthToken();
+            var soap = getContentSubFormSoapRequest(token, applicationId, fieldId, fieldValues);
+            var response = JSON.parse(x2j(sendSoapRequest(commands.getRecord, soap, SOAPAction)));
+            destroyAuthToken(token);
+            result = dq(response, 'Envelope.Body.CreateSubformRecordResponse.CreateSubformRecordResult');
+        }
         return result;
     }
 
@@ -1702,7 +2002,7 @@ script:
 
     function createRecord(command, dataArgs) {
         // corresponds to 'archer-create-record' command. Creates a new record in Archer
-
+        var contentId;
         var appId = dataArgs.applicationId;
         var fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
@@ -1711,19 +2011,40 @@ script:
 
         var levels = getLevelsByApplicationId(appId);
         var createRecordMapping = createMappingNameToFieldId(levels);
-        var fields = inputToXML(fieldsToValue, createRecordMapping);
-        var token = getAuthToken();
-        var soap = createContentSoapRequest(token, appId, fields);
-        var SOAPAction = 'http://archer-tech.com/webservices/CreateRecord';
-        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
-        destroyAuthToken(token);
-        var response = JSON.parse(x2j(rawResponse));
 
-        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
-            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+        if (params.useRest){
+        // in case that the user wants to use the REST API
+            var content = {
+                "Content": {
+                    "LevelId": levels[0],
+                    "FieldContents": createFieldsContentsObject(fieldsToValue, createRecordMapping)
+                }
+            };
+
+            var resp = sendRestRequest('/api/core/content', command, content, false);
+            try {
+                contentId = resp['RequestedObject']['Id'];
+            } catch (err) {
+                throw "Archer didn't create a new record. We received the following response " + JSON.stringify(resp)
+            }
+
+        } else {
+        // use the SOAP API
+            var fields = inputToXML(fieldsToValue, createRecordMapping);
+            var token = getAuthToken();
+            var soap = createContentSoapRequest(token, appId, fields);
+            var SOAPAction = 'http://archer-tech.com/webservices/CreateRecord';
+            var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+            destroyAuthToken(token);
+            var response = JSON.parse(x2j(rawResponse));
+
+            if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+                throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+            }
+
+            contentId = dq(response, 'Envelope.Body.CreateRecordResponse.CreateRecordResult');
         }
 
-        var contentId = dq(response, 'Envelope.Body.CreateRecordResponse.CreateRecordResult');
         var md = JSON.parse(JSON.stringify(fieldsToValue));
         md.Id = contentId;
 
@@ -1731,13 +2052,15 @@ script:
             return {
                 ContentsFormat: formats["markdown"],
                 Type: entryTypes["error"],
-                Contents: "Recived an error" + JSON.stringify(response)
+                Contents: "Received an error" + JSON.stringify(response)
             };
         }
 
         return {
             Type: entryTypes.note,
-            Contents: response,
+            Contents: {
+                "CreateRecordResult": contentId
+            },
             ContentsFormat: formats.json,
             HumanReadable: tableToMarkdown(command, md),
             ReadableContentsFormat: formats.markdown,
@@ -1763,38 +2086,60 @@ script:
         if (incidentId){
             contentId = getContentIdsFromIncIds(appId, incidentId)[0];
         }
-
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
         }
 
         var levels = getLevelsByApplicationId(appId);
         var updateRecordMapping = createMappingNameToFieldId(levels);
-        var fields = inputToXML(fieldsToValue, updateRecordMapping);
 
-        var token = getAuthToken();
-        var soap = updateContentSoapRequest(token, appId, contentId, fields);
-        var SOAPAction = 'http://archer-tech.com/webservices/UpdateRecord';
-        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
-        destroyAuthToken(token);
-        var response = JSON.parse(x2j(rawResponse));
-        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
-            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
-        }
-
-        var result = dq(response, 'Envelope.Body.UpdateRecordResponse.UpdateRecordResult');
-        if (!result && result < 1) {
-            return {
-                ContentsFormat: formats["markdown"],
-                Type: entryTypes["error"],
-                Contents: "Recived an error" + JSON.stringify(response)
+        if (params.useRest){
+        // in case that the user wants to use the REST API
+            var content = {
+                "Content": {
+                    "Id": contentId,
+                    "LevelId": levels[0],
+                    "FieldContents": createFieldsContentsObject(fieldsToValue, updateRecordMapping)
+                }
             };
+
+            var resp = sendRestRequest('/api/core/content', commands.updateRecordREST, content, false);
+
+            try {
+                contentId = resp['RequestedObject']['Id'];
+            } catch (err) {
+                throw "Archer didn't create a new record. We received the following response " + JSON.stringify(resp)
+            }
+
+        } else {
+        // use the SOAP API
+            var fields = inputToXML(fieldsToValue, updateRecordMapping);
+            var token = getAuthToken();
+            var soap = updateContentSoapRequest(token, appId, contentId, fields);
+            var SOAPAction = 'http://archer-tech.com/webservices/UpdateRecord';
+            var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+            destroyAuthToken(token);
+            var response = JSON.parse(x2j(rawResponse));
+            if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+                throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+            }
+
+            var result = dq(response, 'Envelope.Body.UpdateRecordResponse.UpdateRecordResult');
+            if (!result && result < 1) {
+                return {
+                    ContentsFormat: formats["markdown"],
+                    Type: entryTypes["error"],
+                    Contents: "Recived an error" + JSON.stringify(response)
+                };
+            }
         }
 
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
-            Contents: result,
+            Contents: {
+                "updatedRecord": contentId
+            },
             ReadableContentsFormat: formats.markdown,
             HumanReadable: 'content id = ' + contentId + ' was updated successfully'
         }
@@ -2330,7 +2675,12 @@ script:
         var incidentId = args.incidentId;
         var entryId = args.entryId;
         if (incidentId){
-            contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
+            contentIdsFromInc = getContentIdsFromIncIds(applicationId, incidentId);
+            if (contentIdsFromInc.length > 0){
+                contentId = contentIdsFromInc[0];
+            } else {
+                contentId = incidentId;
+            }
         }
         var fileName = dq(invContext, "File(val.EntryID == '" + entryId + "').Name");
         if (Array.isArray(fileName)) {
@@ -2344,10 +2694,14 @@ script:
         var fileB64String = entrytoa(entryId);
         var body = {"AttachmentName": fileName, "AttachmentBytes": fileB64String};
         var response = sendRestRequest(urlDictionary[commands.uploadFile], commands.uploadFile, body, false);
+        if (response['IsSuccessful'] == "false"){
+            throw "Uploading failed. Response was: " + JSON.stringify(response);
+        }
 
         var archerFileId = response.RequestedObject.Id;
-        var currentRecord = getRecord(commands.getRecord, contentId, applicationId, true);
         var currentFiles = [archerFileId];
+        var currentRecord = getRecord(commands.getRecord, contentId, applicationId, true);
+
         for (var i=1; i<currentRecord.length; i++){
             currentFiles.push(parseInt(currentRecord[i]['ArcherFileId']));
         }
@@ -2368,6 +2722,9 @@ script:
         var applicationId = args.applicationId;
         var contentId = args.contentId;
         var incidentId = args.incidentId;
+        if (!contentId && !incidentId){
+            throw "Please enter either contentId or incidentId of the record";
+        }
 
         if (incidentId){
             contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
@@ -2385,17 +2742,52 @@ script:
         }
 
         var fields = '<Field id="29906" value="' + value +'" />';
-        detailedAnalysisArcherIds.push(getSubformId(30186, 411, fields));
+        detailedAnalysisArcherIds.push(getSubformId(30186, 411, fields, value));
 
         var args = {
             "applicationId": applicationId,
             "contentId": contentId,
-            "fieldsToValue": {"Detailed Analysis": detailedAnalysisArcherIds},
+            "fieldsToValue": {
+                "Detailed Analysis": detailedAnalysisArcherIds
+            },
             "incidentId": incidentId
         }
         updateRecord(commands.updateRecord, args);
 
         return "Detailed Analysis updated successfully";
+    }
+
+    function getUserId(args){
+        // corresponds to 'archer-get-user-id' command. Retrieves a user id from Archer
+
+        var userInfo = args.userInfo.split("\\");
+        var userDomain = userInfo[0];
+        var userName = userInfo[1].toLowerCase();
+
+        var token = getAuthToken();
+        var soap = getUserIdSoapRequest(token, userName, userDomain);
+        var SOAPAction = 'http://archer-tech.com/webservices/LookupDomainUserId';
+        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+
+        destroyAuthToken(token);
+        var response = JSON.parse(x2j(rawResponse));
+        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+        }
+        var userId = response.Envelope.Body.LookupDomainUserIdResponse.LookupDomainUserIdResult;
+
+        return {
+            Type: entryTypes.note,
+            Contents: {
+                "UserId": userId
+            },
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: "User id for user " + userName + " is " + userId,
+            EntryContext: {
+                'Archer.getUserId(val.UserId==obj.UserId)': userId
+            }
+        };
     }
 
     function test() {
@@ -2404,13 +2796,17 @@ script:
             throw 'If Fetch incidents is on, then Application Id and fields to display must be passed';
         }
         if (!getListOfApplications(commands.searchApps).Contents.length > 0){
-            throw 'Error in test, list of Applications is empty - problem with API connection';
+            throw 'Error in test, list of Applications is empty - possible problem with API connection';
         }
         return 'ok';
     }
 
-    extendAppIdMapping(411); /* current workaround for known missing mapping. If this issue appears again
+    try { // it's ok if this fails, the client might not have this module
+        extendAppIdMapping(411); /* current workaround for known missing mapping. If this issue appears again
                                 it would be better to put missing application ids (such as 411) as integration params.*/
+    } catch (e) {
+
+    }
     switch (command) {
         case 'test-module':
             return test();
@@ -2450,6 +2846,8 @@ script:
             return uploadFile(args);
         case commands.addToDetailedAnalysis:
             return addToDetailedAnalysis(args);
+        case commands.getUserId:
+            return getUserId(args);
         case 'fetch-incidents':
             return fetchIncidents(args);
         default:
@@ -2469,6 +2867,7 @@ script:
     outputs:
     - contextPath: Archer.Record.Id
       description: Content Id
+      type: number
     - contextPath: Archer.Record.Fields
       description: Content property fields
     description: Creates a new content record in the given application.
@@ -2704,5 +3103,14 @@ script:
       description: 'The value you want to add to Detailed Analysis. For example: value="test
         string"'
     description: Add data to Archer's Detailed Analysis field
+  - name: archer-get-user-id
+    arguments:
+    - name: userInfo
+      required: true
+      description: Username in the form of "Domain\\username". For example, userInfo="mydomain\\myusername"
+    outputs:
+    - contextPath: Archer.User.UserId
+      description: The user id of the Archer user
+    description: Get the user id of an Archer user
   isfetch: true
   runonce: false
