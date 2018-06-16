@@ -569,18 +569,19 @@ script: |-
   try:
       fileType = demisto.executeCommand('getEntry', {'id': demisto.args()['entryid']})[0]['FileMetadata']['info']
       filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryid']})[0]['Contents']['path']
+      demisto.log('file type is: '  + fileType)
   except Exception, ex:
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)}]
 
-  if 'Composite Document File V2 Document'.lower() or 'CDFV2 Microsoft Outlook Message'.lower() in fileType.lower():
-      temp1, temp2 =  handleMsg(filePath)
+  if 'Composite Document File V2 Document'.lower() in fileType.lower() or 'CDFV2 Microsoft Outlook Message'.lower() in fileType.lower():
+      temp1, temp2 = handleMsg(filePath)
       res += temp1
       res += temp2
   elif 'rfc 822 mail' in fileType.lower():
       temp1, temp2 = handleEml(filePath)
       res += temp1
       res += temp2
-  elif 'ASCII text' in fileType:
+  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType or 'ASCII text, with CRLF, LF line terminators' in fileType:
       try:
           # Try to open the email as-is
           with open(filePath, 'rb') as f:
