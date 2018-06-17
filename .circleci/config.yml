@@ -15,6 +15,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+              curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
               sudo apt install nodejs
               sudo apt install npm
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
