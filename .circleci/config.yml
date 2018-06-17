@@ -2,6 +2,8 @@ version: 2
 jobs:
   build:
     machine: true
+    machine:
+      image: circleci/classic:edge
     environment:
       CONTENT_VERSION: "18.6.0"
     steps:
