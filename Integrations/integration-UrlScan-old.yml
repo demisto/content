@@ -23,7 +23,7 @@ configuration:
   type: 4
   required: false
   hidden: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "false"
   type: 8

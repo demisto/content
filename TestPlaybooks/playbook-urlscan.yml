@@ -241,7 +241,7 @@ tasks:
       - "11"
     scriptarguments:
       timeout: "30"
-      url: www.demisto.com
+      url: https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a8.8.8.8&run=toolpage
       wait: ""
     view: |-
       {

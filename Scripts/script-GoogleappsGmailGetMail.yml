@@ -52,3 +52,4 @@ dependson:
   must:
   - googleapps-gmail-get-mail
 timeout: 0s
+deprecated: true

@@ -208,7 +208,7 @@ tasks:
       sensor:
         simple: ${CbResponse.Sensors.[0].CbSensorID}
       wait-timeout:
-        simple: "30"
+        simple: "300"
     separatecontext: false
     view: |-
       {

@@ -33,7 +33,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -1375,4 +1375,3 @@ script:
     description: Close a case
   isfetch: true
   runonce: false
-releaseNotes: "Added context and markdown for all command, added chatter api"

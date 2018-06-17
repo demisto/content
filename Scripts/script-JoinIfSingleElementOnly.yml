@@ -25,4 +25,3 @@ args:
   description: The array to join if it has single element
   isArray: true
 scripttarget: 0
-releaseNotes: 'add transformer JoinIfSingleElementOnly'

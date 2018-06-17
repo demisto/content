@@ -415,4 +415,3 @@ script:
       the specified file
   dockerimage: demisto/dxl
   runonce: false
-releaseNotes: "-"

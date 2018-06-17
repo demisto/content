@@ -1,5 +1,6 @@
 {
   "name": "reputations",
+  "releaseNotes": "Extract domain from urls",
   "reputations": [
     {
       "id": "fileRep",
@@ -162,7 +163,23 @@
         "URLReputation",
         "SplunkSearch"
       ],
-      "fromVersion": "3.1.0"
+      "fromVersion": "3.1.0",
+      "toVersion": "3.5.0"
+    },
+    {
+      "id": "urlRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\[?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!\\-:,.\\(\\);]*[A-Z0-9+&@#\\/%=~_$\\(\\);])?",
+      "reputationCommand": "url",
+      "details": "URL",
+      "enhancementScriptNames": [
+        "URLReputation",
+        "SplunkSearch"
+      ],
+      "formatScript": "UnEscapeURLs",
+      "contextPath": "URL(val.Data && val.Data === obj.Data)",
+      "contextValue": "Data",
+      "fromVersion": "3.5.1"
     },
     {
       "id": "registryRep",
@@ -204,6 +221,29 @@
       "enhancementScriptNames": [
         "ADGetUser"
       ]
+    },
+    {
+      "id": "domainRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "Domain",
+      "enhancementScriptNames": [
+        "DomainReputation"
+      ],
+      "toVersion": "3.6"
+    },
+    {
+      "id": "domainRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\[?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!\\-:,.\\(\\);]*[A-Z0-9+&@#\\/%=~_$\\(\\);])?|\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+      "reputationCommand": "domain",
+      "details": "Domain",
+      "enhancementScriptNames": [
+        "DomainReputation"
+      ],
+      "formatScript": "ExtractDomainFromUrlAndEmail",
+      "fromVersion": "3.6"
     }
   ]
 }
