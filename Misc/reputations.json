@@ -1,5 +1,6 @@
 {
   "name": "reputations",
+  "releaseNotes": "Extract domain from urls",
   "reputations": [
     {
       "id": "fileRep",
@@ -229,7 +230,20 @@
       "details": "Domain",
       "enhancementScriptNames": [
         "DomainReputation"
-      ]
+      ],
+      "toVersion": "3.6"
+    },
+    {
+      "id": "domainRep",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\[?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!\\-:,.\\(\\);]*[A-Z0-9+&@#\\/%=~_$\\(\\);])?|\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+      "reputationCommand": "domain",
+      "details": "Domain",
+      "enhancementScriptNames": [
+        "DomainReputation"
+      ],
+      "formatScript": "ExtractDomainFromUrlAndEmail",
+      "fromVersion": "3.6"
     }
   ]
 }
