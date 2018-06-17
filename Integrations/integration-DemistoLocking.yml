@@ -10,7 +10,7 @@ detaileddescription: "The Demisto Locking integration allows prevention of concu
   execution of scripts or commands, using a wait-lock-release flow (mutex). \nUse
   the lock name argument to support multiple locks in different flows."
 configuration:
-- display: Default timeout for wait on locks to be released
+- display: Default timeout (minutes) for wait on locks to be released
   name: timeout
   defaultvalue: "60"
   type: 0
@@ -26,27 +26,27 @@ script:
       return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
 
-    var setLock = function(guid, info) {
-        var integrationContext = getIntegrationContext();
+    function setLock(guid, info) {
+        var integrationContext = getIntegrationContext() || {};
         integrationContext[lockName] = {guid: guid, info: info};
         setIntegrationContext(integrationContext);
-    };
-    var getLock = function() {
-        var integrationContext = getIntegrationContext();
+    }
+    function getLock() {
+        var integrationContext = getIntegrationContext() || {};
         if (!integrationContext[lockName]) {
             integrationContext[lockName] = {};
         }
         return integrationContext[lockName];
-    };
+    }
 
-    var lockName = (args.name) ? args.name : 'Default';
+    var lockName = args.name || 'Default';
 
     switch (command) {
         case 'test-module':
             return 'ok';
 
         case 'demisto-lock-get':
-            var lockTimeout = (args.timeout) ? args.timeout : params.timeout;
+            var lockTimeout = args.timeout || params.timeout;
             var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
             lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
 
@@ -88,9 +88,7 @@ script:
             return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
         case 'demisto-lock-release-all':
-            integrationContext = getIntegrationContext();
-            integrationContext = {};
-            setIntegrationContext(integrationContext);
+            setIntegrationContext({});
 
             var md = '### Demisto Locking Mechanism\n';
             md += 'All locks released successfully';
@@ -102,7 +100,6 @@ script:
             var res;
             var md = '### Demisto Locking Mechanism\n';
             var locks = (lockName === 'Default') ? Object.keys(integrationContext) : [lockName];
-
 
             locks.forEach(function(lock){
                 md += 'Lock name: ' + lock + ' - ';
@@ -131,7 +128,8 @@ script:
     - name: info
       description: Additional information to provide for the lock instance
     - name: timeout
-      description: Timeout for wait on lock to be freed
+      description: Timeout (minutes) for wait on lock to be freed
+      defaultValue: "60"
     description: Get a lock. If the lock is already in use - will wait until it is
       released or until timeout is reached
   - name: demisto-lock-release
