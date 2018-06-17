@@ -96,6 +96,7 @@ script:
 
         case 'demisto-lock-info':
             integrationContext = getIntegrationContext();
+            var obj = [];
 
             var res;
             var md = '### Demisto Locking Mechanism\n';
@@ -107,12 +108,13 @@ script:
                     md += 'Locked.\n';
                     md += '- GUID: ' + integrationContext[lock].guid + '\n';
                     md += '- Info: ' + integrationContext[lock].info + '\n\n';
+                    obj.push({lock: lock, state: integrationContext[lock]});
                 } else {
                     md += 'Not locked\n\n';
                 }
 
             });
-            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+            return { ContentsFormat: formats.json, Type: entryTypes.note, Contents: obj, HumanReadable: md } ;
 
         default:
             var md = 'Unknown command ' + command;
