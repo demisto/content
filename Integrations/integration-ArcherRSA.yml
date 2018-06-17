@@ -1433,24 +1433,23 @@ script:
                 var files;
                 var dateValue;
                 var usersValue;
+
                 if (field['Users']){
                     usersValue = userFieldHandler(field['Users']);
                     fieldName = GLOBAL_MAPPING[field['-id']].Name;
                 }
-                else {
-                    if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
-                        dateValue = getOccurredTime(field['-value'], 0);
-                    }
-                    if (field['-fileID']){ // attached files
-                        files = getFilesString(field);
-                        fieldName = 'files';
-                    } else if (field['-id'] && (GLOBAL_MAPPING[field['-id']])){
-                        fieldName = GLOBAL_MAPPING[field['-id']].Name;
-                        levelId = GLOBAL_MAPPING[field['-id']].levelId;
-                    } else { // in the edge case that we don't have the mapping of the field
-                        fieldName = field['-id'];
-                        levelId = " ";
-                    }
+                else if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
+                    dateValue = getOccurredTime(field['-value'], 0);
+                }
+                else if (field['-fileID']){ // attached files
+                    files = getFilesString(field);
+                    fieldName = 'files';
+                } else if (field['-id'] && (GLOBAL_MAPPING[field['-id']])){
+                    fieldName = GLOBAL_MAPPING[field['-id']].Name;
+                    levelId = GLOBAL_MAPPING[field['-id']].levelId;
+                } else { // in the edge case that we don't have the mapping of the field
+                    fieldName = field['-id'];
+                    levelId = " ";
                 }
 
                 recordVals.push({
