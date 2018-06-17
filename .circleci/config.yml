@@ -25,6 +25,7 @@ jobs:
               sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
+              sudo pip install awscli
       - run:
           name: Validate Files and Yaml
           command: |
@@ -44,13 +45,21 @@ jobs:
           path: artifacts
           destination: artifacts
       - run:
-          name: Setup Instance
+          name: Download Artifacts
           command: |
-              sudo pip install awscli
               chmod +x ./Tests/scripts/*
               ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+      - run:
+          name: Create Instance
+          command: |
               ./Tests/scripts/create_instance.sh
+      - run:
+          name: Download Configuration
+          command: |
               ./Tests/scripts/download_demisto_conf.sh
+      - run:
+          name: Setup Instance
+          command: |
               ./Tests/scripts/run_installer_on_instance.sh
               ./Tests/scripts/wait_until_server_ready.sh
       - run:
