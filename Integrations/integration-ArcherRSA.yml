@@ -1432,25 +1432,32 @@ script:
                 var levelId;
                 var files;
                 var dateValue;
-
-                if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
-                    dateValue = getOccurredTime(field['-value'], 0);
-                }
-                if (field['-fileID']){ // attached files
-                    files = getFilesString(field);
-                    fieldName = 'files';
-                } else if (field['-id'] && (GLOBAL_MAPPING[field['-id']])){
+                var usersValue;
+                if (field['Users']){
+                    usersValue = userFieldHandler(field['Users']);
                     fieldName = GLOBAL_MAPPING[field['-id']].Name;
-                    levelId = GLOBAL_MAPPING[field['-id']].levelId;
-                } else { // in the edge case that we don't have the mapping of the field
-                    fieldName = field['-id'];
-                    levelId = " ";
                 }
+                else {
+                    if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
+                        dateValue = getOccurredTime(field['-value'], 0);
+                    }
+                    if (field['-fileID']){ // attached files
+                        files = getFilesString(field);
+                        fieldName = 'files';
+                    } else if (field['-id'] && (GLOBAL_MAPPING[field['-id']])){
+                        fieldName = GLOBAL_MAPPING[field['-id']].Name;
+                        levelId = GLOBAL_MAPPING[field['-id']].levelId;
+                    } else { // in the edge case that we don't have the mapping of the field
+                        fieldName = field['-id'];
+                        levelId = " ";
+                    }
+                }
+
                 recordVals.push({
                     FieldId: field['-id'],
                     FieldName: fieldName,
                     FieldType: field['-type'],
-                    Value: dateValue || groupValue || field['-value'] ||innerRecordrows || files,
+                    Value: dateValue || groupValue || field['-value'] ||innerRecordrows || files || usersValue,
                     LevelId: levelId
                 });
             });
@@ -3114,3 +3121,4 @@ script:
     description: Get the user id of an Archer user
   isfetch: true
   runonce: false
+releaseNotes: "-"
