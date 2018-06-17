@@ -195,7 +195,7 @@ script:
             obj = vars(client._client_config)
             data=[]
             kwargs = {}
-
+            output = []
             if args.get('filters') is not None:
                 kwargs.update({'Filters':parse_filter_field(args.get('filters'))})
             if args.get('instanceIds') is not None:
@@ -220,9 +220,10 @@ script:
                     data[i].update ({
                         tag['Key']: tag['Value']
                     })
-            output = json.dumps(reservation['Instances'], cls=DatetimeEncoder)
-            raw = json.loads(output)
-            raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+                instance.update({'Region': obj['_user_provided_options']['region_name']})
+                output.append(instance)
+
+            raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
             ec = {'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)': raw}
             return  create_entry('AWS Instances',data, ec)
 
