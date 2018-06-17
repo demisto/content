@@ -20,6 +20,9 @@ jobs:
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
               sudo easy_install pip
               sudo apt-get install npm
+              sudo npm cache clean -f
+              sudo npm install -g n
+              sudo n stable
               sudo npm install npm -g
               sudo pip install pykwalify
               sudo pip install requests
