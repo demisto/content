@@ -1,8 +1,7 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/node:9.11
+    machine: true
     environment:
       CONTENT_VERSION: "18.6.0"
     steps:
