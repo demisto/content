@@ -344,6 +344,10 @@
     ],
     "skipped": [
         {
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
+        },
+        {
             "integrations": {
                 "name": "carbonblack-v2",
                 "byoi": true
