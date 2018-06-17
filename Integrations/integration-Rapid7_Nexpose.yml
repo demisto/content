@@ -1,8 +1,8 @@
 commonfields:
-  id: Rapid7 Nexpose_python
+  id: Rapid7 Nexpose
   version: -1
-name: Rapid7 Nexpose_python
-display: Rapid7 Nexpose_python
+name: Rapid7 Nexpose
+display: Rapid7 Nexpose
 category: Vulnerability Management
 image: data:image/png;base64,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
 description: Rapid7's on-premise vulnerability management solution, Nexpose, helps
@@ -37,25 +37,27 @@ configuration:
   required: false
 script:
   script: |-
-    from pprint import pprint
     import time
     import re
     import requests
     import json
 
     RANGE_OPERATORS = ['in-range', 'is-between', 'not-in-range']
+    YEAR_IN_MINUTES = 525600
+    MONTH_IN_MINUTES = 43800
+    WEEK_IN_MINUTES = 10080
+    DAY_IN_MINUTES = 1440
+    HOUR_IN_MINUTES = 60
+
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    SITE_COOKIE = "time-zone-offset=-180; _pendo_accountId.77c79869-0135-481b-7c93-53f43e8ae3d8=21c87447-3796-4bea-848b-660358b7e1da; _pendo_visitorId.77c79869-0135-481b-7c93-53f43e8ae3d8=21c87447-3796-4bea-848b-660358b7e1da-1; i18next=en-US; hide-dashboard-tour=shown; _pendo_meta.77c79869-0135-481b-7c93-53f43e8ae3d8=2114032251; nexposeCCSessionID=5D476D9DA8DA829E607FBF8E3B4BC7ED20A29DA4; TIMEOUT=session-alive'"
-    SESSION = "5D476D9DA8DA829E607FBF8E3B4BC7ED20A29DA4"
+
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('insecure', False)
     TOKEN = demisto.params().get('token', None)
-
-
 
     def get_server_url():
         url = demisto.params()['server']
@@ -75,6 +77,29 @@ script:
     SERVER_URL = BASE_URL + '/api/3'
     PROXY = load_proxy()
 
+    def get_login_headers():
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
+        }
+
+    def login():
+        url = BASE_URL + '/data/user/login'
+        headers = get_login_headers()
+        body = {
+            'nexposeccusername': USERNAME,
+            'nexposeccpassword': PASSWORD
+        }
+        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+        body = res.json()
+        if 'sessionID' not in body:
+            raise Exception('Failed to log in')
+
+        return body['sessionID']
+
+    SESSION = login()
 
     def get_headers():
         headers = {
@@ -85,24 +110,69 @@ script:
             headers['Token'] = TOKEN
         return headers
 
-
     def get_site_headers():
         headers = get_headers()
 
-        headers['Cookie'] = SITE_COOKIE
+        headers['Cookie'] = 'nexposeCCSessionID=' + SESSION
         headers['nexposeCCSessionID'] = SESSION
 
         return headers
 
+    def get_site(asset_id):
+        url = BASE_URL + '/data/assets/' + str(asset_id) + '/scans'
+        headers = get_site_headers()
+        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+        response = res.json()
+        if response is None or response['records'] is None or len(response['records']) == 0:
+            return ''
 
-    def send_request(path, method = 'get', body = {}, params = {}, headers = None, is_file=False):
+        return {
+            'id': response['records'][0]['siteID'],
+            'name': response['records'][0]['siteName'],
+            'ip': response['records'][0]['ipAddress']
+        }
+
+    def send_request(path, method = 'get', body = {}, params = {}, headers=None, is_file=False):
         url = '%s/%s' % (SERVER_URL, path)
         headers = headers if headers is not None else get_headers()
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-        verify=VERIFY_SSL, proxies = PROXY)
+        verify=VERIFY_SSL, proxies=PROXY)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception('Body: ' + json.dumps(body) + ' Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return res.json() if is_file is False else res.content
+
+    def iso8601_duration_as_minutes(d):
+        if d is None:
+            return 0
+        if d[0] != 'P':
+            raise ValueError('Not an ISO 8601 Duration string')
+        minutes = 0
+        # split by the 'T'
+        for i, item in enumerate(d.split('T')):
+            for number, period in re.findall( '(?P<number>\d+)(?P<period>S|M|H|D|W|Y)', item):
+                # print '%s -> %s %s' % (d, number, unit )
+                number = float(number)
+                this = 0
+                if period == 'Y':
+                    this = number *  YEAR_IN_MINUTES # 365.25
+                elif period == 'W':
+                    this = number * WEEK_IN_MINUTES
+                elif period == 'D':
+                    this = number * DAY_IN_MINUTES
+                elif period == 'H':
+                    this = number * HOUR_IN_MINUTES
+                elif period == 'M':
+                    # ambiguity betweeen months and minutes
+                    if i == 0:
+                        this = number * MONTH_IN_MINUTES # assume 30 days
+                    else:
+                        this = number
+                elif period == 'S':
+                    this = number / 60
+                minutes = minutes + this
+        return minutes
 
     def dq(obj, path):
       '''
@@ -150,22 +220,6 @@ script:
       else:
           return translate_single_object(content, map_fields, filter_func)
 
-
-    def get_site(asset_id):
-        url = BASE_URL + '/data/assets/' + str(asset_id) + '/scans'
-        headers = get_site_headers()
-        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
-        if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
-        response = res.json()
-        if response is None or response['records'] is None or len(response['records']) == 0:
-            return ''
-
-        return {
-            'id': response['records'][0]['siteID'],
-            'name': response['records'][0]['siteName'],
-            'ip': response['records'][0]['ipAddress']
-        }
 
     def get_list_response(path, method='get', limit=None, body={}, params={}):
         final_result = []
@@ -439,16 +493,18 @@ script:
                 {'from': 'summary.text', 'to': 'Summary'},
                 {'from': 'steps.text', 'to': 'Steps'},
                 {'from': 'estimate', 'to': 'Estimate'},
-                {'from': 'additionalInformation', 'to': 'AdditionalInformation'}
+                {'from': 'additionalInformation.text', 'to': 'AdditionalInformation'}
             ])
+            for i, v in enumerate(solutionsOutput):
+                solutionsOutput[i]['Estimate'] = str(iso8601_duration_as_minutes(solutionsOutput[i]['Estimate'])) + ' minutes'
 
         vulnerabilitiesMd = tableToMarkdown('Vulnerability ' + demisto.args()['vulnerabilityId'], vulnOutputs, vulnHeaders, removeNull=True)
         resultsMd = tableToMarkdown('Checks', resultsOutput, resultsHeaders, removeNull=True) if len(resultsOutput) > 0 else ''
         solutionsMd = tableToMarkdown('Solutions', solutionsOutput, solutionsHeaders, removeNull=True) if solutionsOutput is not None else ''
         md = vulnerabilitiesMd + resultsMd + solutionsMd
 
-        vulnOutputs['Checks'] = resultsOutput
-        vulnOutputs['Solutions'] = solutionsOutput
+        vulnOutputs['Check'] = resultsOutput
+        vulnOutputs['Solution'] = solutionsOutput
         asset = {
             'AssetId': demisto.args()['id'],
             'Vulnerability': [vulnOutputs]
@@ -692,6 +748,9 @@ script:
         if(scan is None):
             return 'Scan not found'
 
+        return get_scan_entry(scan)
+
+    def get_scan_entry(scan):
         scanHeaders = [
             'Id',
             'ScanType',
@@ -715,6 +774,8 @@ script:
             {'from': 'status', 'to': 'Status'},
             {'from': 'message', 'to': 'Message'}
         ])
+
+        scanOutput['TotalTime'] = str(iso8601_duration_as_minutes(scanOutput['TotalTime'])) + ' minutes'
 
         vulnHeaders = [
             'Critical',
@@ -926,18 +987,20 @@ script:
         return fileResult(name + '.pdf', report)
 
     def start_assets_scan_command():
-        ips = demisto.args().get('IPs', '').split(',')
-        hostNames = demisto.args().get('hostNames', '').split(',')
+        ips = demisto.args().get('IPs', None)
+        hostNames = demisto.args().get('hostNames', None)
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
 
         textFilters = None
-        if len(ips) > 0:
+        if ips is not None:
+            ips = ips.split(',')
             textFilters = ['ip-address is ' + ips[0]]
-        elif len(hostNames) > 0:
+        elif hostNames is not None:
+            hostNames = hostNames.split(',')
             textFilters = ['host-name is ' + hostNames[0]]
 
         if textFilters is None:
-            return 'No IPs or hosts provided'
+            return 'No IPs or hosts were provided'
 
         filters = get_search_filters(textFilters)
         asset = search_assets(filters, match='all')
@@ -949,28 +1012,50 @@ script:
         if site is None or 'id' not in site:
             return 'Could not find site'
 
-        hosts = ips + hostNames
-        scan = start_scan(site['id'], hosts, name)
+        hosts = []
+        if ips is not None:
+            hosts += ips
+        if hostNames is not None:
+            hosts += hostNames
 
-        return scan['id']
+        scan_response = start_scan(site['id'], hosts, name)
+
+        if(scan_response is None):
+            return 'Could not start scan'
+
+        scan = wait_until_scan_finished(scan_response['id'])
+
+        return get_scan_entry(scan)
 
     def start_site_scan_command():
         site = demisto.args()['site']
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
         hosts = demisto.args().get('hosts', '')
 
-        scan = start_scan(site, hosts.split(','), name)
+        scan_response = start_scan(site, hosts.split(','), name)
 
-        if(scan is None):
-            return 'Failed to start scan'
+        if(scan_response is None):
+            return 'Could not start scan'
 
-        return scan['id']
+        scan = wait_until_scan_finished(scan_response['id'])
+
+        return get_scan_entry(scan)
+
+    def wait_until_scan_finished(scan_id):
+        while True:
+            scan = get_scan(scan_id)
+            status = scan['status']
+            LOG(status)
+            LOG.print_log()
+            if status not in ['running','dispatched','integrating','unknown']:
+                break
+            time.sleep(60)
+
+        return scan
 
     def start_scan(site, hosts, name):
         path = 'sites/' + str(site) + '/scans'
         body = {
-            #'engineId' = 1,
-            #'tempalteId' = 1,
             'name': name,
             'hosts': hosts
         }
@@ -1011,22 +1096,133 @@ script:
         raise
   type: python
   commands:
+  - name: nexpose-get-asset
+    arguments:
+    - name: id
+      required: true
+      description: integer <int64> The identifier of the asset.
+    outputs:
+    - contextPath: Nexpose.Asset.Addresses
+      description: All addresses discovered on the asset.
+    - contextPath: Nexpose.Asset.AssetId
+      description: Id of the asset.
+    - contextPath: Nexpose.Asset.Hardware
+      description: The primary Media Access Control (MAC) address of the asset. The
+        format is six groups of two hexadecimal digits separated by colons.
+    - contextPath: Nexpose.Asset.Aliases
+      description: All host names or aliases discovered on the asset.
+    - contextPath: Nexpose.Asset.HostType
+      description: The type of asset, Valid values are unknown, guest, hypervisor,
+        physical, mobile
+    - contextPath: Nexpose.Asset.Site
+      description: Asset site name.
+    - contextPath: Nexpose.Asset.OperatingSystem
+      description: Operating system of the asset.
+    - contextPath: Nexpose.Asset.Vulnerabilities
+      description: The total number of vulnerabilities on the asset.
+    - contextPath: Nexpose.Asset.CPE
+      description: The Common Platform Enumeration (CPE) of the operating system.
+    - contextPath: Nexpose.Asset.LastScanDate
+      description: Last scan date of the asset.
+    - contextPath: Nexpose.Asset.LastScanId
+      description: Id of the asset's last scan.
+    - contextPath: Nexpose.Asset.RiskScore
+      description: The risk score (with criticality adjustments) of the asset.
+    - contextPath: Nexpose.Asset.Software.Software
+      description: The description of the software.
+    - contextPath: Nexpose.Asset.Software.Version
+      description: The version of the software.
+    - contextPath: Nexpose.Asset.Services.Name
+      description: The name of the service.
+    - contextPath: Nexpose.Asset.Services.Port
+      description: The port of the service.
+    - contextPath: Nexpose.Asset.Services.Product
+      description: The product running the service.
+    - contextPath: Nexpose.Asset.Services.protocol
+      description: The protocol of the service, valid values are ip, icmp, igmp, ggp,
+        tcp, pup, udp, idp, esp, nd, raw
+    - contextPath: Nexpose.Asset.Users.FullName
+      description: The full name of the user account.
+    - contextPath: Nexpose.Asset.Users.Name
+      description: The name of the user account.
+    - contextPath: Nexpose.Asset.Users.UserId
+      description: The identifier of the user account.
+    - contextPath: Nexpose.Asset.Vulnerability.Id
+      description: The identifier of the vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.Instacnes
+      description: The number of vulnerable occurrences of the vulnerability. This
+        does not include invulnerable instances.
+    - contextPath: Nexpose.Asset.Vulnerability.Title
+      description: The title (summary) of the vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.Malware
+      description: The malware kits that are known to be used to exploit the vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.Exploit
+      description: The exploits that can be used to exploit a vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.CVSS
+      description: The CVSS exploit score.
+    - contextPath: Nexpose.Asset.Vulnerability.Risk
+      description: The risk score of the vulnerability, rounded to a maximum of to
+        digits of precision. If using the default Rapid7 Real Risk™ model, this value
+        ranges from 0-1000.
+    - contextPath: Nexpose.Asset.Vulnerability.PublishedOn
+      description: The date the vulnerability was first published or announced. The
+        format is an ISO 8601 date, YYYY-MM-DD.
+    - contextPath: Nexpose.Asset.Vulnerability.ModifiedOn
+      description: The last date the vulnerability was modified. The format is an
+        ISO 8601 date, YYYY-MM-DD.
+    - contextPath: Nexpose.Asset.Vulnerability.Severity
+      description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
+        "Critical".'
+    - contextPath: Endpoint.IP
+      description: Endpoint IP address.
+    - contextPath: Endpoint.HostName
+      description: Endpoint host name.
+    - contextPath: Endpoint.OS
+      description: Endpoint operating system.
+    description: Returns the specified asset.
   - name: nexpose-get-assets
     arguments:
     - name: sort
       description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
         The default sort order is ascending. Multiple sort criteria can be specified
         using multiple sort query parameters.'
-      isArray: true
     - name: limit
       description: integer <int32> The number of records per page to retrieve.
+    outputs:
+    - contextPath: Nexpose.Asset.AssetId
+      description: The identifier of the asset.
+    - contextPath: Nexpose.Asset.Address
+      description: The primary IPv4 or IPv6 address of the asset.
+    - contextPath: Nexpose.Asset.Name
+      description: The primary host name (local or FQDN) of the asset.
+    - contextPath: Nexpose.Asset.Site
+      description: Asset site name.
+    - contextPath: Nexpose.Asset.Exploits
+      description: The number of distinct exploits that can exploit any of the vulnerabilities
+        on the asset.
+    - contextPath: Nexpose.Asset.Malware
+      description: The number of distinct malware kits that vulnerabilities on the
+        asset are susceptible to.
+    - contextPath: Nexpose.Asset.OperatingSystem
+      description: Operating system of the asset.
+    - contextPath: Nexpose.Asset.Vulnerabilities
+      description: The total number of vulnerabilities.
+    - contextPath: Nexpose.Asset.RiskScore
+      description: The risk score (with criticality adjustments) of the asset.
+    - contextPath: Nexpose.Asset.Assessed
+      description: Whether the asset has been assessed for vulnerabilities at least
+        once.
+    - contextPath: Nexpose.Asset.LastScanDate
+      description: Last scan date of the asset.
+    - contextPath: Nexpose.Asset.LastScanId
+      description: Id of the asset's last scan.
+    - contextPath: Endpoint.IP
+      description: Endpoint IP address.
+    - contextPath: Endpoint.HostName
+      description: Endpoint host name.
+    - contextPath: Endpoint.OS
+      description: Endpoint operating system.
     description: Returns all assets for which you have access.
-  - name: nexpose-get-asset
-    arguments:
-    - name: id
-      required: true
-      description: integer <int64> The identifier of the asset.
-    description: Returns the specified asset.
   - name: nexpose-search-assets
     arguments:
     - name: query
@@ -1057,6 +1253,40 @@ script:
         filters match for an asset to be included. any requires only one filter to
         match for an asset to be included.
       defaultValue: all
+    outputs:
+    - contextPath: Nexpose.Asset.AssetId
+      description: The identifier of the asset.
+    - contextPath: Nexpose.Asset.Address
+      description: The primary IPv4 or IPv6 address of the asset.
+    - contextPath: Nexpose.Asset.Name
+      description: The primary host name (local or FQDN) of the asset.
+    - contextPath: Nexpose.Asset.Site
+      description: Asset site name.
+    - contextPath: Nexpose.Asset.Exploits
+      description: The number of distinct exploits that can exploit any of the vulnerabilities
+        on the asset.
+    - contextPath: Nexpose.Asset.Malware
+      description: The number of distinct malware kits that vulnerabilities on the
+        asset are susceptible to.
+    - contextPath: Nexpose.Asset.OperatingSystem
+      description: Operating system of the asset.
+    - contextPath: Nexpose.Asset.Vulnerabilities
+      description: The total number of vulnerabilities.
+    - contextPath: Nexpose.Asset.RiskScore
+      description: The risk score (with criticality adjustments) of the asset.
+    - contextPath: Nexpose.Asset.Assessed
+      description: Whether the asset has been assessed for vulnerabilities at least
+        once.
+    - contextPath: Nexpose.Asset.LastScanDate
+      description: Last scan date of the asset.
+    - contextPath: Nexpose.Asset.LastScanId
+      description: Id of the asset's last scan.
+    - contextPath: Endpoint.IP
+      description: Endpoint IP address.
+    - contextPath: Endpoint.HostName
+      description: Endpoint host name.
+    - contextPath: Endpoint.OS
+      description: Endpoint operating system.
     description: Returns all assets for which you have access that match the given
       search criteria.
   - name: nexpose-get-scan
@@ -1064,6 +1294,32 @@ script:
     - name: id
       required: true
       description: integer <int64> The identifier of the scan.
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
     description: Returns the specified scan.
   - name: nexpose-get-asset-vulnerability
     arguments:
@@ -1073,6 +1329,69 @@ script:
     - name: vulnerabilityId
       required: true
       description: <string> The identifier of the vulnerability.
+    outputs:
+    - contextPath: Nexpose.Asset.AssetId
+      description: Identifier of the asset.
+    - contextPath: Nexpose.Asset.Vulnerability.Id
+      description: The identifier of the vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.Title
+      description: The title (summary) of the vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.Severity
+      description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
+        "Critical".'
+    - contextPath: Nexpose.Asset.Vulnerability.RiskScore
+      description: The risk score of the vulnerability, rounded to a maximum of to
+        digits of precision. If using the default Rapid7 Real Risk™ model, this value
+        ranges from 0-1000.
+    - contextPath: Nexpose.Asset.Vulnerability.CVSS
+      description: The CVSS vector(s) for the vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.CVSSV3
+      description: The CVSS v3 vector.
+    - contextPath: Nexpose.Asset.Vulnerability.Published
+      description: The date the vulnerability was first published or announced. The
+        format is an ISO 8601 date, YYYY-MM-DD.
+    - contextPath: Nexpose.Asset.Vulnerability.Added
+      description: The date the vulnerability coverage was added. The format is an
+        ISO 8601 date, YYYY-MM-DD.
+    - contextPath: Nexpose.Asset.Vulnerability.Modified
+      description: The last date the vulnerability was modified. The format is an
+        ISO 8601 date, YYYY-MM-DD.
+    - contextPath: Nexpose.Asset.Vulnerability.CVSSScore
+      description: The CVSS score, which ranges from 0-10.
+    - contextPath: Nexpose.Asset.Vulnerability.CVSSV3Score
+      description: The CVSS3 score, which ranges from 0-10.
+    - contextPath: Nexpose.Asset.Vulnerability.Categories
+      description: All vulnerability categories assigned to this vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.CVES
+      description: All CVEs assigned to this vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Port
+      description: The port of the service the result was discovered on.
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Protocol
+      description: The protocol of the service the result was discovered on, valid
+        values ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Since
+      description: The date and time the result was first recorded, in the ISO8601
+        format. If the result changes status this value is the date and time of the
+        status change.
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Proof
+      description: The proof explaining why the result was found vulnerable.
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Status
+      description: The status of the vulnerability check result. Valid values are,
+        unknown, not-vulnerable, vulnerable, vulnerable-version, vulnerable-potential,
+        vulnerable-with-exception-applied, vulnerable-version-with-exception-applied,
+        vulnerable-potential-with-exception-applied
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.Type
+      description: 'The type of the solution. One of: "Configuration", "Rollup patch",
+        "Patch".'
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.Summary
+      description: The summary of the solution.
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.Steps
+      description: The steps required to remediate the vulnerability.
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.Estimate
+      description: The estimated duration to apply the solution, in minutes.
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.AdditionalInformation
+      description: Additional information or resources that can assist in applying
+        the remediation
     description: Returns the details for solutions that can remediate a given vulnerability.
   - name: nexpose-get-sites
     arguments:
@@ -1082,9 +1401,36 @@ script:
       description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
         The default sort order is ascending. Multiple sort criteria can be specified
         using multiple sort query parameters.'
+    outputs:
+    - contextPath: Nexpose.Site.Id
+      description: The identifier of the site.
+    - contextPath: Nexpose.Site.Name
+      description: The site name.
+    - contextPath: Nexpose.Site.Assets
+      description: The number of assets that belong to the site.
+    - contextPath: Nexpose.Site.Type
+      description: The type of the site. Valid values are agent, dynamic, static
+    - contextPath: Nexpose.Site.Vulnerabilities
+      description: The total number of vulnerabilities.
+    - contextPath: Nexpose.Site.Risk
+      description: The risk score (with criticality adjustments) of the site.
+    - contextPath: Nexpose.Site.LastScan
+      description: The date and time of the site's last scan.
     description: Retrieves accessible sites.
   - name: nexpose-get-report-templates
     arguments: []
+    outputs:
+    - contextPath: Nexpose.Template.Id
+      description: The identifier of the report template;
+    - contextPath: Nexpose.Template.Name
+      description: The name of the report template.
+    - contextPath: Nexpose.Template.Description
+      description: The description of the report template.
+    - contextPath: Nexpose.Template.Type
+      description: The type of the report template. document is a templatized, typically
+        printable, report that has various sections of content. export is data-oriented
+        output, typically CSV. file is a printable report template using a report
+        template file.
     description: Returns all available report templates.
   - name: nexpose-create-assets-report
     arguments:
@@ -1128,6 +1474,32 @@ script:
         be a mixture of IP Addresses and Hostnames as a comma separated string array.
     - name: name
       description: The user-driven scan name for the scan.
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
     description: Starts a scan for the specified site.
   - name: nexpose-start-assets-scan
     arguments:
@@ -1137,6 +1509,32 @@ script:
       description: Host names of assets
     - name: name
       description: The user-driven scan name for the scan.
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 releaseNotes: "-"
