@@ -1,8 +1,7 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/node:9.11
+    machine: true
     environment:
       CONTENT_VERSION: "18.6.0"
     steps:
@@ -16,8 +15,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+              sudo sudo apt-get update
+              sudo apt-get install python-pip python-dev
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
               sudo easy_install pip
+              sudo apt-get install npm
+              sudo npm config set strict-ssl false
               sudo npm install npm -g
               sudo pip install pykwalify
               sudo pip install requests
