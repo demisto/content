@@ -58,6 +58,7 @@ script:
     import base64
     import re
     import datetime
+    import time
 
     # CONSTANTS
     SECURITY_INCIDENT_SUMMARY_NODE_XPATH = ".//SecurityIncidentSummary"
@@ -118,11 +119,17 @@ script:
                 raise Exception("Illegal argument in severities parameter.")
         return ",".join(severities_list)
 
+
+    def load_dst()
+        dst = time.localtime().is_dst
+        return 0 if dst == -1 else dst
+
     # GLOBALS
     SERVER_URL = load_server_url()
     CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
     PROXY = load_proxy()
     FETCH_SEVERITIES = load_severities()
+    DST = load_dst()
 
     # HELPERS
     def api_call(body, headers):
@@ -138,7 +145,7 @@ script:
         """ Converts a Symantec event to a Demisto incident """
         incident = {}
         incident["name"] = "Incident: %s (%s)" % (event["IncidentNumber"], event["Classification"])
-        incident["occurred"] = event["TimeCreated"] + "+00:00"
+        incident["occurred"] = event["TimeCreated"] + "+0%s:00" % DST
         incident["rawJSON"] = json.dumps(event)
 
         labels = []
@@ -564,4 +571,4 @@ script:
     description: Get a list of incidents
   dockerimage: demisto/symantec_mss
   isfetch: true
-releaseNotes: "Changed severities for fetching incidents to be a configurable parameter."
+releaseNotes: "Changed severities for fetching incidents to be a configurable parameter. Fixed incident occurrence time."
