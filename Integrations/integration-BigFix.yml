@@ -136,7 +136,7 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': sites,
-            'HumanReadable': tableToMarkdown('BigFix Sites', sites),
+            'HumanReadable': tableToMarkdown('BigFix Sites', sites, ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']),
             'EntryContext': {
                 'Bigfix.Site(val.Resource==obj.Resource)': sites
             }
@@ -195,7 +195,7 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': site,
-            'HumanReadable': tableToMarkdown('BigFix Site: {} - {}'.format(site_type, site_name) , [site]),
+            'HumanReadable': tableToMarkdown('BigFix Site: {} - {}'.format(site_type, site_name) , [site], ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']),
             'EntryContext': {
                 'Bigfix.Site(val.Resource==obj.Resource)': site
             }
@@ -218,7 +218,6 @@ script:
                 )
 
         raw_endpoints = json.loads(xml2json(res.content))
-        demisto.info('####' + str(res.content))
         if (not raw_endpoints or not raw_endpoints.has_key('BESAPI')):
             return None
 
@@ -238,9 +237,151 @@ script:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': endpoints,
-            'HumanReadable': tableToMarkdown('BigFix Computers' , endpoints),
+            'HumanReadable': tableToMarkdown('BigFix Computers' , endpoints, ['ID', 'Resource', 'LastReportTime']),
             'EntryContext': {
                 'Bigfix.Endpoint(val.ID==obj.ID)': endpoints
+            }
+        })
+
+    def get_patches(site_type='', site_name=''):
+        fullurl = BASE_URL + '/api/fixlets/{}'.format(site_type)
+        if site_type != 'master':
+            # if site name is not empty the add to url
+            fullurl += '/' + site_name
+
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit(
+                'Failed to get patches',
+                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
+                )
+
+        raw_patches = json.loads(xml2json(res.content))
+        if (not raw_patches or not raw_patches.has_key('BESAPI')):
+            return None
+
+        raw_patches = demisto.get(raw_patches, 'BESAPI.Fixlet')
+        if raw_patches and not isinstance(raw_patches, list):
+            raw_patches = [raw_patches]
+
+        patches_with_details = []
+        for raw_patch in raw_patches:
+            patch = get_patch_details(site_type, site_name, raw_patch.get('ID'))
+            patch['LastModified'] = raw_patch['@LastModified']
+            patches_with_details.append(patch)
+
+        return patches_with_details
+
+
+    def get_patches_command():
+        site_name = demisto.args().get('site_name')
+        site_type = demisto.args().get('site_type')
+        patches = get_patches(site_type, site_name)
+
+        markdown = tableToMarkdown('BigFix Patches' , patches, headers = [
+            'ID',
+            'Name',
+            'Description',
+            'LastModified',
+            'Resource',
+            'Relevance',
+            'Category',
+            'DownloadSize',
+            'Source',
+            'SourceID',
+            'SourceReleaseDate',
+            'SourceSeverity',
+            'ActionID',
+            'ActionScript'
+            ])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': patches,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'Bigfix.Patch(val.ID==obj.ID)': patches
+            }
+        })
+
+
+    def get_patch_details(site_type, site_name, patch_id):
+        fullurl = ''
+        if site_type == 'master':
+            fullurl = BASE_URL + '/api/fixlet/master/{}'.format(patch_id)
+        else:
+            fullurl = BASE_URL + '/api/fixlet/{}/{}/{}'.format(site_type, site_name, patch_id)
+
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error_and_exit(
+                'Failed to get patch {}'.format(patch_id),
+                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
+                )
+
+        raw_patch = json.loads(xml2json(res.content))
+        if (not raw_patch or not raw_patch.has_key('BES')):
+            return None
+
+        raw_patch = demisto.get(raw_patch, 'BES.Fixlet')
+        patch = {
+            'ID': patch_id,
+            'Name': demisto.get(raw_patch, 'Title'),
+            'Resource': fullurl,
+            'Description': demisto.get(raw_patch, 'Description'),
+            'Relevance': demisto.get(raw_patch, 'Relevance'),
+            'Category': demisto.get(raw_patch, 'Category'),
+            'DownloadSize': demisto.get(raw_patch, 'DownloadSize'),
+            'Source': demisto.get(raw_patch, 'Source'),
+            'SourceID': demisto.get(raw_patch, 'SourceID'),
+            'SourceReleaseDate': demisto.get(raw_patch, 'SourceReleaseDate'),
+            'SourceSeverity': demisto.get(raw_patch, 'SourceSeverity'),
+            'ActionID': demisto.get(raw_patch, 'DefaultAction.@ID'),
+            'ActionScript': demisto.get(raw_patch, 'DefaultAction.ActionScript')
+        }
+
+        return patch
+
+    def get_patch_details_command():
+        site_type = demisto.args().get('site_type')
+        site_name = demisto.args().get('site_name')
+        patch_id = demisto.args().get('id')
+
+        patch = get_patch_details(site_type, site_name, patch_id)
+        markdown = tableToMarkdown('BigFix Patch {}'.format(patch_id) , [patch], headers = [
+            'ID',
+            'Name',
+            'Resource',
+            'Description',
+            'Relevance',
+            'Category',
+            'DownloadSize',
+            'Source',
+            'SourceID',
+            'SourceReleaseDate',
+            'SourceSeverity',
+            'ActionID',
+            'ActionScript'
+            ])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': patch,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'Bigfix.Patch(val.ID==obj.ID)': patch
             }
         })
 
@@ -271,7 +412,11 @@ script:
     elif demisto.command() == 'bigfix-get-endpoints':
         get_endpoints_command()
 
+    elif demisto.command() == 'bigfix-get-patches':
+        get_patches_command()
 
+    elif demisto.command() == 'bigfix-get-patch':
+        get_patch_details_command()
 
   type: python
   commands:
@@ -340,8 +485,6 @@ script:
       description: Name of the site. If the site is external or operator then site
         must be provided
     outputs:
-    - contextPath: Bigfix.Patch
-      description: Patch (fixlet)
     - contextPath: Bigfix.Patch.ID
       description: 'The ID of patch '
       type: string
@@ -352,6 +495,19 @@ script:
       type: string
     - contextPath: Bigfix.Patch.Resource
       description: The link for the patch
+      type: string
+    - contextPath: Bigfix.Patch.Description
+    - contextPath: Bigfix.Patch.Relevance
+    - contextPath: Bigfix.Patch.Category
+      type: string
+    - contextPath: Bigfix.Patch.DownloadSize
+    - contextPath: Bigfix.Patch.Source
+    - contextPath: Bigfix.Patch.SourceID
+    - contextPath: Bigfix.Patch.SourceSeverity
+    - contextPath: Bigfix.Patch.SourceReleaseDate
+    - contextPath: Bigfix.Patch.ActionID
+      type: string
+    - contextPath: Bigfix.Patch.ActionScript
       type: string
     description: Retrieve all the patches (fixlets) of site
   - name: bigfix-get-endpoints
@@ -387,4 +543,39 @@ script:
         to all the computers
       isArray: true
     description: Deploy patch on site
+  - name: bigfix-get-patch
+    arguments:
+    - name: id
+      required: true
+      description: Fixlet id
+    - name: site_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - external
+      - operator
+      - master
+      - custom
+      description: 'Type of the site. One of the following options: external,operator,master,custom'
+    - name: site_name
+      description: Name of the site. If the site is external or operator then site
+        must be provided
+    outputs:
+    - contextPath: Bigfix.Patch.ID
+    - contextPath: Bigfix.Patch.Name
+    - contextPath: Bigfix.Patch.Resource
+    - contextPath: Bigfix.Patch.Description
+    - contextPath: Bigfix.Patch.Relevance
+    - contextPath: Bigfix.Patch.Category
+      type: string
+    - contextPath: Bigfix.Patch.DownloadSize
+    - contextPath: Bigfix.Patch.Source
+    - contextPath: Bigfix.Patch.SourceID
+    - contextPath: Bigfix.Patch.SourceSeverity
+    - contextPath: Bigfix.Patch.SourceReleaseDate
+    - contextPath: Bigfix.Patch.ActionID
+      type: string
+    - contextPath: Bigfix.Patch.ActionScript
+      type: string
+    description: Retrieve patch (fixlet) by id
   runonce: false
