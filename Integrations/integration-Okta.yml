@@ -261,6 +261,11 @@ script:
 
         url = url.concat(query);
 
+        // backward compatibility
+        if(params.proxy){
+            params.proxy == "true" ? true : false;
+        }
+
         var res = http(
             url,
             {
