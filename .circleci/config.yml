@@ -18,7 +18,9 @@ jobs:
               sudo sudo apt-get update
               sudo apt-get install python-pip python-dev
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
-              sudo snap install node --classic --channel 9/stable
+              sudo apt-get install -y build-essential
+              curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+              sudo apt-get install -f -y nodejs
               sudo apt-get install npm
               npm config set registry="http://registry.npmjs.org/"
               sudo easy_install pip
