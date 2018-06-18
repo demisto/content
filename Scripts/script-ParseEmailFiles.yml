@@ -569,7 +569,6 @@ script: |-
   try:
       fileType = demisto.executeCommand('getEntry', {'id': demisto.args()['entryid']})[0]['FileMetadata']['info']
       filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryid']})[0]['Contents']['path']
-      demisto.log('file type is: '  + fileType)
   except Exception, ex:
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)}]
 
