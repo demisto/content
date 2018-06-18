@@ -18,9 +18,14 @@ jobs:
               sudo sudo apt-get update
               sudo apt-get install python-pip python-dev
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
-              sudo apt-get install -y build-essential
-              curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-              sudo apt-get install -f -y nodejs
+              VERSION=v8.9.4
+              DISTRO=linux-x64
+              sudo mkdir /usr/local/lib/nodejs
+              sudo tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
+              sudo mv /usr/local/lib/nodejs/node-$VERSION-$DISTRO /usr/local/lib/nodejs/node-$VERSION
+              export NODEJS_HOME=/usr/local/lib/nodejs/node-$VERSION/bin
+              echo 'export PATH=$NODEJS_HOME:$PATH' >> $BASH_ENV
+              source $BASH_ENV
               sudo apt-get install npm
               npm config set registry="http://registry.npmjs.org/"
               sudo easy_install pip
