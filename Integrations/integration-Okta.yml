@@ -27,8 +27,8 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 0
+  defaultvalue: "false"
+  type: 8
   required: false
 script:
   script: |-
@@ -1657,3 +1657,4 @@ script:
     description: Get logs by providing optional filters
   runonce: false
 fromversion: 3.6.0
+releaseNotes: "Changed the proxy parameter from short text to boolean"
