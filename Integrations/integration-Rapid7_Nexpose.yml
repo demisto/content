@@ -20,8 +20,8 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
-  name: insecure
+- display: Trust any certificate (unsecure)
+  name: unsecure
   defaultvalue: "false"
   type: 8
   required: false
@@ -56,7 +56,7 @@ script:
 
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
-    VERIFY_SSL = not demisto.params().get('insecure', False)
+    VERIFY_SSL = not demisto.params().get('unsecure', False)
     TOKEN = demisto.params().get('token', None)
 
     def get_server_url():
@@ -83,6 +83,11 @@ script:
             'Accept': 'application/json'
         }
 
+        if TOKEN is not None:
+            headers['Token'] = TOKEN
+
+        return headers
+
     def login():
         url = BASE_URL + '/data/user/login'
         headers = get_login_headers()
@@ -95,7 +100,7 @@ script:
             raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
         body = res.json()
         if 'sessionID' not in body:
-            raise Exception('Failed to log in')
+            return ''
 
         return body['sessionID']
 
@@ -123,7 +128,7 @@ script:
         headers = get_site_headers()
         res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+           return ''
         response = res.json()
         if response is None or response['records'] is None or len(response['records']) == 0:
             return ''
@@ -634,7 +639,7 @@ script:
             field = components[0]
             operator = components[1]
             value = components[2].split(',')
-            # Convert numbers to floats if necessary
+            # Convert numbers to floats if values are numbers
             for i, v in enumerate(value):
                 currVal = None
                 try:
@@ -667,7 +672,7 @@ script:
         path = 'assets/search'
         params = {}
         if sort is not None:
-            params['sort'] = sort
+            params['sort'] = sort.split(';')
 
         return get_list_response(path, method='post', limit=limit, body=search_body, params=params)
 
@@ -739,7 +744,7 @@ script:
     def get_assets(limit=None, sort=None):
         params = {}
         if sort is not None:
-            params['sort'] = sort
+            params['sort'] = sort.split(';')
         return get_list_response('assets', limit=limit, params=params)
 
     def get_scan_command():
@@ -857,7 +862,7 @@ script:
         path = 'sites'
         params = {}
         if sort is not None:
-            params['sort'] = sort
+            params['sort'] = sort.split(';')
         return get_list_response(path, limit=limit, params=params)
 
     def get_report_templates_command():
@@ -899,7 +904,7 @@ script:
         return send_request(path)
 
     def create_assets_report_command():
-        assets = demisto.args()['assets'].split(',')
+        assets = str(demisto.args()['assets']).split(',')
         template = demisto.args().get('template', None)
         name = demisto.args().get('name','report ' + str(datetime.now()))
 
@@ -912,7 +917,7 @@ script:
         return download_report(report_id, name)
 
     def create_sites_report_command():
-        sites = demisto.args()['sites'].split(',')
+        sites = str(demisto.args()['sites']).split(',')
         template = demisto.args().get('template', None)
         name = demisto.args().get('name','report ' + str(datetime.now()))
 
@@ -1045,8 +1050,6 @@ script:
         while True:
             scan = get_scan(scan_id)
             status = scan['status']
-            LOG(status)
-            LOG.print_log()
             if status not in ['running','dispatched','integrating','unknown']:
                 break
             time.sleep(60)
@@ -1185,7 +1188,7 @@ script:
     - name: sort
       description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
         The default sort order is ascending. Multiple sort criteria can be specified
-        using multiple sort query parameters.'
+        using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
     - name: limit
       description: integer <int32> The number of records per page to retrieve.
     outputs:
@@ -1226,14 +1229,15 @@ script:
   - name: nexpose-search-assets
     arguments:
     - name: query
-      description: Filter to match assets, multiple filters can be provided using
-        ';' separator.
+      description: 'Filter to match assets, multiple filters can be provided using
+        '';'' separator. For example: ''ip-address in range 1.2.3.4,1.2.3.8;host-name
+        is myhost'''
     - name: limit
       description: integer <int32> The number of records per page to retrieve.
     - name: sort
       description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
         The default sort order is ascending. Multiple sort criteria can be specified
-        using multiple sort query parameters.'
+        using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
     - name: ipAddressIs
       description: Search by a specific IP address
     - name: hostNameIs
@@ -1392,7 +1396,8 @@ script:
     - contextPath: Nexpose.Asset.Vulnerability.Solution.AdditionalInformation
       description: Additional information or resources that can assist in applying
         the remediation
-    description: Returns the details for solutions that can remediate a given vulnerability.
+    description: Returns the details and possible remediations for an asset's given
+      vulnerability.
   - name: nexpose-get-sites
     arguments:
     - name: limit
@@ -1400,7 +1405,7 @@ script:
     - name: sort
       description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
         The default sort order is ascending. Multiple sort criteria can be specified
-        using multiple sort query parameters.'
+        using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
     outputs:
     - contextPath: Nexpose.Site.Id
       description: The identifier of the site.

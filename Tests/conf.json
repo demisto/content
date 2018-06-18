@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Rapid7 Nexpose",
+            "playbookID": "nexpose_test",
+            "timeout": 240
+        },
+        {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
         },
