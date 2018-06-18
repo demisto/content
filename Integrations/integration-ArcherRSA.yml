@@ -1432,11 +1432,16 @@ script:
                 var levelId;
                 var files;
                 var dateValue;
+                var usersValue;
 
-                if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
+                if (field['Users']){
+                    usersValue = userFieldHandler(field['Users']);
+                    fieldName = GLOBAL_MAPPING[field['-id']].Name;
+                }
+                else if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
                     dateValue = getOccurredTime(field['-value'], 0);
                 }
-                if (field['-fileID']){ // attached files
+                else if (field['-fileID']){ // attached files
                     files = getFilesString(field);
                     fieldName = 'files';
                 } else if (field['-id'] && (GLOBAL_MAPPING[field['-id']])){
@@ -1446,11 +1451,12 @@ script:
                     fieldName = field['-id'];
                     levelId = " ";
                 }
+
                 recordVals.push({
                     FieldId: field['-id'],
                     FieldName: fieldName,
                     FieldType: field['-type'],
-                    Value: dateValue || groupValue || field['-value'] ||innerRecordrows || files,
+                    Value: dateValue || groupValue || field['-value'] ||innerRecordrows || files || usersValue,
                     LevelId: levelId
                 });
             });
@@ -3114,3 +3120,4 @@ script:
     description: Get the user id of an Archer user
   isfetch: true
   runonce: false
+releaseNotes: "-"
