@@ -120,7 +120,7 @@ script:
         return ",".join(severities_list)
 
 
-    def load_dst()
+    def load_dst():
         dst = time.localtime().is_dst
         return 0 if dst == -1 else dst
 
