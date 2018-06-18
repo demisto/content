@@ -263,7 +263,12 @@ script:
 
         // backward compatibility
         if(params.proxy){
-            params.proxy == "true" ? true : false;
+            if(params.proxy === "true"){
+                params.proxy = true;
+            }
+            else if(params.proxy === "false"){
+                params.proxy = false;
+            }
         }
 
         var res = http(
