@@ -339,7 +339,9 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
-
+        },
+        {
+            "playbookID": "test-domain-indicator"
         }
     ],
     "skipped": [
