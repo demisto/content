@@ -1,6 +1,3 @@
-#!/usr/bin/env bash
-set -e
-
 ACCEPT_TYPE="Accept: application/json"
 SERVER_API_URI="https://circleci.com/api/v1/project/demisto/server"
 TOKEN_ATTR="circle-token=$1"
@@ -26,6 +23,6 @@ SERVER_DOWNLOAD_LINK=$(curl -s -H "$ACCEPT_TYPE" ${SERVER_API_URI}/${ARTIFACT_BU
 echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
 echo "SERVER_DOWNLOAD_LINK = ${SERVER_DOWNLOAD_LINK}"
 
-curl -o demistoserver.sh ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
+curl -o demistoserver.sh "${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}"
 
 echo "Done!"
