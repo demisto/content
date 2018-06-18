@@ -1,6 +1,6 @@
 {
   "name": "reputations",
-  "releaseNotes": "Extract domain from urls",
+  "releaseNotes": "Extract domain from urls, and Adding ssdeep reputation",
   "reputations": [
     {
       "id": "fileRep",
@@ -221,6 +221,14 @@
       "enhancementScriptNames": [
         "ADGetUser"
       ]
+    },
+    {
+      "id": "ssdeepRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "ssdeep",
+      "enhancementScriptNames": []
     },
     {
       "id": "domainRep",
