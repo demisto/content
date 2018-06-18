@@ -2,7 +2,13 @@ commonfields:
   id: BuildEWSQuery
   version: -1
 name: BuildEWSQuery
+releaseNotes: "Add paramter for stripping the subject from prefixes"
 script: |-
+  import re
+
+  # Regex for removing forward/replay prefixes
+  p = re.compile('([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$', re.IGNORECASE)
+
   args = {}
 
   if demisto.args().get("from"):
@@ -13,6 +19,10 @@ script: |-
       args["AttachmentName"] = demisto.args().get("attachmentName")
   if demisto.args().get("body"):
       args["Body"] = demisto.args().get("body")
+
+  stripSubject = True if demisto.args().get("stripSubject").lower() == "true" else False
+  if stripSubject and args["Subject"]:
+      args["Subject"] = p.sub( '', args["Subject"]).strip()
 
   query = " AND ".join('{0}:"{1}"'.format(key,value) for (key,value) in args.items())
 
@@ -48,6 +58,13 @@ args:
   - "true"
   - "false"
   description: Limit the search to the current week (true/false).
+  defaultValue: "true"
+- name: stripSubject
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Removes the prefix from the subject of reply and forward messages (e.g., FW:).
   defaultValue: "true"
 outputs:
 - contextPath: EWS.Query
