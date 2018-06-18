@@ -1,6 +1,6 @@
 id: close_incident_if_duplicate_found
 version: -1
-name: Close incident if duplicate found
+name: DeDup incidents
 fromversion: "3.5.0"
 description: |
   Check for duplicate incidents for the current incident, and close it if any duplicate has found.
@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e5143833-522e-4edc-85f7-7fabf61c96ea
+    taskid: 0c9fa614-e05a-4144-8e40-6b736392a16a
     type: start
     task:
-      id: e5143833-522e-4edc-85f7-7fabf61c96ea
+      id: 0c9fa614-e05a-4144-8e40-6b736392a16a
       version: -1
       description: ""
       name: ""
@@ -30,10 +30,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: b28e7d7f-b929-4b40-81a2-b68164e705e2
+    taskid: 6c68450d-d32f-4a07-8978-8df36190ada6
     type: regular
     task:
-      id: b28e7d7f-b929-4b40-81a2-b68164e705e2
+      id: 6c68450d-d32f-4a07-8978-8df36190ada6
       version: -1
       name: Find duplicate incidents
       description: Find duplicate incidents for the current incident.
@@ -51,6 +51,10 @@ tasks:
         simple: "no"
       ignoreMissingKeys: {}
       maxNumberOfIncidents: {}
+      minimumContextKeysToCompare: {}
+      minimumCustomFieldsToCompare: {}
+      minimumLabelsKeysToCompare: {}
+      minimumNumberOfKeysToCompare: {}
       similarContextKeys:
         simple: ${inputs.similarContextKeys}
       similarCustomFields:
@@ -69,10 +73,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 0b306157-ac37-4006-8abc-6cdb910ef3dd
+    taskid: bced6173-64c6-457c-85bd-2adf6be16c4c
     type: regular
     task:
-      id: 0b306157-ac37-4006-8abc-6cdb910ef3dd
+      id: bced6173-64c6-457c-85bd-2adf6be16c4c
       version: -1
       name: Close as duplicate
       description: Close the current investigation as duplicate.
@@ -96,10 +100,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: b9f0f671-1eff-42d8-8387-1d9fd00dd4c2
+    taskid: e503045a-de15-4177-8147-ec721599b47a
     type: condition
     task:
-      id: b9f0f671-1eff-42d8-8387-1d9fd00dd4c2
+      id: e503045a-de15-4177-8147-ec721599b47a
       version: -1
       name: Is duplicate incident found?
       description: Check if there is any duplicate incident found.
@@ -129,10 +133,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: ae7479e7-e2fb-48f5-8794-2ffbfa66f2f7
+    taskid: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c
     type: title
     task:
-      id: ae7479e7-e2fb-48f5-8794-2ffbfa66f2f7
+      id: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c
       version: -1
       description: ""
       name: Done
@@ -190,3 +194,4 @@ inputs:
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
+releaseNotes: "Rename playbook"
