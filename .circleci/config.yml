@@ -1,7 +1,8 @@
 version: 2
 jobs:
   build:
-    machine: true
+    docker:
+      - image: circleci/node:9.11
     environment:
       CONTENT_VERSION: "18.6.0"
     steps:
@@ -15,25 +16,14 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-              sudo sudo apt-get update
-              sudo apt-get install python-pip python-dev
               sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
-              sudo apt-get install python-software-properties python g++ make
-              sudo apt-get install software-properties-common
-              sudo add-apt-repository ppa:chris-lea/node.js -y
-              sudo apt-get update
-              sudo apt-get install nodejs
-              sudo apt-get install npm
-              npm config set registry="http://registry.npmjs.org/"
               sudo easy_install pip
               sudo npm install npm -g
-              sudo pip install --upgrade pip
               sudo pip install pykwalify
               sudo pip install requests
-              pip install git+https://github.com/demisto/demisto-py.git@test-content
+              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
               sudo npm install -g jsdoc-to-markdown
-              pip install git+https://github.com/rahulrrixe/parinx.git@master
-              sudo pip install awscli
+              sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
       - run:
           name: Validate Files and Yaml
           command: |
@@ -80,7 +70,7 @@ jobs:
               echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
               echo "SERVER_DOWNLOAD_LINK = ${SERVER_DOWNLOAD_LINK}"
 
-              curl --silent -o demistoserver.sh ${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
+              curl -o demistoserver.sh "${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}"
 
               echo "Done!"
       - run:
