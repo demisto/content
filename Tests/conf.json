@@ -339,12 +339,14 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
-
         },
-	{
-	    "integrations": "Demisto Lock",
-	    "playbookID": "DemistoLockTest"
-	}
+        {
+            "integrations": "Demisto Lock",
+            "playbookID": "DemistoLockTest"
+        },
+        {
+            "playbookID": "test-domain-indicator"
+        }
     ],
     "skipped": [
         {

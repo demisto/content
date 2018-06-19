@@ -1,8 +1,8 @@
 {
 	"id": "my-home-dashboard",
 	"version": -1,
-	"fromVersion": "4.0.0",
-	"releaseNotes": "Support for users with \\",
+	"fromVersion": "3.5.1",
+	"toVersion": "4.0.0",
 	"period": {
 		"byTo": "",
 		"byFrom": "days",
@@ -28,7 +28,7 @@
 				"name": "My Tasks",
 				"dataType": "tasks",
 				"widgetType": "list",
-				"query": "assignee:\"{me}\" and (state:Waiting or state:inprogress or state:error)",
+				"query": "assignee:{me} and (state:Waiting or state:inprogress or state:error)",
 				"sort": [
 					{
 						"field": "dueDate",
@@ -103,7 +103,7 @@
 				"name": "My Incidents",
 				"dataType": "incidents",
 				"widgetType": "number",
-				"query": "-category:job and -status:archived and -status:closed and owner:\"{me}\"",
+				"query": "-category:job and -status:archived and -status:closed and owner:{me}",
 				"sort": null,
 				"isPredefined": false,
 				"dateRange": {
@@ -154,7 +154,7 @@
 				"name": "Late Incidents",
 				"dataType": "incidents",
 				"widgetType": "number",
-				"query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow and owner:\"{me}\"",
+				"query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow and owner:{me}",
 				"sort": null,
 				"isPredefined": false,
 				"dateRange": {
@@ -205,7 +205,7 @@
 				"name": "My Active Incidents by Type",
 				"dataType": "incidents",
 				"widgetType": "line",
-				"query": "-category:job and -status:archived and -status:closed and owner:\"{me}\"",
+				"query": "-category:job and -status:archived and -status:closed and owner:{me}",
 				"sort": null,
 				"isPredefined": false,
 				"dateRange": {
@@ -245,7 +245,7 @@
 				"name": "My Mean Time To Resolution",
 				"dataType": "incidents",
 				"widgetType": "duration",
-				"query": "-category:job and status:closed and owner:\"{me}\"",
+				"query": "-category:job and status:closed and owner:{me}",
 				"sort": null,
 				"isPredefined": true,
 				"dateRange": {
