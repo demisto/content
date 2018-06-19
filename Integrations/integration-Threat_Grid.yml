@@ -270,6 +270,16 @@ script:
 
     var SHORTCUT_DATA = "[InternetShortcut]\nURL=";
 
+    function calcScore(tg_score) {
+        if (tg_score >= 95) {
+            return 3;
+        };
+        if (tg_score >= 75) {
+            return 2;
+        }
+        return 1;
+    }
+
     function get_sample_state(id) {
         var rawResponse = sendRequest(
             'GET',
@@ -299,7 +309,7 @@ script:
     }
 
     function get_report(id, type) { //Complete
-        if (type == 'html') {
+        if (type.lower() == 'html') {
             rawResponse = sendRequest(
                 'GET',
                 'samples/' + id + '/report.html',
@@ -323,6 +333,39 @@ script:
             HumanReadable: createHR(command, returnObject),
             EntryContext: (contextData && returnObject && ec) ? ec : undefined
         };
+    }
+
+    function get_threat_summary(id) {
+        var contextData = {
+            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
+            ContentPath: 'data',
+        };
+        var ec = {};
+        var returnObject = mapObjFunction([
+                {to: 'MaxConfidence', from: 'max-confidence'},
+                {to: 'MaxSeverity', from: 'max-severity'},
+                {to: 'Score', from: 'score'},
+                {to: 'Count', from: 'count'},
+                {to: 'ID', from: 'sample'},
+            ])(dq(rawResponse, contextData.ContentPath));
+        ec[contextData.ContextPath] = returnObject;
+        returnObject.ID = id;
+        ec['DBotScore'] = {
+            'Indicator': returnObject.ID,
+            'Score': calcScore(returnObject.Score),
+            'Type': 'Sample ID',
+            'Vendor': 'ThreatGrid'
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.table,
+            Contents: [
+                {'key': 'Sample ID', 'value': rawResponse.data.sample},
+                {'key': 'Threat Grid Score', 'value': returnObject.Score},
+                {'key': 'DBot Score', 'value': calcScore(returnObject.Score)}
+            ],
+            EntryContext: ec
+        }
     }
 
 
@@ -367,8 +410,7 @@ script:
         wait_for_report(sampleId, parseInt(args.delay), parseInt(args.timeout));
         var type = args['report-file-type'];
         delete(args['report-file-type']);
-        return get_report(sampleId, type);
-
+        return get_threat_summary(sampleId, type);
 
       case 'threat-grid-upload-sample':
         args['api_key'] = params.token;
@@ -425,12 +467,30 @@ script:
     if (returnObject && !returnObject.ID) {
         returnObject.ID = id;
     }
-    if (command === 'threat-grid-get-threat-summary-by-id' && returnObject.Score >= TERSHOLD) {
-        var md5 = dq(invContext, "ThreatGrid.Sample(val=val.ID=='" + returnObject.ID + "').MD5");
-        addMalicious(ec, outputPaths.file, {
-            MD5: Array.isArray(md5) ? md5[0] : md5,
-            Malicious: {Vendor: 'ThreatGrid', Description: 'Sample has score of ' + returnObject.Score + ' which is higher than treshold (80)'}
-        });
+    if (command === 'threat-grid-get-threat-summary-by-id') {
+        if ( returnObject.Score >= TERSHOLD) {
+            var md5 = dq(invContext, "ThreatGrid.Sample(val=val.ID=='" + returnObject.ID + "').MD5");
+            addMalicious(ec, outputPaths.file, {
+                MD5: Array.isArray(md5) ? md5[0] : md5,
+                Malicious: {Vendor: 'ThreatGrid', Description: 'Sample has score of ' + returnObject.Score + ' which is higher than treshold (80)'}
+            });
+        }
+        ec['DBotScore'] = {
+            'Indicator': returnObject.ID,
+            'Score': calcScore(returnObject.Score),
+            'Type': 'Sample ID',
+            'Vendor': 'ThreatGrid'
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.table,
+            Contents: [
+                {'key': 'Sample ID', 'value': rawResponse.data.sample},
+                {'key': 'Threat Grid Score', 'value': returnObject.Score},
+                {'key': 'DBot Score', 'value': calcScore(returnObject.Score)}
+            ],
+            EntryContext: ec
+        }
     }
 
     return {
@@ -880,18 +940,31 @@ script:
     outputs:
     - contextPath: ThreatGrid.Sample.ID
       description: The sample id
+      type: string
     - contextPath: ThreatGrid.Sample.MaxSeverity
       description: The sample max severity
+      type: number
     - contextPath: ThreatGrid.Sample.Score
       description: The sample score
+      type: number
     - contextPath: ThreatGrid.Sample.Count
       description: The sample count
+      type: number
     - contextPath: ThreatGrid.Sample.MaxConfidence
       description: The sample max confidence
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator's type
+      type: string
     description: Returns a summary of the threats detected during analysis
   - name: threat-grid-get-html-report-by-id
     arguments:
@@ -1034,7 +1107,7 @@ script:
       description: Entry ID of the uploaded file (e.g. the message in the war room
         with the uploaded file's details).
     - name: delay
-      description: Delay wait time between calls (in seconds)
+      description: Time to wait between status checks (in seconds)
       defaultValue: "20"
     - name: timeout
       description: Total wait time (in seconds)
@@ -1046,6 +1119,34 @@ script:
       - json
       description: File type of report to return
       defaultValue: html
+    outputs:
+    - contextPath: ThreatGrid.Sample.ID
+      description: The sample id
+      type: string
+    - contextPath: ThreatGrid.Sample.MaxSeverity
+      description: The sample max severity
+      type: number
+    - contextPath: ThreatGrid.Sample.Score
+      description: The sample score
+      type: number
+    - contextPath: ThreatGrid.Sample.Count
+      description: The sample count
+      type: number
+    - contextPath: ThreatGrid.Sample.MaxConfidence
+      description: The sample max confidence
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator's type
+      type: string
     description: Detonates URL address through Threat Grid
   - name: threat-grid-url-to-file
     arguments:
