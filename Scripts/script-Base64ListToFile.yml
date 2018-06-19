@@ -1,0 +1,34 @@
+commonfields:
+  id: Base64ListToFile
+  version: -1
+name: Base64ListToFile
+script: |-
+  import base64
+
+  # Output file name
+  if 'filename' in demisto.args():
+      outfilename = demisto.args()['filename']
+  else:
+      outfilename = demisto.args()['listname']
+
+  # get the list
+  res = demisto.executeCommand('getList', {'listName': demisto.args()['listname']})
+
+  # convert base64 file to binary file
+  bin_file = base64.decodestring(res[0]['Contents'])
+
+  # output file to warroom
+  demisto.results(fileResult(outfilename,bin_file))
+type: python
+tags:
+- Utility
+comment: Will covert Base64 file in a list to a binary file and upload to warroom
+enabled: true
+args:
+- name: listname
+  required: true
+  description: Listname of Base64 item (need to be a single file in list)
+- name: filename
+  description: Optional Warroom Output Filename (default filename is listname)
+scripttarget: 0
+runonce: false
