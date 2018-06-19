@@ -119,17 +119,12 @@ script:
                 raise Exception("Illegal argument in severities parameter.")
         return ",".join(severities_list)
 
-
-    def load_dst():
-        dst = time.localtime().is_dst
-        return 0 if dst == -1 else dst
-
     # GLOBALS
     SERVER_URL = load_server_url()
     CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
     PROXY = load_proxy()
     FETCH_SEVERITIES = load_severities()
-    DST = load_dst()
+    DST = 1 if time.daylight else 0
 
     # HELPERS
     def api_call(body, headers):
