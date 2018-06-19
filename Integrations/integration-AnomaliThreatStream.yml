@@ -32,6 +32,21 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: File Threshold
+  name: fileThreshold
+  defaultvalue: "3"
+  type: 0
+  required: false
+- display: IP Threshold
+  name: ipThreshold
+  defaultvalue: "3"
+  type: 0
+  required: false
+- display: Domain Threshold
+  name: domainThreshold
+  defaultvalue: "3"
+  type: 0
+  required: false
 script:
   script: |
     var BASE_URL = params.server.replace(/[\/]+$/, '') + '/api/';
@@ -109,6 +124,12 @@ script:
     var isStandardCommand = function(command) {
         return (command == 'ip' || command == 'file' || command == 'domain');
     }
+
+    var thresholdMap = {
+        ip: params.ipThreshold,
+        file: params.fileThreshold,
+        domain: params.domainThreshold
+    };
 
     var fillReputationOutput = function(command, object) {
         var output = {};
@@ -200,6 +221,8 @@ script:
         var context;
         var contextKey;
         if (isStandardCommand(command)) {
+            var threshold = args.threshold || thresholdMap[command] || 3;
+            threshold = parseInt(threshold)
             var context = {};
             if (command == 'ip' || command == 'domain') {
                 var ipContext = {};
@@ -211,7 +234,7 @@ script:
                 ipContext.Geo.Organization = output['Organization'];
                 ipContext.Geo.Location = output['Latitude'] + ', ' + output['Longitude'];
                 ipContext.Hostname = output['Hostname'];
-                if (output['Threat Score'] >= args.threshold) {
+                if (output['Threat Score'] >= threshold) {
                     ipContext.Malicious = {};
                     ipContext.Malicious.Vendor = output['Source'];
                 }
@@ -228,7 +251,7 @@ script:
 
             } else if (command == 'file') {
                 context.MD5 = args.value;
-                if (output['Threat Score'] >= args.threshold) {
+                if (output['Threat Score'] >= threshold) {
                     context.Malicious = {};
                     context.Malicious.Vendor = output['Source'];
                 }
@@ -245,7 +268,7 @@ script:
         }
 
         var dbotScore = 1;
-        if (output['Threat Score'] >= args.threshold) {
+        if (output['Threat Score'] >= threshold) {
             dbotScore = 3;
         } else if (output['Threat Score'] > 0) {
             dbotScore = 2;
@@ -450,8 +473,7 @@ script:
       description: The domain name to check
     - name: threshold
       description: If ThreatScore is greater or equal than the threshold, then domain
-        will be considered malicious
-      defaultValue: "3"
+        will be considered malicious. If threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The tested indicator
@@ -500,8 +522,7 @@ script:
       description: The checksum to check
     - name: threshold
       description: If ThreatScore is greater or equal than the threshold, then file
-        will be considered malicious
-      defaultValue: "3"
+        will be considered malicious. If threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The tested indicator
@@ -532,8 +553,7 @@ script:
       description: The email address to check
     - name: threshold
       description: If ThreatScore is greater or equal than the threshold, then email
-        will be considered malicious
-      defaultValue: "3"
+        will be considered malicious.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The tested indicator
@@ -582,8 +602,7 @@ script:
       description: The IP to check
     - name: threshold
       description: If ThreatScore is greater or equal than the threshold, then ip
-        will be considered malicious
-      defaultValue: "3"
+        will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The tested indicator
@@ -620,3 +639,4 @@ script:
         with the IP address that is associated with the indicator.
     description: Checks the reputation of the given IP
 hidden: false
+releaseNotes: "Add indicators thresholds as instance parameters"
