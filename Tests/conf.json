@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Base64 File in List Test"
+        },
+        {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
         },
