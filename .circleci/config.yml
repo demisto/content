@@ -20,10 +20,12 @@ jobs:
               sudo easy_install pip
               sudo npm install npm -g
               sudo pip install pykwalify
+              sudo pip install awscli
               sudo pip install requests
               sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
+              chmod +x ./Tests/scripts/*
       - run:
           name: Validate Files and Yaml
           command: |
@@ -43,13 +45,20 @@ jobs:
           path: artifacts
           destination: artifacts
       - run:
+          name: Download Artifacts
+          command: |
+              ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+      - run:
+          name: Create Instance
+          command: |
+              ./Tests/scripts/create_instance.sh
+      - run:
+          name: Download Configuration
+          command: |
+              ./Tests/scripts/download_demisto_conf.sh
+      - run:
           name: Setup Instance
           command: |
-              sudo pip install awscli
-              chmod +x ./Tests/scripts/*
-              ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-              ./Tests/scripts/create_instance.sh
-              ./Tests/scripts/download_demisto_conf.sh
               ./Tests/scripts/run_installer_on_instance.sh
               ./Tests/scripts/wait_until_server_ready.sh
       - run:
