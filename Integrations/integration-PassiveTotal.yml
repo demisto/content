@@ -203,6 +203,7 @@ script:
                     samples.push(jsonRes.results[i].sample);
                 }
                 context[outputPaths.file] = [];
+                context.DBotScore = [];
                 for (var hash = 0; hash < samples.length; hash++) {
                     var hashType = samples[hash].length === 32 ? 'MD5' : samples[hash].length === 40 ? 'SHA1' : 'SHA256';
                     var hashObj = {Malicious: {Vendor: 'PassiveTotal', Description: 'Malware sample'}};
@@ -210,6 +211,7 @@ script:
                     var malFile = {};
                     addMalicious(malFile, outputPaths.file, hashObj);
                     context[outputPaths.file].push(malFile[outputPaths.file]);
+                    context.DBotScore.push({Indicator: samples[hash], Type: 'hash', Vendor: 'PassiveTotal', Score: 3});
                 }
 
                 var recentSampleCount = 0;
@@ -239,7 +241,7 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                context.DBotScore = {Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: dbotScore};
+                context.DBotScore.push({Indicator: args.query, Type: 'domain', Vendor: 'PassiveTotal', Score: dbotScore});
             } else {
                 md += 'No results found!';
             }
