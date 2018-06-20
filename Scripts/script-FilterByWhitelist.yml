@@ -32,14 +32,14 @@ script: |
                        'Type': entryTypes['note'],
                        'Contents': contents,
                        'HumanReadable' : hr,
-                       'HomanReadableFormat' : formats['markdown'],
+                       'HumanReadableFormat' : formats['markdown'],
                        'EntryContext': ec})
 
   sys.exit(0)
 type: python
 tags:
 - whitelist
-comment: Check whether the given item is whitelisted. Default list is the Demisto Indicators Whitelist
+comment: Check whether the specified item is whitelisted. Default list is the Demisto Indicators Whitelist.
 enabled: true
 args:
 - name: value
@@ -50,8 +50,8 @@ args:
   defaultValue: Indicators Whitelist
 outputs:
 - contextPath: Whitelist.In
-  description: List of items in the whitelist
+  description: List of items on the whitelist
 - contextPath: Whitelist.NotIn
-  description: List of items not in the whitelist
+  description: List of items not on the whitelist
 scripttarget: 0
 runonce: false
