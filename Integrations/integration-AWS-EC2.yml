@@ -54,9 +54,9 @@ script:
                 })
 
         if roleSessionDuration is not None:
-            kwargs.update({'DurationSeconds':roleSessionDuration})
+            kwargs.update({'DurationSeconds':int(roleSessionDuration)})
         elif AWS_roleSessionDuration is not None:
-            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+            kwargs.update({'DurationSeconds':int(AWS_roleSessionDuration)})
 
         if rolePolicy is not None:
             kwargs.update({'Policy':rolePolicy})
@@ -216,10 +216,11 @@ script:
                         'KeyName': instance['KeyName'],
                         'Monitoring': instance['Monitoring']['State'],
                     })
-                for tag in instance['Tags']:
-                    data[i].update ({
-                        tag['Key']: tag['Value']
-                    })
+                    if 'Tags' in instance:
+                        for tag in instance['Tags']:
+                            data[i].update ({
+                              tag['Key']: tag['Value']
+                            })
                 instance.update({'Region': obj['_user_provided_options']['region_name']})
                 output.append(instance)
 
