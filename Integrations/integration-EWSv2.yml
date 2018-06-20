@@ -631,24 +631,27 @@ script:
             incident['attachment'] = [];
             for attachment in item.attachments:
                 file_result = None
+                label_attachment_type = None
+                label_attachment_id_type = None
                 if isinstance(attachment, FileAttachment):
-                    # file attachment
-                    label_attachment_type = 'attachments'
-                    label_attachment_id_type = 'attachmentId'
+                    if attachment.content:
+                        # file attachment
+                        label_attachment_type = 'attachments'
+                        label_attachment_id_type = 'attachmentId'
 
-                    # save the attachment
-                    file_result = fileResult(attachment.name, attachment.content)
+                        # save the attachment
+                        file_name = attachment.name if attachment.name else 'demisto_untitled_attachment'
+                        file_result = fileResult(file_name, attachment.content)
+                        # check for error
+                        if file_result['Type'] == entryTypes['error']:
+                            demisto.error(file_result['Contents'])
+                            raise Exception(file_result['Contents'])
 
-                    # check for error
-                    if file_result['Type'] == entryTypes['error']:
-                        demisto.error(file_result['Contents'])
-                        raise Exception(file_result['Contents'])
-
-                    # save attachment to incident
-                    incident['attachment'].append({
-                        'path': file_result['FileID'],
-                        'name': attachment.name
-                    })
+                        # save attachment to incident
+                        incident['attachment'].append({
+                            'path': file_result['FileID'],
+                            'name': attachment.name
+                        })
 
                 else:
                     # other item attachment
@@ -1766,4 +1769,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-releaseNotes: "Fixed issue when searching all mailboxes - skipped mailboxes without mailboxId."
+releaseNotes: "Fixed handing attachments with an empty name/content."
