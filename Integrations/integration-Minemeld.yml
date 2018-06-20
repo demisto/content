@@ -250,7 +250,7 @@ script:
         current_list = get_miner_list(MM, miner, type_)
         for x in current_list:
             x['miner'] = miner
-        miner_context_key = "Minemeld(val.indicator == obj.indicator && val.miner == obj.miner)"
+        miner_context_key = "Minemeld.Miner(val.indicator == obj.indicator && val.miner == obj.miner)"
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': current_list,
@@ -259,6 +259,33 @@ script:
             'HumanReadable': tableToMarkdown('Minemeld indicators %s' % miner, current_list, ['indicator', 'comment', 'share_level']),
             'EntryContext': {
                 miner_context_key: current_list
+            }
+        })
+
+    if demisto.command() == 'minemeld-get-item-from-list':
+        miner = demisto.args()['miner']
+        type_ = demisto.args()['type']
+        item = demisto.args()['item']
+        matching_items = []
+        current_list = get_miner_list(MM, miner, type_)
+        for x in current_list:
+            x['miner'] = miner
+        for indicator in current_list:
+            for value in indicator.values():
+                if value == item:
+                    matching_items.append(indicator)
+        miner_context_key = "Minemeld.Item()"
+        result_text = 'Items found at miner: %s' % miner
+        if not matching_items:
+            result_text = "No items found at miner"
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': matching_items,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(result_text, matching_items, ['indicator', 'direction', 'comment', 'share_level']),
+            'EntryContext': {
+                miner_context_key: matching_items
             }
         })
 
@@ -343,5 +370,40 @@ script:
       description: Indicator share level
       type: string
     description: Get miner indicators list.
+  - name: minemeld-get-item-from-list
+    arguments:
+    - name: miner
+      required: true
+      description: Miner name
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - IPv4
+      - IPv6
+      - domain
+      - URL
+      description: Node type
+    - name: item
+      required: true
+      description: Indicator details (IPv4,IPv6,domain,URL,comment,share,direction,share_level)
+    outputs:
+    - contextPath: MineMeld.Item
+      description: The entire record of item
+    - contextPath: MineMeld.Item.indicator
+      description: IP address
+      type: string
+    - contextPath: MineMeld.Item.miner
+      description: 'Miner''s name '
+      type: string
+    - contextPath: MineMeld.Item.comment
+      description: Custom comment
+      type: string
+    - contextPath: MineMeld.Item.share_level
+      description: Severity
+      type: string
+    - contextPath: MineMeld.Item.direction
+      description: Inbound/Outbound
+      type: string
+    description: Get indicator from a miner list
   runonce: false
-releaseNotes: "Add new integration"
