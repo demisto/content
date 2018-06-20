@@ -1,0 +1,32 @@
+commonfields:
+  id: ExtractDomainFromUrlAndEmail
+  version: -1
+name: ExtractDomainFromUrlAndEmail
+script: |-
+  from tld import get_tld
+  from validate_email import validate_email
+  import re
+
+
+  inp = demisto.args()['input']
+
+  is_email = validate_email(inp)
+  if is_email:
+      domain = re.search("@[\w.]+", inp)
+      if len(domain.group()) > 0:
+          demisto.results(domain.group()[1:])
+  else:
+      domain = get_tld(inp)
+      demisto.results(domain)
+type: python
+tags:
+- indicator-format
+comment: Extract Domain from a URL or Email
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: The URL or Email to process
+scripttarget: 0
+dockerimage: demisto/tld

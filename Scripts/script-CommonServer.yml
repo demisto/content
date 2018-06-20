@@ -227,7 +227,7 @@ script: |-
    * Converts a JSON demisto table to a Markdown table
    * @param {String} name - The name of the table
    * @param {Object} t - the JSON table - Array of objects with the same keys
-   * @param {Array} [headers] - The output markdown table will show only these headers (by order) (Optional).
+   * @param {Array|String} [headers] - The output markdown table will show only these headers (by order). Use a single string in case of a value type array (Optional).
    * @param {String} [cellDelimiter] - The delimiter of the string representation of arrays (Optional).
    * @param {Function} [headerTransform] - A transformation function for the header keys in the markdown table (Optional).
    * @return {String} A string representing the markdown table
@@ -237,8 +237,12 @@ script: |-
           t = [t];
       }
 
+      if(headers && !(headers instanceof Array) && typeof(headers) !== 'object'){
+          headers = [headers];
+      }
+
       //in case of headers was not provided (backward compatibility)
-      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
+      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0 && typeof(t[0]) === 'object'){
           headers = GetAllObjectsProperties(t);
       }
 
@@ -273,6 +277,11 @@ script: |-
           mdResults += sep.join('|') + '\n';
           t.forEach(function(entry){
               var vals = [];
+              if(typeof(entry) !== 'object' && !(entry instanceof Array)){
+                var obj = {};
+                obj[headers[0]] = entry;
+                entry = obj;
+              }
               headers.forEach(function(h){
                   if(entry[h] === null || entry[h] === undefined) {
                       vals.push(' ');
@@ -1326,6 +1335,9 @@ script: |-
    * @return {Object} the formatted object (key-value format)
    */
   var treeToFlattenObject = function(object) {
+      if(typeof object !== 'object' && !(Array.isArray(object))){
+          return object;
+      }
       var retVal = {};
 
       for (var i in object) {

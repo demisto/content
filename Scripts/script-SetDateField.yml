@@ -7,8 +7,8 @@ script: |-
 
   field_name = demisto.args()['fieldName']
 
-  t = strftime("%b %d %H:%M:%S")
-  res = demisto.executeCommand("IncidentSet", {"customFieldName":field_name,"customFieldValue":t})
+  t = strftime("%a, %d %b %Y %H:%M:%S %Z")
+  res = demisto.executeCommand("setIncident", {field_name:t})
   demisto.results(res)
 type: python
 tags:
