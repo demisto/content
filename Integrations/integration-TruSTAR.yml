@@ -42,9 +42,6 @@ script:
     import json
     import trustar
     import os
-    import collections
-    from trustar.models.indicator import Indicator
-    from trustar.models.page import Page
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -142,24 +139,7 @@ script:
 
     ''' FUNCTIONS '''
     def get_related_indicators(indicators, enclave_ids, page_size, page_number):
-        # To display priority score
-        items_list = []
-        indicators_json = dict()
-        related_indicator_response = ts.get_related_indicators_page(indicators, enclave_ids, page_size, page_number)
-        for related_indicator in related_indicator_response:
-            current_indicator = related_indicator.to_dict(remove_nones=True)
-            search_indicator_response = ts.search_indicators_page(current_indicator['value'], enclave_ids, page_size,
-                                                                  page_number)
-            for found_indicator in search_indicator_response:
-                current_found_indicator = found_indicator.to_dict(remove_nones=True)
-                if current_indicator['value'] == current_found_indicator['value']:
-                    current_indicator['priorityLevel'] = current_found_indicator['priorityLevel']
-                    break
-            if not current_indicator.get('priorityLevel'):
-                current_indicator['priorityLevel'] = "NOT_FOUND"
-            items_list.append(current_indicator)
-        indicators_json.update({'items': items_list})
-        response = Page.from_dict(indicators_json, content_type=Indicator)
+        response = ts.get_related_indicators_page(indicators, enclave_ids, page_size, page_number)
         related_indicators, ec = translate_indicators(response)
         if related_indicators:
             title = 'TruSTAR indicators related to ' + indicators
@@ -218,17 +198,16 @@ script:
             title=title,
             body=report_body,
             enclave_ids=[enclave_ids] if enclave_ids else enclave_ids,
-            is_enclave=True if distribution_type == 'ENCLAVE' else False,
+            is_enclave=True if distribution_type=='ENCLAVE' else False,
             time_began=time_began,
             external_url=external_url
         )
         response = ts.submit_report(ts_report)
-        deep_link = "{server_url}/constellation/reports/{report_id}".format(server_url=SERVER, report_id=response.id)
-        report = collections.OrderedDict()
-        report['id'] = response.id
-        report['reportTitle'] = title
-        report['reportDeepLink'] = "[{}]({})".format(deep_link, deep_link)
-        report['reportBody'] = report_body
+        report = {
+            'reportTitle': title,
+            'reportBody': report_body,
+            'id': response.id
+        }
         ec = {
             'TruSTAR.Report(val.id && val.id === obj.id)': report
         }
@@ -249,17 +228,16 @@ script:
             title=title,
             body=report_body,
             enclave_ids=[enclave_ids] if enclave_ids else enclave_ids,
-            is_enclave=True if distribution_type == 'ENCLAVE' else False,
+            is_enclave=True if distribution_type=='ENCLAVE' else False,
             time_began=time_began,
             external_url=external_url
         )
         response = ts.update_report(ts_report)
-        deep_link = "{server_url}/constellation/reports/{report_id}".format(server_url=SERVER, report_id=report_id)
-        report = collections.OrderedDict()
-        report['id'] = report_id
-        report['reportTitle'] = title
-        report['reportDeepLink'] = "[{}]({})".format(deep_link, deep_link)
-        report['reportBody'] = report_body
+        report = {
+            'reportTitle': title,
+            'reportBody': report_body,
+            'id': report_id
+        }
         ec = {
             'TruSTAR.Report(val.id && val.id === obj.id)': report
         }
@@ -276,24 +254,12 @@ script:
 
     def get_report_details(report_id, id_type):
         response = ts.get_report_details(report_id, id_type)
-        current_report_dict = response.to_dict(remove_nones=True)
-        report_details = collections.OrderedDict()
-        report_details['id'] = current_report_dict['id']
-        report_details['title'] = current_report_dict['title']
-        deep_link = "{server_url}/constellation/reports/{report_id}".format(server_url=SERVER,
-                                                                            report_id=current_report_dict['id'])
-        report_details['reportDeepLink'] = "[{}]({})".format(deep_link, deep_link)
-        if current_report_dict['enclaveIds']:
-            report_details['enclaveIds'] = ', '.join(current_report_dict['enclaveIds'])  # Prettify list of enclave IDs
-        else:
-            report_details['enclaveIds'] = current_report_dict['enclaveIds']
-        report_details['updated'] = normalize_time(current_report_dict['updated'])
-        report_details['created'] = normalize_time(current_report_dict['created'])
-        report_details['timeBegan'] = normalize_time(current_report_dict['timeBegan'])
-        report_details['distributionType'] = current_report_dict['distributionType']
-        if current_report_dict.get('externalUrl'):
-            report_details['externalUrl'] = current_report_dict['externalUrl']
-        report_details['reportBody'] = current_report_dict['reportBody']
+        report_details = response.to_dict(remove_nones=True)
+        if report_details['enclaveIds']:
+            report_details['enclaveIds'] = ', '.join(report_details['enclaveIds']) # Prettify list of enclave IDs
+        report_details['updated'] = normalize_time(report_details['updated'])
+        report_details['created'] = normalize_time(report_details['created'])
+        report_details['timeBegan'] = normalize_time(report_details['timeBegan'])
         report_context = {
             'reportTitle': report_details['title'],
             'reportBody': report_details['reportBody'],
@@ -318,32 +284,19 @@ script:
         return 'Report ' + report_id + ' was successfully deleted'
 
     def get_reports(from_time, to_time, enclave_ids, distribution_type, tags, excluded_tags):
-        is_encalve = True if distribution_type == 'ENCLAVE' else False
+        is_encalve = True if distribution_type=='ENCLAVE' else False
         from_time = date_to_unix(from_time) if from_time else from_time
         to_time = date_to_unix(to_time) if to_time else to_time
         response = ts.get_reports(is_encalve, enclave_ids, tags, excluded_tags, from_time, to_time)
         reports = []
         reports_context = []
         for report in response:
-            current_report_dict = report.to_dict(remove_nones=True)
-            current_report = collections.OrderedDict()
-            current_report['id'] = current_report_dict['id']
-            current_report['title'] = current_report_dict['title']
-            deep_link = "{server_url}/constellation/reports/{report_id}".format(server_url=SERVER, report_id=current_report_dict['id'])
-            current_report['reportDeepLink'] = deep_link
-            if current_report_dict['enclaveIds']:
-                current_report['enclaveIds'] = ', '.join(current_report_dict['enclaveIds'])  # Prettify list of enclave IDs
-            else:
-                current_report['enclaveIds'] = current_report_dict['enclaveIds']
-            current_report['updated'] = normalize_time(current_report_dict['updated'])
-            current_report['created'] = normalize_time(current_report_dict['created'])
-            current_report['timeBegan'] = normalize_time(current_report_dict['timeBegan'])
-            current_report['distributionType'] = current_report_dict['distributionType']
-            if current_report_dict.get('externalUrl'):
-                current_report['externalUrl'] = current_report_dict['externalUrl']
-            else:
-                current_report['externalUrl'] = ""
-            current_report['reportBody'] = current_report_dict['reportBody']
+            current_report = report.to_dict(remove_nones=True)
+            if current_report['enclaveIds']:
+                current_report['enclaveIds'] = ', '.join(current_report['enclaveIds']) # Prettify list of enclave IDs
+            current_report['updated'] = normalize_time(current_report['updated'])
+            current_report['created'] = normalize_time(current_report['created'])
+            current_report['timeBegan'] = normalize_time(current_report['timeBegan'])
             reports.append(current_report)
             reports_context.append({
                 'reportTitle': current_report['title'],
