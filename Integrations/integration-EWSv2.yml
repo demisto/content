@@ -429,7 +429,7 @@ script:
             mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
         else:
             entry = get_searchable_mailboxes(protocol)
-            mailboxes = entry[ENTRY_CONTEXT]['EWS.Mailboxes']
+            mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
             mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
 
         try:
@@ -1766,4 +1766,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-releaseNotes: "Fixed 'TextBodyField' issue on pre-2013 exchange systems."
+releaseNotes: "Fixed issue when searching all mailboxes - skipped mailboxes without mailboxId."
