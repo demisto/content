@@ -54,9 +54,9 @@ script:
                 })
 
         if roleSessionDuration is not None:
-            kwargs.update({'DurationSeconds':roleSessionDuration})
+            kwargs.update({'DurationSeconds':int(roleSessionDuration)})
         elif AWS_roleSessionDuration is not None:
-            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+            kwargs.update({'DurationSeconds':int(AWS_roleSessionDuration)})
 
         if rolePolicy is not None:
             kwargs.update({'Policy':rolePolicy})
@@ -195,7 +195,7 @@ script:
             obj = vars(client._client_config)
             data=[]
             kwargs = {}
-
+            output = []
             if args.get('filters') is not None:
                 kwargs.update({'Filters':parse_filter_field(args.get('filters'))})
             if args.get('instanceIds') is not None:
@@ -216,13 +216,15 @@ script:
                         'KeyName': instance['KeyName'],
                         'Monitoring': instance['Monitoring']['State'],
                     })
-                for tag in instance['Tags']:
-                    data[i].update ({
-                        tag['Key']: tag['Value']
-                    })
-            output = json.dumps(reservation['Instances'], cls=DatetimeEncoder)
-            raw = json.loads(output)
-            raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+                    if 'Tags' in instance:
+                        for tag in instance['Tags']:
+                            data[i].update ({
+                              tag['Key']: tag['Value']
+                            })
+                instance.update({'Region': obj['_user_provided_options']['region_name']})
+                output.append(instance)
+
+            raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
             ec = {'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)': raw}
             return  create_entry('AWS Instances',data, ec)
 
@@ -4011,8 +4013,7 @@ script:
     - name: cidrIp
       description: The CIDR IPv4 address range.
     - name: ipProtocol
-      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify
-        all protocols.
+      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify all protocols.
     - name: sourceSecurityGroupName
       description: The name of the source security group. The source security group
         must be in the same VPC.
