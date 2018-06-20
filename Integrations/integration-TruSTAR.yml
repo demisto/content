@@ -579,7 +579,7 @@ script:
       type: string
     description: Search all TruSTAR incident reports for provided indicators and return
       all correlated indicators from search results. Two indicators are considered
-      â€œcorrelatedâ€? if they can be found in a common report.
+      "correlated" if they can be found in a common report.
   - name: trustar-trending-indicators
     arguments:
     - name: type
