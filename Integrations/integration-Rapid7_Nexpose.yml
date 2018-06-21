@@ -95,9 +95,9 @@ script:
             'nexposeccusername': USERNAME,
             'nexposeccpassword': PASSWORD
         }
-        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL)
+        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL, proxies=PROXY)
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+            return ''
         body = res.json()
         if 'sessionID' not in body:
             return ''
@@ -126,7 +126,7 @@ script:
     def get_site(asset_id):
         url = BASE_URL + '/data/assets/' + str(asset_id) + '/scans'
         headers = get_site_headers()
-        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
+        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies=PROXY)
         if res.status_code < 200 or res.status_code >= 300:
            return ''
         response = res.json()
@@ -145,7 +145,7 @@ script:
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
         verify=VERIFY_SSL, proxies=PROXY)
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Body: ' + json.dumps(body) + ' Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return res.json() if is_file is False else res.content
 
     def iso8601_duration_as_minutes(d):
@@ -237,7 +237,7 @@ script:
             params['page'] = page
             if limit is not None:
                 params['size'] = limit
-            response = send_request(path,method=method,body=body, params=params)
+            response = send_request(path, method=method, body=body, params=params)
             if not response:
                 break
             if response['resources'] is not None:
@@ -500,7 +500,7 @@ script:
                 {'from': 'estimate', 'to': 'Estimate'},
                 {'from': 'additionalInformation.text', 'to': 'AdditionalInformation'}
             ])
-            for i, v in enumerate(solutionsOutput):
+            for i, val in enumerate(solutionsOutput):
                 solutionsOutput[i]['Estimate'] = str(iso8601_duration_as_minutes(solutionsOutput[i]['Estimate'])) + ' minutes'
 
         vulnerabilitiesMd = tableToMarkdown('Vulnerability ' + demisto.args()['vulnerabilityId'], vulnOutputs, vulnHeaders, removeNull=True)
@@ -914,6 +914,9 @@ script:
 
         report_id = create_report(scope, name, template)
 
+        if report_id is None:
+            return 'Could not retrieve report'
+
         return download_report(report_id, name)
 
     def create_sites_report_command():
@@ -927,6 +930,8 @@ script:
 
         report_id = create_report(scope, name, template)
 
+        if report_id is None:
+            return 'Could not retrieve report'
 
         return download_report(report_id, name)
 
@@ -941,6 +946,8 @@ script:
 
         report_id = create_report(scope, name, template)
 
+        if report_id is None:
+            return 'Could not retrieve report'
 
         return download_report(report_id, name)
 
@@ -965,10 +972,7 @@ script:
         }
 
         result = send_request(path, 'post', body=body)
-        if result is None:
-            return 'Failed to create report'
-
-        return result['id']
+        return result['id'] if 'id' in result else None
 
     def download_report(report_id, name):
         # Generate the report
@@ -1186,11 +1190,12 @@ script:
   - name: nexpose-get-assets
     arguments:
     - name: sort
-      description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
-        The default sort order is ascending. Multiple sort criteria can be specified
-        using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
     - name: limit
-      description: integer <int32> The number of records per page to retrieve.
+      description: integer <int32> The number of records retrieve.
     outputs:
     - contextPath: Nexpose.Asset.AssetId
       description: The identifier of the asset.
@@ -1229,33 +1234,35 @@ script:
   - name: nexpose-search-assets
     arguments:
     - name: query
-      description: 'Filter to match assets, multiple filters can be provided using
+      description: 'Multiple criteria of <string> Filter to match assets, according
+        to the Search Criteria API standard. multiple filters can be provided using
         '';'' separator. For example: ''ip-address in range 1.2.3.4,1.2.3.8;host-name
-        is myhost'''
+        is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
     - name: limit
-      description: integer <int32> The number of records per page to retrieve.
+      description: integer <int32> The number of records retrieve.
     - name: sort
-      description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
-        The default sort order is ascending. Multiple sort criteria can be specified
-        using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
     - name: ipAddressIs
-      description: Search by a specific IP address
+      description: <string> Search by a specific IP address
     - name: hostNameIs
-      description: Search by a specific host name
+      description: <string> Search by a specific host name
     - name: riskScoreHigherThan
-      description: Get all assets whose risk score is higher
+      description: <float> Get all assets whose risk score is higher
     - name: vulnerabilityTitleContains
-      description: Search by vulnerability title
+      description: <string> Search by vulnerability title
     - name: siteIdIn
-      description: Search by site ids
+      description: Multiple criteria of integer<int32> Search by site ids
     - name: match
       auto: PREDEFINED
       predefined:
       - all
       - any
-      description: Operator to determine how to match filters. all requires that all
-        filters match for an asset to be included. any requires only one filter to
-        match for an asset to be included.
+      description: <string> Operator to determine how to match filters. all requires
+        that all filters match for an asset to be included. any requires only one
+        filter to match for an asset to be included.
       defaultValue: all
     outputs:
     - contextPath: Nexpose.Asset.AssetId
@@ -1401,11 +1408,12 @@ script:
   - name: nexpose-get-sites
     arguments:
     - name: limit
-      description: integer <int32> The number of records per page to retrieve.
+      description: integer <int32> The number of records retrieve.
     - name: sort
-      description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
-        The default sort order is ascending. Multiple sort criteria can be specified
-        using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
     outputs:
     - contextPath: Nexpose.Site.Id
       description: The identifier of the site.
@@ -1441,44 +1449,50 @@ script:
     arguments:
     - name: assets
       required: true
-      description: Asset ids to create the report on
+      description: Multiple criteria of integer<int64> Asset ids to create the report
+        on, comma separated.
     - name: template
-      description: Report template id to create the report with
+      description: <string> Report template id to create the report with. If none
+        is provided, the first template available will be used.
     - name: name
-      description: The report name
+      description: <string> The report name
     description: Generates a new report on given assets according to a template and
       arguments.
   - name: nexpose-create-sites-report
     arguments:
     - name: sites
       required: true
-      description: Site ids to create the report on
+      description: Multiple criteria of integer<int32> Site ids to create the report
+        on, comma separated.
     - name: template
-      description: Report template id to create the report with
+      description: <string> Report template id to create the report with. If none
+        is provided, the first template available will be used.
     - name: name
-      description: The report name
+      description: <string> The report name
     description: Generates a new report on given sites according to a template and
       arguments.
   - name: nexpose-create-scan-report
     arguments:
     - name: scan
       required: true
-      description: Id of the scan
+      description: integer <int64> The identifier of the scan.
     - name: template
-      description: Report template id to create the report with
+      description: <string> Report template id to create the report with. If none
+        is provided, the first template available will be used.
     - name: name
-      description: The report name
-    description: Generates a new report for a specified scan
+      description: <string> The report name
+    description: Generates a new report for a specified scan.
   - name: nexpose-start-site-scan
     arguments:
     - name: site
       required: true
       description: integer <int32> The identifier of the site.
     - name: hosts
-      description: The hosts that should be included as a part of the scan. This should
-        be a mixture of IP Addresses and Hostnames as a comma separated string array.
+      description: Multiple criteria of <string> The hosts that should be included
+        as a part of the scan. This should be a mixture of IP Addresses and Hostnames
+        as a comma separated string array.
     - name: name
-      description: The user-driven scan name for the scan.
+      description: <string> The user-driven scan name for the scan.
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
@@ -1509,11 +1523,11 @@ script:
   - name: nexpose-start-assets-scan
     arguments:
     - name: IPs
-      description: IP addresses of assets
+      description: Multiple criteria of <string> IP addresses of assets, comma separated.
     - name: hostNames
-      description: Host names of assets
+      description: Multiple criteria of <string> Host names of assets, comma separated.
     - name: name
-      description: The user-driven scan name for the scan.
+      description: <string> The user-driven scan name for the scan.
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
