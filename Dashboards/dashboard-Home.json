@@ -2,7 +2,8 @@
 	"id": "my-home-dashboard",
 	"version": -1,
 	"fromVersion": "4.0.0",
-	"releaseNotes": "Support for users with \\",
+	"description": "",
+	"releaseNotes": "-",
 	"period": {
 		"byTo": "",
 		"byFrom": "days",
