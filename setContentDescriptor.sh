@@ -1,5 +1,8 @@
 ### this script populate content descriptor with correct dates and assetId
 
+
+git --version
+
 echo "got 2 - $2"
 
 echo "before 1"
