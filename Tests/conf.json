@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Mail Sender (New)",
+            "playbookID": "102c1390-428b-431a-83a7-83ea8c2a7fc5"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
