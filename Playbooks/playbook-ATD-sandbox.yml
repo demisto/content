@@ -1,6 +1,7 @@
 id: ATD - Detonate File_copy
 version: -1
 name: ATD - Detonate File_copy
+fromversion: ""
 description: Detonate a file through McAfee ATD
 starttaskid: "0"
 tasks:
@@ -11,6 +12,7 @@ tasks:
     task:
       id: bb01d4bd-76d4-4d60-897b-d169fc413163
       version: -1
+      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -32,6 +34,7 @@ tasks:
     task:
       id: ade8898b-5f2e-4ba1-8989-2977e4a58003
       version: -1
+      description: ""
       name: Is ATD Available?
       scriptName: Exists
       type: condition
@@ -60,6 +63,7 @@ tasks:
     task:
       id: 35ddeef4-f49f-493d-8679-80624dd4d1d8
       version: -1
+      description: ""
       name: End
       type: title
       iscommand: false
@@ -109,6 +113,7 @@ tasks:
     task:
       id: 1f223a64-b600-4631-815b-f9a929f3a3ac
       version: -1
+      description: ""
       name: ATD - Detonate File
       script: McAfee Advanced Threat Defense|||detonate-file
       type: regular
