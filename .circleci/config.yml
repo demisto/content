@@ -34,7 +34,7 @@ jobs:
               ./Tests/scripts/validate_files_structure.sh
       - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 11c97eacd1b7853557b5763effef56bae514b72b $CONTENT_VERSION
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 917ff634f14779a031e7d3b481037fc26167c4c2 $CONTENT_VERSION
       - run:
           name: Common Server Documentation
           command: ./Docs/commonServerDocs.sh

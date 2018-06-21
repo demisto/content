@@ -3,6 +3,7 @@
 	"version": -1,
 	"fromVersion": "3.5.1",
 	"toVersion": "4.0.0",
+	"description": "",
 	"period": {
 		"byTo": "",
 		"byFrom": "days",
