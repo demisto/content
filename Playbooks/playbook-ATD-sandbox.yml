@@ -1,9 +1,7 @@
-id: ATD - Detonate File
+id: ATD - Detonate File_copy
 version: -1
-name: ATD - Detonate File
-fromversion: ""
-description: Detonate a file in McAfee ATD, wait for results, then get the report
-  as both json and PDF.
+name: ATD - Detonate File_copy
+description: Detonate a file through McAfee ATD
 starttaskid: "0"
 tasks:
   "0":
@@ -14,110 +12,17 @@ tasks:
       id: bb01d4bd-76d4-4d60-897b-d169fc413163
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "5"
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
           "y": 37
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 58ed12cf-6dcd-4785-8344-8e218ee0e9fb
-    type: regular
-    task:
-      id: 58ed12cf-6dcd-4785-8344-8e218ee0e9fb
-      version: -1
-      name: Upload file to ATD
-      description: upload a file/web URL for dynamic analysis by using the provided
-        Analyzer Profile. Only single file/web URL can be submitted at a time.
-      script: McAfee Advanced Threat Defense|||atd-file-upload
-      type: regular
-      iscommand: true
-      brand: McAfee Advanced Threat Defense
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      analyzeAgain: ""
-      dstIp: ""
-      entryID: ${File.EntryID}
-      filePriorityQ: ""
-      messageId: ""
-      skipTaskId: ""
-      srcIp: ""
-      submitType: "0"
-      url: ""
-      vmProfileList: "11"
-      xMode: ""
-    view: |-
-      {
-        "position": {
-          "x": 25,
-          "y": 368
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 0d74ec97-5c05-4da0-8590-cac4670aa463
-    type: regular
-    task:
-      id: 0d74ec97-5c05-4da0-8590-cac4670aa463
-      version: -1
-      name: Get ATD json Report
-      description: ' download the analysis report files'
-      script: McAfee Advanced Threat Defense|||atd-get-report
-      type: regular
-      iscommand: true
-      brand: McAfee Advanced Threat Defense
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      jobId: ""
-      taskId: ${ATD.taskId}
-      type: json
-    view: |-
-      {
-        "position": {
-          "x": 25,
-          "y": 702
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 6d061855-0583-499e-8313-5809236d0b3f
-    type: regular
-    task:
-      id: 6d061855-0583-499e-8313-5809236d0b3f
-      version: -1
-      name: Wait for ATD results
-      scriptName: WhileLoop
-      type: regular
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      cmdArguments: taskId=${ATD.taskId}
-      cmdToRun: atd-check-status
-      keyToWatch: ATD.status
-      maxIterations: "60"
-      sleepTime: ""
-      value: Completed
-    view: |-
-      {
-        "position": {
-          "x": 25,
-          "y": 539
         }
       }
   "5":
@@ -127,19 +32,20 @@ tasks:
     task:
       id: ade8898b-5f2e-4ba1-8989-2977e4a58003
       version: -1
-      description: ""
       name: Is ATD Available?
       scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "no":
       - "6"
       "yes":
-      - "1"
+      - "7"
     scriptarguments:
-      value: modules.brand(val==='McAfee Advanced Threat Defense')
+      value:
+        simple: modules.brand(val==='McAfee Advanced Threat Defense')
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -158,7 +64,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -168,14 +74,43 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: ae0b342a-2ab4-4701-84bf-b74b1380196a
+    taskid: cc6b3924-e309-4c30-8caf-d9fed896acad
+    type: condition
+    task:
+      id: cc6b3924-e309-4c30-8caf-d9fed896acad
+      version: -1
+      name: Is there a file to detonate?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${inputs.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -21,
+          "y": 392
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 1f223a64-b600-4631-815b-f9a929f3a3ac
     type: regular
     task:
-      id: ae0b342a-2ab4-4701-84bf-b74b1380196a
+      id: 1f223a64-b600-4631-815b-f9a929f3a3ac
       version: -1
-      name: Get ATD PDF Report
-      description: ' download the analysis report files'
-      script: McAfee Advanced Threat Defense|||atd-get-report
+      name: ATD - Detonate File
+      script: McAfee Advanced Threat Defense|||detonate-file
       type: regular
       iscommand: true
       brand: McAfee Advanced Threat Defense
@@ -183,28 +118,36 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      jobId: ""
-      taskId: ${ATD.taskId}
-      type: pdf
+      format: {}
+      timeout: {}
+      upload:
+        simple: ${inputs.EntryID}
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 25,
-          "y": 874
+          "x": -162,
+          "y": 606
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
-      "5_6_#default#": 0.1
+      "5_6_no": 0.1
     },
     "paper": {
       "dimensions": {
         "height": 1136,
-        "width": 627,
-        "x": 25,
+        "width": 814,
+        "x": -162,
         "y": 37
       }
     }
   }
-inputs: []
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: false
+  description: the EntryID of the file to detonate
+outputs: []
