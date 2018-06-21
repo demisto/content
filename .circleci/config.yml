@@ -28,4 +28,4 @@ jobs:
               chmod +x ./Tests/scripts/*
       - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 08ceafd0f96ac3d3aacb988523f55d08be2560df $CONTENT_VERSION
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 917ff634f14779a031e7d3b481037fc26167c4c2 $CONTENT_VERSION
