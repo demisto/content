@@ -70,4 +70,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Added this new playbook to test EWS Mail Sender"

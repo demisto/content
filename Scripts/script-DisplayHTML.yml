@@ -7,7 +7,7 @@ script: |
   note = demisto.args().get("markAsNote")
   header = demisto.args().get("header")
 
-  note = True if note.lower() == "true" else False
+  note = True if note and note.lower() == "true" else False
   if header:
       html = "<h1>{0}</h1></br>{1}".format(header,html)
 
@@ -35,3 +35,4 @@ args:
   description: Add a header text to the output
 scripttarget: 0
 runonce: false
+releaseNotes: Fix script execution in case matkAsNote was not defined
