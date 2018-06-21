@@ -3,8 +3,14 @@ commonfields:
   version: -1
 name: DomainReputation
 script: |-
-  return executeCommand('domain', {domain: args.domain});
-type: javascript
+  results = demisto.executeCommand('domain', {'domain': demisto.get(demisto.args(),'domain')})
+
+  for item in results:
+      if isError(item):
+          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+
+  demisto.results(results)
+type: python
 tags:
 - enhancement
 comment: A context script for Domain entities
@@ -12,6 +18,6 @@ enabled: true
 args:
 - name: domain
   required: true
-  default: true
   description: Domain to look up
 scripttarget: 0
+runonce: false

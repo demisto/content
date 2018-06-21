@@ -44,11 +44,6 @@ configuration:
   defaultvalue: ""
   type: 14
   required: false
-- display: Insecure
-  name: insecure
-  defaultvalue: "true"
-  type: 8
-  required: false
 - display: Query for fetching incident in JQL
   name: query
   defaultvalue: status=open
@@ -58,6 +53,16 @@ configuration:
   name: idOffset
   defaultvalue: "10000"
   type: 0
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -79,6 +84,11 @@ script:
     // handle '/' at the end of the url
     if (params.url[params.url.length - 1] != '/') {
         params.url = params.url + '/';
+    }
+
+    // backward compatibility
+    if(!(params.proxy)){
+        params.proxy = false;
     }
 
     var isOAuth;
@@ -116,7 +126,7 @@ script:
             }
         }
 
-        var result = http(params.url + resourceUrl, requestParams, params.insecure);
+        var result = http(params.url + resourceUrl, requestParams, params.insecure, params.proxy);
         if (result.StatusCode !== 200 && result.StatusCode !== 201) {
             throw 'Failed to send request, request status code: ' + result.StatusCode + ', ' + result.Body;
         }
@@ -149,7 +159,8 @@ script:
             },
             {
             },
-            params.insecure
+            params.insecure,
+            params.proxy
         );
         if (res.StatusCode !== 200) {
             return 'Failed to execute request:' + res.StatusCode + ', body: ' + res.Body;

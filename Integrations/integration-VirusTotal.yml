@@ -33,27 +33,27 @@ configuration:
   defaultvalue: true
   type: 8
   required: false
-- display: Allow self-signed SSL certificates
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: false
   type: 8
   required: false
-- display: File Threshold. Minimun number of positive reuslts from VT scanners to consider the file malicious.
+- display: File Threshold. Minimun number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: "10"
   type: 0
   required: false
-- display: IP Threshold. Minimun number of positive reuslts from VT scanners to consider the IP malicious.
+- display: IP Threshold. Minimun number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   defaultvalue: "10"
   type: 0
   required: false
-- display: URL Threshold. Minimun number of positive reuslts from VT scanners to consider the URL malicious.
+- display: URL Threshold. Minimun number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   defaultvalue: "10"
   type: 0
   required: false
-- display: Domain Threshold. Minimun number of positive reuslts from VT scanners to consider the domain malicious.
+- display: Domain Threshold. Minimun number of positive results from VT scanners to consider the domain malicious.
   name: domainThreshold
   defaultvalue: "10"
   type: 0

@@ -3,6 +3,21 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test"
+        },
+        {
+            "playbookID": "decodemimeheader_-_test"
+        },
+        {
+            "integrations": "CVE Search",
+            "playbookID": "cve_enrichment_-_generic_-_test"
+        },
+        {
             "playbookID": "test_url_regex"
         },
         {
@@ -189,6 +204,9 @@
             "playbookID": "ExtractURL Test"
         },
         {
+            "playbookID": "strings-test"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -269,10 +287,6 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test"
-        },
-        {
             "integrations": [
                 {
                     "name": "carbonblackliveresponse",
@@ -302,21 +316,43 @@
             "playbookID": "Preempt Test"
         },
         {
-            "integrations": "SQS",
-            "playbookID": "sqs_test"
+            "integrations": "urlscan.io",
+            "playbookID": "urlscan_malicious_Test"
         },
-        {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
-        }
-    ],
-    "skipped": [
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
+        },
+        {
+
+            "integrations": "Netskope",
+            "playbookID": "Netskope Test"
+        },
+        {
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Cylance Protect v2 Test"
+        },
+        {
+            "integrations": "ReversingLabs Titanium Cloud",
+            "playbookID": "ReversingLabsTCTest"
+        },
+        {
+            "integrations": "ReversingLabs A1000",
+            "playbookID": "ReversingLabsA1000Test"
+        },
+        {
+            "integrations": "Demisto Lock",
+            "playbookID": "DemistoLockTest"
+        },
+        {
+            "playbookID": "test-domain-indicator"
         }
     ],
     "skipped": [
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
@@ -440,6 +476,14 @@
         {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
+        },
+        {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": "AlphaSOC Wisdom",
+            "playbookID": "AlphaSOC-Wisdom-Test"
         }
     ]
 }

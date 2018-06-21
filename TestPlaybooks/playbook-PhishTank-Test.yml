@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 524747e4-ee8b-4338-82a4-9d921ed10a37
+    taskid: 7aaefdb3-41b2-4c42-8cd1-54f706951e5f
     type: start
     task:
-      id: 524747e4-ee8b-4338-82a4-9d921ed10a37
+      id: 7aaefdb3-41b2-4c42-8cd1-54f706951e5f
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,8 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,12 +27,12 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 34ff5e44-4f52-44fa-8e8b-16dcf47b540e
+    taskid: 5a505f28-e3be-4c95-81c6-ae394b129f80
     type: regular
     task:
-      id: 34ff5e44-4f52-44fa-8e8b-16dcf47b540e
+      id: 5a505f28-e3be-4c95-81c6-ae394b129f80
       version: -1
-      name: Check good URL
+      name: Check URL
       script: PhishTank|||url
       type: regular
       iscommand: true
@@ -38,8 +40,143 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+      - "3"
     scriptarguments:
-      url: ${inputs.goodUrl}
+      url:
+        simple: ${badURL}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 0a2da204-3f8f-4eab-83df-f878268723f5
+    type: regular
+    task:
+      id: 0a2da204-3f8f-4eab-83df-f878268723f5
+      version: -1
+      name: Verify URL Data
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Data
+      path:
+        simple: URL
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 5cc2b958-d69e-43b2-89f6-55ceb23ef902
+    type: regular
+    task:
+      id: 5cc2b958-d69e-43b2-89f6-55ceb23ef902
+      version: -1
+      name: Verify DBotScore
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator,Score,Type,Vendor
+      path:
+        simple: DBotScore
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ff7a088b-0315-4569-85e8-ec5556bd0b1f
+    type: title
+    task:
+      id: ff7a088b-0315-4569-85e8-ec5556bd0b1f
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+  "5":
+    id: "5"
+    taskid: be16d6b0-c31f-48c8-8802-a4d71351a0e9
+    type: regular
+    task:
+      id: be16d6b0-c31f-48c8-8802-a4d71351a0e9
+      version: -1
+      name: Download phishtank CSV
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: phishtank.csv
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: http://data.phishtank.com/data/online-valid.csv
+      username: {}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -47,25 +184,28 @@ tasks:
           "y": 370
         }
       }
-  "2":
-    id: "2"
-    taskid: 8b890b91-cb1d-44a2-8bed-bb91075ccf47
-    type: condition
+  "6":
+    id: "6"
+    taskid: 2460c597-5995-4288-887d-60873622416e
+    type: regular
     task:
-      id: 8b890b91-cb1d-44a2-8bed-bb91075ccf47
+      id: 2460c597-5995-4288-887d-60873622416e
       version: -1
-      name: Check if url is malicious
-      scriptName: Exists
-      type: condition
+      name: Load file to context
+      scriptName: ReadFile
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "3"
+      '#none#':
+      - "7"
     scriptarguments:
-      value: ${URL.Malicious}
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize:
+        simple: "2000"
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -73,129 +213,15 @@ tasks:
           "y": 545
         }
       }
-  "3":
-    id: "3"
-    taskid: 98b3a92c-4216-4f45-863a-157ca1172cad
-    type: regular
-    task:
-      id: 98b3a92c-4216-4f45-863a-157ca1172cad
-      version: -1
-      name: Problem
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      value: ${nothing}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 3257bd0b-af96-4de9-8eec-b03736dbf932
-    type: regular
-    task:
-      id: 3257bd0b-af96-4de9-8eec-b03736dbf932
-      version: -1
-      name: Check bad URL
-      script: PhishTank|||url
-      type: regular
-      iscommand: true
-      brand: PhishTank
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      url: ${inputs.badUrl}
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-  "5":
-    id: "5"
-    taskid: cc29f97e-0581-44bf-8f5a-d36f4e5107c0
-    type: condition
-    task:
-      id: cc29f97e-0581-44bf-8f5a-d36f4e5107c0
-      version: -1
-      name: Check if url is malicious
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "6"
-      "yes":
-      - "7"
-    scriptarguments:
-      value: ${URL.Malicious}
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-  "6":
-    id: "6"
-    taskid: fde8b6d4-ad4e-4a29-87d4-c61541c9b7a8
-    type: regular
-    task:
-      id: fde8b6d4-ad4e-4a29-87d4-c61541c9b7a8
-      version: -1
-      name: Problem
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      value: ${nothing}
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1070
-        }
-      }
   "7":
     id: "7"
-    taskid: 1f0f7dfc-2c6e-4520-883c-75df2651c73b
+    taskid: e8f9b718-59b5-431e-8e37-66b1025b321e
     type: regular
     task:
-      id: 1f0f7dfc-2c6e-4520-883c-75df2651c73b
+      id: e8f9b718-59b5-431e-8e37-66b1025b321e
       version: -1
-      name: Close
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes: ""
-      reason: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1070
-        }
-      }
-  "8":
-    id: "8"
-    taskid: 94c6dc41-433d-435f-8eb3-be16e1f796dd
-    type: regular
-    task:
-      id: 94c6dc41-433d-435f-8eb3-be16e1f796dd
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
+      name: Set badURL
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -203,8 +229,41 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      all: "yes"
-      key: ""
+      append: {}
+      key:
+        simple: badURL
+      value:
+        simple: ${FileData=val.split('\n')[1].split(',')[1]}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 60b545ed-5c7c-4bc2-8131-00da26d2b52c
+    type: regular
+    task:
+      id: 60b545ed-5c7c-4bc2-8131-00da26d2b52c
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -217,17 +276,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 1025,
+        "height": 1260,
+        "width": 810,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs:
-- key: badUrl
-  value: http://intranet.saintdizier.com/images/2.html
-  description: ""
-- key: goodUrl
-  value: https://www.phishtank.com/
-  description: ""
+inputs: []
+outputs: []

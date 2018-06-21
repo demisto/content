@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -192,7 +192,7 @@ script:
     try:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            if getHostStatus():
+            if get_host_status():
                 demisto.results('ok')
             else:
                 demisto.results('test failed')

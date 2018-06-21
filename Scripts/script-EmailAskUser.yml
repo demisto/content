@@ -11,11 +11,20 @@ script: |-
   }
 
   // Get entitlement
-  res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
-  if (res[0].Type === entryTypes.error) {
-      return res;
+  var entitlement;
+  var retries = parseInt(args.retries) || 10;
+  for (i = 0 ; i < retries; i++) {
+      res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
+      if (isError(res[0])) {
+          if (res[0].Contents.contains('[investigations] [investigation] (15)')) {
+              wait(1);
+              continue;
+          }
+          return res;
+      }
+      entitlement = res[0].Contents;
+      break;
   }
-  var entitlement = res[0].Contents;
 
   // Create email subject
   var subjectSuffix = ' - #' + incidents[0].id + ' ' + entitlement;
@@ -138,4 +147,7 @@ args:
   - "true"
   - "false"
   defaultValue: "false"
+- name: retries
+  description: Indicates how many times to try and create an entitlement in case of failure
+  defaultValue: "10"
 scripttarget: 0

@@ -38,9 +38,9 @@ script: |+
       requestObj.SaveToFile = true;
   }
 
-  var insecure = (args.insecure === 'true');
+  var unsecure = (args.unsecure === 'true' || args.insecure === 'true');
   var proxy = (args.proxy === 'true');
-  var res = http(args.url, requestObj, insecure, proxy);
+  var res = http(args.url, requestObj, unsecure, proxy);
   var fileName;
   if (args.filename) {
       fileName = args.filename;
@@ -93,7 +93,11 @@ args:
   description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
 - name: insecure
   auto: PREDEFINED
-  description: Do not validate server certificate
+  description: Trust any certificate (unsecure)
+  deprecated: true
+- name: unsecure
+  auto: PREDEFINED
+  description: Trust any certificate (unsecure)
   predefined:
   - "true"
   - "false"
