@@ -1,5 +1,5 @@
-id: d99d5de0-72bd-4406-8001-a65bb50b65c3
-version: 1
+id: threat_grid_detonate_url_test
+version: -1
 name: Threat Grid detonate url test
 starttaskid: "0"
 tasks:
