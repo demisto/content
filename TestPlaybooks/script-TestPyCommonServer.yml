@@ -1,8 +1,9 @@
 commonfields:
   id: TestPYCommonServer
-  version: 53
+  version: -1
 name: TestPYCommonServer
 script: |-
+  import copy
   INFO = {'b' : 1,
       'a': {
           'safd' : 3,
@@ -71,6 +72,7 @@ script: |-
 
 
   def test_tbl_to_md():
+      tables = []
       data = [
           {
               'header_1': 'a1',
@@ -90,86 +92,139 @@ script: |-
       ]
 
       table = tableToMarkdown('tableToMarkdown test', data)
-      expected_tbl = '''### tableToMarkdown test
+      expected_table = '''### tableToMarkdown test
   |header_2|header_3|header_1|
   |-|-|-|
   |b1|c1|a1|
   |b2|c2|a2|
   |b3|c3|a3|
   '''
-      table_tranform = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
-      expected_transform_tbl = '''### tableToMarkdown test with headerTransform
+      tables.append((table, expected_table, ))
+
+      table_transform = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
+      expected_table_transform = '''### tableToMarkdown test with headerTransform
   |Header2|Header3|Header1|
   |-|-|-|
   |b1|c1|a1|
   |b2|c2|a2|
   |b3|c3|a3|
   '''
+      tables.append((table_transform, expected_table_transform, ))
 
-      data2 = data[:]
+      data2 = copy.deepcopy(data)
       for i, d in enumerate(data2):
           d['header_2'] = 'b%d.1\nb%d.2' % (i+1, i+1, )
           d['header_3'] = 'c%d|1' % (i+1, )
+
       table_multiline = tableToMarkdown('tableToMarkdown test with multiline', data2)
-      expected_multiline_tbl = '''### tableToMarkdown test with multiline
+      expected_table_multiline = '''### tableToMarkdown test with multiline
   |header_2|header_3|header_1|
   |-|-|-|
   |b1.1<br>b1.2|c1\|1|a1|
   |b2.1<br>b2.2|c2\|1|a2|
   |b3.1<br>b3.2|c3\|1|a3|
   '''
+      tables.append((table_multiline, expected_table_multiline, ))
 
-      data3 = data[:]
-      for i, d in enumerate(data2):
+      data3 = copy.deepcopy(data)
+      for i, d in enumerate(data3):
           d['header_3'] = '[url](https:\\demisto.com)'
           d['header_2'] = None
       table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data3)
-      expected_url_missing_info_tbl = '''### tableToMarkdown test with url and missing info
+      expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
   |header_2|header_3|header_1|
   |-|-|-|
   ||[url](https:\\demisto.com)|a1|
   ||[url](https:\\demisto.com)|a2|
   ||[url](https:\\demisto.com)|a3|
   '''
+      tables.append((table_url_missing_info, expected_table_url_missing_info, ))
 
       table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
-      expected_single_column_tbl = '''### tableToMarkdown test with single column
+      expected_table_single_column = '''### tableToMarkdown test with single column
   |header_1|
   |-|
   |a1|
   |a2|
   |a3|
   '''
+      tables.append((table_single_column, expected_table_single_column, ))
 
-      demisto.results(toEntry(table))
-      demisto.results(toEntry(expected_tbl))
-      demisto.results(toEntry(table_tranform))
-      demisto.results(toEntry(expected_transform_tbl))
-      demisto.results(toEntry(table_multiline))
-      demisto.results(toEntry(expected_multiline_tbl))
-      demisto.results(toEntry(table_url_missing_info))
-      demisto.results(toEntry(expected_url_missing_info_tbl))
-      demisto.results(toEntry(table_single_column))
-      demisto.results(toEntry(expected_single_column_tbl))
+      data4 = copy.deepcopy(data)
+      for i, d in enumerate(data4):
+          d['header_3'] = [i+1, 'second item']
+          d['header_2'] = 'hi'
+      table_list_field = tableToMarkdown('tableToMarkdown test with list field', data4)
+      expected_table_list_field = '''### tableToMarkdown test with list field
+  |header_2|header_3|header_1|
+  |-|-|-|
+  |hi|1,<br>second item|a1|
+  |hi|2,<br>second item|a2|
+  |hi|3,<br>second item|a3|
+  '''
+      tables.append((table_list_field, expected_table_list_field, ))
+
+      data5 = [
+          {
+              'a' : None,
+              'b' : None,
+              'c' : None,
+          } for _ in range(3)
+      ]
+      table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data5)
+      expected_table_all_none = '''### tableToMarkdown test with all none fields
+  |a|c|b|
+  |-|-|-|
+  ||||
+  ||||
+  ||||
+  '''
+      tables.append((table_all_none, expected_table_all_none, ))
+
+      table_all_none2 = tableToMarkdown('tableToMarkdown test with all none fields2', data5, removeNull=True)
+      expected_table_all_none2 = '''### tableToMarkdown test with all none fields2
+  **No entries.**
+  '''
+      tables.append((table_all_none2, expected_table_all_none2, ))
 
 
-      results = [table == expected_tbl,
-          table_tranform == expected_transform_tbl,
-          table_multiline == expected_multiline_tbl,
-          table_url_missing_info == expected_url_missing_info_tbl,
-          table_single_column == expected_single_column_tbl,
-          ]
+      data6 = copy.deepcopy(data)
+      data6[1]['extra_header'] = 'sample'
+      table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data6, headers=['header_1', 'header_2', 'extra_header'])
+      expected_table_extra_header = '''### tableToMarkdown test with extra header
+  |header_1|header_2|extra_header|
+  |-|-|-|
+  |a1|b1||
+  |a2|b2|sample|
+  |a3|b3||
+  '''
+      tables.append((table_extra_header, expected_table_extra_header, ))
+
+
+      table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', data, headers=['no', 'header', 'found'], removeNull=True)
+      expected_table_no_headers = '''### tableToMarkdown test with no headers
+  **No entries.**
+  '''
+      tables.append((table_no_headers, expected_table_no_headers, ))
+
+
+      results = [actual == expected for actual, expected in tables]
 
       if all(results):
           demisto.results('ok')
       else:
+          for result, (actual, expected) in zip(results, tables):
+              if not result:
+                  demisto.results(toEntry(actual))
+                  demisto.results(toEntry(expected))
+
           demisto.results(str(results))
           demisto.results('error')
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
-      #'XML' : test_xml,
+      # 'XML' : test_xml,
       'ENTRY' : test_entry,
       'TBLMD' : test_tbl_to_md
   }

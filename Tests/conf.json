@@ -7,6 +7,14 @@
             "playbookID": "Test Playbook McAfee ATD"
         },
         {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {
@@ -200,6 +208,9 @@
             "playbookID": "ExtractURL Test"
         },
         {
+            "playbookID": "strings-test"
+        },
+        {
             "playbookID": "TestCommonPython"
         },
         {
@@ -309,10 +320,6 @@
             "playbookID": "Preempt Test"
         },
         {
-            "integrations": "SQS",
-            "playbookID": "sqs_test"
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
         },
@@ -326,10 +333,6 @@
             "playbookID": "Netskope Test"
         },
         {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
-        },
-        {
             "integrations": "Cylance Protect v2",
             "playbookID": "Cylance Protect v2 Test"
         },
@@ -340,10 +343,20 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
+        },
+        {
+            "integrations": "Demisto Lock",
+            "playbookID": "DemistoLockTest"
+        },
+        {
+            "playbookID": "test-domain-indicator"
         }
-
     ],
     "skipped": [
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
@@ -471,6 +484,10 @@
         {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": "AlphaSOC Wisdom",
+            "playbookID": "AlphaSOC-Wisdom-Test"
         }
     ]
 }

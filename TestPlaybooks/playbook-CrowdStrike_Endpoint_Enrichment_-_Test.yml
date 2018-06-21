@@ -7,18 +7,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c1b2203d-9117-4a02-8a65-35e2ff8a3148
+    taskid: 8c9fe9bb-ecca-43c4-8626-713f02b35c62
     type: start
     task:
-      id: c1b2203d-9117-4a02-8a65-35e2ff8a3148
+      id: 8c9fe9bb-ecca-43c4-8626-713f02b35c62
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -27,42 +26,13 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
-    type: regular
-    task:
-      id: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
-      version: -1
-      description: ""
-      name: Delete context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
   "3":
     id: "3"
-    taskid: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
+    taskid: f22b31e5-46e6-43b7-8266-8be52233f2c2
     type: regular
     task:
-      id: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
+      id: f22b31e5-46e6-43b7-8266-8be52233f2c2
       version: -1
-      description: ""
       name: Verify context
       scriptName: VerifyContext
       type: regular
@@ -78,77 +48,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
-    type: regular
-    task:
-      id: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
-      version: -1
-      description: ""
-      name: 'Add hostname #1'
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: Endpoint.Hostname
-      value:
-        simple: CentOS70
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 759fe9ee-1d3b-4e02-844d-2207862d71c3
-    type: regular
-    task:
-      id: 759fe9ee-1d3b-4e02-844d-2207862d71c3
-      version: -1
-      description: ""
-      name: 'Add hostname #2'
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: Endpoint.Hostname
-      value:
-        simple: CYPHORT-CS-PC
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "y": 824
         }
       }
   "6":
     id: "6"
-    taskid: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+    taskid: e5567210-6a22-42a2-8f40-5f0eff33d5e6
     type: playbook
     task:
-      id: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+      id: e5567210-6a22-42a2-8f40-5f0eff33d5e6
       version: -1
       name: CrowdStrike Endpoint Enrichment
       description: Enrich Endpoint with CrowdStrike
@@ -161,7 +69,7 @@ tasks:
       - "3"
     scriptarguments:
       Hostname:
-        simple: ${Endpoint.Hostname}
+        simple: ${FalconHostDevices}
     separatecontext: false
     loop:
       iscommand: false
@@ -171,7 +79,65 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 624
+        }
+      }
+  "7":
+    id: "7"
+    taskid: bbc95b84-16ee-4f9f-8aef-1394322b9877
+    type: regular
+    task:
+      id: bbc95b84-16ee-4f9f-8aef-1394322b9877
+      version: -1
+      name: cs-device-search
+      description: Search for devices in your environment by platform, host name,
+        IP, or a number of other parameters
+      script: FalconHost|||cs-device-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      offset: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 408
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 01de79be-3c07-4b1a-85c3-2192bb477642
+    type: regular
+    task:
+      id: 01de79be-3c07-4b1a-85c3-2192bb477642
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 201
         }
       }
 view: |-
@@ -179,7 +145,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 869,
         "width": 380,
         "x": 50,
         "y": 50
