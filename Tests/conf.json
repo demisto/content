@@ -346,6 +346,10 @@
             "playbookID": "ReversingLabsA1000Test"
         },
         {
+            "integrations": "Demisto Lock",
+            "playbookID": "DemistoLockTest"
+        },
+        {
             "playbookID": "test-domain-indicator"
         }
     ],
@@ -481,6 +485,10 @@
         {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": "AlphaSOC Wisdom",
+            "playbookID": "AlphaSOC-Wisdom-Test"
         }
     ]
 }
