@@ -96,7 +96,7 @@ script:
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-        ErrorFolderNotFound
+        ErrorFolderNotFound, ErrorToFolderNotFound
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -238,6 +238,11 @@ script:
             raise Exception("ItemId %s not found" % str(item_id))
         return result[0]
 
+
+    def get_build(version_str):
+        if version_str not in VERSIONS:
+            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
+        return VERSIONS[version_str]
 
     def get_version(version_str):
         if version_str not in VERSIONS:
@@ -424,7 +429,7 @@ script:
             mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
         else:
             entry = get_searchable_mailboxes(protocol)
-            mailboxes = entry[ENTRY_CONTEXT]['EWS.Mailboxes']
+            mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
             mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
 
         try:
@@ -469,7 +474,10 @@ script:
             if not FETCH_ALL_HISTORY:
                 last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
                 qs = qs.filter(datetime_received__gte=last_10_min)
-        qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
+        fields = map(lambda x: x.name, Message.FIELDS)
+        if get_build(VERSION_STR) <= EXCHANGE_2010_SP2:
+            fields = filter(lambda x: x != 'text_body', fields)
+        qs = qs.filter().only(*fields)
         result = qs.all()
         result = [x for x in result if isinstance(x, Message)]
         if exclude_ids and len(exclude_ids) > 0:
@@ -650,21 +658,6 @@ script:
                     # save the attachment
                     file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
 
-                    inner_file_result = None
-                    for inner_attachment in attachment.item.attachments:
-                        if isinstance(inner_attachment, FileAttachment):
-                            inner_file_result = fileResult(inner_attachment.name, inner_attachment.content)
-                            incident['attachment'].append({
-                                'path': inner_file_result['FileID'],
-                                'name': inner_attachment.name
-                            })
-                        else:
-                            inner_file_result = fileResult(inner_attachment.name + ".eml", inner_attachment.item.mime_content)
-                            incident['attachment'].append({
-                                'path': inner_file_result['FileID'],
-                                'name': inner_attachment.name + ".eml"
-                            })
-
                     # check for error
                     if file_result['Type'] == entryTypes['error']:
                         demisto.error(file_result['Contents'])
@@ -815,15 +808,6 @@ script:
 
         return entries
 
-    def get_inner_attachments(item_attachment):
-        entries = []
-        for attachment in item_attachment.item.attachments:
-            if isinstance(attachment, FileAttachment):
-                entries.append(fileResult(attachment.name, attachment.content))
-            else:
-                entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
-        return entries
-
 
     def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -835,7 +819,6 @@ script:
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
                 entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
-                entries.extend(get_inner_attachments(attachment))
 
         return entries
 
@@ -844,7 +827,12 @@ script:
         destination_account = get_account(destination_mailbox or ACCOUNT_EMAIL)
         destination_folder = get_folder_by_path(destination_account, destination_folder_path)
         item = get_item_from_mailbox(source_account, item_id)
-        source_account.bulk_move(ids=[item], to_folder=destination_folder)
+        try:
+          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+        except ErrorToFolderNotFound:
+          source_account = get_account(source_mailbox or ACCOUNT_EMAIL, access_type=DELEGATE)
+          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+
         move_result = {
             MOVED_TO_MAILBOX: destination_mailbox,
             MOVED_TO_FOLDER: destination_folder_path,
@@ -1751,5 +1739,6 @@ script:
       description: The action, value will be 'moved'.
       type: string
     description: Move an item from one mailbox to another.
-  dockerimage: demisto/py-ews
+  dockerimage: demisto/py-ews:2.0
   isfetch: true
+releaseNotes: "Fixed issue when searching all mailboxes - skipped mailboxes without mailboxId."

@@ -1,29 +1,57 @@
 commonfields:
-  id: 6b33d8e5-44da-4322-8f06-c19bf4232cc6
-  version: 9
+  id: BuildEWSQuery
+  version: -1
 name: BuildEWSQuery
 script: |-
-  var keys = Object.keys(args);
-  var str = '';
-  for (var j in keys) {
-      if (args[keys[j]]) {
-          str += keys[j] + ':"' + args[keys[j]] + (j < (keys.length - 1) ? '" AND ' : '"');
-      }
-  }
-  return str || ' ';
-type: javascript
-comment: Returns an EWS query that includes the given arguments
+  args = {}
+
+  if demisto.args().get("from"):
+      args["From"] = demisto.args().get("from")
+  if demisto.args().get("subject"):
+      args["Subject"] = demisto.args().get("subject")
+  if demisto.args().get("attachmentName"):
+      args["AttachmentName"] = demisto.args().get("attachmentName")
+  if demisto.args().get("body"):
+      args["Body"] = demisto.args().get("body")
+
+  query = " AND ".join('{0}:"{1}"'.format(key,value) for (key,value) in args.items())
+
+  search_last_week = True if demisto.args().get("searchThisWeek").lower() == "true" else False
+  if search_last_week:
+      query = query + ' AND Received:"this week"'
+
+  demisto.results({
+      'ContentsFormat': formats["json"],
+      'Type': entryTypes["note"],
+      'Contents':  {"EWS":{"Query": query or ' '}},
+      "HumanReadable": query or ' ',
+      "EntryContext": {"EWS":{"Query": query or ' '}}
+  });
+type: python
 tags:
 - ews
-enabled: true
+comment: Returns an EWS query according to the automation's arguments.
+system: true
 args:
 - name: from
   default: true
-  description: Parameter 'from' of the query
+  description: The value of the email's "From" attribute.
 - name: subject
-  description: Parameter 'subject' of the query
+  description: The value of the email's "Subject" attribute.
 - name: attachmentName
-  description: Parameter 'attachmentName' of the query
+  description: The value of the email's "attachmentName" attribute.
 - name: body
-  description: Parameter 'body' of the query
+  description: The value of the email's "Body" attribute.
+- name: searchThisWeek
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Limit the search to the current week (true/false).
+  defaultValue: "true"
+outputs:
+- contextPath: EWS.Query
+  description: The result query
+  type: string
 scripttarget: 0
+runonce: false

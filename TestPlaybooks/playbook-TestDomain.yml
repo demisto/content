@@ -1,0 +1,271 @@
+id: test-domain-indicator
+version: -1
+name: test-domain-indicator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d73eea89-9664-4cbb-8716-b020ddec169d
+    type: start
+    task:
+      id: d73eea89-9664-4cbb-8716-b020ddec169d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 88b9c62b-1518-4c89-8fc8-aea9e3fec8ab
+    type: regular
+    task:
+      id: 88b9c62b-1518-4c89-8fc8-aea9e3fec8ab
+      version: -1
+      name: Print domains
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      value:
+        simple: |-
+          https://www.exit.com
+          trump@usa.com
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    taskid: e3538908-4f70-4e69-8724-e785a6d39f1c
+    type: regular
+    task:
+      id: e3538908-4f70-4e69-8724-e785a6d39f1c
+      version: -1
+      name: Get usa.com indicator
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      indicator:
+        simple: usa.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 2e2b5ffd-3cf0-4ae1-82b5-558da89f4557
+    type: regular
+    task:
+      id: 2e2b5ffd-3cf0-4ae1-82b5-558da89f4557
+      version: -1
+      name: Get exit.com indicator
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      indicator:
+        simple: exit.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 927a80fd-7959-4f62-8111-4309ee52a2cd
+    type: condition
+    task:
+      id: 927a80fd-7959-4f62-8111-4309ee52a2cd
+      version: -1
+      name: Has exit.com indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      expectedValue:
+        simple: usa.com
+      fields: {}
+      path:
+        simple: DBotScore.[3].Indicator
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: exit.com
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: exit.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "11":
+    id: "11"
+    taskid: b8bf7eff-4e48-46de-8e72-59a1a7aa2854
+    type: condition
+    task:
+      id: b8bf7eff-4e48-46de-8e72-59a1a7aa2854
+      version: -1
+      name: Has usa.com indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      expectedValue:
+        simple: usa.com
+      fields: {}
+      path:
+        simple: DBotScore.[3].Indicator
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: usa.com
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: usa.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 2d75dd08-c2cd-42ca-832b-91638c6d9ade
+    type: regular
+    task:
+      id: 2d75dd08-c2cd-42ca-832b-91638c6d9ade
+      version: -1
+      name: All Good
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: ALL GOOD
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "13":
+    id: "13"
+    taskid: ca818786-d32b-492a-8b3e-ef5cd62fabe8
+    type: regular
+    task:
+      id: ca818786-d32b-492a-8b3e-ef5cd62fabe8
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
