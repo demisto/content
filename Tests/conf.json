@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "GoogleApps API",
+            "playbookID": "GoogleAppsTest"
+        },
+        {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
         },
