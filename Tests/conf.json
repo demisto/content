@@ -484,6 +484,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Intezer Testing",
+            "playbookID": "AlphaSOC-Wisdom-Test"
         }
     ]
 }
