@@ -1,11 +1,11 @@
 commonfields:
-  id: GoogleApps API
+  id: Gmail
   version: -1
-name: GoogleApps API
-display: GoogleApps API
+name: Gmail
+display: Gmail
 category: Authentication
-image: data:image/png;base64,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
-description: Google apps Admin API, or GSuite
+image: data:image/png;base64,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
+description: Gmail API and user management
 detaileddescription: "This API enables the usage of Google Admin API. In order to
   enable it, you will need to create an account service private key json file and
   copy its content.\nFollow the steps here to create such a private key and authorize
@@ -37,7 +37,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Events query (e.g. "from:Demisto")
+- display: Events query (e.g. "from:example@demisto.com")
   name: query
   defaultvalue: ""
   type: 0
@@ -129,7 +129,9 @@ script:
 
 
     def get_email_context(email_data, mailbox):
-        headers = dict([(h['name'].lower(), h['value']) for h in email_data.get('payload', {}).get('headers', [])])
+        context_headers = email_data.get('payload', {}).get('headers', [])
+        context_headers = [{'Name' : v['name'], 'Value':v['value']} for v in context_headers]
+        headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
         body = demisto.get(email_data, 'payload.body.data')
         body = body.encode('ascii') if body is not None else ''
         parsed_body = base64.urlsafe_b64decode(body)
@@ -140,7 +142,7 @@ script:
             'ID' : email_data['id'],
             'ThreadId' : email_data['threadId'],
             'Labels' : ', '.join(email_data['labelIds']),
-            'Headers' : ', '.join(headers.keys()),
+            'Headers' : context_headers,
             'Attachments' : email_data.get('payload', {}).get('filename', ''),
             # only for format 'raw'
             'RawData' : email_data.get('raw'),
@@ -165,6 +167,7 @@ script:
 
         if 'multipart' in context['Format']:
             context['Body'], context['Html'], context['Attachments'] = parse_mail_parts(email_data.get('payload', {}).get('parts', []))
+            context['Attachment Names'] = ', '.join([attachment['Name'] for attachment in context['Attachments']])
 
         return context, headers
 
@@ -204,10 +207,10 @@ script:
             emails.append(context)
 
         headers = {
-            'minimal' : ['Mailbox', 'ID', 'Labels', 'Headers', 'Attachments', ],
-            'raw' : ['MailBox', 'ID', 'Labels', 'Headers', 'Attachments', 'RawData'],
-            'metadata' : ['MailBox', 'ID', 'Labels', 'Headers', 'Attachments', 'Format', 'Subject', 'From', 'To'],
-            'full' : ['Mailbox', 'ID', 'Labels', 'Headers', 'Attachments', 'Format', 'Subject', 'From', 'To', 'Body'],
+            'minimal' : ['Mailbox', 'ID', 'Labels', 'Attachment Names', ],
+            'raw' : ['MailBox', 'ID', 'Labels', 'Attachment Names', 'RawData'],
+            'metadata' : ['MailBox', 'ID', 'Subject', 'From', 'To', 'Labels', 'Attachment Names', 'Format'],
+            'full' : ['Mailbox', 'ID', 'Subject', 'From', 'To', 'Labels', 'Attachment Names', 'Format', 'Body'],
         }
 
         return {
@@ -252,7 +255,7 @@ script:
             })
 
         return {
-            # 'type' : 'Gmail',
+            'type' : 'Gmail',
             'name' : parsed_msg['Subject'],
             'details' : parsed_msg['Body'],
             'labels' : create_incident_labels(parsed_msg, headers),
@@ -332,95 +335,6 @@ script:
         }
 
 
-    def devices_to_entry(title, response):
-        context = []
-        for device_data in response:
-            context.append({
-                'ResourceId' : device_data.get('resourceId'),
-                'Applications' : ','.join([app['displayName'] for app in device_data.get('applications', [])]),
-                'Packges' : ','.join([app['packageName'] for app in device_data.get('applications', [])]),
-                'Applications Versions' : ','.join([app['versionName'] for app in device_data.get('applications', [])]),
-                'Application Permissions' : ','.join([app['permission'] for app in device_data.get('applications', [])]),
-                'Kind' : device_data.get('kind'),
-                'BootloaderVersion' : device_data.get('bootloaderVersion'),
-                'BuildNumber' : device_data.get('buildNumber'),
-                'DefaultLanguage' : device_data.get('defaultLanguage'),
-                'DeviceCompromisedStatus' : device_data.get('deviceCompromisedStatus'),
-                'DeviceId' : device_data.get('deviceId'),
-                'Brand' : device_data.get('brand'),
-                'DevicePasswordStatus' : device_data.get('devicePasswordStatus'),
-                'Email' : ','.join(device_data.get('email', [])),
-                'Imei' : device_data.get('imei'),
-                'Hardware' : device_data.get('hardwareId'),
-                'KernelVersion' : device_data.get('kernelVersion'),
-                'Type' : device_data.get('type'),
-                'SerialNumber' : device_data.get('serialNumber'),
-                'Model' : device_data.get('model'),
-                'Name' : device_data.get('name'),
-                'Os' : device_data.get('os'),
-                'Status' : device_data.get('status'),
-                'WifiMacAddress' : device_data.get('wifiMacAddress'),
-            })
-
-        headers = ['ResourceId', 'Applications', 'Packges',
-            'Applications Versions', 'Application Permissions', 'Kind', 'BootloaderVersion', 'BuildNumber', 'DefaultLanguage',
-            'DeviceCompromisedStatus', 'DeviceId', 'Brand', 'DevicePasswordStatus', 'Email', 'Imei', 'Hardware',
-            'KernelVersion', 'Type', 'SerialNumber', 'Model', 'Name', 'Os', 'Status', 'WifiMacAddress',]
-
-        return {
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': context,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, context, headers),
-            'EntryContext': {'Device(val.DeviceId && val.DeviceId == obj.DeviceId)' : context}
-        }
-
-
-    def chrome_devices_to_entry(title, response):
-        context = []
-        for device_data in response:
-            context.append({
-                'Kind' : device_data.get('kind'),
-                'BootMode' : device_data.get('bootMode'),
-                'ActiveTimeRanges' : ','.join([time['date'] for time in device_data.get('activeTimeRanges', [])]),
-                'recentUsersEmails' : ','.join([user['email'] for user in device_data.get('recentUsers', [])]),
-                'recentUsersTypes' : ','.join([user['type'] for user in device_data.get('recentUsers', [])]),
-                'AnnotatedAssetId' : device_data.get('AnnotatedAssetId'),
-                'AnnotatedLocation' : device_data.get('annotatedLocation'),
-                'EthernetMacAddress' : device_data.get('ethernetMacAddress'),
-                'FirmwareVersion' : device_data.get('firmwareVersion'),
-                'DeviceId' : device_data.get('deviceId'),
-                'LastEnrollmentTime' : device_data.get('lastEnrollmentTime'),
-                'Meid' : device_data.get('meid'),
-                'Notes' : device_data.get('notes'),
-                'OrderNumber' : device_data.get('orderNumber'),
-                'OrgUnitPath' : device_data.get('orgUnitPath'),
-                'PlatformVersion' : device_data.get('platformVersion'),
-                'SerialNumber' : device_data.get('serialNumber'),
-                'Model' : device_data.get('model'),
-                'SupportEndDate' : device_data.get('supportEndDate'),
-                'OsVersion' : device_data.get('osVersion'),
-                'Status' : device_data.get('status'),
-                'MacAddress' : device_data.get('macAddress'),
-                'LastSync' : device_data.get('lastSync'),
-            })
-        headers = ['Kind', 'BootMode', 'ActiveTimeRanges', 'recentUsersEmails',
-            'recentUsersTypes', 'AnnotatedAssetId', 'AnnotatedLocation', 'EthernetMacAddress', 'FirmwareVersion',
-            'DeviceId', 'LastEnrollmentTime', 'Meid', 'Notes', 'OrderNumber', 'OrgUnitPath', 'PlatformVersion', 'SerialNumber',
-            'Model', 'SupportEndDate', 'OsVersion', 'Status', 'MacAddress', 'LastSync',
-        ]
-
-        return {
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': context,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, context, headers),
-            'EntryContext': {'ChromeDevice(val.DeviceId && val.DeviceId == obj.DeviceId)' : context}
-        }
-
-
     ''' FUNCTIONS '''
     def list_users():
         command_args = {}
@@ -463,14 +377,14 @@ script:
         return users_to_entry('User %s:' % (command_args['userKey'], ), [result])
 
 
-    def insert_user():
+    def create_user():
         command_args = {}
         args = demisto.args()
         command_args['primaryEmail'] = args['email']
         command_args['name'] = {
-            'givenName' : args['given-name'],
+            'givenName' : args['first-name'],
             'familyName' : args['family-name'],
-            'fullName' : args['given-name'] + args['family-name'],
+            'fullName' : '%s %s' % (args['first-name'], args['family-name'], ),
         }
         command_args['password'] = args.get('password', '')
 
@@ -543,7 +457,7 @@ script:
         return 'Role has been deleted.'
 
 
-    def gmail_search_all_mailboxes():
+    def search_all_mailboxes():
         command_args = {
             'maxResults' : 100,
             'domain' : ADMIN_EMAIL.split('@')[1],
@@ -555,17 +469,20 @@ script:
 
         entries = []
         for user in result['users']:
-            entries.append(gmail_search(user['primaryEmail']))
+            entries.append(search(user['primaryEmail']))
 
         return entries
 
 
-    def gmail_search(mailbox=None):
+    def search(mailbox=None, q=''):
         command_args = {}
         args = demisto.args()
 
+        QUERY_VALUES = ['from', 'subject', 'filename', 'label', 'in', 'after', 'before', ]
+        q += ' ' + ' '.join('%s:%s ' % (qv, args[qv], ) for qv in QUERY_VALUES if args.get(qv) is not None)
+
         command_args['userId'] = args.get('user-key') if mailbox is None else mailbox
-        command_args['q'] = args.get('query')
+        command_args['q'] = '%s %s' % (q, args.get('query', ''), )
         command_args['maxResults'] = int(args.get('max-results', 100))
         command_args['fields'] = args.get('fields') #TODO
         command_args['labelIds'] = [l for l in args.get('labels-ids', '').split(',') if l != '']
@@ -584,22 +501,21 @@ script:
             'userId' : command_args['userId'],
             'format' : 'full'
         }
-        for mail in result['messages']:
+        for mail in result.get('messages', []):
             mail_args['id'] = mail['id']
             mails.append(service.users().messages().get(**mail_args).execute())
 
-        return emails_to_entry('Search in %s: %s' % (command_args['userId'], command_args['q'], ),
+        return emails_to_entry('Search in %s:\nquery:"%s"' % (command_args['userId'], command_args['q'], ),
             mails, mail_args['format'], command_args['userId'])
 
 
-    def gmail_get_mail():
+    def get_mail():
         command_args = {}
         args = demisto.args()
 
         command_args['userId'] = args.get('user-key')
         command_args['id'] = args.get('message-id')
         command_args['format'] = args.get('format')
-        command_args['fields'] = args.get('fields') #TODO
 
         credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',])
         service = discovery.build('gmail', 'v1', credentials=credentials)
@@ -608,23 +524,34 @@ script:
         return emails_to_entry('Email:', [result], command_args['format'], command_args['userId'])
 
 
-    def gmail_get_attachment():
-        command_args = {}
+    def get_attachments():
+        mail_args = {}
         args = demisto.args()
 
-        command_args['messageId'] = args.get('message-id')
-        command_args['id'] = args.get('attachment-id')
-        command_args['userId'] = args.get('user-key')
-
+        mail_args['id'] = args.get('message-id')
+        mail_args['userId'] = args.get('user-key')
+        mail_args['format'] = 'full'
         credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',])
         service = discovery.build('gmail', 'v1', credentials=credentials)
-        result = service.users().messages().attachments().get(**command_args).execute()
-
-        file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-        return fileResult('Gmail_Attachment', file_data)
+        result = service.users().messages().get(**mail_args).execute()
+        result = get_email_context(result, mail_args['userId'])[0]
 
 
-    def gmail_delete_mail():
+        command_args = {
+            'messageId' : args.get('message-id'),
+            'userId' : args.get('user-key'),
+        }
+        files = []
+        for attachment in result['Attachments']:
+            command_args['id'] = attachment['ID']
+            result = service.users().messages().attachments().get(**command_args).execute()
+            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+            files.append(fileResult(attachment['Name'], file_data))
+
+        return files
+
+
+    def delete_mail():
         command_args = {}
         args = demisto.args()
         permanent = bool(strtobool(args.get('permanent', 'false')))
@@ -654,70 +581,6 @@ script:
         result = service.tokens().list(**command_args).execute()
 
         return tokens_to_entry('Tokens:', result['items'])
-
-
-    def get_user_devices():
-        command_args = {}
-        args = demisto.args()
-
-        command_args['customerId'] = GAPPS_ID
-        command_args['query'] = args.get('query')
-
-        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly'])
-        service = discovery.build('admin', 'directory_v1', credentials=credentials)
-        result = service.mobiledevices().list(**command_args).execute()
-
-        return devices_to_entry('Devices:', result['mobiledevices'])
-
-
-    def device_action():
-        command_args = {}
-        args = demisto.args()
-
-        command_args['customerId'] = args['customerId']
-        command_args['resouceId'] = args['resource-id']
-        command_args['action'] = args['action']
-
-        command_args['user-key'] = args.get('user-key')
-        command_args['token'] = args.get('token')
-
-        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.device.mobile'])
-        service = discovery.build('admin', 'directory_v1', credentials=credentials)
-        result = service.mobiledevices().action(**command_args).execute()
-
-        return 'action "%s" on mobile device executed.' % (args['action'], )
-
-
-    def get_user_chrome_devices():
-        command_args = {}
-        args = demisto.args()
-
-        command_args['customerId'] = GAPPS_ID
-        command_args['query'] = args.get('query')
-
-        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'])
-        service = discovery.build('admin', 'directory_v1', credentials=credentials)
-        result = service.chromeosdevices().list(**command_args).execute()
-
-        return chrome_devices_to_entry('Chrome Devices:', result['chromeosdevices'])
-
-
-    def chrome_devices_action():
-        command_args = {}
-        args = demisto.args()
-
-        command_args['customerId'] = args['customerId']
-        command_args['resouceId'] = args['resource-id']
-        command_args['action'] = args['action']
-
-        command_args['user-key'] = args.get('user-key')
-        command_args['token'] = args.get('token')
-
-        credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'])
-        service = discovery.build('admin', 'directory_v1', credentials=credentials)
-        result = service.chromeosdevices().action(**command_args).execute()
-
-        return 'action "%s" on chrome device executed.' % (args['action'], )
 
 
     def fetch_incidents():
@@ -772,38 +635,30 @@ script:
         if demisto.command() == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
             sys.exit(0)
-        elif demisto.command() == 'googleapps-list-users':
+        elif demisto.command() == 'gmail-list-users':
             demisto.results(list_users())
-        elif demisto.command() == 'googleapps-get-user':
+        elif demisto.command() == 'gmail-get-user':
             demisto.results(get_user())
-        elif demisto.command() == 'googleapps-insert-user':
-            demisto.results(insert_user())
-        elif demisto.command() == 'googleapps-delete-user':
+        elif demisto.command() == 'gmail-create-user':
+            demisto.results(create_user())
+        elif demisto.command() == 'gmail-delete-user':
             demisto.results(delete_user())
-        elif demisto.command() == 'googleapps-get-user-roles':
+        elif demisto.command() == 'gmail-get-user-roles':
             demisto.results(get_user_role())
-        elif demisto.command() == 'googleapps-revoke-user-role':
+        elif demisto.command() == 'gmail-revoke-user-role':
             demisto.results(revoke_user_roles())
-        elif demisto.command() == 'googleapps-gmail-search-all-mailboxes':
-            demisto.results(gmail_search_all_mailboxes())
-        elif demisto.command() == 'googleapps-gmail-search':
-            demisto.results(gmail_search())
-        elif demisto.command() == 'googleapps-gmail-get-mail':
-            demisto.results(gmail_get_mail())
-        elif demisto.command() == 'googleapps-gmail-get-attachment':
-            demisto.results(gmail_get_attachment())
-        elif demisto.command() == 'googleapps-gmail-delete-mail':
-            demisto.results(gmail_delete_mail())
-        elif demisto.command() == 'googleapps-get-tokens-for-user':
+        elif demisto.command() == 'gmail-search-all-mailboxes':
+            demisto.results(search_all_mailboxes())
+        elif demisto.command() == 'gmail-search':
+            demisto.results(search())
+        elif demisto.command() == 'gmail-get-mail':
+            demisto.results(get_mail())
+        elif demisto.command() == 'gmail-get-attachments':
+            demisto.results(get_attachments())
+        elif demisto.command() == 'gmail-delete-mail':
+            demisto.results(delete_mail())
+        elif demisto.command() == 'gmail-get-tokens-for-user':
             demisto.results(get_user_tokens())
-        elif demisto.command() == 'googleapps-get-devices-for-user':
-            demisto.results(get_user_devices())
-        elif demisto.command() == 'googleapps-device-action':
-            demisto.results(device_action())
-        elif demisto.command() == 'googleapps-get-chrome-devices-for-user':
-            demisto.results(get_user_chrome_devices())
-        elif demisto.command() == 'googleapps-chrome-device-action':
-            demisto.results(chrome_devices_action())
 
     except Exception, e:
         LOG('%s: %s' % (type(e), e.message, ))
@@ -818,42 +673,7 @@ script:
         raise
   type: python
   commands:
-  - name: googleapps-chrome-device-action
-    arguments:
-    - name: costumerId
-      required: true
-      default: true
-      description: Unique identifier of the customer's Google account. use !googleapps-get-user
-        to get this argument using user key, default is "my_customer"
-      defaultValue: my_customer
-    - name: action
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - deprovision
-      - disable
-      - reenable
-      description: 'Action to be taken on the Chrome OS device. Acceptable values
-        are: "deprovision": Remove a device from management that is no longer active,
-        being resold, or is being submitted for return / repair, use the deprovision
-        action to dissociate it from management.  "disable": If you believe a device
-        in your organization has been lost or stolen, you can disable the device so
-        that no one else can use it.  "reenable": Re-enable a disabled device when
-        a misplaced device is found or a lost device is returned.'
-    - name: deprovision-reason
-      required: true
-      description: Only used when the action is deprovision. With the deprovision
-        action, this field is required
-    - name: resource-id
-      required: true
-      description: The unique ID the API service uses to identify the mobile device.
-    - name: token
-      description: Token to authorize and authenticate the action
-    - name: user-key
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
-    description: Action to be taken on the Chrome OS Device
-  - name: googleapps-delete-user
+  - name: gmail-delete-user
     arguments:
     - name: user-key
       required: true
@@ -861,65 +681,7 @@ script:
       description: Identifies the user in the API request. The value can be the user's
         primary email address, alias email address, or unique user ID.
     description: Delete a User
-  - name: googleapps-device-action
-    arguments:
-    - name: customerId
-      required: true
-      default: true
-      description: Unique identifier of the customer's Google account. use !googleapps-get-user
-        to get this argument using user key, default is "my_customer"
-      defaultValue: my_customer
-    - name: action
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - admin_account_wipe
-      - admin_remote_wipe
-      - approve
-      - block
-      - cancel_remote_wipe_then_activate
-      - cancel_remote_wipe_then_block
-      description: 'The action to be performed on the device. Acceptable values are:
-        "admin_account_wipe": Remotely wipes only G Suite data from the device.  "admin_remote_wipe":
-        Remotely wipes all data on the device.  "approve": Approves the device.  "block":
-        Blocks access to G Suite data (mail, calendar, and contacts) on the device.
-        The user can still access their mail, calendar, and contacts from a desktop
-        computer or mobile browser.  "cancel_remote_wipe_then_activate": Cancels a
-        remote wipe of the device and then reactivates it.  "cancel_remote_wipe_then_block":
-        Cancels a remote wipe of the device and then blocks it.'
-    - name: resource-id
-      required: true
-      description: The unique ID the API service uses to identify the mobile device.
-    - name: token
-      description: Token to authorize and authenticate the action
-    - name: user-key
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
-    description: Takes an action that affects a mobile device. For example, remotely
-      wiping a device.
-  - name: googleapps-get-chrome-devices-for-user
-    arguments:
-    - name: customerId
-      required: true
-      default: true
-      description: Unique identifier of the customer's Google account. use !googleapps-get-user
-        to get this argument using user key, default is "my_customer"
-      defaultValue: my_customer
-    - name: query
-      description: Query string search. Should be of the form "". Complete documentation
-        is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users
-    description: Retrieve all Chrome OS Devices of a customer.
-  - name: googleapps-get-devices-for-user
-    arguments:
-    - name: customerId
-      description: Unique identifier of the customer's Google account. use !googleapps-get-user
-        to get this argument using user key, default is "my_customer"
-      defaultValue: my_customer
-    - name: query
-      description: Query string search. Should be of the form "". Complete documentation
-        is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users
-    description: Retrieve all Mobile Devices of a customer.
-  - name: googleapps-get-tokens-for-user
+  - name: gmail-get-tokens-for-user
     arguments:
     - name: user-key
       required: true
@@ -928,7 +690,7 @@ script:
         primary email address, alias email address, or unique user ID.
     description: Returns the set of tokens specified user has issued to 3rd party
       applications.
-  - name: googleapps-get-user
+  - name: gmail-get-user
     arguments:
     - name: user-key
       required: true
@@ -980,7 +742,7 @@ script:
       description: Group associated with current account
       type: string
     description: Fetch info on specific user
-  - name: googleapps-get-user-roles
+  - name: gmail-get-user-roles
     arguments:
     - name: user-key
       required: true
@@ -1007,20 +769,17 @@ script:
       description: User Id who was assigned to role
       type: string
     description: Retrieves a list of all roleAssignments.
-  - name: googleapps-gmail-get-attachment
+  - name: gmail-get-attachments
     arguments:
     - name: message-id
       required: true
       description: The ID of the message to retrieve
-    - name: attachment-id
-      required: true
-      description: The ID of the attachment to retrieve
     - name: user-key
       required: true
       description: ' Identifies the user in the API request. The value can be the
         user''s primary email address, alias email address, or unique user ID.'
-    description: Gets the specified attachment.
-  - name: googleapps-gmail-get-mail
+    description: Gets the all attachments of an email.
+  - name: gmail-get-mail
     arguments:
     - name: user-key
       required: true
@@ -1030,9 +789,6 @@ script:
     - name: message-id
       required: true
       description: The ID of the message to retrieve
-    - name: fields
-      description: Fields allows partial responses to be retrieved. See https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
-        for more information. (comma separated list)
     - name: format
       auto: PREDEFINED
       predefined:
@@ -1083,10 +839,10 @@ script:
       description: Attachments ids separated by ','
       type: unknown
     - contextPath: Email.Headers
-      description: All headers of specific mail
-      type: string
+      description: All headers of specific mail (list)
+      type: unknown
     description: Gets the specified message.
-  - name: googleapps-gmail-search
+  - name: gmail-search
     arguments:
     - name: user-key
       required: true
@@ -1117,6 +873,24 @@ script:
       description: ' Include messages from SPAM and TRASH in the results. (Default:
         false)'
       defaultValue: "False"
+    - name: from
+      description: 'Specify the sender. for example: "john"'
+    - name: subject
+      description: 'Words in the subject line. for example: "alert"'
+    - name: filename
+      description: 'Attachments with a certain name or file type. for example: "pdf"
+        or "report.pdf"'
+    - name: label
+      description: 'Messages that have a certain label. for example: unread'
+    - name: in
+      description: 'Messages in any folder, including Spam and Trash. for example:
+        shopping'
+    - name: after
+      description: 'Search for messages sent during a certain time period. for example:
+        2018/05/06'
+    - name: before
+      description: 'Search for messages sent during a certain time period. for example:
+        2018/05/09'
     outputs:
     - contextPath: Email.ID
       description: Inner Id of mail in gmail
@@ -1152,10 +926,10 @@ script:
       description: Attachments ids separated by ','
       type: unknown
     - contextPath: Email.Headers
-      description: All headers of specific mail
-      type: string
+      description: All headers of specific mail (list)
+      type: unknown
     description: Search for messages in the user's mailbox.
-  - name: googleapps-gmail-search-all-mailboxes
+  - name: gmail-search-all-mailboxes
     arguments:
     - name: query
       description: 'Only return messages matching the specified query. Supports the
@@ -1181,6 +955,26 @@ script:
       description: ' Include messages from SPAM and TRASH in the results. (Default:
         false)'
       defaultValue: "False"
+    - name: from
+      description: 'Specify the sender. for example: "john"'
+    - name: to
+      description: 'Specify the receiver. for example: "john"'
+    - name: subject
+      description: 'Words in the subject line. for example: "alert"'
+    - name: filename
+      description: 'Attachments with a certain name or file type. for example: "pdf"
+        or "report.pdf"'
+    - name: label
+      description: 'Messages that have a certain label. for example: unread'
+    - name: in
+      description: 'Messages in any folder, including Spam and Trash. for example:
+        shopping'
+    - name: after
+      description: 'Search for messages sent during a certain time period. for example:
+        2018/05/06'
+    - name: before
+      description: 'Search for messages sent during a certain time period. for example:
+        2018/05/09'
     outputs:
     - contextPath: Email.ID
       description: Inner Id of mail in gmail
@@ -1216,10 +1010,10 @@ script:
       description: Attachments ids separated by ','
       type: unknown
     - contextPath: Email.Headers
-      description: All headers of specific mail
-      type: string
+      description: All headers of specific mail (list)
+      type: unknown
     description: Search for messages in all mailboxes.
-  - name: googleapps-list-users
+  - name: gmail-list-users
     arguments:
     - name: projection
       auto: PREDEFINED
@@ -1320,14 +1114,14 @@ script:
       description: Identifies the user in the API request. The value can be the user's
         primary email address, alias email address, or unique user ID.
     description: Deletes a role assignment.
-  - name: googleapps-insert-user
+  - name: gmail-create-user
     arguments:
     - name: email
       required: true
       default: true
       description: The user's primary email address. The primaryEmail must be unique
         and cannot be an alias of another user.
-    - name: given-name
+    - name: first-name
       required: true
       description: The user's first name.
     - name: family-name
@@ -1358,7 +1152,7 @@ script:
       description: Group associated with current accout
       type: string
     description: Creates a user.
-  - name: googleapps-gmail-delete-mail
+  - name: gmail-delete-mail
     arguments:
     - name: user-key
       required: true
@@ -1378,4 +1172,4 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
-releaseNotes: "new BYOI Google Apps integration"
+releaseNotes: "new BYOI Gmail integration"

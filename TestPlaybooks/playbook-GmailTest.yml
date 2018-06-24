@@ -1,6 +1,6 @@
-id: GoogleAppsTest
+id: GmailTest
 version: -1
-name: GoogleAppsTest
+name: GmailTest
 starttaskid: "0"
 tasks:
   "0":
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 50
         }
       }
@@ -48,22 +48,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 195
         }
       }
   "2":
     id: "2"
-    taskid: 02b5dcaf-1656-4298-8f75-6c0f8850c90c
+    taskid: 7820bb6b-0b10-4a56-83e9-0632c7c732e3
     type: regular
     task:
-      id: 02b5dcaf-1656-4298-8f75-6c0f8850c90c
+      id: 7820bb6b-0b10-4a56-83e9-0632c7c732e3
       version: -1
       name: List all users
-      script: GoogleApps API|||googleapps-list-users
+      script: Gmail|||gmail-list-users
       type: regular
       iscommand: true
-      brand: GoogleApps API
+      brand: Gmail
     nexttasks:
       '#none#':
       - "3"
@@ -83,22 +83,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 515
         }
       }
   "3":
     id: "3"
-    taskid: a4dd13cf-2166-4234-8ad7-0f0407c17c49
+    taskid: e83862fc-822f-45af-8050-6885158dcb77
     type: regular
     task:
-      id: a4dd13cf-2166-4234-8ad7-0f0407c17c49
+      id: e83862fc-822f-45af-8050-6885158dcb77
       version: -1
       name: Get specific user
-      script: GoogleApps API|||googleapps-get-user
+      script: Gmail|||gmail-get-user
       type: regular
       iscommand: true
-      brand: GoogleApps API
+      brand: Gmail
     nexttasks:
       '#none#':
       - "4"
@@ -133,7 +133,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 690
         }
       }
@@ -163,22 +163,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 865
         }
       }
   "5":
     id: "5"
-    taskid: 618e0494-dce2-4541-8aa0-0ce987ffec5b
+    taskid: 9a660df8-640f-4c90-8604-f537775434ff
     type: regular
     task:
-      id: 618e0494-dce2-4541-8aa0-0ce987ffec5b
+      id: 9a660df8-640f-4c90-8604-f537775434ff
       version: -1
       name: Create new user
-      script: GoogleApps API|||googleapps-insert-user
+      script: Gmail|||gmail-create-user
       type: regular
       iscommand: true
-      brand: GoogleApps API
+      brand: Gmail
     nexttasks:
       '#none#':
       - "6"
@@ -187,7 +187,7 @@ tasks:
         simple: JohnS${TimeNowUnix}@demistodev.com
       family-name:
         simple: Smith
-      given-name:
+      first-name:
         simple: John
       password:
         simple: johnpass1!
@@ -195,26 +195,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 1040
         }
       }
   "6":
     id: "6"
-    taskid: ec9aa9ea-8721-4544-83f4-ce9be74ce83a
+    taskid: b43589f0-7afd-4167-833b-db0dd03bfb8c
     type: regular
     task:
-      id: ec9aa9ea-8721-4544-83f4-ce9be74ce83a
+      id: b43589f0-7afd-4167-833b-db0dd03bfb8c
       version: -1
       name: Delete User
-      script: GoogleApps API|||googleapps-delete-user
+      script: Gmail|||gmail-delete-user
       type: regular
       iscommand: true
-      brand: GoogleApps API
+      brand: Gmail
     nexttasks:
       '#none#':
-      - "11"
-      - "12"
       - "13"
     scriptarguments:
       user-key:
@@ -244,7 +242,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 1215
         }
       }
@@ -262,11 +260,12 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
+      - "16"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 910,
           "y": 370
         }
       }
@@ -288,80 +287,65 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 370
         }
       }
   "9":
     id: "9"
-    taskid: 451bd7f3-0a5b-4ffe-819d-bc5540eea282
+    taskid: 5da9c388-670b-4a1b-82bd-fed3a1ac0cb6
     type: regular
     task:
-      id: 451bd7f3-0a5b-4ffe-819d-bc5540eea282
+      id: 5da9c388-670b-4a1b-82bd-fed3a1ac0cb6
       version: -1
       name: Search emails with attachments
-      script: GoogleApps API|||googleapps-gmail-search
+      script: Gmail|||gmail-search
       type: regular
       iscommand: true
-      brand: GoogleApps API
+      brand: Gmail
     nexttasks:
       '#none#':
       - "10"
       - "14"
     scriptarguments:
+      after: {}
+      before: {}
       fields: {}
+      filename: {}
+      from: {}
+      in: {}
       include-spam-trash: {}
+      label: {}
       labels-ids: {}
       max-results:
         simple: "10"
       page-token: {}
       query:
         simple: has:attachment
+      subject: {}
       user-key:
         simple: admin@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 695,
           "y": 515
         }
       }
   "10":
     id: "10"
-    taskid: 05ac34db-6730-4ce8-89c9-e2065f888dfb
+    taskid: fbd7cf70-ab59-474b-8a2c-d00a75715f0a
     type: regular
     task:
-      id: 05ac34db-6730-4ce8-89c9-e2065f888dfb
+      id: fbd7cf70-ab59-474b-8a2c-d00a75715f0a
       version: -1
       name: Get mail with attachment
-      script: GoogleApps API|||googleapps-gmail-get-attachment
+      script: Gmail|||gmail-get-attachments
       type: regular
       iscommand: true
-      brand: GoogleApps API
+      brand: Gmail
     scriptarguments:
-      attachment-id:
-        complex:
-          root: Email
-          filters:
-          - - operator: general.isNotEmpty
-              left:
-                value:
-                  simple: Email.Attachments
-                iscontext: true
-          transformers:
-          - operator: general.e56a7467-e156-4296-8c87-25b64aa20b3a
-          - operator: general.getField
-            args:
-              field:
-                value:
-                  simple: Attachments
-          - operator: general.e56a7467-e156-4296-8c87-25b64aa20b3a
-          - operator: general.getField
-            args:
-              field:
-                value:
-                  simple: ID
       message-id:
         complex:
           root: Email
@@ -384,26 +368,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 480,
           "y": 690
         }
       }
-  "11":
-    id: "11"
-    taskid: e3e81383-abcd-4c59-8ef5-e999b1160333
+  "13":
+    id: "13"
+    taskid: 2dbed4ad-0f09-425f-8a93-34d4972dbdd2
     type: regular
     task:
-      id: e3e81383-abcd-4c59-8ef5-e999b1160333
+      id: 2dbed4ad-0f09-425f-8a93-34d4972dbdd2
       version: -1
-      name: Get chrome devices
-      script: GoogleApps API|||googleapps-get-chrome-devices-for-user
+      name: Get Tokens
+      script: Gmail|||gmail-get-tokens-for-user
       type: regular
       iscommand: true
-      brand: GoogleApps API
+      brand: Gmail
     scriptarguments:
-      customerId:
-        simple: my_customer
-      query: {}
+      user-key:
+        simple: admin@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -412,66 +395,19 @@ tasks:
           "y": 1390
         }
       }
-  "12":
-    id: "12"
-    taskid: a3f03b7e-caa8-46ee-8d8e-3d00f57f37f6
-    type: regular
-    task:
-      id: a3f03b7e-caa8-46ee-8d8e-3d00f57f37f6
-      version: -1
-      name: Get Devices
-      script: GoogleApps API|||googleapps-get-devices-for-user
-      type: regular
-      iscommand: true
-      brand: GoogleApps API
-    scriptarguments:
-      customerId: {}
-      query: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1390
-        }
-      }
-  "13":
-    id: "13"
-    taskid: f4a6c845-362e-405b-8e6d-b634f0d31ba5
-    type: regular
-    task:
-      id: f4a6c845-362e-405b-8e6d-b634f0d31ba5
-      version: -1
-      name: Get Tokens
-      script: GoogleApps API|||googleapps-get-tokens-for-user
-      type: regular
-      iscommand: true
-      brand: GoogleApps API
-    scriptarguments:
-      user-key:
-        simple: admin@demistodev.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1390
-        }
-      }
   "14":
     id: "14"
-    taskid: 752d5ed6-87d9-4e06-806a-8699a793d172
+    taskid: 70b2464e-4a0a-4a6f-8fef-f9a5e3c04c15
     type: regular
     task:
-      id: 752d5ed6-87d9-4e06-806a-8699a793d172
+      id: 70b2464e-4a0a-4a6f-8fef-f9a5e3c04c15
       version: -1
       name: Get Email data
-      script: GoogleApps API|||googleapps-gmail-get-mail
+      script: Gmail|||gmail-get-mail
       type: regular
       iscommand: true
-      brand: GoogleApps API
+      brand: Gmail
     scriptarguments:
-      fields: {}
       format: {}
       message-id:
         complex:
@@ -489,8 +425,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 910,
           "y": 690
+        }
+      }
+  "16":
+    id: "16"
+    taskid: d6fcde30-3dc9-4c5e-89d9-77e02ba26e07
+    type: regular
+    task:
+      id: d6fcde30-3dc9-4c5e-89d9-77e02ba26e07
+      version: -1
+      name: Search all mailboxes
+      script: Gmail|||gmail-search-all-mailboxes
+      type: regular
+      iscommand: true
+      brand: Gmail
+    scriptarguments:
+      after:
+        simple: 2018/1/20
+      before:
+        simple: 2018/1/30
+      fields: {}
+      filename: {}
+      from: {}
+      in: {}
+      include-spam-trash: {}
+      label: {}
+      labels-ids: {}
+      max-results:
+        simple: "2"
+      page-token: {}
+      query:
+        simple: has:attachment
+      subject: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 515
         }
       }
 view: |-
