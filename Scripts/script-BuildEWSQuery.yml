@@ -2,7 +2,7 @@ commonfields:
   id: BuildEWSQuery
   version: -1
 name: BuildEWSQuery
-releaseNotes: "Add paramter for stripping the subject from prefixes"
+releaseNotes: "Add parameter for stripping the subject from prefixes"
 script: |-
   import re
 
@@ -22,7 +22,17 @@ script: |-
 
   stripSubject = True if demisto.args().get("stripSubject").lower() == "true" else False
   if stripSubject and args["Subject"]:
-      args["Subject"] = p.sub( '', args["Subject"]).strip()
+      # Recursively remove the regex matches only from the beginning of the string
+      match_string = args["Subject"]
+      location_match = p.match(match_string)
+      location = location_match.start() if location_match else -1
+
+      while(location==0 and match_string):
+          match_string = p.sub("",match_string,1)
+          location_match = p.match(match_string)
+          location = location_match.start() if location_match else -1
+
+      args["Subject"] = match_string
 
   query = " AND ".join('{0}:"{1}"'.format(key,value) for (key,value) in args.items())
 

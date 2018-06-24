@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "buildewsquery_test"
+        },
+        {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
         },
