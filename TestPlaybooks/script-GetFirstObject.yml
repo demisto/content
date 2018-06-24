@@ -1,6 +1,6 @@
 commonfields:
-  id: e56a7467-e156-4296-8c87-25b64aa20b3a
-  version: 15
+  id: GetFirstObject
+  version: -1
 name: GetFirstObject
 script: |
   value = demisto.args()['value']

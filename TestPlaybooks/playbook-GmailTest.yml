@@ -356,7 +356,7 @@ tasks:
                   simple: Email.Attachments
                 iscontext: true
           transformers:
-          - operator: general.e56a7467-e156-4296-8c87-25b64aa20b3a
+          - operator: general.GetFirstObject
           - operator: general.getField
             args:
               field:
