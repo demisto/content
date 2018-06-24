@@ -2,6 +2,7 @@ commonfields:
   id: QRadarFullSearch
   version: -1
 name: QRadarFullSearch
+releaseNotes: "Remove auto-log line"
 script: |-
   res = [];
 
@@ -46,7 +47,7 @@ script: |-
           var q_status = dq(status_res[0], "Contents.status");
 
           if (q_status && ['WAIT', 'EXECUTE', 'SORTING'].indexOf(q_status) !== -1) {
-              log('search id is {0} search status is {1}'.format(search_id,q_status));
+              continue;
           } else if (q_status && q_status == 'COMPLETED') {
               search_done = true;
           } else {
