@@ -429,7 +429,7 @@ script:
             mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
         else:
             entry = get_searchable_mailboxes(protocol)
-            mailboxes = entry[ENTRY_CONTEXT]['EWS.Mailboxes']
+            mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
             mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
 
         try:
@@ -658,21 +658,6 @@ script:
                     # save the attachment
                     file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
 
-                    inner_file_result = None
-                    for inner_attachment in attachment.item.attachments:
-                        if isinstance(inner_attachment, FileAttachment):
-                            inner_file_result = fileResult(inner_attachment.name, inner_attachment.content)
-                            incident['attachment'].append({
-                                'path': inner_file_result['FileID'],
-                                'name': inner_attachment.name
-                            })
-                        else:
-                            inner_file_result = fileResult(inner_attachment.name + ".eml", inner_attachment.item.mime_content)
-                            incident['attachment'].append({
-                                'path': inner_file_result['FileID'],
-                                'name': inner_attachment.name + ".eml"
-                            })
-
                     # check for error
                     if file_result['Type'] == entryTypes['error']:
                         demisto.error(file_result['Contents'])
@@ -823,15 +808,6 @@ script:
 
         return entries
 
-    def get_inner_attachments(item_attachment):
-        entries = []
-        for attachment in item_attachment.item.attachments:
-            if isinstance(attachment, FileAttachment):
-                entries.append(fileResult(attachment.name, attachment.content))
-            else:
-                entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
-        return entries
-
 
     def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -843,7 +819,6 @@ script:
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
                 entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
-                entries.extend(get_inner_attachments(attachment))
 
         return entries
 
@@ -1766,4 +1741,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-releaseNotes: "Fixed 'TextBodyField' issue on pre-2013 exchange systems."
+releaseNotes: "Fixed issue when searching all mailboxes - skipped mailboxes without mailboxId."

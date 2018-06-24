@@ -333,10 +333,6 @@
             "playbookID": "Netskope Test"
         },
         {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
-        },
-        {
             "integrations": "Cylance Protect v2",
             "playbookID": "Cylance Protect v2 Test"
         },
@@ -347,10 +343,24 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
-
+        },
+        {
+            "integrations": "Demisto Lock",
+            "playbookID": "DemistoLockTest"
+        },
+        {
+            "playbookID": "test-domain-indicator"
+        },
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
         }
     ],
     "skipped": [
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
@@ -478,6 +488,10 @@
         {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": "AlphaSOC Wisdom",
+            "playbookID": "AlphaSOC-Wisdom-Test"
         }
     ]
 }
