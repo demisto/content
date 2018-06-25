@@ -229,7 +229,7 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue:
-        simple: '["application/pdf","application/xml"]'
+        simple: '["application/pdf","text/xml; charset=utf-8"]'
       fields: {}
       path:
         simple: File.Info
