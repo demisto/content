@@ -343,11 +343,12 @@ inputs:
   required: false
   description: File object of the file to detonate.
 outputs:
-- contextPath: File
-  type: unknown
 - contextPath: File.SHA256
   description: SHA256 hash of the file
   type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
 - contextPath: File.Type
   description: File type e.g. "PE"
   type: string
@@ -363,12 +364,14 @@ outputs:
 - contextPath: File.SHA1
   description: SHA1 hash of the file
   type: string
-- contextPath: File.Malicious
+- contextPath: File
+  description: The File object
   type: unknown
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
 - contextPath: DBotScore
+  description: The DBotScore object
   type: unknown
 - contextPath: DBotScore.Indicator
   description: The indicator we tested
