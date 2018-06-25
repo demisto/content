@@ -1,0 +1,195 @@
+commonfields:
+  id: AlphaSOC Wisdom
+  version: -1
+name: AlphaSOC Wisdom
+display: AlphaSOC Wisdom
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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6fR5M023Xsy+SfLimI3sApaAhYDFP4PGoA5ZV2FrrCp7DWhrgar358yrtPvJ3U1a+Mok47aAhYAlcP0TtMxw3W33RZhaJ1nroyruPDlvWdBqZbASsAQsBCzuHkzGdeAa1aFrnLKa5pf14LW9+t/CFF+cH2c53RYpu1QPS7xr+4ypcVvAQsDi/nfw4y/C1q/1b007+HE29T+7JH998X+vNaLzgHNilJu9jYe6CVnXQf/PtvRXCVgCFgIWxxtsroLWKP80Bf/yxaBzFdAOdVe//ipAbW/5PQGKQ54DVzcgozp0PfSYvzpWr47fZZePWeO2gIWAxelnAUb3vZMXkOjBTciNUNXXhyOM2wIWAECR/ksJAAAELAAAAQsAQMACAEDAAgAQsAAABCwAAAQsAAABCwBAwAIAQMACABCwAAAELAAAAQsAAAELAEDAAgAQsAAAELAAAAQsAAABCwAAAQsAQMACABCwAAAQsAAABCwAAAELAEDAAgBAwAIAELAAAAQsAAAELAAAAQsAQMACAEDAAgAQsAAABCwAAAQsAAABCwBAwAIAELAAABCwAAAELAAAAQsAAAELAEDAAgAQsAAAELAAAAQsAAABCwAAAQsAQMACABCwAAAELAAABCwAAAELAEDAAgBAwAIAELAAAAQsAAAELAAAAQsAQMACABCwAAAQsAAABCwAAAELAAABCwBAwAIAELAAABCwAAAELAAAAQsAAAELAEDAAgAQsAAABCwAAAQsAAABCwBAwAIAQMACABCwAAAELAAABCwAAAELAEDAAgBAwAIAELAAAAQsAAABCwAAAQsAQMACABCwAAAQsAAABCwAAAELAAABCwBAwAIAELAAABCwAAAELAAAAQsAQMACAEDAAgAQsAAABCwAAAQsAAABCwBAwAIAQMACABCwAAAELAAAAQsAAAELAEDAAgAQsAAAELAAAAQsAAABCwAAAQsAQMACABCwAAAQsAAABCwAAAELAEDAAgBAwAIAELAAAAQsAAAELAAAAQsAQMACAEDAAgAQsAAABCwAAAQsAAABCwBAwAIAELAAABCwAAAELAAAAQsAAAELAEDAAgAQsAAAELAAAAQsAAABCwAAAQsAQMACABCwAAAELAAA9vH/BwBm9VHYOUQRfgAAAABJRU5ErkJggg==
+description: DNS and IP threat intelligence via the AlphaSOC platform
+detaileddescription: |-
+  Don’t have an API key? Register at [https://alphasoc.com/wisdom](https://alphasoc.com/wisdom)
+
+  ---
+
+  [Click here](https://www.alphasoc.com/docs/wisdom-output-format) to discover the various flags returned by Wisdom.
+configuration:
+- display: AlphaSOC Wisdom API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    var wisdomURL = 'https://api.alphasoc.net/v1/wisdom'
+
+    var sendRequest = function(requestUrl) {
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    Authorization: ['Basic ' + btoa(params.APIKey + ':')],
+                    Accept: ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (!res || res.StatusCode < 200 || res.StatusCode >= 300) {
+            var errorString = '';
+
+            if (res.StatusCode === 401 || res.StatusCode === 403) {
+                errorString = '\n\nError: Invalid API key\n';
+            }
+
+            errorString += '\nRequest Failed'
+                + '\nRequestUrl: ' + requestUrl
+                + '\nStatus code: ' + res.StatusCode
+                + '\nResponse: ' + JSON.stringify(res);
+            throw errorString;
+        }
+
+        try {
+            return JSON.parse(res.Body);
+        } catch (err) {
+            throw 'Failed to parse JSON response: ' + res.Body + '\n';
+        }
+    };
+
+    var extractDomainName = function(url) {
+        var hostname;
+
+        //find & remove protocol (http, ftp, etc.) and get the hostname
+        if (url.indexOf("://") > -1) {
+            hostname = url.split('/')[2];
+        }
+        else {
+            hostname = url ? url.split('/')[0] : '';
+        }
+
+        //find & remove port number
+        hostname = hostname.split(':')[0];
+
+        return hostname;
+    }
+
+    var getDomainWisdom = function(domain) {
+        var extractedDomain = extractDomainName(domain);
+        var url = wisdomURL + '?q=' + extractedDomain;
+        var result = sendRequest(url);
+
+        var ec = {
+            Domain: {Name: extractedDomain},
+            Wisdom: {Flag: result.flags}
+        }
+
+        var md = '#### AlphaSOC Wisdom Flags for __' + extractedDomain + '__\n';
+
+        if (result.flags.length === 0) {
+            md += '__No flags.__\n';
+        } else {
+            for (var i = 0; i < result.flags.length; i++) {
+                md += '- ' + result.flags[i] + '\n';
+            }
+        }
+
+        return {
+            Type: entryTypes.note,
+            EntryContext: ec,
+
+            ContentsFormat: formats.json,
+            Contents: result,
+
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md
+        };
+    }
+
+    var getIPWisdom = function(proto, ip, port) {
+        var escapedIP = ip.indexOf(':') > 0 ? '[' + ip + ']' : ip;
+        var query = proto + ':' + escapedIP + ':' + port;
+        var url = wisdomURL + '?q=' + query;
+        var result = sendRequest(url);
+
+        var ec = {
+            Wisdom: {Flag: result.flags}
+        }
+
+        var md = '#### AlphaSOC Wisdom Flags for __' + query + '__\n';
+
+        if (result.flags.length === 0) {
+            md += '__No flags.__\n';
+        } else {
+            for (var i = 0; i < result.flags.length; i++) {
+                md += '- ' + result.flags[i] + '\n';
+            }
+        }
+
+        return {
+            Type: entryTypes.note,
+            EntryContext: ec,
+
+            ContentsFormat: formats.json,
+            Contents: result,
+
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md
+        };
+    }
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            getDomainWisdom('example.com');
+            return 'ok';
+        case 'wisdom-domain-flags':
+            return getDomainWisdom(args.domain);
+        case 'wisdom-ip-flags':
+            return getIPWisdom(args.proto, args.ip, args.port)
+        default:
+    }
+  type: javascript
+  commands:
+  - name: wisdom-domain-flags
+    arguments:
+    - name: domain
+      required: true
+      description: Enter a domain or URL (e.g. www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Wisdom.Flag
+      description: The AlphaSOC security category or feature
+    description: Returns a list of flags (categories and features) assigned to a domain
+      by AlphaSOC Threat Intelligence
+  - name: wisdom-ip-flags
+    arguments:
+    - name: proto
+      required: true
+      description: Transport layer protocol (tcp, udp, icmp)
+      defaultValue: tcp
+    - name: ip
+      required: true
+      description: IPv4 or IPv6
+    - name: port
+      required: true
+      description: Destination port
+    outputs:
+    - contextPath: Wisdom.Flag
+      description: The AlphaSOC security category or feature
+    description: Returns a list of flags (categories and features) assigned to an
+      IP connection (defined by protocol, destination address and port number) by
+      AlphaSOC Threat Intelligence
+  runonce: false

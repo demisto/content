@@ -1,0 +1,315 @@
+id: ParseEmailFiles-test
+version: -1
+name: ParseEmailFiles-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8ecc4c16-5175-4b68-8b60-2866d1d76cee
+    type: start
+    task:
+      id: 8ecc4c16-5175-4b68-8b60-2866d1d76cee
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 13a6c832-8fa6-4b4f-89cd-e717e7e99b47
+    type: regular
+    task:
+      id: 13a6c832-8fa6-4b4f-89cd-e717e7e99b47
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: badd665a-ccb4-485b-848e-93590beb3b7d
+    type: regular
+    task:
+      id: badd665a-ccb4-485b-848e-93590beb3b7d
+      version: -1
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+  "3":
+    id: "3"
+    taskid: e1802d66-e67d-4aa8-8854-42cf38c2d387
+    type: regular
+    task:
+      id: e1802d66-e67d-4aa8-8854-42cf38c2d387
+      version: -1
+      name: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook. Requires pip and access to python repository to install "olefile"
+        package.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "8"
+      - "11"
+      - "13"
+    scriptarguments:
+      entryid:
+        simple: ${File.EntryID}
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+  "4":
+    id: "4"
+    taskid: d494998a-6a23-499c-8788-5836d26d37ef
+    type: regular
+    task:
+      id: d494998a-6a23-499c-8788-5836d26d37ef
+      version: -1
+      name: VerifyContext - To
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: shachar@demisto.com
+      fields: {}
+      path:
+        simple: Email.To
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 352,
+          "y": 769
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 6dbb6aea-26cf-46a4-8af5-bb48f657f0cf
+    type: regular
+    task:
+      id: 6dbb6aea-26cf-46a4-8af5-bb48f657f0cf
+      version: -1
+      name: VerifyContext - Subject
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: ParseEmail test email
+      fields: {}
+      path:
+        simple: Email.Subject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 769
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 87e95d08-95fe-488b-8282-005de460b180
+    type: condition
+    task:
+      id: 87e95d08-95fe-488b-8282-005de460b180
+      version: -1
+      name: AreValuesEqual - verify pdf attachment
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      left:
+        complex:
+          root: File
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+          accessor: MD5
+      right:
+        simple: 9060c2d4f48745de19a5690d8e6cabe1
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1213,
+          "y": 769
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 73c8666e-e1ee-48ba-847e-f7bfc1a9576e
+    type: title
+    task:
+      id: 73c8666e-e1ee-48ba-847e-f7bfc1a9576e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1107
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 98a17e89-b80c-476a-8946-9b45a177ecf1
+    type: condition
+    task:
+      id: 98a17e89-b80c-476a-8946-9b45a177ecf1
+      version: -1
+      name: AreValuesEqual - verify docx attachment
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      left:
+        complex:
+          root: File
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+          accessor: MD5
+      right:
+        simple: b842aa8664f41a2dd7fe0d47a9fd4724
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 769
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1122,
+        "width": 1713,
+        "x": -120,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"
