@@ -351,6 +351,10 @@
         },
         {
             "playbookID": "test-domain-indicator"
+        },
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
         }
     ],
     "skipped": [
