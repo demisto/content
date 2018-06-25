@@ -286,6 +286,7 @@ outputs:
   description: For malicious files, the reason for the vendor to make the decision
   type: string
 - contextPath: DBotScore
+  description: The DBotScore object
   type: unknown
 - contextPath: DBotScore.Indicator
   description: The indicator we tested
