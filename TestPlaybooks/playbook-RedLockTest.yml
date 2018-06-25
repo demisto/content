@@ -1,0 +1,456 @@
+id: RedLockTest
+version: -1
+name: RedLockTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 23ef3831-9e96-4944-891f-94e4cbe8da75
+    type: start
+    task:
+      id: 23ef3831-9e96-4944-891f-94e4cbe8da75
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 94fb8b3f-ad61-441f-8432-31899d0d906d
+    type: regular
+    task:
+      id: 94fb8b3f-ad61-441f-8432-31899d0d906d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 6ee1c058-3369-47c3-8d4a-875471b02abf
+    type: regular
+    task:
+      id: 6ee1c058-3369-47c3-8d4a-875471b02abf
+      version: -1
+      name: Retrieve all open alerts from last month
+      description: Check IP reputation (when information is available, returns a JSON
+        with details).  Uses all configured Threat Intelligence feeds
+      script: RedLock|||redlock-search-alerts
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      alertID: {}
+      alertRuleName: {}
+      alertStatus: {}
+      cloudAccount: {}
+      cloudRegion: {}
+      cloudType: {}
+      policyComplianceStandard: {}
+      policyLabel: {}
+      policyName: {}
+      policySeverity: {}
+      policyType: {}
+      resourceID: {}
+      resourceName: {}
+      resourceType: {}
+      riskGrade: {}
+      timeRangeDateFrom: {}
+      timeRangeDateTo: {}
+      timeRangeUnit:
+        simple: month
+      timeRangeValue:
+        simple: "1"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 6c281996-57e2-410d-85c1-9d3b9a9a9772
+    type: regular
+    task:
+      id: 6c281996-57e2-410d-85c1-9d3b9a9a9772
+      version: -1
+      name: VerifyContext we have more than 5 alerts
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: Redlock.Alert=>val.length > 5
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: f19b295a-74e2-471d-811a-3ab54afa7a75
+    type: condition
+    task:
+      id: f19b295a-74e2-471d-811a-3ab54afa7a75
+      version: -1
+      name: There should not be not open alert
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${Redlock.Alert.Status(val != 'open')}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: a96e183b-95af-4602-8c48-5435ba66a142
+    type: regular
+    task:
+      id: a96e183b-95af-4602-8c48-5435ba66a142
+      version: -1
+      name: Fail
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 8ab81c0c-93b1-4eb8-8c19-0e0d7b0701d4
+    type: regular
+    task:
+      id: 8ab81c0c-93b1-4eb8-8c19-0e0d7b0701d4
+      version: -1
+      name: Dismiss the first alert
+      script: RedLock|||redlock-dismiss-alerts
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alertID:
+        simple: ${Redlock.Alert.[0].ID}
+      alertRuleName: {}
+      alertStatus: {}
+      cloudAccount: {}
+      cloudRegion: {}
+      cloudType: {}
+      dismissalNote:
+        simple: Dismiss
+      policyComplianceStandard: {}
+      policyID: {}
+      policyLabel: {}
+      policyName: {}
+      policySeverity: {}
+      policyType: {}
+      resourceID: {}
+      resourceName: {}
+      resourceType: {}
+      riskGrade: {}
+      timeRangeDateFrom: {}
+      timeRangeDateTo: {}
+      timeRangeUnit: {}
+      timeRangeValue: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: b9b2cd53-515e-4f00-8838-6e4b50aef19c
+    type: regular
+    task:
+      id: b9b2cd53-515e-4f00-8838-6e4b50aef19c
+      version: -1
+      name: Retrieve the details of this alert
+      script: RedLock|||redlock-get-alert-details
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alertID:
+        simple: ${Redlock.Alert.[0].ID}
+      detailed: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 895
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 4384b76d-f0bf-414c-87e1-c0a0115b3510
+    type: regular
+    task:
+      id: 4384b76d-f0bf-414c-87e1-c0a0115b3510
+      version: -1
+      name: Verify that last status is dismissed
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      expectedValue:
+        simple: dismissed
+      fields: {}
+      path:
+        simple: Redlock.Alert=>val[val.length-1].Status
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1070
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 19277280-186d-4686-896d-32c6312f439c
+    type: regular
+    task:
+      id: 19277280-186d-4686-896d-32c6312f439c
+      version: -1
+      name: Re-open the last alert
+      script: RedLock|||redlock-reopen-alerts
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alertID:
+        simple: ${Redlock.Alert.[0].ID}
+      alertRuleName: {}
+      alertStatus: {}
+      cloudAccount: {}
+      cloudRegion: {}
+      cloudType: {}
+      policyComplianceStandard: {}
+      policyLabel: {}
+      policyName: {}
+      policySeverity: {}
+      policyType: {}
+      resourceID: {}
+      resourceName: {}
+      resourceType: {}
+      riskGrade: {}
+      timeRangeDateFrom: {}
+      timeRangeDateTo: {}
+      timeRangeUnit: {}
+      timeRangeValue: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1245
+        }
+      }
+  "10":
+    id: "10"
+    taskid: d9f923ef-c7a2-4b79-8085-c4cfcd69d2f8
+    type: regular
+    task:
+      id: d9f923ef-c7a2-4b79-8085-c4cfcd69d2f8
+      version: -1
+      name: Retrieve the details of this alert
+      script: RedLock|||redlock-get-alert-details
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alertID:
+        simple: ${Redlock.Alert.[0].ID}
+      detailed: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1420
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 62637f99-55ab-4b9e-8b24-322e2f84fddd
+    type: regular
+    task:
+      id: 62637f99-55ab-4b9e-8b24-322e2f84fddd
+      version: -1
+      name: Verify that last status is dismissed
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      expectedValue:
+        simple: open
+      fields: {}
+      path:
+        simple: Redlock.Alert=>val[val.length-1].Status
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1595
+        }
+      }
+  "12":
+    id: "12"
+    taskid: b643205a-2f01-4e87-8492-ae3331476dc7
+    type: regular
+    task:
+      id: b643205a-2f01-4e87-8492-ae3331476dc7
+      version: -1
+      name: Close investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes:
+        simple: Done
+      reason:
+        simple: Done
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1770
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 830,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,794 @@
+commonfields:
+  id: RedLock
+  version: -1
+name: RedLock
+display: RedLock
+category: Network Security
+image: data:image/png;base64,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
+description: Cloud threat defense
+detaileddescription: To use Redlock, you must provide credentials with privileges
+  to manage alerts
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://api.redlock.io/
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Customer name
+  name: customer
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |
+    import requests
+    from datetime import datetime
+
+    URL = demisto.getParam('url')
+    if URL[-1] != '/':
+        URL += '/'
+
+    if not demisto.getParam('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # Standard headers
+    HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+    TOKEN = None
+
+
+    def return_error(data):
+        """
+        Return error as result and exit
+        """
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': data
+        })
+        sys.exit(0)
+
+
+    def get_token():
+        """
+        Retrieve the token using the credentials
+        """
+        r = requests.post(URL + 'login', headers = HEADERS, json={
+            'customerName': demisto.getParam('customer') or '',
+            'username': demisto.getParam('credentials')['identifier'],
+            'password': demisto.getParam('credentials')['password']
+        })
+        if r.status_code != requests.codes.ok:
+            return_error('Error authenticating to RedLock service [%d] - %s' % (r.status_code, r.text))
+        TOKEN = r.json()['token']
+        HEADERS['x-redlock-auth'] = TOKEN
+
+
+    def req(method, path, data, param_data):
+        if not TOKEN:
+            get_token()
+        r = requests.request(method, URL + path, json=data, params=param_data, headers=HEADERS)
+        if r.status_code != requests.codes.ok:
+            text = r.text
+            if r.headers.get('x-redlock-status'):
+                try:
+                    status = json.loads(r.headers.get('x-redlock-status'))
+                    for s in status:
+                        text += '\n%s [%s]' % (s.get('i18nKey', ''), s.get('subject', ''))
+                except:
+                    pass
+            return_error('Error in API call to RedLock service [%d] - %s' % (r.status_code, text))
+        if not r.text:
+            return {}
+        return r.json()
+
+
+    def list_filters():
+        """
+        List the acceptable filters on alerts
+        """
+        r = req('GET', 'filter/alert/suggest', None, None)
+        filters = [{
+            'Name': k,
+            'Options': ','.join(r.get(k).get('options')),
+            'Static': r.get(k).get('staticFilter')
+        } for k in r]
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': r,
+            'HumanReadable': tableToMarkdown('Filter options', filters, ['Name', 'Options', 'Static'])
+        })
+
+
+    def convertDateToUnix(dstr):
+        """
+        Convert a given string with MM/DD/YYYY format to millis since epoch
+        """
+        d = datetime.strptime(dstr, '%m/%d/%Y')
+        return int((d - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+
+
+    def convertUnixToDate(d):
+        """
+        Convert millise since epoch to date formatted MM/DD/YYYY HH:MI:SS
+        """
+        if d:
+            dt = datetime.utcfromtimestamp(d / 1000)
+            return dt.strftime('%m/%d/%Y %H:%M:%S')
+        return 'N/A'
+
+    def handle_time_filter(payload, baseCase):
+        """
+        Add the time filter to the payload
+        """
+        unit = demisto.getArg('timeRangeUnit')
+        value = demisto.getArg('timeRangeValue')
+        timeFrom = demisto.getArg('timeRangeDateFrom')
+        timeTo = demisto.getArg('timeRangeDateTo')
+        relative = ('hour', 'day', 'week', 'month', 'year')
+        toNow = relative[1:] + ('epoch', 'login')
+        if unit:
+            if value:
+                if unit not in relative:
+                    return_error('Time unit for relative time must be one of the following: ' + ','.join(relative))
+                payload['timeRange'] = {'type': 'relative', 'value': {'amount': int(value), 'unit': unit}}
+            else:
+                if unit not in toNow:
+                    return_error('Time unit for to_now time must be one of the following: ' + ','.join(toNow))
+                payload['timeRange'] = {'type': 'to_now', 'value': unit}
+        else:
+            if not timeFrom or not timeTo:
+                payload['timeRange'] = baseCase
+            else:
+                payload['timeRange'] = {'type': 'absolute', 'value': {'startTime': convertDateToUnix(timeFrom), 'endTime': convertDateToUnix(timeTo)}}
+
+    def handle_filters(payload):
+        """
+        Add filters to the filter object based on received arguments
+        """
+        argsConversion = {
+            'alertStatus': 'alert.status',
+            'policyName': 'policy.name',
+            'policyLabel': 'policy.label',
+            'policyComplianceStandard': 'policy.complianceStandard',
+            'cloudAccount': 'cloud.account',
+            'cloudRegion': 'cloud.region',
+            'alertRuleName': 'alertRule.name',
+            'resourceID': 'resource.id',
+            'resourceName': 'resource.name',
+            'resourceType': 'resource.type',
+            'alertID': 'alert.id',
+            'cloudType': 'cloud.type',
+            'riskGrade': 'risk.grade',
+            'policyType': 'policy.type',
+            'policySeverity': 'policy.severity'
+        }
+        payload['filters'] = []
+        for k in demisto.args():
+            if k in ('policyName', 'policyLabel', 'policyComplianceStandard', 'cloudAccount', 'cloudRegion', 'alertRuleName', 'resourceID', 'resourceName', 'resourceType', 'alertStatus', 'alertID', 'cloudType', 'riskGrade', 'policyType', 'policySeverity') and demisto.getArg(k):
+                payload['filters'].append({'name': argsConversion[k], 'operator': '=', 'value': demisto.getArg(k)})
+
+
+    def alert_to_readable(a):
+        """
+        Transform an alert to a nice readable object
+        """
+        return {
+            'ID': a.get('id'),
+            'Status': a.get('status'),
+            'FirstSeen': convertUnixToDate(a.get('firstSeen')),
+            'LastSeen': convertUnixToDate(a.get('lastSeen')),
+            'AlertTime': convertUnixToDate(a.get('alertTime')),
+            'PolicyName': demisto.get(a, 'policy.name'),
+            'PolicyType': demisto.get(a, 'policy.policyType'),
+            'PolicyDescription': demisto.get(a, 'policy.description'),
+            'PolicySeverity': demisto.get(a, 'policy.severity'),
+            'PolicyRecommendation': demisto.get(a, 'policy.recommendation'),
+            'PolicyDeleted': demisto.get(a, 'policy.deleted'),
+            'PolicyRemediable': demisto.get(a, 'policy.remediable'),
+            'RiskRating': demisto.get(a, 'riskDetail.rating'),
+            'ResourceName': demisto.get(a, 'resource.name'),
+            'ResourceAccount': demisto.get(a, 'resource.account'),
+            'ResourceType': demisto.get(a, 'resource.resourceType'),
+            'ResourceCloudType': demisto.get(a, 'resource.cloudType')
+        }
+
+
+    def alert_to_context(a):
+        """
+        Transform a single alert to context struct
+        """
+        return {
+            'ID': a.get('id'),
+            'Status': a.get('status'),
+            'AlertTime': a.get('alertTime'),
+            'Policy': {
+                'ID': demisto.get(a, 'policy.policyId'),
+                'Name': demisto.get(a, 'policy.name'),
+                'Type': demisto.get(a, 'policy.policyType'),
+                'Severity': demisto.get(a, 'policy.severity'),
+                'Remediable': demisto.get(a, 'policy.remediable')
+            },
+            'RiskDetail': {
+                'Rating': demisto.get(a, 'riskDetail.rating'),
+                'Score': demisto.get(a, 'riskDetail.riskScore.score')
+            },
+            'Resource': {
+                'ID': demisto.get(a, 'resource.id'),
+                'Name': demisto.get(a, 'resource.name'),
+                'Account': demisto.get(a, 'resource.account'),
+                'AccountID': demisto.get(a, 'resource.accountId')
+            }
+        }
+
+
+    def search_alerts():
+        """
+        Retrieves alerts by filter
+        """
+        payload = {}
+        handle_time_filter(payload, {'type': 'relative', 'value': {'amount': 7, 'unit': 'day'}})
+        handle_filters(payload)
+        r = req('POST', 'alert', payload, {'detailed':'true'})
+        alerts = []
+        ec = {'Redlock.Alert': []}
+        for k in r:
+            alerts.append(alert_to_readable(k))
+            ec['Redlock.Alert'].append(alert_to_context(k))
+        ec['Redlock.Metadata.CountOfAlerts'] = len(r)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': r,
+            'EntryContext': ec,
+            'HumanReadable': tableToMarkdown('Alerts', alerts, [
+                'ID', 'Status', 'FirstSeen', 'LastSeen', 'AlertTime', 'PolicyName', 'PolicyType', 'PolicyDescription',
+                'PolicySeverity', 'PolicyRecommendation', 'PolicyDeleted', 'PolicyRemediable', 'RiskRating', 'ResourceName',
+                'ResourceAccount', 'ResourceType', 'ResourceCloudType'
+            ])
+        })
+
+
+    def get_alert_details():
+        """
+        Retrieve alert details by given ID
+        """
+        r = req('GET', 'alert/' + demisto.getArg('alertID'), None, None) # {'detailed': demisto.getArg('detailed')})
+        alert = alert_to_readable(r)
+        alert.update({
+            'PolicyID': demisto.get(r, 'policy.policyID'),
+            'PolicySystemDefault': demisto.get(r, 'policy.systemDefault'),
+            'PolicyLabels': demisto.get(r, 'policy.labels'),
+            'PolicyLastModifiedOn': demisto.get(r, 'policy.lastModifiedOn'),
+            'PolicyLastModifiedBy': demisto.get(r, 'policy.lastModifiedBy'),
+            'RiskScore': demisto.get(r, 'riskDetail.riskScore.score'),
+            'ResourceRRN': demisto.get(r, 'resource.rrn'),
+            'ResourceID': demisto.get(r, 'resource.id'),
+            'ResourceAccountID': demisto.get(r, 'resource.accountId'),
+            'ResourceRegionID': demisto.get(r, 'resource.regionId'),
+            'ResourceApiName': demisto.get(r, 'resource.resourceApiName'),
+            'ResourceUrl': demisto.get(r, 'resource.url'),
+            'ResourceData': demisto.get(r, 'resource.data'),
+            'ResourceAccessKeyAge': demisto.get(r, 'resource.additionalInfo.accessKeyAge'),
+            'ResourceInactiveSinceTs': demisto.get(r, 'resource.additionalInfo.inactiveSinceTs')
+        })
+
+        ec = {'Redlock.Alert': alert_to_context(r)}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': r,
+            'EntryContext': ec,
+            'HumanReadable': tableToMarkdown('Alert', [alert], ['ID', 'Status', 'FirstSeen', 'LastSeen', 'AlertTime', 'PolicyID', 'PolicyName', 'PolicyType',
+            'PolicySystemDefault', 'PolicyLabels','PolicyDescription', 'PolicySeverity', 'PolicyRecommendation', 'PolicyDeleted', 'PolicyRemediable', 'PolicyLastModifiedOn', 'PolicyLastModifiedBy', 'RiskScore', 'RiskRating', 'ResourceName', 'ResourceRRN', 'ResourceID', 'ResourceAccount', 'ResourceAccountID', 'ResourceType', 'ResourceRegionID', 'ResourceApiName', 'ResourceUrl', 'ResourceData', 'ResourceAccessKeyAge', 'ResourceInactiveSinceTs', 'ResourceCloudType'
+            ])
+        })
+
+
+    def dismiss_alerts():
+        """
+        Dismiss the given list of alerts based on given filter
+        """
+        ids = argToList(demisto.getArg('alertID'))
+        policies = argToList(demisto.getArg('policyID'))
+        payload = {'alerts': ids, 'policies': policies, 'dismissalNote': demisto.getArg('dismissalNote'), 'filter': {}}
+        demisto.args().pop('alertID', None)
+        handle_filters(payload['filter'])
+        handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+        if not ids and not policies and not payload['filter']['filters']:
+            return_error('You must specify some filtering for dismissing alerts')
+        r = req('POST', 'alert/dismiss', payload, None)
+        ec = {}
+        if ids:
+            ec['Redlock.Alert.ID'] = ids
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': r,
+            'EntryContext': ec,
+            'HumanReadable': '### Alerts dismissed successfully. Dismissal Note: %s.' % demisto.getArg('dismissalNote')
+        })
+
+
+    def reopen_alerts():
+        """
+        Reopen the given list of alerts based on given filter
+        """
+        ids = argToList(demisto.getArg('alertID'))
+        policies = argToList(demisto.getArg('policyID'))
+        payload = {'alerts': ids, 'policies': policies, 'filter': {}}
+        demisto.args().pop('alertID', None)
+        handle_filters(payload['filter'])
+        handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+        if not ids and not policies and not payload['filter']['filters']:
+            return_error('You must specify some filtering for re-opening alerts')
+        r = req('POST', 'alert/reopen', payload, None)
+        ec = {}
+        if ids:
+            ec['Redlock.Alert.ID'] = ids
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': r,
+            'EntryContext': ec,
+            'HumanReadable': '### Alerts re-opened successfully.'
+        })
+
+
+    if demisto.command() == 'test-module':
+        get_token()
+        demisto.results('ok')
+    elif demisto.command() == 'redlock-search-alerts':
+        search_alerts()
+    elif demisto.command() == 'redlock-list-alert-filters':
+        list_filters()
+    elif demisto.command() == 'redlock-get-alert-details':
+        get_alert_details()
+    elif demisto.command() == 'redlock-dismiss-alerts':
+        dismiss_alerts()
+    elif demisto.command() == 'redlock-reopen-alerts':
+        reopen_alerts()
+  type: python
+  commands:
+  - name: redlock-search-alerts
+    arguments:
+    - name: timeRangeDateFrom
+      description: Start time for search in the following string format -  MM/DD/YYYY
+    - name: timeRangeDateTo
+      description: End time for search in the following format -  MM/DD/YYYY
+    - name: timeRangeValue
+      description: The amount of units to go back in time
+    - name: timeRangeUnit
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      description: The search unit. login and epoch are only available if timeRangeValue
+        is not provided.
+    - name: policyName
+      auto: PREDEFINED
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+      description: The policy name
+    - name: policyLabel
+      description: The policy label
+    - name: policyComplianceStandard
+      description: The policy compliance standard
+    - name: cloudAccount
+      description: The cloud account
+    - name: cloudRegion
+      description: The cloud region
+    - name: alertRuleName
+      description: The alert rule name
+    - name: resourceID
+      description: The resourceID
+    - name: resourceName
+      description: The resource name
+    - name: resourceType
+      description: The resource type
+    - name: alertStatus
+      auto: PREDEFINED
+      predefined:
+      - open
+      - resolved
+      - dismissed
+      description: The alert status
+      defaultValue: open
+    - name: alertID
+      description: The alert ID
+    - name: cloudType
+      auto: PREDEFINED
+      predefined:
+      - aws
+      - azure
+      - gcp
+      description: The cloud type
+    - name: riskGrade
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      - C
+      - F
+      description: The risk grade
+    - name: policyType
+      auto: PREDEFINED
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+      description: The policy type
+    - name: policySeverity
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The policy severity
+    outputs:
+    - contextPath: Redlock.Alert.ID
+      description: ID of returned alert
+      type: string
+    - contextPath: Redlock.Alert.Status
+      description: Status of returned alert
+      type: string
+    - contextPath: Redlock.Alert.AlertTime
+      description: Time of alert
+      type: string
+    - contextPath: Redlock.Alert.Policy.ID
+      description: The policy ID
+      type: string
+    - contextPath: Redlock.Alert.Policy.Name
+      description: The policy name
+      type: string
+    - contextPath: Redlock.Alert.Policy.Type
+      description: The policy type
+      type: string
+    - contextPath: Redlock.Alert.Policy.Severity
+      description: The policy severity
+      type: string
+    - contextPath: Redlock.Alert.Policy.Remediable
+      description: Whether or not the policy is remediable
+      type: boolean
+    - contextPath: Redlock.Alert.RiskDetail.Rating
+      description: The risk rating
+      type: string
+    - contextPath: Redlock.Alert.RiskDetail.Score
+      description: The risk score
+      type: string
+    - contextPath: Redlock.Metadata.CountOfAlerts
+      description: The number of alerts found
+      type: number
+    description: Search alerts on the RedLock platform
+  - name: redlock-get-alert-details
+    arguments:
+    - name: alertID
+      required: true
+      default: true
+      description: The alert ID
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Allows for retrieving entire / trimmed alert model
+      defaultValue: "true"
+    outputs:
+    - contextPath: Redlock.Alert.ID
+      description: The alert ID
+      type: string
+    - contextPath: Redlock.Alert.Status
+      description: The alert status
+      type: string
+    - contextPath: Redlock.Alert.AlertTime
+      description: The time of the alert
+      type: string
+    - contextPath: Redlock.Alert.Policy.ID
+      description: The policy ID
+      type: string
+    - contextPath: Redlock.Alert.Policy.Name
+      description: The policy name
+      type: string
+    - contextPath: Redlock.Alert.Policy.Type
+      description: The type of policy
+      type: string
+    - contextPath: Redlock.Alert.Policy.Severity
+      description: The policy severity
+      type: string
+    - contextPath: Redlock.Alert.Policy.Remediable
+      description: Whether or not the policy is remediable
+      type: string
+    - contextPath: Redlock.Alert.RiskDetail.Rating
+      description: The risk rating
+      type: string
+    - contextPath: Redlock.Alert.RiskDetail.Score
+      description: The risk score
+      type: string
+    description: Gets the details of an alert based on alert ID
+  - name: redlock-dismiss-alerts
+    arguments:
+    - name: alertID
+      description: comma separated list of string IDs to be dismissed
+    - name: dismissalNote
+      required: true
+      description: Reason for dismissal
+    - name: timeRangeDateFrom
+      description: Start time for search in the following string format -  MM/DD/YYYY
+    - name: timeRangeDateTo
+      description: End time for search in the following format -  MM/DD/YYYY
+    - name: timeRangeValue
+      description: The amount of units to go back in time
+    - name: timeRangeUnit
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      description: The search unit
+    - name: policyName
+      auto: PREDEFINED
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+      description: The policy name
+    - name: policyLabel
+      description: The policy label
+    - name: policyComplianceStandard
+      description: The policy compliance standard
+    - name: cloudAccount
+      description: The cloud account
+    - name: cloudRegion
+      description: The cloud region
+    - name: alertRuleName
+      description: The alert rule name
+    - name: resourceID
+      description: The resourceID
+    - name: resourceName
+      description: The resource name
+    - name: resourceType
+      description: The resource type
+    - name: alertStatus
+      auto: PREDEFINED
+      predefined:
+      - open
+      - resolved
+      - dismissed
+      description: The alert status
+    - name: cloudType
+      auto: PREDEFINED
+      predefined:
+      - aws
+      - azure
+      - gcp
+      description: The cloud type
+    - name: riskGrade
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      - C
+      - F
+      description: The risk grade
+    - name: policyType
+      auto: PREDEFINED
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+      description: The policy type
+    - name: policySeverity
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The policy severity
+    - name: policyID
+      description: comma separated string of policy IDs
+    outputs:
+    - contextPath: Redlock.Alert.ID
+      description: The IDs of the dismissed alerts
+      type: string
+    description: Dismiss the alerts matching the given filter
+    execution: true
+  - name: redlock-reopen-alerts
+    arguments:
+    - name: alertID
+      description: The IDs of alerts to reopen
+    - name: timeRangeDateFrom
+      description: Start time for search in the following string format -  MM/DD/YYYY
+    - name: timeRangeDateTo
+      description: End time for search in the following format -  MM/DD/YYYY
+    - name: timeRangeValue
+      description: The amount of units to go back in time
+    - name: timeRangeUnit
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      description: The search unit
+    - name: policyName
+      auto: PREDEFINED
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+      description: The policy name
+    - name: policyLabel
+      description: The policy label
+    - name: policyComplianceStandard
+      description: The policy compliance standard
+    - name: cloudAccount
+      description: The cloud account
+    - name: cloudRegion
+      description: The cloud region
+    - name: alertRuleName
+      description: The alert rule name
+    - name: resourceID
+      description: The resourceID
+    - name: resourceName
+      description: The resource name
+    - name: resourceType
+      description: The resource type
+    - name: alertStatus
+      auto: PREDEFINED
+      predefined:
+      - open
+      - resolved
+      - dismissed
+      description: The alert status
+    - name: cloudType
+      auto: PREDEFINED
+      predefined:
+      - aws
+      - azure
+      - gcp
+      description: The cloud type
+    - name: riskGrade
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      - C
+      - F
+      description: The risk grade
+    - name: policyType
+      auto: PREDEFINED
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+      description: The policy type
+    - name: policySeverity
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The policy severity
+    outputs:
+    - contextPath: Redlock.Alert.ID
+      description: IDs of the re-opened alerts
+      type: string
+    description: Re-open the alerts matching the given filter
+    execution: true
+  - name: redlock-list-alert-filters
+    arguments: []
+    description: List the acceptable filters and values for alerts
+  runonce: false
+releaseNotes: "Support RedLock alert management"
+
