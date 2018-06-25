@@ -1,5 +1,5 @@
-id: 8618c82b-1174-4e8c-891a-72d132ac8dfc
-version: 12
+id: nexpose_test
+version: -1
 name: Nexpose test
 description: Playbook test for Nexpose integration
 starttaskid: "0"
@@ -388,3 +388,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "-"
