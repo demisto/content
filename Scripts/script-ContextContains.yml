@@ -1,6 +1,6 @@
 commonfields:
   id: ContextContains
-  version: 53
+  version: -1
 name: ContextContains
 script: |
   def search(context, path, value):
@@ -33,8 +33,9 @@ script: |
 
   demisto.results(results[search(demisto.context(), path.split('.'), value)])
 type: python
-tags: []
-comment: "This script searches for a value in a context path."
+tags:
+- Condition
+comment: This script searches for a value in a context path.
 enabled: true
 args:
 - name: path
@@ -44,3 +45,5 @@ args:
   default: true
   description: Value to search
 scripttarget: 0
+runonce: false
+-releaseNotes: "Added Condition tag." 
