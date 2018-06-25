@@ -1,0 +1,34 @@
+{
+  "canvasContextConnections": [
+    {
+      "contextKey1": "File.MD5",
+      "contextKey2": "File.SHA256",
+      "connectionDescription": "Belongs to the same file"
+    },
+    {
+      "contextKey1": "File.MD5",
+      "contextKey2": "File.SHA1",
+      "connectionDescription": "Belongs to the same file"
+    },
+    {
+      "contextKey1": "File.SHA1",
+      "contextKey2": "File.SHA256",
+      "connectionDescription": "Belongs to the same file"
+    },
+    {
+      "contextKey1": "File.SSDeep",
+      "contextKey2": "File.SHA256",
+      "connectionDescription": "Belongs to the same file"
+    },
+    {
+      "contextKey1": "File.SSDeep",
+      "contextKey2": "File.SHA1",
+      "connectionDescription": "Belongs to the same file"
+    },
+    {
+      "contextKey1": "File.SSDeep",
+      "contextKey2": "File.MD5",
+      "connectionDescription": "Belongs to the same file"
+    }
+  ]
+}
