@@ -209,38 +209,6 @@ tasks:
           "y": 1580
         }
       }
-  "7":
-    id: "7"
-    taskid: be89a40f-7a24-4b6a-878f-1f5434500bc0
-    type: regular
-    task:
-      id: be89a40f-7a24-4b6a-878f-1f5434500bc0
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue:
-        simple: '["application/pdf","text/xml; charset=utf-8"]'
-      fields: {}
-      path:
-        simple: File.Info
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1953
-        }
-      }
   "8":
     id: "8"
     taskid: e57cb3d7-4c60-43d7-88a6-f56ec6f6008b
@@ -358,7 +326,7 @@ tasks:
       brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
-      - "7"
+      - "13"
     scriptarguments:
       assets:
         simple: ${Nexpose.Asset.AssetId}
@@ -374,12 +342,44 @@ tasks:
           "y": 1760
         }
       }
+  "13":
+    id: "13"
+    taskid: a4d832e5-61d0-47a4-8aa5-b98288e98e3b
+    type: regular
+    task:
+      id: a4d832e5-61d0-47a4-8aa5-b98288e98e3b
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '["pdf","xml"]'
+      fields: {}
+      path:
+        simple: File.Extension
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1987
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1998,
+        "height": 2032,
         "width": 380,
         "x": 450,
         "y": 50
