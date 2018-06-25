@@ -553,3 +553,4 @@ script:
       the one in this request completely replaces it.
   dockerimage: demisto/boto3
   runonce: false
+releaseNotes: "-"

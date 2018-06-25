@@ -4032,3 +4032,4 @@ script:
       values exactly.
   dockerimage: demisto/boto3
   runonce: false
+releaseNotes: "-"

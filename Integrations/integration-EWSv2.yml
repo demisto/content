@@ -662,22 +662,6 @@ script:
                     if attachment.item.mime_content:
                         file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
 
-                    inner_file_result = None
-                    for inner_attachment in attachment.item.attachments:
-                        if isinstance(inner_attachment, FileAttachment):
-                            if inner_attachment.content:
-                                inner_file_result = fileResult(inner_attachment.name, inner_attachment.content)
-                                incident['attachment'].append({
-                                    'path': inner_file_result['FileID'],
-                                    'name': inner_attachment.name
-                                })
-                        elif inner_attachment.item.mime_content:
-                            inner_file_result = fileResult(inner_attachment.name + ".eml", inner_attachment.item.mime_content)
-                            incident['attachment'].append({
-                                'path': inner_file_result['FileID'],
-                                'name': inner_attachment.name + ".eml"
-                            })
-
                     if file_result:
                         # check for error
                         if file_result['Type'] == entryTypes['error']:
@@ -830,16 +814,6 @@ script:
 
         return entries
 
-    def get_inner_attachments(item_attachment):
-        entries = []
-        for attachment in item_attachment.item.attachments:
-            if isinstance(attachment, FileAttachment):
-                if attachment.content:
-                    entries.append(fileResult(attachment.name, attachment.content))
-            elif attachment.item.mime_content:
-                entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
-        return entries
-
 
     def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -852,8 +826,7 @@ script:
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
                 if attachment.item.mime_content:
-                  entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
-                entries.extend(get_inner_attachments(attachment))
+                    entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
 
         return entries
 
