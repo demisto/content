@@ -31,4 +31,4 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - splunkpy|||splunk-search
+  - splunk-search
