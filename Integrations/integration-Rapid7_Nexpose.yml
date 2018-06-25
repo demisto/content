@@ -907,51 +907,53 @@ script:
         assets = str(demisto.args()['assets']).split(',')
         template = demisto.args().get('template', None)
         name = demisto.args().get('name','report ' + str(datetime.now()))
+        reportFormat = demisto.args().get('format', 'pdf')
 
         scope = {
             'assets': assets
         }
 
-        report_id = create_report(scope, name, template)
+        report_id = create_report(scope, name, template, reportFormat)
 
         if report_id is None:
             return 'Could not retrieve report'
 
-        return download_report(report_id, name)
+        return download_report(report_id, name, reportFormat)
 
     def create_sites_report_command():
         sites = str(demisto.args()['sites']).split(',')
         template = demisto.args().get('template', None)
         name = demisto.args().get('name','report ' + str(datetime.now()))
+        reportFormat = demisto.args().get('format', 'pdf')
 
         scope = {
             'sites': sites
         }
 
-        report_id = create_report(scope, name, template)
+        report_id = create_report(scope, name, template, reportFormat)
 
         if report_id is None:
             return 'Could not retrieve report'
 
-        return download_report(report_id, name)
+        return download_report(report_id, name, reportFormat)
 
     def create_scan_report_command():
         scan = demisto.args()['scan']
         template = demisto.args().get('template', None)
         name = demisto.args().get('name','report ' + str(datetime.now()))
-
+        reportFormat = demisto.args().get('format', 'pdf')
         scope = {
             'scan': scan
         }
 
-        report_id = create_report(scope, name, template)
+        report_id = create_report(scope, name, template, reportFormat)
 
         if report_id is None:
             return 'Could not retrieve report'
 
-        return download_report(report_id, name)
+        return download_report(report_id, name, reportFormat)
 
-    def create_report(scope, name, template=None):
+    def create_report(scope, name, template, reportFormat):
         if template is None:
             templates = get_report_templates()
             if(templates is None or len(templates) == 0 or 'resources' not in templates):
@@ -968,13 +970,13 @@ script:
             'scope': scope,
             'template': template,
             'name': name,
-            'format': "pdf"
+            'format': reportFormat
         }
 
         result = send_request(path, 'post', body=body)
         return result['id'] if 'id' in result else None
 
-    def download_report(report_id, name):
+    def download_report(report_id, name, reportFormat):
         # Generate the report
         path = 'reports/' + str(report_id) +' /generate'
         instance = send_request(path, 'post')
@@ -993,7 +995,7 @@ script:
         path = 'reports/' + str(report_id) + '/history/' + str(instance['id']) + '/output'
         report = send_request(path, headers=headers, is_file=True)
 
-        return fileResult(name + '.pdf', report)
+        return fileResult(name + '.' + reportFormat, report)
 
     def start_assets_scan_command():
         ips = demisto.args().get('IPs', None)
@@ -1456,6 +1458,15 @@ script:
         is provided, the first template available will be used.
     - name: name
       description: <string> The report name
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - rtf
+      - xml
+      - html
+      - text
+      description: <string> The report format, default is PDF
     description: Generates a new report on given assets according to a template and
       arguments.
   - name: nexpose-create-sites-report
@@ -1469,6 +1480,15 @@ script:
         is provided, the first template available will be used.
     - name: name
       description: <string> The report name
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - rtf
+      - xml
+      - html
+      - text
+      description: <string> The report format, default is PDF
     description: Generates a new report on given sites according to a template and
       arguments.
   - name: nexpose-create-scan-report
@@ -1481,6 +1501,15 @@ script:
         is provided, the first template available will be used.
     - name: name
       description: <string> The report name
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - rtf
+      - xml
+      - html
+      - text
+      description: <string> The report format, default is PDF
     description: Generates a new report for a specified scan.
   - name: nexpose-start-site-scan
     arguments:
