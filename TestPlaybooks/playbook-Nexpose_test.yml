@@ -63,10 +63,10 @@ tasks:
       version: -1
       name: nexpose-get-assets
       description: Returns all assets for which you have access.
-      script: Rapid7 Nexpose2|||nexpose-get-assets
+      script: Rapid7 Nexpose|||nexpose-get-assets
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "3"
@@ -92,10 +92,10 @@ tasks:
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
         search criteria.
-      script: Rapid7 Nexpose2|||nexpose-search-assets
+      script: Rapid7 Nexpose|||nexpose-search-assets
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "10"
@@ -127,10 +127,10 @@ tasks:
       version: -1
       name: nexpose-get-asset
       description: Returns the specified asset.
-      script: Rapid7 Nexpose2|||nexpose-get-asset
+      script: Rapid7 Nexpose|||nexpose-get-asset
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "5"
@@ -190,10 +190,10 @@ tasks:
       name: nexpose-create-assets-report
       description: Generates a new report on given assets according to a template
         and arguments.
-      script: Rapid7 Nexpose2|||nexpose-create-assets-report
+      script: Rapid7 Nexpose|||nexpose-create-assets-report
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "7"
@@ -252,10 +252,10 @@ tasks:
       name: nexpose-get-asset-vulnerability
       description: Returns the details and possible remediations for an asset's given
         vulnerability.
-      script: Rapid7 Nexpose2|||nexpose-get-asset-vulnerability
+      script: Rapid7 Nexpose|||nexpose-get-asset-vulnerability
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "9"
@@ -317,10 +317,10 @@ tasks:
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
         search criteria.
-      script: Rapid7 Nexpose2|||nexpose-search-assets
+      script: Rapid7 Nexpose|||nexpose-search-assets
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "4"

@@ -1556,5 +1556,5 @@ script:
       description: The total number of vulnerabilities.
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
-releaseNotes: "-"
+releaseNotes: "New integration with the Nexpose V3 API"
 fromversion: 3.6.0
