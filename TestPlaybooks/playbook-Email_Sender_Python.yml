@@ -1,5 +1,5 @@
 id: Mail Sender (New) Test
-version: 35
+version: 36
 name: Email Sender Python
 description: |-
   Email sender - python.
@@ -30,13 +30,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 090f95ef-b17d-415c-866a-8591318d39fb
+    taskid: 555ee87d-b850-43b5-83d7-2c68634cbce4
     type: regular
     task:
-      id: 090f95ef-b17d-415c-866a-8591318d39fb
+      id: 555ee87d-b850-43b5-83d7-2c68634cbce4
       version: -1
       name: Delete context
-      scriptName: DeleteContext_copy_yarden
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
