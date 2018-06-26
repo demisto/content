@@ -299,10 +299,6 @@
             "playbookID": "CarbonBlackLiveResponseTest"
         },
         {
-            "playbookID": "TestSafeBreach",
-            "integrations": "SafeBreach"
-        },
-        {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
         },
@@ -491,6 +487,10 @@
         {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
+        },
+        {
+            "playbookID": "TestSafeBreach",
+            "integrations": "SafeBreach"
         }
     ]
 }
