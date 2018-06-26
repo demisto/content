@@ -1,5 +1,5 @@
 id: Mail Sender (New) Test
-version: 32
+version: 35
 name: Email Sender Python
 description: |-
   Email sender - python.
@@ -57,16 +57,16 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 2b112223-adf4-4f3c-868c-e34abf8a43fe
+    taskid: 05aa4856-3bea-40b8-859e-5f99fca5fedb
     type: regular
     task:
-      id: 2b112223-adf4-4f3c-868c-e34abf8a43fe
+      id: 05aa4856-3bea-40b8-859e-5f99fca5fedb
       version: -1
       name: Send mail using python
-      script: email-sender|||send-mail
+      script: Mail Sender (New)|||send-mail
       type: regular
       iscommand: true
-      brand: email-sender
+      brand: Mail Sender (New)
     nexttasks:
       '#none#':
       - "3"
