@@ -341,7 +341,7 @@ script:
     function get_threat_summary(id) {
         rawResponse = sendRequest(
             'GET',
-            'samples/' + id + '/summary',
+            'samples/' + id + '/threat',
             args,
             null
         );
