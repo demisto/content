@@ -133,11 +133,6 @@ script:
                 {to: 'Count', from: 'count'},
                 {to: 'ID', from: 'sample'},
             ],
-        'threat-grid-get-samples-state': [
-                {to: 'ID', from: 'sample'},
-                {to: 'State', from: 'state'},
-                {to: 'Status', from: 'status'}
-            ]
     }
 
     var titleDictionary = {
@@ -145,8 +140,7 @@ script:
         'threat-grid-get-sample-state-by-id': 'Threat grid sample state',
         'threat-grid-get-sample-by-id': 'Threat grid get sample',
         'threat-grid-get-samples': 'Threat grid get samples',
-        'threat-grid-get-threat-summary-by-id': 'Threat grid get threat summary',
-        'threat-grid-get-samples-state': 'Threat grid get sample state'
+        'threat-grid-get-threat-summary-by-id': 'Threat grid get threat summary'
     }
 
     var createHR = function(command, object) {
@@ -180,10 +174,6 @@ script:
             ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
             ContentPath: 'data',
         },
-        "threat-grid-get-samples-state": {
-            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
-            ContentPath: 'data',
-        }
     }
 
     var fileCommands = {
@@ -203,7 +193,7 @@ script:
         'threat-grid-get-samples': 'GET',
         'threat-grid-get-sample-by-id': 'GET',
         'threat-grid-get-sample-state-by-id': 'GET',
-        'threat-grid-get-samples-state': 'GET',
+        'threat-grid-get-samples-state': 'POST',
         'threat-grid-search-samples': 'GET',
         'threat-grid-upload-sample': 'POST',
         'threat-grid-search-submissions': 'GET',
@@ -351,7 +341,7 @@ script:
     function get_threat_summary(id) {
         rawResponse = sendRequest(
             'GET',
-            'samples/' + id + '/threat',
+            'samples/' + id + '/summary',
             args,
             null
         );
@@ -398,15 +388,39 @@ script:
         return 'ok';
 
       case 'threat-grid-url-to-file':
-        var urls = argToList(args.urls);
-        var files = [];
-        for (i = 0; i < urls.length; i++) {
-            var url = urls[i];
-            var fileName = "url_" + (i+1);
-            var fileEntry = { Type: 3, FileID: saveFile(SHORTCUT_DATA + url.replace(/\s/g,'')), File: fileName, Contents: fileName };
-            files.push(fileEntry);
+        var url = args['url'];
+        delete(args['url']);
+        return { Type: 3, FileID: saveFile(SHORTCUT_DATA + url), File: 'url_as_file', Contents: 'url_as_file' };
+
+      case 'threat-grid-detonate-file':
+        args['api_key'] = params.token;
+        var entryId = args['file-entry-id'];
+        delete(args['file-entry-id']);
+        var res = httpMultipart(
+                url + 'samples',
+                entryId,
+                {
+                    Method: 'POST',
+                },
+                args,
+                params.insecure,
+                params.proxy,
+                undefined,
+                'sample',
+                args.filename
+            );
+        if (res.StatusCode == 503) {
+            throw 'Sample upload failed: File was already uploaded.';
         }
-        return files;
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Sample upload failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        rawResponse = JSON.parse(res.Body);
+        sampleId = rawResponse.data.id;
+        wait_for_report(sampleId, parseInt(args.delay), parseInt(args.timeout));
+        var type = args['report-file-type'];
+        delete(args['report-file-type']);
+        return get_threat_summary(sampleId);
 
       case 'threat-grid-upload-sample':
         args['api_key'] = params.token;
@@ -431,7 +445,7 @@ script:
         rawResponse = JSON.parse(res.Body);
         break;
       case 'threat-grid-get-samples-state':
-          args.ids = JSON.stringify(args.ids.split(','));
+        args.ids = JSON.stringify(args.ids.split(','));
       default:
         // Get file name if such exists
         var filename = command in fileCommands && replaceInTemplates(fileCommands[command], args);
@@ -795,13 +809,6 @@ script:
       required: true
       default: true
       description: IDs to get state of, comma separated
-    outputs:
-    - contextPath: Sample.State
-      description: The sample state.
-      type: string
-    - contextPath: Sample.ID
-      description: The sample ID.
-      type: unknown
     description: Get threat grid samples state
   - name: threat-grid-upload-sample
     arguments:
@@ -859,7 +866,7 @@ script:
         as determined by the value of api_key.
     - name: term
       description: Restrict matches to a subset of submission fields. The value of
-                     'term' is a comma-delimited list of strings which select groups of fields
+        'term' is a comma-delimited list of strings which select groups of fields
     - name: before
       description: Return submissions created before specified time. Value is a timestring,
         either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic)
@@ -1101,44 +1108,61 @@ script:
       description: The output type
       defaultValue: json
     description: Gets a specific threat feed
-  - name: threat-grid-url-to-file
+  - name: threat-grid-detonate-file
     arguments:
-    - name: urls
+    - name: file-entry-id
       required: true
       default: true
-      description: The URLs to convert.
-      isArray: true
+      description: Entry ID of the uploaded file (e.g. the message in the war room
+        with the uploaded file's details).
+    - name: delay
+      description: Time to wait between status checks (in seconds)
+      defaultValue: "20"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "660"
+    - name: report-file-type
+      auto: PREDEFINED
+      predefined:
+      - html
+      - json
+      description: File type of report to return
+      defaultValue: html
     outputs:
-    - contextPath: File.EntryID
-      description: EntryID of the file upload message in the war room
+    - contextPath: ThreatGrid.Sample.ID
+      description: The sample id
       type: string
-    - contextPath: File.Name
-      description: File Name
+    - contextPath: ThreatGrid.Sample.MaxSeverity
+      description: The sample max severity
+      type: number
+    - contextPath: ThreatGrid.Sample.Score
+      description: The sample score
+      type: number
+    - contextPath: ThreatGrid.Sample.Count
+      description: The sample count
+      type: number
+    - contextPath: ThreatGrid.Sample.MaxConfidence
+      description: The sample max confidence
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
       type: string
-    - contextPath: File.Extension
-      description: File Extension
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
       type: string
-    - contextPath: File.Type
-      description: File Type
+    - contextPath: DBotScore.Type
+      description: The indicator's type
       type: string
-    - contextPath: File.Info
-      description: File Info
-      type: string
-    - contextPath: File.MD5
-      description: MD5 checksum
-      type: string
-    - contextPath: File.SHA1
-      description: SHA1 checksum
-      type: string
-    - contextPath: File.SHA256
-      description: SHA256 checksum
-      type: string
-    - contextPath: File.SSDeep
-      description: SSDeep checksum
-      type: string
-    - contextPath: File.Size
-      description: File Size in bytes
-      type: int
+    description: Detonates URL address through Threat Grid
+  - name: threat-grid-url-to-file
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to convert.
     description: Convert a URL into a file for Threat Grid file detonation.
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Added threat-grid-detonate-file and threat-grid-url-to-file commands."
