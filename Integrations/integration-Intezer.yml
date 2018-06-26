@@ -204,13 +204,15 @@ script:
                 addMalicious(malFile, outputPaths.file, {
                     SHA256: hash,
                     ExistsInIntezer: true,
-                    Malicious: {Vendor: 'Intezer', Metadata: res.result}
+                    Metadata: res.result,
+                    Malicious: {Vendor: 'Intezer'}
                 });
                 ec[outputPaths.file].push(malFile[outputPaths.file]);
             } else {
                 ec[outputPaths.file].push({
                     SHA256: hash,
-                    ExistsInIntezer: true
+                    ExistsInIntezer: true,
+                    Metadata: res.result
                 });
                 if (verdict === 'suspicious') {
                     dbotScore = 2;
@@ -279,7 +281,7 @@ script:
       defaultValue: "5"
     outputs:
     - contextPath: File.SHA256
-      description: Bad hash SHA256
+      description: Hash SHA256
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
@@ -296,13 +298,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    - contextPath: Intezer.File
-      description: 'The file '
-      type: unknown
     - contextPath: File.ExistsInIntezer
       description: 'File exists in Intezer genome database (in case file does not
         exist, consider upload the file) '
       type: boolean
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+      type: unknown
     description: Checks file reputation of the given hash, supports SHA256
   - name: intezer-upload
     arguments:
@@ -327,7 +331,7 @@ script:
       defaultValue: "5"
     outputs:
     - contextPath: File.SHA256
-      description: Bad hash SHA256
+      description: Hash SHA256
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
@@ -344,5 +348,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
     description: Checks file reputation for uploaded file (up to 20MB)
   runonce: false
