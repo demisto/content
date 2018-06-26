@@ -146,7 +146,7 @@ tasks:
     task:
       id: f19b295a-74e2-471d-811a-3ab54afa7a75
       version: -1
-      name: There should not be not open alert
+      name: All retrieved alerts' status should be open
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
@@ -385,7 +385,7 @@ tasks:
     task:
       id: 62637f99-55ab-4b9e-8b24-322e2f84fddd
       version: -1
-      name: Verify that last status is dismissed
+      name: Verify that last status is open
       description: |-
         Verifies path in context:
         - Verifies path existence
