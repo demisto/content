@@ -29,10 +29,30 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Fetch only incidents matching this rule name
+  name: ruleName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch only incidents with this severity
+  name: policySeverity
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
-  script: |
+  script: |-
     import requests
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     URL = demisto.getParam('url')
     if URL[-1] != '/':
@@ -129,6 +149,16 @@ script:
             dt = datetime.utcfromtimestamp(d / 1000)
             return dt.strftime('%m/%d/%Y %H:%M:%S')
         return 'N/A'
+
+
+    def convertUnixToDemisto(d):
+        """
+        Convert millise since epoch to date formatted MM/DD/YYYYTHH:MI:SS
+        """
+        if d:
+            dt = datetime.utcfromtimestamp(d / 1000)
+            return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+        return ''
 
     def handle_time_filter(payload, baseCase):
         """
@@ -348,6 +378,57 @@ script:
         })
 
 
+    def translate_severity(alert):
+        """
+        Translate alert severity to demisto
+        Might take risk grade into account in the future
+        """
+        sev = demisto.get(alert, 'policy.severity')
+        if sev == 'high':
+            return 3
+        elif sev == 'medium':
+            return 2
+        elif sev == 'low':
+            return 1
+        return 0
+
+
+    def fetch_incidents():
+        """
+        Retrieve new incidents periodically based on pre-defined instance parameters
+        """
+        now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+        lastRunObject = demisto.getLastRun()
+        lastRun = lastRunObject and lastRunObject['time']
+        if not lastRun:
+            lastRun = now - 24 * 60 * 60 * 1000
+        payload = {
+            'timeRange': {
+                'type': 'absolute',
+                'value': {
+                    'startTime': lastRun,
+                    'endTime': now
+                }
+            }
+        }
+        payload['filters'] = [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]
+        if demisto.getParam('ruleName'):
+            payload['filters'].append({'name': 'alertRule.name', 'operator': '=', 'value': demisto.getParam('ruleName')})
+        if demisto.getParam('policySeverity'):
+            payload['filters'].append({'name': 'policy.severity', 'operator': '=', 'value': demisto.getParam('policySeverity')})
+        r = req('POST', 'alert', payload, {'detailed':'true'})
+        incidents = []
+        for a in r:
+            incidents.append({
+                'name': a.get('policy.name', 'No policy') + ' - ' + a.get('id'),
+                'occurred': convertUnixToDemisto(a.get('alertTime')),
+                'severity': translate_severity(a),
+                'rawJSON': json.dumps(a)
+            })
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': now})
+
+
     if demisto.command() == 'test-module':
         get_token()
         demisto.results('ok')
@@ -361,6 +442,10 @@ script:
         dismiss_alerts()
     elif demisto.command() == 'redlock-reopen-alerts':
         reopen_alerts()
+    elif demisto.command() == 'fetch-incidents':
+        fetch_incidents()
+    else:
+        return_error('Unrecognized command: ' + demisto.command())
   type: python
   commands:
   - name: redlock-search-alerts
@@ -789,6 +874,7 @@ script:
   - name: redlock-list-alert-filters
     arguments: []
     description: List the acceptable filters and values for alerts
+  isfetch: true
   runonce: false
 releaseNotes: "Support RedLock alert management"
 
