@@ -483,6 +483,7 @@ script:
                             { to: 'Events.ParentHash', from: 'events.parentHash'},
                             { to: 'Events.PolicyState', from: 'events.policyState'},
                             { to: 'Events.LongDescription', from: 'events.longDescription'},
+                            { to: 'Events.CommandLine', from: 'events.commandLine'},
                             { to: 'Events.ParentPid', from: 'events.parentPid'},
                             { to: 'Events.ProcessId', from: 'events.processId'},
                             { to: 'Events.ThreatIndicators', from: 'events.threatIndicators'},
@@ -1365,6 +1366,8 @@ script:
       description: Policy State
     - contextPath: CarbonBlackDefense.GetAlertDetails.Events.LongDescription
       description: Long Description
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.CommandLine
+      description: Command Line
     - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentPid
       description: Parent Pid
     - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessId
@@ -1585,3 +1588,4 @@ script:
       description: The modified policy
     description: Re-set policy fields.
   isfetch: true
+releaseNotes: "add output Events.CommandLine in cbd-get-alert-details"
