@@ -76,45 +76,24 @@ tasks:
       alert-id: {}
       alert-rule-name: {}
       alert-status: {}
-      alertID: {}
-      alertRuleName: {}
-      alertStatus: {}
       cloud-account: {}
       cloud-region: {}
       cloud-type: {}
-      cloudAccount: {}
-      cloudRegion: {}
-      cloudType: {}
       policy-compliance-standard: {}
       policy-label: {}
       policy-name: {}
       policy-severity: {}
       policy-type: {}
-      policyComplianceStandard: {}
-      policyLabel: {}
-      policyName: {}
-      policySeverity: {}
-      policyType: {}
       resource-id: {}
       resource-name: {}
       resource-type: {}
-      resourceID: {}
-      resourceName: {}
-      resourceType: {}
       risk-grade: {}
-      riskGrade: {}
       time-range-date-from:
         simple: 05/19/2018
       time-range-date-to:
         simple: 06/26/2018
       time-range-unit: {}
       time-range-value: {}
-      timeRangeDateFrom: {}
-      timeRangeDateTo: {}
-      timeRangeUnit:
-        simple: month
-      timeRangeValue:
-        simple: "1"
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -234,19 +213,10 @@ tasks:
         simple: ${Redlock.Alert.[0].ID}
       alert-rule-name: {}
       alert-status: {}
-      alertID:
-        simple: ${Redlock.Alert.[0].ID}
-      alertRuleName: {}
-      alertStatus: {}
       cloud-account: {}
       cloud-region: {}
       cloud-type: {}
-      cloudAccount: {}
-      cloudRegion: {}
-      cloudType: {}
       dismissal-note:
-        simple: Dismiss
-      dismissalNote:
         simple: Dismiss
       policy-compliance-standard: {}
       policy-id: {}
@@ -254,28 +224,14 @@ tasks:
       policy-name: {}
       policy-severity: {}
       policy-type: {}
-      policyComplianceStandard: {}
-      policyID: {}
-      policyLabel: {}
-      policyName: {}
-      policySeverity: {}
-      policyType: {}
       resource-id: {}
       resource-name: {}
       resource-type: {}
-      resourceID: {}
-      resourceName: {}
-      resourceType: {}
       risk-grade: {}
-      riskGrade: {}
       time-range-date-from: {}
       time-range-date-to: {}
       time-range-unit: {}
       time-range-value: {}
-      timeRangeDateFrom: {}
-      timeRangeDateTo: {}
-      timeRangeUnit: {}
-      timeRangeValue: {}
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -302,8 +258,6 @@ tasks:
       - "8"
     scriptarguments:
       alert-id:
-        simple: ${Redlock.Alert.[0].ID}
-      alertID:
         simple: ${Redlock.Alert.[0].ID}
       detailed: {}
     reputationcalc: 0
@@ -371,42 +325,22 @@ tasks:
         simple: ${Redlock.Alert.[0].ID}
       alert-rule-name: {}
       alert-status: {}
-      alertID:
-        simple: ${Redlock.Alert.[0].ID}
-      alertRuleName: {}
-      alertStatus: {}
       cloud-account: {}
       cloud-region: {}
       cloud-type: {}
-      cloudAccount: {}
-      cloudRegion: {}
-      cloudType: {}
       policy-compliance-standard: {}
       policy-label: {}
       policy-name: {}
       policy-severity: {}
       policy-type: {}
-      policyComplianceStandard: {}
-      policyLabel: {}
-      policyName: {}
-      policySeverity: {}
-      policyType: {}
       resource-id: {}
       resource-name: {}
       resource-type: {}
-      resourceID: {}
-      resourceName: {}
-      resourceType: {}
       risk-grade: {}
-      riskGrade: {}
       time-range-date-from: {}
       time-range-date-to: {}
       time-range-unit: {}
       time-range-value: {}
-      timeRangeDateFrom: {}
-      timeRangeDateTo: {}
-      timeRangeUnit: {}
-      timeRangeValue: {}
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -433,8 +367,6 @@ tasks:
       - "11"
     scriptarguments:
       alert-id:
-        simple: ${Redlock.Alert.[0].ID}
-      alertID:
         simple: ${Redlock.Alert.[0].ID}
       detailed: {}
     reputationcalc: 0
