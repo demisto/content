@@ -1222,4 +1222,3 @@ script:
         56105 for SSL
     description: Dumps information out of the database in nwd formatted files
 fromversion: 3.5.0
-releaseNotes: "Updated argument types"
