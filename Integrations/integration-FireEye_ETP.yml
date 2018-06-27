@@ -777,6 +777,7 @@ script:
     - contextPath: FireEyeETP.Alerts.meta.legacy_id
       description: 'Alert ID as shown in ETP Web Portal '
     - contextPath: FireEyeETP.Alerts.alert.product
+      description: Product alerted
     - contextPath: FireEyeETP.Alerts.alert.timestamp
       description: Alert timestamp
     - contextPath: FireEyeETP.Alerts.alert.malware_md5
@@ -819,6 +820,7 @@ script:
     - contextPath: FireEyeETP.Alerts.meta.legacy_id
       description: 'Alert ID as shown in ETP Web Portal '
     - contextPath: FireEyeETP.Alerts.meta.acknowledged
+      description: Acknowledged
     - contextPath: FireEyeETP.Alerts.alert.product
       description: Product generate the alert.
     - contextPath: FireEyeETP.Alerts.alert.alert_type
@@ -826,19 +828,31 @@ script:
     - contextPath: FireEyeETP.Alerts.alert.severity
       description: Severity code.
     - contextPath: FireEyeETP.Alerts.alert.explanation.analysis
+      description: Analysis
     - contextPath: FireEyeETP.Alerts.alert.explanation.anomaly
+      description: Anomaly
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.domain
+      description: Malware domain
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.downloaded_at
+      description: Malware downloaded at timestamp
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.executed_at
+      description: Malware executed at timestamp
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.name
+      description: Malware name
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.sid
+      description: Malware sid
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.stype
+      description: Malware type
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.submitted_at
+      description: Malware submitted at
     - contextPath: FireEyeETP.Alerts.alert.explanation.protocol
+      description: Protocol
     - contextPath: FireEyeETP.Alerts.alert.explanation.timestamp
+      description: Explanation timestamp
     - contextPath: FireEyeETP.Alerts.alert.timestamp
       description: Alert timestamp.
     - contextPath: FireEyeETP.Alerts.alert.action
+      description: Alert acrion
     - contextPath: FireEyeETP.Alerts.alert.name
       description: Alert name.
     - contextPath: FireEyeETP.Alerts.email.status
