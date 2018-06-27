@@ -93,7 +93,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 45,
           "y": 370
         }
       }
@@ -112,7 +112,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "13"
     scriptarguments:
       entryid:
         simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
@@ -162,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 265,
+          "y": 865
         }
       }
   "5":
@@ -195,8 +195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 865
+          "x": 377.5,
+          "y": 1040
         }
       }
   "6":
@@ -216,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1040
+          "x": 265,
+          "y": 1215
         }
       }
   "11":
@@ -235,14 +235,13 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-      - "13"
     reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 720
         }
       }
   "13":
@@ -260,7 +259,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "6"
+      - "11"
     scriptarguments:
       addLabels: {}
       app: {}
@@ -393,8 +392,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 865
+          "x": 480,
+          "y": 545
         }
       }
 view: |-
@@ -402,9 +401,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1055,
-        "width": 922.5,
-        "x": 50,
+        "height": 1230,
+        "width": 815,
+        "x": 45,
         "y": 50
       }
     }
