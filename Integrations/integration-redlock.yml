@@ -164,13 +164,16 @@ script:
         """
         Add the time filter to the payload
         """
-        unit = demisto.getArg('timeRangeUnit')
-        value = demisto.getArg('timeRangeValue')
-        timeFrom = demisto.getArg('timeRangeDateFrom')
-        timeTo = demisto.getArg('timeRangeDateTo')
+        unit = demisto.getArg('time-range-unit')
+        value = demisto.getArg('time-range-value')
+        timeFrom = demisto.getArg('time-range-date-from')
+        timeTo = demisto.getArg('time-range-date-to')
         relative = ('hour', 'day', 'week', 'month', 'year')
         toNow = relative[1:] + ('epoch', 'login')
         if unit:
+            if timeFrom or timeTo:
+                return_error('You cannot specify absolute times [time-range-date-from, time-range-date-to] ' +
+                    'with relative times [time-range-unit, time-range-value]')
             if value:
                 if unit not in relative:
                     return_error('Time unit for relative time must be one of the following: ' + ','.join(relative))
@@ -190,25 +193,25 @@ script:
         Add filters to the filter object based on received arguments
         """
         argsConversion = {
-            'alertStatus': 'alert.status',
-            'policyName': 'policy.name',
-            'policyLabel': 'policy.label',
-            'policyComplianceStandard': 'policy.complianceStandard',
-            'cloudAccount': 'cloud.account',
-            'cloudRegion': 'cloud.region',
-            'alertRuleName': 'alertRule.name',
-            'resourceID': 'resource.id',
-            'resourceName': 'resource.name',
-            'resourceType': 'resource.type',
-            'alertID': 'alert.id',
-            'cloudType': 'cloud.type',
-            'riskGrade': 'risk.grade',
-            'policyType': 'policy.type',
-            'policySeverity': 'policy.severity'
+            'alert-status': 'alert.status',
+            'policy-name': 'policy.name',
+            'policy-label': 'policy.label',
+            'policy-compliance-standard': 'policy.complianceStandard',
+            'cloud-account': 'cloud.account',
+            'cloud-region': 'cloud.region',
+            'alert-rule-name': 'alertRule.name',
+            'resource-id': 'resource.id',
+            'resource-name': 'resource.name',
+            'resource-type': 'resource.type',
+            'alert-id': 'alert.id',
+            'cloud-type': 'cloud.type',
+            'risk-grade': 'risk.grade',
+            'policy-type': 'policy.type',
+            'policy-severity': 'policy.severity'
         }
         payload['filters'] = []
         for k in demisto.args():
-            if k in ('policyName', 'policyLabel', 'policyComplianceStandard', 'cloudAccount', 'cloudRegion', 'alertRuleName', 'resourceID', 'resourceName', 'resourceType', 'alertStatus', 'alertID', 'cloudType', 'riskGrade', 'policyType', 'policySeverity') and demisto.getArg(k):
+            if k in ('policy-name', 'policy-label', 'policy-compliance-standard', 'cloud-account', 'cloud-region', 'alert-rule-name', 'resource-id', 'resource-name', 'resource-type', 'alert-status', 'alert-id', 'cloud-type', 'risk-grade', 'policy-type', 'policy-severity') and demisto.getArg(k):
                 payload['filters'].append({'name': argsConversion[k], 'operator': '=', 'value': demisto.getArg(k)})
 
 
@@ -296,7 +299,7 @@ script:
         """
         Retrieve alert details by given ID
         """
-        r = req('GET', 'alert/' + demisto.getArg('alertID'), None, None) # {'detailed': demisto.getArg('detailed')})
+        r = req('GET', 'alert/' + demisto.getArg('alert-id'), None, None) # {'detailed': demisto.getArg('detailed')})
         alert = alert_to_readable(r)
         alert.update({
             'PolicyID': demisto.get(r, 'policy.policyID'),
@@ -332,14 +335,14 @@ script:
         """
         Dismiss the given list of alerts based on given filter
         """
-        ids = argToList(demisto.getArg('alertID'))
-        policies = argToList(demisto.getArg('policyID'))
-        payload = {'alerts': ids, 'policies': policies, 'dismissalNote': demisto.getArg('dismissalNote'), 'filter': {}}
-        demisto.args().pop('alertID', None)
+        ids = argToList(demisto.getArg('alert-id'))
+        policies = argToList(demisto.getArg('policy-id'))
+        payload = {'alerts': ids, 'policies': policies, 'dismissalNote': demisto.getArg('dismissal-note'), 'filter': {}}
+        demisto.args().pop('alert-id', None)
         handle_filters(payload['filter'])
         handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
-        if not ids and not policies and not payload['filter']['filters']:
-            return_error('You must specify some filtering for dismissing alerts')
+        if not ids and not policies:
+            return_error('You must specify either alert-id or policy-id for dismissing alerts')
         r = req('POST', 'alert/dismiss', payload, None)
         ec = {}
         if ids:
@@ -349,7 +352,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': r,
             'EntryContext': ec,
-            'HumanReadable': '### Alerts dismissed successfully. Dismissal Note: %s.' % demisto.getArg('dismissalNote')
+            'HumanReadable': '### Alerts dismissed successfully. Dismissal Note: %s.' % demisto.getArg('dismissal-note')
         })
 
 
@@ -357,14 +360,14 @@ script:
         """
         Reopen the given list of alerts based on given filter
         """
-        ids = argToList(demisto.getArg('alertID'))
-        policies = argToList(demisto.getArg('policyID'))
+        ids = argToList(demisto.getArg('alert-id'))
+        policies = argToList(demisto.getArg('policy-id'))
         payload = {'alerts': ids, 'policies': policies, 'filter': {}}
-        demisto.args().pop('alertID', None)
+        demisto.args().pop('alert-id', None)
         handle_filters(payload['filter'])
         handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
-        if not ids and not policies and not payload['filter']['filters']:
-            return_error('You must specify some filtering for re-opening alerts')
+        if not ids and not policies:
+            return_error('You must specify either alert-id or policy-id for re-opening alerts')
         r = req('POST', 'alert/reopen', payload, None)
         ec = {}
         if ids:
@@ -450,13 +453,13 @@ script:
   commands:
   - name: redlock-search-alerts
     arguments:
-    - name: timeRangeDateFrom
+    - name: time-range-date-from
       description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: timeRangeDateTo
+    - name: time-range-date-to
       description: End time for search in the following format -  MM/DD/YYYY
-    - name: timeRangeValue
+    - name: time-range-value
       description: The amount of units to go back in time
-    - name: timeRangeUnit
+    - name: time-range-unit
       auto: PREDEFINED
       predefined:
       - hour
@@ -468,7 +471,7 @@ script:
       - epoch
       description: The search unit. login and epoch are only available if timeRangeValue
         is not provided.
-    - name: policyName
+    - name: policy-name
       auto: PREDEFINED
       predefined:
       - IAM password policy does not have a symbol
@@ -502,23 +505,23 @@ script:
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
       description: The policy name
-    - name: policyLabel
+    - name: policy-label
       description: The policy label
-    - name: policyComplianceStandard
+    - name: policy-compliance-standard
       description: The policy compliance standard
-    - name: cloudAccount
+    - name: cloud-account
       description: The cloud account
-    - name: cloudRegion
+    - name: cloud-region
       description: The cloud region
-    - name: alertRuleName
+    - name: alert-rule-name
       description: The alert rule name
-    - name: resourceID
-      description: The resourceID
-    - name: resourceName
+    - name: resource-id
+      description: The resource ID
+    - name: resource-name
       description: The resource name
-    - name: resourceType
+    - name: resource-type
       description: The resource type
-    - name: alertStatus
+    - name: alert-status
       auto: PREDEFINED
       predefined:
       - open
@@ -526,16 +529,16 @@ script:
       - dismissed
       description: The alert status
       defaultValue: open
-    - name: alertID
+    - name: alert-id
       description: The alert ID
-    - name: cloudType
+    - name: cloud-type
       auto: PREDEFINED
       predefined:
       - aws
       - azure
       - gcp
       description: The cloud type
-    - name: riskGrade
+    - name: risk-grade
       auto: PREDEFINED
       predefined:
       - A
@@ -543,7 +546,7 @@ script:
       - C
       - F
       description: The risk grade
-    - name: policyType
+    - name: policy-type
       auto: PREDEFINED
       predefined:
       - anomaly
@@ -551,7 +554,7 @@ script:
       - config
       - network
       description: The policy type
-    - name: policySeverity
+    - name: policy-severity
       auto: PREDEFINED
       predefined:
       - high
@@ -595,7 +598,7 @@ script:
     description: Search alerts on the RedLock platform
   - name: redlock-get-alert-details
     arguments:
-    - name: alertID
+    - name: alert-id
       required: true
       default: true
       description: The alert ID
@@ -640,18 +643,18 @@ script:
     description: Gets the details of an alert based on alert ID
   - name: redlock-dismiss-alerts
     arguments:
-    - name: alertID
+    - name: alert-id
       description: comma separated list of string IDs to be dismissed
-    - name: dismissalNote
+    - name: dismissal-note
       required: true
       description: Reason for dismissal
-    - name: timeRangeDateFrom
+    - name: time-range-date-from
       description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: timeRangeDateTo
+    - name: time-range-date-to
       description: End time for search in the following format -  MM/DD/YYYY
-    - name: timeRangeValue
+    - name: time-range-value
       description: The amount of units to go back in time
-    - name: timeRangeUnit
+    - name: time-range-unit
       auto: PREDEFINED
       predefined:
       - hour
@@ -662,7 +665,7 @@ script:
       - login
       - epoch
       description: The search unit
-    - name: policyName
+    - name: policy-name
       auto: PREDEFINED
       predefined:
       - IAM password policy does not have a symbol
@@ -696,37 +699,37 @@ script:
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
       description: The policy name
-    - name: policyLabel
+    - name: policy-label
       description: The policy label
-    - name: policyComplianceStandard
+    - name: policy-compliance-standard
       description: The policy compliance standard
-    - name: cloudAccount
+    - name: cloud-account
       description: The cloud account
-    - name: cloudRegion
+    - name: cloud-region
       description: The cloud region
-    - name: alertRuleName
+    - name: alert-rule-name
       description: The alert rule name
-    - name: resourceID
-      description: The resourceID
-    - name: resourceName
+    - name: resource-id
+      description: The resource ID
+    - name: resource-name
       description: The resource name
-    - name: resourceType
+    - name: resource-type
       description: The resource type
-    - name: alertStatus
+    - name: alert-status
       auto: PREDEFINED
       predefined:
       - open
       - resolved
       - dismissed
       description: The alert status
-    - name: cloudType
+    - name: cloud-type
       auto: PREDEFINED
       predefined:
       - aws
       - azure
       - gcp
       description: The cloud type
-    - name: riskGrade
+    - name: risk-grade
       auto: PREDEFINED
       predefined:
       - A
@@ -734,7 +737,7 @@ script:
       - C
       - F
       description: The risk grade
-    - name: policyType
+    - name: policy-type
       auto: PREDEFINED
       predefined:
       - anomaly
@@ -742,32 +745,33 @@ script:
       - config
       - network
       description: The policy type
-    - name: policySeverity
+    - name: policy-severity
       auto: PREDEFINED
       predefined:
       - high
       - medium
       - low
       description: The policy severity
-    - name: policyID
+    - name: policy-id
       description: comma separated string of policy IDs
     outputs:
     - contextPath: Redlock.Alert.ID
       description: The IDs of the dismissed alerts
       type: string
-    description: Dismiss the alerts matching the given filter
+    description: Dismiss the alerts matching the given filter. Must provide either
+      policy IDs or alert IDs.
     execution: true
   - name: redlock-reopen-alerts
     arguments:
-    - name: alertID
+    - name: alert-id
       description: The IDs of alerts to reopen
-    - name: timeRangeDateFrom
+    - name: time-range-date-from
       description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: timeRangeDateTo
+    - name: time-range-date-to
       description: End time for search in the following format -  MM/DD/YYYY
-    - name: timeRangeValue
+    - name: time-range-value
       description: The amount of units to go back in time
-    - name: timeRangeUnit
+    - name: time-range-unit
       auto: PREDEFINED
       predefined:
       - hour
@@ -778,7 +782,7 @@ script:
       - login
       - epoch
       description: The search unit
-    - name: policyName
+    - name: policy-name
       auto: PREDEFINED
       predefined:
       - IAM password policy does not have a symbol
@@ -812,37 +816,37 @@ script:
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
       description: The policy name
-    - name: policyLabel
+    - name: policy-label
       description: The policy label
-    - name: policyComplianceStandard
+    - name: policy-compliance-standard
       description: The policy compliance standard
-    - name: cloudAccount
+    - name: cloud-account
       description: The cloud account
-    - name: cloudRegion
+    - name: cloud-region
       description: The cloud region
-    - name: alertRuleName
+    - name: alert-rule-name
       description: The alert rule name
-    - name: resourceID
-      description: The resourceID
-    - name: resourceName
+    - name: resource-id
+      description: The resource ID
+    - name: resource-name
       description: The resource name
-    - name: resourceType
+    - name: resource-type
       description: The resource type
-    - name: alertStatus
+    - name: alert-status
       auto: PREDEFINED
       predefined:
       - open
       - resolved
       - dismissed
       description: The alert status
-    - name: cloudType
+    - name: cloud-type
       auto: PREDEFINED
       predefined:
       - aws
       - azure
       - gcp
       description: The cloud type
-    - name: riskGrade
+    - name: risk-grade
       auto: PREDEFINED
       predefined:
       - A
@@ -850,7 +854,7 @@ script:
       - C
       - F
       description: The risk grade
-    - name: policyType
+    - name: policy-type
       auto: PREDEFINED
       predefined:
       - anomaly
@@ -858,7 +862,7 @@ script:
       - config
       - network
       description: The policy type
-    - name: policySeverity
+    - name: policy-severity
       auto: PREDEFINED
       predefined:
       - high
@@ -869,7 +873,8 @@ script:
     - contextPath: Redlock.Alert.ID
       description: IDs of the re-opened alerts
       type: string
-    description: Re-open the alerts matching the given filter
+    description: Re-open the alerts matching the given filter.  Must provide either
+      policy IDs or alert IDs.
     execution: true
   - name: redlock-list-alert-filters
     arguments: []

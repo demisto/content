@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 23ef3831-9e96-4944-891f-94e4cbe8da75
+    taskid: 77b8ef03-e751-4afe-8656-c4b7b6c65036
     type: start
     task:
-      id: 23ef3831-9e96-4944-891f-94e4cbe8da75
+      id: 77b8ef03-e751-4afe-8656-c4b7b6c65036
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 94fb8b3f-ad61-441f-8432-31899d0d906d
+    taskid: 6e434e41-7577-4c02-8bc9-e6f7a3189077
     type: regular
     task:
-      id: 94fb8b3f-ad61-441f-8432-31899d0d906d
+      id: 6e434e41-7577-4c02-8bc9-e6f7a3189077
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -56,12 +56,12 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 6ee1c058-3369-47c3-8d4a-875471b02abf
+    taskid: 07eafe11-1cab-42aa-86b1-5504892d6666
     type: regular
     task:
-      id: 6ee1c058-3369-47c3-8d4a-875471b02abf
+      id: 07eafe11-1cab-42aa-86b1-5504892d6666
       version: -1
-      name: Retrieve all open alerts from last month
+      name: Retrieve all open alerts between 2 given dates
       description: Check IP reputation (when information is available, returns a JSON
         with details).  Uses all configured Threat Intelligence feeds
       script: RedLock|||redlock-search-alerts
@@ -73,21 +73,42 @@ tasks:
       - "3"
       - "4"
     scriptarguments:
+      alert-id: {}
+      alert-rule-name: {}
+      alert-status: {}
       alertID: {}
       alertRuleName: {}
       alertStatus: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
       cloudAccount: {}
       cloudRegion: {}
       cloudType: {}
+      policy-compliance-standard: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
       policyComplianceStandard: {}
       policyLabel: {}
       policyName: {}
       policySeverity: {}
       policyType: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
       resourceID: {}
       resourceName: {}
       resourceType: {}
+      risk-grade: {}
       riskGrade: {}
+      time-range-date-from:
+        simple: 05/19/2018
+      time-range-date-to:
+        simple: 06/26/2018
+      time-range-unit: {}
+      time-range-value: {}
       timeRangeDateFrom: {}
       timeRangeDateTo: {}
       timeRangeUnit:
@@ -105,10 +126,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 6c281996-57e2-410d-85c1-9d3b9a9a9772
+    taskid: 4b4ca0e2-1d6b-47d0-8c31-888ed934e728
     type: regular
     task:
-      id: 6c281996-57e2-410d-85c1-9d3b9a9a9772
+      id: 4b4ca0e2-1d6b-47d0-8c31-888ed934e728
       version: -1
       name: VerifyContext we have more than 5 alerts
       description: |-
@@ -135,16 +156,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 500,
           "y": 545
         }
       }
   "4":
     id: "4"
-    taskid: f19b295a-74e2-471d-811a-3ab54afa7a75
+    taskid: 5b72be05-336d-498f-8b31-e6bd380af486
     type: condition
     task:
-      id: f19b295a-74e2-471d-811a-3ab54afa7a75
+      id: 5b72be05-336d-498f-8b31-e6bd380af486
       version: -1
       name: All retrieved alerts' status should be open
       description: Check if a given value exists in the context. Will return 'no'
@@ -166,16 +187,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 60,
           "y": 545
         }
       }
   "5":
     id: "5"
-    taskid: a96e183b-95af-4602-8c48-5435ba66a142
+    taskid: 6ace577a-7ddd-4716-8214-e7acbf3eae51
     type: regular
     task:
-      id: a96e183b-95af-4602-8c48-5435ba66a142
+      id: 6ace577a-7ddd-4716-8214-e7acbf3eae51
       version: -1
       name: Fail
       scriptName: Print
@@ -189,16 +210,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 50,
           "y": 720
         }
       }
   "6":
     id: "6"
-    taskid: 8ab81c0c-93b1-4eb8-8c19-0e0d7b0701d4
+    taskid: dd43d2e4-c81b-4f27-8e09-b80d6c9940de
     type: regular
     task:
-      id: 8ab81c0c-93b1-4eb8-8c19-0e0d7b0701d4
+      id: dd43d2e4-c81b-4f27-8e09-b80d6c9940de
       version: -1
       name: Dismiss the first alert
       script: RedLock|||redlock-dismiss-alerts
@@ -209,25 +230,48 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      alert-id:
+        simple: ${Redlock.Alert.[0].ID}
+      alert-rule-name: {}
+      alert-status: {}
       alertID:
         simple: ${Redlock.Alert.[0].ID}
       alertRuleName: {}
       alertStatus: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
       cloudAccount: {}
       cloudRegion: {}
       cloudType: {}
+      dismissal-note:
+        simple: Dismiss
       dismissalNote:
         simple: Dismiss
+      policy-compliance-standard: {}
+      policy-id: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
       policyComplianceStandard: {}
       policyID: {}
       policyLabel: {}
       policyName: {}
       policySeverity: {}
       policyType: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
       resourceID: {}
       resourceName: {}
       resourceType: {}
+      risk-grade: {}
       riskGrade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
       timeRangeDateFrom: {}
       timeRangeDateTo: {}
       timeRangeUnit: {}
@@ -237,16 +281,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 490,
           "y": 720
         }
       }
   "7":
     id: "7"
-    taskid: b9b2cd53-515e-4f00-8838-6e4b50aef19c
+    taskid: 64df938e-c4c4-40da-86b4-e89ec7c71ff6
     type: regular
     task:
-      id: b9b2cd53-515e-4f00-8838-6e4b50aef19c
+      id: 64df938e-c4c4-40da-86b4-e89ec7c71ff6
       version: -1
       name: Retrieve the details of this alert
       script: RedLock|||redlock-get-alert-details
@@ -257,6 +301,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      alert-id:
+        simple: ${Redlock.Alert.[0].ID}
       alertID:
         simple: ${Redlock.Alert.[0].ID}
       detailed: {}
@@ -265,16 +311,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 490,
           "y": 895
         }
       }
   "8":
     id: "8"
-    taskid: 4384b76d-f0bf-414c-87e1-c0a0115b3510
+    taskid: 2a8ee834-91f5-460f-8c3b-929903c27a2e
     type: regular
     task:
-      id: 4384b76d-f0bf-414c-87e1-c0a0115b3510
+      id: 2a8ee834-91f5-460f-8c3b-929903c27a2e
       version: -1
       name: Verify that last status is dismissed
       description: |-
@@ -301,16 +347,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 490,
           "y": 1070
         }
       }
   "9":
     id: "9"
-    taskid: 19277280-186d-4686-896d-32c6312f439c
+    taskid: dd6a25fc-685d-47b8-8aa3-e382640739a8
     type: regular
     task:
-      id: 19277280-186d-4686-896d-32c6312f439c
+      id: dd6a25fc-685d-47b8-8aa3-e382640739a8
       version: -1
       name: Re-open the last alert
       script: RedLock|||redlock-reopen-alerts
@@ -321,22 +367,42 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      alert-id:
+        simple: ${Redlock.Alert.[0].ID}
+      alert-rule-name: {}
+      alert-status: {}
       alertID:
         simple: ${Redlock.Alert.[0].ID}
       alertRuleName: {}
       alertStatus: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
       cloudAccount: {}
       cloudRegion: {}
       cloudType: {}
+      policy-compliance-standard: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
       policyComplianceStandard: {}
       policyLabel: {}
       policyName: {}
       policySeverity: {}
       policyType: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
       resourceID: {}
       resourceName: {}
       resourceType: {}
+      risk-grade: {}
       riskGrade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
       timeRangeDateFrom: {}
       timeRangeDateTo: {}
       timeRangeUnit: {}
@@ -346,16 +412,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 490,
           "y": 1245
         }
       }
   "10":
     id: "10"
-    taskid: d9f923ef-c7a2-4b79-8085-c4cfcd69d2f8
+    taskid: 391c805c-2092-4c45-80cc-1375c508c260
     type: regular
     task:
-      id: d9f923ef-c7a2-4b79-8085-c4cfcd69d2f8
+      id: 391c805c-2092-4c45-80cc-1375c508c260
       version: -1
       name: Retrieve the details of this alert
       script: RedLock|||redlock-get-alert-details
@@ -366,6 +432,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      alert-id:
+        simple: ${Redlock.Alert.[0].ID}
       alertID:
         simple: ${Redlock.Alert.[0].ID}
       detailed: {}
@@ -374,16 +442,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 490,
           "y": 1420
         }
       }
   "11":
     id: "11"
-    taskid: 62637f99-55ab-4b9e-8b24-322e2f84fddd
+    taskid: 58c9089a-b1ed-41ec-8c1f-372106a13d6f
     type: regular
     task:
-      id: 62637f99-55ab-4b9e-8b24-322e2f84fddd
+      id: 58c9089a-b1ed-41ec-8c1f-372106a13d6f
       version: -1
       name: Verify that last status is open
       description: |-
@@ -410,16 +478,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 490,
           "y": 1595
         }
       }
   "12":
     id: "12"
-    taskid: b643205a-2f01-4e87-8492-ae3331476dc7
+    taskid: 375dc964-a389-4a8d-87be-010062b632d8
     type: regular
     task:
-      id: b643205a-2f01-4e87-8492-ae3331476dc7
+      id: 375dc964-a389-4a8d-87be-010062b632d8
       version: -1
       name: Close investigation
       scriptName: CloseInvestigation
@@ -436,7 +504,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 490,
           "y": 1770
         }
       }
