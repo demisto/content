@@ -6,10 +6,6 @@
             "playbookID": "buildewsquery_test"
         },
         {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
-        },
-        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
@@ -491,6 +487,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
         }
     ]
 }
