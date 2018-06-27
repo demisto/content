@@ -1157,7 +1157,7 @@ script:
       description: The indicator's type
       type: string
     description: Detonates URL address through Threat Grid
-    timeout: "720"
+    timeout: 720
   - name: threat-grid-url-to-file
     arguments:
     - name: url
