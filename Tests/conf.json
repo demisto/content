@@ -16,6 +16,9 @@
             "playbookID": "minemeld_test"
         },
         {
+            "playbookID": "buildewsquery_test"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
@@ -355,6 +358,10 @@
         },
         {
             "playbookID": "test-domain-indicator"
+        },
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
         }
     ],
     "skipped": [
@@ -493,6 +500,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
         }
     ]
 }
