@@ -19,7 +19,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Trust any certificate (unsecure)
+- display: Do not validate server certificate (insecure)
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -39,42 +39,82 @@ configuration:
   defaultvalue: "66"
   type: 0
   required: true
+- display: It is cloud
+  name: cloud
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |
     var sendRequest = function(url,param, fileId) {
         var requestUrl = params.url + url + param;
         var res;
-
-        if (fileId) {
-            var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
-            res = httpMultipart(
-                requestUrl,
-                fileId,
-                {
-                    Method: 'POST',
-                    Headers: {
-                        Accept: ['application/json'],
-                        filename: fileName
+        if (params.cloud) {
+            if (fileId) {
+                var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
+                res = httpMultipart(
+                    requestUrl,
+                    fileId,
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            Accept: ['application/json'],
+                            filename: [fileName],
+                            apikey: [params.api]
+                        }
+                    },
+                    {},
+                    params.insecure,
+                    params.proxy,
+                    undefined,
+                    'file',
+                    fileName);
+            } else {
+                res = http(
+                    requestUrl,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            Accept: ['application/json'],
+                            apikey: [params.api]
+                        }
                     }
-                },
-                {},
-                params.insecure,
-                params.proxy,
-                undefined,
-                'file',
-                fileName);
+                    );
+                return res;
+            }
         } else {
-            res = http(
-                requestUrl,
-                {
-                    Method: 'GET',
-                    Headers: {
-                        Accept: ['application/json']
+            if (fileId) {
+                var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
+                res = httpMultipart(
+                    requestUrl,
+                    fileId,
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            Accept: ['application/json'],
+                            filename: fileName
+                        }
+                    },
+                    {},
+                    params.insecure,
+                    params.proxy,
+                    undefined,
+                    'file',
+                    fileName);
+            } else {
+                res = http(
+                    requestUrl,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            Accept: ['application/json']
+                        }
                     }
-                }
-                );
+                    );
+            }
         }
 
+        return res;
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
@@ -148,7 +188,7 @@ script:
         }
 
         try {
-            res = JSON.parse(sendRequest('file', '' , args.fileId).Body);
+            res = JSON.parse(sendRequest('/file', '' , args.fileId).Body);
         } catch (err) {
             throw 'Error in JSON parsing\n';
         }
@@ -170,7 +210,7 @@ script:
     var getScanResult = function() {
         var res;
         try {
-            res = JSON.parse(sendRequest('file/' + args.id, '').Body);
+            res = JSON.parse(sendRequest('/file/' + args.id, '').Body);
         } catch (err) {
             throw 'Error in JSON parsing\n';
         }
@@ -280,3 +320,5 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
+  runonce: false
+releaseNotes: "Now supports cloud Metadefender."
