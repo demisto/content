@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing",
+            "timeout": 500
+        },
+        {
             "playbookID": "buildewsquery_test"
         },
         {
@@ -349,10 +354,6 @@
         },
         {
             "playbookID": "test-domain-indicator"
-        },
-        {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
         }
     ],
     "skipped": [
