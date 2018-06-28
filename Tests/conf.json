@@ -353,6 +353,11 @@
     ],
     "skipped": [
         {
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
+        },
+        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
