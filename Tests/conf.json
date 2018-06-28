@@ -345,10 +345,6 @@
         },
         {
             "playbookID": "test-domain-indicator"
-        },
-        {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
         }
     ],
     "skipped": [
@@ -360,6 +356,11 @@
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing",
+            "timeout": 500
         },
         {
             "integrations": {
