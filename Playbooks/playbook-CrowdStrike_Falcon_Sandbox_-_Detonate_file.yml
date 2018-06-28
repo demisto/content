@@ -5,7 +5,6 @@ description: Detonate one or more files using the CrowdStrike Falcon Sandbox int
   This playbook returns relevant reports to the War Room and file reputations to the
   context data.
 fromversion: 3.5.0
-releaseNotes: "Add support to upgraded integration"
 starttaskid: "0"
 tasks:
   "0":

@@ -6,17 +6,13 @@
             "playbookID": "buildewsquery_test"
         },
         {
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test"
+        },
+        {
             "integrations": "Rapid7 Nexpose",
             "playbookID": "nexpose_test",
             "timeout": 240
-        },
-        {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
-        },
-        {
-            "integrations": "EWS Mail Sender",
-            "playbookID": "EWS Mail Sender Test"
         },
         {
             "playbookID": "decodemimeheader_-_test"
