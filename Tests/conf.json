@@ -3,11 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing",
-            "timeout": 500
-        },
-        {
             "playbookID": "buildewsquery_test"
         },
         {
@@ -360,6 +355,11 @@
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing",
+            "timeout": 500
         },
         {
             "integrations": {
