@@ -6,13 +6,12 @@
             "playbookID": "buildewsquery_test"
         },
         {
-            "integrations": "EWS Mail Sender",
-            "playbookID": "EWS Mail Sender Test"
+            "integrations": "Rapid7 Nexpose",
+            "playbookID": "nexpose_test"
         },
         {
-            "integrations": "Rapid7 Nexpose",
-            "playbookID": "nexpose_test",
-            "timeout": 240
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test"
         },
         {
             "playbookID": "decodemimeheader_-_test"
@@ -358,6 +357,11 @@
     ],
     "skipped": [
         {
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
+        },
+        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
@@ -492,6 +496,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
         }
     ]
 }
