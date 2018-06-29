@@ -349,6 +349,11 @@
         {
             "integrations": "Intezer",
             "playbookID": "Intezer Testing"
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "nightly": true
         }
     ],
     "skipped": [

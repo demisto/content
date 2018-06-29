@@ -92,6 +92,7 @@ script:
             req_params.update(params_dict)
 
         url = SERVER_URL + url_suffix
+
         LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, headers, json.dumps(req_params)))
 
         try:
@@ -103,6 +104,7 @@ script:
                 proxies=PROXY
             )
             res.raise_for_status()
+
             return res.json()
 
         except Exception, e:
@@ -142,7 +144,7 @@ script:
 
         if (positives >= threshold):
             ec.update({
-                'File': {
+                'File(val.MD5==obj.MD5)': {
                     'MD5': vt_response.get('md5'),
                     'SHA1': vt_response.get('sha1'),
                     'SHA256': vt_response.get('sha256'),
@@ -151,16 +153,9 @@ script:
                         'Detections': positives,
                         'TotalEngines': demisto.get(vt_response, 'total')
                     },
-                },
-                'DBotScore': [
-                    {
-                        'Indicator': file_hash,
-                        'Type': 'hash',
-                        'Vendor': 'VirusTotal',
-                        'Score': 3
-                    }
-                ]
+                }
             })
+            dbotScore = 3
         elif (positives >= threshold / 2):
             dbotScore = 2
         else:
@@ -284,10 +279,21 @@ script:
             md += tableToMarkdown('Files that are related to hash: ' + file_hash + ' :', remove_duplicates_from_list_of_dicts([{'File':file} for file in files_data]))
 
         if (keys_data is not None):
-            md += tableToMarkdown('Keys that are related to hash: ' + file_hash + ' :', remove_duplicates_from_list_of_dicts([{'Key':k} for k in keys_data]))
+            md += tableToMarkdown('Registry Keys that are related to hash: ' + file_hash + ' :', remove_duplicates_from_list_of_dicts([{'Key':k} for k in keys_data]))
 
         if (mutex_data is not None):
             md += tableToMarkdown('Opened mutexes that are related to hash: ' + file_hash + ' :',  remove_duplicates_from_list_of_dicts([{'Mutex':m} for m in mutex_data]))
+
+        hash_ec = {
+            "Hash": file_hash,
+            'RelatedDomains': domains_list,
+            'RelatedURLs': urls_list,
+            'RelatedIPs': ips_list,
+            'RelatedHosts': hosts,
+            'RelatedFiles': files_data,
+            'RelatedRegistryKeys': keys_data,
+            'RelatedMutexes': mutex_data,
+        }
 
         return {
             'Type': entryTypes['note'],
@@ -296,14 +302,8 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'VirusTotal.FileBehaviour.Domain(val==obj)': domains_list,
-                'VirusTotal.FileBehaviour.URL(val==obj)': urls_list,
-                'VirusTotal.FileBehaviour.IP(val==obj)': ips_list,
-                'VirusTotal.FileBehaviour.Host(val==obj)': hosts,
-                'VirusTotal.FileBehaviour.File(val==obj)': files_data,
-                'VirusTotal.FileBehaviour.Key(val==obj)': keys_data,
-                'VirusTotal.FileBehaviour.Mutex(val==obj)': mutex_data,
-
+                'VirusTotal.FileBehaviour(val.Hash==obj.Hash)': hash_ec,
+                'File(val.Hash==obj.Hash)': hash_ec,
             }
         }
 
@@ -385,6 +385,15 @@ script:
         if whois is not None:
             md += tableToMarkdown("Observed subdomains", [{'Domain':d} for d in subdomains])
 
+        domain_ec = {
+            "Name": domain,
+            'DownloadedHashes': downloaded_malware_hashes,
+            'CommunicatingHashes': communicating_malware_hashes,
+            'Resolutions': resolutions_list,
+            'Whois': whois,
+            'Subdomains': subdomains,
+        }
+
         return {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -392,11 +401,8 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'VirusTotal.domainReport.DownloadedHashes(val.sha256==obj.sha256)': downloaded_malware_hashes,
-                'VirusTotal.domainReport.CommunicatingHashes(val.sha256==obj.sha256)': communicating_malware_hashes,
-                'VirusTotal.domainReport.Reolutions(val.ip_address==obj.ip_address)': resolutions_list,
-                'VirusTotal.domainReport.Whois(val==obj)': whois,
-                'VirusTotal.domainReport.Subdomains(val==obj)': subdomains
+                'VirusTotal.domainReport(val.Name==obj.Name)': domain_ec,
+                'Domain(val.Name==obj.Name)': domain_ec
             }
         }
 
@@ -481,28 +487,27 @@ script:
 
         if (positives >= threshold):
             ec.update({
-                'URL': {
+                'URL(val.Data==obj.Data)': {
                     'Data': url,
                     'Malicious': {
                         'Description': 'Positives / Total: ' + positives + ' / ' + response.get('total', ''),
                         'Vendor': 'VirusTotal'
                     },
                 },
-                'DBotScore': [
-                    {
-                        'Indicator': url,
-                        'Type': 'url',
-                        'Vendor': 'VirusTotal',
-                        'Score': 3
-                    }
-                ]
             })
+            dbotScore = 3
         elif (positives >= threshold / 2):
             dbotScore = 2
         else:
             dbotScore = 1
 
         ec['DBotScore'].append({'Indicator': url, 'Type': 'url', 'Vendor': 'VirusTotal', 'Score': dbotScore})
+        if (dbotScore < 3):
+            ec.update({
+                'URL(val.Data==obj.Data)': {
+                    'Data': url
+                }
+            })
 
         additional_info = response.get('additional_info', None)
         if additional_info is not None:
@@ -611,10 +616,10 @@ script:
         ec = {}
         ec['DBotScore'] = []
         dbotScore = 0
-        bad_downloads_amount = len(undetected_downloaded_samples)
+        bad_downloads_amount = len(undetected_downloaded_samples) if undetected_downloaded_samples else 0
         if (bad_downloads_amount >= threshold):
             ec.update({
-                'ip': {
+                'ip(val.Address==obj.Address)': {
                     'Address': ip,
                     'ASN': asn,
                     'Geo': {
@@ -624,22 +629,38 @@ script:
                         'Description': 'Recent malicious downloads: ' + str(bad_downloads_amount),
                         'Vendor': 'VirusTotal'
                     },
-                },
-                'DBotScore': [
-                    {
-                        'Indicator': ip,
-                        'Type': 'ip',
-                        'Vendor': 'VirusTotal',
-                        'Score': 3
-                    }
-                ]
+                }
             })
+            dbotScore = 3
         elif (bad_downloads_amount >= threshold / 2):
             dbotScore = 2
         else:
             dbotScore = 1
 
         ec['DBotScore'] = {'Indicator': ip, 'Type': 'ip', 'Vendor': 'VirusTotal', 'Score': dbotScore}
+        if (dbotScore < 3):
+            ec.update({
+                'ip(val.Address==obj.Address)': {
+                    'Address': ip,
+                    'ASN': asn,
+                    'Geo': {
+                        'Country': response.get('country','')
+                    }
+                }
+            })
+        ip_ec = {
+            'Address': ip,
+            'DownloadedHashes': detected_downloaded_samples,
+            'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
+            "DetectedURLs": detected_urls,
+            'CommunicatingHashes': detected_communicating_samples,
+            'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
+            'Resolutions': resolutions,
+            'ReferrerHashes': detected_referrer_samples,
+            'UnAVDetectedReferrerHashes': undetected_referrer_samples
+        }
+        ec['ip(val.Address==obj.Address)'].update(ip_ec)
+        ec['VirusTotal.IPReport(val.Address==obj.Address)'] = ip_ec
 
         return {
             'Type': entryTypes['note'],
@@ -684,14 +705,19 @@ script:
         md = '## Found the following hashes for the query :' + query + '\n'
         md += tableToMarkdown('Hashes are: ', [{'Hash':h} for h in hashes])
 
+        ec = {
+            "Query" : query,
+            "SearchResult": hashes
+        }
+
         return {
                 'Type': entryTypes['note'],
-                'Contents': response,
+                'Contents': ec,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': md,
                 'EntryContext': {
-                      'VirusTotal.FileSearchHashes(val==obj)': hashes
+                      'VirusTotal.SearchFile(val.Query==obj.Query)': ec
                 }
         }
 
@@ -723,15 +749,19 @@ script:
             positives = d_hash.get('positives')
             if (positives >= threshold):
                 malware_hashes.append(d_hash)
-
+        ip_ec = {
+            'Address': ip,
+            'CommunicatingHashes': communicating_hashes
+        }
         return {
             'Type': entryTypes['note'],
-            'Contents': malware_hashes,
+            'Contents': ip_ec,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Communicating files hashes for ip: " + ip, malware_hashes),
             'EntryContext': {
-                  'VirusTotal.ipToCommunicatingHash(val.sha256==obj.sha256)': malware_hashes
+                  'VirusTotal.ipToCommunicatingHash(val.Address==obj.Address)': ip_ec,
+                  'IP(val.Address==obj.Address)': ip_ec
             }
         }
 
@@ -764,14 +794,20 @@ script:
             if (positives >= threshold):
                 malware_hashes.append(d_hash)
 
+        ip_ec = {
+            'Address': ip,
+            'DownloadedHashes': malware_hashes
+        }
+
         return {
             'Type': entryTypes['note'],
-            'Contents': malware_hashes,
+            'Contents': ip_ec,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Downloaded files hashes for ip: " + ip, malware_hashes),
             'EntryContext': {
-                  'VirusTotal.ipToDownloadedHash(val.sha256==obj.sha256)': malware_hashes
+                  'VirusTotal.ipToDownloadedHash(val.Address==obj.Address)': ip_ec,
+                  'IP(val.Address==obj.Address)': ip_ec
             }
         }
 
@@ -796,14 +832,20 @@ script:
         if not resolutions:
             return "Virus Total didn't any relevant domains"
 
+        ip_ec = {
+            'Address': ip,
+            'Resolutions': resolutions,
+        }
+
         return {
             'Type': entryTypes['note'],
-            'Contents': resolutions,
+            'Contents': ip_ec,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Resolved domains for ip: " + ip, resolutions),
             'EntryContext': {
-                  'VirusTotal.ipToDomain(val.hostname==obj.hostname)': resolutions
+                  'VirusTotal.ipToDomain(val.Address==obj.Address)': ip_ec,
+                  'IP(val.Address==obj.Address)': ip_ec
             }
         }
 
@@ -827,7 +869,7 @@ script:
         downloaded_hashes = response.get('detected_downloaded_samples', None)
 
         if not downloaded_hashes:
-            return "Virus Total didn't any relevant file hashes"
+            return "Virus Total didn't find any relevant file hashes"
 
         malware_hashes = []
 
@@ -836,14 +878,20 @@ script:
             if (positives >= threshold):
                 malware_hashes.append(d_hash)
 
+        domain_ec = {
+            "Name": domain,
+            'DownloadedHashes': malware_hashes,
+        }
+
         return {
             'Type': entryTypes['note'],
-            'Contents': malware_hashes,
+            'Contents': domain_ec,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Downloaded files hashes for domain: " + domain, malware_hashes),
             'EntryContext': {
-                  'VirusTotal.domainToDownloadedHash(val.sha256==obj.sha256)': malware_hashes
+                  'VirusTotal.domainToDownloadedHash(val.Name==obj.Name)': domain_ec,
+                  'Domain(val.Name==obj.Name)': domain_ec
             }
         }
 
@@ -876,14 +924,20 @@ script:
             if (positives >= threshold):
                 malware_hashes.append(d_hash)
 
+        domain_ec = {
+            "Name": domain,
+            'CommunicatingHashes': malware_hashes
+        }
+
         return {
             'Type': entryTypes['note'],
-            'Contents': malware_hashes,
+            'Contents': domain_ec,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Communicating files hashes for domain: " + domain, malware_hashes),
             'EntryContext': {
-                  'VirusTotal.domainToCommunicatingHash(val.sha256==obj.sha256)': malware_hashes
+                  'VirusTotal.domainToCommunicatingHash(val.Name==obj.Name)': domain_ec,
+                  'Domain(val.Name==obj.Name)': domain_ec
             }
         }
 
@@ -946,6 +1000,14 @@ script:
         if (len(urls_list) > 0):
             md += tableToMarkdown('URLs that hash: ' + file_hash + ' communicates with are:',  remove_duplicates_from_list_of_dicts([{'URL':url} for url in urls_list]))
 
+        hash_ec = {
+            "Hash": file_hash,
+            "CommunicatedDomains": domains_list,
+            "CommunicatedURLs": urls_list,
+            "CommunicatedIPs": ips_list,
+            "CommunicatedHosts": hosts
+        }
+
         return {
             'Type': entryTypes['note'],
             'Contents': network_data,
@@ -953,12 +1015,37 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                  'VirusTotal.hashCommunication.Domain(val==obj)': domains_list,
-                  'VirusTotal.hashCommunication.URL(val==obj)': urls_list,
-                  'VirusTotal.hashCommunication.IP(val==obj)': ips_list,
-                  'VirusTotal.hashCommunication.Host(val==obj)': hosts
+                  'VirusTotal.hashCommunication(val.Hash==obj.Hash)': hash_ec,
+                  'File(val.Hash==obj.Hash)': hash_ec
             }
         }
+
+    def download_file(file_hash):
+
+        params = {
+            'hash': file_hash,
+            'apikey': API_KEY
+        }
+
+        response = requests.get('https://www.virustotal.com/vtapi/v2/file/download', params=params)
+
+        return response
+
+    def download_file_command():
+        args = demisto.args()
+        file_hash = args['hash']
+
+        response = download_file(file_hash)
+
+        if (response.status_code == 404):
+            return "File was not found in Virus Total's store"
+
+        file_name = file_hash + "-vt-file"
+        file_json = fileResult(file_name, response.content)
+
+        return {'Contents': 'File downloaded successfully', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'],
+        'File': file_name, 'FileID': file_json['FileID']}
+
 
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
@@ -994,6 +1081,8 @@ script:
             demisto.results(domain_to_communicating_hash_command())
         elif demisto.command() == 'vt-hash-communication':
             demisto.results(hash_communication_command())
+        elif demisto.command() == 'vt-download-file':
+            demisto.results(download_file_command())
 
     except Exception, e:
         LOG(e.message)
@@ -1020,11 +1109,29 @@ script:
       description: IPs that the hash communicates with
     - contextPath: VirusTotal.FileBehaviour.Host
       description: Hosts that the hash communicates with
-    - contextPath: VirusTotal.FileBehaviour.File
+    - contextPath: VirusTotal.FileBehaviour.RelatedFiles
       description: Files that are related to this hash
-    - contextPath: VirusTotal.FileBehaviour.Key
-      description: Keys which are related to this hash
+    - contextPath: VirusTotal.FileBehaviour.RegistryKey
+      description: Registry Keys which are related to this hash
     - contextPath: VirusTotal.FileBehaviour.Mutex
+      description: Mutexes which are related to this hash
+    - contextPath: VirusTotal.FileBehaviour.Hash
+      description: Original file hash
+    - contextPath: File.Hash
+      description: Original file hash
+    - contextPath: File.RelatedDomains
+      description: Domains that the hash communicates with
+    - contextPath: File.RelatedURLs
+      description: URLs that the hash communicates with
+    - contextPath: File.RelatedIPs
+      description: IPs that the hash communicates with
+    - contextPath: File.RelatedHosts
+      description: Hosts that the hash communicates with
+    - contextPath: File.RelatedFiles
+      description: Files that are related to this hash
+    - contextPath: File.RelatedRegistryKeys
+      description: Keys which are related to this hash
+    - contextPath: File.RelatedMutexes
       description: Mutexes which are related to this hash
     description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines
       that execute the files we receive. This API allows you to retrieve the full
@@ -1040,26 +1147,30 @@ script:
         threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: Domain.Name
-      description: Bad domain found
+      description: Domain name
       type: string
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
-      type: string
-    - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: string
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+    - contextPath: VirusTotal.domainReport.DownloadedHashes
+      description: Hashes of files who were downloaded from this domain
+    - contextPath: VirusTotal.domainReport.CommunicatingHashes
+      description: Hashes of files who communicated with this domain in a sandbox
+    - contextPath: VirusTotal.domainReport.Resolutions
+      description: IPs who resolved to this domain
+    - contextPath: VirusTotal.domainReport.Whois
+      description: Whois report
+    - contextPath: VirusTotal.domainReport.Subdomains
+      description: Subdomains
+    - contextPath: Domain.DownloadedHashes
+      description: Hashes of files who were downloaded from this domain
+    - contextPath: Domain.CommunicatingHashes
+      description: Hashes of files who communicated with this domain in a sandbox
+    - contextPath: Domain.Resolutions
+      description: IPs who resolved to this domain
+    - contextPath: Domain.Whois
+      description: Whois report
+    - contextPath: Domain.Subdomains
+      description: Subdomains
+    - contextPath: VirusTotal.domainReport.DomainName
+      description: Domain name
     description: Retrieves a report on a given domain (including the information recorded
       by VirusTotal's passive DNS infrastructure).
   - name: vt-get-file-report
@@ -1145,7 +1256,8 @@ script:
         threshold, as configured in the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: Url address
+      type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
       type: string
@@ -1203,6 +1315,46 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: IP.DownloadedHashes
+      description: Latest files that are detected by at least one antivirus solution
+        and were downloaded by VirusTotal from the IP address
+    - contextPath: IP.UnAVDetectedDownloadedHashes
+      description: Latest files that are not detected by any antivirus solution and
+        were downloaded by VirusTotal from the IP address provided
+    - contextPath: IP.DetectedURLs
+      description: Latest URLs hosted in this IP address detected by at least one
+        URL scanner
+    - contextPath: IP.CommunicatingHashes
+      description: Latest detected files that communicate with this IP address
+    - contextPath: IP.UnAVDetectedCommunicatingHashes
+      description: Latest undetected files that communicate with this IP address
+    - contextPath: IP.Resolutions
+      description: The following domains resolved to the given IP
+    - contextPath: IP.ReferrerHashes
+      description: Latest detected files that embed this IP address in their strings
+    - contextPath: IP.UnAVDetectedReferrerHashes
+      description: Latest undetected files that embed this IP address in their strings
+    - contextPath: VirusTotal.IPReport.DownloadedHashes
+      description: Latest files that are detected by at least one antivirus solution
+        and were downloaded by VirusTotal from the IP address
+    - contextPath: VirusTotal.IPReport.UnAVDetectedDownloadedHashes
+      description: Latest files that are not detected by any antivirus solution and
+        were downloaded by VirusTotal from the IP address provided
+    - contextPath: VirusTotal.IPReport.DetectedURLs
+      description: Latest URLs hosted in this IP address detected by at least one
+        URL scanner
+    - contextPath: VirusTotal.IPReport.CommunicatingHashes
+      description: Latest detected files that communicate with this IP address
+    - contextPath: VirusTotal.IPReport.UnAVDetectedCommunicatingHashes
+      description: Latest undetected files that communicate with this IP address
+    - contextPath: VirusTotal.IPReport.Resolutions
+      description: The following domains resolved to the given IP
+    - contextPath: VirusTotal.IPReport.ReferrerHashes
+      description: Latest detected files that embed this IP address in their strings
+    - contextPath: VirusTotal.IPReport.UnAVDetectedReferrerHashes
+      description: Latest undetected files that embed this IP address in their strings
+    - contextPath: VirusTotal.IPReport.Address
+      description: Given IP address
     description: Retrieves a report on a given IP address (including the information
       recorded by VirusTotal's Passive DNS infrastructure).
   - name: vt-search-file
@@ -1212,9 +1364,11 @@ script:
       description: File search query. For example, query="type:peexe size:90kb+ positives:5+
         behaviour:'taskkill'"
     outputs:
-    - contextPath: VirusTotal.FileSearchHashes
+    - contextPath: VirusTotal.SearchResult
       description: The hashes of files that fits the query
       type: unknown
+    - contextPath: VirusTotal.Query
+      description: Original search query
     description: 'This command is equivalent to VirusTotal Intelligence advanced searches.
       A very wide variety of search modifiers are available, including: file size,
       file type, first submission date to VirusTotal, last submission date to VirusTotal,
@@ -1231,8 +1385,16 @@ script:
         will be considered malicious. If threshold is not specified, the default file
         threshold, as configured in the instance settings, will be used.
     outputs:
-    - contextPath: VirusTotal.ipToCommunicatingHash
-      description: All the SHA256 hashes related to this ip
+    - contextPath: VirusTotal.ipToCommunicatingHash.CommunicatingHashes
+      description: All the SHA256 hashes of malware that have communicated with the
+        given IP address
+    - contextPath: VirusTotal.ipToCommunicatingHash.Address
+      description: Given IP address
+    - contextPath: IP.Address
+      description: Given IP address
+    - contextPath: IP.CommunicatingHashes
+      description: All the SHA256 hashes of malware that have communicated with the
+        given IP address
     description: Returns all SHA256 hashes of malware that have communicated with
       a given IP address.
   - name: vt-ip-to-downloaded-hash
@@ -1245,8 +1407,15 @@ script:
         will be considered malicious. If threshold is not specified, the default file
         threshold, as configured in the instance settings, will be used.
     outputs:
-    - contextPath: VirusTotal.ipToDownloadedHash
-      description: SHA256 hashes of malware that have been downloaded from a given
+    - contextPath: VirusTotal.ipToDownloadedHash.DownloadedHashes
+      description: SHA256 hashes of malware that have been downloaded from the given
+        IP address
+    - contextPath: VirusTotal.ipToDownloadedHash.Address
+      description: Given IP address
+    - contextPath: IP.Address
+      description: Given IP address
+    - contextPath: IP.DownloadedHashes
+      description: SHA256 hashes of malware that have been downloaded from the given
         IP address
     description: Returns all SHA256 hashes of malware that have been downloaded from
       a given IP address.
@@ -1256,7 +1425,13 @@ script:
       required: true
       description: IPv4 address
     outputs:
-    - contextPath: VirusTotal.ipToDomain
+    - contextPath: VirusTotal.ipToDomain.Resolutions
+      description: Domains that were resolved to this IP
+    - contextPath: VirusTotal.ipToDomain.Address
+      description: Given IP address
+    - contextPath: IP.Address
+      description: Given IP address
+    - contextPath: IP.Resolutions
       description: Domains that were resolved to this IP
     description: Returns all domains that have resolved to a given IP address based
       on passive DNS history
@@ -1270,9 +1445,16 @@ script:
         will be considered malicious. If threshold is not specified, the default file
         threshold, as configured in the instance settings, will be used.
     outputs:
-    - contextPath: VirusTotal.domainToDownloadedHash
-      description: SHA256 hashes of malware that have been downloaded from a given
-        domain
+    - contextPath: VirusTotal.domainToDownloadedHash.DownloadedHashes
+      description: SHA256 hashes of malware that have been downloaded from the given
+        Domain address
+    - contextPath: VirusTotal.domainToDownloadedHash.Name
+      description: Given Domain name
+    - contextPath: Domain.Name
+      description: Given Domain name
+    - contextPath: Domain.DownloadedHashes
+      description: SHA256 hashes of malware that have been downloaded from the given
+        Domain address
     description: Returns all SHA256 hashes of malware that have been downloaded from
       a given domain.
   - name: vt-domain-to-communicating-hash
@@ -1285,8 +1467,16 @@ script:
         will be considered malicious. If threshold is not specified, the default file
         threshold, as configured in the instance settings, will be used.
     outputs:
-    - contextPath: VirusTotal.domainToCommunicatingHash
-      description: SHA256 hashes of malware that have communicated with the domain
+    - contextPath: VirusTotal.domainToCommunicatingHash.CommunicatingHashes
+      description: All the SHA256 hashes of malware that have communicated with the
+        given Domain address
+    - contextPath: VirusTotal.domainToCommunicatingHash.Name
+      description: Given Domain name
+    - contextPath: Domain.Name
+      description: Given Domain name
+    - contextPath: Domain.CommunicatingHashes
+      description: All the SHA256 hashes of malware that have communicated with the
+        given Domain address
     description: Returns all SHA256 hashes of malware that have communicated with
       a given domain.
   - name: vt-hash-communication
@@ -1295,15 +1485,35 @@ script:
       required: true
       description: File Hash
     outputs:
-    - contextPath: VirusTotal.hashCommunication.Domain
+    - contextPath: VirusTotal.hashCommunication.CommunicatedDomains
       description: Domains that the hash communicates with
-    - contextPath: VirusTotal.hashCommunication.URL
+    - contextPath: VirusTotal.hashCommunication.CommunicatedURLs
       description: URLs that the hash communicates with
-    - contextPath: VirusTotal.hashCommunication.IP
+    - contextPath: VirusTotal.hashCommunication.CommunicatedIPs
       description: IPs that the hash communicates with
-    - contextPath: VirusTotal.hashCommunication.Host
+    - contextPath: VirusTotal.hashCommunication.CommunicatedHosts
       description: Hosts that the hash communicates with
+    - contextPath: File.CommunicatedDomains
+      description: Domains that the hash communicates with
+    - contextPath: File.CommunicatedURLs
+      description: URLs that the hash communicates with
+    - contextPath: File.CommunicatedIPs
+      description: IPs that the hash communicates with
+    - contextPath: File.CommunicatedHosts
+      description: Hosts that the hash communicates with
+    - contextPath: File.Hash
+      description: Input Hash
+    - contextPath: VirusTotal.hashCommunication.Hash
+      description: Input Hash
     description: Return all Domains, IPs, URLs  that a given SHA256 hash of malware
       communicates with
+  - name: vt-download-file
+    arguments:
+    - name: hash
+      required: true
+      description: "\tThe md5/sha1/sha256 hash of the file you want to download."
+    description: Downloads a file from VirusTotal's store given one of its hashes.
+      This call can be used in conjuction with the file searching call in order to
+      download samples that match a given set of criteria.
   runonce: false
 releaseNotes: "-"
