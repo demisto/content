@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 638d1729-ba80-4a3d-8fd1-ee5ce6d6272e
+    taskid: 76ffa010-35f1-4607-8bf0-075ce31540ff
     type: start
     task:
-      id: 638d1729-ba80-4a3d-8fd1-ee5ce6d6272e
+      id: 76ffa010-35f1-4607-8bf0-075ce31540ff
       version: -1
       name: ""
       iscommand: false
@@ -16,23 +16,20 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-      - "3"
-      - "4"
-      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: 494d8fd7-770a-4487-8302-4e52e9d617ab
+    taskid: 73aa7f46-1091-480c-87b6-8b071b483d8f
     type: regular
     task:
-      id: 494d8fd7-770a-4487-8302-4e52e9d617ab
+      id: 73aa7f46-1091-480c-87b6-8b071b483d8f
       version: -1
       name: cylance-protect-get-devices
       description: Allows a caller to request a page with a list of Console device
@@ -52,16 +49,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 195
         }
       }
   "2":
     id: "2"
-    taskid: 7b0634c8-c929-48d3-836c-88357a617e69
+    taskid: a5b55041-f2fa-4c7d-861c-6e1dc72cd7a4
     type: regular
     task:
-      id: 7b0634c8-c929-48d3-836c-88357a617e69
+      id: a5b55041-f2fa-4c7d-861c-6e1dc72cd7a4
       version: -1
       name: cylance-protect-get-device-threats
       description: Allows a caller to request a page with a list of threats found
@@ -94,16 +91,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 370
         }
       }
   "3":
     id: "3"
-    taskid: a8a36f1f-81d7-4138-86df-2cc03a080c89
+    taskid: e1fb7e83-d945-4096-838f-f3fa6164bada
     type: regular
     task:
-      id: a8a36f1f-81d7-4138-86df-2cc03a080c89
+      id: e1fb7e83-d945-4096-838f-f3fa6164bada
       version: -1
       name: cylance-protect-get-list
       description: Gets a list of global list resources for a tenant
@@ -113,7 +110,7 @@ tasks:
       brand: Cylance Protect v2
     nexttasks:
       '#none#':
-      - "10"
+      - "5"
     scriptarguments:
       listTypeId:
         simple: GlobalQuarantine
@@ -123,16 +120,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 720
+          "x": 50,
+          "y": 895
         }
       }
   "4":
     id: "4"
-    taskid: 6f0fec15-e1ce-441a-881d-6f0b750192f7
+    taskid: 401967f8-38fa-4ca6-8ccf-6b1c14f05dde
     type: regular
     task:
-      id: 6f0fec15-e1ce-441a-881d-6f0b750192f7
+      id: 401967f8-38fa-4ca6-8ccf-6b1c14f05dde
       version: -1
       name: cylance-protect-get-policies
       description: Allows the caller to get a list of tenant policies
@@ -150,16 +147,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 1420
         }
       }
   "5":
     id: "5"
-    taskid: c3b68df2-ea1c-4286-8301-6eab2512b5ff
+    taskid: 246b0426-0cd9-4379-847f-f141cd3e1d1f
     type: regular
     task:
-      id: c3b68df2-ea1c-4286-8301-6eab2512b5ff
+      id: 246b0426-0cd9-4379-847f-f141cd3e1d1f
       version: -1
       name: cylance-protect-get-zones
       description: Request zone information for your organization. This will return
@@ -179,15 +176,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1070
         }
       }
   "6":
     id: "6"
-    taskid: 69b35266-f8d4-4094-80e7-cde05f1f48ad
+    taskid: bb0eafd2-a373-4725-88ad-ee003c2a72bd
     type: regular
     task:
-      id: 69b35266-f8d4-4094-80e7-cde05f1f48ad
+      id: bb0eafd2-a373-4725-88ad-ee003c2a72bd
       version: -1
       name: cylance-protect-get-threat
       description: Request threat details for a specific threat
@@ -224,16 +221,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 545
         }
       }
   "7":
     id: "7"
-    taskid: 10253bb1-e769-4655-854f-608f38bc9b6d
+    taskid: c5117a3e-f43c-45b8-8e0d-76528e761adc
     type: regular
     task:
-      id: 10253bb1-e769-4655-854f-608f38bc9b6d
+      id: c5117a3e-f43c-45b8-8e0d-76528e761adc
       version: -1
       name: VerifyContext
       description: |-
@@ -248,7 +245,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "3"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -259,16 +256,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 720
         }
       }
   "8":
     id: "8"
-    taskid: ec97d5a7-6769-4c3c-8912-ce30f21a1763
+    taskid: dae85dce-994b-4928-878d-ee25845317a0
     type: regular
     task:
-      id: ec97d5a7-6769-4c3c-8912-ce30f21a1763
+      id: dae85dce-994b-4928-878d-ee25845317a0
       version: -1
       name: VerifyContext
       description: |-
@@ -294,16 +291,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 50,
+          "y": 1595
         }
       }
   "9":
     id: "9"
-    taskid: 9e094c1a-f783-443e-821e-6fecd4ac72cd
+    taskid: ab62b33e-edff-4db5-8604-765c2f6e4649
     type: regular
     task:
-      id: 9e094c1a-f783-443e-821e-6fecd4ac72cd
+      id: ab62b33e-edff-4db5-8604-765c2f6e4649
       version: -1
       name: VerifyContext
       description: |-
@@ -318,7 +315,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "4"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -330,15 +327,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1245
         }
       }
   "10":
     id: "10"
-    taskid: ceb8461d-32f0-4e84-8b08-e9fa35d97f03
+    taskid: d1ca79ac-d5fa-4ab0-89c0-d6707032b289
     type: title
     task:
-      id: ceb8461d-32f0-4e84-8b08-e9fa35d97f03
+      id: d1ca79ac-d5fa-4ab0-89c0-d6707032b289
       version: -1
       name: Success
       type: title
@@ -348,8 +345,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 895
+          "x": 50,
+          "y": 1770
         }
       }
 view: |-
@@ -357,8 +354,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 1670,
+        "height": 1785,
+        "width": 380,
         "x": 50,
         "y": 50
       }
