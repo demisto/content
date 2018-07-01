@@ -514,6 +514,12 @@ script:
             resolution = additional_info.get('resolution', None)
             if resolution is not None:
                 md += 'IP address resolution for this domain is: ' + resolution + '\n'
+                ec.update({
+                'URL(val.Data==obj.Data)': {
+                    'Resolutions': resolution,
+                    'Data': url,
+                }
+            })
 
         del response['response_code']
         scans = response.get('scans', None)
@@ -1276,6 +1282,8 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: URL.Resolutions
+      description: IPs who resolved to this URL
     description: Retrieves a concluded url scan report for a given url.
   - name: vt-get-ip-report
     arguments:
