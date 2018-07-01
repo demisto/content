@@ -62,23 +62,13 @@
       "connectionDescription": "Belongs to the same endpoint",
       "parentContextKey": "Endpoint"
     },
+
     {
-      "contextKey1": "Hostname",
-      "contextKey2": "MAC",
-      "connectionDescription": "Belongs to the same endpoint",
-      "parentContextKey": "Endpoint"
-    },
-    {
-      "contextKey1": "MAC",
-      "contextKey2": "IP",
-      "connectionDescription": "Belongs to the same endpoint",
-      "parentContextKey": "Endpoint"
       "contextKey1": "SSDeep",
       "contextKey2": "MD5",
       "connectionDescription": "Belongs to the same file",
       "parentContextKey": "File"
     },
-
     {
       "contextKey1": "Username",
       "contextKey2": "Email.Address",
@@ -100,25 +90,6 @@
 
     {
       "contextKey1": "Hostname",
-      "contextKey2": "IP",
-      "connectionDescription": "Belongs to the same endpoint",
-      "parentContextKey": "Endpoint"
-    },
-    {
-      "contextKey1": "Hostname",
-      "contextKey2": "MAC",
-      "connectionDescription": "Belongs to the same endpoint",
-      "parentContextKey": "Endpoint"
-    },
-    {
-      "contextKey1": "MAC",
-      "contextKey2": "IP",
-      "connectionDescription": "Belongs to the same endpoint",
-      "parentContextKey": "Endpoint"
-    },
-
-    {
-      "contextKey1": "MAC",
       "contextKey2": "IP",
       "connectionDescription": "Belongs to the same endpoint",
       "parentContextKey": "Endpoint"
