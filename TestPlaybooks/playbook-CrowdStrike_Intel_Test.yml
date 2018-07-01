@@ -32,10 +32,10 @@ tasks:
       id: ecb402a0-cecb-4764-89b3-7d6dd97fcc3a
       version: -1
       name: Check IP Address
-      script:FalconIntel|||ip
+      script: FalconIntel|||ip
       type: regular
       iscommand: true
-      brand:FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "3"
@@ -85,10 +85,10 @@ tasks:
       id: 169008a1-10d8-43bf-8d48-45a0cd8a26d6
       version: -1
       name: Check File
-      script:FalconIntel|||file
+      script: FalconIntel|||file
       type: regular
       iscommand: true
-      brand:FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "4"
@@ -111,10 +111,10 @@ tasks:
       id: 1b53ee0b-9ea4-4fbb-8a76-0d0b2a502460
       version: -1
       name: Check URL
-      script:FalconIntel|||url
+      script: FalconIntel|||url
       type: regular
       iscommand: true
-      brand:FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "5"
@@ -137,10 +137,10 @@ tasks:
       id: d0436374-037b-45d5-809c-04291af5289c
       version: -1
       name: Check Domain
-      script:FalconIntel|||domain
+      script: FalconIntel|||domain
       type: regular
       iscommand: true
-      brand:FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "6"
@@ -264,10 +264,10 @@ tasks:
       id: 4ee91ed0-0064-4f19-848b-08c6d696d2d8
       version: -1
       name: Search known actors
-      script:FalconIntel|||cs-actors
+      script: FalconIntel|||cs-actors
       type: regular
       iscommand: true
-      brand:FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "10"
@@ -305,10 +305,10 @@ tasks:
       id: 474531c2-7aef-486b-8b5a-071d812445fb
       version: -1
       name: Search known indicators
-      script:FalconIntel|||cs-indicators
+      script: FalconIntel|||cs-indicators
       type: regular
       iscommand: true
-      brand:FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "11"
@@ -339,10 +339,10 @@ tasks:
       id: d9c30128-a54a-4f21-8f53-d3b7583ebe3a
       version: -1
       name: Query CrowdStrike intelligence publications
-      script:FalconIntel|||cs-reports
+      script: FalconIntel|||cs-reports
       type: regular
       iscommand: true
-      brand:FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "12"
@@ -381,10 +381,10 @@ tasks:
       id: 7f86c752-3185-4618-8184-60515c785ee3
       version: -1
       name: Retrieve Falcon Intel Report PDFcrowd
-      script:FalconIntel|||cs-report-pdf
+      script: FalconIntel|||cs-report-pdf
       type: regular
       iscommand: true
-      brand:FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "7"
