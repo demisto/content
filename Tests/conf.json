@@ -165,7 +165,8 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
+            "playbookID": "Qualys-Test",
+            "nightly": true
         },
         {
             "integrations": {
@@ -360,6 +361,11 @@
         }
     ],
     "skipped": [
+        {
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
+        },
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"

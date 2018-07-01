@@ -8,7 +8,6 @@
   "dataType": "tasks",
   "widgetType": "list",
   "description": "",
-  "releaseNotes": "-",
   "query": "assignee:{me} and (state:Waiting or state:inprogress or state:error)",
   "sort": [
     {
