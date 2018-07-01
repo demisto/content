@@ -609,4 +609,3 @@ script:
       description: Task UUID of submitted Lastline analysis
     description: Upload file for analysis
   runonce: false
-releaseNotes: "fixed lastline-upload command"
