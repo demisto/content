@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "FalconIntel",
+            "playbookID": "CrowdStrike Falcon Intel v2"
+        },
+        {
             "playbookID": "buildewsquery_test"
         },
         {
