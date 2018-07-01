@@ -1,34 +1,79 @@
 {
   "canvasContextConnections": [
     {
-      "contextKey1": "File.MD5",
-      "contextKey2": "File.SHA256",
-      "connectionDescription": "Belongs to the same file"
+      "contextKey1": "MD5",
+      "contextKey2": "SHA256",
+      "connectionDescription": "Belongs to the same file",
+      "parentContextKey": "File"
     },
     {
-      "contextKey1": "File.MD5",
-      "contextKey2": "File.SHA1",
-      "connectionDescription": "Belongs to the same file"
+      "contextKey1": "MD5",
+      "contextKey2": "SHA1",
+      "connectionDescription": "Belongs to the same file",
+      "parentContextKey": "File"
     },
     {
-      "contextKey1": "File.SHA1",
-      "contextKey2": "File.SHA256",
-      "connectionDescription": "Belongs to the same file"
+      "contextKey1": "SHA1",
+      "contextKey2": "SHA256",
+      "connectionDescription": "Belongs to the same file",
+      "parentContextKey": "File"
     },
     {
-      "contextKey1": "File.SSDeep",
-      "contextKey2": "File.SHA256",
-      "connectionDescription": "Belongs to the same file"
+      "contextKey1": "SSDeep",
+      "contextKey2": "SHA256",
+      "connectionDescription": "Belongs to the same file",
+      "parentContextKey": "File"
     },
     {
-      "contextKey1": "File.SSDeep",
-      "contextKey2": "File.SHA1",
-      "connectionDescription": "Belongs to the same file"
+      "contextKey1": "SSDeep",
+      "contextKey2": "SHA1",
+      "connectionDescription": "Belongs to the same file",
+      "parentContextKey": "File"
     },
     {
-      "contextKey1": "File.SSDeep",
-      "contextKey2": "File.MD5",
-      "connectionDescription": "Belongs to the same file"
+      "contextKey1": "SSDeep",
+      "contextKey2": "MD5",
+      "connectionDescription": "Belongs to the same file",
+      "parentContextKey": "File"
+    },
+
+    {
+      "contextKey1": "Username",
+      "contextKey2": "Email.Address",
+      "connectionDescription": "User's email address",
+      "parentContextKey": "Account"
+    },
+    {
+      "contextKey1": "Username",
+      "contextKey2": "Domain",
+      "connectionDescription": "User's domain",
+      "parentContextKey": "Account"
+    },
+    {
+      "contextKey1": "Email.Domain",
+      "contextKey2": "Email.Address",
+      "connectionDescription": "Email's domain",
+      "parentContextKey": "Account"
+    },
+
+    {
+      "contextKey1": "Hostname",
+      "contextKey2": "IP",
+      "connectionDescription": "Belongs to the same endpoint",
+      "parentContextKey": "Endpoint"
+    },
+    {
+      "contextKey1": "Hostname",
+      "contextKey2": "MAC",
+      "connectionDescription": "Belongs to the same endpoint",
+      "parentContextKey": "Endpoint"
+    },
+    {
+      "contextKey1": "MAC",
+      "contextKey2": "IP",
+      "connectionDescription": "Belongs to the same endpoint",
+      "parentContextKey": "Endpoint"
     }
+
   ]
 }
