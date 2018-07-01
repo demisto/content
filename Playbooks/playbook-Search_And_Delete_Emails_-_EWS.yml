@@ -2,7 +2,6 @@ id: search_and_delete_emails_-_ews
 version: -1
 name: Search And Delete Emails - EWS
 fromversion: 3.6.0
-releaseNotes: "Added targe-mail-box to delete task"
 description: This playbook searches EWS to identify and delete emails with similar
   attributes of a malicious email.
 starttaskid: "0"

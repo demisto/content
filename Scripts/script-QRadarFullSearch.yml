@@ -2,7 +2,6 @@ commonfields:
   id: QRadarFullSearch
   version: -1
 name: QRadarFullSearch
-releaseNotes: "Remove auto-log line"
 script: |-
   res = [];
 

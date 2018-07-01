@@ -6,10 +6,6 @@
             "playbookID": "buildewsquery_test"
         },
         {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
-        },
-        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
@@ -169,7 +165,8 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
+            "playbookID": "Qualys-Test",
+            "nightly": true
         },
         {
             "integrations": {
@@ -361,6 +358,11 @@
     ],
     "skipped": [
         {
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
+        },
+        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
@@ -495,6 +497,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
         }
     ]
 }
