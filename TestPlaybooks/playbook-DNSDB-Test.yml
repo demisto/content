@@ -1,0 +1,138 @@
+id: DNSDBTest
+version: -1
+name: DNSDBTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f50ccca6-eb90-4d74-8299-c128a80ccba9
+    type: start
+    task:
+      id: f50ccca6-eb90-4d74-8299-c128a80ccba9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 5e24c48c-eb4e-44d4-8d41-21dacb7caa99
+    type: regular
+    task:
+      id: 5e24c48c-eb4e-44d4-8d41-21dacb7caa99
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f459f09b-4032-4b43-89c7-c104653fc831
+    type: regular
+    task:
+      id: f459f09b-4032-4b43-89c7-c104653fc831
+      version: -1
+      name: dnsdb-rrset
+      description: Check IP reputation (when information is available, returns a JSON
+        with details).  Uses all configured Threat Intelligence feeds
+      script: Farsight DNSDB_copy|||dnsdb-rrset
+      type: regular
+      iscommand: true
+      brand: Farsight DNSDB_copy
+    scriptarguments:
+      bailiwick: {}
+      limit:
+        simple: "10"
+      owner:
+        simple: google.*
+      rrtype: {}
+      time_first_after: {}
+      time_first_before: {}
+      time_last_after: {}
+      time_last_before: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -196,
+          "y": 446
+        }
+      }
+  "5":
+    id: "5"
+    taskid: edcdf841-173b-4e52-87ce-6a13b3920b05
+    type: regular
+    task:
+      id: edcdf841-173b-4e52-87ce-6a13b3920b05
+      version: -1
+      name: dnsdb-rdata
+      script: Farsight DNSDB_copy|||dnsdb-rdata
+      type: regular
+      iscommand: true
+      brand: Farsight DNSDB_copy
+    scriptarguments:
+      limit:
+        simple: "10"
+      rrtype: {}
+      time_first_after: {}
+      time_first_before: {}
+      time_last_after: {}
+      time_last_before: {}
+      type:
+        simple: name
+      value:
+        simple: youtube.com
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 432
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 491,
+        "width": 1316,
+        "x": -196,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
