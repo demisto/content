@@ -633,26 +633,30 @@ script:
                 label_attachment_type = None
                 label_attachment_id_type = None
                 if isinstance(attachment, FileAttachment):
-                    if attachment.content:
-                        # file attachment
-                        label_attachment_type = 'attachments'
-                        label_attachment_id_type = 'attachmentId'
+                    try:
+                        if attachment.content:
+                            # file attachment
+                            label_attachment_type = 'attachments'
+                            label_attachment_id_type = 'attachmentId'
 
-                        # save the attachment
-                        file_name = attachment.name if attachment.name else 'demisto_untitled_attachment'
-                        file_result = fileResult(file_name, attachment.content)
+                            # save the attachment
+                            file_name = attachment.name if attachment.name else 'demisto_untitled_attachment'
+                            file_result = fileResult(file_name, attachment.content)
 
-                        # check for error
-                        if file_result['Type'] == entryTypes['error']:
-                            demisto.error(file_result['Contents'])
-                            raise Exception(file_result['Contents'])
+                            # check for error
+                            if file_result['Type'] == entryTypes['error']:
+                                demisto.error(file_result['Contents'])
+                                raise Exception(file_result['Contents'])
 
-                        # save attachment to incident
-                        incident['attachment'].append({
-                            'path': file_result['FileID'],
-                            'name': attachment.name
-                        })
-
+                            # save attachment to incident
+                            incident['attachment'].append({
+                                'path': file_result['FileID'],
+                                'name': attachment.name
+                            })
+                    except TypeError, e:
+                        if e.message != "must be string or buffer, not None":
+                            raise
+                        continue
                 else:
                     # other item attachment
                     label_attachment_type = 'attachmentItems'
@@ -737,20 +741,37 @@ script:
 
 
     def parse_attachment_as_dict(item_id, attachment):
-        attachment_content = attachment.content if isinstance(attachment, FileAttachment) else attachment.item.mime_content
-        return {
-            ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
-            ATTACHMENT_ID: attachment.attachment_id.id,
-            'attachmentName': attachment.name,
-            'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
-            'attachmentContentType': attachment.content_type,
-            'attachmentContentId': attachment.content_id,
-            'attachmentContentLocation': attachment.content_location,
-            'attachmentSize': attachment.size,
-            'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
-            'attachmentIsInline': attachment.is_inline,
-            ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
-        }
+        try:
+            attachment_content = attachment.content if isinstance(attachment, FileAttachment) else attachment.item.mime_content
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': attachment.name,
+                'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
+                'attachmentContentType': attachment.content_type,
+                'attachmentContentId': attachment.content_id,
+                'attachmentContentLocation': attachment.content_location,
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
+            }
+        except TypeError, e:
+            if e.message != "must be string or buffer, not None":
+                raise
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': attachment.name,
+                'attachmentSHA256': None,
+                'attachmentContentType': attachment.content_type,
+                'attachmentContentId': attachment.content_id,
+                'attachmentContentLocation': attachment.content_location,
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
+            }
 
 
     def get_entry_for_item_attachment(item_id, attachment, target_email):
@@ -821,8 +842,12 @@ script:
         entries = []
         for attachment in attachments:
             if isinstance(attachment, FileAttachment):
-                if attachment.content:
-                    entries.append(get_entry_for_file_attachment(item_id, attachment))
+                try:
+                    if attachment.content:
+                        entries.append(get_entry_for_file_attachment(item_id, attachment))
+                except TypeError, e:
+                    if e.message != "must be string or buffer, not None":
+                        raise
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
                 if attachment.item.mime_content:
