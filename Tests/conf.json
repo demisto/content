@@ -53,6 +53,10 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "integrations": "EWS v2",
+            "playbookID": "EWSv2_empty_attachment_test"
+        },
+        {
             "integrations": "Anomali ThreatStream",
             "playbookID": "Anomali_ThreatStream_Test"
         },
