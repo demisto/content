@@ -128,13 +128,13 @@
     {
       "contextKey1": "Hash",
       "contextKey2": "CommunicatedIPs",
-      "connectionDescription": "Communicated with host",
+      "connectionDescription": "Communicated with ip",
       "parentContextKey": "File"
     },
     {
       "contextKey1": "Hash",
       "contextKey2": "CommunicatedURLs",
-      "connectionDescription": "Communicated with host",
+      "connectionDescription": "Communicated with url",
       "parentContextKey": "File"
     },
     {
@@ -208,7 +208,7 @@
     {
       "contextKey1": "Address",
       "contextKey2": "ReferrerHashes.sha256",
-      "connectionDescription": "Detected by AV",
+      "connectionDescription": "AV Detected Referrer Hashes",
       "parentContextKey": "IP"
     },
      {
