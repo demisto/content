@@ -1,6 +1,5 @@
 {
   "name": "reputations",
-  "releaseNotes": "Extract domain from urls, and Adding ssdeep reputation",
   "reputations": [
     {
       "id": "fileRep",
@@ -47,7 +46,8 @@
       "details": "IP",
       "enhancementScriptNames": [
         "IPReputation",
-        "SplunkSearch"
+        "SplunkSearch",
+        "SplunkPySearch"
       ],
       "formatScript": "UnEscapeIPs",
       "fromVersion": "3.5.1"
@@ -74,7 +74,8 @@
       "enhancementScriptNames": [
         "FileReputation",
         "SplunkSearch",
-        "WildfireReport"
+        "WildfireReport",
+        "SplunkPySearch"
       ],
       "fromVersion": "3.1.0"
     },
@@ -100,7 +101,8 @@
       "enhancementScriptNames": [
         "FileReputation",
         "SplunkSearch",
-        "WildfireReport"
+        "WildfireReport",
+        "SplunkPySearch"
       ],
       "fromVersion": "3.1.0"
     },
@@ -126,7 +128,8 @@
       "enhancementScriptNames": [
         "FileReputation",
         "SplunkSearch",
-        "WildfireReport"
+        "WildfireReport",
+        "SplunkPySearch"
       ],
       "fromVersion": "3.1.0"
     },
@@ -174,7 +177,8 @@
       "details": "URL",
       "enhancementScriptNames": [
         "URLReputation",
-        "SplunkSearch"
+        "SplunkSearch",
+        "SplunkPySearch"
       ],
       "formatScript": "UnEscapeURLs",
       "contextPath": "URL(val.Data && val.Data === obj.Data)",

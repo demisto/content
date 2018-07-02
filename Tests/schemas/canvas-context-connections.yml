@@ -21,3 +21,6 @@ schema;canvas_context_conncetion:
     connectionDescription:
       type: str
       required: yes
+    parentContextKey:
+      type: str
+      required: yes
