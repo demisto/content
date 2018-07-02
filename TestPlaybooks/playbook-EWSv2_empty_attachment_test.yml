@@ -38,10 +38,10 @@ tasks:
       id: 9ee95d9f-d075-44e9-80c6-5796b2b5e0d6
       version: -1
       name: Verify getting empty attachment does not return error
-      script: EWS v2_untitled_attachments|||ews-get-attachment
+      script: EWS v2|||ews-get-attachment
       type: regular
       iscommand: true
-      brand: EWS v2_untitled_attachments
+      brand: EWS v2
     scriptarguments:
       attachment-ids: {}
       item-id:
