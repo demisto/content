@@ -1,7 +1,7 @@
 commonfields:
   id: TopMaliciousRatioIndicators
   version: -1
-fromVersion: "4.0.0"
+fromversion: "4.0.0"
 name: TopMaliciousRatioIndicators
 script: |
   from datetime import datetime, timedelta
