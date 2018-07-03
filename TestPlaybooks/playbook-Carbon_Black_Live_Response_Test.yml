@@ -203,6 +203,7 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
+      session-timeout: {}
       keepalive-timeout: {}
       sensor:
         simple: ${CbResponse.Sensors.[0].CbSensorID}
