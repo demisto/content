@@ -2,7 +2,6 @@ id: Phishing Investigation - Generic
 version: -1
 name: Phishing Investigation - Generic
 fromversion: 3.6.0
-releaseNotes: "Add response section including support for search and delete malicious emails"
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 

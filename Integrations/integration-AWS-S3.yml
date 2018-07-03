@@ -49,9 +49,9 @@ script:
                 })
 
         if roleSessionDuration is not None:
-            kwargs.update({'DurationSeconds':roleSessionDuration})
+            kwargs.update({'DurationSeconds':int(roleSessionDuration)})
         elif AWS_roleSessionDuration is not None:
-            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+            kwargs.update({'DurationSeconds':int(AWS_roleSessionDuration)})
 
         if rolePolicy is not None:
             kwargs.update({'Policy':rolePolicy})
@@ -553,4 +553,3 @@ script:
       the one in this request completely replaces it.
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Changed authentication method to STS assumerole"

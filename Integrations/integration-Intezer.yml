@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Intezer
 display: Intezer
-category: Data Enrichment & Threat Intelligence
+category: Forensics & Malware Analysis
 image: data:image/png;base64,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
 description: Malware detection and analysis based on code reuse
 detaileddescription: |
@@ -25,52 +25,78 @@ script:
     var SERVER_API = 'https://analyze.intezer.com/api/';
     var IS_AVAILABLE_URL = 'is-available';
     var HASH_URL = 'v1-2/analyze-by-sha256';
+    var FILE_UPLOAD_URL = 'v1-2/analyze';
     var ANALYSIS_RESULT_URL = 'v1-2/analyses/';
     var SHA_256_REGEXP = new RegExp('[A-Fa-f0-9]{64}');
     var SUCCESS_STATUS = 'succeeded';
     var ERROR_PREFIX = 'Error from Intezer: ';
 
-    var sendRequest = function(method, url, parameters) {
+    var sendRequest = function(method, url, body, acceptedCodes) {
         // handle '/' at the end of the url
         if (url[url.length - 1] === '/') {
             url = url.substring(0, url.length - 1);
         }
-        if (!parameters) {
-            parameters = {};
+        if (!body) {
+            body = {};
         }
-        parameters.api_key = params.APIKey;
+        body.api_key = params.APIKey;
         // no need to handle url query encoding in GET (as no such api in Intezer)
         var result = http(
             SERVER_API + url,
             {
                 Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json']},
                 Method: method,
-                Body: method == 'POST' ? JSON.stringify(parameters) : ''
+                Body: method == 'POST' ? JSON.stringify(body) : ''
             },
             false,
             params.useproxy
         );
+        return handleResponse(result, url, acceptedCodes);
+    };
 
+    var sendMultipartRequest = function(url, file, body) {
+        // handle '/' at the end of the url
+        if (url[url.length - 1] === '/') {
+            url = url.substring(0, url.length - 1);
+        }
+        if (!body) {
+            body = {};
+        }
+        body.api_key = params.APIKey;
+        var result = httpMultipart(
+          SERVER_API + url,
+          file,
+          {
+            Method: 'POST',
+            Headers: {'Content-Type': ['multipart/form-data']},
+          },
+          body
+        );
+        return handleResponse(result, url);
+    };
+
+    var handleResponse = function(result, url, acceptedCodes) {
+        var ignoreStatusCode = acceptedCodes && (acceptedCodes.indexOf(result.StatusCode) !== -1);
         // validate response
-        if (result.StatusCode < 200 || result.StatusCode > 299) {
+        if (!ignoreStatusCode && (result.StatusCode < 200 || result.StatusCode > 299)) {
             switch (result.StatusCode) {
-                case '400':
+                case 400:
                     throw ERROR_PREFIX + '400 Bad Request - Wrong or invalid parameters\n';
-                case '401':
+                case 401:
                     throw ERROR_PREFIX + '401 Unauthorized - Wrong or invalid api key\n';
-                case '403':
+                case 403:
                     throw ERROR_PREFIX + '403 Forbidden - The API key is not valid\n';
-                case '404':
+                case 404:
                     throw ERROR_PREFIX + '404 Not Found - Access to expired analysis URL or sha256 not found for analysis by sha256\n';
-                case '410':
+                case 410:
                     throw ERROR_PREFIX + '410 Gone - Analysis no longer exists in the service\n';
-                case '413':
+                case 413:
                     throw ERROR_PREFIX + '413 Payload Too Large - Large request\n';
-                case '415':
+                case 415:
                     throw ERROR_PREFIX + '415 Unsupported Media Type - Wrong or missing content type\n';
-                case '500':
+                case 500:
                     throw ERROR_PREFIX + '500 Internal Server Error - Internal error\n';
-                case '503':
+                case 503:
                     throw ERROR_PREFIX + '503 Service Unavailable\n';
                 default:
                     throw ERROR_PREFIX + 'Failed to perform request ' + SERVER_API + url + ', request status code: ' + result.StatusCode + '\n';
@@ -98,7 +124,6 @@ script:
 
     var analyzeSHA256 = function(hash, codeItemType, maxRetries, delay) {
         // validate file is indeed sha256
-        var entries = [];
         if (!SHA_256_REGEXP.test(hash)) {
             var warning = ERROR_PREFIX + 'File hash is not valid sha256.\nIntezer file hash reputation supports only sha256 hash.\n\n';
             return {
@@ -107,20 +132,50 @@ script:
               ContentsFormat: formats.markdown
             };
         }
-
         // create file analysis request
         var res = sendRequest('POST', HASH_URL, {
             sha256: hash,
             code_item_type: codeItemType
-        });
-
+        }, [404]);
         var analysisId;
-        if (res.statusCode === 201) {
+        if (res.statusCode === 404) {
+            var dBotScore = [{Indicator: hash, Type: 'hash', Vendor: 'Intezer', Score: 0}];
+            var file = {
+                SHA256: hash,
+                ExistsInIntezer: false
+            };
+            var ec = { };
+            ec[outputPaths.file] = file;
+            ec.DBotScore = dBotScore;
+
+            return [{
+                Type: entryTypes.note,
+                Contents: '',
+                ContentsFormat: formats.json,
+                HumanReadable: 'Hash ' + hash + ' does not exist on Intezer genome database',
+                EntryContext: ec
+              }];
+        } else if (res.statusCode === 201) {
             analysisId = res.obj.analysis_id;
         } else {
             throw ERROR_PREFIX + 'Failed to create sha256 analysis for ' + hash + ', request status code: ' + res.statusCode + '\n';
         }
+        return waitForResponse(analysisId, maxRetries, delay);
+    };
 
+    var analyzeUploadedFile = function(fileEntryId, codeItemType, maxRetries, delay) {
+        var res = sendMultipartRequest(FILE_UPLOAD_URL, fileEntryId, {code_item_type: codeItemType});
+        var analysisId;
+        if (res.statusCode === 201) {
+            analysisId = res.obj.analysis_id;
+        } else {
+            throw ERROR_PREFIX + 'Failed to create analysis, request status code: ' + res.statusCode + '\n';
+        }
+        return waitForResponse(analysisId, maxRetries, delay);
+    };
+
+    var waitForResponse = function(analysisId, maxRetries, delay) {
+        var entries = [];
         // perform wait loop
         res = getAnalysis(analysisId);
         var tries = 0;
@@ -130,30 +185,44 @@ script:
             wait(delay); // wait {delay} seconds
             res = getAnalysis(analysisId);
         }
-
         // if polling did not retrieve response after {delay * maxRetries} seconds, return an error message
         if (res.status !== SUCCESS_STATUS) {
-            throw ERROR_PREFIX + 'Failed to pool sha256 analysis for ' + hash + ', Try to change maxRetries or delay arguments\n';
+            throw ERROR_PREFIX + 'Failed to analyze, Try to change maxRetries or delay arguments\n';
         } else {
             // Create new indicator of sha256 according to verdict
             var verdict = res.result.verdict;
+            var hash = res.result.sha256;
             var dbotScore = 0;
             var ec = {};
+            ec.DBotScore = [];
             ec[outputPaths.file] = [];
+
             if (verdict === 'malicious') {
                 dbotScore = 3;
                 var malFile = {};
                 addMalicious(malFile, outputPaths.file, {
                     SHA256: hash,
-                    Malicious: {Vendor: 'Intezer', Metadata: res.result}
+                    ExistsInIntezer: true,
+                    Metadata: res.result,
+                    Malicious: {Vendor: 'Intezer'}
                 });
                 ec[outputPaths.file].push(malFile[outputPaths.file]);
-            } else if (verdict === 'suspicious') {
-                dbotScore = 2;
-            } else if (verdict === 'trusted' || verdict === 'neutral') {
-                dbotScore = 1;
+            } else {
+                ec[outputPaths.file].push({
+                    SHA256: hash,
+                    ExistsInIntezer: true,
+                    Metadata: res.result
+                });
+                if (verdict === 'suspicious') {
+                    dbotScore = 2;
+                } else if (verdict === 'trusted' || verdict === 'neutral') {
+                    dbotScore = 1;
+                }
             }
-            ec.DBotScore = [{Indicator: hash, Type: 'hash', Vendor: 'Intezer', Score: dbotScore}];
+
+            // Set DBot score
+            ec.DBotScore.push({Indicator: hash, Type: 'hash', Vendor: 'Intezer', Score: dbotScore});
+
             var data = res.result;
             var md = '## Intezer analysis result\n';
             md += 'SHA256: ' + hash + '\n';
@@ -163,6 +232,7 @@ script:
             }
             md += 'Verdict: **' + data.verdict + '** (' + data.sub_verdict + ')\n';
             md += '[' + 'Analysis Link' + '](' + data.analysis_url + ')\n';
+
             // set return entry with context
             entries.push({
               Type: entryTypes.note,
@@ -172,7 +242,6 @@ script:
               EntryContext: ec
             });
         }
-
         return entries;
     };
 
@@ -181,7 +250,9 @@ script:
             // send is available
             return sendRequest('GET', IS_AVAILABLE_URL).obj.is_available;
         case 'file':
-            return analyzeSHA256(args.file, args.codeItemType, args.maxRetries, args.delay);
+            return analyzeSHA256(args.file, args.codeItuemType, args.maxRetries, args.delay);
+        case 'intezer-upload':
+            return analyzeUploadedFile(args.fileEntryId, args.codeItemType, args.maxRetries, args.delay);
         default:
     }
   type: javascript
@@ -209,7 +280,7 @@ script:
       defaultValue: "5"
     outputs:
     - contextPath: File.SHA256
-      description: Bad hash SHA256
+      description: Hash SHA256
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
@@ -226,5 +297,59 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: File.ExistsInIntezer
+      description: 'File exists in Intezer genome database (in case file does not
+        exist, consider upload the file) '
+      type: boolean
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+      type: unknown
     description: Checks file reputation of the given hash, supports SHA256
+  - name: intezer-upload
+    arguments:
+    - name: fileEntryId
+      required: true
+      default: true
+      description: The file entry id to upload
+    - name: codeItemType
+      auto: PREDEFINED
+      predefined:
+      - file
+      - memory_module
+      - fileless_code
+      description: Item type - File (file), Memory Module (memory_module) or Memory
+        Fileless Code (fileless_code)
+      defaultValue: file
+    - name: maxRetries
+      description: Number of retries for polling the analysis report
+      defaultValue: "60"
+    - name: delay
+      description: Delay in seconds between polling of analysis results
+      defaultValue: "5"
+    outputs:
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+    description: Checks file reputation for uploaded file (up to 20MB)
   runonce: false
