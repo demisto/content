@@ -223,11 +223,11 @@ script:
             external_url=external_url
         )
         response = ts.submit_report(ts_report)
-        deep_link = "{server_url}/constellation/reports/{report_id}".format(server_url=SERVER, report_id=response.id)
+        deep_link = '{server_url}/constellation/reports/{report_id}'.format(server_url=SERVER, report_id=response.id)
         report = collections.OrderedDict()
         report['id'] = response.id
         report['reportTitle'] = title
-        report['reportDeepLink'] = "[{}]({})".format(deep_link, deep_link)
+        report['reportDeepLink'] = '[{}]({})'.format(deep_link, deep_link)
         report['reportBody'] = report_body
         ec = {
             'TruSTAR.Report(val.id && val.id === obj.id)': report
@@ -254,11 +254,11 @@ script:
             external_url=external_url
         )
         response = ts.update_report(ts_report)
-        deep_link = "{server_url}/constellation/reports/{report_id}".format(server_url=SERVER, report_id=report_id)
+        deep_link = '{server_url}/constellation/reports/{report_id}'.format(server_url=SERVER, report_id=report_id)
         report = collections.OrderedDict()
         report['id'] = report_id
         report['reportTitle'] = title
-        report['reportDeepLink'] = "[{}]({})".format(deep_link, deep_link)
+        report['reportDeepLink'] = '[{}]({})'.format(deep_link, deep_link)
         report['reportBody'] = report_body
         ec = {
             'TruSTAR.Report(val.id && val.id === obj.id)': report
@@ -280,13 +280,11 @@ script:
         report_details = collections.OrderedDict()
         report_details['id'] = current_report_dict['id']
         report_details['title'] = current_report_dict['title']
-        deep_link = "{server_url}/constellation/reports/{report_id}".format(server_url=SERVER,
+        deep_link = '{server_url}/constellation/reports/{report_id}'.format(server_url=SERVER,
                                                                             report_id=current_report_dict['id'])
-        report_details['reportDeepLink'] = "[{}]({})".format(deep_link, deep_link)
+        report_details['reportDeepLink'] = '[{}]({})'.format(deep_link, deep_link)
         if current_report_dict['enclaveIds']:
             report_details['enclaveIds'] = ', '.join(current_report_dict['enclaveIds'])  # Prettify list of enclave IDs
-        else:
-            report_details['enclaveIds'] = current_report_dict['enclaveIds']
         report_details['updated'] = normalize_time(current_report_dict['updated'])
         report_details['created'] = normalize_time(current_report_dict['created'])
         report_details['timeBegan'] = normalize_time(current_report_dict['timeBegan'])
@@ -329,20 +327,16 @@ script:
             current_report = collections.OrderedDict()
             current_report['id'] = current_report_dict['id']
             current_report['title'] = current_report_dict['title']
-            deep_link = "{server_url}/constellation/reports/{report_id}".format(server_url=SERVER, report_id=current_report_dict['id'])
-            current_report['reportDeepLink'] = deep_link
+            deep_link = '{server_url}/constellation/reports/{report_id}'.format(server_url=SERVER, report_id=current_report_dict['id'])
+            current_report['reportDeepLink'] = '[{}]({})'.format(deep_link, deep_link)
             if current_report_dict['enclaveIds']:
                 current_report['enclaveIds'] = ', '.join(current_report_dict['enclaveIds'])  # Prettify list of enclave IDs
-            else:
-                current_report['enclaveIds'] = current_report_dict['enclaveIds']
             current_report['updated'] = normalize_time(current_report_dict['updated'])
             current_report['created'] = normalize_time(current_report_dict['created'])
             current_report['timeBegan'] = normalize_time(current_report_dict['timeBegan'])
             current_report['distributionType'] = current_report_dict['distributionType']
             if current_report_dict.get('externalUrl'):
                 current_report['externalUrl'] = current_report_dict['externalUrl']
-            else:
-                current_report['externalUrl'] = ""
             current_report['reportBody'] = current_report_dict['reportBody']
             reports.append(current_report)
             reports_context.append({
