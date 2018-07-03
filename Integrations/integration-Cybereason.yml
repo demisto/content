@@ -25,7 +25,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -702,4 +702,3 @@ script:
       type: string
     description: Stops isolation of a machine
     execution: true
-releaseNotes: "Improved the query sent in query-connections, added outputs to is-probe-connected and removed login command"

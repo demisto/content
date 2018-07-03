@@ -24,7 +24,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -409,4 +409,3 @@ script:
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Detonate file hosted on a website through WildFire
 hidden: false
-releaseNotes: "Verify MD5/SHA256 are valid"

@@ -54,7 +54,7 @@ configuration:
   defaultvalue: "10000"
   type: 0
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -629,4 +629,3 @@ script:
     description: Creates (or updates) issue link
   isfetch: true
 system: true
-releaseNotes: 'Added option to use proxy, renamed insecure option.'

@@ -114,7 +114,8 @@ script:
             head+=key+'|';
             line+='-|';
         }
-        var md=head+'\n'+line+'\n';
+        var md = '### Farsight DNSDB\n';
+        md+=head+'\n'+line+'\n';
         for (var i = 0; i<data.length; i++) {
             md += '|';
             for (key in keys) {
@@ -144,6 +145,10 @@ script:
             params.useproxy
 
         );
+        if (res.StatusCode == 404 || res.StatusCode == 400) {
+            //null is returned while 404 returns error that stops playbook
+            return null;
+        }
         if (res.StatusCode < 200 || res.StatusCode>299) {
             throw 'Error ' + res.StatusCode + '. ' + res.Status;
         }
@@ -181,6 +186,10 @@ script:
             parameters.time_last_after = args.time_last_after*-1;
         }
         var res= sendRequest(requestUrl,parameters);
+        if (res === null) {
+            md = '### Farsight DNSDB: No information found on ' + args.value;
+            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+        }
         var md = dataToMd(api,res.entries);
         return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
     }
@@ -255,4 +264,5 @@ script:
     - name: time_last_after
       description: Filter results for entries seen for last time after (seconds)
     description: Lookup rrser records
-hidden: false
+  runonce: false
+releaseNotes: "Added error handling of 404/400 response and improved human readable output." 

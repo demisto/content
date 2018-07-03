@@ -33,7 +33,7 @@ configuration:
   defaultvalue: NTLM
   type: 0
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -251,7 +251,7 @@ script:
             else:
                 demisto.info(error_message + "\nFull debug log:\n" + debug_log)
 
-    raise Exception(error_message)
+        raise Exception(error_message)
   type: python
   commands:
   - name: send-mail
@@ -281,4 +281,3 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
-releaseNotes: "-"

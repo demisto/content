@@ -46,7 +46,7 @@ script: |-
           var q_status = dq(status_res[0], "Contents.status");
 
           if (q_status && ['WAIT', 'EXECUTE', 'SORTING'].indexOf(q_status) !== -1) {
-              log('search id is {0} search status is {1}'.format(search_id,q_status));
+              // Not finished
           } else if (q_status && q_status == 'COMPLETED') {
               search_done = true;
           } else {
