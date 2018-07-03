@@ -36,8 +36,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |2-
-
+  script: |-
     //GLOBALS//
     var BASE = params.baseUrl;
     // handle '/' at the end of the url
@@ -368,16 +367,21 @@ script:
         return prettyFileUpload;
     }
 
-    function fileUploadRaw(body, fileEntryId) {
+    function fileUploadRaw(body, fileEntryId, filenameToUpload) {
         var uri = '/php/fileupload.php'
-        var filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileEntryId +'")=val.Name');
-        var filename = undefined;
 
-        if (filenameDq && filenameDq[0]) {
-            filename = filenameDq;
-        }
-        else{
-            fileEntryId = undefined;
+
+        if (typeof fileEntryId !== undefined) { //checking that it's a file upload and not url
+            if (typeof filenameToUpload == undefined) { //first priority for the file name is user's argument
+                //second priority for the file name is the file name in the context
+                var filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileEntryId +'")=val.Name');
+                if (filenameDq && filenameDq[0]) {
+                    filenameToUpload = filenameDq;
+                }
+                else {
+                    filenameToUpload = fileEntryId; //last priority for the file name is demisto's entryID
+                }
+            }
         }
 
         res = httpMultipart(
@@ -392,7 +396,7 @@ script:
             PROXY,
             false,
             'amas_filename',
-            filename
+            filenameToUpload
         );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to use uri ' + BASE+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
@@ -407,7 +411,7 @@ script:
 
     function fileUpload(submitType, sample, vmProfileList,
                                 skipTaskId, analyzeAgain, xMode, messageId,
-                                filePriorityQ, srcIp, destIp){
+                                filePriorityQ, srcIp, destIp, fileName){
         var body = {};
         body.data = {};
         var data = {};
@@ -426,7 +430,9 @@ script:
 
         body.data = JSON.stringify(data);
         var file = (submitType == '0') ? sample : undefined;
-        var resultObj = JSON.parse(fileUploadRaw(body, file));
+        var filenameToUpload = (submitType == '0' && fileName) ? fileName : undefined;
+        var resultObj = fileUploadRaw(body, file, filenameToUpload);
+        resultObj = JSON.parse(resultObj);
         return{
             taskId: resultObj.results[0].taskId,
             resultObj: resultObj
@@ -440,7 +446,7 @@ script:
         var result = fileUpload(castToInt(args.submitType), sample,
                                 vmProfileList, castToInt(args.skipTaskId),
                                 castToInt(args.analyzeAgain), castToInt(args.xMode), args.messageId,
-                                args.filePriorityQ, args.srcIp, args.destIp);
+                                args.filePriorityQ, args.srcIp, args.destIp, args.fileName);
 
         var md = tableToMarkdown('ATD sandbox sample submission', prettifyFileUploadRes(result.resultObj),
                                 ['taskId', 'jobId', 'messageId', 'url', 'destIp', 'srcIp', 'MD5', 'SHA1', 'SHA256']);
@@ -593,8 +599,8 @@ script:
         return uriSuffix;
     }
 
-    function detonate(submitType ,sample, timeout, type, threshold){
-        var result = fileUpload(submitType, sample);
+    function detonate(submitType ,sample, timeout, type, threshold, fileName){
+        var result = fileUpload(submitType, sample, fileName);
         var taskId = result.taskId;
         var uploadData = result.resultObj.results[0];
 
@@ -682,7 +688,7 @@ script:
             return detonate(0, args.upload, args.timeout, args.format, args.threshold);
             //submit type for regular file is 0
         case 'detonate-url':
-            return detonate(1, args.url, args.timeout, args.format, args.threshold);
+            return detonate(1, args.url, args.timeout, args.format, args.threshold, args.fileName);
             //submit type for url submission is 1
         //case 'detonate-file-remote':
             //return detonate(3, args.url, args.timeout, args.format, args.threshold);
@@ -750,6 +756,8 @@ script:
         run_now'
     - name: entryID
       description: entry ID f the file to upload
+    - name: fileName
+      description: The name of the file
     outputs:
     - contextPath: ATD.Task.taskId
       description: The task ID of the sample uploaded
@@ -980,6 +988,8 @@ script:
       description: If ATD severity is bigger than the threshold we will consider it
         malicious
       defaultValue: "3"
+    - name: fileName
+      description: The name of the file
     outputs:
     - contextPath: File.Name
       description: Filename (only in case of report type=json)
