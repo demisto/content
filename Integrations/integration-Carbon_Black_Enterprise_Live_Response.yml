@@ -230,10 +230,13 @@ script:
         };
     }
 
-    function createSessionRequest(sensorId, keepaliveTimeout) {
+    function createSessionRequest(sensorId, sessionTimeout, keepaliveTimeout) {
         let queryParams = {
             sensor_id: parseInt(sensorId)
         };
+        if (sessionTimeout) {
+            queryParams.session_timeout = sessionTimeout;
+        }
         if (keepaliveTimeout) {
             queryParams.sensor_wait_timeout = keepaliveTimeout;
         }
@@ -247,7 +250,7 @@ script:
     }
 
     function createSession() {
-        let result = createSessionRequest(args.sensor, args['keepalive-timeout']);
+        let result = createSessionRequest(args.sensor, args['session-timeout'], args['keepalive-timeout']);
 
         let title = 'CB Response - Create Session';
         let dataMap = sessionData;
@@ -269,7 +272,7 @@ script:
     }
 
     function createSessionAndWait() {
-        let result = createSessionRequest(args.sensor, args['keepalive-timeout']);
+        let result = createSessionRequest(args.sensor, args['session-timeout'], args['keepalive-timeout']);
         sleep(1000);
         let sessionId = result.id;
         let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : 20 * 1000;
@@ -1232,6 +1235,9 @@ script:
       required: true
       default: true
       description: Sensor ID to create session for
+    - name: session-timeout
+      description: Session timeout (If a command will not be issued after this time
+        the session will be closed)
     - name: keepalive-timeout
       description: Session keepalive timeout (If a keepalive is not issued after this
         time, the session will close)
@@ -1255,6 +1261,9 @@ script:
       required: true
       default: true
       description: Sensor ID to create session for
+    - name: session-timeout
+      description: Session timeout (If a command will not be issued after this time
+        the session will be closed)
     - name: keepalive-timeout
       description: Session keepalive timeout (If a keepalive is not issued after this
         time, the session will close)
@@ -1309,3 +1318,4 @@ script:
       defaultValue: "20"
     description: Terminates a process at the sensor/endpoint
   runonce: false
+releaseNotes: "Change 'command-timeout' argument name to 'session-timeout' for compliance with 3.6.1 server version update"
