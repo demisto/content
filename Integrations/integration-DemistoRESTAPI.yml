@@ -188,5 +188,22 @@ script:
       description: Request URI (i.e. /user)
     description: send HTTP DELETE request
     execution: true
+  - name: demisto-api-download
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI
+    description: Download files from Demisto server
+  - name: demisto-api-multipart
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI
+    - name: entryID
+      required: true
+      description: File entry ID
+    - name: body
+      description: Request body
+    description: Send HTTP Multipart request to upload files to Demisto server
   runonce: false
 releaseNotes: Added demisto-api-multipart and demisto-api-download commands to upload and download files from demisto server
