@@ -299,10 +299,13 @@ script:
         filter1 = indicators.add_filter()
         filter1.add_indicator(demisto.args()['indicator'])
         owners_arr = []
-        owners = tc.owners()
-        owners.retrieve()
-        for owner in owners:
-            owners_arr.append(owner.name)
+        if "owner" in demisto.args():
+            owners_arr.append(demisto.args()['owner'])
+        else:
+            owners = tc.owners()
+            owners.retrieve()
+            for owner in owners:
+                owners_arr.append(owner.name)
         filter1.add_owner(owners_arr)
         indicators.retrieve()
 
@@ -563,6 +566,8 @@ script:
       default: true
       description: Indicator to tag, this is the value of indicator like ip, file
         hash, url
+    - name: owner
+      description: filter by owner
     description: Tag an exiting indicator
   - name: tc-get-indicator
     arguments:
