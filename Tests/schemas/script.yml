@@ -53,9 +53,9 @@ mapping:
     type: seq
     sequence:
       - include: important_schema
-  fromversion:
+  fromVersion:
     type: text
-  toversion:
+  toVersion:
     type: text
   dockerimage:
     type: str
