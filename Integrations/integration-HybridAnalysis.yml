@@ -50,7 +50,7 @@ script:
     } else if (integrationContext.apiKey) {
         apiKey = integrationContext.apiKey;
     } else {
-        generateKey();
+        apiKey = generateKey();
     }
 
     HEADERS['api-key'] = [apiKey];
@@ -64,9 +64,10 @@ script:
         HEADERS['api-key'] = [integrationContext.masterApiKey];
         var cmdUrl = '/api/v2/key/create';
         var response = sendRequest('POST', cmdUrl, 'uid=DemistoLimitedEdition');
-        apiKey = response.api_key;
-        integrationContext.apiKey = apiKey;
+        key = response.api_key;
+        integrationContext.apiKey = key;
         setIntegrationContext(integrationContext);
+        return key;
     }
 
     function entryError(errorCode, text) {
@@ -394,7 +395,7 @@ script:
   - name: hybrid-analysis-search
     arguments:
     - name: query
-      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options`
+      description: Hybrid Analysis query syntax (see `<server url>/faq#advanced-search-options`
         for more details). examples -  url:google, host:95.181.53.78
     - name: filename
       description: Filename e.g. invoice.exe
@@ -464,7 +465,7 @@ script:
       description: or malicious files, the vendor that made the decision
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
-    description: Search the database using the Falcon Sandbox search syntax
+    description: Search the database using the Hybrid Analysis search syntax
   - name: hybrid-analysis-detonate-file
     arguments:
     - name: entryId
@@ -479,5 +480,5 @@ script:
     - name: timeout
       description: Total wait time (in seconds)
       defaultValue: "60"
-    description: Detonate file through Falcon Sandbox
+    description: Detonate file through Hybrid Analysis
   runonce: false
