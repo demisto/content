@@ -353,6 +353,11 @@ script:
             demisto.results('Event was created in Splunk index: '+r.name)
         sys.exit(0)
     if demisto.command() == 'splunk-notable-event-edit':
+        if not proxy:
+            os.environ["HTTPS_PROXY"] = ""
+            os.environ["HTTP_PROXY"] = ""
+            os.environ["https_proxy"] = ""
+            os.environ["http_proxy"] = ""
         baseurl = 'https://'+demisto.params()['host']+':'+demisto.params()['port']+'/'
         username=demisto.params()['authentication']['identifier']
         password=demisto.params()['authentication']['password']

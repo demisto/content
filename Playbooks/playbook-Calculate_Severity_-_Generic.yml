@@ -2,7 +2,6 @@ id: Calculate Severity - Generic
 version: -1
 name: Calculate Severity - Generic
 fromversion: 3.6.0
-releaseNotes: "Separate logic into sub-playbooks and improve documentation"
 description: |-
   Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
 

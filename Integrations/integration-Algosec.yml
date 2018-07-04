@@ -2,7 +2,6 @@ commonfields:
   id: AlgoSec
   version: -1
 name: AlgoSec
-releaseNotes: "-"
 display: AlgoSec
 system: true
 category: Network Security

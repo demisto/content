@@ -5,7 +5,7 @@ import glob
 import shutil
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
-                'Classifiers', 'Layouts', 'IncidentFields']
+                'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
 TEST_DIR = 'TestPlaybooks'
 

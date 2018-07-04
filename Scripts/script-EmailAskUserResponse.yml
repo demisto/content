@@ -32,4 +32,3 @@ args:
   default: true
   description: Entry ID where EmailAskUser will complete when user replies
 scripttarget: 0
-releaseNotes: "Handling BR tags in HTML response"

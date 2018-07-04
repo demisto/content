@@ -1,8 +1,10 @@
 id: CrowdStrike Falcon Sandbox - Detonate file
 version: -1
 name: CrowdStrike Falcon Sandbox - Detonate file
-description: Detonate file through CrowdStrike Falcon Sandbox
-fromversion: "3.5.0"
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data.
+fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +21,7 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -29,14 +32,14 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 74b3c9f2-12c2-4d14-8088-fcf09067c209
+    taskid: 382bacc2-d6bd-4c14-8f52-4583422c52b4
     type: regular
     task:
-      id: 74b3c9f2-12c2-4d14-8088-fcf09067c209
+      id: 382bacc2-d6bd-4c14-8f52-4583422c52b4
       version: -1
       name: DetonateFile (CS Falcon Sandbox)
-      description: Detonate the file in CS Falcon Sandbox.
-      script: VxStream|||vx-detonate-file
+      description: Detonate the file in CrowdStrike Falcon Sandbox.
+      script: VxStream|||crowdstrike-detonate-file
       type: regular
       iscommand: true
       brand: VxStream
@@ -46,58 +49,89 @@ tasks:
     scriptarguments:
       delay: {}
       entryId:
-        simple: ${inputs.EntryID}
+        complex:
+          root: File
+          filters:
+          - - operator: string.match
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:exe|scr|pif|dll|com|cpl|etc|doc|docx|ppt|pps|pptx|ppsx|xls|xlsx|rtf|pub|PDF|APK|JAR|sct|lnk|chm|hta|wsf|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|PL|ELF|EML|MSG)\b
+              ignorecase: true
+            - operator: string.match
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:exe|scr|pif|dll|com|cpl|etc|doc|docx|ppt|pps|pptx|ppsx|xls|xlsx|rtf|pub|PDF|APK|JAR|sct|lnk|chm|hta|wsf|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|PL|ELF|EML|MSG)\b
+              ignorecase: true
+          accessor: EntryID
       environmentID: {}
       timeout: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 728
         }
       }
   "5":
     id: "5"
-    taskid: 1b506876-b5d6-4890-84c1-98684630107c
+    taskid: 94c56870-3c61-4f5c-8816-7d412d155b5f
     type: condition
     task:
-      id: 1b506876-b5d6-4890-84c1-98684630107c
+      id: 94c56870-3c61-4f5c-8816-7d412d155b5f
       version: -1
       name: Is CS Falcon Sandbox enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
+      description: Verify that there is a valid instance of CrowdStrike Falcon Sandbox
+        enabled.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "6"
       "yes":
-      - "7"
-    scriptarguments:
-      value:
-        complex:
-          root: modules
-          filters:
-          - - operator: string.isEqual
-              left:
-                value:
-                  simple: brand
-                iscontext: true
-              right:
-                value:
-                  simple: VxStream
-          - - operator: string.isEqual
-              left:
-                value:
-                  simple: state
-                iscontext: true
-              right:
-                value:
-                  simple: active
+      - "8"
+    reputationcalc: 0
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VxStream
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -117,61 +151,123 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 905
         }
       }
-  "7":
-    id: "7"
-    taskid: 6b7fbff0-e88f-4977-8b2e-c29dc8c6033d
-    type: condition
+  "8":
+    id: "8"
+    taskid: 49f9beb3-ca33-46ec-8221-0592122e44b8
+    type: regular
     task:
-      id: 6b7fbff0-e88f-4977-8b2e-c29dc8c6033d
+      id: 49f9beb3-ca33-46ec-8221-0592122e44b8
       version: -1
-      name: Is there file to detonate?
-      description: Checks if there is a file to detonate through CS Faclon Sandbox.
-      scriptName: Exists
-      type: condition
+      name: Set file to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "6"
-      "yes":
-      - "4"
+      '#none#':
+      - "9"
     scriptarguments:
+      append: {}
+      key:
+        simple: File
       value:
-        simple: ${inputs.EntryID}
+        complex:
+          root: inputs.File
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 357
+          "x": 50,
+          "y": 375
+        }
+      }
+  "9":
+    id: "9"
+    taskid: db62439a-babe-4770-86ec-9e473e10880e
+    type: condition
+    task:
+      id: db62439a-babe-4770-86ec-9e473e10880e
+      version: -1
+      name: Is the file type supported?
+      description: Check if file type is supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: string.match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:exe|scr|pif|dll|com|cpl|etc|doc|docx|ppt|pps|pptx|ppsx|xls|xlsx|rtf|pub|PDF|APK|JAR|sct|lnk|chm|hta|wsf|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|PL|ELF|EML|MSG)\b
+                    ignorecase: true
+                  - operator: string.match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:exe|scr|pif|dll|com|cpl|etc|doc|docx|ppt|pps|pptx|ppsx|xls|xlsx|rtf|pub|PDF|APK|JAR|sct|lnk|chm|hta|wsf|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|PL|ELF|EML|MSG)\b
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 534
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "5_6_#default#": 0.4
+    },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 550,
-        "x": -120,
+        "height": 920,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs:
-- key: EntryID
+- key: File
   value:
-    simple: ${File.EntryID}
+    complex:
+      root: File
   required: false
-  description: Entry ID of file to be detonated
+  description: File object of the file to detonate.
 outputs:
 - contextPath: File.SHA256
   description: SHA256 of the file
@@ -188,3 +284,18 @@ outputs:
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number

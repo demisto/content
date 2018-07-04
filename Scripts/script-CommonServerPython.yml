@@ -435,6 +435,8 @@ script: |-
       indent = 4 if is_pretty else None
       if type(data) in STRING_TYPES:
           return data
+      elif isinstance(data, list):
+          return ',\n'.join(str(d) for d in data)
       else:
           return json.dumps(data, indent=indent)
 
@@ -543,10 +545,10 @@ script: |-
       if removeNull:
           headers_aux = headers[:]
           for header in headers_aux:
-              if all(obj[header] is None for obj in t):
+              if all(obj.get(header) is None for obj in t):
                   headers.remove(header)
 
-      if t:
+      if t and len(headers) > 0:
           newHeaders = []
           if headerTransform is None:
               headerTransform = lambda s: s
@@ -557,7 +559,7 @@ script: |-
               mdResult += newHeaders[0]
           else:
               mdResult += '|'.join(newHeaders)
-          mdResult = mdResult + '|\n'
+          mdResult += '|\n'
           sep = '-'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
