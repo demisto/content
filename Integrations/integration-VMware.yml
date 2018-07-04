@@ -323,6 +323,7 @@ script:
     sout = sys.stdout
     sys.stdout = StringIO()
     res = []
+    si = None
     try:
         si = login()
 
