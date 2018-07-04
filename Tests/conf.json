@@ -295,19 +295,6 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": [
-                {
-                    "name": "carbonblackliveresponse",
-                    "byoi": true
-                },
-                {
-                    "name": "carbonblack-v2",
-                    "byoi": true
-                }
-            ],
-            "playbookID": "CarbonBlackLiveResponseTest"
-        },
-        {
             "playbookID": "TestSafeBreach",
             "integrations": "SafeBreach"
         },
@@ -509,6 +496,19 @@
         {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": [
+                {
+                    "name": "carbonblackliveresponse",
+                    "byoi": true
+                },
+                {
+                    "name": "carbonblack-v2",
+                    "byoi": true
+                }
+            ],
+            "playbookID": "CarbonBlackLiveResponseTest"
         }
     ]
 }
