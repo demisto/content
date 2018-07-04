@@ -14,6 +14,10 @@ pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColu
 
 pyIrregularFuncs = {"LOG" : {"argList" : ["message"]}}
 
+jsAutomationOnly = ["fileNameFromEntry", "closeInvestigation", "setSeverity", "setIncident", "createNewIncident",
+                    "setPlaybookAccordingToType", "setOwner", "taskAssign", "setTaskDueDate", "setPlaybook", "addTask",
+                    "getCSVListAsArray", "getJSONListAsObject"]
+
 markdownDescFuncs = ["createEntry"]
 
 def readJsonFile(filepath):
@@ -106,6 +110,8 @@ def createJsDocumentation(path, origin, language):
             y["markdown"] = True
         y["language"] = language
         y["origin"] = origin
+        if y["name"] in jsAutomationOnly:
+            y["automationOnly"] = True
 
         x.append(y)
     return x, isError
