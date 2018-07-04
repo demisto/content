@@ -71,16 +71,26 @@ script:
     if demisto.command() == 'pgsql-query':
         conn = pgsqlConnect()
         cur = None
+        rows = []
         try:
             cur = conn.cursor()
             cur.execute(demisto.args()['query'])
-            rows = cur.fetchall()
-            colnames = [desc[0] for desc in cur.description]
+            # try to fetch rows
+            try:
+                colnames = [desc[0] for desc in cur.description]
+                rows = cur.fetchall()
+            except:
+                # No rows returned
+                pass
         except Exception as e:
             demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : e.message })
             sys.exit(0)
         finally:
             closeConnection(conn)
+
+        if(len(rows) == 0):
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['text'], 'Contents' : "No rows returned" })
+            sys.exit(0)
 
         contents = []
         table = [];
@@ -108,3 +118,4 @@ script:
     description: Query PostgreSQL database
   dockerimage: demisto/psycopg2
 hidden: false
+releaseNotes: "-"
