@@ -372,6 +372,10 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
         }
     ],
     "skipped": [
@@ -379,10 +383,6 @@
 
             "integrations": "Farsight DNSDB",
             "playbookID": "DNSDBTest"
-        },
-        {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
         },
         {
             "integrations": {
