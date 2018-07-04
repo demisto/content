@@ -57,12 +57,20 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "integrations": "EWS v2",
+            "playbookID": "EWSv2_empty_attachment_test"
+        },
+        {
             "integrations": "Anomali ThreatStream",
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
         },
         {
             "integrations": "Symantec Endpoint Protection",
@@ -165,7 +173,8 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
+            "playbookID": "Qualys-Test",
+            "nightly": true
         },
         {
             "integrations": {
@@ -351,8 +360,16 @@
             "playbookID": "test-domain-indicator"
         },
         {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
+        },
+        {
             "integrations": "Intezer",
             "playbookID": "Intezer Testing"
+        },
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
         }
     ],
     "skipped": [
@@ -360,10 +377,6 @@
 
             "integrations": "Farsight DNSDB",
             "playbookID": "DNSDBTest"
-        },
-        {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
         },
         {
             "integrations": {
