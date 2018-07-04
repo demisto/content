@@ -36,6 +36,46 @@ script:
         serverURL = serverURL.slice(0,-1);
     }
 
+    sendMultipart = function (uri, entryID, body) {
+        var requestUrl = serverURL;
+        if (uri.slice(-1) !== '/') {
+            requestUrl += '/';
+        }
+        requestUrl += uri;
+
+        var res = httpMultipart(
+            requestUrl,
+            entryID,
+            {
+                Headers: {
+                    'Authorization': [params.apikey],
+                    'Content-Type': ['multipart/form-data'],
+                    'Accept': ['application/json']
+                },
+            },
+            body,
+            params.insecure,
+            params.proxy,
+            undefined,
+            'file'
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Demisto REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        try {
+            var response = res.Body;
+            try {
+                response = JSON.parse(res.Body);
+            } catch (ex) {
+                // do nothing, already handled prior the try/catch
+            }
+            return {response: response};
+        } catch (ex) {
+            throw 'Demisto REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+        }
+
+    };
+
     var sendRequest = function(method, uri, body, raw) {
         var requestUrl = serverURL;
         if (uri.slice(-1) !== '/') {
@@ -74,7 +114,7 @@ script:
                 }
                 return {response: response};
             } catch (ex) {
-                throw 'Demisto REST APIs - Error parsing response - ' + ex;
+                throw 'Demisto REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
             }
         }
     };
@@ -97,7 +137,15 @@ script:
             return sendMultipart(args.uri, args.entryID, args.body);
         case 'demisto-api-download':
             var res = sendRequest('GET',args.uri,args.body,true);
-            var filename = (args.filename) ? args.filename : (res.Headers['Content-Disposition']) ? res.Headers['Content-Disposition'][0].split('=')[1] : res.Path;
+            var filename = res.Path;
+            if (args.filename) {
+                filename = args.filename;
+            } else {
+                var disposition = res.Headers['Content-Disposition'][0].split('=');
+                if (disposition.length === 2) {
+                    filename = disposition[1];
+                }
+            }
             var desc = args.description || '';
             return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
         default:
