@@ -322,7 +322,7 @@ script:
     from cStringIO import StringIO
     sout = sys.stdout
     sys.stdout = StringIO()
-
+    res = []
     try:
         si = login()
 
@@ -346,12 +346,17 @@ script:
             result = revert_snapshot(demisto.args()['snapshot-name'], demisto.args()['vm-uuid'])
         if demisto.command() == 'vmware-get-events':
             result = get_events(demisto.args()['vm-uuid'], demisto.args()['event-type'])
+        res.append(result)
+    except Exception as ex:
+        res.append({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(ex)})
+
+    try:
         logout(si)
     except Exception as ex:
-        result = { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(ex)}
+        res.append({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Logout failed. " + str(ex)})
 
     sys.stdout = sout
-    demisto.results(result)
+    demisto.results(res)
     sys.exit(0)
   type: python
   commands:
