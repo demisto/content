@@ -49,14 +49,15 @@ def reformatPythonOutput(output, origin, language):
         argList = a.get("argList", [])
         argDetails = a.get("arguments", {})
         for argName in argList:
-            argInfo = argDetails[argName]
-            argInfo["name"] = argName
-            argInfo["type"] = argInfo["type_name"]
-            if argInfo.get("description", "") == "":
-                isError = True
-                print "Missing description for argument", argName, "in python function", a["name"]
-            del argInfo["type_name"]
-            z.append(argInfo)
+            argInfo = argDetails.get(argName, None)
+            if argInfo is not None:
+                argInfo["name"] = argName
+                argInfo["type"] = argInfo["type_name"]
+                if argInfo.get("description", "") == "":
+                    isError = True
+                    print "Missing description for argument", argName, "in python function", a["name"]
+                del argInfo["type_name"]
+                z.append(argInfo)
 
         a["arguments"] = z
         a["return_value"] = a["return"]
@@ -66,6 +67,7 @@ def reformatPythonOutput(output, origin, language):
         a["language"] = language
         a["origin"] = origin
 
+        del a["argList"]
         del a["return"]
         del a["return_value"]["type_name"]
         res.append(a)

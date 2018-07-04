@@ -702,6 +702,9 @@ script: |-
          :type filename: ``str``
          :param filename: The name of the file to be modified (required)
 
+         :type saveFilename: ``str``
+         :param saveFilename: The new file name
+
          :return: A Demisto war room entry
          :rtype: ``dict``
       """
