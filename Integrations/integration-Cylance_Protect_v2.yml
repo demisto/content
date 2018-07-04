@@ -200,20 +200,43 @@ script:
         page_size = demisto.args()['pageSize'] if 'pageSize' in demisto.args() else None
         result = get_devices_request(page, page_size)
         devices = result['page_items']
-
-        devices_context = createContext(data=devices, keyTransform=underscoreToCamelCase)
-        ec = {
-            'Endpoint(val.id && val.id === obj.id)': devices_context
-        }
-
         hr = []
-
+        devices_context = []
+        endpoint_context = []
         for device in devices:
+            current_device_context = {
+                'AgentVersion': device['agent_version'],
+                'DateFirstRegistered': device['date_first_registered'],
+                'ID': device['id'],
+                'IPAddress': device['ip_addresses'],
+                'MACAdress': device['mac_addresses'],
+                'Hostname': device['name'],
+                'State': device['state']
+            }
+            if device['policy']:
+                policy = {}
+                if device['policy']['id']:
+                    policy['ID'] = device['policy']['id']
+                if device['policy']['name']:
+                    policy['Name'] = device['policy']['name']
+                if policy:
+                    current_device_context['Policy'] = policy
+            devices_context.append(current_device_context)
+            endpoint_context.append({
+                'IPAddress': device['ip_addresses'],
+                'MACAdress': device['mac_addresses'],
+                'Hostname': device['name']
+            })
             current_device = dict(device)
             current_device['ip_addresses'] = ', '.join(current_device['ip_addresses'])
             current_device['mac_addresses'] = ', '.join(current_device['mac_addresses'])
             current_device['policy'] = current_device['policy']['name']
             hr.append(current_device)
+
+        ec = {
+            'CylanceProtect.Device(val.ID && val.ID === obj.ID)': devices_context,
+            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
+        }
 
         entry = {
             'Type': entryTypes['note'],
@@ -245,10 +268,41 @@ script:
     def get_device():
         device_id = demisto.args()['id']
         device = get_device_request(device_id)
-
-        device_context = createContext(data=device, keyTransform=underscoreToCamelCase)
+        device_context = {
+            'IPAddress': device['ip_addresses'],
+            'MACAdress': device['mac_addresses'],
+            'Hostname': device['host_name'],
+            'OSVersion': device['os_version'],
+            'UpdateAvailable': device['update_available'],
+            'BackgroundDetection': device['background_detection'],
+            'DateFirstRegistered': device['date_first_registered'],
+            'DateLastModified': device['date_last_modified'],
+            'DateOffline': device['date_offline'],
+            'IsSafe': device['is_safe'],
+            'LastLoggedInUser': device['last_logged_in_user'],
+            'State': device['state'],
+            'ID': device['id'],
+            'Name': device['name']
+        }
+        if device['update_type']:
+            device_context['UpdateType'] = device['update_type']
+        if device['policy']:
+            policy = {}
+            if device['policy']['id']:
+                policy['ID'] = device['policy']['id']
+            if device['policy']['name']:
+                policy['Name'] = device['policy']['name']
+            if policy:
+                device_context['Policy'] = policy
+        endpoint_context = {
+            'IPAddress': device['ip_addresses'],
+            'MACAdress': device['mac_addresses'],
+            'Hostname': device['host_name'],
+            'OSVersion': device['os_version']
+        }
         ec = {
-            'Endpoint(val.id && val.id === obj.id)': device_context
+            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context,
+            'CylanceProtect.Device(val.ID && val.ID === obj.ID)': device_context
         }
 
         hr = []
@@ -721,25 +775,46 @@ script:
                 threat['mac_addresses'] = ', '.join(threat['mac_addresses'])
 
             file_paths = []
+            endpoint_context = []
+            devices_context = []
             for threat in threats_context:
-                threat['hostname'] = threat.pop('name')
-                threat['I_p_address'] = threat.pop('ip_addresses')
-                threat['M_a_c_address'] = threat.pop('mac_addresses')
+                endpoint_context.append({
+                    'Hostname':threat['name'],
+                    'IPAddress': threat['ip_addresses'],
+                    'MACAddress': threat['mac_addresses']
+                })
+                current_device = {
+                    'Hostname':threat['name'],
+                    'IPAddress': threat['ip_addresses'],
+                    'MACAddress': threat['mac_addresses'],
+                    'AgentVersion': threat['agent_version'],
+                    'DateFound': threat['date_found'],
+                    'FilePath': threat['file_path'],
+                    'MACAddress': threat['mac_addresses'],
+                    'ID': threat['id'],
+                    'State': threat['state'],
+                    'FileStatus': threat['file_status']
+                }
+                if threat['policy_id']:
+                    current_device['PolicyID'] = threat['policy_id']
+                devices_context.append(current_device)
                 file_path = threat.pop('file_path')
                 file_paths.append({
                     'FilePath': file_path
                 })
 
-            context_file = {
-                'Sha256': threat_hash,
-                'FilePath': file_paths
+            file_context = {
+                'SHA256': threat_hash,
+                'Path': file_paths
             }
 
-            context_device = createContext(data=threats_context, keyTransform=underscoreToCamelCase, removeNull=True)
-
             ec = {
-                'File':  context_file,
-                'Endpoint(val.id && val.id === obj.id)': context_device
+                'File':  file_context,
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context,
+                'CylanceProtect.Threat(val.SHA256 && val.SHA256 === obj.SHA256)': {
+                        'SHA256': threat_hash,
+                        'Devices': devices_context
+                }
             }
 
             title = 'Cylance Protect Threat ' + threat_hash + ' Devices'
@@ -951,28 +1026,39 @@ script:
     - name: pageSize
       description: 'Default: 100'
     outputs:
-    - contextPath: Endpoint.AgentVersion
+    - contextPath: CylanceProtect.Device.AgentVersion
       description: The CylancePROTECT Agent version installed on the device.
       type: string
-    - contextPath: Endpoint.DateFirstRegistered
+    - contextPath: CylanceProtect.Device.DateFirstRegistered
       description: The date and time (in UTC) when the device record was created.
-      type: string
-    - contextPath: Endpoint.Id
+      type: date
+    - contextPath: CylanceProtect.Device.ID
       description: The device’s unique identifier.
       type: string
-    - contextPath: Endpoint.IpAddresses
+    - contextPath: Endpoint.IPAddress
       description: The list of IP addresses for the device.
-    - contextPath: Endpoint.MacAddresses
+    - contextPath: Endpoint.MACAddress
       description: The list of MAC addresses for the device.
-    - contextPath: Endpoint.Name
-      description: The device’s name.
+    - contextPath: Endpoint.Hostname
+      description: The device name.
       type: string
-    - contextPath: Endpoint.Policy
-      description: The policy ID and name.
+    - contextPath: CylanceProtect.Device.Policy.ID
+      description: Device policy ID
       type: string
-    - contextPath: Endpoint.State
+    - contextPath: CylanceProtect.Device.State
       description: Machine state
       type: string
+    - contextPath: CylanceProtect.Device.Policy.Name
+      description: Device policy name
+      type: string
+    - contextPath: CylanceProtect.Device.Hostname
+      description: The device name.
+      type: string
+    - contextPath: CylanceProtect.Device.MACAddress
+      description: The list of MAC addresses for the device.
+      type: unknown
+    - contextPath: CylanceProtect.Device.IPAddress
+      description: The list of IP addresses for the device.
     description: Allows a caller to request a page with a list of Console device resources
       belongings to a Tenant, sorted by registration (created) date in descending
       order (most recent device registered listed first)
@@ -983,35 +1069,57 @@ script:
       default: true
       description: The device ID
     outputs:
-    - contextPath: Endpoint.AgentVersion
+    - contextPath: CylanceProtect.Device.AgentVersion
       description: The CylancePROTECT Agent version installed on the device.
-      type: string
-    - contextPath: Endpoint.DateFirstRegistered
+      type: date
+    - contextPath: CylanceProtect.Device.DateFirstRegistered
       description: The date and time (in UTC) when the device record was created.
-      type: string
-    - contextPath: Endpoint.BackgroundDetection
+      type: date
+    - contextPath: CylanceProtect.Device.BackgroundDetection
       description: If true, the Agent is currently running.
       type: boolean
-    - contextPath: Endpoint.DateLastModified
+    - contextPath: CylanceProtect.Device.DateLastModified
       description: The date and time (in UTC) when the device record was last modified.
-      type: string
-    - contextPath: Endpoint.DateOffline
+      type: date
+    - contextPath: CylanceProtect.Device.DateOffline
       description: The date and time (in UTC) when the device last communicated with
         the Console.
-      type: string
-    - contextPath: Endpoint.HostName
+      type: date
+    - contextPath: CylanceProtect.Device.Hostname
       description: The hostname for the device.
       type: string
-    - contextPath: Endpoint.Id
+    - contextPath: CylanceProtect.Device.ID
       description: The unique identifier for the device.
       type: string
-    - contextPath: Endpoint.IpAddresses
+    - contextPath: CylanceProtect.Device.IPAddress
       description: The list of IP addresses for the device.
-    - contextPath: Endpoint.MacAddresses
+    - contextPath: CylanceProtect.Device.MACAddress
       description: The list of MAC addresses for the device.
-    - contextPath: Endpoint.IsSafe
+    - contextPath: CylanceProtect.Device.IsSafe
       description: If true, there are no outstanding threats.
       type: boolean
+    - contextPath: CylanceProtect.Device.UpdateAvailable
+      description: If true, there is available update for the device
+      type: boolean
+    - contextPath: CylanceProtect.Device.State
+      description: Machine state
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Device hostname
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: The list of MAC addresses for the device.
+    - contextPath: Endpoint.IPAddress
+      description: The list of IP addresses for the device.
+    - contextPath: Endpoint.OSVersion
+      description: Device OS version
+      type: string
+    - contextPath: CylanceProtect.Device.OSVersion
+      description: Device OS version
+      type: string
+    - contextPath: CylanceProtect.Device.Name
+      description: Device name
+      type: string
     description: Allows a caller to request a specific device resource belonging to
       a Tenant
   - name: cylance-protect-update-device
@@ -1298,16 +1406,16 @@ script:
       default: true
       description: The SHA256 hash of the threat
     outputs:
-    - contextPath: Endpoint.Id
+    - contextPath: CylanceProtect.Threat.Devices.ID
       description: The device ID.
       type: string
-    - contextPath: Endpoint.DateFound
+    - contextPath: CylanceProtect.Threat.Devices.DateFound
       description: The date and time (in UTC) when the threat was found on the device.
-      type: string
-    - contextPath: Endpoint.AgentVersion
+      type: date
+    - contextPath: CylanceProtect.Threat.Devices.AgentVersion
       description: The agent version installed on the device.
       type: string
-    - contextPath: Endpoint.FileStatus
+    - contextPath: CylanceProtect.Threat.Devices.FileStatus
       description: Current quarantine status of the file on the device. Default (0),Quarantined
         (1),Whitelisted (2),Suspicious (3),FileRemoved (4),Corrupt (5)
       type: number
@@ -1318,19 +1426,26 @@ script:
     - contextPath: Endpoint.Hostname
       description: The device name for the device.
       type: string
-    - contextPath: Endpoint.PolicyId
+    - contextPath: CylanceProtect.Threat.Devices.PolicyID
       description: The unique identifier of the policy assigned to the device, or
         null if no policy is assigned.
       type: string
-    - contextPath: Endpoint.State
+    - contextPath: CylanceProtect.Threat.Devices.State
       description: The state of the device (Offline,Online).
       type: string
-    - contextPath: File.Sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash of the threat
       type: string
-    - contextPath: File.FilePath
+    - contextPath: File.Path
       description: The path where the file was found on the device.
       type: string
+    - contextPath: CylanceProtect.Threat.Devices.Hostname
+      description: The device name for the device.
+      type: string
+    - contextPath: CylanceProtect.Threat.Devices.IPAddress
+      description: The list of IP addresses for the device.
+    - contextPath: CylanceProtect.Threat.Devices.MACAddress
+      description: The list of MAC addresses for the device.
     description: Allows a caller to request  a list of devices on a specific threat
   - name: cylance-protect-get-indicators-report
     arguments:
