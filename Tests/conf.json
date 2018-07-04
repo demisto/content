@@ -372,13 +372,14 @@
             "playbookID": "Tanium Demo Playbook",
             "nightly": true,
             "timeout": 1200
-        },
-        {
-            "integrations": "VMware",
-            "playbookID": "VMWare Test"
         }
     ],
     "skipped": [
+
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
+        },
         {
 
             "integrations": "Farsight DNSDB",
