@@ -362,12 +362,20 @@ script:
             ]
 
         vulnerabilities = get_vulnerabilities(asset['id'])
+        asset['vulnerabilities'] = vulnerabilities
         vulnerabilitiesOutput = []
-        for v in vulnerabilities:
+        cvesOutput = []
+        for i,v in enumerate(asset['vulnerabilities']):
             detailedVuln = get_vulnerability(v['id'])
-            cvss = dq(detailedVuln['cvss'], ['v3', 'score'])
-            if cvss is None:
-                cvss = dq(detailedVuln['cvss'], ['v2','score'])
+            # Add to raw output
+            asset['vulnerabilities'][i] = dict(asset['vulnerabilities'][i].items() + detailedVuln.items())
+            cvss = dq(detailedVuln['cvss'], ['v2','score'])
+
+            if('cves' in detailedVuln):
+                cvesOutput = cvesOutput + map(lambda cve: {
+                'ID': cve
+                }, detailedVuln['cves'])
+
             outputVuln = {
                 'Id': v['id'],
                 'Title': detailedVuln['title'],
@@ -403,16 +411,21 @@ script:
             'OS': assetOutput['OperatingSystem']
         }
 
+        context = {
+            'Nexpose.Asset(val.AssetId==obj.AssetId)': assetOutput,
+            'Endpoint(val.IP==obj.IP)': endpoint
+        }
+
+        if len(cvesOutput) > 0:
+            context['CVE(val.ID==obj.ID)'] = cvesOutput
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': asset,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
-            'EntryContext': {
-                  'Nexpose.Asset(val.AssetId==obj.AssetId)': assetOutput,
-                  'Endpoint(val.IP==obj.IP)': endpoint
-            }
+            'EntryContext': context
         }
 
         return entry
@@ -444,6 +457,8 @@ script:
         ]
 
         detailedVuln = get_vulnerability(v['id'])
+        # Add to raw output
+        v = dict(v.items() + detailedVuln.items())
         vulnOutputs = translate_object(detailedVuln, [
             {'from': 'id', 'to': 'Id'},
             {'from': 'title', 'to': 'Title'},
@@ -491,7 +506,9 @@ script:
         ]
 
         solutionsOutput = None
-        solutions = get_vulnerability_solutions(demisto.args()['id'] ,demisto.args()['vulnerabilityId'])
+        solutions = get_vulnerability_solutions(demisto.args()['id'], demisto.args()['vulnerabilityId'])
+        # Add to raw output
+        v['solutions'] = solutions
         if solutions is not None and len(solutions) > 0:
             solutionsOutput = translate_object(solutions['resources'], [
                 {'from': 'type', 'to': 'Type'},
@@ -507,6 +524,11 @@ script:
         resultsMd = tableToMarkdown('Checks', resultsOutput, resultsHeaders, removeNull=True) if len(resultsOutput) > 0 else ''
         solutionsMd = tableToMarkdown('Solutions', solutionsOutput, solutionsHeaders, removeNull=True) if solutionsOutput is not None else ''
         md = vulnerabilitiesMd + resultsMd + solutionsMd
+        cves = []
+        if(vulnOutputs['CVES'] is not None and len(vulnOutputs['CVES']) > 0):
+            cves = map(lambda cve: {
+            'ID': cve
+            }, vulnOutputs['CVES'])
 
         vulnOutputs['Check'] = resultsOutput
         vulnOutputs['Solution'] = solutionsOutput
@@ -515,15 +537,20 @@ script:
             'Vulnerability': [vulnOutputs]
         }
 
+        context = {
+            'Nexpose.Asset(val.AssetId==obj.AssetId)': asset,
+        }
+
+        if len(cves) > 0:
+            context['CVE(val.ID==obj.ID)'] = cves
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': v,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
-            'EntryContext': {
-                  'Nexpose.Asset(val.AssetId==obj.AssetId)': asset
-            }
+            'EntryContext': context
         }
 
         return entry
@@ -546,32 +573,43 @@ script:
 
         return send_request(path)
 
-    def search_assets_command():
-        textFilters = None
-        queries = demisto.args().get('query', None)
-        if queries is not None:
-            textFilters = queries.split(';')
-        ip_address = demisto.args().get('ipAddressIs', None)
-        if ip_address is not None:
-            textFilters = ['ip-address is ' + ip_address]
-        host_name = demisto.args().get('hostNameIs', None)
-        if host_name is not None:
-            textFilters = ['host-name is ' + host_name]
-        risk_score = demisto.args().get('riskScoreHigherThan', None)
-        if risk_score is not None:
-            textFilters = ['risk-score is-greater-than ' + risk_score]
-        vulnerability_title = demisto.args().get('vulnerabilityTitleContains', None)
-        if vulnerability_title is not None:
-            textFilters = ['vulnerability-title contains ' + vulnerability_title]
-        siteIds = demisto.args().get('siteIdIn', None)
-        if siteIds is not None:
-            textFilters = ['site-id in ' + siteIds]
-
+    def search_by_filter(textFilters):
         if(textFilters is None):
-            return 'No query provided for search'
+            return []
 
         filters = get_search_filters(textFilters)
-        assets = search_assets(filters, demisto.args()['match'], demisto.args().get('limit', None), demisto.args().get('sort', None))
+        assets = search_assets(filters, demisto.args()['match'], demisto.args().get('limit'), demisto.args().get('sort'))
+
+        return assets
+
+    def search_assets_command():
+        textFilters = None
+        queries = demisto.args().get('query')
+        ip_addresses = demisto.args().get('ipAddressIs')
+        host_names = demisto.args().get('hostNameIs')
+        risk_score = demisto.args().get('riskScoreHigherThan')
+        vulnerability_title = demisto.args().get('vulnerabilityTitleContains')
+        siteIds = demisto.args().get('siteIdIn')
+
+        assets = None
+        if queries is not None:
+            assets = search_by_filter(queries.split(';'))
+        elif risk_score is not None:
+            assets = search_by_filter(['risk-score is-greater-than ' + risk_score])
+        elif vulnerability_title is not None:
+            assets = search_by_filter(['vulnerability-title contains ' + vulnerability_title])
+        elif siteIds is not None:
+            assets = search_by_filter(['site-id in ' + siteIds])
+        elif ip_addresses is not None:
+            ips = ip_addresses.split(',')
+            assets = []
+            for i, ip in enumerate(ips):
+                assets = assets + search_by_filter(['ip-address is ' + str(ip)])
+        elif host_names is not None:
+            host_names = host_names.split(',')
+            assets = []
+            for i, host_name in enumerate(host_names):
+                assets = assets + search_by_filter(['host-name is ' + str(host_name)])
 
         if(assets is None or len(assets) == 0):
             return 'No assets found'
@@ -677,8 +715,8 @@ script:
         return get_list_response(path, method='post', limit=limit, body=search_body, params=params)
 
     def get_assets_command():
-        limit = demisto.args().get('limit', None)
-        sort = demisto.args().get('sort', None)
+        limit = demisto.args().get('limit')
+        sort = demisto.args().get('sort')
         assets = get_assets(limit=limit, sort=sort)
 
         if(assets is None or len(assets) == 0):
@@ -820,7 +858,7 @@ script:
         return send_request(path)
 
     def get_sites_command():
-        sites = get_sites(limit=demisto.args().get('limit', None),sort=demisto.args().get('sort', None))
+        sites = get_sites(limit=demisto.args().get('limit'),sort=demisto.args().get('sort'))
 
         if(sites is None or len(sites) == 0):
             return 'No sites found'
@@ -905,7 +943,7 @@ script:
 
     def create_assets_report_command():
         assets = str(demisto.args()['assets']).split(',')
-        template = demisto.args().get('template', None)
+        template = demisto.args().get('template')
         name = demisto.args().get('name','report ' + str(datetime.now()))
         reportFormat = demisto.args().get('format', 'pdf')
 
@@ -922,7 +960,7 @@ script:
 
     def create_sites_report_command():
         sites = str(demisto.args()['sites']).split(',')
-        template = demisto.args().get('template', None)
+        template = demisto.args().get('template')
         name = demisto.args().get('name','report ' + str(datetime.now()))
         reportFormat = demisto.args().get('format', 'pdf')
 
@@ -939,7 +977,7 @@ script:
 
     def create_scan_report_command():
         scan = demisto.args()['scan']
-        template = demisto.args().get('template', None)
+        template = demisto.args().get('template')
         name = demisto.args().get('name','report ' + str(datetime.now()))
         reportFormat = demisto.args().get('format', 'pdf')
         scope = {
@@ -998,8 +1036,8 @@ script:
         return fileResult(name + '.' + reportFormat, report)
 
     def start_assets_scan_command():
-        ips = demisto.args().get('IPs', None)
-        hostNames = demisto.args().get('hostNames', None)
+        ips = demisto.args().get('IPs')
+        hostNames = demisto.args().get('hostNames')
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
 
         textFilters = None
@@ -1188,6 +1226,8 @@ script:
       description: Endpoint host name.
     - contextPath: Endpoint.OS
       description: Endpoint operating system.
+    - contextPath: CVE.ID
+      description: Common Vulnerabilities and Exposures ids
     description: Returns the specified asset.
   - name: nexpose-get-assets
     arguments:
@@ -1405,6 +1445,8 @@ script:
     - contextPath: Nexpose.Asset.Vulnerability.Solution.AdditionalInformation
       description: Additional information or resources that can assist in applying
         the remediation
+    - contextPath: CVE.ID
+      description: Common Vulnerabilities and Exposures ids
     description: Returns the details and possible remediations for an asset's given
       vulnerability.
   - name: nexpose-get-sites
