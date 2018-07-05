@@ -2,6 +2,7 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
+releaseNotes: "Updated doc string of file_result_existing_file"
 script: |-
   # Common functions script
   # =======================
@@ -701,6 +702,9 @@ script: |-
 
          :type filename: ``str``
          :param filename: The name of the file to be modified (required)
+
+         :type saveFilename: ``str``
+         :param saveFilename: The new file name
 
          :return: A Demisto war room entry
          :rtype: ``dict``
