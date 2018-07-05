@@ -74,6 +74,7 @@ tasks:
       id: e0ffa563-92e4-428b-81ed-c0fe3eeeb2f7
       version: -1
       name: Interact with the user
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -97,6 +98,7 @@ tasks:
       id: 343205d4-9062-4954-8d57-ac3ab134d5f6
       version: -1
       name: Enrich indicators
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -122,6 +124,7 @@ tasks:
       id: faf6fad5-f040-47b2-8802-73c06b1ef6d2
       version: -1
       name: Enrich source IP
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -145,6 +148,7 @@ tasks:
       id: f4690b1b-98cd-4309-82be-53e760d502ee
       version: -1
       name: Enrich destination IP
+      description: ""
       type: title
       iscommand: false
       brand: ""
