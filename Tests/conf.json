@@ -12,6 +12,9 @@
             "playbookID": "minemeld_test"
         },
         {
+            "playbookID": "buildewsquery_test"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
@@ -59,12 +62,20 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "integrations": "EWS v2",
+            "playbookID": "EWSv2_empty_attachment_test"
+        },
+        {
             "integrations": "Anomali ThreatStream",
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
         },
         {
             "integrations": "Symantec Endpoint Protection",
@@ -167,7 +178,8 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
+            "playbookID": "Qualys-Test",
+            "nightly": true
         },
         {
             "integrations": {
@@ -351,12 +363,36 @@
         },
         {
             "playbookID": "test-domain-indicator"
-        }
-    ],
-    "skipped": [
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
+        },
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
+        },
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true,
+            "timeout": 1200
+        }
+    ],
+    "skipped": [
+
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
+        },
+        {
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
         },
         {
             "integrations": {
@@ -384,10 +420,6 @@
         },
         {
             "playbookID": "TestParseCSV"
-        },
-        {
-            "integrations": "VMware",
-            "playbookID": "VMWare Test"
         },
         {
             "integrations": [
@@ -418,12 +450,6 @@
         {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "McAfee-TIE Test"
-        },
-        {
-            "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
-            "nightly": true,
-            "timeout": 1200
         },
         {
             "integrations": "ArcSight Logger",
@@ -488,6 +514,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
         }
     ]
 }

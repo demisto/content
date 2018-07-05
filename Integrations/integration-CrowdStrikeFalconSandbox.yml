@@ -189,6 +189,12 @@ script:
                 });
            }
         });
+        context.DBotScore = {
+            Indicator: response[0].sha256,
+            Type: 'hash',
+            Vendor: 'CrowdStrike Falcon Sandbox',
+            Score: translateScore(response[0]['threat_level'])
+        }
         return createTableEntry('Scan Results:', response, table, context);
     }
 
@@ -471,7 +477,8 @@ script:
         }
 
         if (version === 'v2') {
-            return resultEntry(res, fileType)
+            var fileScan = scan(hash);
+            return resultEntry(res, fileType, fileScan)
         } else {
             return res;
         }
@@ -492,7 +499,7 @@ script:
         return sendRequest('GET', cmdUrl);
     }
 
-    function resultEntry(result, fileType) {
+    function resultEntry(result, fileType, scan) {
         var currentTime = new Date();
         var filename =  'CrowdStrike_report_' + currentTime.getTime();
         switch (fileType) {
@@ -504,7 +511,7 @@ script:
                 break;
             case 'json':
                 filename += '.json';
-                res = JSON.stringify(result);
+                result = JSON.stringify(result);
                 break;
             case 'misp':
             case 'stix':
@@ -513,12 +520,35 @@ script:
             case 'pdf':
                 filename += '.pdf';
         }
+        ec = {
+            DBotScore: {
+                Indicator: scan.sha256,
+                Type: 'hash',
+                Vendor: 'CrowdStrike Falcon Sandbox',
+                Score: translateScore(scan[0]['threat_level'])
+            }
+        }
         return {
-            Type: 3,
+            Type: 9,
             FileID: saveFile(result),
             File: filename,
-            Contents: filename
+            Contents: filename,
+            EntryContext: ec
         };
+    }
+
+    function translateScore(score) {
+        /* Translates CS threat level to DBot Score */
+        var scoreObject = {
+            2: 3,
+            1: 2,
+            0: 1
+        }
+        if (score in scoreObject) {
+            return scoreObject[score];
+        } else {
+            return 0;
+        }
     }
 
     function detonateFile(entryId, delay, timeout) {
@@ -663,6 +693,31 @@ script:
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
 
+    function submitFileByUrlCommad(url, environmentID) {
+        if (version === 'v1') {
+            throw 'This command is supported only in API v2.'
+        }
+        var response = submitFileByUrl(url, environmentID);
+        var context = {
+            'File(val.SHA256 && val.SHA256 === obj.SHA256)': {
+                'SHA256': response['sha256']
+            },
+            'CrowdStrike(val.JobID && val.JobID === obj.JobID)': {
+                'EnvironmentID': response['environment_id'],
+                'JobID': response['job_id']
+            }
+        };
+        var title = 'File ' + url + ' was submitted for analysis on CrowdStrike Falcon Sandbox';
+        return createTableEntry(title, response, response, context);
+    }
+
+    function submitFileByUrl(url, environmentID) {
+        var cmdUrl = '/api/v2/submit/url-to-file';
+        var body = 'url=' + url + '&environment_id=' + environmentID;
+        HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
+        return sendRequest('POST', cmdUrl, body);
+    }
+
     switch (command) {
         case 'test-module':
             args.query = 'url:google';
@@ -674,7 +729,11 @@ script:
         case 'vx-scan': // Deprecated
         case 'crowdstrike-scan':
             var res = scan(args.file);
-            return scanToEntry(res);
+            if (res.length > 0){
+                return scanToEntry(res);
+            } else {
+                return 'No results found.'
+            }
         case 'vx-get-environments': // Deprecated
         case 'crowdstrike-get-environments':
             var response = getEnvironments();
@@ -700,6 +759,8 @@ script:
             return file(args.file);
         case 'crowdstrike-detonate-url':
             return detonateUrl(args.url, args.delay, args.timeout, args['file-type']);
+        case 'crowdstrike-submit-file-by-url':
+            return submitFileByUrlCommad(args.url, args.environmentID);
     }
 
   type: javascript
@@ -817,6 +878,18 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Get summary information for a given MD5, SHA1 or SHA256 and all the
       reports generated for any environment ID
   - name: vx-get-environments
@@ -1071,6 +1144,19 @@ script:
       defaultValue: pdf
     - name: JobID
       description: Job ID of file to generate report of (supported only in v2)
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Retrieve result data upon a file. NOTE - This command returns a file
   - name: vx-detonate-file
     deprecated: true
@@ -1151,6 +1237,18 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Detonate file through Falcon Sandbox
   - name: crowdstrike-submit-url
     arguments:
@@ -1255,4 +1353,36 @@ script:
       - pcap
       description: File type of report to return
       defaultValue: pdf
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Detonates URL address through Falcon Sandbox (supported only in v2)
+  - name: crowdstrike-submit-file-by-url
+    arguments:
+    - name: environmentID
+      description: Environment ID to submit file to (get all IDs via crowdstrike-get-environments)
+      defaultValue: "100"
+    - name: url
+      required: true
+      description: URL of file to submit.
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: CrowdStrike.EnvironmentID
+      description: Environment ID in which the file was analysed
+      type: string
+    - contextPath: CrowdStrike.JobID
+      description: Job ID of file analysation
+      type: string
+    description: Submit a file by URL for analysis (Supported only in v2).

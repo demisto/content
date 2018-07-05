@@ -1,7 +1,8 @@
 id: WildFire - Detonate file
 version: -1
 name: WildFire - Detonate file
-description: Detonate files through WildFire
+description: Detonate one or more files using the Wildfire integration. This playbook
+  returns relevant reports to the War Room and file reputations to the context data.
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
@@ -13,79 +14,74 @@ tasks:
       id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
       version: -1
       name: ""
-      iscommand: false
       description: ""
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "5"
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 162.5,
           "y": 50
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 3b9613c2-336f-4934-8c0d-935b95580d42
-    type: regular
-    task:
-      id: 3b9613c2-336f-4934-8c0d-935b95580d42
-      version: -1
-      name: DetonateFile (WildFire)
-      description: Detonate the file in WildFire.
-      script: WildFire|||detonate-file
-      type: regular
-      iscommand: true
-      brand: WildFire
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      delay: ""
-      entryID: ${inputs.File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
-      format: ""
-      hash: ""
-      interval: ""
-      md5: ""
-      timeout: ""
-      upload: ${inputs.File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
-      verbose: ""
-    view: |-
-      {
-        "position": {
-          "x": 71,
-          "y": 545
         }
       }
   "5":
     id: "5"
-    taskid: ca3bc370-80b9-4b97-80c6-ed99a5b851f5
+    taskid: 8dec7425-dcfc-4b65-8810-02604bb775be
     type: condition
     task:
-      id: ca3bc370-80b9-4b97-80c6-ed99a5b851f5
+      id: 8dec7425-dcfc-4b65-8810-02604bb775be
       version: -1
       name: Is WildFire enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
+      description: |
+        Verify that there is a valid instance of Wildfire enabled.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "6"
       "yes":
-      - "7"
-    scriptarguments:
-      value: ${modules(val.brand == 'WildFire' && val.state == 'active')}
+      - "11"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -101,64 +97,229 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 71,
-          "y": 720
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 0469d0c7-99b4-4495-8d6c-05c1803bd4d4
-    type: condition
-    task:
-      id: 0469d0c7-99b4-4495-8d6c-05c1803bd4d4
-      version: -1
-      name: Is file type supported?
-      description: Check if file type is supported
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "8"
-      "yes":
-      - "4"
-    scriptarguments:
-      value: ${inputs.File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
-        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
-    view: |-
-      {
-        "position": {
-          "x": 26,
-          "y": 378
+          "x": 162.5,
+          "y": 1275
         }
       }
   "8":
     id: "8"
-    taskid: 4312a9b3-70fc-462f-8846-fac07a824d41
+    taskid: 014d826b-a0a1-425d-834b-c285d71ae68e
     type: regular
     task:
-      id: 4312a9b3-70fc-462f-8846-fac07a824d41
+      id: 014d826b-a0a1-425d-834b-c285d71ae68e
       version: -1
-      name: File type is not supported
-      description: Prints text to war room that file type is not supported
-      scriptName: Print
+      name: Get PDF report
+      description: Download the pdf report to the War Room.
+      script: WildFire|||wildfire-report
+      type: regular
+      iscommand: true
+      brand: WildFire
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      format:
+        simple: pdf
+      hash: {}
+      md5:
+        complex:
+          root: File
+          accessor: MD5
+      verbose: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1081
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 190a26ed-0c09-4567-8bc2-a9bea3f53207
+    type: condition
+    task:
+      id: 190a26ed-0c09-4567-8bc2-a9bea3f53207
+      version: -1
+      name: Is there an MD5 hash?
+      description: Checks if there is an MD5 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 885
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 489aac5a-850e-4b34-86bd-1d2812088a98
+    type: condition
+    task:
+      id: 489aac5a-850e-4b34-86bd-1d2812088a98
+      version: -1
+      name: Is  the file type supported?
+      description: Check if file type is supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "12"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: string.match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                    ignorecase: true
+                  - operator: string.match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 544
+        }
+      }
+  "11":
+    id: "11"
+    taskid: a707109d-e569-4fa6-853a-30cf5b5ffb50
+    type: regular
+    task:
+      id: a707109d-e569-4fa6-853a-30cf5b5ffb50
+      version: -1
+      name: Set file to context
+      description: Set the file object into context.
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "10"
     scriptarguments:
-      value: File type is not supported for detonation through WildFire
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": -369,
-          "y": 548
+          "x": 162.5,
+          "y": 385
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 24e8b68e-759f-44e5-81d7-ced51d3c6618
+    type: regular
+    task:
+      id: 24e8b68e-759f-44e5-81d7-ced51d3c6618
+      version: -1
+      name: DetonateFile (WildFire)
+      description: Detonate the file in WildFire.
+      script: WildFire|||detonate-file
+      type: regular
+      iscommand: true
+      brand: WildFire
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      delay: {}
+      entryID:
+        simple: ${inputs.File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return
+          val.Info.toLowerCase().indexOf(t) >= 0 || val.Type.toLowerCase().indexOf(t)
+          >= 0;}).length > 0).EntryID}
+      format: {}
+      hash: {}
+      interval: {}
+      md5: {}
+      timeout: {}
+      upload:
+        complex:
+          root: File
+          filters:
+          - - operator: string.match
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+              ignorecase: true
+            - operator: string.match
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+          accessor: EntryID
+      verbose: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
         }
       }
 view: |-
@@ -166,23 +327,53 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 901.5,
-        "x": -369,
+        "height": 1290,
+        "width": 380,
+        "x": 162.5,
         "y": 50
       }
     }
   }
 inputs:
 - key: File
-  value: ${File}
-  description: File object of file to be uploaded
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate.
 outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
 - contextPath: File.Name
   description: Filename
   type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
   type: string
 - contextPath: DBotScore.Type
   description: The type of the indicator
@@ -193,18 +384,3 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
-- contextPath: DBotScore.Indicator
-  description: The indicator we tested
-  type: string
-- contextPath: File.Type
-  description: File type e.g. "PE"
-  type: string
-- contextPath: File.MD5
-  description: MD5 hash of the file
-  type: string
-- contextPath: File.SHA1
-  description: SHA1 hash of the file
-  type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file
-  type: string
