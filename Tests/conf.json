@@ -53,12 +53,16 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
+            "integrations": "EWS v2",
+            "playbookID": "EWSv2_empty_attachment_test"
         },
         {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
         },
         {
             "integrations": "Symantec Endpoint Protection",
@@ -348,19 +352,38 @@
             "playbookID": "test-domain-indicator"
         },
         {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
+        },
+        {
             "integrations": "Intezer",
             "playbookID": "Intezer Testing"
-        }
-    ],
-    "skipped": [
-        {
-
-            "integrations": "Farsight DNSDB",
-            "playbookID": "DNSDBTest"
         },
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true,
+            "timeout": 1200
+        }
+    ],
+    "skipped": [
+
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
+        {
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
         },
         {
             "integrations": {
@@ -391,10 +414,6 @@
             "playbookID": "TestParseCSV"
         },
         {
-            "integrations": "VMware",
-            "playbookID": "VMWare Test"
-        },
-        {
             "integrations": [
                 "AlienVault OTX",
                 {
@@ -423,12 +442,6 @@
         {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "McAfee-TIE Test"
-        },
-        {
-            "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
-            "nightly": true,
-            "timeout": 1200
         },
         {
             "integrations": "ArcSight Logger",
