@@ -1,0 +1,337 @@
+id: Recorded Future Test
+version: -1
+name: Recorded Future Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 552dc470-85da-4fe9-8b43-de1115d16cbb
+    type: start
+    task:
+      id: 552dc470-85da-4fe9-8b43-de1115d16cbb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "1":
+    id: "1"
+    taskid: 6de061ca-483d-4c0d-81d6-f6de4de6551c
+    type: regular
+    task:
+      id: 6de061ca-483d-4c0d-81d6-f6de4de6551c
+      version: -1
+      name: recorded-future-get-related-entities
+      description: Look up threat intel context for an indicator in Recorded Future.
+      script: Recorded Future|||recorded-future-get-related-entities
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    scriptarguments:
+      entityType:
+        simple: domain
+      entityValue:
+        simple: google.com
+      resultEntityType:
+        simple: All
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "2":
+    id: "2"
+    taskid: e019e5ee-9179-484b-86ae-58d844582b00
+    type: regular
+    task:
+      id: e019e5ee-9179-484b-86ae-58d844582b00
+      version: -1
+      name: ip
+      description: Look up threat intel information for an IP in Recorded Future.
+      script: Recorded Future|||ip
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      detailed: {}
+      ip:
+        simple: ${RecordedFuture.Entity.RelatedEntities.IPAddress.[0].Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "3":
+    id: "3"
+    taskid: 796e2a94-9c5d-487b-806b-bd0ecb65f8c9
+    type: regular
+    task:
+      id: 796e2a94-9c5d-487b-806b-bd0ecb65f8c9
+      version: -1
+      name: domain
+      description: Look up threat intel information for a domain or DNS in Recorded
+        Future.
+      script: Recorded Future|||domain
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      detailed:
+        simple: "true"
+      domain:
+        simple: ${RecordedFuture.Entity.RelatedEntities.Domain.[0].Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "4":
+    id: "4"
+    taskid: b6c037de-83ce-4b50-8585-e95984d1cd92
+    type: regular
+    task:
+      id: b6c037de-83ce-4b50-8585-e95984d1cd92
+      version: -1
+      name: file
+      description: Look up threat intel information for a file in Recorded Future.
+      script: Recorded Future|||file
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      detailed: {}
+      file:
+        simple: ${RecordedFuture.Entity.RelatedEntities.Hash.[0].Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "5":
+    id: "5"
+    taskid: dcf5c203-53d2-4fbb-866b-fc7f17d548f3
+    type: regular
+    task:
+      id: dcf5c203-53d2-4fbb-866b-fc7f17d548f3
+      version: -1
+      name: VerifyContext IP
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Address,Criticality,FirstSeen,LastSeen
+      path:
+        simple: RecordedFuture.IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "6":
+    id: "6"
+    taskid: fc73b4a7-0623-48a1-8e4a-e41ded530b9d
+    type: regular
+    task:
+      id: fc73b4a7-0623-48a1-8e4a-e41ded530b9d
+      version: -1
+      name: VerifyContext - Domain
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name,Criticality,FirstSeen,LastSeen
+      path:
+        simple: RecordedFuture.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "7":
+    id: "7"
+    taskid: 86939a42-2fc4-4ea1-814c-d9a7c82c303a
+    type: regular
+    task:
+      id: 86939a42-2fc4-4ea1-814c-d9a7c82c303a
+      version: -1
+      name: VerifyContext - File
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator,Type,Vendor,Score
+      path:
+        simple: DBotScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "8":
+    id: "8"
+    taskid: f7a155c9-79e2-483d-8388-3c065b2ca732
+    type: title
+    task:
+      id: f7a155c9-79e2-483d-8388-3c065b2ca732
+      version: -1
+      name: Success!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
