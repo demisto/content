@@ -57,10 +57,6 @@
             "playbookID": "EWSv2_empty_attachment_test"
         },
         {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
-        },
-        {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
         },
@@ -379,6 +375,10 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
         },
         {
 
