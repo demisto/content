@@ -77,19 +77,32 @@ script:
             cur.execute(demisto.args()['query'])
             # try to fetch rows
             try:
-                colnames = [desc[0] for desc in cur.description]
                 rows = cur.fetchall()
-            except:
-                # No rows returned
-                pass
+                colnames = [desc[0] for desc in cur.description]
+            except Exception as e:
+                if e.message != 'no results to fetch':
+                    demisto.results({
+                        'Type' : entryTypes['error'],
+                        'ContentsFormat' : formats['text'],
+                        'Contents' : e.message
+                    })
+                    sys.exit(0)
         except Exception as e:
-            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : e.message })
+            demisto.results({
+                'Type' : entryTypes['error'],
+                'ContentsFormat' : formats['text'],
+                'Contents' : e.message
+            })
             sys.exit(0)
         finally:
             closeConnection(conn)
 
         if(len(rows) == 0):
-            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['text'], 'Contents' : "No rows returned" })
+            demisto.results({
+                'Type' : entryTypes['note'],
+                'ContentsFormat' : formats['text'],
+                'Contents' : "No rows returned"
+            })
             sys.exit(0)
 
         contents = []
@@ -105,7 +118,13 @@ script:
             contents.append(obj)
             table.append(tableRow)
 
-        demisto.results( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': contents, "ReadableContentsFormat": formats['table'], "HumanReadable": table} );
+        demisto.results({
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            "ReadableContentsFormat": formats['table'],
+            "HumanReadable": table
+        });
         sys.exit(0)
   type: python
   commands:
