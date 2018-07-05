@@ -3,7 +3,6 @@
 	"version": -1,
 	"fromVersion": "4.0.0",
 	"description": "",
-	"releaseNotes": "-",
 	"period": {
 		"byTo": "",
 		"byFrom": "days",
