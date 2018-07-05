@@ -118,4 +118,4 @@ script:
     description: Query PostgreSQL database
   dockerimage: demisto/psycopg2
 hidden: false
-releaseNotes: "-"
+releaseNotes: "Fixed 'no rows returned' error"
