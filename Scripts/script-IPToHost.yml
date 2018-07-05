@@ -27,14 +27,15 @@ script: |
 
   hostname = host_info[0]
 
-  context = {}
-  #context["Endpoint(val.Hostname && val.Hostname === obj.Hostname)"] = {
-  context["Endpoint"] = {
+  output = {
       "Hostname" : str(hostname),
       "IP" : ip
   }
 
-  md = tableToMarkdown("IP to Host", [context["Endpoint"]])
+  context = {}
+  context["Endpoint(val.Hostname && val.Hostname === obj.Hostname)"] = output
+
+  md = tableToMarkdown("IP to Host", [output])
 
   demisto.results({
       'Type' : entryTypes['note'],
