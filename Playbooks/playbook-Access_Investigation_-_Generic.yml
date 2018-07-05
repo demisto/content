@@ -168,6 +168,7 @@ tasks:
       id: f68c6b42-4b24-426c-81e0-417984626f2a
       version: -1
       name: Enrich source user
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -240,6 +241,7 @@ tasks:
       id: 7a5f3223-0418-418a-8872-ca221ab74c5a
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -440,6 +442,7 @@ tasks:
       id: 160c3d44-9b6f-4207-8df9-69f7c6ac3eb7
       version: -1
       name: IP Enrichment - Generic
+      description: ""
       playbookName: IP Enrichment - Generic
       description: ""
       type: playbook
@@ -853,7 +856,11 @@ tasks:
       id: 8ae1ca42-1f1d-4ae7-883e-814705b8aae2
       version: -1
       name: Manually remediate  the incident
-      description: Review the incident to determine if the account activity is malicious.
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf
+        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
+        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
+        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
+        and change if needed"
       type: regular
       iscommand: false
       brand: ""
