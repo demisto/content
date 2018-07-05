@@ -39,7 +39,7 @@ configuration:
   defaultvalue: "66"
   type: 0
   required: true
-- display: It is cloud
+- display: Cloud based
   name: cloud
   defaultvalue: "false"
   type: 8
@@ -47,6 +47,9 @@ configuration:
 script:
   script: |
     var sendRequest = function(url,param, fileId) {
+        if (params.url[params.url.length - 1] !== '/') {
+            params.url += '/';
+        }
         var requestUrl = params.url + url + param;
         var res;
         if (params.cloud) {
@@ -113,8 +116,6 @@ script:
                     );
             }
         }
-
-        return res;
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
@@ -321,4 +322,4 @@ script:
       description: OPSWAT scan id
     description: Get OPSWAT result
   runonce: false
-releaseNotes: "Now supports cloud Metadefender"
+releaseNotes: "Now supports cloud Metadefender."
