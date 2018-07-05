@@ -418,7 +418,7 @@ script:
   - name: fe-submit
     arguments:
     - name: upload
-      description: commands.server.feSubmit.arguments.uploadFile.description
+      description: commands.server.feSubmit.arguments.upload.description
     - name: uploadFile
       description: commands.server.feSubmit.arguments.uploadFile.description
     - name: analysistype
