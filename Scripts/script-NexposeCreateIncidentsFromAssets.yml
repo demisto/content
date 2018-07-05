@@ -2,7 +2,7 @@ commonfields:
   id: nexpose_create_incidents_from_assets
   version: -1
 name: NexposeCreateIncidentsFromAssets
-script: |+
+script: |-
   SEVERITIES = ['Moderate','Severe','Critical']
 
   incident_type = demisto.args().get("incidentType", "Vulnerability")
@@ -11,7 +11,7 @@ script: |+
   if not isinstance(asset_ids, list):
       asset_ids = [asset_ids]
 
-  sevrity_index = SEVERITIES.index(min_severity)
+  severity_index = SEVERITIES.index(min_severity)
 
   if not asset_ids:
       demisto.results( {
@@ -21,6 +21,8 @@ script: |+
       } )
       sys.exit(0)
 
+  incident_name = []
+
   for asset_id in asset_ids:
       resp = demisto.executeCommand("nexpose-get-asset", {"id" : asset_id })
       if isError(resp[0]):
@@ -29,7 +31,8 @@ script: |+
 
       # Need to get it from raw-output not context
       vulnerabilities = resp[0]['EntryContext']['Nexpose.Asset(val.AssetId==obj.AssetId)']['Vulnerability']
-      vulnerability_ids = [vul['Id'] for vul in vulnerabilities if vul['Severity'] in SEVERITIES[sevrity_index:]]
+      # Creates a list of all the vulnerabilites' IDs when their severity is equal/higher to the min_severity
+      vulnerability_ids = [vul['Id'] for vul in vulnerabilities if vul['Severity'] in SEVERITIES[severity_index:]]
 
       for vulnerability_id in vulnerability_ids:
           # Search for existing open incidents with the same Vendor ID and Asset ID. Will open a new incident only if such an incident not exists.
@@ -51,17 +54,24 @@ script: |+
               sys.exit(0)
 
           if incident_number == 0:
+              name = "Vulnerability - Asset {0} ID \"{1}\"".format(asset_id,vulnerability_id)
               #Create incident
               demisto.executeCommand("createNewIncident", {
-                  "name": "Vulnerability - Asset {0} ID \"{1}\"".format(asset_id,vulnerability_id),
+                  "name": name,
                   "vendorid" : str(vulnerability_id),
                   "type": incident_type,
                   "assetid" : str(asset_id)
               })
+              incident_name.append({'Name' : name})
 
-
-  demisto.results("Done.")
-
+  if incident_name:
+      demisto.results({
+          'Type' : entryTypes['note'],
+          'Contents': tableToMarkdown('New incidents:', incident_name),
+          'ContentsFormat' : formats['markdown']
+      })
+  else:
+      demisto.results("No new incidents were created.")
 type: python
 tags:
 - nexpose
