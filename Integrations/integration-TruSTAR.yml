@@ -74,6 +74,7 @@ script:
         for indicator in ts_indicators:
             current_indicator = indicator.to_dict(remove_nones=True)
             indicator_type = current_indicator['indicatorType']
+            priority_level = current_indicator['priorityLevel']
             value = current_indicator['value']
             if indicator_type == 'SOFTWARE':
                 # Extracts the filename out of file path
@@ -87,27 +88,33 @@ script:
                 })
             elif indicator_type in {'SHA256', 'SHA1', 'MD5'}:
                 file_context.append({
-                    indicator_type: value
+                    indicator_type: value,
+                    'priorityLevel': priority_level
                 })
             elif indicator_type == 'URL':
                 url_context.append({
-                    'Address': value
+                    'Address': value,
+                    'priorityLevel': priority_level
                 })
             elif indicator_type == 'IP':
                 ip_context.append({
-                    'Address': value
+                    'Address': value,
+                    'priorityLevel': priority_level
                 })
             elif indicator_type == 'EMAIL_ADDRESS':
                 email_context.append({
-                    'Address': value
+                    'Address': value,
+                    'priorityLevel': priority_level
                 })
             elif indicator_type == 'REGISTRY_KEY':
                 key_context.append({
-                    'Path': value
+                    'Path': value,
+                    'priorityLevel': priority_level
                 })
             elif indicator_type == 'CVE':
                 cve_context.append({
-                    'ID': value
+                    'ID': value,
+                    'priorityLevel': priority_level
                 })
             indicators.append(current_indicator)
         # Build Entry Context
