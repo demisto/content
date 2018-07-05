@@ -2299,8 +2299,8 @@ script:
         var isDescending = dataArgs.isDescending === 'true';
         var pageNumber = dataArgs.pageNumber || '1';
         var fetchFilter = dataArgs.fetchFilter;
-        var getInnerRecords = dataArgs.getInnerRecords;
-        var fullData = dataArgs.fullData;
+        var getInnerRecords = dataArgs.getInnerRecords === 'true';
+        var fullData = dataArgs.fullData === 'true';
 
         var levels = getLevelsByApplicationId(appId);
         var nameToFieldMapping = createMappingNameToFieldId(levels);
@@ -2484,8 +2484,8 @@ script:
         dataArgs.fieldsToDisplay = dataArgs.fieldsToDisplay || params.fieldsToDisplay || "Incident ID";
         dataArgs.isDescending = 'false';
         dataArgs.fetchFilter = params.fetchFilter;
-        dataArgs.getInnerRecords = true;
-        dataArgs.fullData = true;
+        dataArgs.getInnerRecords = 'true';
+        dataArgs.fullData = 'true';
 
         var results = searchRecords(cmd, dataArgs);
         var incidents = createIncidentsArr(results, dataArgs.applicationId);
@@ -3026,6 +3026,10 @@ script:
       - "false"
       description: Get the inner records of the records found by the search
     - name: fullData
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: Get an extended responses with all of the data regarding this search.
         For example, "fullData=true"
     outputs:
@@ -3094,8 +3098,12 @@ script:
       required: true
       description: The GUID of the report
     outputs:
-    - contextPath: Archer.StatisticSearch.Records.Record
+    - contextPath: Archer.SearchByReport.Records
       description: The records found by the search
+    - contextPath: Archer.SearchByReport.RecordsAmount
+      description: Amount of records found by the search
+    - contextPath: Archer.SearchByReport.FieldDefinitions
+      description: Field definitions of the found records
     description: Search records by report Guid
   - name: archer-get-mapping-by-level
     arguments:
