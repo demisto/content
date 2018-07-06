@@ -174,7 +174,7 @@ script:
                 download_url = file['download_url']
                 r = requests.get(download_url, stream=True)
                 if r.status_code < 200 or r.status_code > 299:
-                    return_error('Unable to download recording for meeting %s: [%d] - %s' % (meeting, r.status_code, r.text)
+                    return_error('Unable to download recording for meeting %s: [%d] - %s' % (meeting, r.status_code, r.text))
                 filename = 'recording_%s_%s.mp4' % (meeting, file['id'])
                 with open(filename, 'wb') as f:
                     r.raw.decode_content = True
