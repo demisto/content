@@ -84,7 +84,8 @@ script:
                     file_name = value.split('/')[-1] # Handles file path with slash
                 current_indicator['value'] = file_name
                 file_context.append({
-                    'Name': file_name
+                    'Name': file_name,
+                    'priorityLevel': priority_level
                 })
             elif indicator_type in {'SHA256', 'SHA1', 'MD5'}:
                 file_context.append({
@@ -563,20 +564,38 @@ script:
     - contextPath: File.SHA256
       description: File SHA256
       type: string
+    - contextPath: File.priorityLevel
+      description: File priority level
+      type: string
     - contextPath: URL.Address
       description: URL address
+      type: string
+    - contextPath: URL.priorityLevel
+      description: URL priority level
       type: string
     - contextPath: IP.Address
       description: IP address
       type: string
+    - contextPath: IP.priorityLevel
+      description: IP priority level
+      type: string
     - contextPath: Account.Email.Address
       description: Email address
+      type: string
+    - contextPath: Account.Email.priorityLevel
+      description: Email priority level
       type: string
     - contextPath: RegistryKey.Path
       description: Registry key path
       type: string
+    - contextPath: RegistryKey.priorityLevel
+      description: Registry key priority level
+      type: string
     - contextPath: CVE.ID
       description: CVE ID
+      type: string
+    - contextPath: CVE.priorityLevel
+      description: CVE priority level
       type: string
     description: Search all TruSTAR incident reports for provided indicators and return
       all correlated indicators from search results. Two indicators are considered
