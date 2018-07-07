@@ -12,7 +12,6 @@
         "groupBy": ["engine"],
         "timeFrame": "minutes"
     },
-    "size": 61,
     "dateRange": {
         "period": {
             "byTo": "",
