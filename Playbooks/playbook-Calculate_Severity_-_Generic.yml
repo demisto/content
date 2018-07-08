@@ -682,10 +682,10 @@ tasks:
     task:
       id: e628aa74-143a-4068-8a75-3abd96479000
       version: -1
-      name: Calculate Severity - 3rd-party integrations_dev
+      name: Calculate Severity - 3rd-party integrations
       description: Calculates the incident severity level according to the methodology
         of a 3rd-party integration.
-      playbookName: Calculate Severity - 3rd-party integrations_dev
+      playbookName: Calculate Severity - 3rd-party integrations
       type: playbook
       iscommand: false
       brand: ""
