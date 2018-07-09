@@ -20,7 +20,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -193,8 +193,8 @@ script:
             }
         }
 
-        if (categorization.status === 1) {
-            domainContext.Malicious = {Vendor: 'Cisco Umbrella', Description: 'Categorized as 1'};
+        if (categorization.status === -1) {
+            domainContext.Malicious = {Vendor: 'Cisco Umbrella', Description: securityCategories};
         }
         // build context
         var context = {};

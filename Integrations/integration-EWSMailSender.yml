@@ -33,7 +33,7 @@ configuration:
   defaultvalue: NTLM
   type: 0
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -227,21 +227,30 @@ script:
 
     except Exception, e:
         import time
+
         time.sleep(2)
-        log_stream.seek(0)
-        debug_log = log_stream.read()
+        debug_log = log_stream.getvalue()
         error_message = ""
         if "Status code: 401" in debug_log:
             error_message = "Got unauthorized from the server. " \
-                                 "Check credentials are correct and authentication method are supported."
+                            "Check credentials are correct and authentication method are supported. "
 
-            error_message += "You can try using 'domain\\username' as username for authentication" if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+            error_message += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
             error_message = "Got timeout from the server. " \
-                            "Probably the server is not reachable with the current settings" \
-                            "Check proxy parameter. If you are using server URL - change to server IP address"
+                            "Probably the server is not reachable with the current settings. " \
+                            "Check proxy parameter. If you are using server URL - change to server IP address. "
+        error_message = error_message + "\n" + e.message
+        stacktrace = traceback.format_exc()
+        if stacktrace:
+            error_message += "\nFull stacktrace:\n" + stacktrace
+
         if debug_log:
-            error_message = error_message + "\n" + e.message + "\nFull debug log:\n" + debug_log
+            if IS_TEST_MODULE:
+                error_message += "\nFull debug log:\n" + debug_log
+            else:
+                demisto.info(error_message + "\nFull debug log:\n" + debug_log)
+
         raise Exception(error_message)
   type: python
   commands:

@@ -455,7 +455,10 @@ script: |-
       md += "* {0}:\t{1}\n".format('To',emailData['To'])
       md += "* {0}:\t{1}\n".format('CC', emailData['CC'])
       md += u"* {0}:\t{1}\n".format('Subject', emailData['Subject'])
-      md += u"* {0}:\t{1}\n".format('Body', emailData['Text'])
+      if emailData['Text']:
+          md += u"* {0}:\t{1}\n".format('Body/Text', emailData['Text'])
+      if emailData['HTML']:
+          md += u"* {0}:\t{1}\n".format('Body/HTML', emailData['HTML'])
       md += "* {0}:\t{1}\n".format('Attachments', emailData['Attachments'])
       md += "* {0}:\t{1}\n".format('Headers', emailData['Headers'])
       return md
@@ -498,6 +501,8 @@ script: |-
           'EntryContext': {'Email': emailData}}]
 
   def getUtfString(text, field):
+      if text is None:
+        text = ''
       try:
           utfString = text.encode('utf-8')
       except Exception as ex:
@@ -567,8 +572,8 @@ script: |-
   except Exception, ex:
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)}]
 
-  if 'Composite Document File V2 Document'.lower() in fileType.lower():
-      temp1, temp2 =  handleMsg(filePath)
+  if 'Composite Document File V2 Document'.lower() in fileType.lower() or 'CDFV2 Microsoft Outlook Message'.lower() in fileType.lower():
+      temp1, temp2 = handleMsg(filePath)
       res += temp1
       res += temp2
   elif 'rfc 822 mail' in fileType.lower():
@@ -637,3 +642,4 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
+runonce: false

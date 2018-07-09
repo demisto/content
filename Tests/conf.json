@@ -3,6 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "buildewsquery_test"
+        },
+        {
+            "integrations": "EWS Mail Sender",
+            "playbookID": "EWS Mail Sender Test"
+        },
+        {
+            "playbookID": "decodemimeheader_-_test"
+        },
+        {
+            "integrations": "CVE Search",
+            "playbookID": "cve_enrichment_-_generic_-_test"
+        },
+        {
             "playbookID": "test_url_regex"
         },
         {
@@ -39,12 +53,20 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
+            "integrations": "EWS v2",
+            "playbookID": "EWSv2_empty_attachment_test"
+        },
+        {
             "integrations": "Anomali ThreatStream",
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
         },
         {
             "integrations": "Symantec Endpoint Protection",
@@ -147,7 +169,8 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
+            "playbookID": "Qualys-Test",
+            "nightly": true
         },
         {
             "integrations": {
@@ -187,6 +210,9 @@
         },
         {
             "playbookID": "ExtractURL Test"
+        },
+        {
+            "playbookID": "strings-test"
         },
         {
             "playbookID": "TestCommonPython"
@@ -269,10 +295,6 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test"
-        },
-        {
             "integrations": [
                 {
                     "name": "carbonblackliveresponse",
@@ -302,8 +324,44 @@
             "playbookID": "Preempt Test"
         },
         {
-            "integrations": "SQS",
-            "playbookID": "sqs_test"
+            "integrations": "urlscan.io",
+            "playbookID": "urlscan_malicious_Test"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test"
+        },
+        {
+
+            "integrations": "Netskope",
+            "playbookID": "Netskope Test"
+        },
+        {
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Cylance Protect v2 Test"
+        },
+        {
+            "integrations": "ReversingLabs Titanium Cloud",
+            "playbookID": "ReversingLabsTCTest"
+        },
+        {
+            "integrations": "ReversingLabs A1000",
+            "playbookID": "ReversingLabsA1000Test"
+        },
+        {
+            "integrations": "Demisto Lock",
+            "playbookID": "DemistoLockTest"
+        },
+        {
+            "playbookID": "test-domain-indicator"
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
+        },
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
         },
         {
             "integrations": "Cybereason",
@@ -312,11 +370,10 @@
     ],
     "skipped": [
         {
-            "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
-        }
-    ],
-    "skipped": [
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
@@ -440,6 +497,18 @@
         {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
+        },
+        {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": "AlphaSOC Wisdom",
+            "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
         }
     ]
 }

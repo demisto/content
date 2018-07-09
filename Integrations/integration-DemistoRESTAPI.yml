@@ -19,7 +19,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Trust certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -63,8 +63,13 @@ script:
         }
 
         try {
-            var json = JSON.parse(res.Body);
-            return {response:json};
+            var response = res.Body;
+            try {
+                response = JSON.parse(res.Body);
+            } catch (ex) {
+                // do nothing, already handled prior the try/catch
+            }
+            return {response: response};
         } catch (ex) {
             throw 'Demisto REST APIs - Error parsing response - ' + ex;
         }

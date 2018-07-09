@@ -1,0 +1,564 @@
+id: 4078d8b6-37c6-42d7-8324-16096a2feb51
+version: 6
+name: AWS - Route53 Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 47d5b2dc-3355-4fcb-8944-fac9d6b87d2b
+    type: start
+    task:
+      id: 47d5b2dc-3355-4fcb-8944-fac9d6b87d2b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 63bcf396-3d00-4fa3-8cf5-a378d85cd6f5
+    type: regular
+    task:
+      id: 63bcf396-3d00-4fa3-8cf5-a378d85cd6f5
+      version: -1
+      name: aws-route53-create-record
+      description: Creates a resource record set. Creates a resource record set that
+        has the specified values.
+      script: AWS - Route53|||aws-route53-create-record
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      comment:
+        simple: test
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.Id}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      source:
+        simple: testplaybook.lab-demisto.com
+      target:
+        simple: 192.168.1.1
+      ttl:
+        simple: "300"
+      type:
+        simple: A
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 457a6e1e-a2c7-4bdf-8319-8fb7e89405be
+    type: regular
+    task:
+      id: 457a6e1e-a2c7-4bdf-8319-8fb7e89405be
+      version: -1
+      name: aws-route53-delete-record
+      description: Deletes a resource record set. Deletes an existing resource record
+        set that has the specified values.
+      script: AWS - Route53|||aws-route53-delete-record
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    scriptarguments:
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.Id}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      source:
+        simple: testplaybook.lab-demisto.com
+      target:
+        simple: 192.168.1.2
+      ttl:
+        simple: "300"
+      type:
+        simple: A
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c92a5826-e0d2-40c5-8b77-469b5fde2a65
+    type: regular
+    task:
+      id: c92a5826-e0d2-40c5-8b77-469b5fde2a65
+      version: -1
+      name: aws-route53-list-hosted-zones
+      description: 'Retrieves a list of the public and private hosted zones that are
+        associated with the current AWS account. '
+      script: AWS - Route53|||aws-route53-list-hosted-zones
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "8"
+      - "14"
+      - "15"
+    scriptarguments:
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    taskid: d03c6ae3-826e-4e87-8c35-1fa4999fecc3
+    type: regular
+    task:
+      id: d03c6ae3-826e-4e87-8c35-1fa4999fecc3
+      version: -1
+      name: aws-route53-list-resource-record-sets
+      description: Lists the resource record sets in a specified hosted zone.
+      script: AWS - Route53|||aws-route53-list-resource-record-sets
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "13"
+      - "16"
+    scriptarguments:
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.Id}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      startRecordIdentifier: {}
+      startRecordName:
+        simple: testpaybook
+      startRecordType:
+        simple: A
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+  "5":
+    id: "5"
+    taskid: a0151161-8b69-45a9-8054-4b36193952e2
+    type: regular
+    task:
+      id: a0151161-8b69-45a9-8054-4b36193952e2
+      version: -1
+      name: aws-route53-waiter-resource-record-sets-changed
+      description: A waiter function that waits until record set change is successful
+      script: AWS - Route53|||aws-route53-waiter-resource-record-sets-changed
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id:
+        simple: ${AWS.Route53.RecordSetsChange.Id}
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 26f6cccc-bb99-4cde-8093-dbcf89bc4bcd
+    type: regular
+    task:
+      id: 26f6cccc-bb99-4cde-8093-dbcf89bc4bcd
+      version: -1
+      name: aws-route53-test-dns-answer
+      description: Gets the value that Amazon Route 53 returns in response to a DNS
+        request for a specified record name and type. You can optionally specify the
+        IP address of a DNS resolver, an EDNS0 client subnet IP address, and a subnet
+        mask.
+      script: AWS - Route53|||aws-route53-test-dns-answer
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.Id}
+      recordName:
+        simple: testplaybook.lab-demisto.com
+      recordType:
+        simple: A
+      resolverIP: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+  "7":
+    id: "7"
+    taskid: bd9a9001-802a-4255-8305-6fb613f63fe7
+    type: regular
+    task:
+      id: bd9a9001-802a-4255-8305-6fb613f63fe7
+      version: -1
+      name: aws-route53-upsert-record
+      description: Upsert a resource record set. If a resource record set does not
+        already exist, AWS creates it. If a resource set does exist, Amazon Route
+        53 updates it with the values in the request.
+      script: AWS - Route53|||aws-route53-upsert-record
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      comment: {}
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.Id}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      source:
+        simple: testplaybook.lab-demisto.com
+      target:
+        simple: 192.168.1.2
+      ttl:
+        simple: "300"
+      type:
+        simple: A
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 309127f2-4e84-4552-8928-e81571899e4d
+    type: regular
+    task:
+      id: 309127f2-4e84-4552-8928-e81571899e4d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.Route53.HostedZones.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 49,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 700d05f2-fb07-4eed-8aad-cc66944ef67a
+    type: regular
+    task:
+      id: 700d05f2-fb07-4eed-8aad-cc66944ef67a
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.Route53.RecordSetsChange.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    taskid: d340952a-4c9c-4d78-8438-1b4f7474211a
+    type: regular
+    task:
+      id: d340952a-4c9c-4d78-8438-1b4f7474211a
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.Route53.RecordSetsChange.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "12":
+    id: "12"
+    taskid: bcbd1813-79f4-4960-81df-e0052aa905a2
+    type: regular
+    task:
+      id: bcbd1813-79f4-4960-81df-e0052aa905a2
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.Route53.TestDNSAnswer.RecordName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+  "13":
+    id: "13"
+    taskid: f46cf2d9-ace2-481a-84a7-080b2d2800bb
+    type: regular
+    task:
+      id: f46cf2d9-ace2-481a-84a7-080b2d2800bb
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.Route53.HostedZones.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1595
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 3e32a637-d71e-46fa-864a-56d606465841
+    type: regular
+    task:
+      id: 3e32a637-d71e-46fa-864a-56d606465841
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.Route53.HostedZones.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 0ae823ec-4e72-452b-8c45-6b1abafa7673
+    type: regular
+    task:
+      id: 0ae823ec-4e72-452b-8c45-6b1abafa7673
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.Route53.HostedZones.ResourceRecordSetCount
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 31e6c025-eef0-4f3c-8466-4e90b44f374d
+    type: regular
+    task:
+      id: 31e6c025-eef0-4f3c-8466-4e90b44f374d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.Route53.HostedZones.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2165,
+        "width": 1241,
+        "x": 49,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
