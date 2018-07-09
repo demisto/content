@@ -74,7 +74,7 @@ script:
         for indicator in ts_indicators:
             current_indicator = indicator.to_dict(remove_nones=True)
             indicator_type = current_indicator['indicatorType']
-            priority_level = current_indicator['priorityLevel']
+            priority_level = current_indicator.get('priorityLevel')
             value = current_indicator['value']
             if indicator_type == 'SOFTWARE':
                 # Extracts the filename out of file path
@@ -83,40 +83,40 @@ script:
                 else:
                     file_name = value.split('/')[-1] # Handles file path with slash
                 current_indicator['value'] = file_name
-                file_context.append({
-                    'Name': file_name,
-                    'priorityLevel': priority_level
-                })
+                context_dict = {'Name': file_name}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                file_context.append(context_dict)
             elif indicator_type in {'SHA256', 'SHA1', 'MD5'}:
-                file_context.append({
-                    indicator_type: value,
-                    'priorityLevel': priority_level
-                })
+                context_dict = {indicator_type: value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                file_context.append(context_dict)
             elif indicator_type == 'URL':
-                url_context.append({
-                    'Address': value,
-                    'priorityLevel': priority_level
-                })
+                context_dict = {'Address': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                url_context.append(context_dict)
             elif indicator_type == 'IP':
-                ip_context.append({
-                    'Address': value,
-                    'priorityLevel': priority_level
-                })
+                context_dict = {'Address': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                ip_context.append(context_dict)
             elif indicator_type == 'EMAIL_ADDRESS':
-                email_context.append({
-                    'Address': value,
-                    'priorityLevel': priority_level
-                })
+                context_dict = {'Address': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                email_context.append(context_dict)
             elif indicator_type == 'REGISTRY_KEY':
-                key_context.append({
-                    'Path': value,
-                    'priorityLevel': priority_level
-                })
+                context_dict = {'Path': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                key_context.append(context_dict)
             elif indicator_type == 'CVE':
-                cve_context.append({
-                    'ID': value,
-                    'priorityLevel': priority_level
-                })
+                context_dict = {'ID': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                cve_context.append(context_dict)
             indicators.append(current_indicator)
         # Build Entry Context
         ec = {}
