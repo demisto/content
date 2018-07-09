@@ -1,21 +1,17 @@
 ### this script populate content descriptor with correct dates and assetId
 
-CHANGE_LOG="changelog.txt"
-DELETE_CHANGE_LOG="delete-changelog.txt"
-git diff --name-status $2 > "$CHANGE_LOG"
-git diff  --diff-filter=D $2 > "$DELETE_CHANGE_LOG"
-if [ ! -s "$CHANGE_LOG" ] || [ ! -s "$DELETE_CHANGE_LOG" ]
-then
-    echo "Change log files are not exist"
+git diff --name-status $2 &> changelog.txt
+git diff  --diff-filter=D $2 &> delete-changelog.txt
+
+if grep -q "fatal: bad object" changelog.txt || grep -q "fatal: bad object" delete-changelog.txt; then
+    echo "diff operation failed. make sure the compared branch is exists"
     exit 1
 fi
 
-ls -la
 echo "###"
-cat "$CHANGE_LOG"
 cat changelog.txt
-echo "##"
+
 ASSETID=$1
 VERSION=$3
 
-python release_notes.py  $VERSION "$CHANGE_LOG" "$DELETE_CHANGE_LOG" $ASSETID
+python release_notes.py  $VERSION changelog.txt delete-changelog.txt $ASSETID
