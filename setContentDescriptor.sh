@@ -10,6 +10,8 @@ then
     exit 1
 fi
 
+ls
+
 ASSETID=$1
 VERSION=$3
 
