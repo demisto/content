@@ -11,7 +11,10 @@ then
 fi
 
 ls
-
+echo "###"
+cat "$CHANGE_LOG"
+cat changelog.txt
+echo "##"
 ASSETID=$1
 VERSION=$3
 
