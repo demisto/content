@@ -164,4 +164,4 @@ args:
   description: The BCC email address
 scripttarget: 0
 runonce: false
-releaseNotes: "-"
+releaseNotes: "Added cc and bcc arguments"
