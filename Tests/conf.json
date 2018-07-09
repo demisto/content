@@ -12,10 +12,6 @@
             "playbookID": "Mail Sender (New) Test"
         },
         {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
-        },
-        {
             "playbookID": "buildewsquery_test"
         },
         {
