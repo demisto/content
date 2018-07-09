@@ -155,11 +155,15 @@ script:
             throw 'Invalid hash. Only SHA256 and MD5 are supported.';
         }
         var bodyXML = 'apikey='+TOKEN+'&format=xml&hash='+hash;
-        var resXML = sendRequest(reportUrl, bodyXML, DEFAULT_HEADERS).Body;
+        var resXML = sendRequest(reportUrl, bodyXML, DEFAULT_HEADERS);
         if(!resXML){
-          return 'No results yet';
+          return {error: 'Report not found'};
         }
-        var result = JSON.parse(x2j(resXML));
+        var resXMLBody = resXML.Body;
+        if(!resXMLBody){
+          return {error: 'No results yet'};
+        }
+        var result = JSON.parse(x2j(resXMLBody));
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
         var returnObj = {
@@ -262,6 +266,9 @@ script:
       case 'file':
       case 'wildfire-report':
         var reportResponse = getReport(args.md5, args.hash, args.file);
+        if (reportResponse.error){
+            return reportResponse.error;
+        }
         return createReport(reportResponse, args.format, args.verbose);
       case 'wildfire-upload':
           var response = uploadFile(args.upload);
@@ -409,3 +416,4 @@ script:
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Detonate file hosted on a website through WildFire
 hidden: false
+releaseNotes: "-"

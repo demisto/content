@@ -3,6 +3,19 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": [{
+                "name": "Mail Sender (New)"
+            },{
+                "name": "google",
+                "byoi": false
+            }],
+            "playbookID": "Mail Sender (New) Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
+        },
+        {
             "playbookID": "buildewsquery_test"
         },
         {
@@ -55,10 +68,6 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test"
-        },
-        {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -366,9 +375,24 @@
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true,
+            "timeout": 1200
         }
     ],
     "skipped": [
+
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
         {
 
             "integrations": "Farsight DNSDB",
@@ -403,10 +427,6 @@
             "playbookID": "TestParseCSV"
         },
         {
-            "integrations": "VMware",
-            "playbookID": "VMWare Test"
-        },
-        {
             "integrations": [
                 "AlienVault OTX",
                 {
@@ -435,12 +455,6 @@
         {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "McAfee-TIE Test"
-        },
-        {
-            "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
-            "nightly": true,
-            "timeout": 1200
         },
         {
             "integrations": "ArcSight Logger",

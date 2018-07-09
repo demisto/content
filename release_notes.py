@@ -118,7 +118,7 @@ class Content:
                     if new_count > 1:
                         count_str = " " + str(new_count)
 
-                    res = "\n#### %s%s %s\n" % (count_str, title_prefix, self.get_header())
+                    res = "\n#### %s %s %s\n" % (count_str, title_prefix, self.get_header())
                 res += new_str
 
         if missing_rn:
