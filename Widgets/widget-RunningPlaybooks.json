@@ -3,7 +3,7 @@
   "version": -1,
   "name": "Running playbooks",
   "dataType": "incidents",
-  "widgetType": "trend",
+  "widgetType": "number",
   "query": "runStatus:running",
   "sort": null,
   "isPredefined": false,
@@ -37,5 +37,6 @@
     }
   },
   "size": 0,
-  "category": ""
+  "category": "",
+  "releaseNotes": "-"
 }
