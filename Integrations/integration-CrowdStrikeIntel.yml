@@ -763,3 +763,4 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
   runonce: false
+releaseNotes: "Added support for v2 indicator API"
