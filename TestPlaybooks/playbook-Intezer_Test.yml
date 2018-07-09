@@ -1,0 +1,502 @@
+id: Intezer Testing
+version: -1
+name: Intezer Testing
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dd88acb0-a2ba-472a-8ea4-4728ff2e4b2c
+    type: start
+    task:
+      id: dd88acb0-a2ba-472a-8ea4-4728ff2e4b2c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: a948bde3-2f3d-4b66-8578-2e6762a9b39e
+    type: regular
+    task:
+      id: a948bde3-2f3d-4b66-8578-2e6762a9b39e
+      version: -1
+      name: Analyze by SHA256
+      script: Intezer|||file
+      type: regular
+      iscommand: true
+      brand: Intezer
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      codeItemType: {}
+      delay: {}
+      file:
+        simple: fcb42f8e4ccb55ee2920da64c7834575875012d89ff260ee318db5054e6e1019
+      maxRetries: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "3":
+    id: "3"
+    taskid: e6086d02-ae7a-4146-8d8f-f4963d1ac18c
+    type: regular
+    task:
+      id: e6086d02-ae7a-4146-8d8f-f4963d1ac18c
+      version: -1
+      name: Verify existing on Intezer
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: File.ExistsInIntezer
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 10ececb2-ce02-411c-87d5-8facc6a38233
+    type: title
+    task:
+      id: 10ececb2-ce02-411c-87d5-8facc6a38233
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 1b25f379-4ed8-4d40-8afd-328387783263
+    type: regular
+    task:
+      id: 1b25f379-4ed8-4d40-8afd-328387783263
+      version: -1
+      name: Verify Hash on DBot score
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue:
+        simple: ${inputs.SHA256}
+      fields: {}
+      path:
+        simple: DBotScore.[0].Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "6":
+    id: "6"
+    taskid: bd0011df-b9be-41c1-88e3-9775e1a5c7b3
+    type: regular
+    task:
+      id: bd0011df-b9be-41c1-88e3-9775e1a5c7b3
+      version: -1
+      name: Verify Vendor
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      expectedValue:
+        simple: Intezer
+      fields: {}
+      path:
+        simple: DBotScore.[0].Vendor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+  "7":
+    id: "7"
+    taskid: fce810de-3bbc-429a-8caf-4161ca191ae3
+    type: regular
+    task:
+      id: fce810de-3bbc-429a-8caf-4161ca191ae3
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 48224857-27ed-45d0-8087-d9e53e216a93
+    type: regular
+    task:
+      id: 48224857-27ed-45d0-8087-d9e53e216a93
+      version: -1
+      name: Verify Hash on File
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue:
+        simple: ${inputs.SHA256}
+      fields: {}
+      path:
+        simple: File.SHA256
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 26ccde1c-ab8e-41f7-8ed1-28345a077aee
+    type: title
+    task:
+      id: 26ccde1c-ab8e-41f7-8ed1-28345a077aee
+      version: -1
+      name: File upload
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+  "10":
+    id: "10"
+    taskid: a128409e-a719-4d5a-88a0-d21147908b19
+    type: title
+    task:
+      id: a128409e-a719-4d5a-88a0-d21147908b19
+      version: -1
+      name: Analyze file by SHA256
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    taskid: b89af6c9-f6cc-4754-8220-d86fbf3e1377
+    type: regular
+    task:
+      id: b89af6c9-f6cc-4754-8220-d86fbf3e1377
+      version: -1
+      name: Upload Sample File
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/intezer-test-file.sample
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 67c6dead-b4f5-4ecf-83f4-cec5a1dc960a
+    type: regular
+    task:
+      id: 67c6dead-b4f5-4ecf-83f4-cec5a1dc960a
+      version: -1
+      name: 'Analyze by Upload File '
+      script: Intezer|||intezer-upload
+      type: regular
+      iscommand: true
+      brand: Intezer
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      codeItemType: {}
+      delay: {}
+      fileEntryId:
+        simple: ${File.EntryID}
+      maxRetries: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 4e5fbe07-dee4-4c7e-8e94-e99df9f532df
+    type: regular
+    task:
+      id: 4e5fbe07-dee4-4c7e-8e94-e99df9f532df
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+  "14":
+    id: "14"
+    taskid: bca2b60b-b041-47a7-8c44-6e5fadb3a701
+    type: regular
+    task:
+      id: bca2b60b-b041-47a7-8c44-6e5fadb3a701
+      version: -1
+      name: Verify Hash on File
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue:
+        simple: ${inputs.SHA256}
+      fields: {}
+      path:
+        simple: File.SHA256
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 17211190-a676-401e-86a6-50e1fe9a9e40
+    type: regular
+    task:
+      id: 17211190-a676-401e-86a6-50e1fe9a9e40
+      version: -1
+      name: Verify Hash on DBot score
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      expectedValue:
+        simple: ${inputs.SHA256}
+      fields: {}
+      path:
+        simple: DBotScore.[0].Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 6d946468-0860-49ea-88e9-2d2cf7d23feb
+    type: regular
+    task:
+      id: 6d946468-0860-49ea-88e9-2d2cf7d23feb
+      version: -1
+      name: Verify Vendor
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: Intezer
+      fields: {}
+      path:
+        simple: DBotScore.[0].Vendor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+  "17":
+    id: "17"
+    taskid: a68dee3a-3fb9-4b5f-8a27-d1a8a1ed4ac8
+    type: regular
+    task:
+      id: a68dee3a-3fb9-4b5f-8a27-d1a8a1ed4ac8
+      version: -1
+      name: Verify existing on Intezer
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: File.ExistsInIntezer
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2775,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value:
+    simple: fcb42f8e4ccb55ee2920da64c7834575875012d89ff260ee318db5054e6e1019
+  required: false
+  description: ""
+outputs: []

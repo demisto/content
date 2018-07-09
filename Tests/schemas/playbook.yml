@@ -73,6 +73,9 @@ mapping:
                 type: str
               script:
                 type: str
+              tags:
+                sequence:
+                - type: str
               type:
                 type: str
                 enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard']
