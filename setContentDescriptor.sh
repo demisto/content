@@ -4,13 +4,13 @@ CHANGE_LOG="changelog.txt"
 DELETE_CHANGE_LOG="delete-changelog.txt"
 git diff --name-status $2 > "$CHANGE_LOG"
 git diff  --diff-filter=D $2 > "$DELETE_CHANGE_LOG"
-if [ ! -f "$CHANGE_LOG" ] || [ ! -f "$DELETE_CHANGE_LOG" ]
+if [ ! -s "$CHANGE_LOG" ] || [ ! -s "$DELETE_CHANGE_LOG" ]
 then
     echo "Change log files are not exist"
     exit 1
 fi
 
-ls
+ls -la
 echo "###"
 cat "$CHANGE_LOG"
 cat changelog.txt
