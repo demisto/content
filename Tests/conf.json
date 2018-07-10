@@ -381,6 +381,11 @@
             "playbookID": "Tanium Demo Playbook",
             "nightly": true,
             "timeout": 1200
+        },
+        {
+            "integrations": "Recorded Future",
+            "playbookID": "Recorded Future Test",
+            "nightly": true
         }
     ],
     "skipped": [
