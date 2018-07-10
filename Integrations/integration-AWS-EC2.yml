@@ -4455,8 +4455,7 @@ script:
     - contextPath: AWS.EC2.Instances.InstanceId
       description: The ID of the instance.
     - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
-        monitoring is enabled.
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
     description: Disables detailed monitoring for a running instance.
   - name: aws-ec2-reboot-instances
     arguments:
