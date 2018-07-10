@@ -34,7 +34,12 @@ script: |-
 
   function convertToCSV(objArray, headers) {
       // if objArray is an array of strings then return a single line of values
-      if (typeof objArray[0] === 'string') {
+      if (typeof objArray[0] !== 'object') {
+          // add headrs line
+          if (headers && headers.length >= objArray.length){
+              headers = headers.slice(0, objArray.length);
+              return headers.join() + '\n' + objArray.join();
+          }
           return objArray.join();
       }
       // create file headers
@@ -67,7 +72,10 @@ script: |-
       return fileContent;
   }
 
+  // string was passed as input
   if (typeof args.csvArray === 'string') {
+      // add array brackets if missing from string
+      args.csvArray = args.csvArray[0] == '[' ? args.csvArray : '[' + args.csvArray + ']'
       // try to parse string to json
       try {
           args.csvArray = JSON.parse(args.csvArray);
@@ -79,6 +87,7 @@ script: |-
           };
       }
   }
+  // json object passed as input
   if (!Array.isArray(args.csvArray)) {
       //wrap in an array
       args.csvArray = [args.csvArray];
@@ -116,4 +125,4 @@ args:
     list.
   isArray: true
 scripttarget: 0
-releaseNotes: "Add option to pass headers as script argument"
+runonce: false
