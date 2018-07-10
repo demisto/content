@@ -514,16 +514,12 @@ script:
     }
 
     var domainToIP = function(domain, threshold, longFormat, sampleSize, waitForRateLimit, retries) {
-        if (!sampleSize) {
-            sampleSize = 10;
-        }
-        if (!threshold) {
-            threshold = params.domainThreshold || 10;
-        }
-        threshold = parseInt(threshold)
+
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
         var o = res.obj;
-        var ec = {};
+        var ec = {
+            "Name": domain
+        };
         if (o.response_code === 0) {
             ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
@@ -534,67 +530,23 @@ script:
         md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
 
         if (o.resolutions && o.resolutions.length > 0) {
-            md += tableToMarkdown("IPs which resolve to this domain", o.resolutions, Object.keys(o.resolutions[0]), undefined, function (header) { return underscoreToCamelCase(header); });
-            if (ec.hasOwnProperty('Domain')){
-                ec.Domain.DNS = o.resolutions;
-            } else {
-                ec.Domain = {DNS: o.resolutions};
-            }
+            md += tableToMarkdown("IPs who resolve to this domain", o.resolutions, Object.keys(o.resolutions[0]), undefined, function (header) { return underscoreToCamelCase(header); });
+            ec.Resolutions = o.resolutions;
         } else {
             md += "No IPs found in the context of this domain\n";
         }
 
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                'Domain(val.Name==obj.Name)': ec
+            }
+        };
     };
 
-    var ipToDomain = function(ip, longFormat, threshold, sampleSize, waitForRateLimit, retries) {
-        if (!isValidIP(ip)) {
-            return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
-        }
-        if (!threshold) {
-            threshold = params.ipThreshold || 10;
-        }
-        threshold = parseInt(threshold)
-        if (!sampleSize) {
-            sampleSize = 10;
-        }
-        var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'ip-address/report', {ip: ip});});
-        var o = res.obj;
-        var ec = {};
-        if (o.response_code === 0) {
-            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
-        }
-
-        var md = '## VirusTotal result for IP: ' + ip + '\n';
-        md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
-        md += 'Country: **' + o.country + '**\n';
-        md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
-        log(JSON.stringify(o))
-        var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
-            {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
-            {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions, t: 'Resolutions'}];
-        for (var i=0; i<arrTitle.length; i++) {
-            if (arrTitle[i].a) {
-                md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
-            }
-        }
-        if (longFormat === 'true') {
-            for (var j=0; j<arrTitle.length; j++) {
-                if (arrTitle[j].a) {
-                    md += '### ' + arrTitle[j].t + '\n';
-                    // Print only the first 10 rows
-                    var curr = [];
-                    for (var k=0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
-                        curr.push(arrTitle[j].a[k]);
-                    }
-                    md += arrToMd(curr) + '\n';
-                }
-            }
-        }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
 
     switch (command) {
         case 'test-module':
@@ -620,7 +572,7 @@ script:
             return getComments(args.resource, args.before);
         case 'vt-file-scan-upload-url':
             return fileScanUploadURL();
-        case 'domainToIP':
+        case 'vt-domain-to-ip':
             return domainToIP(args.domain, args.threshold, args.long, args.sampleSize, args.wait, args.retries);
         default:
             throw 'Unknown command - ' + command;
@@ -872,26 +824,12 @@ script:
     - name: before
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
-  - name: domainToIP
+  - name: vt-domain-to-ip
     arguments:
     - name: domain
       required: true
       default: true
       description: Domain name, will return all IP addresses who resolves to it
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Should we return full response with detected URLs
-      defaultValue: "false"
-    - name: sampleSize
-      description: The number of samples to display in the case of long format
-      defaultValue: "10"
-    - name: threshold
-      description: If the number of positives is bigger than the threshold the domain
-        will be considered malicious. If threshold is not specified, the default domain
-        threshold, as configured in the instance settings, will be used.
     - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
       defaultValue: "60"
@@ -900,28 +838,12 @@ script:
       defaultValue: "0"
     outputs:
     - contextPath: Domain.Name
-      description: Bad domain found
+      description: Input domain name
       type: string
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
-      type: string
-    - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: string
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
-    - contextPath: Domain.DNS
-      description: IPs resolved by DNS. List of IP objects
-    description: Return IPs that resolves to this domain
+    - contextPath: Domain.Resolutions
+      description: IPs resolved by DNS. List of IPs
+    description: Return IPs who resolve to this domain
   runonce: false
-releaseNotes: "-"
+hidden: false
+fromversion: 2.5.0
+releaseNotes: "New command - vt-domain-to-ip. Used to return IP addresses who resolve to a certain domain"
