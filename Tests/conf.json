@@ -369,10 +369,6 @@
             "playbookID": "RedLockTest"
         },
         {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
-        },
-        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
@@ -389,7 +385,10 @@
         }
     ],
     "skipped": [
-
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
+        },
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
