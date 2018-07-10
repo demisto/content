@@ -152,7 +152,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Indicates wether to use one-time entitlement or a persistent one
+  description: Indicates whether to use one-time entitlement or a persistent one
   defaultValue: "false"
 - name: retries
   description: Indicates how many times to try and create an entitlement in case of
