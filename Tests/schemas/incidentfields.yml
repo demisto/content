@@ -64,6 +64,8 @@ schema;field_schema:
       type: bool
     associatedTypes:
       type: any
+    systemAssociatedTypes:
+      type: any
     associatedToAll:
       type: bool
     unmapped:

@@ -3,6 +3,19 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "FalconIntel",
+            "playbookID": "CrowdStrike Falcon Intel v2"
+        },
+        {
+            "integrations": [{
+                "name": "Mail Sender (New)"
+            },{
+                "name": "google",
+                "byoi": false
+            }],
+            "playbookID": "Mail Sender (New) Test"
+        },
+        {
             "playbookID": "buildewsquery_test"
         },
         {
@@ -511,10 +524,6 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
-        },
-        {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
         }
     ]
 }
