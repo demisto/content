@@ -13,11 +13,26 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: 'API Token'
+- display: 'API Token '
   name: token
   defaultvalue: ""
   type: 4
   required: true
+- display: File Threshold. Minimum risk score from RF to consider the file malicious.
+  name: file_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: IP Threshold. Minimum risk score from RF to consider the IP malicious.
+  name: ip_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: Domain Threshold. Minimum risk score from RF to consider the domain malicious.
+  name: domain_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
 - display: Trust any certificate (unsecure)
   name: unsecure
   defaultvalue: "true"
@@ -29,7 +44,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: |-
     ''' IMPORTS '''
     import requests
     import os
@@ -53,6 +68,9 @@ script:
         'X-RFToken': TOKEN,
         'X-RF-User-Agent': 'DemistoIntegrations+v1.0'
     }
+    FILE_THRESHOLD = int(demisto.params()['file_threshold'])
+    IP_THRESHOLD = int(demisto.params()['ip_threshold'])
+    DOMAIN_THRESHOLD = int(demisto.params()['domain_threshold'])
 
     ''' HELPER FUNCTIONS '''
     def http_request(method, url_suffix):
@@ -71,11 +89,11 @@ script:
             raise
         return res.text
 
-    def translate_score(score):
+    def translate_score(score, threshold):
         '''
         Translates Recorded Future score to DBot score
         '''
-        if score >= 65: # Bad
+        if score >= threshold: # Bad
             return 3
         elif score >= 5: # Suspicious
             return 2
@@ -128,28 +146,29 @@ script:
                     })
                 hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
             sightings_table = []
-            for sighting in sightings:
-                sightings_table.append({
-                    'Published': sighting.get('published'),
-                    'Type': sighting.get('type'),
-                    'Fragment': sighting.get('fragment'),
-                    'URL': '[{}]({})'.format(sighting.get('url'), sighting.get('url')),
-                    'Source': sighting.get('source'),
-                    'Title': sighting.get('title')
-                })
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this domain', sightings_table)
+                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['domain']] = {
-                'Name': domain
-            }
-            ec['RecordedFuture.Domain(val.Name && val.Name === obj.Name)'] = {
                 'Name': domain,
-                'Criticality': risk.get('criticalityLabel'),
-                'FirstSeen': timestamps.get('firstSeen'),
-                'LastSeen': timestamps.get('lastSeen')
+                'RecordedFuture': {
+                    'Criticality': risk.get('criticalityLabel'),
+                    'FirstSeen': timestamps.get('firstSeen'),
+                    'LastSeen': timestamps.get('lastSeen')
+                }
             }
-            dbot_score = translate_score(rf_score)
+            dbot_score = translate_score(rf_score, DOMAIN_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': domain,
                 'Type': 'domain',
@@ -207,28 +226,29 @@ script:
                     })
                 hr += tableToMarkdown('Triggered Risk Rules', evidence_table, ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
             sightings_table = []
-            for sighting in sightings:
-                sightings_table.append({
-                    'Published': sighting.get('published'),
-                    'Type': sighting.get('type'),
-                    'Fragment': sighting.get('fragment'),
-                    'URL': '[{}]({})'.format(sighting.get('url'), sighting.get('url')),
-                    'Source': sighting.get('source'),
-                    'Title': sighting.get('title')
-                })
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this IP', sightings_table)
+                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             ec = {}
             ec[outputPaths['ip']] = {
-                'Address': ip
-            }
-            ec['RecordedFuture.IP(val.Address && val.Address === obj.Address)'] = {
                 'Address': ip,
-                'Criticality': risk['criticalityLabel'],
-                'FirstSeen': timestamps['firstSeen'],
-                'LastSeen': timestamps['lastSeen']
+                'RecordedFuture': {
+                    'Criticality': risk.get('criticalityLabel'),
+                    'FirstSeen': timestamps.get('firstSeen'),
+                    'LastSeen': timestamps.get('lastSeen')
+                }
             }
-            dbot_score = translate_score(rf_score)
+            dbot_score = translate_score(rf_score, IP_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': ip,
                 'Type': 'ip',
@@ -286,29 +306,30 @@ script:
                     })
                 hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
             sightings_table = []
-            for sighting in sightings:
-                sightings_table.append({
-                    'Published': sighting.get('published'),
-                    'Type': sighting.get('type'),
-                    'Fragment': sighting.get('fragment'),
-                    'URL': '[{}]({})'.format(sighting.get('url'), sighting.get('url')),
-                    'Source': sighting.get('source'),
-                    'Title': sighting.get('title')
-                })
+            for raw_sighting in sightings:
+                sighting = {
+                    'Published': raw_sighting.get('published'),
+                    'Type': raw_sighting.get('type'),
+                    'Fragment': raw_sighting.get('fragment'),
+                    'Source': raw_sighting.get('source'),
+                    'Title': raw_sighting.get('title')
+                }
+                if raw_sighting['url']:
+                    sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
+                sightings_table.append(sighting)
             if sightings_table:
-                hr += tableToMarkdown('References collected for this hash', sightings_table)
+                hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
             hash_type = determine_hash(file)
             ec = {}
             ec[outputPaths['file']] = {
-                hash_type: file
-            }
-            ec['RecordedFuture.File(val.{} && val.{} === obj.{})'.format(hash_type, hash_type, hash_type)] = {
                 hash_type: file,
-                'Criticality': risk['criticalityLabel'],
-                'FirstSeen': timestamps['firstSeen'],
-                'LastSeen': timestamps['lastSeen']
+                'RecordedFuture': {
+                    'Criticality': risk['criticalityLabel'],
+                    'FirstSeen': timestamps['firstSeen'],
+                    'LastSeen': timestamps['lastSeen']
+                }
             }
-            dbot_score = translate_score(rf_score)
+            dbot_score = translate_score(rf_score, FILE_THRESHOLD)
             ec['DBotScore'] = {
                 'Indicator': file,
                 'Type': 'file',
@@ -339,7 +360,7 @@ script:
     def get_related_entities_command():
         entity_value = demisto.args().get('entityValue')
         entity_result_type = demisto.args().get('resultEntityType')
-        entity_type = demisto.args().get('entityType')
+        entity_type = demisto.args().get('entityType').lower()
         if entity_type == 'file':
             entity_type = 'hash'
         response = json.loads(get_related_entities(entity_value, entity_type))
@@ -383,7 +404,8 @@ script:
                             'Name': entity['entity']['name']
                         }
                         output_map[related_entity['type']].append(hr_entity)
-            hr = '### Recorded Future related entities to ' + entity_value + '\n'
+            hr = ''
+            ec = {}
             related_entities_ec = {}
             if ip_outputs:
                 hr += tableToMarkdown('IP Address', ip_outputs)
@@ -400,13 +422,32 @@ script:
             if malware_outputs:
                 hr += tableToMarkdown('Malware', malware_outputs)
                 related_entities_ec['Malware'] = malware_outputs
-            ec = {
-                'RecordedFuture.Entity(val.Value && val.Value === obj.Value)': {
-                    'Value': entity_value,
-                    'RelatedEntities': related_entities_ec
-                }
-            }
-            title = 'Recorded Future related entities to ' + entity_value
+
+            if hr:
+                hr = '### Recorded Future related entities to ' + entity_value + '\n' + hr
+                if entity_type == 'ip':
+                    ec[outputPaths['ip']] = {
+                        'Address': entity_value,
+                        'RecordedFuture': {
+                            'RelatedEntities': related_entities_ec
+                        }
+                    }
+                elif entity_type == 'domain':
+                    ec[outputPaths['domain']] = {
+                        'Name': entity_value,
+                        'RecordedFuture': {
+                            'RelatedEntities': related_entities_ec
+                        }
+                    }
+                elif entity_type == 'file':
+                    ec[outputPaths['file']] = {
+                        determine_hash(entity_value): entity_value,
+                        'RecordedFuture': {
+                            'RelatedEntities': related_entities_ec
+                        }
+                    }
+            else:
+                hr = 'No results found'
             demisto.results({
                 'Type': entryTypes['note'],
                 'Contents': response,
@@ -446,7 +487,6 @@ script:
         LOG(e.message)
         LOG.print_log()
         raise
-
   type: python
   commands:
   - name: domain
@@ -479,18 +519,15 @@ script:
     - contextPath: Domain.Name
       description: Domain name
       type: string
-    - contextPath: RecordedFuture.Domain.Criticality
+    - contextPath: Domain.RecordedFuture.Criticality
       description: Domain criticality label
       type: string
-    - contextPath: RecordedFuture.Domain.FirstSeen
+    - contextPath: Domain.RecordedFuture.FirstSeen
       description: Risk first seen timestamp
       type: date
-    - contextPath: RecordedFuture.Domain.LastSeen
+    - contextPath: Domain.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    - contextPath: RecordedFuture.Domain.Name
-      description: Domain name
-      type: string
     description: Look up threat intel information for a domain or DNS in Recorded
       Future.
   - name: ip
@@ -530,18 +567,15 @@ script:
     - contextPath: IP.Address
       description: IP address
       type: string
-    - contextPath: RecordedFuture.IP.Criticality
+    - contextPath: IP.RecordedFuture.Criticality
       description: Risk criticality label
       type: string
-    - contextPath: RecordedFuture.IP.FirstSeen
+    - contextPath: IP.RecordedFuture.FirstSeen
       description: Risk first seen timestamp
       type: date
-    - contextPath: RecordedFuture.IP.LastSeen
+    - contextPath: IP.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    - contextPath: RecordedFuture.IP.Address
-      description: IP address
-      type: string
     description: Look up threat intel information for an IP in Recorded Future.
   - name: file
     arguments:
@@ -598,10 +632,10 @@ script:
     - contextPath: File.Criticality
       description: Risk criticality label
       type: string
-    - contextPath: File.FirstSeen
+    - contextPath: File.RecordedFuture.FirstSeen
       description: Risk first seen timestamp
       type: date
-    - contextPath: File.LastSeen
+    - contextPath: File.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
     description: Look up threat intel information for a file in Recorded Future.
@@ -634,53 +668,164 @@ script:
         be given as comma separated values, e.g. Hash,IP,Domain)
       defaultValue: All
     outputs:
-    - contextPath: RecordedFuture.Entity.Value
-      description: Entity value
+    - contextPath: File.SHA256
+      description: File SHA-256
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.IPAddress.Count
-      description: Related entity count (IP)
+    - contextPath: File.SHA512
+      description: File SHA-512
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA-1
+      type: string
+    - contextPath: File.MD5
+      description: File MD-5
+      type: string
+    - contextPath: File.CRC32
+      description: File CRC-32
+      type: string
+    - contextPath: File.CTPH
+      description: File CTPH
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.IPAddress.Count
+      description: File related entity count (IP)
       type: number
-    - contextPath: RecordedFuture.Entity.RelatedEntities.IPAddress.ID
-      description: Related entity ID (IP)
+    - contextPath: File.RecordedFuture.RelatedEntities.IPAddress.ID
+      description: File related entity ID (IP)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.IPAddress.Name
-      description: Related entity name (IP)
+    - contextPath: File.RecordedFuture.RelatedEntities.IPAddress.Name
+      description: File related entity name (IP)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Hash.Count
-      description: Related entity count (Hash)
+    - contextPath: File.RecordedFuture.RelatedEntities.Hash.Count
+      description: File related entity count (Hash)
       type: number
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Hash.ID
-      description: Related entity ID (Hash)
+    - contextPath: File.RecordedFuture.RelatedEntities.Hash.ID
+      description: File related entity ID (Hash)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Hash.Name
-      description: Related entity name (Hash)
+    - contextPath: File.RecordedFuture.RelatedEntities.Hash.Name
+      description: File related entity name (Hash)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Domain.Count
-      description: Related entity count (Domain)
+    - contextPath: File.RecordedFuture.RelatedEntities.Domain.Count
+      description: File related entity count (Domain)
       type: number
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Domain.ID
-      description: Related entity ID (Domain)
+    - contextPath: File.RecordedFuture.RelatedEntities.Domain.ID
+      description: File related entity ID (Domain)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Domain.Name
-      description: Related entity name (Domain)
+    - contextPath: File.RecordedFuture.RelatedEntities.Domain.Name
+      description: File related entity name (Domain)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Attacker.Count
-      description: Related entity count (Attacker)
+    - contextPath: File.RecordedFuture.RelatedEntities.Attacker.Count
+      description: File related entity count (Attacker)
       type: number
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Attacker.ID
-      description: Related entity ID (Attacker)
+    - contextPath: File.RecordedFuture.RelatedEntities.Attacker.ID
+      description: File related entity ID (Attacker)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Attacker.Name
-      description: Related entity name (Attacker)
+    - contextPath: File.RecordedFuture.RelatedEntities.Attacker.Name
+      description: File related entity name (Attacker)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Malware.Count
-      description: Related entity count (Malware)
+    - contextPath: File.RecordedFuture.RelatedEntities.Malware.Count
+      description: File related entity count (Malware)
       type: number
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Malware.ID
-      description: Related entity ID (Malware)
+    - contextPath: File.RecordedFuture.RelatedEntities.Malware.ID
+      description: File related entity ID (Malware)
       type: string
-    - contextPath: RecordedFuture.Entity.RelatedEntities.Malware.Name
-      description: Related entity name (Malware)
+    - contextPath: File.RecordedFuture.RelatedEntities.Malware.Name
+      description: File related entity name (Malware)
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.IPAddress.Count
+      description: IP related entity count (IP)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.IPAddress.ID
+      description: IP related entity ID (IP)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.IPAddress.Name
+      description: IP related entity name (IP)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Hash.Count
+      description: IP related entity count (Hash)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.Hash.ID
+      description: IP related entity ID (Hash)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Hash.Name
+      description: IP related entity name (Hash)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Domain.Count
+      description: IP related entity count (Domain)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.Domain.ID
+      description: IP related entity ID (Domain)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Domain.Name
+      description: IP related entity name (Domain)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Attacker.Count
+      description: IP related entity count (Attacker)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.Attacker.ID
+      description: IP related entity ID (Attacker)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Attacker.Name
+      description: IP related entity name (Attacker)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Malware.Count
+      description: IP related entity count (Malware)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.Malware.ID
+      description: IP related entity ID (Malware)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Malware.Name
+      description: IP related entity name (Malware)
+      type: string
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.IPAddress.Count
+      description: Domain related entity count (IP)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.IPAddress.ID
+      description: Domain related entity ID (IP)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.IPAddress.Name
+      description: Domain related entity name (IP)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Hash.Count
+      description: Domain related entity count (Hash)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Hash.ID
+      description: Domain related entity ID (Hash)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Hash.Name
+      description: Domain related entity name (Hash)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Domain.Count
+      description: Domain related entity count (Domain)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Domain.ID
+      description: Domain related entity ID (Domain)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Domain.Name
+      description: Domain related entity name (Domain)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Attacker.Count
+      description: Domain related entity count (Attacker)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Attacker.ID
+      description: Domain related entity ID (Attacker)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Attacker.Name
+      description: Domain related entity name (Attacker)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Malware.Count
+      description: Domain related entity count (Malware)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Malware.ID
+      description: Domain related entity ID (Malware)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Malware.Name
+      description: Domain related entity name (Malware)
       type: string
     description: Look up threat intel context for an indicator in Recorded Future.
   runonce: false

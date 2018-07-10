@@ -25,11 +25,6 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "1":
     id: "1"
     taskid: 6de061ca-483d-4c0d-81d6-f6de4de6551c
@@ -64,17 +59,12 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "2":
     id: "2"
-    taskid: e019e5ee-9179-484b-86ae-58d844582b00
+    taskid: 1a3fd11c-fd5c-4f18-818b-70814ad7284e
     type: regular
     task:
-      id: e019e5ee-9179-484b-86ae-58d844582b00
+      id: 1a3fd11c-fd5c-4f18-818b-70814ad7284e
       version: -1
       name: ip
       description: Look up threat intel information for an IP in Recorded Future.
@@ -88,7 +78,7 @@ tasks:
     scriptarguments:
       detailed: {}
       ip:
-        simple: ${RecordedFuture.Entity.RelatedEntities.IPAddress.[0].Name}
+        simple: ${Domain.RecordedFuture.RelatedEntities.IPAddress.[0].Name}
     separatecontext: false
     view: |-
       {
@@ -98,17 +88,12 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "3":
     id: "3"
-    taskid: 796e2a94-9c5d-487b-806b-bd0ecb65f8c9
+    taskid: 5dfc05df-b7f2-4325-8d40-76b7e4540c00
     type: regular
     task:
-      id: 796e2a94-9c5d-487b-806b-bd0ecb65f8c9
+      id: 5dfc05df-b7f2-4325-8d40-76b7e4540c00
       version: -1
       name: domain
       description: Look up threat intel information for a domain or DNS in Recorded
@@ -124,7 +109,7 @@ tasks:
       detailed:
         simple: "true"
       domain:
-        simple: ${RecordedFuture.Entity.RelatedEntities.Domain.[0].Name}
+        simple: ${Domain.RecordedFuture.RelatedEntities.Domain.[0].Name}
     separatecontext: false
     view: |-
       {
@@ -134,17 +119,12 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "4":
     id: "4"
-    taskid: b6c037de-83ce-4b50-8585-e95984d1cd92
+    taskid: 421532ad-3a1d-4890-8602-0093322955d7
     type: regular
     task:
-      id: b6c037de-83ce-4b50-8585-e95984d1cd92
+      id: 421532ad-3a1d-4890-8602-0093322955d7
       version: -1
       name: file
       description: Look up threat intel information for a file in Recorded Future.
@@ -158,7 +138,7 @@ tasks:
     scriptarguments:
       detailed: {}
       file:
-        simple: ${RecordedFuture.Entity.RelatedEntities.Hash.[0].Name}
+        simple: ${Domain.RecordedFuture.RelatedEntities.Hash.[0].Name}
     separatecontext: false
     view: |-
       {
@@ -168,17 +148,12 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "5":
     id: "5"
-    taskid: dcf5c203-53d2-4fbb-866b-fc7f17d548f3
+    taskid: f47b44dd-5645-4ca3-81ad-4d0f188f9a4e
     type: regular
     task:
-      id: dcf5c203-53d2-4fbb-866b-fc7f17d548f3
+      id: f47b44dd-5645-4ca3-81ad-4d0f188f9a4e
       version: -1
       name: VerifyContext IP
       description: |-
@@ -197,9 +172,9 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Address,Criticality,FirstSeen,LastSeen
+        simple: Criticality,FirstSeen,LastSeen
       path:
-        simple: RecordedFuture.IP
+        simple: IP.RecordedFuture
     separatecontext: false
     view: |-
       {
@@ -209,17 +184,12 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "6":
     id: "6"
-    taskid: fc73b4a7-0623-48a1-8e4a-e41ded530b9d
+    taskid: 9e6f3df4-6acc-42ce-8a94-395ffb7e19b4
     type: regular
     task:
-      id: fc73b4a7-0623-48a1-8e4a-e41ded530b9d
+      id: 9e6f3df4-6acc-42ce-8a94-395ffb7e19b4
       version: -1
       name: VerifyContext - Domain
       description: |-
@@ -238,9 +208,9 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Name,Criticality,FirstSeen,LastSeen
+        simple: Criticality,FirstSeen,LastSeen
       path:
-        simple: RecordedFuture.Domain
+        simple: Domain.[1].RecordedFuture
     separatecontext: false
     view: |-
       {
@@ -250,17 +220,12 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "7":
     id: "7"
-    taskid: 86939a42-2fc4-4ea1-814c-d9a7c82c303a
+    taskid: 435d1446-4696-4aac-8db2-23c3de4cd460
     type: regular
     task:
-      id: 86939a42-2fc4-4ea1-814c-d9a7c82c303a
+      id: 435d1446-4696-4aac-8db2-23c3de4cd460
       version: -1
       name: VerifyContext - File
       description: |-
@@ -291,11 +256,6 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "8":
     id: "8"
     taskid: f7a155c9-79e2-483d-8388-3c065b2ca732
@@ -316,11 +276,6 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
 view: |-
   {
     "linkLabelsPosition": {},
