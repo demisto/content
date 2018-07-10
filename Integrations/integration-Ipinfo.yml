@@ -102,4 +102,3 @@ script:
       description: Name of the field to retrieve. Can be org, city, geo, etc.
     description: Retrieve value for a specific field from the IP address information
   runonce: false
-releaseNotes: "Added support to use API token for paid plans"
