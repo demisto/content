@@ -1,15 +1,14 @@
 commonfields:
   id: TopMaliciousRatioIndicators
   version: -1
-fromversion: "4.0.0"
 name: TopMaliciousRatioIndicators
 script: |
   from datetime import datetime, timedelta
   import json, random
 
-  MAX_INDICATORS = 10000
-  MIN_NUMBER_OF_INVS = 3
-  MAX_RESULTS = 10
+  MAX_INDICATORS = int(demisto.args()['maxNumberOfIndicators'])
+  MIN_NUMBER_OF_INVS = int(demisto.args()['minimumNumberOfInvs'])
+  MAX_RESULTS = int(demisto.args()['maximumNumberOfResults'])
 
   from_date = demisto.args().get('from', '"30 days ago"')
   res = demisto.executeCommand("findIndicators", {'query':'lastSeen:>=%s' % from_date, 'size': MAX_INDICATORS})
@@ -29,11 +28,22 @@ script: |
   sorted_indicators = sorted_indicators[:MAX_RESULTS]
   demisto.results(json.dumps({"total": len(sorted_indicators), "data": sorted_indicators}))
 type: python
-tags: []
+tags:
+- widget
 comment: |-
   Find the top malicious ratio indicators.
   Malicious ratio is defined by the ratio between the number of "bad" incidents divided by the number of total number of incidents that the indicators appears in.
 enabled: true
+args:
+- name: maxNumberOfIndicators
+  description: Maximum number of indicators for malicious ratio calculation.
+  defaultValue: "10000"
+- name: minimumNumberOfInvs
+  description: Minimum number of investigation the indicator has to appear in.
+  defaultValue: "3"
+- name: maximumNumberOfResults
+  description: Maximum number of results to display.
+  defaultValue: "100"
 scripttarget: 0
 runonce: false
-releaseNotes: "Add new script"
+releaseNotes: "Adding top malicious ratio indicators script"
