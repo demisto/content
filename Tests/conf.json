@@ -19,6 +19,10 @@
             "playbookID": "buildewsquery_test"
         },
         {
+            "integrations": "Rapid7 Nexpose",
+            "playbookID": "nexpose_test"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
