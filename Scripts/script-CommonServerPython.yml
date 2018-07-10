@@ -2,7 +2,6 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
-releaseNotes: "Updated doc string of file_result_existing_file"
 script: |-
   # Common functions script
   # =======================

@@ -881,5 +881,3 @@ script:
     description: List the acceptable filters and values for alerts
   isfetch: true
   runonce: false
-releaseNotes: "Support RedLock alert management"
-

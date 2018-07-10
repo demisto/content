@@ -1554,5 +1554,4 @@ script:
       description: <string> The report format, default is PDF
     description: Generates a new report for a specified scan.
   runonce: false
-releaseNotes: "New integration with the Nexpose V3 API"
 fromversion: 3.6.0
