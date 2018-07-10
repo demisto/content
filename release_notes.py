@@ -452,7 +452,7 @@ class IntegrationContent(Content):
         return "Integrations"
 
     def added_release_notes(self, cnt):
-        return release_notes_item(cnt["name"], cnt["description"])
+        return release_notes_item(cnt["display"], cnt["description"])
 
     def modified_release_notes(self, cnt):
         rn = cnt.get("releaseNotes", "")
@@ -461,7 +461,7 @@ class IntegrationContent(Content):
         res = ""
 
         if rn != '-':
-            res = release_notes_item(cnt["name"], rn)
+            res = release_notes_item(cnt["display"], rn)
         return res
 
 
