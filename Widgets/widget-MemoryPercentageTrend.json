@@ -17,7 +17,7 @@
             "field": ""
         }
     },
-    "size": 1500
+    "size": 1500,
     "params": {
         "timeFrame": "minutes"
     }
