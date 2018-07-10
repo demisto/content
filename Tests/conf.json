@@ -3,8 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
+            "integrations": "FalconIntel",
+            "playbookID": "CrowdStrike Falcon Intel v2"
+        },
+        {
+            "integrations": [{
+                "name": "Mail Sender (New)"
+            },{
+                "name": "google",
+                "byoi": false
+            }],
+            "playbookID": "Mail Sender (New) Test"
+        },
+        {
+            "playbookID": "buildewsquery_test"
         },
         {
             "integrations": "EWS Mail Sender",
@@ -54,12 +66,16 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
+            "integrations": "EWS v2",
+            "playbookID": "EWSv2_empty_attachment_test"
         },
         {
             "playbookID": "TestWordFileToIOC",
             "timeout": 300
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
         },
         {
             "integrations": "Symantec Endpoint Protection",
@@ -162,7 +178,8 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
+            "playbookID": "Qualys-Test",
+            "nightly": true
         },
         {
             "integrations": {
@@ -329,10 +346,6 @@
             "playbookID": "Netskope Test"
         },
         {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
-        },
-        {
             "integrations": "Cylance Protect v2",
             "playbookID": "Cylance Protect v2 Test"
         },
@@ -343,10 +356,52 @@
         {
             "integrations": "ReversingLabs A1000",
             "playbookID": "ReversingLabsA1000Test"
-
+        },
+        {
+            "integrations": "Demisto Lock",
+            "playbookID": "DemistoLockTest"
+        },
+        {
+            "playbookID": "test-domain-indicator"
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest"
+        },
+        {
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true,
+            "timeout": 1200
+        },
+        {
+            "integrations": "Recorded Future",
+            "playbookID": "Recorded Future Test",
+            "nightly": true
         }
     ],
     "skipped": [
+        {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
+        },
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
+        {
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
+        },
         {
             "integrations": {
                 "name": "carbonblack-v2",
@@ -374,10 +429,6 @@
         },
         {
             "playbookID": "TestParseCSV"
-        },
-        {
-            "integrations": "VMware",
-            "playbookID": "VMWare Test"
         },
         {
             "integrations": [
@@ -408,12 +459,6 @@
         {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "McAfee-TIE Test"
-        },
-        {
-            "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
-            "nightly": true,
-            "timeout": 1200
         },
         {
             "integrations": "ArcSight Logger",
@@ -474,6 +519,10 @@
         {
             "integrations": "TruSTAR",
             "playbookID": "TruSTAR Test"
+        },
+        {
+            "integrations": "AlphaSOC Wisdom",
+            "playbookID": "AlphaSOC-Wisdom-Test"
         }
     ]
 }

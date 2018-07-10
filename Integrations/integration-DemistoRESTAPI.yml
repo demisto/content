@@ -63,8 +63,13 @@ script:
         }
 
         try {
-            var json = JSON.parse(res.Body);
-            return {response:json};
+            var response = res.Body;
+            try {
+                response = JSON.parse(res.Body);
+            } catch (ex) {
+                // do nothing, already handled prior the try/catch
+            }
+            return {response: response};
         } catch (ex) {
             throw 'Demisto REST APIs - Error parsing response - ' + ex;
         }

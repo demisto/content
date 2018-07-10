@@ -2,6 +2,7 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
+releaseNotes: "Remove special support for EWS - Work in generic way with all relevant integrations"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -19,22 +20,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
-      - "10"
+      - "1"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 265,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: f2b26499-4ab2-4361-8349-61c6ee840908
+    taskid: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
     type: condition
     task:
-      id: f2b26499-4ab2-4361-8349-61c6ee840908
+      id: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
       version: -1
       name: Do we have original emails attached?
       description: Check if we have any attachments with relevant attachment types
@@ -45,21 +46,22 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "8"
+      - "2"
       "yes":
       - "3"
     scriptarguments:
       value:
-        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2
-          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
+          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
+          0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
+          0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 545
+          "x": 265,
+          "y": 195
         }
       }
   "2":
@@ -86,44 +88,46 @@ tasks:
         simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
           Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
           Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 45,
+          "y": 370
         }
       }
   "3":
     id: "3"
-    taskid: e88faaf2-0aa0-46da-8f82-611736b3b2b5
+    taskid: 4ac2b332-b76d-463e-824e-717895c5b644
     type: regular
     task:
-      id: e88faaf2-0aa0-46da-8f82-611736b3b2b5
+      id: 4ac2b332-b76d-463e-824e-717895c5b644
       version: -1
       name: Add original email attachments to context
-      scriptName: ParseEmailFiles
       description: ""
+      scriptName: ParseEmailFiles
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "13"
     scriptarguments:
       entryid:
-        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2
-          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
+          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
+          0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
+          0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+    reputationcalc: 0
     results:
     - AttachmentName
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 480,
+          "y": 370
         }
       }
   "4":
@@ -143,6 +147,7 @@ tasks:
       - "6"
       "yes":
       - "5"
+    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -157,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1215
+          "x": 265,
+          "y": 865
         }
       }
   "5":
@@ -185,12 +190,13 @@ tasks:
           accessor: HTML
       type: {}
       width: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1390
+          "x": 377.5,
+          "y": 1040
         }
       }
   "6":
@@ -205,139 +211,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1565
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 89bf5fad-7ce9-4754-8091-b9c99bedee26
-    type: playbook
-    task:
-      id: 89bf5fad-7ce9-4754-8091-b9c99bedee26
-      version: -1
-      name: Process Email - EWS
-      description: ""
-      playbookName: Process Email - EWS
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      EmailID:
-        complex:
-          root: inputs.EmailID
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 705,
-          "y": 370
-        }
-      }
-  "8":
-    id: "8"
-    taskid: b368765b-e29c-4df9-8320-73b826419988
-    type: condition
-    task:
-      id: b368765b-e29c-4df9-8320-73b826419988
-      version: -1
-      name: Was an e-mail object created previously?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: Email
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 688,
-          "y": 731
-        }
-      }
-  "9":
-    id: "9"
-    taskid: cc9f4698-3226-4a41-8bd0-486e837ecbed
-    type: regular
-    task:
-      id: cc9f4698-3226-4a41-8bd0-486e837ecbed
-      version: -1
-      name: Set input files to context
-      description: ""
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      append: {}
-      key:
-        simple: File
-      value:
-        complex:
-          root: inputs.File
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 370
-        }
-      }
-  "10":
-    id: "10"
-    taskid: a3636352-1537-4f8f-857a-33a5b1956dc7
-    type: condition
-    task:
-      id: a3636352-1537-4f8f-857a-33a5b1956dc7
-      version: -1
-      name: Is there an input file?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "1"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs.File
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
+          "x": 265,
+          "y": 1215
         }
       }
   "11":
@@ -355,37 +235,165 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-      - "12"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1070
+          "x": 265,
+          "y": 720
         }
       }
-  "12":
-    id: "12"
-    taskid: 2f5dd8de-695b-4ed5-89d9-432dda410e2d
-    type: playbook
+  "13":
+    id: "13"
+    taskid: 42e12a9b-7195-44bc-8606-fce3495e3b04
+    type: regular
     task:
-      id: 2f5dd8de-695b-4ed5-89d9-432dda410e2d
+      id: 42e12a9b-7195-44bc-8606-fce3495e3b04
       version: -1
-      name: Process Email - Add custom fields
+      name: Set incident with the Email object data
       description: ""
-      playbookName: Process Email - Add custom fields
-      type: playbook
-      iscommand: false
-      brand: ""
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
-      - "6"
-    separatecontext: true
+      - "11"
+    scriptarguments:
+      addLabels: {}
+      app: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc:
+        complex:
+          root: Email
+          accessor: BCC
+          transformers:
+          - operator: general.uniq
+          - operator: general.Stringify
+      emailbody:
+        complex:
+          root: Email
+          accessor: Text
+          transformers:
+          - operator: general.Stringify
+      emailbodyformat: {}
+      emailbodyhtml:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: general.Stringify
+      emailcc:
+        complex:
+          root: Email
+          accessor: CC
+          transformers:
+          - operator: general.uniq
+          - operator: general.Stringify
+      emailclientname: {}
+      emailfrom:
+        complex:
+          root: Email
+          accessor: From
+          transformers:
+          - operator: general.uniq
+          - operator: general.Stringify
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: general.uniq
+          - operator: general.Stringify
+      emailto:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: general.uniq
+          - operator: general.Stringify
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      labels: {}
+      malwarefamily: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity: {}
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 1390
+          "x": 480,
+          "y": 545
         }
       }
 view: |-
@@ -393,9 +401,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1580,
-        "width": 1035,
-        "x": 50,
+        "height": 1230,
+        "width": 815,
+        "x": 45,
         "y": 50
       }
     }
@@ -463,13 +471,6 @@ inputs:
       accessor: labels.Email/format
   required: false
   description: The email’s format
-- key: EmailID
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/ID
-  required: false
-  description: The EWS Email ID
 outputs:
 - contextPath: Email
   description: Email object

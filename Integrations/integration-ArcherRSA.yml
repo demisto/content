@@ -610,7 +610,7 @@ script:
         );
     }
 
-    function searchRecordsByReportSoapRequest(token, reportGuid, maxResults) {
+    function searchRecordsByReportSoapRequest(token, reportGuid, pageNumber) {
         return (
         '<?xml version="1.0" encoding="utf-8"?>' +
         '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
@@ -618,7 +618,7 @@ script:
         '    <SearchRecordsByReport xmlns="http://archer-tech.com/webservices/">' +
         '      <sessionToken>' + token + '</sessionToken>' +
         '      <reportIdOrGuid>' + reportGuid + '</reportIdOrGuid>' +
-        '      <pageNumber>' + maxResults + '</pageNumber>' +
+        '      <pageNumber>' + pageNumber + '</pageNumber>' +
         '    </SearchRecordsByReport>' +
         '  </soap:Body>' +
         '</soap:Envelope>'
@@ -932,12 +932,18 @@ script:
                         if (listValueIdtoName !== {}){
                             if (Array.isArray(fieldValue)){
                                 for(var i=0; i<fieldValue.length; i++){
-                                    valueList.push(listValueIdtoName[fieldValue[i]])
+                                    if (listValueIdtoName[fieldValue[i]] !== undefined){
+                                         valueList.push(listValueIdtoName[fieldValue[i]]);
+                                    }
                                 }
-                            } else{
+                                if (valueList.length === 0){
+                                    valueList = fieldValue;
+                                }
+                            } else if (listValueIdtoName[fieldValue] !== undefined) {
                                 valueList.push(listValueIdtoName[fieldValue])
                             }
-                        } else {
+                        }
+                        if (valueList.length === 0) {
                             valueList.push(fieldValue);
                         }
 
@@ -1138,7 +1144,7 @@ script:
         return fieldsContent;
     }
 
-    function getSearchRecords(parsedJSON) {
+    function getSearchRecords(parsedJSON, getInnerRecords, fullData) {
         /* getSearchRecords is used in searchRecords and creates an Object with each of the search results full records(with all
            of their inner fields) including their full inner records(with all of their inner fields). Note that it does it only
            for the first level of the inner records, they would have only a summary of their inner records but not the full record objects. */
@@ -1162,32 +1168,38 @@ script:
             var seenModuleIds = {};
             seenModuleIds[moduleId] = moduleId;
             // Getting base record
-            var recordObject = getRecord(commands.getRecord, contentId, moduleId, false)[0].keyValsForFetch;
-            toContext.Fields.Record = recordObject;
-            // iterating over the base records inner records and getting their entire object
-            var innerRecords = verifyOrMakeArray(recordObject.innerRecords); // contains all possible inner records
-            innerRecords.forEach(function (innerRecord){
-                if (innerRecord){
-                    if (innerRecord.levelId === "33"){ //buggy record type in Archer
-                        return;
-                    }
-                    var innerRecordContentId = innerRecord.contentId;
-                    if (seenRecords[innerRecordContentId]){
-                        innerRecord.Record = seenRecords[innerRecordContentId];
-                    } else {
-                        var innerRecordModuleId = innerRecord.ModuleId || args.applicationId;
-                        if(innerRecordModuleId && !(innerRecordModuleId in seenModuleIds)){
-                            // we have an inner record from another module, so we bring the field mappings of the new module
-                            extendAppIdMapping(innerRecordModuleId);
-                            seenModuleIds[innerRecordModuleId] = innerRecordModuleId;
+            if (fullData){
+               var recordObject = getRecord(commands.getRecord, contentId, moduleId, false)[0].keyValsForFetch;
+                toContext.Fields.Record = recordObject;
+                if (getInnerRecords){
+                    // iterating over the base records inner records and getting their entire object
+                    var innerRecords = verifyOrMakeArray(recordObject.innerRecords); // contains all possible inner records
+                    innerRecords.forEach(function (innerRecord){
+                        if (innerRecord){
+                            if (innerRecord.levelId === "33"){ //buggy record type in Archer
+                                return;
+                            }
+                            var innerRecordContentId = innerRecord.contentId;
+                            if (seenRecords[innerRecordContentId]){
+                                innerRecord.Record = seenRecords[innerRecordContentId];
+                            } else {
+                                var innerRecordModuleId = innerRecord.ModuleId || args.applicationId;
+                                if(innerRecordModuleId && !(innerRecordModuleId in seenModuleIds)){
+                                    // we have an inner record from another module, so we bring the field mappings of the new module
+                                    extendAppIdMapping(innerRecordModuleId);
+                                    seenModuleIds[innerRecordModuleId] = innerRecordModuleId;
+                                }
+                                var recordRes = getRecord(commands.getRecord, innerRecordContentId, innerRecordModuleId, false);
+                                var innerRecordRes = recordRes.length > 0 ? recordRes[0].keyValsForFetch : innerRecord;
+                                innerRecord.Record = innerRecordRes;
+                                seenRecords[innerRecordContentId] = innerRecordRes;
+                            }
                         }
-                        var recordRes = getRecord(commands.getRecord, innerRecordContentId, innerRecordModuleId, false);
-                        var innerRecordRes = recordRes.length > 0 ? recordRes[0].keyValsForFetch : innerRecord;
-                        innerRecord.Record = innerRecordRes;
-                        seenRecords[innerRecordContentId] = innerRecordRes;
-                    }
+                    });
                 }
-            });
+            }
+
+
             var fields = verifyOrMakeArray(record.Field);
             fields.forEach(function (field) {
                 toContext.Fields[GLOBAL_MAPPING[field['-id']].Name] = field['#text'];
@@ -1432,11 +1444,16 @@ script:
                 var levelId;
                 var files;
                 var dateValue;
+                var usersValue;
 
-                if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
+                if (field['Users']){
+                    usersValue = userFieldHandler(field['Users']);
+                    fieldName = GLOBAL_MAPPING[field['-id']].Name;
+                }
+                else if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
                     dateValue = getOccurredTime(field['-value'], 0);
                 }
-                if (field['-fileID']){ // attached files
+                else if (field['-fileID']){ // attached files
                     files = getFilesString(field);
                     fieldName = 'files';
                 } else if (field['-id'] && (GLOBAL_MAPPING[field['-id']])){
@@ -1446,11 +1463,12 @@ script:
                     fieldName = field['-id'];
                     levelId = " ";
                 }
+
                 recordVals.push({
                     FieldId: field['-id'],
                     FieldName: fieldName,
                     FieldType: field['-type'],
-                    Value: dateValue || groupValue || field['-value'] ||innerRecordrows || files,
+                    Value: usersValue || dateValue || groupValue || field['-value'] ||innerRecordrows || files,
                     LevelId: levelId
                 });
             });
@@ -2281,6 +2299,8 @@ script:
         var isDescending = dataArgs.isDescending === 'true';
         var pageNumber = dataArgs.pageNumber || '1';
         var fetchFilter = dataArgs.fetchFilter;
+        var getInnerRecords = dataArgs.getInnerRecords === 'true';
+        var fullData = dataArgs.fullData === 'true';
 
         var levels = getLevelsByApplicationId(appId);
         var nameToFieldMapping = createMappingNameToFieldId(levels);
@@ -2343,7 +2363,7 @@ script:
             throw ('searchRecords response parse error is ' + JSON.stringify(err));
         }
         var parsedJson = extractObjectFromXML(response, 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult');
-        var output = getSearchRecords(parsedJson);
+        var output = getSearchRecords(parsedJson, getInnerRecords, fullData);
         var md = [];
         output.forEach(function (out) {
             md.push(treeToFlattenObject(out));
@@ -2464,6 +2484,8 @@ script:
         dataArgs.fieldsToDisplay = dataArgs.fieldsToDisplay || params.fieldsToDisplay || "Incident ID";
         dataArgs.isDescending = 'false';
         dataArgs.fetchFilter = params.fetchFilter;
+        dataArgs.getInnerRecords = 'true';
+        dataArgs.fullData = 'true';
 
         var results = searchRecords(cmd, dataArgs);
         var incidents = createIncidentsArr(results, dataArgs.applicationId);
@@ -2564,28 +2586,44 @@ script:
     function searchRecordsByReport(command, dataArgs) {
         // corresponds to 'archer-search-records-by-report' command. Search records by a specific Archer report
 
-        var maxResults = dataArgs.maxResults || '1';
         var reportGuid = dataArgs.reportGuid;
-
-        var token = getAuthToken();
-        var soap = searchRecordsByReportSoapRequest(token, reportGuid, maxResults);
-        var SOAPAction = 'http://archer-tech.com/webservices/SearchRecordsByReport';
-        var rawResponse = sendSoapRequest(command, soap, SOAPAction);
-        destroyAuthToken(token);
-        var response = JSON.parse(x2j(rawResponse));
-
-        if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
-            throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+        var currentPage = 1;
+        var moreRecords = true;
+        var searchResults = {
+            "RecordsAmount": "",
+            "Records": [],
+            "FieldDefinitions": []
         }
-        var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult');
+        do {
+            var token = getAuthToken();
+            var soap = searchRecordsByReportSoapRequest(token, reportGuid, currentPage);
+            var SOAPAction = 'http://archer-tech.com/webservices/SearchRecordsByReport';
+            var rawResponse = sendSoapRequest(command, soap, SOAPAction);
+            destroyAuthToken(token);
+            var response = JSON.parse(x2j(rawResponse));
+
+            if (typeof rawResponse !== 'string' || rawResponse.length == 0) {
+                throw "Error in response. Request = " + soap + " Response = " + rawResponse;
+            }
+            var parsedJSON = extractObjectFromXML(response, 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult');
+            if (parsedJSON.Records && parsedJSON.Records.Record){
+                currentPage += 1;
+                searchResults['RecordsAmount'] = parsedJSON.Records['-count'];
+                searchResults['Records'].push(parsedJSON.Records.Record);
+                searchResults['FieldDefinitions'].push(parsedJSON.Records.Metadata.FieldDefinitions.FieldDefinition)
+            } else {
+                moreRecords = false;
+            }
+        } while (moreRecords)
+
 
         return {
             Type: entryTypes.note,
-            Contents: parsedJSON,
+            Contents: searchResults,
             ContentsFormat: formats.json,
             ReadableContentsFormat: formats.markdown,
             EntryContext: {
-                'Archer.SearchByReport(true)': parsedJSON
+                'Archer.SearchByReport(true)': searchResults
             }
         };
     }
@@ -2981,6 +3019,19 @@ script:
       - "true"
       - "false"
       description: Order by descending order
+    - name: getInnerRecords
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Get the inner records of the records found by the search
+    - name: fullData
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Get an extended responses with all of the data regarding this search.
+        For example, "fullData=true"
     outputs:
     - contextPath: Archer.Record.Id
       description: Content Id
@@ -3046,12 +3097,13 @@ script:
     - name: reportGuid
       required: true
       description: The GUID of the report
-    - name: maxResults
-      description: Maximum pages of the records
-      defaultValue: "1"
     outputs:
-    - contextPath: Archer.StatisticSearch.Records.Record
+    - contextPath: Archer.SearchByReport.Records
       description: The records found by the search
+    - contextPath: Archer.SearchByReport.RecordsAmount
+      description: Amount of records found by the search
+    - contextPath: Archer.SearchByReport.FieldDefinitions
+      description: Field definitions of the found records
     description: Search records by report Guid
   - name: archer-get-mapping-by-level
     arguments:
@@ -3107,10 +3159,11 @@ script:
     arguments:
     - name: userInfo
       required: true
-      description: Username in the form of "Domain\\username". For example, userInfo="mydomain\\myusername"
+      description: Username in the form of "Domain\username". For example, userInfo="mydomain\myusername"
     outputs:
     - contextPath: Archer.User.UserId
       description: The user id of the Archer user
     description: Get the user id of an Archer user
   isfetch: true
   runonce: false
+releaseNotes: "-"

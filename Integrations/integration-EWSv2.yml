@@ -238,6 +238,11 @@ script:
         return result[0]
 
 
+    def get_build(version_str):
+        if version_str not in VERSIONS:
+            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
+        return VERSIONS[version_str]
+
     def get_version(version_str):
         if version_str not in VERSIONS:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
@@ -423,7 +428,7 @@ script:
             mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
         else:
             entry = get_searchable_mailboxes(protocol)
-            mailboxes = entry[ENTRY_CONTEXT]['EWS.Mailboxes']
+            mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
             mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
 
         try:
@@ -468,7 +473,10 @@ script:
             if not FETCH_ALL_HISTORY:
                 last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
                 qs = qs.filter(datetime_received__gte=last_10_min)
-        qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
+        fields = map(lambda x: x.name, Message.FIELDS)
+        if get_build(VERSION_STR) <= EXCHANGE_2010_SP2:
+            fields = filter(lambda x: x != 'text_body', fields)
+        qs = qs.filter().only(*fields)
         result = qs.all()
         result = [x for x in result if isinstance(x, Message)]
         if exclude_ids and len(exclude_ids) > 0:
@@ -622,58 +630,53 @@ script:
             incident['attachment'] = [];
             for attachment in item.attachments:
                 file_result = None
+                label_attachment_type = None
+                label_attachment_id_type = None
                 if isinstance(attachment, FileAttachment):
-                    # file attachment
-                    label_attachment_type = 'attachments'
-                    label_attachment_id_type = 'attachmentId'
+                    try:
+                        if attachment.content:
+                            # file attachment
+                            label_attachment_type = 'attachments'
+                            label_attachment_id_type = 'attachmentId'
 
-                    # save the attachment
-                    file_result = fileResult(attachment.name, attachment.content)
+                            # save the attachment
+                            file_name = attachment.name if attachment.name else 'demisto_untitled_attachment'
+                            file_result = fileResult(file_name, attachment.content)
 
-                    # check for error
-                    if file_result['Type'] == entryTypes['error']:
-                        demisto.error(file_result['Contents'])
-                        raise Exception(file_result['Contents'])
+                            # check for error
+                            if file_result['Type'] == entryTypes['error']:
+                                demisto.error(file_result['Contents'])
+                                raise Exception(file_result['Contents'])
 
-                    # save attachment to incident
-                    incident['attachment'].append({
-                        'path': file_result['FileID'],
-                        'name': attachment.name
-                    })
-
+                            # save attachment to incident
+                            incident['attachment'].append({
+                                'path': file_result['FileID'],
+                                'name': attachment.name
+                            })
+                    except TypeError, e:
+                        if e.message != "must be string or buffer, not None":
+                            raise
+                        continue
                 else:
                     # other item attachment
                     label_attachment_type = 'attachmentItems'
                     label_attachment_id_type = 'attachmentItemsId'
 
                     # save the attachment
-                    file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
+                    if attachment.item.mime_content:
+                        file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
 
-                    inner_file_result = None
-                    for inner_attachment in attachment.item.attachments:
-                        if isinstance(inner_attachment, FileAttachment):
-                            inner_file_result = fileResult(inner_attachment.name, inner_attachment.content)
-                            incident['attachment'].append({
-                                'path': inner_file_result['FileID'],
-                                'name': inner_attachment.name
-                            })
-                        else:
-                            inner_file_result = fileResult(inner_attachment.name + ".eml", inner_attachment.item.mime_content)
-                            incident['attachment'].append({
-                                'path': inner_file_result['FileID'],
-                                'name': inner_attachment.name + ".eml"
-                            })
+                    if file_result:
+                        # check for error
+                        if file_result['Type'] == entryTypes['error']:
+                            demisto.error(file_result['Contents'])
+                            raise Exception(file_result['Contents'])
 
-                    # check for error
-                    if file_result['Type'] == entryTypes['error']:
-                        demisto.error(file_result['Contents'])
-                        raise Exception(file_result['Contents'])
-
-                    # save attachment to incident
-                    incident['attachment'].append({
-                        'path': file_result['FileID'],
-                        'name': attachment.name + ".eml"
-                    })
+                        # save attachment to incident
+                        incident['attachment'].append({
+                            'path': file_result['FileID'],
+                            'name': attachment.name + ".eml"
+                        })
 
 
                 labels.append({'type': label_attachment_type, 'value': attachment.name})
@@ -738,19 +741,37 @@ script:
 
 
     def parse_attachment_as_dict(item_id, attachment):
-        return {
-            ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
-            ATTACHMENT_ID: attachment.attachment_id.id,
-            'attachmentName': attachment.name,
-            'attachmentSHA256': hashlib.sha256(attachment.content if isinstance(attachment, FileAttachment) else attachment.item.mime_content).hexdigest(),
-            'attachmentContentType': attachment.content_type,
-            'attachmentContentId': attachment.content_id,
-            'attachmentContentLocation': attachment.content_location,
-            'attachmentSize': attachment.size,
-            'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
-            'attachmentIsInline': attachment.is_inline,
-            ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
-        }
+        try:
+            attachment_content = attachment.content if isinstance(attachment, FileAttachment) else attachment.item.mime_content
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': attachment.name,
+                'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
+                'attachmentContentType': attachment.content_type,
+                'attachmentContentId': attachment.content_id,
+                'attachmentContentLocation': attachment.content_location,
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
+            }
+        except TypeError, e:
+            if e.message != "must be string or buffer, not None":
+                raise
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': attachment.name,
+                'attachmentSHA256': None,
+                'attachmentContentType': attachment.content_type,
+                'attachmentContentId': attachment.content_id,
+                'attachmentContentLocation': attachment.content_location,
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
+            }
 
 
     def get_entry_for_item_attachment(item_id, attachment, target_email):
@@ -814,15 +835,6 @@ script:
 
         return entries
 
-    def get_inner_attachments(item_attachment):
-        entries = []
-        for attachment in item_attachment.item.attachments:
-            if isinstance(attachment, FileAttachment):
-                entries.append(fileResult(attachment.name, attachment.content))
-            else:
-                entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
-        return entries
-
 
     def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -830,11 +842,16 @@ script:
         entries = []
         for attachment in attachments:
             if isinstance(attachment, FileAttachment):
-                entries.append(get_entry_for_file_attachment(item_id, attachment))
+                try:
+                    if attachment.content:
+                        entries.append(get_entry_for_file_attachment(item_id, attachment))
+                except TypeError, e:
+                    if e.message != "must be string or buffer, not None":
+                        raise
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
-                entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
-                entries.extend(get_inner_attachments(attachment))
+                if attachment.item.mime_content:
+                    entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
 
         return entries
 
@@ -844,10 +861,11 @@ script:
         destination_folder = get_folder_by_path(destination_account, destination_folder_path)
         item = get_item_from_mailbox(source_account, item_id)
         try:
-          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+            source_account.bulk_move(ids=[item], to_folder=destination_folder)
         except ErrorToFolderNotFound:
-          source_account = get_account(source_mailbox or ACCOUNT_EMAIL, access_type=DELEGATE)
-          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+            exported_items = source_account.export([item])
+            destination_account.upload([(destination_folder, exported_items[0])])
+            source_account.bulk_delete([item])
 
         move_result = {
             MOVED_TO_MAILBOX: destination_mailbox,
@@ -855,12 +873,12 @@ script:
         }
 
         return {
-          'Type': entryTypes['note'],
-          'Contents': "Item was moved successfully.",
-          'ContentsFormat': formats['text'],
-          ENTRY_CONTEXT: {
-             "EWS.Items(val.itemId === '%s')" % (item_id,): move_result
-          }
+            'Type': entryTypes['note'],
+            'Contents': "Item was moved successfully.",
+            'ContentsFormat': formats['text'],
+            ENTRY_CONTEXT: {
+               "EWS.Items(val.itemId === '%s')" % (item_id,): move_result
+            }
         }
 
     def move_item(item_id, target_folder_path, target_mailbox=None):
@@ -1757,3 +1775,5 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
+releaseNotes: "Fixed handing attachments with an empty name/content."
+

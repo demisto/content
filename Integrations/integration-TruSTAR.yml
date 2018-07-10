@@ -42,6 +42,9 @@ script:
     import json
     import trustar
     import os
+    import collections
+    from trustar.models.indicator import Indicator
+    from trustar.models.page import Page
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -71,6 +74,7 @@ script:
         for indicator in ts_indicators:
             current_indicator = indicator.to_dict(remove_nones=True)
             indicator_type = current_indicator['indicatorType']
+            priority_level = current_indicator.get('priorityLevel')
             value = current_indicator['value']
             if indicator_type == 'SOFTWARE':
                 # Extracts the filename out of file path
@@ -79,33 +83,40 @@ script:
                 else:
                     file_name = value.split('/')[-1] # Handles file path with slash
                 current_indicator['value'] = file_name
-                file_context.append({
-                    'Name': file_name
-                })
+                context_dict = {'Name': file_name}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                file_context.append(context_dict)
             elif indicator_type in {'SHA256', 'SHA1', 'MD5'}:
-                file_context.append({
-                    indicator_type: value
-                })
+                context_dict = {indicator_type: value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                file_context.append(context_dict)
             elif indicator_type == 'URL':
-                url_context.append({
-                    'Address': value
-                })
+                context_dict = {'Address': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                url_context.append(context_dict)
             elif indicator_type == 'IP':
-                ip_context.append({
-                    'Address': value
-                })
+                context_dict = {'Address': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                ip_context.append(context_dict)
             elif indicator_type == 'EMAIL_ADDRESS':
-                email_context.append({
-                    'Address': value
-                })
+                context_dict = {'Address': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                email_context.append(context_dict)
             elif indicator_type == 'REGISTRY_KEY':
-                key_context.append({
-                    'Path': value
-                })
+                context_dict = {'Path': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                key_context.append(context_dict)
             elif indicator_type == 'CVE':
-                cve_context.append({
-                    'ID': value
-                })
+                context_dict = {'ID': value}
+                if priority_level:
+                    context_dict.update({'priorityLevel': priority_level})
+                cve_context.append(context_dict)
             indicators.append(current_indicator)
         # Build Entry Context
         ec = {}
@@ -139,7 +150,24 @@ script:
 
     ''' FUNCTIONS '''
     def get_related_indicators(indicators, enclave_ids, page_size, page_number):
-        response = ts.get_related_indicators_page(indicators, enclave_ids, page_size, page_number)
+        # To display priority score
+        items_list = []
+        indicators_json = dict()
+        related_indicator_response = ts.get_related_indicators_page(indicators, enclave_ids, page_size, page_number)
+        for related_indicator in related_indicator_response:
+            current_indicator = related_indicator.to_dict(remove_nones=True)
+            search_indicator_response = ts.search_indicators_page(current_indicator['value'], enclave_ids, page_size,
+                                                                  page_number)
+            for found_indicator in search_indicator_response:
+                current_found_indicator = found_indicator.to_dict(remove_nones=True)
+                if current_indicator['value'] == current_found_indicator['value']:
+                    current_indicator['priorityLevel'] = current_found_indicator['priorityLevel']
+                    break
+            if not current_indicator.get('priorityLevel'):
+                current_indicator['priorityLevel'] = "NOT_FOUND"
+            items_list.append(current_indicator)
+        indicators_json.update({'items': items_list})
+        response = Page.from_dict(indicators_json, content_type=Indicator)
         related_indicators, ec = translate_indicators(response)
         if related_indicators:
             title = 'TruSTAR indicators related to ' + indicators
@@ -198,16 +226,17 @@ script:
             title=title,
             body=report_body,
             enclave_ids=[enclave_ids] if enclave_ids else enclave_ids,
-            is_enclave=True if distribution_type=='ENCLAVE' else False,
+            is_enclave=True if distribution_type == 'ENCLAVE' else False,
             time_began=time_began,
             external_url=external_url
         )
         response = ts.submit_report(ts_report)
-        report = {
-            'reportTitle': title,
-            'reportBody': report_body,
-            'id': response.id
-        }
+        deep_link = '{server_url}/constellation/reports/{report_id}'.format(server_url=SERVER, report_id=response.id)
+        report = collections.OrderedDict()
+        report['id'] = response.id
+        report['reportTitle'] = title
+        report['reportDeepLink'] = '[{}]({})'.format(deep_link, deep_link)
+        report['reportBody'] = report_body
         ec = {
             'TruSTAR.Report(val.id && val.id === obj.id)': report
         }
@@ -228,16 +257,17 @@ script:
             title=title,
             body=report_body,
             enclave_ids=[enclave_ids] if enclave_ids else enclave_ids,
-            is_enclave=True if distribution_type=='ENCLAVE' else False,
+            is_enclave=True if distribution_type == 'ENCLAVE' else False,
             time_began=time_began,
             external_url=external_url
         )
         response = ts.update_report(ts_report)
-        report = {
-            'reportTitle': title,
-            'reportBody': report_body,
-            'id': report_id
-        }
+        deep_link = '{server_url}/constellation/reports/{report_id}'.format(server_url=SERVER, report_id=report_id)
+        report = collections.OrderedDict()
+        report['id'] = report_id
+        report['reportTitle'] = title
+        report['reportDeepLink'] = '[{}]({})'.format(deep_link, deep_link)
+        report['reportBody'] = report_body
         ec = {
             'TruSTAR.Report(val.id && val.id === obj.id)': report
         }
@@ -254,12 +284,22 @@ script:
 
     def get_report_details(report_id, id_type):
         response = ts.get_report_details(report_id, id_type)
-        report_details = response.to_dict(remove_nones=True)
-        if report_details['enclaveIds']:
-            report_details['enclaveIds'] = ', '.join(report_details['enclaveIds']) # Prettify list of enclave IDs
-        report_details['updated'] = normalize_time(report_details['updated'])
-        report_details['created'] = normalize_time(report_details['created'])
-        report_details['timeBegan'] = normalize_time(report_details['timeBegan'])
+        current_report_dict = response.to_dict(remove_nones=True)
+        report_details = collections.OrderedDict()
+        report_details['id'] = current_report_dict['id']
+        report_details['title'] = current_report_dict['title']
+        deep_link = '{server_url}/constellation/reports/{report_id}'.format(server_url=SERVER,
+                                                                            report_id=current_report_dict['id'])
+        report_details['reportDeepLink'] = '[{}]({})'.format(deep_link, deep_link)
+        if current_report_dict['enclaveIds']:
+            report_details['enclaveIds'] = ', '.join(current_report_dict['enclaveIds'])  # Prettify list of enclave IDs
+        report_details['updated'] = normalize_time(current_report_dict['updated'])
+        report_details['created'] = normalize_time(current_report_dict['created'])
+        report_details['timeBegan'] = normalize_time(current_report_dict['timeBegan'])
+        report_details['distributionType'] = current_report_dict['distributionType']
+        if current_report_dict.get('externalUrl'):
+            report_details['externalUrl'] = current_report_dict['externalUrl']
+        report_details['reportBody'] = current_report_dict['reportBody']
         report_context = {
             'reportTitle': report_details['title'],
             'reportBody': report_details['reportBody'],
@@ -284,19 +324,28 @@ script:
         return 'Report ' + report_id + ' was successfully deleted'
 
     def get_reports(from_time, to_time, enclave_ids, distribution_type, tags, excluded_tags):
-        is_encalve = True if distribution_type=='ENCLAVE' else False
+        is_encalve = True if distribution_type == 'ENCLAVE' else False
         from_time = date_to_unix(from_time) if from_time else from_time
         to_time = date_to_unix(to_time) if to_time else to_time
         response = ts.get_reports(is_encalve, enclave_ids, tags, excluded_tags, from_time, to_time)
         reports = []
         reports_context = []
         for report in response:
-            current_report = report.to_dict(remove_nones=True)
-            if current_report['enclaveIds']:
-                current_report['enclaveIds'] = ', '.join(current_report['enclaveIds']) # Prettify list of enclave IDs
-            current_report['updated'] = normalize_time(current_report['updated'])
-            current_report['created'] = normalize_time(current_report['created'])
-            current_report['timeBegan'] = normalize_time(current_report['timeBegan'])
+            current_report_dict = report.to_dict(remove_nones=True)
+            current_report = collections.OrderedDict()
+            current_report['id'] = current_report_dict['id']
+            current_report['title'] = current_report_dict['title']
+            deep_link = '{server_url}/constellation/reports/{report_id}'.format(server_url=SERVER, report_id=current_report_dict['id'])
+            current_report['reportDeepLink'] = '[{}]({})'.format(deep_link, deep_link)
+            if current_report_dict['enclaveIds']:
+                current_report['enclaveIds'] = ', '.join(current_report_dict['enclaveIds'])  # Prettify list of enclave IDs
+            current_report['updated'] = normalize_time(current_report_dict['updated'])
+            current_report['created'] = normalize_time(current_report_dict['created'])
+            current_report['timeBegan'] = normalize_time(current_report_dict['timeBegan'])
+            current_report['distributionType'] = current_report_dict['distributionType']
+            if current_report_dict.get('externalUrl'):
+                current_report['externalUrl'] = current_report_dict['externalUrl']
+            current_report['reportBody'] = current_report_dict['reportBody']
             reports.append(current_report)
             reports_context.append({
                 'reportTitle': current_report['title'],
@@ -515,20 +564,38 @@ script:
     - contextPath: File.SHA256
       description: File SHA256
       type: string
+    - contextPath: File.priorityLevel
+      description: File priority level
+      type: string
     - contextPath: URL.Address
       description: URL address
+      type: string
+    - contextPath: URL.priorityLevel
+      description: URL priority level
       type: string
     - contextPath: IP.Address
       description: IP address
       type: string
+    - contextPath: IP.priorityLevel
+      description: IP priority level
+      type: string
     - contextPath: Account.Email.Address
       description: Email address
+      type: string
+    - contextPath: Account.Email.priorityLevel
+      description: Email priority level
       type: string
     - contextPath: RegistryKey.Path
       description: Registry key path
       type: string
+    - contextPath: RegistryKey.priorityLevel
+      description: Registry key priority level
+      type: string
     - contextPath: CVE.ID
       description: CVE ID
+      type: string
+    - contextPath: CVE.priorityLevel
+      description: CVE priority level
       type: string
     description: Search all TruSTAR incident reports for provided indicators and return
       all correlated indicators from search results. Two indicators are considered
@@ -844,3 +911,4 @@ script:
     description: Returns the list of all enclaves that the user has access to, as
       well as whether they can read, create, and update reports in that enclave.
   dockerimage: demisto/trustar
+releaseNotes: "Added priority level and deep links to related-indicators command"
