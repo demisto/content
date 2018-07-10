@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "3.5.1",
     "modified": "2018-03-14T17:42:44.919467+02:00",
-    "name": "Memory Use Trend",
+    "name": "Memory Usage (last 24h)",
     "dataType": "system",
     "widgetType": "line",
     "query": "memory.usedPercent",
@@ -17,6 +17,7 @@
             "field": ""
         }
     },
+    "size": 1500
     "params": {
         "timeFrame": "minutes"
     }
