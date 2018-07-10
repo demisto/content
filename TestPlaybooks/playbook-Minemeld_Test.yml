@@ -1,7 +1,6 @@
 id: minemeld_test
-version: -1
+version: 51
 name: Minemeld Test
-fromversion: "3.5.0"
 description: This is a playbook test for Palo Alto minemeld Node's indicators integration.
 starttaskid: "0"
 tasks:
@@ -12,7 +11,6 @@ tasks:
     task:
       id: 6efc085e-7d3d-44f2-8788-ae5ac7dd7376
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -29,12 +27,11 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 622b3c33-c447-4e95-816b-d1c97aa45a12
+    taskid: 47d18046-294f-42c4-89fa-02b9d7eb73cf
     type: regular
     task:
-      id: 622b3c33-c447-4e95-816b-d1c97aa45a12
+      id: 47d18046-294f-42c4-89fa-02b9d7eb73cf
       version: -1
-      description: ""
       name: Add indicator to miner
       script: Palo Alto Minemeld|||minemeld-add-to-miner
       type: regular
@@ -47,18 +44,18 @@ tasks:
       comment:
         simple: test comment
       miner:
-        simple: wlWhiteListIPv4
+        simple: Suspicious
       share-level: {}
       type:
         simple: IPv4
       value:
-        simple: 1.2.3.4
+        simple: 6.6.6.6
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 369
         }
       }
   "2":
@@ -91,14 +88,13 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 56151b15-f0ca-4d61-8ca0-ab60329b8fb4
+    taskid: 641c8f71-46e8-4677-846b-d562e7ffbb03
     type: regular
     task:
-      id: 56151b15-f0ca-4d61-8ca0-ab60329b8fb4
+      id: 641c8f71-46e8-4677-846b-d562e7ffbb03
       version: -1
-      description: ""
-      name: Retrieve miner's indicators list
-      script: Palo Alto Minemeld|||minemeld-retrieve-list
+      name: Retrieve indicator from miner's list
+      script: Palo Alto Minemeld|||minemeld-get-item-from-list
       type: regular
       iscommand: true
       brand: Palo Alto Minemeld
@@ -106,10 +102,11 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      item:
+        simple: 6.6.6.6
       miner:
-        simple: wlWhiteListIPv4
-      type:
-        simple: IPv4
+        simple: Suspicious
+      type: {}
     separatecontext: false
     view: |-
       {
@@ -120,12 +117,11 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 104acfba-b06e-4969-8f0c-884293a6b978
+    taskid: 77137c59-1710-440f-8d93-14cbde48f6c2
     type: condition
     task:
-      id: 104acfba-b06e-4969-8f0c-884293a6b978
+      id: 77137c59-1710-440f-8d93-14cbde48f6c2
       version: -1
-      description: ""
       name: Test if indicator exists
       type: condition
       iscommand: false
@@ -161,11 +157,11 @@ tasks:
                 - - operator: string.isEqual
                     left:
                       value:
-                        simple: Minemeld.indicator
+                        simple: Minemeld.Item.indicator
                       iscontext: true
                     right:
                       value:
-                        simple: 1.2.3.4
+                        simple: 6.6.6.6
             iscontext: true
     view: |-
       {
@@ -176,12 +172,11 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 55091487-fc3a-4607-8a3c-b9c93574970d
+    taskid: 67bd1146-c143-4a70-83f0-98d5f21290d5
     type: regular
     task:
-      id: 55091487-fc3a-4607-8a3c-b9c93574970d
+      id: 67bd1146-c143-4a70-83f0-98d5f21290d5
       version: -1
-      description: ""
       name: Remove indicator from miner
       script: Palo Alto Minemeld|||minemeld-remove-from-miner
       type: regular
@@ -192,11 +187,11 @@ tasks:
       - "14"
     scriptarguments:
       miner:
-        simple: wlWhiteListIPv4
+        simple: Suspicious
       type:
         simple: IPv4
       value:
-        simple: 1.2.3.4
+        simple: 6.6.6.6
     separatecontext: false
     view: |-
       {
@@ -212,7 +207,6 @@ tasks:
     task:
       id: 268f2723-f381-43dd-86cc-010c2a8d90f8
       version: -1
-      description: ""
       name: Test failed
       scriptName: ThrowException
       type: regular
@@ -231,19 +225,18 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 75130eb5-d8c9-41ae-8823-3d289e346032
+    taskid: 661e9125-9592-4ebb-8b7e-7665e565fb7c
     type: condition
     task:
-      id: 75130eb5-d8c9-41ae-8823-3d289e346032
+      id: 661e9125-9592-4ebb-8b7e-7665e565fb7c
       version: -1
-      description: ""
       name: Test if indicator exists
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "15"
       "yes":
       - "8"
     scriptarguments:
@@ -272,11 +265,11 @@ tasks:
                 - - operator: string.isEqual
                     left:
                       value:
-                        simple: Minemeld.indicator
+                        simple: Minemeld.Miner.indicator
                       iscontext: true
                     right:
                       value:
-                        simple: 1.2.3.4
+                        simple: 6.6.6.6
             iscontext: true
     view: |-
       {
@@ -292,7 +285,6 @@ tasks:
     task:
       id: 30a8d52d-c3eb-4c43-8432-763b8e460023
       version: -1
-      description: ""
       name: Test Failed - Could not delete indicator / indicator still in context
       scriptName: ThrowException
       type: regular
@@ -316,7 +308,6 @@ tasks:
     task:
       id: f960bb51-7db1-4d84-8797-78d7113e2ff1
       version: -1
-      description: ""
       name: Test finished successfuly
       type: title
       iscommand: false
@@ -325,18 +316,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1610
+          "x": 58,
+          "y": 2305
         }
       }
   "12":
     id: "12"
-    taskid: d63e77d0-964e-46d2-8dbc-49a46f6b2b67
+    taskid: ab9f3df0-bd01-4847-8c55-956638f4c51b
     type: regular
     task:
-      id: d63e77d0-964e-46d2-8dbc-49a46f6b2b67
+      id: ab9f3df0-bd01-4847-8c55-956638f4c51b
       version: -1
-      description: ""
       name: Retrieve miner's indicators list
       script: Palo Alto Minemeld|||minemeld-retrieve-list
       type: regular
@@ -346,10 +336,10 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      all: {}
       miner:
-        simple: wlWhiteListIPv4
-      type:
-        simple: IPv4
+        simple: Suspicious
+      type: {}
     separatecontext: false
     view: |-
       {
@@ -386,6 +376,170 @@ tasks:
           "y": 1070
         }
       }
+  "15":
+    id: "15"
+    taskid: 1cbfcda9-4bad-4a38-890a-5b19f49b9d4a
+    type: regular
+    task:
+      id: 1cbfcda9-4bad-4a38-890a-5b19f49b9d4a
+      version: -1
+      name: Delete Context
+      description: Clear context before process starts
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 58,
+          "y": 1595
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 400c3f8e-d848-476f-8909-2e11063181f5
+    type: regular
+    task:
+      id: 400c3f8e-d848-476f-8909-2e11063181f5
+      version: -1
+      name: Check IP
+      script: Palo Alto Minemeld|||ip
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ip:
+        simple: 7.7.7.7
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 58,
+          "y": 1949
+        }
+      }
+  "17":
+    id: "17"
+    taskid: ec9fd4cb-5ffe-48e7-89b3-f88bb1fb888a
+    type: regular
+    task:
+      id: ec9fd4cb-5ffe-48e7-89b3-f88bb1fb888a
+      version: -1
+      name: Add IP indicator to miner
+      script: Palo Alto Minemeld|||minemeld-add-to-miner
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      comment:
+        simple: test ip 7777
+      miner:
+        simple: Suspicious
+      type:
+        simple: IPv4
+      value:
+        simple: 7.7.7.7
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 59,
+          "y": 1779
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 314c82da-83a2-481f-810e-9725a60b3571
+    type: condition
+    task:
+      id: 314c82da-83a2-481f-810e-9725a60b3571
+      version: -1
+      name: Test if indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        complex:
+          root: Minemeld
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: Minemeld.indicator
+                iscontext: true
+              right:
+                value:
+                  simple: asdas
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: Minemeld
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: Minemeld.Item.indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 7.7.7.7
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 58,
+          "y": 2119
+        }
+      }
+  "19":
+    id: "19"
+    taskid: f3367419-d549-4029-8b7e-6d3cc84394b6
+    type: regular
+    task:
+      id: f3367419-d549-4029-8b7e-6d3cc84394b6
+      version: -1
+      name: Test Failed - Could not delete indicator / indicator still in context
+      scriptName: ThrowException
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: Test Failed - Could not delete indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 483,
+          "y": 2236
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -394,9 +548,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1640,
-        "width": 1025,
-        "x": 50,
+        "height": 2320,
+        "width": 1017,
+        "x": 58,
         "y": 50
       }
     }

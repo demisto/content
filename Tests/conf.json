@@ -381,6 +381,10 @@
             "playbookID": "Tanium Demo Playbook",
             "nightly": true,
             "timeout": 1200
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
         }
     ],
     "skipped": [
