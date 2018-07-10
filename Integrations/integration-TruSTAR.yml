@@ -911,4 +911,3 @@ script:
     description: Returns the list of all enclaves that the user has access to, as
       well as whether they can read, create, and update reports in that enclave.
   dockerimage: demisto/trustar
-releaseNotes: "Added priority level and deep links to related-indicators command"

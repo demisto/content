@@ -2,7 +2,6 @@ id: ip_enrichment_generic
 version: -1
 name: IP Enrichment - Generic
 description: Use one or more integrations to enrich an IP address.
-releaseNotes: "Add ip to host capability"
 fromversion: 3.6.0
 starttaskid: "0"
 tasks:
