@@ -2,6 +2,7 @@ commonfields:
   id: SendEmailToManager
   version: 1
 name: SendEmailToManager
+releaseNotes: "Spelling fix"
 fromversion: 3.5.0
 script: |-
   email = demisto.get(demisto.args(), 'email')
@@ -89,7 +90,7 @@ args:
 - name: replyEntriesTag
   description: Tag to add on email reply entries
 - name: persistent
-  description: Indicates wether to use one-time entitlement or a persistent one
+  description: Indicates whether to use one-time entitlement or a persistent one
   auto: PREDEFINED
   predefined:
   - "true"
