@@ -185,11 +185,6 @@
             "playbookID": "PostgreSQL Test"
         },
         {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test",
-            "nightly": true
-        },
-        {
             "integrations": {
                 "name": "google",
                 "byoi": false
@@ -527,6 +522,11 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Qualys",
+            "playbookID": "Qualys-Test",
+            "nightly": true
         }
     ]
 }
