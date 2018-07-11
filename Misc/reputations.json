@@ -255,7 +255,7 @@
       ],
       "formatScript": "ExtractDomainFromUrlAndEmail",
       "fromVersion": "3.6"
-    },
-    "releaseNotes":"Fixing Domain reputation"
-  ]
+    }
+  ],
+  "releaseNotes":"Fixing Domain reputation"
 }
