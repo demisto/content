@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: EmailAskUser
 fromversion: 3.5.0
+releaseNotes: "Spelling fix"
 script: |-
   // email body type
   var bodyType = 'text';
@@ -152,7 +153,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Indicates wether to use one-time entitlement or a persistent one
+  description: Indicates whether to use one-time entitlement or a persistent one
   defaultValue: "false"
 - name: retries
   description: Indicates how many times to try and create an entitlement in case of
