@@ -1782,5 +1782,5 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-releaseNotes: "Fixed handing attachments with an empty name/content."
+releaseNotes: "Improved UX of 'Test Module' errors."
 
