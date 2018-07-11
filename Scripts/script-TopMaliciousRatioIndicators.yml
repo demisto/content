@@ -6,6 +6,15 @@ script: |
   from datetime import datetime, timedelta
   import json, random
 
+  def select_indicator_columns(indicator):
+      display_indicator = {}
+      display_indicator['ID'] = indicator['id']
+      display_indicator['Type'] = indicator['indicator_type']
+      display_indicator['Malicious Ratio'] = '%.2f' % float(indicator['maliciousRatio'])
+      display_indicator['Value'] = indicator['value']
+      display_indicator['Last Seen'] = indicator['lastSeen']
+      return display_indicator
+
   MAX_INDICATORS = int(demisto.args()['maxNumberOfIndicators'])
   MIN_NUMBER_OF_INVS = int(demisto.args()['minimumNumberOfInvs'])
   MAX_RESULTS = int(demisto.args()['maximumNumberOfResults'])
@@ -26,6 +35,7 @@ script: |
 
   sorted_indicators = sorted(indicators_map.values(), key=lambda x: x['maliciousRatio'], reverse=True)
   sorted_indicators = sorted_indicators[:MAX_RESULTS]
+  sorted_indicators = map(select_indicator_columns, sorted_indicators)
   demisto.results(json.dumps({"total": len(sorted_indicators), "data": sorted_indicators}))
 type: python
 tags:
