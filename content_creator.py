@@ -43,13 +43,14 @@ def convert_incident_fields_to_array():
     scan_files = glob.glob(os.path.join('IncidentFields', '*.json'))
     for path in scan_files:
         print "1 path - %s" % (path,)
-        with open(path, 'rw') as f:
+        with open(path, 'r+') as f:
             data = json.load(f)
             print "2 - data"
             incident_fields = data.get('incidentFields')
             if incident_fields is not None:
-                print "3 - write"
-                json.dump(incident_fields, f)
+                f.seek(0)
+                json.dump(incident_fields, f, indent=2)
+                f.truncate()  # remove remaining part
 
 
 def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
