@@ -18,14 +18,15 @@ script: |-
       var owner = incidents[0].owner;
   }
 
+  var user;
   if (args.User) {
-      var user = args.User;
+      user = args.User;
   } else {
       var res = executeCommand('getUsers', {current: true});
       if (isError(res[0])) {
           return res;
       }
-      var user = res[0].Contents[0].id;
+      user = res[0].Contents[0].id;
   }
 
   if (user !== owner || (user === owner && args.IgnoreOwner == "true")) {
