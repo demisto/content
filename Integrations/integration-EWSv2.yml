@@ -1215,26 +1215,27 @@ script:
         debug_log = log_stream.getvalue()
         error_message = ""
         if "Status code: 401" in debug_log:
-            error_message = "Got unauthorized from the server. " \
+            error_message_simple = "Got unauthorized from the server. " \
                             "Check credentials are correct and authentication method are supported. "
 
-            error_message += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+            error_message_simple += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
-            error_message = "Got timeout from the server. " \
+            error_message_simple = "Got timeout from the server. " \
                             "Probably the server is not reachable with the current settings. " \
                             "Check proxy parameter. If you are using server URL - change to server IP address. "
-        error_message = error_message + "\n" + e.message
+        error_message = error_message_simple + "\n" + e.message
         stacktrace = traceback.format_exc()
         if stacktrace:
             error_message += "\nFull stacktrace:\n" + stacktrace
 
         if debug_log:
-            if IS_TEST_MODULE:
-                error_message += "\nFull debug log:\n" + debug_log
-            else:
-                demisto.info(error_message + "\nFull debug log:\n" + debug_log)
+            error_message += "\nFull debug log:\n" + debug_log
 
-        raise Exception(error_message)
+        if not IS_TEST_MODULE:
+            raise Exception(error_message)
+        demisto.results(error_message_simple)
+        demisto.error("%s: %s" % (e.__class__.__name__, error_message))
+
   type: python
   commands:
   - name: ews-get-attachment
