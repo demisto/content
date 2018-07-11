@@ -37,7 +37,7 @@ configuration:
   required: true
 - display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
   name: authType
-  defaultvalue: NTLM
+  defaultvalue: Basic
   type: 0
   required: true
 - display: Has impersonation rights.
