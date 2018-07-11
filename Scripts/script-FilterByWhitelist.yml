@@ -1,57 +1,61 @@
 commonfields:
-  id: FilterByWhitelist
+  id: FilterByList
   version: -1
-name: FilterByWhitelist
+name: FilterByList
 script: |
-  lst = demisto.executeCommand("getList", {"listName": demisto.args()["whitelistname"]})
+  lst = demisto.executeCommand("getList", {"listName": demisto.args()["listname"]})
 
   if isError(lst[0]):
       demisto.results(lst)
       sys.exit(0)
 
-  whitelist = lst[0]['Contents']
-  item = demisto.args().get('value', '')
+  lst = lst[0]["Contents"].split(",")
+  items = demisto.args().get("values", "")
 
-  if item == '':
-      demisto.results("No item was given")
-      sys.exit(0)
+  if not isinstance(items, list):
+      items = items.split(",")
 
-  ec = {}
-  contents = {}
-  hr = item + " is not in the whitelist"
+  whitlisted = []
+  notwhitelisted = []
+  hr = ""
 
-  if item in whitelist:
-      hr = item + " is in whitelist"
-      ec["Whitelist.In"] = item
-      contents["inWhitelist"] = item
-  else:
-      ec["Whitelist.NotIn"] = item
-      contents["notInWhitelist"] = item
+  for item in items:
+      if item in lst:
+          hr = hr + item + " is in the list\n"
+          whitlisted.append(item)
+      else:
+          hr = hr + item + " is in on the list\n"
+          notwhitelisted.append(item)
 
-  demisto.results({'ContentsFormat': formats['json'],
-                       'Type': entryTypes['note'],
-                       'Contents': contents,
-                       'HumanReadable' : hr,
-                       'HumanReadableFormat' : formats['markdown'],
-                       'EntryContext': ec})
+
+  ec = {"List.In":whitlisted,"List.NotIn":notwhitelisted }
+  contents = {"inList":whitlisted, "notInList" : notwhitelisted}
+  demisto.results({"ContentsFormat": formats["json"],
+                       "Type": entryTypes["note"],
+                       "Contents": contents,
+                       "HumanReadable" : hr,
+                       "HumanReadableFormat" : formats["markdown"],
+                       "EntryContext": ec})
 
   sys.exit(0)
 type: python
 tags:
 - whitelist
-comment: Check whether the specified item is whitelisted. Default list is the Demisto Indicators Whitelist.
+comment: Check whether the specified item is in a list. Default list is the Demisto
+  Indicators Whitelist.
 enabled: true
 args:
-- name: value
+- name: values
   default: true
-  description: The value to look for on the whitelist
-- name: whitelistname
-  description: Name of whitelist to check
+  description: The value to look for in the list
+  isArray: true
+- name: listname
+  description: Name of list to check
   defaultValue: Indicators Whitelist
 outputs:
-- contextPath: Whitelist.In
-  description: List of items on the whitelist
-- contextPath: Whitelist.NotIn
-  description: List of items not on the whitelist
+- contextPath: List.In
+  description: List of items in the list
+- contextPath: List.NotIn
+  description: List of items not in the list
 scripttarget: 0
 runonce: false
