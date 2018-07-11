@@ -2,6 +2,7 @@ id: ip_enrichment_generic
 version: -1
 fromversion: 3.5.0
 toversion: 3.6.0
+releaseNotes: "Spelling fix"
 name: IP Enrichment - Generic
 description: Enrich IP using one or more integrations
 starttaskid: "0"
@@ -186,7 +187,7 @@ tasks:
       id: 769422b8-e388-4be4-8bd9-911fb17421f4
       version: -1
       name: Do we have IP Addresses?
-      description: Determine wether the playbook's input contains IP addresses.
+      description: Determine whether the playbook's input contains IP addresses.
       type: condition
       iscommand: false
       brand: ""

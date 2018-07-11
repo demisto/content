@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
+        },
+        {
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
@@ -17,6 +21,10 @@
         },
         {
             "playbookID": "buildewsquery_test"
+        },
+        {
+            "integrations": "Rapid7 Nexpose",
+            "playbookID": "nexpose_test"
         },
         {
             "integrations": "EWS Mail Sender",
@@ -175,11 +183,6 @@
         {
             "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
-        },
-        {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test",
-            "nightly": true
         },
         {
             "integrations": {
@@ -386,10 +389,6 @@
     ],
     "skipped": [
         {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
-        },
-        {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
         },
@@ -523,6 +522,11 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Qualys",
+            "playbookID": "Qualys-Test",
+            "nightly": true
         }
     ]
 }

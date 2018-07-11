@@ -29,5 +29,4 @@ args:
   description: The string to compare to
 scripttarget: 0
 runonce: false
-releaseNotes: "-"
 fromversion: 3.6.0
