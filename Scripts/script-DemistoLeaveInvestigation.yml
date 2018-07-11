@@ -1,0 +1,62 @@
+commonfields:
+  id: DemistoLeaveInvestigation
+  version: -1
+name: DemistoLeaveInvestigation
+script: |-
+  var body = {};
+
+  if (args.InvestigationID) {
+      var invID = args.InvestigationID;
+      var res = executeCommand("getIncidents", {id: invID});
+      if (isError(res[0])) {
+          return res[0].Contents;
+      }
+      var owner = res[0].Contents.data[0].owner;
+
+  } else {
+      var invID = incidents[0].id;
+      var owner = incidents[0].owner;
+  }
+
+  if (args.User) {
+      var user = args.User;
+  } else {
+      var res = executeCommand('getUsers', {current: true});
+      if (isError(res[0])) {
+          return res;
+      }
+      var user = res[0].Contents[0].id;
+  }
+
+  if (user !== owner || (user === owner && args.IgnoreOwner == "true")) {
+      var uri = '/investigation/' + invID + '/deleteuser/' + user;
+
+      var res = executeCommand('demisto-api-post', {uri: uri, body: body});
+      if (isError(res[0])) {
+          return res[0].Contents;
+      }
+
+      return 'Successfully removed ' + user + '.';
+  } else {
+      return 'User ' + user + ' is the owner.';
+  }
+type: javascript
+tags:
+- DemistoAPI
+comment: Removes a user from an investigation team
+enabled: true
+args:
+- name: IgnoreOwner
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Remove the user from the investigation team even if it is the owner
+  defaultValue: "false"
+- name: User
+  description: User to remove from the investigation team. Defaults for the executing
+    user
+- name: InvestigationID
+  description: Investigation ID to leave. Defaults to the current investigation ID
+scripttarget: 0
+runonce: false
