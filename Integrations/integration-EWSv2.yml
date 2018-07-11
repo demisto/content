@@ -1213,6 +1213,7 @@ script:
 
         time.sleep(2)
         debug_log = log_stream.getvalue()
+        error_message_simple = ""
         error_message = ""
         if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. " \
@@ -1223,7 +1224,12 @@ script:
             error_message_simple = "Got timeout from the server. " \
                             "Probably the server is not reachable with the current settings. " \
                             "Check proxy parameter. If you are using server URL - change to server IP address. "
-        error_message = error_message_simple + "\n" + e.message
+
+        if not error_message_simple:
+            error_message = error_message_simple = e.message
+        else:
+            error_message = error_message_simple + "\n" + e.message
+
         stacktrace = traceback.format_exc()
         if stacktrace:
             error_message += "\nFull stacktrace:\n" + stacktrace
