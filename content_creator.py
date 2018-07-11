@@ -38,6 +38,19 @@ def add_tools_to_bundle(bundle):
         shutil.make_archive(os.path.join(bundle, 'tools-%s' % (os.path.basename(d), )), 'zip', d)
 
 
+def convert_incident_fields_to_array():
+    scan_files = glob.glob(os.path.join('IncidentFields', '*.json'))
+    for path in scan_files:
+        print "1 path - %s" % (path,)
+        with open(path, 'rw') as f:
+            data = json.load(f)
+            print "2 - data"
+            incident_fields = data.get('incidentFields')
+            if incident_fields is not None:
+                print "3 - write"
+                json.dump(incident_fields, f)
+
+
 def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.yml'))
     post_files = 0
@@ -93,6 +106,8 @@ def main(circle_artifacts):
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
         os.mkdir(b)
         add_tools_to_bundle(b)
+
+    convert_incident_fields_to_array()
 
     for d in CONTENT_DIRS:
         print 'copying dir %s to bundles ...' % (d,)
