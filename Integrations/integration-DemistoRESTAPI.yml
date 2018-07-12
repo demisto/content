@@ -210,4 +210,3 @@ script:
       description: Request body
     description: Send HTTP Multipart request to upload files to Demisto server
   runonce: false
-releaseNotes: Added demisto-api-multipart and demisto-api-download commands to upload and download files from demisto server

@@ -2,7 +2,6 @@ commonfields:
   id: SendEmailToManager
   version: 1
 name: SendEmailToManager
-releaseNotes: "Spelling fix"
 fromversion: 3.5.0
 script: |-
   email = demisto.get(demisto.args(), 'email')
