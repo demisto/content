@@ -6,7 +6,7 @@
   "widgetType": "number",
   "query": "runStatus:running",
   "sort": null,
-  "isPredefined": false,
+  "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
@@ -37,6 +37,5 @@
     }
   },
   "size": 0,
-  "category": "",
-  "releaseNotes": "-"
+  "category": ""
 }
