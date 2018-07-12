@@ -1,6 +1,6 @@
 commonfields:
-  id: 7e050a0e-4ad5-4d09-84d7-3df88d037d5c
-  version: 53
+  id: MatchRegex
+  version: -1
 name: MatchRegex
 script: |-
   var data = (typeof args.data) === 'string' ? args.data : JSON.stringify(args.data);
