@@ -20,7 +20,7 @@ configuration:
   required: false
 - display: API Version
   name: version
-  defaultvalue: "1.6"
+  defaultvalue: "2.0"
   type: 0
   required: false
 - display: Trust any certificate (unsecure)
@@ -33,6 +33,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+releaseNotes: "Updating default API version to 2.0"
 script:
   script: |-
     var SentinelOne = function() {

@@ -3,7 +3,28 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
+        },
+        {
+            "integrations": "FalconIntel",
+            "playbookID": "CrowdStrike Falcon Intel v2"
+        },
+        {
+            "integrations": [{
+                "name": "Mail Sender (New)"
+            },{
+                "name": "google",
+                "byoi": false
+            }],
+            "playbookID": "Mail Sender (New) Test"
+        },
+        {
             "playbookID": "buildewsquery_test"
+        },
+        {
+            "integrations": "Rapid7 Nexpose",
+            "playbookID": "nexpose_test"
         },
         {
             "integrations": "EWS Mail Sender",
@@ -164,11 +185,6 @@
             "playbookID": "PostgreSQL Test"
         },
         {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test",
-            "nightly": true
-        },
-        {
             "integrations": {
                 "name": "google",
                 "byoi": false
@@ -291,6 +307,19 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
+            "integrations": [
+                {
+                    "name": "carbonblackliveresponse",
+                    "byoi": true
+                },
+                {
+                    "name": "carbonblack-v2",
+                    "byoi": true
+                }
+            ],
+            "playbookID": "CarbonBlackLiveResponseTest"
+        },
+        {
             "playbookID": "TestSafeBreach",
             "integrations": "SafeBreach"
         },
@@ -343,10 +372,6 @@
             "playbookID": "RedLockTest"
         },
         {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
-        },
-        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
@@ -355,10 +380,14 @@
             "playbookID": "Tanium Demo Playbook",
             "nightly": true,
             "timeout": 1200
+        },
+        {
+            "integrations": "Recorded Future",
+            "playbookID": "Recorded Future Test",
+            "nightly": true
         }
     ],
     "skipped": [
-
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
@@ -495,21 +524,9 @@
             "playbookID": "AlphaSOC-Wisdom-Test"
         },
         {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
-        },
-        {
-            "integrations": [
-                {
-                    "name": "carbonblackliveresponse",
-                    "byoi": true
-                },
-                {
-                    "name": "carbonblack-v2",
-                    "byoi": true
-                }
-            ],
-            "playbookID": "CarbonBlackLiveResponseTest"
+            "integrations": "Qualys",
+            "playbookID": "Qualys-Test",
+            "nightly": true
         }
     ]
 }
