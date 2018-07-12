@@ -19,13 +19,13 @@ script: |-
           if (args.contextKey) {
               ec[args.contextKey] = val;
           }
+          vals.push(val);
       }
   }
+  setContext('MatchRegex.results', vals)
   if (vals.length) {
-      setContext('MatchRegex.results', vals)
       return {Type: entryTypes.note, Contents: vals, ContentsFormat: formats.text, EntryContext: ec};
   }
-  setContext('MatchRegex.results', vals)
   return {Type: entryTypes.note, Contents: 'Regex does not match', ContentsFormat: formats.text};
 type: javascript
 tags:
