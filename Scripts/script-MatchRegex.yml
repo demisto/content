@@ -36,6 +36,7 @@ enabled: true
 args:
 - name: data
   required: true
+  default: true
   description: The text date we should extract regex from
 - name: regex
   required: true
@@ -46,11 +47,11 @@ args:
 - name: contextKey
   description: The context key to populate with the result
 - name: flags
-  description: The regex flags to match. Default is -i.
+  description: The regex flags to match. Default is -im.
   defaultValue: 
 outputs:
 - contextPath: MatchRegex.results
   description: List of Regex matches
   type: string
 scripttarget: 0
-runonce: false
+releaseNotes: "Added the option to return all matches."
