@@ -14,26 +14,33 @@ script: |-
 
   indicator_value = demisto.args()['input']
   indicator = get_indicator_from_value(indicator_value)
-  res = demisto.executeCommand("maliciousRatio", {'value': indicator['value']})
-  mr_score = res[0]['Contents'][0]['maliciousRatio']
-  if mr_score > float(demisto.args()['threshold']):
-      ec = {}
-      ec['DBotScore'] = {
-          'Type': indicator['indicator_type'].lower(),
-          'Score': 2, #suspicious
-          'Vendor': 'MaliciousRatio',
-          'Indicator': indicator['value']
-      }
-      demisto.results({
-          'Type': entryTypes['note'],
-          'EntryContext': ec,
-          'Contents': 'Malicious ratio for %s is %.2f' % (indicator['value'], mr_score),
-          'ContentsFormat': formats['text']
-      })
+  if indicator:
+      res = demisto.executeCommand("maliciousRatio", {'value': indicator['value']})
+      try:
+          mr_score = res[0]['Contents'][0]['maliciousRatio']
+          if mr_score > float(demisto.args()['threshold']):
+              ec = {}
+              ec['DBotScore'] = {
+                  'Type': indicator['indicator_type'].lower(),
+                  'Score': 2, #suspicious
+                  'Vendor': 'DBot-MaliciousRatio',
+                  'Indicator': indicator['value']
+              }
+              entry = {
+                  'Type': entryTypes['note'],
+                  'EntryContext': ec,
+                  'Contents': ec['DBotScore']['Score'],
+                  'ContentsFormat': formats['text'],
+                  'HumanReadable': 'Malicious ratio for %s is %.2f' % (indicator['value'], mr_score),
+                  'ReadableContentsFormat': formats['markdown']
+              }
+              demisto.results(entry)
+      except:
+          pass
 type: python
 tags:
 - reputation
-comment: |
+comment: |-
   Set indicator reputation to "suspicious" when malicious ratio is above threshold.
   Malicious ratio is the ration between number of "bad" incidents to total number of incidents the indicator appears in.
 enabled: true
@@ -42,7 +49,7 @@ args:
   description: Value of the indicator.
 - name: threshold
   description: 'Malicious ratio threshold to set indicator as suspicious. '
-  defaultValue: "0.5"
+  defaultValue: "0.3"
 scripttarget: 0
 runonce: false
 releaseNotes: "Add malicious ratio reputation script"
