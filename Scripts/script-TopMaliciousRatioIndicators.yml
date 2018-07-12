@@ -2,6 +2,7 @@ commonfields:
   id: TopMaliciousRatioIndicators
   version: -1
 name: TopMaliciousRatioIndicators
+fromversion: "4.0.0"
 script: |
   from datetime import datetime, timedelta
   import json, random
@@ -34,6 +35,7 @@ script: |
       indicators_map[mr['indicatorId']]['from_date'] = from_date
 
   sorted_indicators = sorted(indicators_map.values(), key=lambda x: x['maliciousRatio'], reverse=True)
+  sorted_indicators = [x for x in sorted_indicators if x['maliciousRatio'] > 0]
   sorted_indicators = sorted_indicators[:MAX_RESULTS]
   sorted_indicators = map(select_indicator_columns, sorted_indicators)
   demisto.results(json.dumps({"total": len(sorted_indicators), "data": sorted_indicators}))
