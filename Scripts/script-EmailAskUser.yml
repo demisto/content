@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: EmailAskUser
 fromversion: 3.5.0
-releaseNotes: "Spelling fix"
 script: |-
   // email body type
   var bodyType = 'text';
