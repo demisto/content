@@ -57,6 +57,12 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Events to fetch (All, Issues, Blocked Clicks,  Permitted Clicks,  Blocked
+    Messages, Delivered Messages)
+  name: eventTypes
+  defaultvalue: All
+  type: 0
+  required: false
 script:
   script: |-
     /**
@@ -83,6 +89,67 @@ script:
             return this.substring(this_len - search.length, this_len) === search;
         };
     }
+
+    /**
+     * Returns true if the object is in the array
+     * @param {searchElement} element to search for
+     * @param {fromIndex} starting indext in the array to start the search from
+     * @return {Boolean} true if object is in the array
+     * Source: https://tc39.github.io/ecma262/#sec-array.prototype.includes
+     */
+    if (!Array.prototype.includes) {
+      Object.defineProperty(Array.prototype, 'includes', {
+        value: function(searchElement, fromIndex) {
+
+          if (this == null) {
+            throw new TypeError('"this" is null or not defined');
+          }
+
+          // 1. Let O be ? ToObject(this value).
+          var o = Object(this);
+
+          // 2. Let len be ? ToLength(? Get(O, "length")).
+          var len = o.length >>> 0;
+
+          // 3. If len is 0, return false.
+          if (len === 0) {
+            return false;
+          }
+
+          // 4. Let n be ? ToInteger(fromIndex).
+          //    (If fromIndex is undefined, this step produces the value 0.)
+          var n = fromIndex | 0;
+
+          // 5. If n ≥ 0, then
+          //  a. Let k be n.
+          // 6. Else n < 0,
+          //  a. Let k be len + n.
+          //  b. If k < 0, let k be 0.
+          var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+          function sameValueZero(x, y) {
+            return x === y || (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y));
+          }
+
+          // 7. Repeat, while k < len
+          while (k < len) {
+            // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+            // b. If SameValueZero(searchElement, elementK) is true, return true.
+            if (sameValueZero(o[k], searchElement)) {
+              return true;
+            }
+            // c. Increase k by 1.
+            k++;
+          }
+
+          // 8. Return false
+          return false;
+        }
+      });
+    }
+
+    var FILTER_ARGS_LIST = Object.freeze(["all", "issues", "blockedclicks", "permittedclicks", "blockedmessages", "deliveredmessages"]);
+    var ISSUES = Object.freeze(["permittedclicks", "deliveredmessages"]);
 
     function fixUrl(url) {
         if (url.endsWith('/')) {
@@ -116,8 +183,31 @@ script:
     }
 
 
+    function parseFilterElement(e) {
+        clean = e.toLowerCase().replace(/\s/g, '');
+        if (!FILTER_ARGS_LIST.includes(clean)) {
+            throw "Invalid event type: " + e;
+        }
+        return clean;
+    }
+
+
+    function parseFilter(filter) {
+        var filterList = [];
+        var rawFilterList = filter.split(",");
+        if (rawFilterList.length === 1 && filterList[0] === '') {
+            return ["all"];
+        }
+
+        return rawFilterList.map(parseFilterElement);
+    }
+
+    function shouldGetEvent(eventType, filter) {
+        return filter.includes("all") || (filter.includes("issues") && ISSUES.includes(eventType)) || filter.includes(eventType);
+    }
 
     function getEvents() {
+        var filter = parseFilter(args.eventTypes);
         var events = getEventsRequest(args.interval, args.sinceTime, args.sinceSeconds, args.threatType, args.threatStatus);
 
         // human readable
@@ -131,7 +221,7 @@ script:
         var eventsMarkdownString = '';
         if (events) {
             // convert events to demisto incidents
-            if (events.messagesDelivered && events.messagesDelivered.length > 0) {
+            if (shouldGetEvent("deliveredmessages", filter) && events.messagesDelivered && events.messagesDelivered.length > 0) {
                 for (var i = 0; i < events.messagesDelivered.length; i++) {
                     var event = events.messagesDelivered[i];
                     messagesDeliveredOutput.push(event);
@@ -153,7 +243,7 @@ script:
                 ]);
             }
 
-            if (events.messagesBlocked && events.messagesBlocked.length > 0) {
+            if (shouldGetEvent("blockedmessages", filter) && events.messagesBlocked && events.messagesBlocked.length > 0) {
                 for (var i = 0; i < events.messagesBlocked.length; i++) {
                     var event = events.messagesBlocked[i];
                     messagesBlockedOutput.push(event);
@@ -174,7 +264,7 @@ script:
                 ]);
             }
 
-            if (events.clicksPermitted && events.clicksPermitted.length > 0) {
+            if (shouldGetEvent("permittedclicks", filter) && events.clicksPermitted && events.clicksPermitted.length > 0) {
                 for (var i = 0; i < events.clicksPermitted.length; i++) {
                     var event = events.clicksPermitted[i];
                     clicksPermittedOutput.push(event);
@@ -183,7 +273,7 @@ script:
                 eventsMarkdownString += tableToMarkdown('Clicks Permitted', clicksPermittedOutput);
             }
 
-            if (events.clicksBlocked && events.clicksBlocked.length > 0) {
+            if (shouldGetEvent("blockedclicks", filter) && events.clicksBlocked && events.clicksBlocked.length > 0) {
                 for (var i = 0; i < events.clicksBlocked.length; i++) {
                     var event = events.clicksBlocked[i];
                     clicksBlockedOutput.push(event);
@@ -243,6 +333,7 @@ script:
     }
 
     var results;
+    var globalFilter = parseFilter(params.eventTypes);
     switch(command) {
         case 'test-module':
             // the test will get the last 10 minutes events
@@ -273,7 +364,7 @@ script:
             var incidents = [];
             if (events) {
                 // convert events to demisto incidents
-                if (events.messagesDelivered && events.messagesDelivered.length > 0) {
+                if (shouldGetEvent("deliveredmessages", globalFilter) && events.messagesDelivered && events.messagesDelivered.length > 0) {
                     for (var i = 0; i < events.messagesDelivered.length; i++) {
                         var event = events.messagesDelivered[i];
                         event.type = 'messages delivered';
@@ -286,7 +377,7 @@ script:
                     }
                 }
 
-                if (events.messagesBlocked && events.messagesBlocked.length > 0) {
+                if (shouldGetEvent("blockedmessages", globalFilter) && events.messagesBlocked && events.messagesBlocked.length > 0) {
                     for (var i = 0; i < events.messagesBlocked.length; i++) {
                         var event = events.messagesBlocked[i];
                         event.type = 'messages blocked';
@@ -299,7 +390,7 @@ script:
                     }
                 }
 
-                if (events.clicksPermitted && events.clicksPermitted.length > 0) {
+                if (shouldGetEvent("permittedclicks", globalFilter) && events.clicksPermitted && events.clicksPermitted.length > 0) {
                     for (var i = 0; i < events.clicksPermitted.length; i++) {
                         var event = events.clicksPermitted[i];
                         event.type = 'clicks permitted';
@@ -312,7 +403,7 @@ script:
                     }
                 }
 
-                if (events.clicksBlocked && events.clicksBlocked.length > 0) {
+                if (shouldGetEvent("blockedclicks", globalFilter) && events.clicksBlocked && events.clicksBlocked.length > 0) {
                     for (var i = 0; i < events.clicksBlocked.length; i++) {
                         var event = events.clicksBlocked[i];
                         event.type = 'clicks blocked';
@@ -376,12 +467,24 @@ script:
         API server time rounded to the nearest minute. If JSON output is selected,
         the end time is included in the returned result. Example: 2016-05-01T12:00:00Z'
     - name: sinceSeconds
-      description: 'An integer representing a time window in seconds from the current API server time.
-        The start of the window is the current API server time, rounded to the nearest minute,
-        less the number of seconds provided. The end of the window is the current API server
-        time rounded to the nearest minute. If JSON output is selected, the end
-        time is included in the returned result.'
+      description: 'An integer representing a time window in seconds from the current
+        API server time. The start of the window is the current API server time, rounded
+        to the nearest minute, less the number of seconds provided. The end of the
+        window is the current API server time rounded to the nearest minute. If JSON
+        output is selected, the end time is included in the returned result.'
+    - name: eventTypes
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Issues
+      - DeliveredMessages
+      - BlockedMessages
+      - PermittedClicks
+      - BlockedClicks
+      description: Type of events to get
+      defaultValue: All
     description: Fetch events for all click and message relating to known threats
       within the specified time period. Details as per clicks/blocked.
   isfetch: true
   runonce: false
+releaseNotes: "Added the ability to fetch only certain event types."
