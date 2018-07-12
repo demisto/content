@@ -1,5 +1,6 @@
 {
   "id": "TopMaliciousRatioIndicators",
+  "fromVersion": "4.0.0",
   "version": -1,
   "modified": "2018-07-03T14:52:05.828225489+03:00",
   "name": "TopMaliciousRatioIndicators",
