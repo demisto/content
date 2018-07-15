@@ -201,10 +201,6 @@
             "nightly": true
         },
         {
-            "integrations": "ThreatExchange",
-            "playbookID": "ThreatExchange-test"
-        },
-        {
             "integrations": "jira",
             "playbookID": "Jira-Test"
         },
@@ -376,6 +372,11 @@
             "playbookID": "Cybereason Test"
         },
         {
+            "integrations": "ThreatExchange",
+            "playbookID": "extract_indicators_-_generic_-_test",
+            "timeout": 240
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Demo Playbook",
             "nightly": true,
@@ -394,8 +395,7 @@
         },
         {
             "integrations": "ThreatExchange",
-            "playbookID": "extract_indicators_-_generic_-_test",
-            "timeout": 240
+            "playbookID": "ThreatExchange-test"
         },
         {
             "integrations": "Anomali ThreatStream",
