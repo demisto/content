@@ -17,15 +17,10 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Database username
-  name: user
+- display: Username
+  name: credentials
   defaultvalue: ""
-  type: 0
-  required: true
-- display: Database User password
-  name: password
-  defaultvalue: ""
-  type: 4
+  type: 9
   required: true
 - display: Database name
   name: dbname
@@ -45,10 +40,10 @@ script:
 
     def pgsqlConnect():
         connectionString = "dbname='" + demisto.params()['dbname'] +"' ";
-        connectionString +="user='" + demisto.params()['user'] +"' ";
+        connectionString +="user='" + demisto.params()['credentials']['identifier'] +"' ";
         connectionString +="host='" + demisto.params()['host'] +"' ";
         connectionString +="port='" + str(demisto.params()['port']) +"' ";
-        connectionString +="password='" + demisto.params()['password'] +"'";
+        connectionString +="password='" + demisto.params()['credentials']['password'] +"'";
         try:
             conn = psycopg2.connect(connectionString)
             conn.autocommit = True
@@ -136,4 +131,5 @@ script:
       description: SQL Statement
     description: Query PostgreSQL database
   dockerimage: demisto/psycopg2
-hidden: false
+  runonce: false
+releaseNotes: "Breaking change: Replaced username/password fields with Credentials store"
