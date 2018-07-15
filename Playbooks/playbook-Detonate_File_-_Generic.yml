@@ -12,6 +12,7 @@ tasks:
     task:
       id: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
       version: -1
+      description: "Playbook start point"
       name: ""
       iscommand: false
       brand: ""
@@ -99,6 +100,7 @@ tasks:
     task:
       id: 9db19651-009c-468f-80b3-c58efea96ed2
       version: -1
+      description: "Done"
       name: Done
       type: title
       iscommand: false
