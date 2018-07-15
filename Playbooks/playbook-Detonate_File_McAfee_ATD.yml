@@ -1,6 +1,6 @@
-id: ATD - Detonate File_copy
+id: ATD - Detonate File
 version: -1
-name: ATD - Detonate File_copy
+name: ATD - Detonate File
 fromversion: ""
 description: Detonate a file through McAfee ATD
 starttaskid: "0"
@@ -156,3 +156,4 @@ inputs:
   required: false
   description: the EntryID of the file to detonate
 outputs: []
+releaseNotes: "adding a detonate-file playbook using McAfee ATD"
