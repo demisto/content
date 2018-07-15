@@ -1,8 +1,8 @@
 commonfields:
-  id: SSDeepReputation
-  version: -1
+  id: 127b4d8a-394f-4fca-832d-c8b0000c5f72
+  version: 85
 name: SSDeepReputation
-script: |
+script: |2
 
   REPUTATIONS = {
       0: 'None',
@@ -13,8 +13,6 @@ script: |
 
   def get_indicator_from_value(indicator_value):
       try:
-          if not indicator_value:
-              return None
           res = demisto.executeCommand("findIndicators", {'value': indicator_value})
           indicator = res[0]['Contents'][0]
           return indicator
@@ -28,18 +26,16 @@ script: |
           try:
               res = demisto.executeCommand("getContext", {"id": inv_id})
               context = res[0]['Contents']['context']
-              file_obj = demisto.dt(context, "File(val.SSDeep == '%s')" % ssdeep_indicator['value'])
-              if file_obj is None:
-                  file_obj = {}
-              elif type(file_obj) == list:
-                  file_obj = file_obj[0]
-              related_indicators.append(get_indicator_from_value(file_obj.get('MD5')))
-              related_indicators.append(get_indicator_from_value(file_obj.get('SHA1')))
-              related_indicators.append(get_indicator_from_value(file_obj.get('SHA256')))
+              file_obj = demisto.dt(context, "File(val.SSDeep == '%s')" % ssdeep_indicator['value'])[0]
+              related_indicators.append(get_indicator_from_value(file_obj['MD5']))
+              related_indicators.append(get_indicator_from_value(file_obj['SHA1']))
+              related_indicators.append(get_indicator_from_value(file_obj['SHA256']))
           except:
               continue
       related_indicators = [x for x in related_indicators if x is not None]
       return related_indicators
+
+
 
   ssdeep_value = demisto.args()['input']
   ssdeep_indicator = get_indicator_from_value(ssdeep_value)
@@ -57,6 +53,7 @@ script: |
 
   max_score = max(map(lambda x: x['score'], related_indicators))
   max_score_indicator = next(x for x in related_indicators if x['score'] == max_score)
+
   if max_score > ssdeep_indicator['score']:
       entry = {
           'Type': entryTypes['note'],
@@ -91,4 +88,4 @@ args:
   defaultValue: "50"
 scripttarget: 0
 runonce: false
-releaseNotes: "Add ssdeep reputation script"
+releaseNotes: "Add script for test"

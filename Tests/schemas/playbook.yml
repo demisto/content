@@ -131,6 +131,8 @@ mapping:
             type: int
           separatecontext:
             type: bool
+          note:
+            type: bool
   system:
     type: bool
   fromversion:

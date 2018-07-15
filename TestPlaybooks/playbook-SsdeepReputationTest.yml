@@ -1,0 +1,99 @@
+id: ssdeepreputationtest
+version: -1
+name: SsdeepReputationTest
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7ce9b764-e11e-4866-85fe-61adc0f0553b
+    type: start
+    task:
+      id: 7ce9b764-e11e-4866-85fe-61adc0f0553b
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 160
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 05a4b93d-27ac-48ab-8b53-3618b36e22cc
+    type: regular
+    task:
+      id: 05a4b93d-27ac-48ab-8b53-3618b36e22cc
+      version: -1
+      description: ""
+      name: Ssdeep test
+      scriptName: SsdeepReputationTest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    results:
+    - File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 310
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 7085c54b-3303-49f3-89a9-64c58dc1d00d
+    type: regular
+    task:
+      id: 7085c54b-3303-49f3-89a9-64c58dc1d00d
+      version: -1
+      description: ""
+      name: Check score
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: "3"
+      fields: {}
+      path:
+        simple: DBotScore.Score
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 510
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 445,
+        "width": 380,
+        "x": 740,
+        "y": 160
+      }
+    }
+  }
+inputs: []
+outputs: []
