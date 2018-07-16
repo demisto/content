@@ -39,17 +39,22 @@ script:
           conn.close()
 
     def pgsqlConnect():
-        connectionString = "dbname='" + demisto.params()['dbname'] +"' ";
-        connectionString +="user='" + demisto.params()['credentials']['identifier'] +"' ";
-        connectionString +="host='" + demisto.params()['host'] +"' ";
-        connectionString +="port='" + str(demisto.params()['port']) +"' ";
-        connectionString +="password='" + demisto.params()['credentials']['password'] +"'";
+        params = demisto.params()
+        username = params.get('username') or params.get('credentials')['identifier']
+        password = params.get('password') or params.get('credentials')['password']
+
+        connectionString = "dbname='" + params.get('dbname') + "' ";
+        connectionString +="user='" + username + "' ";
+        connectionString +="host='" + params.get('host') + "' ";
+        connectionString +="port='" + str(params.get('port')) + "' ";
+        connectionString +="password='" + password + "'";
+
         try:
             conn = psycopg2.connect(connectionString)
             conn.autocommit = True
         except Exception as e:
             demisto.results(e.message)
-            return None
+            sys.exit(0)
         return conn
 
     if demisto.command() == 'test-module':
@@ -132,4 +137,4 @@ script:
     description: Query PostgreSQL database
   dockerimage: demisto/psycopg2
   runonce: false
-releaseNotes: "Breaking change: Replaced username/password fields with Credentials store"
+releaseNotes: "Replaced username/password fields with Credentials store."
