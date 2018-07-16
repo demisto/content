@@ -1,7 +1,7 @@
 {
     "id": "engine-total-workers-bar",
     "version": -1,
-    "fromVersion": "3.5.1",
+    "fromVersion": "4.0.0",
     "modified": "2018-03-14T17:42:44.919467+02:00",
     "name": "Engine Workers Count",
     "description": "Current number of workers per engine",
