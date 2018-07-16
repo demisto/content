@@ -54,7 +54,7 @@ script:
             url: 'reports/report',
             method: 'GET',
         },
-        'fe-submit-file-status': {
+        'fe-submit-status': {
             url: 'submissions/status/%submission_Key%',
             method: 'GET',
             setContentType: true,
@@ -127,7 +127,7 @@ script:
                 }
             ],
         },
-        'fe-submit-file': {
+        'fe-submit': {
             extended: true,
             translator: [
                 {
@@ -264,7 +264,7 @@ script:
             var filename = getFileName(args);
             result = {Type: 9, FileID: saveFile(response.Bytes), File: filename, Contents: filename};
             break;
-        case 'fe-submit-file':
+        case 'fe-submit':
             if (args.profiles) {
                 args.profiles = args.profiles.split(',');
                 for (var k in args.profiles) {
@@ -397,7 +397,7 @@ script:
     - name: frame
       description: commands.server.feReport.arguments.frame.description
     description: commands.server.feReport.description
-  - name: fe-submit-file-status
+  - name: fe-submit-status
     arguments:
     - name: submission_Key
       required: true
@@ -465,7 +465,7 @@ script:
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
     description: Results of the file submission
-  - name: fe-submit-file
+  - name: fe-submit
     arguments:
     - name: upload
       description: commands.server.feSubmit.arguments.uploadFile.description
