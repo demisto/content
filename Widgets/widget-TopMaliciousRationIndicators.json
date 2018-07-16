@@ -55,5 +55,5 @@
   },
   "size": 10,
   "category": "",
-  "releaseNotes": "Adding Top Malicious Ration widget"
+  "description": "Malicious Ratio indicator widget shows indicator that appear in high ration at bad incidents"
 }
