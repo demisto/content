@@ -54,5 +54,6 @@
       "maximumNumberOfResults": 50
   },
   "size": 10,
-  "category": ""
+  "category": "",
+  "description": "Top malicious ratio indicators"
 }
