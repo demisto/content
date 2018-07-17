@@ -26,3 +26,5 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+dockerimage: demisto/python3
+releaseNotes: "-"
