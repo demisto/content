@@ -450,9 +450,13 @@ script:
       default: true
       description: The data to get malware for
     - name: samples
+      required: false 
+      default: false
       description: The number of malware samples to return
       defaultValue: "10"
     - name: threshold
+      required: false 
+      default: false
       description: Above this number of samples we will consider this to be malicious
       defaultValue: "10"
     outputs:
@@ -531,7 +535,7 @@ script:
     - name: compact_record
       description: Compress the WHOIS record into a deduplicated format - true or
         false
-      defaultValue: "true"
+      defaultValue: true
     outputs:
     - contextPath: passivetotal.whois.email
       description: Contact email for the queried domain
@@ -569,6 +573,7 @@ script:
       description: Query value to use in your request
     - name: direction
       required: true
+      default: false
       description: Relationship direction - parents, children.
       defaultValue: children
     description: Get host pairs based on dependent requests observed in web crawls
