@@ -861,10 +861,11 @@ script:
         destination_folder = get_folder_by_path(destination_account, destination_folder_path)
         item = get_item_from_mailbox(source_account, item_id)
         try:
-          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+            source_account.bulk_move(ids=[item], to_folder=destination_folder)
         except ErrorToFolderNotFound:
-          source_account = get_account(source_mailbox or ACCOUNT_EMAIL, access_type=DELEGATE)
-          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+            exported_items = source_account.export([item])
+            destination_account.upload([(destination_folder, exported_items[0])])
+            source_account.bulk_delete([item])
 
         move_result = {
             MOVED_TO_MAILBOX: destination_mailbox,
@@ -872,12 +873,12 @@ script:
         }
 
         return {
-          'Type': entryTypes['note'],
-          'Contents': "Item was moved successfully.",
-          'ContentsFormat': formats['text'],
-          ENTRY_CONTEXT: {
-             "EWS.Items(val.itemId === '%s')" % (item_id,): move_result
-          }
+            'Type': entryTypes['note'],
+            'Contents': "Item was moved successfully.",
+            'ContentsFormat': formats['text'],
+            ENTRY_CONTEXT: {
+               "EWS.Items(val.itemId === '%s')" % (item_id,): move_result
+            }
         }
 
     def move_item(item_id, target_folder_path, target_mailbox=None):
@@ -1774,5 +1775,3 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-releaseNotes: "Fixed handing attachments with an empty name/content."
-

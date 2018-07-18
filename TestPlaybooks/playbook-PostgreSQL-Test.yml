@@ -5,17 +5,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0f69103c-5b7e-4bdc-83d2-ba197765e604
+    taskid: da241676-a328-4850-8552-3449a1797625
     type: start
     task:
-      id: 0f69103c-5b7e-4bdc-83d2-ba197765e604
+      id: da241676-a328-4850-8552-3449a1797625
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,12 +25,18 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
   "1":
     id: "1"
-    taskid: 5da971b1-3b83-4e5a-8943-015606810d4e
+    taskid: 9674640e-c06c-473e-8592-fa33e2806248
     type: regular
     task:
-      id: 5da971b1-3b83-4e5a-8943-015606810d4e
+      id: 9674640e-c06c-473e-8592-fa33e2806248
       version: -1
       name: Run a PostgreSQL Query
       script: PostgreSQL|||pgsql-query
@@ -39,8 +47,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      extend-context: pgSqlStatus=val
-      query: select 'ALLGOOD' as val
+      query:
+        simple: select 'ALLGOOD' as val
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -48,82 +57,56 @@ tasks:
           "y": 230
         }
       }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
   "2":
     id: "2"
-    taskid: 2b4241ed-168c-4380-8f1f-0686b9cb7064
-    type: condition
+    taskid: 630d0a33-3041-4259-86fc-ea3d86bb3d61
+    type: regular
     task:
-      id: 2b4241ed-168c-4380-8f1f-0686b9cb7064
+      id: 630d0a33-3041-4259-86fc-ea3d86bb3d61
       version: -1
-      name: Check if query returned ALLGOOD
-      scriptName: Exists
-      type: condition
+      name: VerifyHumanReadableEquals
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableEquals
+      type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "3"
     scriptarguments:
-      value: ${pgSqlStatus(val='ALLGOOD')}
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      string:
+        simple: val,ALLGOOD
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 411
+          "y": 410
         }
       }
-  "3":
-    id: "3"
-    taskid: 547453ee-169c-4df6-8d33-dd283953ae61
-    type: regular
-    task:
-      id: 547453ee-169c-4df6-8d33-dd283953ae61
-      version: -1
-      name: All good. Closing investigation
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes: ""
-      reason: ""
-    view: |-
-      {
-        "position": {
-          "x": 682,
-          "y": 583
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 6f197467-630e-4c1a-8e5c-1424f257019f
-    type: regular
-    task:
-      id: 6f197467-630e-4c1a-8e5c-1424f257019f
-      version: -1
-      name: Did not get expected value. Pending analysis
-      type: regular
-      iscommand: false
-      brand: ""
-    view: |-
-      {
-        "position": {
-          "x": 249,
-          "y": 583
-        }
-      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 628,
-        "width": 813,
-        "x": 249,
+        "height": 455,
+        "width": 380,
+        "x": 450,
         "y": 50
       }
     }
   }
 inputs: []
+outputs: []
+fromversion: 3.6.0

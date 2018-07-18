@@ -2,7 +2,6 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
-releaseNotes: "Remove special support for EWS - Work in generic way with all relevant integrations"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
