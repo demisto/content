@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: FireEye ETP
 display: FireEye ETP
-category: Authentication
+category: Email Gateway
 image: data:image/png;base64,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
 description: 'FireEye Email Threat Prevention (ETP Cloud) is a cloud-based platform
   that protects against advanced email attacks. '
@@ -131,7 +131,7 @@ script:
 
         #handle request failure
         if response.status_code not in range(200,205):
-            raise ValueError('Request failed with status code {}\n{}'.format(response.status_code, response))
+            raise ValueError('Request failed with status code {}\n{}'.format(response.status_code, response.text))
         return response.json()
 
     def return_error_entry(message):
@@ -224,17 +224,25 @@ script:
 
     def message_context_data(message):
         context_data = copy.deepcopy(message)
+
         # remove 'attributes' level
         context_data.update(context_data.pop('attributes', {}))
+
         # parse email sddresses
         match =  re.search('<(.*)>', context_data['senderHeader'].replace('\\"',''))
         context_data['from'] = match.group() if match else context_data['senderHeader']
+
+        if context_data.get('recipientHeader') is None:
+                context_data['recipients'] = []
+                return context_data
+
         recipients = []
-        for recipient_header in context_data['recipientHeader']:
+        for recipient_header in context_data.get('recipientHeader', []):
             match = re.search('<(.*)>', recipient_header)
             recipient_address = match.group() if match else recipient_header
             recipients.append(recipient_address)
         context_data['recipients'] = ','.join(recipients)
+
         return context_data
 
     def search_messages_request(attributes={}, has_attachments=None, max_message_size=None):
@@ -594,7 +602,7 @@ script:
             if message_last_modified > last_incident_datetime:
                 last_incident_datetime = message_last_modified
 
-        last_run['last_modified'] = last_incident_datetime.isoformat() + 'Z'
+        last_run['last_modified'] = last_incident_datetime.isoformat()[:-3] + 'Z'
         demisto.incidents(incidents)
         demisto.setLastRun(last_run)
 
@@ -603,8 +611,8 @@ script:
     '''
 
     try:
-        if demisto.command() == 'test module':
-            alerts = get_alert_request(size=1)
+        if demisto.command() == 'test-module':
+            alerts = get_alerts_request(size=1)
             # request was succesful
             demisto.results('ok')
         if demisto.command() == 'fetch-incidents':
