@@ -8,7 +8,7 @@
   "widgetType": "table",
   "query": "TopMaliciousRatioIndicators",
   "sort": null,
-  "isPredefined": false,
+  "isPredefined": true,
   "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -54,5 +54,6 @@
       "maximumNumberOfResults": 50
   },
   "size": 10,
-  "category": ""
+  "category": "",
+  "description": "Malicious Ratio indicator widget shows indicator that appear in high ration at bad incidents"
 }
