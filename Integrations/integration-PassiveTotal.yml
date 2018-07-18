@@ -57,8 +57,8 @@ script:
                 Password: params.APIKey,
                 Body: body ? body : ''
             },
-            args.insecure,
-            args.proxy
+            args.insecure || false,
+            args.proxy || false
         );
         if (result.StatusCode !== 200 && result.StatusCode !== 201) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', request body: ' + result.Body;
