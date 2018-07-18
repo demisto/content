@@ -5,9 +5,16 @@ name: Palo Alto Minemeld
 display: Palo Alto - Minemeld
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
-description: Use the Palo Alto Minemeld integration to manage your miners from within Demisto.
+description: MineMeld streamlines the aggregation, enforcement and sharing of threat
+  intelligence.
+detaileddescription: |-
+  There are 2 list types, each list type holds the names of the miners(lists) that are accounted as threat intel lists (blacklist, whitelist)
+  Each list type represents different DbotScore on Demisto.
+  Blacklist - if indicator is found in one of the blacklists then the indicator will get DbotScore  3, which is considered malicious in Demisto.
+  Whitelist - if indicator is found in one o the whitelists then the indicator will get DbotScore 1 which is considered good in Demisto.
+  If indicator is not found in any list, it will get DbotScore of 0 - unknown severity.
 configuration:
-- display: ""
+- display: MineMeld url e.g.(https://192.0.0.1/)
   name: url
   defaultvalue: ""
   type: 0
@@ -17,10 +24,25 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Use proxy
+- display: Use system proxy
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
+- display: Blacklist names e.g.(BlackListIPv4, BlackListURL,Malicious)
+  name: black_list
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Suspicious list names e.g.(SuspiciousListIPv4,SuspiciousListFiles,Suspicious)
+  name: suspicious_list
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Whitelist names e.g.(wlWhiteListIPv4,wlWhiteListDomain,Unmalicious)
+  name: white_list
+  defaultvalue: ""
+  type: 0
   required: false
 script:
   script: |
@@ -45,6 +67,7 @@ script:
     LOG = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
 
+    #globals and constants
     IPV4_CLASS = 'minemeld.ft.local.YamlIPv4FT'
     IPV6_CLASS = 'minemeld.ft.local.YamlIPv6FT'
     URL_CLASS = 'minemeld.ft.local.YamlURLFT'
@@ -67,6 +90,18 @@ script:
             'supported_classes': [IPV4_CLASS,IPV6_CLASS,URL_CLASS,DOMAIN_CLASS,LOCALDB_CLASS]
         }
     }
+    WHITELISTS = demisto.params()['white_list'] if isinstance(demisto.params()['white_list'], (list)) else [demisto.params()['white_list']]
+    BLACKLISTS = demisto.params()['black_list'] if isinstance(demisto.params()['black_list'], (list)) else [demisto.params()['black_list']]
+    LISTS_BY_SEVERITY = {
+        'whitelist': {
+            'lists': WHITELISTS,
+            'DBotScore': 1
+        },
+        'blacklist': {
+            'lists': BLACKLISTS,
+            'DBotScore': 3
+        },
+    }
     ADD_ACTION = 'minemeld-add-to-miner'
     REMOVE_ACTION = 'minemeld-remove-from-miner'
     SERVER_URL = demisto.params()['url']
@@ -74,7 +109,9 @@ script:
     PASSWORD = demisto.params()['credentials']['password']
     USE_PROXY = demisto.params()['proxy']
 
+
     class MineMeldAPIClient(object):
+
         def __init__(self, url, username, password, capath):
             self.url = url
             self.username = username
@@ -193,6 +230,8 @@ script:
         if not isinstance(values, list):
             values = values.split(',')
         request_params = {}
+        if type_ is False:
+            type_ = ''
 
         if action == ADD_ACTION:
             for value in values:
@@ -215,6 +254,34 @@ script:
             raise Exception('Action %s is not supported' % action)
 
         MM.upload(miner, '[{}]'.format(','.join(current.values())))
+
+
+    def get_indicators_from_miner(miner_name,indicator_value=False):
+
+        result_indicator = []
+        miner_list = get_miner_list(MM, miner_name)
+        for indicator in miner_list:
+            if indicator['indicator'] == indicator_value or indicator_value is False :
+                indicator['miner'] = miner_name
+                result_indicator.append(indicator)
+
+        return result_indicator
+
+    def get_indicator_name_key(indicator_type,indicator_value):
+
+        indicator_name_key = ""
+
+        if indicator_type == "IP":
+            indicator_name_key = 'Address'
+        elif indicator_type == "URL":
+            indicator_name_key = "Data"
+        elif indicator_type == "File":
+            indicator_name_key = get_hash_type(indicator_value).upper()
+        else:
+            indicator_name_key = 'Name'
+
+        return indicator_name_key
+
 
     if not USE_PROXY:
         os.environ['NO_PROXY'] = SERVER_URL
@@ -246,30 +313,24 @@ script:
 
     if demisto.command() == 'minemeld-retrieve-list':
 
-        all_lists = demisto.args().get('all',False)
+        miner_name = demisto.args()['miner']
         result_list = []
-        miner_name = ''
-        markdown_headers = []
+        markdown_headers = ['indicator', 'comment', 'type']
 
-        if all_lists:
-            markdown_headers = ['miner', 'indicator', 'type', 'comment']
+        if miner_name == 'all':
+            markdown_headers.insert(0, 'miner')
             miner_name = 'all miners'
             miners_list = MM.connection_check()
+
             for miner in miners_list:
                 if miner['class'] in INDICATOR_TYPE_TO_CLASS['any']['supported_classes']:
-                    miner_list = get_miner_list(MM, miner['name'])
-                    for indicator in miner_list:
-                        indicator['miner'] = miner['name']
+                    miner_list =  get_indicators_from_miner(miner['name'])
                     result_list.extend(miner_list)
 
         else:
-            markdown_headers = ['indicator', 'comment', 'type']
-            miner_name = demisto.args()['miner']
-            result_list = get_miner_list(MM, miner_name)
-            for indicator in result_list:
-                indicator['miner'] = miner_name
+            result_list = get_indicators_from_miner(miner_name)
 
-        miner_context_key = "Minemeld.Miner(val.indicator == obj.indicator && val.miner == obj.miner)"
+        miner_context_key = "MineMeld.Miner(val.indicator == obj.indicator && val.miner == obj.miner)"
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -288,15 +349,10 @@ script:
         miner_name = demisto.args()['miner']
         item = demisto.args()['item']
         matching_items = []
-        miner_list = get_miner_list(MM, miner_name)
 
-        for indicator in miner_list:
-            indicator['miner'] = miner_name
-            for value in indicator.values():
-                if value == item:
-                    matching_items.append(indicator)
+        matching_items = get_indicators_from_miner(miner_name,item)
 
-        miner_context_key = "Minemeld.Item()"
+        miner_context_key = "MineMeld.Item()"
         if matching_items:
             result_text = 'Items found at miner: %s' % miner_name
         else:
@@ -313,6 +369,32 @@ script:
             }
         })
 
+    if demisto.command() == 'minemeld-get-all-lists-names':
+
+        miners_list = MM.connection_check()
+        matching_items = []
+
+        for miner in miners_list:
+            if miner['class'] in INDICATOR_TYPE_TO_CLASS['any']['supported_classes']:
+                matching_items.append({"miner": miner['name'], "indicators": miner['length'], "class": miner['class']})
+
+        miner_context_key = "MineMeld.Item(val.Name == obj.Name)"
+        if matching_items:
+            result_text = 'Miners found: '
+        else:
+            result_text = "No miners found"
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': matching_items,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(result_text, matching_items, ['miner','indicators','class']),
+            'EntryContext': {
+                miner_context_key: matching_items
+            }
+        })
+
     if demisto.command() == 'domain' or demisto.command() == 'url' or demisto.command() == 'file' or demisto.command() == 'ip':
 
         indicator_type = demisto.command()
@@ -321,22 +403,47 @@ script:
         miners_list = MM.connection_check()
         result_indicator = []
         indicator_type = indicator_type.upper() if len(indicator_type) < 4 else indicator_type.capitalize()
+        #output vars
+        dbotscore = 0
+        indicator_name_key = get_indicator_name_key(indicator_type,indicator_arg)
+        indicator_context_key = indicator_type + '(val.{} && val.{} == obj.{})'.format(indicator_name_key,indicator_name_key,indicator_name_key)
+        indicator_context_list = {}
+        entry_context = {}
 
-        for miner in miners_list:
-            if miner['class'] in indicator_classes:
-                miner_list = get_miner_list(MM, miner['name'])
-                for indicator in miner_list:
-                    indicator['miner'] = miner['name']
-                    if indicator['indicator'] == indicator_arg:
-                        if not indicator.get('type'):
-                            indicator['type'] = indicator_type
-                        result_indicator.append(indicator)
 
-        miner_context_key = "Minemeld.Item()"
+        for severity_list in LISTS_BY_SEVERITY:
+            if result_indicator:
+                break
+            for miner_name in LISTS_BY_SEVERITY[severity_list]['lists']:
+                if not result_indicator:
+                    result_indicator = get_indicators_from_miner(miner_name,indicator_arg)
+                    if result_indicator:
+                        dbotscore = LISTS_BY_SEVERITY[severity_list]['DBotScore']
+                        break
+
+        dbotscore_list = {
+            'Indicator': indicator_arg,
+            'Type': 'Hash' if indicator_type == 'File' else indicator_type,
+            'Vendor': 'Palo Alto MineMeld','Score': dbotscore
+        }
+
+        entry_context = {
+            'DBotScore(val.Indicator == obj.Indicator)': dbotscore_list,
+        }
+
         if result_indicator:
-            result_text = 'Minemeld || {} found at miner: {}'.format(indicator_type,result_indicator[0]['miner'])
+            result_text = 'Minemeld {} found at miner: {}'.format(indicator_type,result_indicator[0]['miner'])
+            indicator_context_list['MineMeld'] = { 'Item' : result_indicator }
+            # add malicious to context
+            if dbotscore ==3:
+                indicator_context_list[indicator_name_key] = indicator_arg
+                indicator_context_list['Malicious'] = {
+                    'Vendor': 'Palo Alto MineMeld',
+                    'Description': 'Indicator was found in MineMeld\'s blacklist'
+                }
+                entry_context[indicator_context_key] = indicator_context_list
         else:
-            result_text = "Minemeld || {} severity - unknown".format(indicator_type)
+            result_text = "Minemeld {} severity - unknown".format(indicator_type)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -344,9 +451,7 @@ script:
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(result_text, result_indicator, ['indicator', 'type', 'comment']),
-            'EntryContext': {
-                miner_context_key: result_indicator
-            }
+            'EntryContext': entry_context
         })
   type: python
   commands:
@@ -355,45 +460,32 @@ script:
     - name: miner
       required: true
       description: Miner name - you can get it under Nodes page on Minemeld UI (nodes
-        with position "miner").
+        of type "miner").
     - name: value
       required: true
-      description: The value to add. Support list \ comma-separated values.
+      description: The indicator's value to add. Support list \ comma-separated values.
       isArray: true
-    - name: type
-      auto: PREDEFINED
-      predefined:
-      - IPv4
-      - IPv6
-      - domain
-      - URL
-      - md5
-      - ssdeep
-      - sha1
-      - sha256
-      description: Miner type.
     - name: comment
       description: Comment to the value.
-    description: Add a value to a miner.
+    description: Add indicator to a miner.
   - name: minemeld-remove-from-miner
     arguments:
     - name: miner
       required: true
       description: Miner name - you can get it under Nodes page on Minemeld UI (nodes
-        with position "miner").
+        of type "miner").
     - name: value
       required: true
-      description: The value  to remove.
-    description: Remove a value from a miner.
+      description: The value of the indicator  to remove.
+    description: Remove an indicator from a miner.
   - name: minemeld-retrieve-list
     arguments:
     - name: miner
-      description: Miner name.
-    - name: all
+      required: true
       auto: PREDEFINED
       predefined:
-      - "yes"
-      description: Show all lists
+      - all
+      description: Miner name, value 'all' for all lists indicators
     outputs:
     - contextPath: Minemeld.Miner.indicator
       description: Indicator value
@@ -432,14 +524,38 @@ script:
       required: true
       description: ip
     outputs:
-    - contextPath: MineMeld.Item
+    - contextPath: IP.MineMeld.Item
       description: The entire record of IP
-    - contextPath: MineMeld.Item.indicator
+    - contextPath: IP.MineMeld.Item.indicator
       description: IP value
-    - contextPath: MineMeld.Item.miner
+      type: string
+    - contextPath: IP.MineMeld.Item.miner
       description: Miner name
-    - contextPath: MineMeld.Item.comment
+      type: string
+    - contextPath: IP.MineMeld.Item.comment
       description: Custom comment
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
     description: Search for ip on lists
   - name: file
     arguments:
@@ -447,14 +563,44 @@ script:
       required: true
       description: file
     outputs:
-    - contextPath: MineMeld.Item
+    - contextPath: File.MineMeld.Item
       description: The entire record of file
-    - contextPath: MineMeld.Item.indicator
+    - contextPath: File.MineMeld.Item.indicator
       description: File value
-    - contextPath: MineMeld.Item.miner
+      type: string
+    - contextPath: File.MineMeld.Item.miner
       description: Miner name
-    - contextPath: MineMeld.Item.comment
+      type: string
+    - contextPath: File.MineMeld.Item.comment
       description: Custom comment
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
     description: Search for file on lists
   - name: domain
     arguments:
@@ -462,14 +608,38 @@ script:
       required: true
       description: domain
     outputs:
-    - contextPath: MineMeld.Item
+    - contextPath: Domain.MineMeld.Item
       description: The entire record of domain
-    - contextPath: MineMeld.Item.indicator
+    - contextPath: Domain.MineMeld.Item.indicator
       description: Domain value
-    - contextPath: MineMeld.Item.miner
+      type: string
+    - contextPath: Domain.MineMeld.Item.miner
       description: Miner name
-    - contextPath: MineMeld.Item.comment
+      type: string
+    - contextPath: Domain.MineMeld.Item.comment
       description: Custom comment
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: DomainMalicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
     description: Search for domain on lists
   - name: url
     arguments:
@@ -477,14 +647,46 @@ script:
       required: true
       description: url
     outputs:
-    - contextPath: MineMeld.Item
+    - contextPath: URL.MineMeld.Item
       description: The entire record of URL
-    - contextPath: MineMeld.Item.indicator
+      type: unknown
+    - contextPath: URL.MineMeld.Item.indicator
       description: URL value
-    - contextPath: MineMeld.Item.miner
+      type: string
+    - contextPath: URL.MineMeld.Item.miner
       description: Miner name
-    - contextPath: MineMeld.Item.comment
+      type: string
+    - contextPath: URL.MineMeld.Item.comment
       description: Custom comment
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: URL.Data
+      description: URL name
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
     description: Search for url on lists
+  - name: minemeld-get-all-lists-names
+    arguments: []
+    outputs:
+    - contextPath: Minemeld.Item.miner
+      description: miner name
+      type: string
+    description: Returns all list names
   runonce: false
 releaseNotes: "Added support for miners that can support any indicator type + 4 commands for threat intel"
