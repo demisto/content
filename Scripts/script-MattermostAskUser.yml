@@ -47,7 +47,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Indicates wether to use one-time entitlement or a persistent one
+  description: Indicates whether to use one-time entitlement or a persistent one
   defaultValue: "false"
 scripttarget: 0
 runonce: false
