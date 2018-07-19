@@ -519,6 +519,7 @@ tasks:
       id: 50661f40-4640-4b90-8f01-8143cec44c79
       version: -1
       name: Is there a base64 encoding for the rendered image?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
