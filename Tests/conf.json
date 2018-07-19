@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+          "playbookID": "ssdeepreputationtest"
+        },
+        {
             "integrations": "Intezer",
             "playbookID": "Intezer Testing"
         },

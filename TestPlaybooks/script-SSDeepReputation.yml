@@ -1,6 +1,6 @@
 commonfields:
-  id: 127b4d8a-394f-4fca-832d-c8b0000c5f72
-  version: 85
+  id: SSDeepReputation
+  version: -1
 name: SSDeepReputation
 script: |2
 
