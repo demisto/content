@@ -1096,8 +1096,8 @@
 	{
 		"id": "incident_htmlimage",
 		"version": 1,
-		"modified": "2018-07-17T07:55:24.242287006Z",
-		"name": "HTM Image",
+		"modified": "2018-07-19T07:29:11.711847656Z",
+		"name": "HTML Image",
 		"ownerOnly": false,
 		"placeholder": "",
 		"description": "",
