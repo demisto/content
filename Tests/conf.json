@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "dedup_-_generic_-_test"
+        },
+        {
             "integrations": "Intezer",
             "playbookID": "Intezer Testing"
         },

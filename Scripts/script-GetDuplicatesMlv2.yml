@@ -1,9 +1,10 @@
 commonfields:
-  id: GetDuplicatesMl
+  id: GetDuplicatesMlv2
   version: -1
-name: GetDuplicatesMl
+name: GetDuplicatesMlv2
+fromVersion: "3.5.0"
 script: |
-  import json, collections, re, dateutil, datetime, pickle, ipaddress
+  import json, collections, re, dateutil.parser, datetime, pickle, ipaddress
   import tldextract, editdistance, zlib
   from rfc822 import parseaddr
   from urlparse import urlparse
@@ -55,7 +56,7 @@ script: |
 
   CANDIDATES_FEATURES_NA_RATIO = 0.2
   IP_MASK_BITS_FOR_COMPARISON = int(demisto.args()['ipComparisonSubnetMask'])
-  MAX_CANDIDATES_IN_LIST = int(demisto.args()['maxCandidates'])
+  MAX_CANDIDATES_IN_LIST = int(demisto.args()['maxResults'])
 
   ########################################################################################################################################################################
 
@@ -115,7 +116,6 @@ script: |
           found_subject = EMAIL_SUBJECT_LABEL in labels
           found_date = EMAIL_DATE_LABEL in labels
           found_sender = EMAIL_SENDER_ADDRESS_LABEL in labels
-
           for label in labels.keys():
               label_lower = label.lower()
               if not found_subject and 'email' in label_lower and 'subject' in label_lower:
@@ -283,7 +283,7 @@ script: |
 
       def get_incident_features(self):
           features = {}
-          incident_time_diff = Utils.get_time_diff_seconds(self.incident1['occurred'], self.incident2['occurred'])
+          incident_time_diff = Utils.get_time_diff_seconds(self.incident1[TIME_FIELD], self.incident2[TIME_FIELD])
           features['incident_time_diff'] = incident_time_diff
           features['same_type'] = self.incident1['type'] == self.incident2['type']
           features['same_severity'] = self.incident1['severity'] == self.incident2['severity']
@@ -319,23 +319,27 @@ script: |
   ##################################################################################
 
   MAX_INCIDENTS = int(demisto.args()['maxNumberOfIncidents'])
-  TIME_DIFF_DAYS = int(demisto.args()['timeFrameDays'])
+  TIME_DIFF_HOURS = int(demisto.args()['timeFrameHours'])
   IGNORE_CLOSED_INCIDENTS = (demisto.args()['ignoreClosedIncidents'] == 'yes')
   MAX_INDICATORS = MAX_INCIDENTS * 100
   THRESHOLD = float(demisto.args()['threshold'])
+  TIME_FIELD = demisto.args()['timeField']
 
   def create_or_condition(field, terms):
       return " or ".join(map(lambda x: "%s:%s" % (field, x), terms))
 
 
-  def get_incidents_by_time_diff(incident_time, ignore_closed=IGNORE_CLOSED_INCIDENTS, max_number_of_results=MAX_INCIDENTS, time_frame_range_days=TIME_DIFF_DAYS):
+  def get_incidents_by_time_diff(incident_id, incident_time, ignore_closed=IGNORE_CLOSED_INCIDENTS, max_number_of_results=MAX_INCIDENTS, time_frame_range_hours=TIME_DIFF_HOURS):
       incident_datetime = dateutil.parser.parse(incident_time)
-      max_date = incident_datetime + timedelta(days=time_frame_range_days)
-      min_date = incident_datetime - timedelta(days=time_frame_range_days)
-      query = 'occurred:>="%s" and occurred:<="%s"' % (min_date.isoformat(), max_date.isoformat())
+      max_date = incident_datetime + timedelta(hours=time_frame_range_hours)
+      min_date = incident_datetime - timedelta(hours=time_frame_range_hours)
+      query = '{0}:>="{1}" and {0}:<="{2}"'.format(TIME_FIELD, min_date.isoformat(), max_date.isoformat())
       if ignore_closed:
           query += " and -closed:*"
-      res = demisto.executeCommand("getIncidents", {'query': query, 'size': max_number_of_results, 'sort': 'occurred.desc'})
+      if incident_id:
+          query += ' and -id:%s' % incident_id
+
+      res = demisto.executeCommand("getIncidents", {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % TIME_FIELD})
       incident_list = res[0]['Contents']['data']
       return incident_list
 
@@ -370,8 +374,8 @@ script: |
 
   def get_my_duplicate_incidents_features(incident_type, days_to_fetch_duplicates, max_number_of_results=MAX_INCIDENTS):
       since_date = datetime.datetime.now() - datetime.timedelta(days=days_to_fetch_duplicates)
-      query = "linkedIncidents:* and occurred:>=%s and type:%s" % (since_date.isoformat(), incident_type)
-      res = demisto.executeCommand("getIncidents", {'query': query, 'size': max_number_of_results, 'sort': 'occurred.desc'})
+      query = "linkedIncidents:* and %s:>=%s and type:%s" % (TIME_FIELD, since_date.isoformat(), incident_type)
+      res = demisto.executeCommand("getIncidents", {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % TIME_FIELD})
       incident_list = res[0]['Contents']['data']
       if incident_list is None:
           return None
@@ -406,7 +410,7 @@ script: |
       return RandomForestClassifier(max_depth=10, n_estimators=100, random_state=1)
 
   def get_result_record(incident, probabilty):
-      occured_time = incident['occurred']
+      occured_time = incident[TIME_FIELD]
       try:
           date_obj = dateutil.parser.parse(occured_time)
           occured_time = date_obj.strftime('%Y-%m-%d %H:%M:%S')
@@ -418,7 +422,7 @@ script: |
               'name': incident['name'],
               'closedTime': incident['closed'] if incident['closed'] !="0001-01-01T00:00:00Z" else "",
               'duplicateProbability': probabilty,
-              'occurredTime': occured_time}
+              'time': occured_time}
 
   def camel_case_to_space(s):
       return ''.join(map(lambda x: x if x.islower() else " "+x, s)).strip().capitalize()
@@ -434,6 +438,7 @@ script: |
 
   def get_incident_email_labels(incident):
       labels_map = Utils.get_incident_labels_map(incident['labels'])
+      labels_map = Utils.complete_email_missing_labels(labels_map)
       return [label for label in labels_map.keys() if 'email' in label.lower()]
 
   incident = enrich_incidents_by_indicators(demisto.incidents()).values()[0]
@@ -462,7 +467,7 @@ script: |
   Y = features_df[DUPLICATE_COL]
   model = get_ml_model()
   model.fit(X, Y)
-  candidates = enrich_incidents_by_indicators(get_incidents_by_time_diff(incident['occurred']))
+  candidates = enrich_incidents_by_indicators(get_incidents_by_time_diff(incident.get('id'), incident[TIME_FIELD]))
   candidates.pop(incident['id'], None)
 
   candidates_features_list = []
@@ -490,17 +495,21 @@ script: |
   result.sort(key=lambda x: x['duplicateProbability'], reverse=True)
 
   # handle results
-  found_duplicates = (len(result) > 0)
-  demisto.setContext('foundDuplicates', found_duplicates)
-  if found_duplicates:
-      # context
-      demisto.setContext('duplicateCandidate', result[0])
-      demisto.setContext('duplicateCandidateList', result[:MAX_CANDIDATES_IN_LIST])
-      # entry
+  if len(result) > 0:
       hr_result = map(lambda row: dict((camel_case_to_space(k),v) for k,v in row.items()), result)
-      markdown_result = tableToMarkdown("Duplicate incidents candidates", hr_result, headers=['Id', 'Name', 'Closed time', 'Duplicate probability', 'Occurred time'])
-      demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown_result})
+      markdown_result = tableToMarkdown("Duplicate incidents candidates", hr_result, headers=['Id', 'Name', 'Closed time', 'Duplicate probability', 'Time'])
+      demisto.results({
+          'ContentsFormat': formats['markdown'],
+          'Type': entryTypes['note'],
+          'Contents': markdown_result,
+          'EntryContext': {
+              'similarIncident': result[0],
+              'similarIncidentList': result[:MAX_CANDIDATES_IN_LIST],
+              'isSimilarIncidentFound': True
+          }
+      })
   else:
+      demisto.setContext('isSimilarIncidentFound', False)
       demisto.results('Did not find any duplicate incidents candidates')
 type: python
 tags:
@@ -517,10 +526,10 @@ args:
   description: Maximum number of incidents (to fetch from the database) to consider
     for machine-learning calculation.
   defaultValue: "1000"
-- name: timeFrameDays
+- name: timeFrameHours
   description: Check candidates for duplication in this time frame of number of days
     from\after.
-  defaultValue: "7"
+  defaultValue: "72"
 - name: ignoreClosedIncidents
   auto: PREDEFINED
   predefined:
@@ -565,19 +574,34 @@ args:
     is a number between 0 - 32). Default is 32 which means an exact match of the IP
     addresses.
   defaultValue: "32"
-- name: maxCandidates
+- name: maxResults
   description: Maximum number of candidates in the output (in incidents candidate
     list).
   defaultValue: "10"
+- name: timeField
+  auto: PREDEFINED
+  predefined:
+  - occurred
+  - created
+  - modified
+  description: Time field to consider.
+  defaultValue: created
 outputs:
-- contextPath: duplicateCandidate
-  description: Duplicate candidate.
+- contextPath: similarIncident
+  description: Similar incident.
   type: unknown
-- contextPath: foundDuplicates
+- contextPath: isSimilarIncidentFound
   description: Found any duplicate?
-- contextPath: duplicateCandidateList
-  description: Duplicate incident candidates list.
+  type: boolean
+- contextPath: similarIncidentList
+  description: Similar incident candidates list.
+- contextPath: similarIncident.rawId
+  description: Similar incident ID.
+  type: string
+- contextPath: similarIncident.name
+  description: Similar incident name.
+  type: string
 scripttarget: 0
+runonce: false
 dockerimage: demisto/machine-learning
-fromversion: 3.5.0
-releaseNotes: "Find email from label automatically."
+releaseNotes: "New version for get duplicate incidents by ML. change inputs \ outputs argument.
