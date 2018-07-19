@@ -186,7 +186,7 @@ script:
         return d
 
     def get_attachment_name(attachment_name):
-        if attachment_name == None or attachent_name == "":
+        if attachment_name is None or attachent_name == "":
             return 'demisto_untitled_attachment'
         return attachment_name
 
