@@ -13,6 +13,7 @@ tasks:
       id: c613b21c-e424-4a21-8151-1c4dc32caa7a
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -35,10 +36,11 @@ tasks:
       id: 3d94acac-2907-4286-8a56-e21170e0739d
       version: -1
       name: Start scan
-      script: Rapid7 Nexpose2|||nexpose-start-site-scan
+      description: "Starts a scan for the specified site."
+      script: Rapid7 Nexpose|||nexpose-start-site-scan
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "4"
@@ -129,6 +131,7 @@ tasks:
       id: f5ca7d6f-8168-4457-8224-cee76af3ad0e
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""

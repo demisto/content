@@ -13,6 +13,7 @@ tasks:
       id: c613b21c-e424-4a21-8151-1c4dc32caa7a
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -35,10 +36,11 @@ tasks:
       id: 7234a0f8-b1af-4a32-8c9c-3d186525a57f
       version: -1
       name: Start scan
-      script: Rapid7 Nexpose2|||nexpose-start-assets-scan
+      description: "Starts a scan for specified asset IP addresses and host names."
+      script: Rapid7 Nexpose|||nexpose-start-assets-scan
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "4"
@@ -129,6 +131,7 @@ tasks:
       id: 1c704f4c-7f5e-4225-869f-2fa09265d983
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
