@@ -594,3 +594,4 @@ script:
       description: The ID of URL submission results
     description: Get a status for a url submitted to FireEye analysis
   runonce: false
+releaseNotes: "Added functionality to submit URLs to FireEye and retrieve their status. Commands added are fe-submit-url and fe-submit-url-status"
