@@ -1,7 +1,7 @@
 id: Process Email
 version: -1
 name: Process Email
-fromversion: ""
+fromversion: 2.5.0
 description: Add email details into the relevant context entities and handle the case
   where you have attached original emails.
 starttaskid: "0"

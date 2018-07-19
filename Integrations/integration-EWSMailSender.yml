@@ -56,7 +56,7 @@ configuration:
 script:
   script: |
     from cStringIO import StringIO
-    import logging, warnings
+    import logging, warnings, traceback
 
     warnings.filterwarnings("ignore")
     log_stream = StringIO()
@@ -281,3 +281,4 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
+releaseNotes: "-"
