@@ -126,3 +126,4 @@ args:
   isArray: true
 scripttarget: 0
 runonce: false
+releaseNotes: "modified to take more possible inputs"
