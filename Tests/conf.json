@@ -379,6 +379,10 @@
             "timeout": 1200
         },
         {
+            "integrations": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
             "integrations": "Recorded Future",
             "playbookID": "Recorded Future Test",
             "nightly": true
@@ -388,10 +392,6 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
-        },
-        {
-            "integrations": "ThreatExchange",
-            "playbookID": "ThreatExchange-test"
         },
         {
             "integrations": "Anomali ThreatStream",
