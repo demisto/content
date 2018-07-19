@@ -346,8 +346,8 @@ script:
 
         case 'threatstream-push-indicator':
             apiCommand = 'threatstream-import';
-            args = { "meta": { "source_confidence_weight": args.confidene_weight }, "objects": [ {
-                [args.indicator_type]: args.indicator,
+            args = { "meta": { "source_confidence_weight": args.confidenceWeight }, "objects": [ {
+                [args.indicatorType]: args.indicator,
                 "classification": args.classification,
                 "itype": args.itype,
                 "confidence": args.confidence,
@@ -644,7 +644,7 @@ script:
     description: Checks the reputation of the given IP
   - name: threatstream-push-indicator
     arguments:
-    - name: confidene_weight
+    - name: confidenceWeight
       required: true
       description: To use your source's confidence entirely, set source_confidence_
         weight to 100.
@@ -652,7 +652,7 @@ script:
     - name: indicator
       required: true
       description: indicator value (1.2.3.4/google.com etc)
-    - name: indicator_type
+    - name: indicatorType
       required: true
       auto: PREDEFINED
       predefined:
