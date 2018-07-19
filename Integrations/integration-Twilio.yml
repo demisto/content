@@ -45,11 +45,11 @@ configuration:
   required: false
 script:
   script: |+
-    var sendRequest = function(body) {
+    var sendRequest = function(method, url, body) {
         var res = http(
             params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json',
             {
-                Method: 'POST',
+                Method: method,
                 Body: body,
                 Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
                 Username: params.sid,
@@ -74,25 +74,11 @@ script:
             // from Twilio instructions, in order to ger the list of accounts, the below curl command should be used.
             // using this as a method to test tht the credentails and connectivity are good, without using sms buckets
             // curl -G https://api.twilio.com/2010-04-01/Accounts -u '[YOUR ACCOUNT SID]:[YOUR AUTH TOKEN]'
-
-            var res = http(
-                params.server.replace(/[\/]+$/, ''),
-                {
-                    Method: 'GET',
-                    Username: params.sid,
-                    Password: params.token
-                },
-
-                params.insecure,
-                params.proxy
-            );
-            if (res.StatusCode < 200 || res.StatusCode >=300) {
-                throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
-            }
+            sendRequest('GET', params.server.replace(/[\/]+$/, ''), "");
             return 'ok';
         default:
-           sendRequest(encodeToURLQuery(args.to, (args.from ? args.from : params.from), args.body));
-           return 'Message sent successfully!';
+            sendRequest('POST', params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json', encodeToURLQuery(args.to, (args.from ? args.from : params.from), args.body));
+            return 'Message sent successfully!';
     }
 
   type: javascript
@@ -110,4 +96,4 @@ script:
     description: send an SMS
 hidden: false
 fromversion: 2.5.0
-releaseNotes: Fixed test function to check credentails only and not send real SMS
+releaseNotes: Test action checks credentials only now
