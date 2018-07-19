@@ -32,5 +32,7 @@
         "key": "dueDate"
       }
     ]
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }

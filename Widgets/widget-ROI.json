@@ -22,5 +22,7 @@
   },
   "params": {
   	"currencySign" : "$"
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }

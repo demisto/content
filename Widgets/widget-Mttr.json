@@ -23,5 +23,7 @@
       "avg|openDuration",
       "count|1"
     ]
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }

@@ -22,5 +22,7 @@
       "playbookId"
     ]
   },
-  "size": 5
+  "size": 5,
+  "description": "",
+  "releaseNotes": "-"
 }

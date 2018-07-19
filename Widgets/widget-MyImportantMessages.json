@@ -10,5 +10,7 @@
     },
     "isPredefined": true,
     "version": -1,
-    "widgetType": "list"
+    "widgetType": "list",
+    "description": "",
+    "releaseNotes": "-"
 }

@@ -11,5 +11,7 @@
   "widgetType": "text",
   "params": {
     "text": "Place your text here.."
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }

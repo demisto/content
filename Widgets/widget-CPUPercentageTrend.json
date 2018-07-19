@@ -20,5 +20,7 @@
     "params": {
         "timeFrame": "minutes"
     },
-    "size": 61
+    "size": 61,
+    "description": "",
+    "releaseNotes": "-"
 }
