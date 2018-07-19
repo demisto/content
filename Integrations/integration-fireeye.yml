@@ -70,6 +70,23 @@ script:
                 }
             ],
         },
+        'fe-submit-url-status': {
+            url: 'submissions/status/%submission_Key%',
+            method: 'GET',
+            setContentType: true,
+            extended: true,
+            translator: [
+                {
+                    contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
+                    title: 'FireEye Submission',
+                    data: [
+                        {to: 'Key', from: 'submission_Key'},
+                        {to: 'Status', from: 'status'},
+                        {to: 'ID', from: 'response.id'},
+                    ]
+                }
+            ],
+        },
         'fe-alert': {
             url: 'alerts',
             method: 'GET',
@@ -118,6 +135,18 @@ script:
                     title: 'FireEye Submission',
                     data: [
                         {to: 'Key', from: 'ID'},
+                    ]
+                }
+            ],
+        },
+        'fe-submit-url': {
+            extended: true,
+            translator: [
+                {
+                    contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
+                    title: 'FireEye Submission',
+                    data: [
+                        {to: 'Key', from: 'id'},
                     ]
                 }
             ],
@@ -269,6 +298,24 @@ script:
               }
               result = JSON.parse(res.Body);
               break;
+        case 'fe-submit-url':
+            var profiles = args.profiles.split(',');
+            var urls = args.urls.split(',');
+            var res = http(
+                server + 'submissions/url',
+                {
+                    Method: 'POST',
+                    Headers: {'Content-Type': ['application/json'],'X-FeApi-Token': token},
+                    Body: JSON.stringify({"timeout":args.timeout, "priority":args.priority, "profiles":profiles, "application":args.application, "force":args.force, "analysistype":args.analysistype, "prefetch":args.prefetch, "urls":urls})
+                },
+                params.insecure,
+                params.proxy
+             );
+            if (res.StatusCode < 200 || res.StatusCode >= 300 || res.success === false) {
+                throw 'FireEye URL Submission Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + res.Body + '.';
+            }
+            result = JSON.parse(res.Body);
+            break;
         default:
             respoonse = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
             result = respoonse.Body;
@@ -289,6 +336,9 @@ script:
     currentCommand = commandDictionary[command];
     var entries = [];
     if (currentCommand.extended) {
+        if(command === 'fe-submit-url'){
+            result = result.response
+        }
         for (var j in currentCommand.translator) {
             var current = currentCommand.translator[j];
             var entry = {
@@ -414,7 +464,7 @@ script:
       description: Bad hash found
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-    description: commands.server.feSubmit.arguments.submissionKey.description
+    description: Results of the file submission
   - name: fe-submit
     arguments:
     - name: upload
@@ -453,7 +503,6 @@ script:
     description: commands.server.feSubmit.description
   - name: fe-config
     arguments: []
-    description: commands.server.feConfig.description
     outputs:
     - contextPath: FireEyeAX.Sensors.Address
       description: Sensor IP address
@@ -469,3 +518,80 @@ script:
       description: FireEye application ID
     - contextPath: FFireEyeAX.Sensors.Profiles.Applications.-name
       description: FireEye application name
+    description: commands.server.feConfig.description
+  - name: fe-submit-url
+    arguments:
+    - name: analysistype
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      description: 'Specify live or sandbox analysis mode. 1—Live, analyze suspected
+        malware objects live within the MAS Multivector Virtual Execution (MVX) analysis
+        engine. 2—Sandbox, analyze suspected malware objects in a closed, protected
+        environment. Example: analysisType=1'
+    - name: profiles
+      required: true
+      description: Select the MAS profile to use for analysis. To determine the available
+        profiles, use the configuration command.  To submit profiles, add them as
+        a parameter using a comma to separate them.  For example, profiles="win7-sp1,winxp-sp3"
+    - name: application
+      required: true
+      description: 'Specifies the application to be used for the analysis. To determine
+        the available applications  for a specific profile, use the configuration
+        command. Note: Setting the application value to 0, allows the MAS to determine
+        the file type for you'
+    - name: priority
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: 'Sets the analysis priority: 0—Normal, adds analysis to the bottom
+        of queue. 1—Urgent, places the analysis at the top of the queue'
+    - name: force
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: 'Specify whether to perform an analysis on the malware object even
+        if the object exactly matches an analysis that has already been performed.
+        In most cases, it is not necessary to reanalyze malware. (default: false)
+        False, Do not analyze duplicate objects. True, Force analysis'
+    - name: prefetch
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specifies whether to determine the file target based on an internal
+        determination rather than browsing to the target location. 0—No 1—Yes. If
+        analysistype is set to 0 for sandbox analysis, prefetch must be set to 1.
+    - name: timeout
+      required: true
+      description: Sets the analysis timeout (in seconds)
+    - name: urls
+      required: true
+      description: URLs to be analyzed. To submit URLs, add them as a parameter using
+        a comma to separate them.  For example, urls="www.demisto.com,www.google.com"
+    outputs:
+    - contextPath: FireEyeAX.Submissions.Key
+      description: The file submission key
+    description: Submit a url for analysis by FireEye
+  - name: fe-submit-url-status
+    arguments:
+    - name: submission_Key
+      required: true
+      description: Submission key of the submission
+    outputs:
+    - contextPath: FireEyeAX.Submissions.Key
+      description: The url submission key
+    - contextPath: FireEyeAX.Submissions.Status
+      description: The url submission status
+    - contextPath: FireEyeAX.Submissions.ID
+      description: The ID of URL submission results
+    description: Get a status for a url submitted to FireEye analysis
+  runonce: false
+releaseNotes: "Added functionality to submit URLs to FireEye and retrieve their status. Commands added are fe-submit-url and fe-submit-url-status"

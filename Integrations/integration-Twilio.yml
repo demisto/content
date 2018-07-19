@@ -45,11 +45,11 @@ configuration:
   required: false
 script:
   script: |+
-    var sendRequest = function(body) {
+    var sendRequest = function(method, url, body) {
         var res = http(
             params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json',
             {
-                Method: 'POST',
+                Method: method,
                 Body: body,
                 Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
                 Username: params.sid,
@@ -71,11 +71,14 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            sendRequest(encodeToURLQuery(params.from,params.from,'Test'));
+            // from Twilio instructions, in order to ger the list of accounts, the below curl command should be used.
+            // using this as a method to test tht the credentails and connectivity are good, without using sms buckets
+            // curl -G https://api.twilio.com/2010-04-01/Accounts -u '[YOUR ACCOUNT SID]:[YOUR AUTH TOKEN]'
+            sendRequest('GET', params.server.replace(/[\/]+$/, ''), "");
             return 'ok';
         default:
-           sendRequest(encodeToURLQuery(args.to, (args.from ? args.from : params.from), args.body));
-           return 'Message sent successfully!';
+            sendRequest('POST', params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json', encodeToURLQuery(args.to, (args.from ? args.from : params.from), args.body));
+            return 'Message sent successfully!';
     }
 
   type: javascript
@@ -93,3 +96,4 @@ script:
     description: send an SMS
 hidden: false
 fromversion: 2.5.0
+releaseNotes: Test action checks credentials only now
