@@ -1,0 +1,194 @@
+id: nexpose_scan_site
+version: -1
+name: Nexpose Scan Site
+description: Starts a Nexpose scan by site id and waits for it to finish by polling
+  its status in pre-defined intervals.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c613b21c-e424-4a21-8151-1c4dc32caa7a
+    type: start
+    task:
+      id: c613b21c-e424-4a21-8151-1c4dc32caa7a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 3d94acac-2907-4286-8a56-e21170e0739d
+    type: regular
+    task:
+      id: 3d94acac-2907-4286-8a56-e21170e0739d
+      version: -1
+      name: Start scan
+      script: Rapid7 Nexpose2|||nexpose-start-site-scan
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      hosts:
+        complex:
+          root: inputs.Hosts
+      name:
+        complex:
+          root: inputs.Name
+      site:
+        complex:
+          root: inputs.Site
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 446c97fc-ff30-4c2e-8659-13577749b809
+    type: regular
+    task:
+      id: 446c97fc-ff30-4c2e-8659-13577749b809
+      version: -1
+      name: Wait for scan
+      description: Manual task that waits for the scan to finish
+      tags:
+      - scan
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: f89a816d-4016-441a-8d16-a26899436c09
+    type: regular
+    task:
+      id: f89a816d-4016-441a-8d16-a26899436c09
+      version: -1
+      name: ScheduleNexposePolling
+      description: Poll the scan status
+      scriptName: ScheduleNexposePolling
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cron:
+        simple: '*/5 * * * *'
+      playbookId:
+        simple: ${currentPlaybookID}
+      scanId:
+        simple: ${Nexpose.Scan.Id}
+      tag:
+        simple: scan
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: f5ca7d6f-8168-4457-8224-cee76af3ad0e
+    type: title
+    task:
+      id: f5ca7d6f-8168-4457-8224-cee76af3ad0e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Site
+  value: {}
+  required: true
+  description: The site to scan
+- key: Hosts
+  value: {}
+  required: false
+  description: The hosts to scan in the site
+- key: Name
+  value: {}
+  required: false
+  description: The scan name
+outputs:
+- contextPath: Nexpose.Scan.Completed
+  description: The end time of the scan in ISO8601 format.
+- contextPath: Nexpose.Scan.Id
+  description: The identifier of the scan.
+- contextPath: Nexpose.Scan.StartedBy
+  description: The name of the user that started the scan.
+- contextPath: Nexpose.Scan.Assets
+  description: The number of assets found in the scan
+- contextPath: Nexpose.Scan.TotalTime
+  description: The duration of the scan in minutes.
+- contextPath: Nexpose.Scan.ScanType
+  description: The scan type (automated, manual, scheduled).
+- contextPath: Nexpose.Scan.Status
+  description: The scan status. Valid values are aborted, unknown, running, finished,
+    stopped, error, paused, dispatched, integrating
+- contextPath: Nexpose.Scan.Vulnerabilities.Critical
+  description: The number of critical vulnerabilities.
+- contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+  description: The number of moderate vulnerabilities.
+- contextPath: Nexpose.Scan.Vulnerabilities.Severe
+  description: The number of severe vulnerabilities.
+- contextPath: Nexpose.Scan.Vulnerabilities.Total
+  description: The total number of vulnerabilities.
+fromversion: 4.0.0
+releaseNotes: "Use Nexpose to scan a specified site and poll the scan status until it's finished"

@@ -1,0 +1,50 @@
+commonfields:
+  id: ScheduleNexposePolling
+  version: -1
+name: ScheduleNexposePolling
+script: |
+  res = []
+
+  dArgs = demisto.args()
+  dArgs['command'] = '!PollNexposeScan scanId=' + str(dArgs['scanId']) + ' playbookId=' + dArgs['playbookId'] + ' tag=' + dArgs['tag']
+
+  res = demisto.executeCommand('scheduleEntry', dArgs)
+  if isError(res[0]):
+      demisto.error(res)
+  else:
+      taskId = demisto.get(res[0],"Contents.id")
+      entry = {
+          'Type': entryTypes['note'],
+          'Contents': res,
+          'ContentsFormat': formats['json'],
+          'EntryContext': {
+                'Nexpose.Scan(val.Id==' + str(dArgs['scanId']) + ')': {
+                    'Id': int(dArgs['scanId']),
+                    'taskId': taskId
+              }
+          }
+      }
+      demisto.results(entry)
+type: python
+tags:
+- nexpose
+comment: Starts a scheduled task that polls a Nexpose scan status, used by a polling playbook
+enabled: true
+args:
+- name: cron
+  required: true
+  default: true
+  description: The interval between each check (in cron format)
+- name: scanId
+  required: true
+  description: The scan id
+- name: playbookId
+  required: true
+  description: Id of the polling playbook
+- name: tag
+  required: true
+  description: Tag of the manual task
+scripttarget: 0
+runonce: false
+fromversion: 4.0.0
+releaseNotes: "Schedules Nexpose scans, used by a polling playbook"

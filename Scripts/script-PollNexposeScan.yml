@@ -1,0 +1,56 @@
+commonfields:
+  id: PollNexposeScan
+  version: -1
+name: PollNexposeScan
+script: |+
+  res = []
+
+  dArgs = demisto.args()
+  commandArgs = {
+      'id': dArgs['scanId']
+  }
+  res = demisto.executeCommand('nexpose-get-scan', commandArgs)
+
+  if isError(res):
+      demisto.error(res)
+
+  try:
+      status = res[0]['Contents']['status']
+      if status not in ['running','dispatched','integrating','unknown']:
+          # Cancel scheduled task
+          scan = demisto.dt(demisto.context(), 'Nexpose.Scan(val.Id==' + str(dArgs['scanId']) +  ')')
+          demisto.executeCommand('scheduleEntry', {
+             'id': scan['taskId'],
+             'cancel':'cancel'
+          })
+          # Complete manual task
+          demisto.executeCommand('taskComplete', {
+              'id': dArgs['tag'],
+              'parentPlaybookID': dArgs['playbookId']
+          })
+
+          demisto.results(res)
+  except Exception as ex:
+      demisto.error(ex)
+
+
+
+type: python
+tags:
+- nexpose
+comment: Poll a Nexpose scan status and complete the scan playbook if it's finished
+enabled: true
+args:
+- name: playbookId
+  required: true
+  description: The id of the polling sub-playbook
+- name: tag
+  required: true
+  description: The tag of the manual task to complete once the scan is done
+- name: scanId
+  required: true
+  description: The id of the scan
+scripttarget: 0
+runonce: false
+fromversion: 4.0.0
+releaseNotes: "Polls Nexpose scans, used by a polling playbook"
