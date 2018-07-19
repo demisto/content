@@ -435,6 +435,8 @@ script: |-
       indent = 4 if is_pretty else None
       if type(data) in STRING_TYPES:
           return data
+      elif isinstance(data, list):
+          return ',\n'.join(str(d) for d in data)
       else:
           return json.dumps(data, indent=indent)
 
@@ -543,10 +545,10 @@ script: |-
       if removeNull:
           headers_aux = headers[:]
           for header in headers_aux:
-              if all(obj[header] is None for obj in t):
+              if all(obj.get(header) is None for obj in t):
                   headers.remove(header)
 
-      if t:
+      if t and len(headers) > 0:
           newHeaders = []
           if headerTransform is None:
               headerTransform = lambda s: s
@@ -557,7 +559,7 @@ script: |-
               mdResult += newHeaders[0]
           else:
               mdResult += '|'.join(newHeaders)
-          mdResult = mdResult + '|\n'
+          mdResult += '|\n'
           sep = '-'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
@@ -699,6 +701,9 @@ script: |-
 
          :type filename: ``str``
          :param filename: The name of the file to be modified (required)
+
+         :type saveFilename: ``str``
+         :param saveFilename: The new file name
 
          :return: A Demisto war room entry
          :rtype: ``dict``
@@ -1008,7 +1013,7 @@ script: |-
 
   # Constants for common merge paths
   outputPaths = {
-    'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)',
+    'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
     'ip': 'IP(val.Address && val.Address == obj.Address)',
     'url': 'URL(val.Data && val.Data == obj.Data)',
     'domain': 'Domain(val.Name && val.Name == obj.Name)',

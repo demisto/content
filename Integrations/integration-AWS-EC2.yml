@@ -54,9 +54,9 @@ script:
                 })
 
         if roleSessionDuration is not None:
-            kwargs.update({'DurationSeconds':roleSessionDuration})
+            kwargs.update({'DurationSeconds':int(roleSessionDuration)})
         elif AWS_roleSessionDuration is not None:
-            kwargs.update({'DurationSeconds':AWS_roleSessionDuration})
+            kwargs.update({'DurationSeconds':int(AWS_roleSessionDuration)})
 
         if rolePolicy is not None:
             kwargs.update({'Policy':rolePolicy})
@@ -195,7 +195,7 @@ script:
             obj = vars(client._client_config)
             data=[]
             kwargs = {}
-
+            output = []
             if args.get('filters') is not None:
                 kwargs.update({'Filters':parse_filter_field(args.get('filters'))})
             if args.get('instanceIds') is not None:
@@ -216,13 +216,15 @@ script:
                         'KeyName': instance['KeyName'],
                         'Monitoring': instance['Monitoring']['State'],
                     })
-                for tag in instance['Tags']:
-                    data[i].update ({
-                        tag['Key']: tag['Value']
-                    })
-            output = json.dumps(reservation['Instances'], cls=DatetimeEncoder)
-            raw = json.loads(output)
-            raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+                    if 'Tags' in instance:
+                        for tag in instance['Tags']:
+                            data[i].update ({
+                              tag['Key']: tag['Value']
+                            })
+                instance.update({'Region': obj['_user_provided_options']['region_name']})
+                output.append(instance)
+
+            raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
             ec = {'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)': raw}
             return  create_entry('AWS Instances',data, ec)
 
@@ -1526,6 +1528,187 @@ script:
         except Exception as e:
             return raise_error(e)
 
+    def copy_image(args):
+        try:
+            client = aws_session(
+                region = args.get('region'),
+                roleArn = args.get('roleArn'),
+                roleSessionName = args.get('roleSessionName'),
+                roleSessionDuration = args.get('roleSessionDuration'),
+            )
+            obj = vars(client._client_config)
+            kwargs = {
+                'Name':args.get('name'),
+                'SourceImageId':args.get('sourceImageId'),
+                'SourceRegion':args.get('sourceRegion'),
+            }
+            if args.get('clientToken') is not None:
+                kwargs.update({'ClientToken':args.get('clientToken')})
+            if args.get('description') is not None:
+                kwargs.update({'Description':args.get('description')})
+            if args.get('encrypted') is not None:
+                kwargs.update({'Encrypted':True if args.get('ebsEncrypted') == 'True'  else False})
+            if args.get('kmsKeyId') is not None:
+                kwargs.update({'KmsKeyId':args.get('kmsKeyId')})
+
+            response = client.copy_image(**kwargs)
+            data = ({
+                'ImageId': response['ImageId'],
+                'Region': obj['_user_provided_options']['region_name']
+            })
+
+            ec = {'AWS.EC2.Images(val.ImageId === obj.ImageId)': data}
+            return  create_entry('AWS EC2 Images',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def copy_snapshot(args):
+        try:
+            client = aws_session(
+                region = args.get('region'),
+                roleArn = args.get('roleArn'),
+                roleSessionName = args.get('roleSessionName'),
+                roleSessionDuration = args.get('roleSessionDuration'),
+            )
+            obj = vars(client._client_config)
+            kwargs = {
+                'SourceSnapshotId':args.get('sourceSnapshotId'),
+                'SourceRegion':args.get('sourceRegion'),
+            }
+            if args.get('description') is not None:
+                kwargs.update({'Description':args.get('description')})
+            if args.get('encrypted') is not None:
+                kwargs.update({'Encrypted':True if args.get('ebsEncrypted') == 'True'  else False})
+            if args.get('kmsKeyId') is not None:
+                kwargs.update({'KmsKeyId':args.get('kmsKeyId')})
+
+            response = client.copy_snapshot(**kwargs)
+            data = ({
+                'SnapshotId': response['SnapshotId'],
+                'Region': obj['_user_provided_options']['region_name']
+            })
+
+            ec = {'AWS.EC2.Snapshots(val.SnapshotId === obj.SnapshotId)': data}
+            return  create_entry('AWS EC2 Snapshots',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def describe_reserved_instances(args):
+        try:
+            client = aws_session(
+                region = args.get('region'),
+                roleArn = args.get('roleArn'),
+                roleSessionName = args.get('roleSessionName'),
+                roleSessionDuration = args.get('roleSessionDuration'),
+            )
+            obj = vars(client._client_config)
+            kwargs = {}
+            data = []
+            output = []
+            if args.get('filters') is not None:
+                kwargs.update({'Filters':parse_filter_field(args.get('filters'))})
+            if args.get('offeringClass') is not None:
+                kwargs.update({'OfferingClass':args.get('offeringClass')})
+            if args.get('reservedInstancesIds') is not None:
+                kwargs.update({'ReservedInstancesIds':parse_resource_ids(args.get('reservedInstancesIds'))})
+
+            response = client.describe_reserved_instances(**kwargs)
+            for i, reservation in enumerate(response['ReservedInstances']):
+                data.append({
+                    'ReservedInstancesId': reservation['ReservedInstancesId'],
+                    'Start': atetime.datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ'),
+                    'End': atetime.datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ'),
+                    'Duration': reservation['Duration'],
+                    'InstanceType':reservation['InstanceType'],
+                    'InstanceCount': reservation['InstanceCount'],
+                    'OfferingClass': reservation['OfferingClass'],
+                    'Scope': reservation['Scope'],
+                    'State': reservation['State']
+                })
+                if 'Tags' in reservation:
+                        for tag in reservation['Tags']:
+                            data[i].update ({
+                              tag['Key']: tag['Value']
+                            })
+                reservation.update({'Region': obj['_user_provided_options']['region_name']})
+                output.append(reservation)
+
+            raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+            ec = {'AWS.EC2.ReservedInstances(val.ReservedInstancesId === obj.ReservedInstancesId)': raw}
+            return  create_entry('AWS EC2 Reserved Instances',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def monitor_instances(args):
+        try:
+            client = aws_session(
+                region = args.get('region'),
+                roleArn = args.get('roleArn'),
+                roleSessionName = args.get('roleSessionName'),
+                roleSessionDuration = args.get('roleSessionDuration'),
+            )
+            obj = vars(client._client_config)
+            data=[]
+            output=[]
+            response = client.monitor_instances(InstanceIds=parse_resource_ids(args.get('instancesIds')))
+
+            for instance in response['InstanceMonitorings']:
+                data.append({
+                    'InstanceId': instance['InstanceId'],
+                    'MonitoringState': instance['Monitoring']['State']
+                })
+
+            ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId)': response['InstanceMonitorings']}
+            return  create_entry('AWS EC2 Instances',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def unmonitor_instances(args):
+        try:
+            client = aws_session(
+                region = args.get('region'),
+                roleArn = args.get('roleArn'),
+                roleSessionName = args.get('roleSessionName'),
+                roleSessionDuration = args.get('roleSessionDuration'),
+            )
+            obj = vars(client._client_config)
+            data=[]
+            output=[]
+            response = client.unmonitor_instances(InstanceIds=parse_resource_ids(args.get('instancesIds')))
+
+            for instance in response['InstanceMonitorings']:
+                data.append({
+                    'InstanceId': instance['InstanceId'],
+                    'MonitoringState': instance['Monitoring']['State']
+                })
+
+            ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId)': response['InstanceMonitorings']}
+            return  create_entry('AWS EC2 Instances',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def reboot_instances(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            response = client.reboot_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Instances were rebooted"
+
+        except Exception as e:
+            return raise_error(e)
+
+
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
@@ -1656,6 +1839,25 @@ script:
 
     if demisto.command() == 'aws-ec2-revoke-security-group-ingress-rule':
         result = revoke_security_group_ingress(demisto.args())
+
+    if demisto.command() == 'aws-ec2-copy-image':
+        result = copy_image(demisto.args())
+
+    if demisto.command() == 'aws-ec2-copy-snapshot':
+        result = copy_snapshot(demisto.args())
+
+    if demisto.command() == 'aws-ec2-describe-reserved-instances':
+        result = describe_reserved_instances(demisto.args())
+
+    if demisto.command() == 'aws-ec2-monitor-instances':
+        result = monitor_instances(demisto.args())
+
+    if demisto.command() == 'aws-ec2-unmonitor-instances':
+        result = unmonitor_instances(demisto.args())
+
+    if demisto.command() == 'aws-ec2-reboot-instances':
+        result = reboot_instances(demisto.args())
+
 
     demisto.results(result)
     sys.exit(0)
@@ -4029,5 +4231,250 @@ script:
     description: Removes egress rule from a security group. To remove a rule, the
       values that you specify (for example, ports) must match the existing rule's
       values exactly.
+  - name: aws-ec2-copy-image
+    arguments:
+    - name: name
+      required: true
+      description: The name of the new AMI in the destination region.
+    - name: sourceImageId
+      required: true
+      description: The ID of the AMI to copy.
+    - name: sourceRegion
+      required: true
+      description: The name of the region that contains the AMI to copy.
+    - name: description
+      description: A description for the new AMI in the destination region.
+    - name: encrypted
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether the destination snapshots of the copied image
+        should be encrypted. The default CMK for EBS is used unless a non-default
+        AWS Key Management Service (AWS KMS) CMK is specified with KmsKeyId .
+    - name: kmsKeyId
+      description: An identifier for the AWS Key Management Service (AWS KMS) customer
+        master key (CMK) to use when creating the encrypted volume. This parameter
+        is only required if you want to use a non-default CMK; if this parameter is
+        not specified, the default CMK for EBS is used. If a KmsKeyId is specified,
+        the Encrypted flag must also be set.
+    - name: clientToken
+      description: nique, case-sensitive identifier you provide to ensure idempotency
+        of the request.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.EC2.Images.ImageId
+      description: The ID of the new AMI.
+      type: string
+    - contextPath: AWS.EC2.Images.Region
+      description: The Region where the image is located.
+      type: string
+    description: Initiates the copy of an AMI from the specified source region to
+      the current region.
+  - name: aws-ec2-copy-snapshot
+    arguments:
+    - name: sourceSnapshotId
+      required: true
+      description: The ID of the EBS snapshot to copy.
+    - name: sourceRegion
+      required: true
+      description: The ID of the region that contains the snapshot to be copied.
+    - name: description
+      description: A description for the EBS snapshot.
+    - name: encrypted
+      description: ' Specifies whether the destination snapshot should be encrypted.
+        You can encrypt a copy of an unencrypted snapshot using this flag, but you
+        cannot use it to create an unencrypted copy from an encrypted snapshot. Your
+        default CMK for EBS is used unless a non-default AWS Key Management Service
+        (AWS KMS) CMK is specified with KmsKeyId .'
+    - name: kmsKeyId
+      description: An identifier for the AWS Key Management Service (AWS KMS) customer
+        master key (CMK) to use when creating the encrypted volume. This parameter
+        is only required if you want to use a non-default CMK; if this parameter is
+        not specified, the default CMK for EBS is used. If a KmsKeyId is specified,
+        the Encrypted flag must also be set.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.EC2.Snapshots.SnapshotId
+      description: The ID of the new snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.Region
+      description: The Region where the snapshot is located.
+      type: string
+    description: Copies a point-in-time snapshot of an EBS volume and stores it in
+      Amazon S3. You can copy the snapshot within the same region or from one region
+      to another.
+  - name: aws-ec2-describe-reserved-instances
+    arguments:
+    - name: filters
+      description: ne or more filters.
+    - name: reservedInstancesIds
+      description: One or more Reserved Instance IDs. Separated by comma.
+    - name: offeringClass
+      auto: PREDEFINED
+      predefined:
+      - standard
+      - convertible
+      description: Describes whether the Reserved Instance is Standard or Convertible.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.EC2.ReservedInstances.AvailabilityZone
+      description: The Availability Zone in which the Reserved Instance can be used.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.Duration
+      description: The duration of the Reserved Instance, in seconds.
+      type: number
+    - contextPath: AWS.EC2.ReservedInstances.End
+      description: The time when the Reserved Instance expires.
+      type: date
+    - contextPath: AWS.EC2.ReservedInstances.FixedPrice
+      description: The purchase price of the Reserved Instance.
+      type: number
+    - contextPath: AWS.EC2.ReservedInstances.InstanceCount
+      description: The number of reservations purchased.
+      type: number
+    - contextPath: AWS.EC2.ReservedInstances.InstanceType
+      description: The instance type on which the Reserved Instance can be used.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.ProductDescription
+      description: The Reserved Instance product platform description.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.ReservedInstancesId
+      description: The ID of the Reserved Instance.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.Start
+      description: The date and time the Reserved Instance started.
+      type: date
+    - contextPath: AWS.EC2.ReservedInstances.State
+      description: The state of the Reserved Instance purchase.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.UsagePrice
+      description: The usage price of the Reserved Instance, per hour.
+      type: number
+    - contextPath: AWS.EC2.ReservedInstances.CurrencyCode
+      description: The currency of the Reserved Instance. It's specified using ISO
+        4217 standard currency codes. At this time, the only supported currency is
+        USD .
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.InstanceTenancy
+      description: The tenancy of the instance.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.OfferingClass
+      description: The offering class of the Reserved Instance.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.OfferingType
+      description: The Reserved Instance offering type.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.RecurringCharges.Amount
+      description: The amount of the recurring charge.
+      type: number
+    - contextPath: AWS.EC2.ReservedInstances.RecurringCharges.Frequency
+      description: he frequency of the recurring charge.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.Scope
+      description: The scope of the Reserved Instance.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.ReservedInstances.Region
+      description: The AWS region where the reserved instance is located.
+      type: string
+    description: Describes one or more of the Reserved Instances that you purchased.
+  - name: aws-ec2-monitor-instances
+    arguments:
+    - name: instancesIds
+      required: true
+      description: One or more instance IDs. Separated by comma.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
+        monitoring is enabled.
+      type: string
+    description: Enables detailed monitoring for a running instance.
+  - name: aws-ec2-unmonitor-instances
+    arguments:
+    - name: instancesIds
+      required: true
+      description: One or more instance IDs. Separated by comma.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
+    description: Disables detailed monitoring for a running instance.
+  - name: aws-ec2-reboot-instances
+    arguments:
+    - name: instanceIds
+      required: true
+      description: One or more instance IDs. Separated by comma.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Requests a reboot of one or more instances. This operation is asynchronous;
+      it only queues a request to reboot the specified instances. The operation succeeds
+      if the instances are valid and belong to you. Requests to reboot terminated
+      instances are ignored. If an instance does not cleanly shut down within four
+      minutes, Amazon EC2 performs a hard reboot.
   dockerimage: demisto/boto3
   runonce: false

@@ -16,8 +16,16 @@ script: |-
       if len(domain.group()) > 0:
           demisto.results(domain.group()[1:])
   else:
-      domain = get_tld(inp)
-      demisto.results(domain)
+      domain = get_tld(inp, fail_silently=True)
+      if not domain:
+          inp_with_http = 'https://'+inp
+          domain = get_tld(inp_with_http, fail_silently=True)
+          if domain:
+              demisto.results(domain)
+          else:
+             demisto.results("")
+      else:
+          demisto.results(domain)
 type: python
 tags:
 - indicator-format

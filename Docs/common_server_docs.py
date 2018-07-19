@@ -10,7 +10,13 @@ jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecur
 
 pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                 "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                "createContextSingle"]
+                "createContextSingle", "IntegrationLogger", "tblToMd"]
+
+pyIrregularFuncs = {"LOG" : {"argList" : ["message"]}}
+
+jsAutomationOnly = ["fileNameFromEntry", "closeInvestigation", "setSeverity", "setIncident", "createNewIncident",
+                    "setPlaybookAccordingToType", "setOwner", "taskAssign", "setTaskDueDate", "setPlaybook", "addTask",
+                    "getCSVListAsArray", "getJSONListAsObject"]
 
 markdownDescFuncs = ["createEntry"]
 
@@ -26,9 +32,6 @@ def readYmlFile(filepath):
         return out
     return []
 
-def reformatPythonOutput(output):
-    return output
-
 def reformatPythonOutput(output, origin, language):
 
     res = []
@@ -43,15 +46,18 @@ def reformatPythonOutput(output, origin, language):
 
         # format arguments
         z = []
-        args = a.get("arguments", {})
-        for argName, argInfo in args.iteritems():
-            argInfo["name"] = argName
-            argInfo["type"] = argInfo["type_name"]
-            if argInfo.get("description", "") == "":
-                isError = True
-                print "Missing description for argument", argName, "in python function", a["name"]
-            del argInfo["type_name"]
-            z.append(argInfo)
+        argList = a.get("argList", [])
+        argDetails = a.get("arguments", {})
+        for argName in argList:
+            argInfo = argDetails.get(argName, None)
+            if argInfo is not None:
+                argInfo["name"] = argName
+                argInfo["type"] = argInfo["type_name"]
+                if argInfo.get("description", "") == "":
+                    isError = True
+                    print "Missing description for argument", argName, "in python function", a["name"]
+                del argInfo["type_name"]
+                z.append(argInfo)
 
         a["arguments"] = z
         a["return_value"] = a["return"]
@@ -61,6 +67,7 @@ def reformatPythonOutput(output, origin, language):
         a["language"] = language
         a["origin"] = origin
 
+        del a["argList"]
         del a["return"]
         del a["return_value"]["type_name"]
         res.append(a)
@@ -105,6 +112,8 @@ def createJsDocumentation(path, origin, language):
             y["markdown"] = True
         y["language"] = language
         y["origin"] = origin
+        if y["name"] in jsAutomationOnly:
+            y["automationOnly"] = True
 
         x.append(y)
     return x, isError
@@ -125,6 +134,7 @@ def createPyDocumentation(path, origin, language):
         if callable(ns.get(a)) and a not in pyPrivateFuncs:
             y = parser.parse_docstring((inspect.getdoc(ns.get(a))))
             y["name"] = a
+            y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) == None else pyIrregularFuncs[a]["argList"]
             x.append(y)
 
     return reformatPythonOutput(x, origin, language)

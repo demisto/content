@@ -27,8 +27,8 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 0
+  defaultvalue: "false"
+  type: 8
   required: false
 script:
   script: |-
@@ -260,6 +260,16 @@ script:
         }
 
         url = url.concat(query);
+
+        // backward compatibility
+        if(params.proxy){
+            if(params.proxy === "true"){
+                params.proxy = true;
+            }
+            else if(params.proxy === "false"){
+                params.proxy = false;
+            }
+        }
 
         var res = http(
             url,

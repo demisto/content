@@ -7,6 +7,7 @@
   "name": "My Tasks",
   "dataType": "tasks",
   "widgetType": "list",
+  "description": "",
   "query": "assignee:{me} and (state:Waiting or state:inprogress or state:error)",
   "sort": [
     {
