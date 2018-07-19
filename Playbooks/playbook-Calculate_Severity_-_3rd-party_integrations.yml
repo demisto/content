@@ -2,7 +2,6 @@ id: calculate_severity_-_3rd-party_integrations
 version: -1
 name: Calculate Severity - 3rd-party integrations
 fromversion: 3.6.0
-releaseNotes: "Add support for Nexpose severity"
 description: Calculates the incident severity level according to the methodology of
   a 3rd-party integration.
 starttaskid: "0"
