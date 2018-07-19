@@ -392,36 +392,6 @@ script:
         delete(args['url']);
         return { Type: 3, FileID: saveFile(SHORTCUT_DATA + url), File: 'url_as_file', Contents: 'url_as_file' };
 
-      case 'threat-grid-detonate-file':
-        args['api_key'] = params.token;
-        var entryId = args['file-entry-id'];
-        delete(args['file-entry-id']);
-        var res = httpMultipart(
-                url + 'samples',
-                entryId,
-                {
-                    Method: 'POST',
-                },
-                args,
-                params.insecure,
-                params.proxy,
-                undefined,
-                'sample',
-                args.filename
-            );
-        if (res.StatusCode == 503) {
-            throw 'Sample upload failed: File was already uploaded.';
-        }
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Sample upload failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        rawResponse = JSON.parse(res.Body);
-        sampleId = rawResponse.data.id;
-        wait_for_report(sampleId, parseInt(args.delay), parseInt(args.timeout));
-        var type = args['report-file-type'];
-        delete(args['report-file-type']);
-        return get_threat_summary(sampleId);
-
       case 'threat-grid-upload-sample':
         args['api_key'] = params.token;
         var fileId = args['file-id'];
@@ -1108,56 +1078,6 @@ script:
       description: The output type
       defaultValue: json
     description: Gets a specific threat feed
-  - name: threat-grid-detonate-file
-    arguments:
-    - name: file-entry-id
-      required: true
-      default: true
-      description: Entry ID of the uploaded file (e.g. the message in the war room
-        with the uploaded file's details).
-    - name: delay
-      description: Time to wait between status checks (in seconds)
-      defaultValue: "20"
-    - name: timeout
-      description: Total wait time (in seconds)
-      defaultValue: "660"
-    - name: report-file-type
-      auto: PREDEFINED
-      predefined:
-      - html
-      - json
-      description: File type of report to return
-      defaultValue: html
-    outputs:
-    - contextPath: ThreatGrid.Sample.ID
-      description: The sample id
-      type: string
-    - contextPath: ThreatGrid.Sample.MaxSeverity
-      description: The sample max severity
-      type: number
-    - contextPath: ThreatGrid.Sample.Score
-      description: The sample score
-      type: number
-    - contextPath: ThreatGrid.Sample.Count
-      description: The sample count
-      type: number
-    - contextPath: ThreatGrid.Sample.MaxConfidence
-      description: The sample max confidence
-      type: number
-    - contextPath: DBotScore.Indicator
-      description: The indicator value
-      type: string
-    - contextPath: DBotScore.Score
-      description: The indicator's score
-      type: number
-    - contextPath: DBotScore.Vendor
-      description: The indicator's vendor
-      type: string
-    - contextPath: DBotScore.Type
-      description: The indicator's type
-      type: string
-    description: Detonates URL address through Threat Grid
-    timeout: 720
   - name: threat-grid-url-to-file
     arguments:
     - name: url
@@ -1165,5 +1085,4 @@ script:
       default: true
       description: The URL to convert.
     description: Convert a URL into a file for Threat Grid file detonation.
-  runonce: false
-releaseNotes: "Added threat-grid-detonate-file and threat-grid-url-to-file commands."
+releaseNotes: "Added threat-grid-url-to-file for url detonation. Added DBot score output for threat-grid-get-summary-by-id."
