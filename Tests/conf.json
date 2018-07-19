@@ -360,7 +360,8 @@
         },
         {
             "integrations": "RedLock",
-            "playbookID": "RedLockTest"
+            "playbookID": "RedLockTest",
+            "nightly": true
         },
         {
             "integrations": "Cybereason",
