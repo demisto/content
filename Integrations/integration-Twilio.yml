@@ -71,7 +71,24 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            sendRequest(encodeToURLQuery(params.from,params.from,'Test'));
+            // from Twilio instructions, in order to ger the list of accounts, the below curl command should be used.
+            // using this as a method to test tht the credentails and connectivity are good, without using sms buckets
+            // curl -G https://api.twilio.com/2010-04-01/Accounts -u '[YOUR ACCOUNT SID]:[YOUR AUTH TOKEN]'
+
+            var res = http(
+                params.server.replace(/[\/]+$/, ''),
+                {
+                    Method: 'GET',
+                    Username: params.sid,
+                    Password: params.token
+                },
+
+                params.insecure,
+                params.proxy
+            );
+            if (res.StatusCode < 200 || res.StatusCode >=300) {
+                throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+            }
             return 'ok';
         default:
            sendRequest(encodeToURLQuery(args.to, (args.from ? args.from : params.from), args.body));
@@ -93,3 +110,4 @@ script:
     description: send an SMS
 hidden: false
 fromversion: 2.5.0
+releaseNotes: Fixed test function to check credentails only and not send real SMS
