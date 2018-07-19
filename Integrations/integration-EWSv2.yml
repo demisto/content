@@ -186,7 +186,7 @@ script:
         return d
 
     def get_attachment_name(attachment_name):
-        if not attachment_name:
+        if not str(attachment_name):
             return 'demisto_untitled_attachment'
         return attachment_name
 
