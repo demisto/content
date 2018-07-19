@@ -461,7 +461,7 @@ tasks:
       filehash: {}
       filename: {}
       filepath: {}
-      htmlrenderedimage:
+      htmlimage:
         simple: '![HTML render](data:image/png;base64,${Base64.encoded})'
       id: {}
       important: {}
