@@ -178,7 +178,7 @@ tasks:
       script: Rasterize|||rasterize-email
       type: regular
       iscommand: true
-      brand: Rasterizedescription: ""
+      brand: Rasterize: ""
     nexttasks:
       '#none#':
       - "15"
