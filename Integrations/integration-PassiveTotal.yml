@@ -82,6 +82,10 @@ script:
         serverUrl += '/';
     }
 
+    if (!params.hasOwnProperty('proxy')) {
+        params.proxy = true;
+    }
+
     var doReq = function(method, path, parameters, body) {
         var result = http(
             serverUrl + path + encodeToURLQuery(parameters),
@@ -92,8 +96,8 @@ script:
                 Password: params.APIKey,
                 Body: body ? body : ''
             },
-            args.insecure || false,
-            args.proxy || false
+            params.insecure || false,
+            params.proxy
         );
         if (result.StatusCode !== 200 && result.StatusCode !== 201) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', request body: ' + result.Body;
