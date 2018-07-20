@@ -185,6 +185,11 @@ script:
             return dict((k, v) for k, v in d.items() if v is not None)
         return d
 
+    def get_attachment_name(attachment_name):
+        if attachment_name is None or attachment_name == "":
+            return 'demisto_untitled_attachment'
+        return attachment_name
+
 
     def get_entry_for_object(title, context_key, obj, headers=None):
         if len(obj) == 0:
@@ -640,7 +645,7 @@ script:
                             label_attachment_id_type = 'attachmentId'
 
                             # save the attachment
-                            file_name = attachment.name if attachment.name else 'demisto_untitled_attachment'
+                            file_name = get_attachment_name(attachment.name)
                             file_result = fileResult(file_name, attachment.content)
 
                             # check for error
@@ -651,7 +656,7 @@ script:
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': attachment.name
+                                'name': get_attachment_name(attachment.name)
                             })
                     except TypeError, e:
                         if e.message != "must be string or buffer, not None":
@@ -664,7 +669,7 @@ script:
 
                     # save the attachment
                     if attachment.item.mime_content:
-                        file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
+                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content)
 
                     if file_result:
                         # check for error
@@ -675,11 +680,11 @@ script:
                         # save attachment to incident
                         incident['attachment'].append({
                             'path': file_result['FileID'],
-                            'name': attachment.name + ".eml"
+                            'name': get_attachment_name(attachment.name) + ".eml"
                         })
 
 
-                labels.append({'type': label_attachment_type, 'value': attachment.name})
+                labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
                 labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
 
@@ -731,7 +736,7 @@ script:
 
 
     def get_entry_for_file_attachment(item_id, attachment):
-        entry = fileResult(attachment.name, attachment.content)
+        entry = fileResult(get_attachment_name(attachment.name), attachment.content)
         ec = {
             CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
                                                                                                               attachment)
@@ -746,7 +751,7 @@ script:
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': attachment.name,
+                'attachmentName': get_attachment_name(attachment.name),
                 'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
                 'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
@@ -762,7 +767,7 @@ script:
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': attachment.name,
+                'attachmentName': get_attachment_name(attachment.name),
                 'attachmentSHA256': None,
                 'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
@@ -778,7 +783,7 @@ script:
         item = attachment.item
         dict_result = parse_attachment_as_dict(item_id, attachment)
         dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
-        title = 'EWS get attachment got item for "%s", "%s"' % (target_email, attachment.name)
+        title = 'EWS get attachment got item for "%s", "%s"' % (target_email, get_attachment_name(attachment.name))
 
         return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                     dict_result)
@@ -851,7 +856,7 @@ script:
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
                 if attachment.item.mime_content:
-                    entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
+                    entries.append(fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content))
 
         return entries
 
@@ -1782,5 +1787,5 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-releaseNotes: "Improved UX of 'Test Module' errors."
+releaseNotes: "Handled unnamed attachments."
 
