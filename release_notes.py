@@ -98,9 +98,9 @@ class Content:
                         if LooseVersion(from_version) > LooseVersion(demisto_version):
                             continue
                     if title_prefix == NEW_RN:
-                        ans = self.added_release_notes(cnt)
+                        ans = self.added_release_notes(cnt, demisto_version, first_release)
                     elif title_prefix == MODIFIED_RN:
-                        ans = self.modified_release_notes(cnt)
+                        ans = self.modified_release_notes(cnt, demisto_version, first_release)
                     else:
                         # should never get here
                         print_error("Error:\n Unknown release notes type" % (title_prefix,))
@@ -169,13 +169,23 @@ class ScriptContent(Content):
     def get_header(self):
         return "Scripts"
 
-    def added_release_notes(self, cnt):
+    def added_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["comment"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) > 0 and rn == "-":
             return ""
         return release_notes_item(cnt["name"], cnt["comment"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["comment"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -196,7 +206,12 @@ class PlaybookContent(Content):
     def get_header(self):
         return "Playbooks"
 
-    def added_release_notes(self, cnt):
+    def added_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["description"])
         rn = cnt.get("description")
         if not rn:
             return None
@@ -205,7 +220,12 @@ class PlaybookContent(Content):
 
         return release_notes_item(cnt["name"], rn)
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["description"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -226,13 +246,23 @@ class ReportContent(Content):
     def get_header(self):
         return "Reports"
 
-    def added_release_notes(self, cnt):
+    def added_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["description"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) > 0 and rn == "-":
             return ""
         return release_notes_item(cnt["name"], cnt["description"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["description"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -253,14 +283,24 @@ class DashboardContent(Content):
     def get_header(self):
         return "Dashboards"
 
-    def added_release_notes(self, cnt):
+    def added_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["description"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) > 0 and rn == "-":
             return ""
 
         return release_notes_item(cnt["name"], cnt["description"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["description"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -281,14 +321,24 @@ class WidgetContent(Content):
     def get_header(self):
         return "Widgets"
 
-    def added_release_notes(self, cnt):
+    def added_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["description"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) > 0 and rn == "-":
             return ""
 
         return release_notes_item(cnt["name"], cnt["description"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["name"], cnt["description"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -455,10 +505,15 @@ class IntegrationContent(Content):
     def get_header(self):
         return "Integrations"
 
-    def added_release_notes(self, cnt):
+    def added_release_notes(self, cnt, demisto_version, first_release):
         return release_notes_item(cnt["display"], cnt["description"])
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
+        if first_release:
+            from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+            if from_version:
+                if LooseVersion(from_version) == LooseVersion(demisto_version):
+                    return release_notes_item(cnt["display"], cnt["description"])
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
