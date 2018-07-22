@@ -26,5 +26,7 @@
     },
     "fromDateLicense": "0001-01-01T00:00:00Z"
   },
-  "size": 10
+  "size": 10,
+  "description": "",
+  "releaseNotes": "-"
 }

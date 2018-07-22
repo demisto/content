@@ -32,5 +32,7 @@
         "key": "severity"
       }
     ]
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }

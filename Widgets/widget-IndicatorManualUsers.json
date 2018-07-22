@@ -20,5 +20,7 @@
   },
   "params": {
     "groupBy": ["setBy"]
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }
