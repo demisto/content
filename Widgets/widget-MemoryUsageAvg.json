@@ -26,5 +26,7 @@
       "type": "above"
     }
   },
-  "size": 0
+  "size": 0,
+  "description": "",
+  "releaseNotes": "-"
 }

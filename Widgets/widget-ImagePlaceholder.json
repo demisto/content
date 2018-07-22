@@ -8,5 +8,7 @@
     "isPredefined": true,
     "params": {
       "text": ""
-    }
-  }
+    },
+    "description": "",
+    "releaseNotes": "-"
+}
