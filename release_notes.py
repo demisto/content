@@ -371,7 +371,7 @@ class IncidentFieldContent(Content):
 
         return add_dot(rn) + "\n"
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
@@ -415,7 +415,7 @@ class LayoutContent(Content):
 
         return LayoutContent.get_release_notes(cnt)
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
         rn = cnt.get("releaseNotes", "")
 
         if len(rn) == 0:
@@ -454,7 +454,7 @@ class ClassifierContent(Content):
 
         return ClassifierContent.get_release_notes(cnt)
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
         rn = cnt.get("releaseNotes", "")
 
         if len(rn) == 0:
@@ -484,7 +484,7 @@ class ReputationContent(Content):
         # This should never happen
         return ""
 
-    def modified_release_notes(self, cnt):
+    def modified_release_notes(self, cnt, demisto_version, first_release):
         rn = cnt.get("releaseNotes", "")
         if len(rn) == 0:
             return None
