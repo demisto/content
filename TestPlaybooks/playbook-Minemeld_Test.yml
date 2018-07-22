@@ -1,5 +1,5 @@
 id: minemeld_test
-version: 51
+version: 74
 name: Minemeld Test
 description: This is a playbook test for Palo Alto minemeld Node's indicators integration.
 starttaskid: "0"
@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: b660b6c5-d807-4f4a-8bd1-1aae352e7f96
+    taskid: 29f65881-bbb5-4ead-82c6-9d454541d595
     type: regular
     task:
-      id: b660b6c5-d807-4f4a-8bd1-1aae352e7f96
+      id: 29f65881-bbb5-4ead-82c6-9d454541d595
       version: -1
       name: Add indicator to miner
       script: Palo Alto Minemeld|||minemeld-add-to-miner
@@ -45,7 +45,7 @@ tasks:
       comment:
         simple: test comment
       miner:
-        simple: Suspicious
+        simple: Unmalicious
       share-level: {}
       type:
         simple: IPv4
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 369
+          "y": 368
         }
       }
     note: false
@@ -91,10 +91,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 324b4c84-0b80-4350-87e7-4f23e9d7ad16
+    taskid: 697e1369-31be-4b01-8705-41e1e136951c
     type: regular
     task:
-      id: 324b4c84-0b80-4350-87e7-4f23e9d7ad16
+      id: 697e1369-31be-4b01-8705-41e1e136951c
       version: -1
       name: Retrieve indicator from miner's list
       script: Palo Alto Minemeld|||minemeld-get-item-from-list
@@ -108,14 +108,14 @@ tasks:
       item:
         simple: 6.6.6.6
       miner:
-        simple: Suspicious
+        simple: Unmalicious
       type: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 543
         }
       }
     note: false
@@ -177,10 +177,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: e3993ce4-7232-417d-8952-cf843450ad40
+    taskid: 926c2ebc-4a5e-41e3-8316-becf7529b67b
     type: regular
     task:
-      id: e3993ce4-7232-417d-8952-cf843450ad40
+      id: 926c2ebc-4a5e-41e3-8316-becf7529b67b
       version: -1
       name: Remove indicator from miner
       script: Palo Alto Minemeld|||minemeld-remove-from-miner
@@ -192,7 +192,7 @@ tasks:
       - "14"
     scriptarguments:
       miner:
-        simple: Suspicious
+        simple: Unmalicious
       type:
         simple: IPv4
       value:
@@ -332,10 +332,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 5ef7bf8b-7559-470d-877d-3adbbeb457d2
+    taskid: ee29a5eb-d4ae-4e8f-84fc-9c28ab624260
     type: regular
     task:
-      id: 5ef7bf8b-7559-470d-877d-3adbbeb457d2
+      id: ee29a5eb-d4ae-4e8f-84fc-9c28ab624260
       version: -1
       name: Retrieve miner's indicators list
       script: Palo Alto Minemeld|||minemeld-retrieve-list
@@ -348,7 +348,7 @@ tasks:
     scriptarguments:
       all: {}
       miner:
-        simple: Suspicious
+        simple: Unmalicious
       type: {}
     separatecontext: false
     view: |-
@@ -473,7 +473,7 @@ tasks:
       {
         "position": {
           "x": 58,
-          "y": 1779
+          "y": 1778
         }
       }
     note: false

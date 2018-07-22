@@ -30,12 +30,12 @@ configuration:
   type: 8
   required: false
 - display: Blacklist names e.g.(BlackListIPv4, BlackListURL,Malicious)
-  name: black_list
+  name: blacklist
   defaultvalue: ""
   type: 0
   required: false
 - display: Whitelist names e.g.(wlWhiteListIPv4,wlWhiteListDomain,Unmalicious)
-  name: white_list
+  name: whitelist
   defaultvalue: ""
   type: 0
   required: false
@@ -85,8 +85,8 @@ script:
             'supported_classes': [IPV4_CLASS,IPV6_CLASS,URL_CLASS,DOMAIN_CLASS,LOCALDB_CLASS]
         }
     }
-    WHITELISTS = demisto.params()['white_list'] if isinstance(demisto.params()['white_list'], (list)) else [demisto.params()['white_list']]
-    BLACKLISTS = demisto.params()['black_list'] if isinstance(demisto.params()['black_list'], (list)) else [demisto.params()['black_list']]
+    WHITELISTS = demisto.params()['whitelist'] if isinstance(demisto.params()['whitelist'], (list)) else [demisto.params()['whitelist']]
+    BLACKLISTS = demisto.params()['blacklist'] if isinstance(demisto.params()['blacklist'], (list)) else [demisto.params()['blacklist']]
     LISTS_BY_SEVERITY = {
         'whitelist': {
             'lists': WHITELISTS,
