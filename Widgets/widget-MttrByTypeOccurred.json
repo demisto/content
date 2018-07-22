@@ -21,5 +21,7 @@
   "params":{
      "keys":["avg|(closed - occurred) / 3600"],
      "groupBy" : ["type"]
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }
