@@ -3,6 +3,7 @@ import datetime
 import json
 import sys
 import yaml
+from distutils.version import LooseVersion
 
 from Tests.test_utils import print_error
 
@@ -81,7 +82,7 @@ class Content:
         return
 
     # create a release notes section for store (add or modified) - return None if found missing release notes
-    def release_notes_section(self, store, title_prefix):
+    def release_notes_section(self, store, title_prefix, demisto_version):
         res = ""
         missing_rn = False
         if len(store) > 0:
@@ -92,7 +93,10 @@ class Content:
                     print " - adding release notes (%s) for file - [%s]... " % (path, title_prefix),
                     raw_content = f.read()
                     cnt = self.load_data(raw_content)
-
+                    from_version = cnt.get("fromversion")
+                    if from_version:
+                        if LooseVersion(from_version) > LooseVersion(demisto_version):
+                            continue
                     if title_prefix == NEW_RN:
                         ans = self.added_release_notes(cnt)
                     elif title_prefix == MODIFIED_RN:
@@ -126,14 +130,14 @@ class Content:
 
         return res
 
-    def generate_release_notes(self):
+    def generate_release_notes(self, demisto_version):
         res = ""
 
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print "starting %s RN" % (self.get_header(),)
 
             # Added files
-            add_rn = self.release_notes_section(self.added_store, NEW_RN)
+            add_rn = self.release_notes_section(self.added_store, NEW_RN, demisto_version)
 
             # Modified files
             modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN)
@@ -565,12 +569,12 @@ def main(argv):
 
     for file in files:
         create_file_release_notes(file, argv[2])
-
+    demisto_version = argv[4]
     res = []
     missing_release_notes = False
     for key in RELEASE_NOTES_ORDER:
         value = release_note_generator[key]
-        ans = value.generate_release_notes()
+        ans = value.generate_release_notes(demisto_version)
         if ans is None:
             missing_release_notes = True
         elif len(ans) > 0:

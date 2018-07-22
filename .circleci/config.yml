@@ -5,6 +5,7 @@ jobs:
       - image: circleci/node:9.11
     environment:
       CONTENT_VERSION: "18.7.1"
+      LATEST_DEMISTO_VERSION: "3.6.0"
     steps:
       - checkout
       - run:
@@ -34,7 +35,7 @@ jobs:
               ./Tests/scripts/validate_files_structure.sh
       - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 5e28b4819d5ec478d7542901a83ee38bdb215afa $CONTENT_VERSION
+          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 5e28b4819d5ec478d7542901a83ee38bdb215afa $CONTENT_VERSION $LATEST_DEMISTO_VERSION
       - run:
           name: Common Server Documentation
           command: ./Docs/commonServerDocs.sh
