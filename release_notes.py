@@ -82,7 +82,7 @@ class Content:
         return
 
     # create a release notes section for store (add or modified) - return None if found missing release notes
-    def release_notes_section(self, store, title_prefix, demisto_version):
+    def release_notes_section(self, store, title_prefix, demisto_version="0.0.0"):
         res = ""
         missing_rn = False
         if len(store) > 0:
