@@ -93,7 +93,7 @@ class Content:
                     print " - adding release notes (%s) for file - [%s]... " % (path, title_prefix),
                     raw_content = f.read()
                     cnt = self.load_data(raw_content)
-                    from_version = cnt.get("fromversion")
+                    from_version = cnt.get("fromversion") or cnt.get("fromVersion")
                     if from_version:
                         if LooseVersion(from_version) > LooseVersion(demisto_version):
                             continue
