@@ -11,7 +11,7 @@ detaileddescription: |-
   There are 2 list types, each list type holds the names of the miners(lists) that are accounted as threat intel lists (blacklist, whitelist)
   Each list type represents different DbotScore on Demisto.
   Blacklist - if indicator is found in one of the blacklists then the indicator will get DbotScore  3, which is considered malicious in Demisto.
-  Whitelist - if indicator is found in one o the whitelists then the indicator will get DbotScore 1 which is considered good in Demisto.
+  Whitelist - if indicator is found in one of the whitelists then the indicator will get DbotScore 1 which is considered good in Demisto.
   If indicator is not found in any list, it will get DbotScore of 0 - unknown severity.
 configuration:
 - display: MineMeld url e.g.(https://192.0.0.1/)
@@ -31,11 +31,6 @@ configuration:
   required: false
 - display: Blacklist names e.g.(BlackListIPv4, BlackListURL,Malicious)
   name: black_list
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Suspicious list names e.g.(SuspiciousListIPv4,SuspiciousListFiles,Suspicious)
-  name: suspicious_list
   defaultvalue: ""
   type: 0
   required: false
@@ -109,7 +104,7 @@ script:
     PASSWORD = demisto.params()['credentials']['password']
     USE_PROXY = demisto.params()['proxy']
 
-
+    # API class
     class MineMeldAPIClient(object):
 
         def __init__(self, url, username, password, capath):
@@ -216,6 +211,7 @@ script:
                 method='PUT'
             )
 
+    #system funcs
     def get_miner_list(MM, miner, type_=False):
         if not MM.check(miner=miner, type_=type_):
             raise Exception('Cannot get miner %s with type %s' % (miner, type_))
@@ -227,9 +223,11 @@ script:
     def preform_action(MM, miner, values, action, type_, comment=''):
         current_list = get_miner_list(MM, miner)
         current = {e['indicator']: json.dumps(e, sort_keys=True) for e in current_list}
+
         if not isinstance(values, list):
             values = values.split(',')
         request_params = {}
+
         if type_ is False:
             type_ = ''
 
@@ -378,7 +376,7 @@ script:
             if miner['class'] in INDICATOR_TYPE_TO_CLASS['any']['supported_classes']:
                 matching_items.append({"miner": miner['name'], "indicators": miner['length'], "class": miner['class']})
 
-        miner_context_key = "MineMeld.Item(val.Name == obj.Name)"
+        miner_context_key = "MineMeld.Item(val.miner == obj.miner)"
         if matching_items:
             result_text = 'Miners found: '
         else:
@@ -400,9 +398,9 @@ script:
         indicator_type = demisto.command()
         indicator_arg = demisto.args()[indicator_type]
         indicator_classes = INDICATOR_TYPE_TO_CLASS[indicator_type]['supported_classes']
+        indicator_type = indicator_type.upper() if len(indicator_type) < 4 else indicator_type.capitalize()
         miners_list = MM.connection_check()
         result_indicator = []
-        indicator_type = indicator_type.upper() if len(indicator_type) < 4 else indicator_type.capitalize()
         #output vars
         dbotscore = 0
         indicator_name_key = get_indicator_name_key(indicator_type,indicator_arg)
