@@ -1617,5 +1617,5 @@ script:
       description: The total number of vulnerabilities.
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
-fromversion: 4.0.0
+fromversion: 3.6.0
 releaseNotes: "Added scan functionality"
