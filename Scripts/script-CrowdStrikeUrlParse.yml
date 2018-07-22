@@ -77,3 +77,4 @@ outputs:
   description: Detection ID for CrowdStrike alert
 scripttarget: 0
 runonce: false
+releaseNotes: "Sometimes the detection ID changes in length, but it's always a number from 0-9"
