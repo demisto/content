@@ -439,7 +439,7 @@ script:
                             'RelatedEntities': related_entities_ec
                         }
                     }
-                elif entity_type == 'file':
+                elif entity_type == 'hash':
                     ec[outputPaths['file']] = {
                         determine_hash(entity_value): entity_value,
                         'RecordedFuture': {
@@ -829,3 +829,4 @@ script:
       type: string
     description: Look up threat intel context for an indicator in Recorded Future.
   runonce: false
+releaseNotes: "-"
