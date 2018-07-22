@@ -386,6 +386,10 @@
             "integrations": "Recorded Future",
             "playbookID": "Recorded Future Test",
             "nightly": true
+        },
+        {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
         }
     ],
     "skipped": [
