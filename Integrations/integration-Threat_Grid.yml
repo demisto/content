@@ -388,9 +388,15 @@ script:
         return 'ok';
 
       case 'threat-grid-url-to-file':
-        var url = args['url'];
-        delete(args['url']);
-        return { Type: 3, FileID: saveFile(SHORTCUT_DATA + url), File: 'url_as_file', Contents: 'url_as_file' };
+        var urls = args.urls.split(',');
+        var files = [];
+        for (i = 0; i < urls.length; i++) {
+            var url = urls[i];
+            var fileName = "url_" + (i+1);
+            var fileEntry = { Type: 3, FileID: saveFile(SHORTCUT_DATA + url.replace(/\s/g,'')), File: fileName, Contents: fileName };
+            files.push(fileEntry);
+        }
+        return files;
 
       case 'threat-grid-upload-sample':
         args['api_key'] = params.token;
@@ -1080,9 +1086,41 @@ script:
     description: Gets a specific threat feed
   - name: threat-grid-url-to-file
     arguments:
-    - name: url
+    - name: urls
       required: true
       default: true
-      description: The URL to convert.
+      description: The URLs to convert.
+      isArray: true
+    outputs:
+    - contextPath: File.EntryID
+      description: EntryID of the file upload message in the war room
+      type: string
+    - contextPath: File.Name
+      description: File Name
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
+    - contextPath: File.Type
+      description: File Type
+      type: string
+    - contextPath: File.Info
+      description: File Info
+      type: string
+    - contextPath: File.MD5
+      description: MD5 checksum
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 checksum
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 checksum
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep checksum
+      type: string
+    - contextPath: File.Size
+      description: File Size in bytes
+      type: int
     description: Convert a URL into a file for Threat Grid file detonation.
 releaseNotes: "Added threat-grid-url-to-file for url detonation. Added DBot score output for threat-grid-get-summary-by-id."
