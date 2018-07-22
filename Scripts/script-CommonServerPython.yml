@@ -1012,6 +1012,15 @@ script: |-
       return True
 
   def return_error(message):
+      """
+         Returns error entry with given message and exits the script
+
+         :type message: ``str``
+         :param message: The message to return in the entry (required)
+
+         :return: Error entry object
+         :rtype: ``dict``
+      """
       demisto.results({
           'Type': entryTypes['error'],
           'ContentsFormat': formats['text'],
