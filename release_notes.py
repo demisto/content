@@ -82,7 +82,7 @@ class Content:
         return
 
     # create a release notes section for store (add or modified) - return None if found missing release notes
-    def release_notes_section(self, store, title_prefix, demisto_version="0.0.0"):
+    def release_notes_section(self, store, title_prefix, demisto_version="0.0.0", first_release=False):
         res = ""
         missing_rn = False
         if len(store) > 0:
@@ -130,17 +130,17 @@ class Content:
 
         return res
 
-    def generate_release_notes(self, demisto_version):
+    def generate_release_notes(self, demisto_version, first_release):
         res = ""
 
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print "starting %s RN" % (self.get_header(),)
 
             # Added files
-            add_rn = self.release_notes_section(self.added_store, NEW_RN, demisto_version)
+            add_rn = self.release_notes_section(self.added_store, NEW_RN, demisto_version, first_release)
 
             # Modified files
-            modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN)
+            modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN, demisto_version, first_release)
 
             if add_rn is None or modified_rn is None:
                 return None
@@ -625,11 +625,12 @@ def main(argv):
     for file in files:
         create_file_release_notes(file, argv[2])
     demisto_version = argv[4]
+    first_release = False if argv[5] == 'False' else True
     res = []
     missing_release_notes = False
     for key in RELEASE_NOTES_ORDER:
         value = release_note_generator[key]
-        ans = value.generate_release_notes(demisto_version)
+        ans = value.generate_release_notes(demisto_version, first_release)
         if ans is None:
             missing_release_notes = True
         elif len(ans) > 0:
