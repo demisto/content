@@ -12,5 +12,6 @@ fi
 ASSETID=$1
 VERSION=$3
 DEMISTO_VERSION=$4
+FIRST_RELEASE_AFTER_DEMISTO_RELEASE=$5
 
-python release_notes.py  $VERSION changelog.txt delete-changelog.txt $ASSETID $DEMISTO_VERSION
+python release_notes.py  $VERSION changelog.txt delete-changelog.txt $ASSETID $DEMISTO_VERSION $FIRST_RELEASE_AFTER_DEMISTO_RELEASE
