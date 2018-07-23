@@ -48,7 +48,7 @@ args:
   - "no"
   description: if you choose yes - all context will be deleted
 - name: keysToKeep
-  description: Context keys (top-level keys) to keep when deleting all context. Use comma to specific multiple values 
+  description: Context keys (top-level keys) to keep when deleting all context. Use comma to specify multiple values 
 scripttarget: 0
 runonce: false
 releaseNotes: Added the ability to specify context keys to keep when deleting all context
