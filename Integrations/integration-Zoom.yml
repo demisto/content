@@ -165,7 +165,7 @@ script:
         else:
             return_error('Meeting creation failed: [%d] - %s' % (res.status_code, res.text))
     elif demisto.command() == 'zoom-fetch-recording':
-        meeting = demisto.getArg('id')
+        meeting = demisto.getArg('meeting_id')
         res = requests.get(URL + 'meetings/%s/recordings' % meeting, headers=HEADERS, params=PARAMS)
         if res.status_code == requests.codes.ok:
             data = res.json()
@@ -180,7 +180,7 @@ script:
                     r.raw.decode_content = True
                     shutil.copyfileobj(r.raw, f)
                 demisto.results(file_result_existing_file(filename))
-                rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']))
+                rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']), headers=HEADERS, params=PARAMS)
                 if rf.status_code == requests.codes.no_content:
                     demisto.results('File ' + filename + ' was moved to trash.')
                 else:
