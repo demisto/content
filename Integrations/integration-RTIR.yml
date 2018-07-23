@@ -112,7 +112,7 @@ script:
 
         subject = demisto.args().get('subject')
         if subject:
-            kwargs['Subject'] = subject
+            kwargs['Subject'] = unicode(subject).encode('utf-8')
 
         requestor = demisto.args().get('requestor')
         if requestor:
@@ -148,7 +148,7 @@ script:
 
         text = demisto.args().get('text')
         if text:
-            kwargs['Text'] = text
+            kwargs['Text'] = unicode(text).encode('utf-8')
 
         customfields = demisto.args().get('customfields')
         if customfields:
@@ -940,3 +940,4 @@ script:
   dockerimage: demisto/rt-ir
   isfetch: true
   runonce: false
+releaseNotes: "-"
