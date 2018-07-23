@@ -33,7 +33,7 @@ tasks:
       id: 0894c5bd-8eab-4dbd-8a62-99af2b864f94
       version: -1
       name: Test with input of simple list of values and headers
-      scriptName: ExportToCSV_2
+      scriptName: ExportToCSV
       type: regular
       iscommand: false
       brand: ""
@@ -153,7 +153,7 @@ tasks:
       id: a0c883ac-c6e5-4ca1-8408-7124a3b6a62d
       version: -1
       name: Test with list of JSON objects, missing value
-      scriptName: ExportToCSV_2
+      scriptName: ExportToCSV
       type: regular
       iscommand: false
       brand: ""
@@ -180,7 +180,7 @@ tasks:
       id: 9bd0e602-01dc-4cbc-890e-6e4419d073c8
       version: -1
       name: Test with list of JSON objects, with headers specified
-      scriptName: ExportToCSV_2
+      scriptName: ExportToCSV
       type: regular
       iscommand: false
       brand: ""
