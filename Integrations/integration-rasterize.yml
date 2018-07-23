@@ -4,6 +4,7 @@ commonfields:
 name: Rasterize
 display: Rasterize
 category: Utilities
+releaseNotes: "Add base64 output to rasterize-email"
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAA10lEQVR4Ae3TYQ3CQAwFYCQgAQlIOCmTMAnnYBJOAhImYRImYRJKSfrrBXoXDkrJtcnLEtaQr9fdiYhcJ4AugAHkIgdJAfwrYAC/eTO51nGAv1x7AAPoH2h4w02AXFdOfjyVngtnNQdyTdC3vOgr8j5ZA/dan5weSbYuICdLWoFHA3CBnqkHiKkBcZgbvD8/GWI3AcJ3mDmzrHPGATAmQDwpWGXBT8AcKKgkzw378bd3gFmJCpRVHtXBOoBq9D/FE/MHLBxyCfx0RgDaJ4AB9AJ0nAAOALwDFV7f8k1w4yAAAAAASUVORK5CYII=
 description: Rasterize URLs or emails given to it
 detaileddescription: Take a URL or HTML body and create an image or PDF out of it
@@ -17,6 +18,8 @@ configuration:
 script:
   script: |-
     import os, subprocess,sys
+    import base64
+
     reload(sys)
     sys.setdefaultencoding("utf-8")
     proxy = demisto.get(demisto.params(),"proxy")
@@ -64,8 +67,13 @@ script:
         rasterize_email(html, friendlyName)
         if return_code == 0:
             filename = demisto.uniqueFile()
-            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
-            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+            path = demisto.investigation()['id'] + '_' + filename
+            subprocess.call(['mv', friendlyName, path])
+
+            with open(path, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read())
+
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': '','EntryContext' : {"Base64.encoded": encoded_string}})
         else:
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
@@ -135,6 +143,10 @@ script:
       description: The page height, e.g. 50px (empty is entire email)
     - name: type
       description: pdf or png. Default is png.
+    outputs:
+    - contextPath: Base64.encoded
+      description: The image base64
+      type: string
     description: Rasterize an email body into an image
   dockerimage: demisto/rasterize
 hidden: false
