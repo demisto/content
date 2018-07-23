@@ -166,6 +166,7 @@ script:
                     },
                 }
             })
+            demisto.log(json.dumps(ec))
             dbotScore = 3
         elif (positives >= threshold / 2):
             dbotScore = 2
@@ -183,14 +184,18 @@ script:
             scans_table_md = tableToMarkdown('Scans', scans_table)
             md += scans_table_md
             md += '\n'
-            ec.update({
-                outputPaths['file']: {
-                    'MD5': vt_response.get('md5'),
-                    'VirusTotal': {
-                        'Scans': scans_table
-                    },
+            if(ec.get(outputPaths['file'], False)):
+                ec[outputPaths['file']]['VirusTotal'] = {
+                    'Scans': scans_table
                 }
-            })
+            else:
+                ec.update({
+                    outputPaths['file']: {
+                        'MD5': vt_response.get('md5'),
+                        'VirusTotal': {
+                        },
+                    }
+                })
 
         entry = {
             'Type': entryTypes['note'],
@@ -590,11 +595,16 @@ script:
             resolution = additional_info.get('resolution', None)
             if resolution is not None:
                 md += 'IP address resolution for this domain is: ' + resolution + '\n'
-                ec.update({
-                outputPaths['url']: {
-                    'VirusTotal':{'Resolutions': resolution[:max_len]},
-                    'Data': url,
-                }})
+                if (outputPaths['url']):
+                    outputPaths['url']['VirusTotal'] = {
+                        'Resolutions': resolution[:max_len]
+                    }
+                else:
+                    ec.update({
+                    outputPaths['url']: {
+                        'VirusTotal':{'Resolutions': resolution[:max_len]},
+                        'Data': url,
+                    }})
 
 
         scans = response.get('scans', None)
@@ -602,13 +612,21 @@ script:
         if scans is not None and not short_format:
             scans_table = create_scans_table(scans)
             scans_table_md = tableToMarkdown('Scans', scans_table)
-            ec.update({
-                outputPaths['url']: {
-                    'VirusTotal':{
+            if (outputPaths['url']):
+                if (outputPaths['url']['VirusTotal']):
+                    outputPaths['url']['VirusTotal']['Scans'] = scans_table
+                else:
+                    outputPaths['url']['VirusTotal'] = {
                         'Scans': scans_table
-                    },
-                    'Data': url,
-            }})
+                    }
+            else:
+                ec.update({
+                    outputPaths['url']: {
+                        'VirusTotal':{
+                            'Scans': scans_table
+                        },
+                        'Data': url,
+                }})
             md += scans_table_md
 
         return {
@@ -771,7 +789,19 @@ script:
             }
         }
 
-        ec[outputPaths['ip']].update(ip_ec)
+        if (ec[outputPaths['ip']]):
+            ec[outputPaths['ip']]['VirusTotal'] = {
+                'DownloadedHashes': detected_downloaded_samples,
+                'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
+                "DetectedURLs": detected_urls,
+                'CommunicatingHashes': detected_communicating_samples,
+                'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
+                'Resolutions': resolutions,
+                'ReferrerHashes': detected_referrer_samples,
+                'UnAVDetectedReferrerHashes': undetected_referrer_samples
+            }
+        else:
+            ec[outputPaths['ip']].update(ip_ec)
 
         return {
             'Type': entryTypes['note'],
