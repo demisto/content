@@ -52,22 +52,31 @@ configuration:
   required: false
 script:
   script: |
-    var apiPathAlerts = '/v1/alerts';
+    var API_PATH_ALERTS = '/v1/alerts';
 
-    var sendRequest = function (requestUrl) {
-        logInfo("Sending HTTP request to: " + requestUrl);
+    var SERVER = params.server.replace(/[\/]+$/, '');
+    var API_KEY = params.APIKey;
+
+    var INSECURE = params.insecure;
+    var PROXY = params.proxy;
+
+    var INCLUDE_POLICY = params.policy;
+    var SEVERITY = params.severity;
+
+    function sendRequest(requestUrl) {
+        logInfo('Sending HTTP request to: ' + requestUrl);
 
         var response = http(
             requestUrl,
             {
                 Method: 'GET',
                 Headers: {
-                    Authorization: ['Basic ' + btoa(params.APIKey + ':')],
+                    Authorization: ['Basic ' + btoa(API_KEY + ':')],
                     Accept: ['application/json']
                 }
             },
-            params.insecure,
-            params.proxy
+            INSECURE,
+            PROXY
         );
 
         var errorString = validateRequestResponse(requestUrl, response);
@@ -82,7 +91,7 @@ script:
         }
     };
 
-    var validateRequestResponse = function (requestUrl, response) {
+    function validateRequestResponse(requestUrl, response) {
         if (!response) {
             return 'Error: Unexpected HTTP response\n\nRequest URL: ' + requestUrl;
         } else if (response.StatusCode < 200 || response.StatusCode >= 300) {
@@ -110,28 +119,27 @@ script:
         return null;
     }
 
-    var createAlertsURL = function (follow) {
-        var server = params.server.replace(/[\/]+$/, '');
-        return server + apiPathAlerts + "?follow=" + follow + "&threats=all"
+    function createAlertsURL(follow) {
+        return SERVER + API_PATH_ALERTS + '?follow=' + follow + '&threats=all';
     }
 
-    var parseFollow = function () {
+    function parseFollow() {
         var lastRun = getLastRun();
-        return lastRun && lastRun.follow ? lastRun.follow : "0";
+        return lastRun && lastRun.follow ? lastRun.follow : '0';
     }
 
-    var saveFollow = function (follow) {
+    function saveFollow(follow) {
         if (follow) {
             setLastRun({ follow: follow });
         }
     }
 
-    var testGetAlerts = function () {
-        var response = sendRequest(createAlertsURL("0"));
+    function testGetAlerts() {
+        var response = sendRequest(createAlertsURL('0'));
         return response && response.alerts ? true : false;
     }
 
-    var getAlerts = function (follow) {
+    function getAlerts(follow) {
         var response = sendRequest(createAlertsURL(follow));
 
         return {
@@ -141,9 +149,9 @@ script:
         }
     }
 
-    var appendIncidentsFromAlert = function (incidents, alert, threats) {
+    function appendIncidentsFromAlert(incidents, alert, threats) {
         if (!threats || !alert || !alert.threats) {
-            logInfo("Invalid alert format or empty threats definition");
+            logInfo('Invalid alert format or empty threats definition');
             return;
         }
 
@@ -161,17 +169,17 @@ script:
                 alert.policy = threat.policy === true ? true : false;
 
                 incidents.push({
-                    "name": threat.title,
-                    "occurred": occurredTs,
-                    "severity": convertSeverity(threat.severity),
-                    "labels": getLabels(alert),
-                    "rawJSON": JSON.stringify(alert)
+                    'name': threat.title,
+                    'occurred': occurredTs,
+                    'severity': convertSeverity(threat.severity),
+                    'labels': getLabels(alert),
+                    'rawJSON': JSON.stringify(alert)
                 });
             }
         }
     }
 
-    var getOccurredTs = function (alert) {
+    function getOccurredTs(alert) {
         try {
             return alert.event.ts;
         } catch (exc) {
@@ -179,7 +187,7 @@ script:
         }
     }
 
-    var getLabels = function (alert) {
+    function getLabels(alert) {
         var labels = [];
         if (!alert) {
             return labels;
@@ -197,7 +205,7 @@ script:
             var eventKeys = Object.keys(alert.event);
             for (var i = 0; i < eventKeys.length; i++) {
                 var eventKey = eventKeys[i];
-                if (eventKey !== "ts") {
+                if (eventKey !== 'ts') {
                     labels.push(createLabelEntry(eventKey, alert.event[eventKey]));
                 }
             }
@@ -214,25 +222,24 @@ script:
         return labels;
     }
 
-    var createLabelEntry = function (key, value) {
+    function createLabelEntry(key, value) {
         return { 'type': key, 'value': String(value) };
     }
 
-    var inScope = function (severity, policy) {
+    function inScope(severity, policy) {
         var severityThereshold = getSeverityThereshold();
-        if (severity === null || severity === undefined || severity < severityThereshold) {
+        if (!severity || severity < severityThereshold) {
             return false;
         }
 
-        var includePolicy = params.policy;
-        if (policy === true && !includePolicy) {
+        if (policy === true && !INCLUDE_POLICY) {
             return false;
         }
 
         return true;
     }
 
-    var convertSeverity = function (severity) {
+    function convertSeverity(severity) {
         var demistoSeverity = 0;
 
         try {
@@ -244,9 +251,9 @@ script:
         return demistoSeverity < 0 || demistoSeverity > 4 ? 0 : demistoSeverity;
     }
 
-    var getSeverityThereshold = function () {
+    function getSeverityThereshold() {
         try {
-            var severity = parseInt(params.severity);
+            var severity = parseInt(SEVERITY);
         } catch (exc) {
             var severity = NaN;
         }
@@ -279,8 +286,6 @@ script:
 
             saveFollow(alerts.follow);
             return JSON.stringify(incidents);
-        default:
-            return 'The AlphaSOC Network Behavior Analytics integration has no command "' + command + '".';
     }
   type: javascript
   isfetch: true
