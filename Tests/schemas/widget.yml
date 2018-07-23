@@ -25,6 +25,7 @@ mapping:
   isPredefined:
     type: bool
     required: yes
+    enum: [true]
   releaseNotes:
     type: str
   dateRange:
