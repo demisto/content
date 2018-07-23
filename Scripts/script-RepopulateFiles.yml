@@ -6,8 +6,6 @@ script: |
   import os
 
   entries = demisto.executeCommand('getEntries', {})
-  typefilter = demisto.get(demisto.args(), 'typefilter')
-  namefilter = demisto.get(demisto.args(), 'namefilter')
   ec = []
   for e in entries:
       if e.get('File') and e.get('FileMetadata'):
