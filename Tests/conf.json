@@ -381,6 +381,10 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
         }
     ],
     "skipped": [
