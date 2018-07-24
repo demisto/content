@@ -23,7 +23,7 @@ script: |-
       match.group('detect')
       '''
 
-      match = re.search(r'detail\/(?P<aid>(\w{32}))\/(?P<detect>(\w{12}))', url)
+      match = re.search(r'detail\/(?P<aid>(\w{32}))\/(?P<detect>([0-9]+))', url)
       aid = match.group('aid')
       detect = match.group('detect')
 
@@ -77,3 +77,4 @@ outputs:
   description: Detection ID for CrowdStrike alert
 scripttarget: 0
 runonce: false
+releaseNotes: "Sometimes the detection ID changes in length, but it's always a number from 0-9"

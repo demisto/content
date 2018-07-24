@@ -82,10 +82,6 @@
             "timeout": 300
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest"
-        },
-        {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
         },
@@ -391,9 +387,18 @@
             "integrations": "Recorded Future",
             "playbookID": "Recorded Future Test",
             "nightly": true
+        },
+        {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
         }
     ],
     "skipped": [
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
