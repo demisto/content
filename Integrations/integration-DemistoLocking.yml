@@ -151,4 +151,4 @@ script:
     arguments: []
     description: Release all locks
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Increase default timeout to 600 seconds"
