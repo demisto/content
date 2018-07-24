@@ -1,4 +1,5 @@
 {
+	"releaseNotes": "Add HTML Image field",
 	"incidentFields": [{
 		"id": "incident_attachmenthash",
 		"version": 1,
@@ -1088,6 +1089,38 @@
 		"hidden": false,
 		"associatedTypes": [
 			"Malware"
+		],
+		"associatedToAll": false,
+		"unmapped": false,
+		"unsearchable": false
+	},
+	{
+		"id": "incident_htmlimage",
+		"version": 1,
+		"modified": "2018-07-19T07:29:11.711847656Z",
+		"name": "HTML Image",
+		"ownerOnly": false,
+		"placeholder": "",
+		"description": "",
+		"cliName": "htmlimage",
+		"type": "markdown",
+		"closeForm": false,
+		"editForm": true,
+		"required": false,
+		"script": "",
+		"fieldCalcScript": "",
+		"neverSetAsRequired": false,
+		"isReadOnly": false,
+		"selectValues": null,
+		"validationRegex": "",
+		"useAsKpi": false,
+		"locked": false,
+		"system": false,
+		"content": false,
+		"group": 0,
+		"hidden": false,
+		"associatedTypes": [
+			"Phishing"
 		],
 		"associatedToAll": false,
 		"unmapped": false,
