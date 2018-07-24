@@ -643,4 +643,4 @@ outputs:
   description: The format of the email if available
 scripttarget: 0
 runonce: false
-releaseNote: 'Added support for "SMTP mail text, ASCII text" files. Fixed bug in email address extraction.'
+releaseNote: "Added support for 'SMTP mail text, ASCII text' files. Fixed bug in email address parsing."
