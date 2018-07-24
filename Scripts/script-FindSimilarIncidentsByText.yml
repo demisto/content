@@ -9,9 +9,9 @@ script: |-
   IGNORE_CLOSED = demisto.args()['ignoreClosedIncidents'] == 'yes'
   INCIDENT_QUERY_SIZE = int(demisto.args()['maximumNumberOfIncidents'])
   INCIDENT_TEXT_FIELD = 'incident_text_for_tfidf'
-  MIN_TEXT_LENGTH = 50
-  MAX_CANDIDATES_IN_LIST = demisto.args()['maxResults']
-  TIME_FIELD = int(demisto.args()['timeField'])
+  MIN_TEXT_LENGTH = int(demisto.args()['minTextLength'])
+  MAX_CANDIDATES_IN_LIST = int(demisto.args()['maxResults'])
+  TIME_FIELD = demisto.args()['timeField']
 
   from sklearn.feature_extraction.text import TfidfVectorizer
   import dateutil.parser
@@ -29,7 +29,7 @@ script: |-
   def get_texts_from_incident(incident, text_fields):
       texts = []
       # labels
-      for label in incident['labels']:
+      for label in incident.get('labels') or []:
           if label['type'].lower() in text_fields:
               texts.append(label['value'])
 
@@ -90,13 +90,17 @@ script: |-
   incident = demisto.incidents()[0]
   incident_text = get_texts_from_incident(incident, TEXT_FIELDS)
   if len(incident_text) < MIN_TEXT_LENGTH:
-      raise Exception("The text is too short to compare - minimum of %d chars required" % MIN_TEXT_LENGTH)
+      demisto.results("The text is too short to compare - minimum of %d chars required" % MIN_TEXT_LENGTH)
+      exit(0)
 
+  # get initial candidates list
   candidates = get_incidents_by_time(incident[TIME_FIELD], incident['type'], incident['id'], HOURS_TIME_FRAME, IGNORE_CLOSED, INCIDENT_QUERY_SIZE)
 
+  # filter candidates with minimum length constraint
   map(lambda x: add_text_to_incident(x, TEXT_FIELDS), candidates)
-  candidates = [x for x in candidates if len(x[INCIDENT_TEXT_FIELD]) >= MIN_TEXT_LENGTH]
+  candidates = [x for x in candidates if len(x.get(INCIDENT_TEXT_FIELD, 0)) >= MIN_TEXT_LENGTH]
 
+  # compare candidates to the orginial incident using TF-IDF
   similarity_vector = get_similar_texts(incident_text, map(lambda x: x[INCIDENT_TEXT_FIELD], candidates))
   similar_incidents = []
   for (i, similarity) in enumerate(similarity_vector):
@@ -166,6 +170,9 @@ args:
 - name: maxResults
   description: Maximum number of similar candidates.
   defaultValue: "10"
+- name: minTextLength
+  description: Minimum required text length to compare.
+  defaultValue: "50"
 outputs:
 - contextPath: similarIncident.rawId
   description: Similar incident ID.
