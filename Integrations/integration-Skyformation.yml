@@ -207,4 +207,3 @@ script:
       command can un-suspend user in Sales Cloud.
     execution: true
   runonce: false
-releaseNotes: "-"

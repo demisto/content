@@ -1,5 +1,4 @@
 {
-	"releaseNotes": "Add HTML Image field",
 	"incidentFields": [{
 		"id": "incident_attachmenthash",
 		"version": 1,

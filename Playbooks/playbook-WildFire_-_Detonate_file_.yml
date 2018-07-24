@@ -5,7 +5,6 @@ description: Detonate one or more files using the Wildfire integration. This pla
   returns relevant reports to the War Room and file reputations to the context data.
 fromversion: 3.6.0
 starttaskid: "0"
-releaseNotes: "Verify that the file exists"
 tasks:
   "0":
     id: "0"
