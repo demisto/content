@@ -51,8 +51,6 @@ mapping:
           scriptarguments:
             type: map
             allowempty: True
-          note:
-            type: bool
           task:
             type: map
             required: yes
