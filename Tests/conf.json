@@ -90,7 +90,6 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
@@ -152,7 +151,10 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-            "integrations": "AlienVault OTX",
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
             "playbookID": "ip_enrichment_generic_test"
         },
         {
@@ -171,7 +173,7 @@
             "playbookID": "Test CommonServer"
         },
         {
-            "integrations": "AlienVault OTX",
+            "integrations": "VirusTotal",
             "playbookID": "domain_enrichment_generic_test"
         },
         {
@@ -384,6 +386,10 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
         }
     ],
     "skipped": [
@@ -435,7 +441,8 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
+                "VirusTotal",
+                "urlscan.io",
                 {
                     "name": "activedir",
                     "byoi": false
@@ -445,7 +452,7 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
+                "VirusTotal",
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
