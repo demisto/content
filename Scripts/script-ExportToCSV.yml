@@ -127,3 +127,4 @@ args:
 scripttarget: 0
 runonce: false
 releaseNotes: "modified to take more possible inputs"
+fromversion: 3.6.0
