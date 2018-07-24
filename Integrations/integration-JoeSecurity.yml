@@ -401,4 +401,3 @@ script:
     - contextPath: Joe. Analysis.Result
       description: Analysis Results
     description: Submit a sample for analysis.
-releaseNotes: "-"

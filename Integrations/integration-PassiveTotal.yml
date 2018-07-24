@@ -744,5 +744,3 @@ script:
         subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
     description: Search for SSL certificates based on field values
   runonce: false
-releaseNotes: Added support for proxy and insecure connections. Added ip, domain support.
-  Changed url command to be based on pt-enrichment and score based on tags or classification.

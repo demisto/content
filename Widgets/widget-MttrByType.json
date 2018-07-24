@@ -22,6 +22,5 @@
      "keys":["avg|openDuration / (3600*24)"],
      "groupBy" : ["occurred(d)", "type"]
   },
-  "description": "",
-  "releaseNotes": "-"
+  "description": ""
 }

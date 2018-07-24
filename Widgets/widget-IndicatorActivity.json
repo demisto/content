@@ -21,6 +21,5 @@
   "params": {
     "groupBy": ["calculatedTime"]
   },
-  "description": "",
-  "releaseNotes": "-"
+  "description": ""
 }
