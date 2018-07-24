@@ -2,7 +2,7 @@ commonfields:
   id: GetDuplicatesMlv2
   version: -1
 name: GetDuplicatesMlv2
-fromVersion: "3.5.0"
+fromversion: "3.5.0"
 script: |
   import json, collections, re, dateutil.parser, datetime, pickle, ipaddress
   import tldextract, editdistance, zlib
