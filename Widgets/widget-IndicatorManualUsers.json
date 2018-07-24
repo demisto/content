@@ -21,6 +21,5 @@
   "params": {
     "groupBy": ["setBy"]
   },
-  "description": "",
-  "releaseNotes": "-"
+  "description": ""
 }
