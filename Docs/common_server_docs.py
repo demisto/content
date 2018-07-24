@@ -119,7 +119,7 @@ def createJsDocumentation(path, origin, language):
     return x, isError
 
 def createPyDocumentation(path, origin, language):
-
+    isErrorPy = False
     # create commonServerPy json doc
     commonServerPython = readYmlFile(path)
     pyScript = commonServerPython.get("script", "")
@@ -132,11 +132,18 @@ def createPyDocumentation(path, origin, language):
 
     for a in ns:
         if callable(ns.get(a)) and a not in pyPrivateFuncs:
-            y = parser.parse_docstring((inspect.getdoc(ns.get(a))))
-            y["name"] = a
-            y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) == None else pyIrregularFuncs[a]["argList"]
-            x.append(y)
+            docstring = inspect.getdoc(ns.get(a))
+            if not docstring:
+                print "docstring for function " + a + " is empty"
+                isErrorPy = True
+            else:
+                y = parser.parse_docstring(docstring)
+                y["name"] = a
+                y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) == None else pyIrregularFuncs[a]["argList"]
+                x.append(y)
 
+    if isErrorPy:
+        return None, isErrorPy
     return reformatPythonOutput(x, origin, language)
 
 def main(argv):

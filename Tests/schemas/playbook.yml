@@ -89,6 +89,8 @@ mapping:
                 type: bool
               clonedfrom:
                 type: str
+          note:
+            type: bool
           nexttasks:
             type: map
             mapping:

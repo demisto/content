@@ -23,5 +23,7 @@
     "groupBy": [
       "roles"
     ]
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }
