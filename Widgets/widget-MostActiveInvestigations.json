@@ -21,5 +21,7 @@
   },
   "params": {
     "groupBy": ["investigation"]
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }

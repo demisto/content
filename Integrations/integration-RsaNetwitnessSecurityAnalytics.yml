@@ -197,7 +197,7 @@ script:
     var defaultIncidentFilter = {
         page: 1,
         start: 0,
-        limit: 100,
+        limit: 50,
         sort: JSON.stringify([
             {
                 property:'created',
@@ -291,7 +291,7 @@ script:
             loadAlerts: true,
             page: 1,
             start: 0,
-            limit: 1000,
+            limit: 50,
             filter: JSON.stringify([{
                 property: 'created',
                 value: [
@@ -301,7 +301,7 @@ script:
             }])
         };
 
-        // TODO handle paging. If number of incidents are more than 1000, then we need to
+        // TODO handle paging. If number of incidents are more than 50, then we need to
         // fetch the next pages too.
         var lastIncidents = listIncidents(sessionId, query, incidentManagementId);
         var convertedIncidents = [];
@@ -2068,3 +2068,4 @@ script:
       description: Id of the alert
     description: Returns the original events which this alert contains
   isfetch: true
+releaseNotes: "Demisto will fetch maximum 50 incidents from Netwitness per fetch"

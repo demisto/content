@@ -631,7 +631,7 @@ script:
     var addEntriesTemplate = '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://ws.v1.service.resource.manager.product.arcsight.com/activeListService/" xmlns:xsd="http://activelist.model.v1.service.resource.manager.product.arcsight.com/xsd"><soapenv:Header /><soapenv:Body><act:addEntries><act:authToken>%authToken%</act:authToken><act:resourceId>%resourceId%</act:resourceId><act:entryList>%entryList%</act:entryList></act:addEntries></soapenv:Body></soapenv:Envelope>';
 
     function addEntries() {
-        var entries;
+        var entries = args.entries;
         if (typeof args.entries === 'string') {
             try {
                 entries = JSON.parse(args.entries);
@@ -1231,3 +1231,4 @@ script:
     execution: true
   isfetch: true
 hidden: false
+releaseNotes: "Fixed as-add-entries bug. Passing entries array from context now works"

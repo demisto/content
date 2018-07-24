@@ -1,13 +1,14 @@
 {
-	"id": "cpu-percentage-trend",
+    "id": "cpu-percentage-trend",
     "version": -1,
     "fromVersion": "3.5.1",
     "modified": "2018-03-14T17:42:44.919467+02:00",
-    "name": "CPU Use Trend",
+    "name": "Server CPU Usage % (last 24h)",
     "dataType": "system",
     "widgetType": "line",
     "query": "cpu.usedPercent",
     "isPredefined": true,
+    "description": "Server CPU usage in the previous 24 hours",
     "dateRange": {
         "period": {
             "byTo": "",
@@ -20,5 +21,6 @@
     "params": {
         "timeFrame": "minutes"
     },
-    "size": 61
+    "size": 1440,
+    "releaseNotes": "Added support for last 24 hours data"
 }

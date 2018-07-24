@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: SlackAskUser
 fromversion: 3.5.0
-releaseNotes: "Spelling fix"
 script: |-
   res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'), 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
   if isError(res[0]):

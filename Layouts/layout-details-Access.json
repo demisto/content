@@ -1,4 +1,5 @@
 {
+	"releaseNotes": "-",
 	"typeId": "Access",
 	"kind": "details",
 	"layout": {
@@ -389,7 +390,7 @@
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",
-				"name": "Child Investigation",
+				"name": "Child Incidents",
 				"type": "childInv",
 				"isVisible": true,
 				"readOnly": true,
