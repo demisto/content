@@ -359,11 +359,6 @@
             "playbookID": "test-domain-indicator"
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
-        },
-        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
@@ -393,6 +388,11 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
