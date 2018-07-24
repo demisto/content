@@ -20,15 +20,18 @@ script: |-
   function extractHeaders(objArray) {
       var headersInOrder = [];
       var headers = {};
-      for (var obj of objArray) {
-          for (var header of Object.keys(obj)) {
-              if (!headers.hasOwnProperty(header)) {
-                  headersInOrder.push(header);
+      for(var i = 0; i < objArray.length; i++){
+          var objHeaders = Object.keys(objArray[i]);
+          for(var j = 0; j < objHeaders.length; j++){
+              header = objHeaders[j];
+              if (!headers.hasOwnProperty(objHeaders[j])) {
+                  headersInOrder.push(objHeaders[j]);
                   // maintain a map to enable quick check if the header was added before
                   headers[header] = '';
               }
           }
       }
+
       return headersInOrder;
   }
 
@@ -48,13 +51,16 @@ script: |-
       }
       // collect values into rows
       var rows = [];
-      for (var obj of objArray) {
+
+      for(var i = 0; i < objArray.length; i++){
+          obj = objArray[i];
           if (typeof obj !== 'object') {
               throw "Array contains '" + typeof obj + "' member: '" + obj + "'" ;
           }
           var row = [];
           // loop on headersInOrder to extract values from the object and add to 'row' to match headers order.
-          for (var header of headers) {
+          for(var j = 0; j < headers.length; j++){
+              header = headers[j];
               var value = '';
               if (obj.hasOwnProperty(header)) {
                   value = valueToValidString(obj[header]);
@@ -63,6 +69,7 @@ script: |-
           }
           rows.push(row);
       }
+
       // create file content
       var fileContent = headers.join() + '\r';
       for (var i = 0; i < rows.length;  i++) {
@@ -127,4 +134,3 @@ args:
 scripttarget: 0
 runonce: false
 releaseNotes: "modified to take more possible inputs"
-fromversion: 3.6.0
