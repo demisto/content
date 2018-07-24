@@ -23,5 +23,7 @@
     "groupBy": [
       "severity"
     ]
-  }
+  },
+  "description": "",
+  "releaseNotes": "-"
 }

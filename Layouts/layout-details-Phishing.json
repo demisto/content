@@ -1,11 +1,11 @@
 {
-	"releaseNotes": "-",
+	"releaseNotes": "Add HTML Image field",
 	"typeId": "Phishing",
 	"kind": "details",
 	"layout": {
 		"id": "Phishing",
 		"version": -1,
-		"modified": "2018-04-08T19:57:25.247211344Z",
+		"modified": "2018-07-17T07:56:11.209263825Z",
 		"name": "",
 		"sections": [
 			{
@@ -183,6 +183,13 @@
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_emailbodyhtml",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_htmlimage",
 						"isVisible": true
 					}
 				],

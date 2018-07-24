@@ -15,6 +15,7 @@ mapping:
     required: yes
   description:
     type: str
+    required: yes
   dataType:
     type: str
   widgetType:
