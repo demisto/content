@@ -37,6 +37,7 @@ script:
     import json
     import io
     import csv
+    from cStringIO import StringIO
 
     if not demisto.params()['proxy']:
       del os.environ['HTTP_PROXY']
@@ -312,44 +313,46 @@ script:
         sys.exit(0)
 
     # Dealing with Broken Pipe issues raised by some pytan commands
-    from cStringIO import StringIO
     sout = sys.stdout
     sys.stdout = StringIO()
 
-    handler = getHandler()
-    response = ''
+    try:
+        handler = getHandler()
+        response = ''
 
-    if demisto.command() == 'test-module':
-        final_result = getAllPackages(handler)
-        restoreSoutAndExit('ok')
-    if demisto.command() == 'tn-get-package':
-        final_result = getPackage(handler)
-    if demisto.command() == 'tn-get-saved-question':
-        final_result = getSavedQuestion(handler)
-    if demisto.command() == 'tn-get-object':
-        final_result = getObject(handler, unicode(demisto.args()['object_type']))
-    if demisto.command() == 'tn-get-all-objects':
-        final_result = getAllObjects(handler, unicode(demisto.args()['object_type']))
-    if demisto.command() == 'tn-get-all-packages':
-        final_result = getAllPackages(handler)
-    if demisto.command() == 'tn-get-all-sensors':
-        final_result = getAllSensors(handler)
-    if demisto.command() == 'tn-get-all-saved-questions':
-        final_result = getAllSavedQuestions(handler)
-    if demisto.command() == 'tn-get-all-saved-actions':
-        final_result = getAllSavedActions(handler)
-    if demisto.command() == 'tn-get-all-pending-actions':
-        final_result = getAllPendingActions(handler)
-    if demisto.command() == 'tn-deploy-package':
-        final_result = deployAction(handler)
-    if demisto.command() == 'tn-ask-system':
-        final_result = askQuestion(handler, 'Get Computer Name from all machines with Computer Name matching \"'+ demisto.args()['hostname'] + '\"')
-    if demisto.command() == 'tn-ask-question':
-        final_result = askQuestion(handler, demisto.args()['question'])
-    if demisto.command() == 'tn-create-package':
-        final_result = createPackage(handler)
-    if demisto.command() == 'tn-approve-pending-action':
-        final_result = approveSavedAction(handler)
+        if demisto.command() == 'test-module':
+            final_result = getAllPackages(handler)
+            restoreSoutAndExit('ok')
+        if demisto.command() == 'tn-get-package':
+            final_result = getPackage(handler)
+        if demisto.command() == 'tn-get-saved-question':
+            final_result = getSavedQuestion(handler)
+        if demisto.command() == 'tn-get-object':
+            final_result = getObject(handler, unicode(demisto.args()['object_type']))
+        if demisto.command() == 'tn-get-all-objects':
+            final_result = getAllObjects(handler, unicode(demisto.args()['object_type']))
+        if demisto.command() == 'tn-get-all-packages':
+            final_result = getAllPackages(handler)
+        if demisto.command() == 'tn-get-all-sensors':
+            final_result = getAllSensors(handler)
+        if demisto.command() == 'tn-get-all-saved-questions':
+            final_result = getAllSavedQuestions(handler)
+        if demisto.command() == 'tn-get-all-saved-actions':
+            final_result = getAllSavedActions(handler)
+        if demisto.command() == 'tn-get-all-pending-actions':
+            final_result = getAllPendingActions(handler)
+        if demisto.command() == 'tn-deploy-package':
+            final_result = deployAction(handler)
+        if demisto.command() == 'tn-ask-system':
+            final_result = askQuestion(handler, 'Get Computer Name from all machines with Computer Name matching \"'+ demisto.args()['hostname'] + '\"')
+        if demisto.command() == 'tn-ask-question':
+            final_result = askQuestion(handler, demisto.args()['question'])
+        if demisto.command() == 'tn-create-package':
+            final_result = createPackage(handler)
+        if demisto.command() == 'tn-approve-pending-action':
+            final_result = approveSavedAction(handler)
+    except Exception as ex:
+        final_result = { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(ex)}
 
     restoreSoutAndExit(final_result)
   type: python
