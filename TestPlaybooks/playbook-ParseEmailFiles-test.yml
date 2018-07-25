@@ -116,6 +116,7 @@ tasks:
       - "8"
       - "11"
       - "13"
+      - "14"
     scriptarguments:
       entryid:
         simple: ${File.EntryID}
@@ -298,18 +299,51 @@ tasks:
           "y": 769
         }
       }
+    note: false
+  "14":
+    id: "14"
+    taskid: e8e4aea5-215a-4fe4-8946-2fc940506b22
+    type: regular
+    task:
+      id: e8e4aea5-215a-4fe4-8946-2fc940506b22
+      version: -1
+      name: VerifyContext - From
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: shachar@demisto.com
+      fields: {}
+      path:
+        simple: Email.From
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -558,
+          "y": 769
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1122,
-        "width": 1713,
-        "x": -120,
+        "width": 2151,
+        "x": -558,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-releaseNotes: "-"

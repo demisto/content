@@ -760,4 +760,3 @@ script:
       it with the values in the request.
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "-"

@@ -3,12 +3,28 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Gmail",
-            "playbookID": "GmailTest"
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing"
         },
         {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
+            "integrations": "FalconIntel",
+            "playbookID": "CrowdStrike Falcon Intel v2"
+        },
+        {
+            "integrations": [{
+                "name": "Mail Sender (New)"
+            },{
+                "name": "google",
+                "byoi": false
+            }],
+            "playbookID": "Mail Sender (New) Test"
+        },
+        {
+            "playbookID": "buildewsquery_test"
+        },
+        {
+            "integrations": "Rapid7 Nexpose",
+            "playbookID": "nexpose_test"
         },
         {
             "integrations": "EWS Mail Sender",
@@ -58,8 +74,8 @@
             "playbookID": "File Enrichment - Generic Test"
         },
         {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
+            "integrations": "EWS v2",
+            "playbookID": "EWSv2_empty_attachment_test"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -71,7 +87,6 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
@@ -110,11 +125,6 @@
             "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
         },
         {
-            "integrations": "ThreatExchange",
-            "playbookID": "extract_indicators_-_generic_-_test",
-            "timeout": 240
-        },
-        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
@@ -138,7 +148,10 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-            "integrations": "AlienVault OTX",
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
             "playbookID": "ip_enrichment_generic_test"
         },
         {
@@ -157,16 +170,12 @@
             "playbookID": "Test CommonServer"
         },
         {
-            "integrations": "AlienVault OTX",
+            "integrations": "VirusTotal",
             "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
-        },
-        {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
         },
         {
             "integrations": {
@@ -183,10 +192,6 @@
             "integrations": "RSA Archer",
             "playbookID": "Archer-Test-Playbook",
             "nightly": true
-        },
-        {
-            "integrations": "ThreatExchange",
-            "playbookID": "ThreatExchange-test"
         },
         {
             "integrations": "jira",
@@ -352,14 +357,56 @@
             "playbookID": "test-domain-indicator"
         },
         {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
+            "integrations": "Cybereason",
+            "playbookID": "Cybereason Test"
+        },
+        {
+            "integrations": "ThreatExchange",
+            "playbookID": "extract_indicators_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "Tanium",
+            "playbookID": "Tanium Demo Playbook",
+            "nightly": true,
+            "timeout": 1200
+        },
+        {
+            "integrations": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
+            "integrations": "Recorded Future",
+            "playbookID": "Recorded Future Test",
+            "nightly": true
+        },
+        {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
         }
     ],
     "skipped": [
         {
-            "integrations": "Cybereason",
-            "playbookID": "Cybereason Test"
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
+        {
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
+        {
+
+            "integrations": "Farsight DNSDB",
+            "playbookID": "DNSDBTest"
         },
         {
             "integrations": {
@@ -390,12 +437,9 @@
             "playbookID": "TestParseCSV"
         },
         {
-            "integrations": "VMware",
-            "playbookID": "VMWare Test"
-        },
-        {
             "integrations": [
-                "AlienVault OTX",
+                "VirusTotal",
+                "urlscan.io",
                 {
                     "name": "activedir",
                     "byoi": false
@@ -405,7 +449,7 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
+                "VirusTotal",
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
@@ -422,12 +466,6 @@
         {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "McAfee-TIE Test"
-        },
-        {
-            "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
-            "nightly": true,
-            "timeout": 1200
         },
         {
             "integrations": "ArcSight Logger",
@@ -492,6 +530,11 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Qualys",
+            "playbookID": "Qualys-Test",
+            "nightly": true
         }
     ]
 }

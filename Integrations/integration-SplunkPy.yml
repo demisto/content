@@ -212,13 +212,8 @@ script:
             'headers': response.info().dict,
             'body': StringIO(response.read())
         }
-
-    service = client.connect(
-            host=demisto.params()['host'],
-            port=demisto.params()['port'],
-            username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'])
-
+    
+    service = None
     proxy = demisto.params()['proxy']
     if proxy:
         try:
@@ -233,6 +228,12 @@ script:
                 pass
             else:
                 raise
+    else:
+        service = client.connect(
+            host=demisto.params()['host'],
+            port=demisto.params()['port'],
+            username=demisto.params()['authentication']['identifier'],
+            password=demisto.params()['authentication']['password'])
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -487,4 +488,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: 'Fix issue where splunk-notable-event-edit taking proxy settings when not needed'

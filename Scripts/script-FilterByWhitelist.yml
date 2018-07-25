@@ -1,0 +1,61 @@
+commonfields:
+  id: FilterByList
+  version: -1
+name: FilterByList
+script: |
+  lst = demisto.executeCommand("getList", {"listName": demisto.args()["listname"]})
+
+  if isError(lst[0]):
+      demisto.results(lst)
+      sys.exit(0)
+
+  lst = lst[0]["Contents"].split(",")
+  items = demisto.args().get("values", "")
+
+  if not isinstance(items, list):
+      items = items.split(",")
+
+  whitlisted = []
+  notwhitelisted = []
+  hr = ""
+
+  for item in items:
+      if item in lst:
+          hr = hr + item + " is in the list\n"
+          whitlisted.append(item)
+      else:
+          hr = hr + item + " is in on the list\n"
+          notwhitelisted.append(item)
+
+
+  ec = {"List.In":whitlisted,"List.NotIn":notwhitelisted }
+  contents = {"inList":whitlisted, "notInList" : notwhitelisted}
+  demisto.results({"ContentsFormat": formats["json"],
+                       "Type": entryTypes["note"],
+                       "Contents": contents,
+                       "HumanReadable" : hr,
+                       "HumanReadableFormat" : formats["markdown"],
+                       "EntryContext": ec})
+
+  sys.exit(0)
+type: python
+tags:
+- whitelist
+comment: Check whether the specified item is in a list. Default list is the Demisto
+  Indicators Whitelist.
+enabled: true
+args:
+- name: values
+  default: true
+  description: The value to look for in the list
+  isArray: true
+- name: listname
+  description: Name of list to check
+  defaultValue: Indicators Whitelist
+outputs:
+- contextPath: List.In
+  description: List of items in the list
+- contextPath: List.NotIn
+  description: List of items not in the list
+scripttarget: 0
+runonce: false
