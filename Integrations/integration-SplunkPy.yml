@@ -473,7 +473,7 @@ script:
         | head 3"
     outputs:
     - contextPath: Splunk.Job
-      description: The created jon SID
+      description: The created job SID
     description: 'Create new search job in Splunk '
   - name: splunk-parse-raw
     arguments:
