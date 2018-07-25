@@ -7,7 +7,7 @@ script: |-
 
   failedTasks = 0
   successTasks = 0
-  totalTasks = Ids.len
+  totalTasks = len(Ids) if Ids is not None else 0
   TasksOutput = []
   result = []
 
