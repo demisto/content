@@ -114,9 +114,9 @@ script: |-
       similar_incidents_rows = sorted(similar_incidents_rows, key=lambda x: x['Time'])
       context = {
           'similarIncidentList': similar_incidents_rows[:MAX_CANDIDATES_IN_LIST],
-          'similarIncident': similar_incidents_rows[0],
-          'isSimilarIncidentFound': True
+          'similarIncident': similar_incidents_rows[0]
       }
+      demisto.setContext('isSimilarIncidentFound', True)
       markdown_result = tableToMarkdown("Similar incidents",
                                         similar_incidents_rows,
                                         headers=['id', 'name', 'closedTime', 'Time', 'similarity'])

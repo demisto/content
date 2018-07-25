@@ -262,9 +262,9 @@ script: |-
       duplicate_incidents_rows = sorted(duplicate_incidents_rows, key=lambda x: x['time'])
       context = {
           'similarIncidentList': duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST],
-          'similarIncident': duplicate_incidents_rows[0],
-          'isSimilarIncidentFound': True
+          'similarIncident': duplicate_incidents_rows[0]
       }
+      demisto.setContext('isSimilarIncidentFound', True)
       duplicate_incidents_rows = duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST]
       hr_result = map(lambda row: dict((camel_case_to_space(k), v) for k, v in row.items()), duplicate_incidents_rows)
       markdown_result = tableToMarkdown("Duplicate incidents",
