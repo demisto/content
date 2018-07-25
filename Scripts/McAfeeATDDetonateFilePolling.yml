@@ -40,6 +40,8 @@ script: |-
   #demisto.results(res)
 type: python
 tags: []
+comment: |
+  Pools detonation statuses from McAfeeATD
 enabled: true
 args:
 - name: Ids
