@@ -1,0 +1,185 @@
+id: ssdeepreputationtest
+version: -1
+name: SsdeepReputationTest
+description: ""
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dbec59ec-e05d-45e6-8825-b057869f3e26
+    type: start
+    task:
+      id: dbec59ec-e05d-45e6-8825-b057869f3e26
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 964eb74c-c5de-4b89-8ee6-00b69086aaee
+    type: regular
+    task:
+      id: 964eb74c-c5de-4b89-8ee6-00b69086aaee
+      version: -1
+      description: ""
+      name: Ssdeep test
+      scriptName: SsdeepReputationTest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    results:
+    - File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 1431aa83-164d-4968-8f15-36a3c37231a6
+    type: regular
+    task:
+      id: 1431aa83-164d-4968-8f15-36a3c37231a6
+      version: -1
+      description: ""
+      name: Check score
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: "3"
+      fields: {}
+      path:
+        simple: DBotScore.Score
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 9f0c0bb9-6f10-4b60-8141-68188243c4a9
+    type: regular
+    task:
+      id: 9f0c0bb9-6f10-4b60-8141-68188243c4a9
+      version: -1
+      description: ""
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 15c90ae8-5fda-42c4-8c16-5df92587a7c6
+    type: regular
+    task:
+      id: 15c90ae8-5fda-42c4-8c16-5df92587a7c6
+      version: -1
+      description: ""
+      name: Check ssdeep reputation
+      scriptName: SSDeepReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      input:
+        simple: ${expectBadSsdeepValue}
+      threshold: {}
+      timeFrameDays: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: e6d478e1-17a7-451f-89c9-1fb33c4c40b7
+    type: regular
+    task:
+      id: e6d478e1-17a7-451f-89c9-1fb33c4c40b7
+      version: -1
+      description: ""
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

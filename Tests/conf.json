@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "exporttocsv_script_test"
+        },
+        {
             "integrations": "Intezer",
             "playbookID": "Intezer Testing"
         },
@@ -82,16 +85,11 @@
             "timeout": 300
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest"
-        },
-        {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
         },
         {
             "integrations": [
-                "AlienVault OTX",
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
@@ -153,7 +151,10 @@
             "playbookID": "crowdstrike_endpoint_enrichment_-_test"
         },
         {
-            "integrations": "AlienVault OTX",
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
             "playbookID": "ip_enrichment_generic_test"
         },
         {
@@ -172,7 +173,7 @@
             "playbookID": "Test CommonServer"
         },
         {
-            "integrations": "AlienVault OTX",
+            "integrations": "VirusTotal",
             "playbookID": "domain_enrichment_generic_test"
         },
         {
@@ -359,10 +360,6 @@
             "playbookID": "test-domain-indicator"
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest"
-        },
-        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
@@ -378,19 +375,32 @@
             "timeout": 1200
         },
         {
+            "integrations": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
             "integrations": "Recorded Future",
             "playbookID": "Recorded Future Test",
             "nightly": true
+        },
+        {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
         }
     ],
     "skipped": [
         {
-            "integrations": "VMware",
-            "playbookID": "VMWare Test"
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
         },
         {
-            "integrations": "ThreatExchange",
-            "playbookID": "ThreatExchange-test"
+            "integrations": "VMware",
+            "playbookID": "VMWare Test"
         },
         {
             "integrations": "Anomali ThreatStream",
@@ -431,7 +441,8 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
+                "VirusTotal",
+                "urlscan.io",
                 {
                     "name": "activedir",
                     "byoi": false
@@ -441,7 +452,7 @@
         },
         {
             "integrations": [
-                "AlienVault OTX",
+                "VirusTotal",
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
