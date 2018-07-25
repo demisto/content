@@ -236,7 +236,7 @@ script:
             var lastCallOffenses = res.length;
             while (startTime && lastCallOffenses >= offensesPerCall) {
                 var from = totalOffenses + 1;
-                var to = min + offensesPerCall;
+                var to = from + offensesPerCall;
                 var lastIncidentTime = res[res.length-1].start_time;
 
                 res = res.concat(getOffenses('start_time>' + startTime + ' AND start_time<' + lastIncidentTime + (query ? (' AND (' + query +')') : ''), undefined, from + '-' + to));
