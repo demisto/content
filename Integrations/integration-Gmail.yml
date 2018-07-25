@@ -308,7 +308,7 @@ script:
             'Contents': context,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, context, headers),
-            'EntryContext': {'GoogleApps.Role(val.ID && val.ID == obj.ID)' : context}
+            'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)' : context}
         }
 
 
@@ -478,7 +478,7 @@ script:
         command_args = {}
         args = demisto.args()
 
-        QUERY_VALUES = ['from', 'subject', 'filename', 'label', 'in', 'after', 'before', ]
+        QUERY_VALUES = ['from', 'subject', 'filename', 'in', 'after', 'before', ]
         q += ' ' + ' '.join('%s:%s ' % (qv, args[qv], ) for qv in QUERY_VALUES if args.get(qv) is not None)
 
         command_args['userId'] = args.get('user-key') if mailbox is None else mailbox
@@ -513,11 +513,11 @@ script:
         command_args = {}
         args = demisto.args()
 
-        command_args['userId'] = args.get('user-key')
+        command_args['userId'] = args.get('user-key', ADMIN_EMAIL)
         command_args['id'] = args.get('message-id')
         command_args['format'] = args.get('format')
 
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',])
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], delegated_user=command_args['userId'])
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().get(**command_args).execute()
 
@@ -531,7 +531,7 @@ script:
         mail_args['id'] = args.get('message-id')
         mail_args['userId'] = args.get('user-key')
         mail_args['format'] = 'full'
-        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',])
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.readonly',], delegated_user=mail_args['userId'])
         service = discovery.build('gmail', 'v1', credentials=credentials)
         result = service.users().messages().get(**mail_args).execute()
         result = get_email_context(result, mail_args['userId'])[0]
@@ -560,7 +560,7 @@ script:
         command_args['id'] = args.get('message-id')
 
         credentials = get_credentials(['https://mail.google.com',
-            'https://www.googleapis.com/auth/gmail.modify',])
+            'https://www.googleapis.com/auth/gmail.modify',], delegated_user=command_args['userId'])
         service = discovery.build('gmail', 'v1', credentials=credentials)
         if permanent:
             result = service.users().messages().delete(**command_args).execute()
@@ -880,8 +880,6 @@ script:
     - name: filename
       description: 'Attachments with a certain name or file type. for example: "pdf"
         or "report.pdf"'
-    - name: label
-      description: 'Messages that have a certain label. for example: unread'
     - name: in
       description: 'Messages in any folder, including Spam and Trash. for example:
         shopping'
@@ -964,8 +962,6 @@ script:
     - name: filename
       description: 'Attachments with a certain name or file type. for example: "pdf"
         or "report.pdf"'
-    - name: label
-      description: 'Messages that have a certain label. for example: unread'
     - name: in
       description: 'Messages in any folder, including Spam and Trash. for example:
         shopping'
@@ -1103,7 +1099,7 @@ script:
       type: string
     description: Retrieves a paginated list of either deleted users or all users in
       a domain
-  - name: googleapps-revoke-user-role
+  - name: gmail-revoke-user-role
     arguments:
     - name: role-assignment-id
       required: true
@@ -1161,7 +1157,7 @@ script:
         user''s primary email address, alias email address, or unique user ID.'
     - name: message-id
       required: true
-      description: The ID of the message to retrieve
+      description: The ID of the message to delete
     - name: permanent
       auto: PREDEFINED
       predefined:
