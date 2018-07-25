@@ -212,7 +212,7 @@ script:
             'headers': response.info().dict,
             'body': StringIO(response.read())
         }
-    
+
     service = None
     proxy = demisto.params()['proxy']
     if proxy:
@@ -395,14 +395,14 @@ script:
       required: true
       default: true
       description: search id
-    description: 'fetch splunk search results '
+    description: fetch splunk search results, can be used in conjunction with splunk-job-create
   - name: splunk-search
     arguments:
     - name: query
       required: true
       default: true
-      description: The splunk search language string to execute, example :"* | head
-        3"
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
     - name: earliest_time
       description: 'Specifies the earliest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
@@ -469,8 +469,8 @@ script:
     arguments:
     - name: query
       required: true
-      description: The splunk search language string to execute, example :"* | head
-        3"
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
     outputs:
     - contextPath: Splunk.Job
       description: The created jon SID
@@ -488,3 +488,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: "-"
