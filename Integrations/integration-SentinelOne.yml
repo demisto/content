@@ -33,7 +33,6 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-releaseNotes: "Updating default API version to 2.0"
 script:
   script: |-
     var SentinelOne = function() {
