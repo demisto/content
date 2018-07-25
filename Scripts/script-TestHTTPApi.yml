@@ -1,0 +1,62 @@
+commonfields:
+  id: TestHTTPApi
+  version: -1
+system: true
+name: TestHTTPApi
+script: |
+  res = http(args.url, {Method: args.method, Body: args.body, Headers: {'Content-Type': ['application/json']}});
+
+  if (res.StatusCode === -1) {
+      return {Type: entryTypes.error, Contents: res.Status};
+  } else if (res.StatusCode === parseInt(args.status_code)) {
+      if (args.field) {
+          if (JSON.parse(res.Body)[args.field] == args.value) {
+              return true; // status and field OK
+          } else {
+              return false; // status OK field BAD
+          }
+      }
+      return true; // status OK no field
+  } else {
+      return false; // status BAD
+  }
+type: javascript
+tags:
+- Condition
+comment: |-
+  Test an HTTP endpoint and verify it returns a valid response.
+  The response can be verified to have a specific HTTP response code and a specific JSON field value
+enabled: true
+args:
+- name: url
+  required: true
+- name: method
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - GET
+  - POST
+  - PUT
+  - DELETE
+  - PATCH
+  description: HTTP Method to use
+  defaultValue: GET
+- name: body
+  description: Request body
+- name: insecure
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Accept any HTTPS certificate (insecure)
+  defaultValue: "no"
+- name: status_code
+  default: true
+  description: HTTP Status code to expect
+  defaultValue: "200"
+- name: field
+  description: JSON field to validate
+- name: value
+  description: Value of JSON field to validate
+scripttarget: 0
+runonce: false
