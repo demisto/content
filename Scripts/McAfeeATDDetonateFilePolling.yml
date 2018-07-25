@@ -49,6 +49,5 @@ args:
 outputs:
 - contextPath: McAfeeATDDetonateFilePolling
   description: Success,Fail,Pending
-- {}
 scripttarget: 0
 runonce: false
