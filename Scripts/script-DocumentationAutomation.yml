@@ -83,25 +83,29 @@ script: |-
   for i in range(len(dataMap['script']['commands'])):
       doc += '### ' + str(i+1) + '. Command name: ' + dataMap['script']['commands'][i]['name'] + '\n'
       #Inputs
-      doc += '#### Inputs:\n'
+      doc += '#### Input:\n'
+      doc += '| **Parameter** | **Description** |\n'
+      doc += '| --- | --- |\n'
       if len(dataMap['script']['commands'][i]['arguments']) != 0:
           for j in range(len(dataMap['script']['commands'][i]['arguments'])):
-              doc += str(j+1)+ '. ' +dataMap['script']['commands'][i]['arguments'][j]['name']
-              doc += ' - '+ dataMap['script']['commands'][i]['arguments'][j]['description'] + '\n'
+              doc += '| ' + dataMap['script']['commands'][i]['arguments'][j]['name'] + ' | '
+              doc += dataMap['script']['commands'][i]['arguments'][j]['description'] + ' | \n'
       else:
           doc += '-\n'
       #Context output
       doc += '#### Context Output:\n'
+      doc += '| **Path** | **Description** |\n'
+      doc += '| --- | --- |\n'
       if 'outputs' in dataMap['script']['commands'][i]:
           for k in range(len(dataMap['script']['commands'][i]['outputs'])):
-              doc += 'Path: ' + dataMap['script']['commands'][i]['outputs'][k]['contextPath'] + '\n'
-              doc += 'Description: ' + dataMap['script']['commands'][i]['outputs'][k]['description'] + '\n'
+              doc += '| ' + dataMap['script']['commands'][i]['outputs'][k]['contextPath'] + ' | '
+              doc += dataMap['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
       else:
           doc += '-\n'
       #Raw output:
       doc += '#### Command example:\n'
-      doc += '#### Raw output:\n'
       doc += '#### Context example:\n'
+      doc += '#### Human Readable:\n'
 
       doc += '\n'
 
@@ -131,7 +135,7 @@ script: |-
   demisto.results(fileResult(filename, doc))
 type: python
 tags: []
-comment: 'Automates integration documentation'
+comment: Automates integration documentation
 enabled: true
 args:
 - name: entryID
@@ -155,4 +159,4 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/python
-releaseNotes: "-"
+releaseNotes: "Used to create integration documentation"
