@@ -3,8 +3,7 @@ version: -1
 name: WildFire - Detonate file
 description: Detonate one or more files using the Wildfire integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
-fromversion: 3.5.0
-releaseNotes: "Bug fixes"
+fromversion: 3.6.0
 starttaskid: "0"
 tasks:
   "0":
@@ -26,7 +25,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 500,
           "y": 50
         }
       }
@@ -47,7 +46,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "11"
+      - "13"
     reputationcalc: 0
     separatecontext: false
     conditions:
@@ -82,7 +81,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 500,
           "y": 195
         }
       }
@@ -103,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1275
+          "x": 500,
+          "y": 1421
         }
       }
   "8":
@@ -137,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1081
+          "x": 500,
+          "y": 1252
         }
       }
   "9":
@@ -173,8 +172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 885
+          "x": 500,
+          "y": 1075
         }
       }
   "10":
@@ -228,8 +227,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 544
+          "x": 500,
+          "y": 721
         }
       }
   "11":
@@ -260,8 +259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 385
+          "x": 500,
+          "y": 553
         }
       }
   "12":
@@ -319,8 +318,43 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 500,
+          "y": 897
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 1c7984d0-757a-481d-8d42-93b047c636da
+    type: condition
+    task:
+      id: 1c7984d0-757a-481d-8d42-93b047c636da
+      version: -1
+      name: Is there a file to detonate?
+      description: Checks that there is a file in the playbook's input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      "yes":
+      - "11"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 368
         }
       }
 view: |-
@@ -328,9 +362,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1436,
         "width": 380,
-        "x": 162.5,
+        "x": 500,
         "y": 50
       }
     }

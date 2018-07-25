@@ -1951,4 +1951,3 @@ script:
     description: Creates a new role for your AWS account.
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "-"
