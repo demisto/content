@@ -1,6 +1,6 @@
 id: minemeld_test
-version: 74
-name: Minemeld Test
+version: 85
+name: Palo Alto MineMeld Test
 description: This is a playbook test for Palo Alto minemeld Node's indicators integration.
 starttaskid: "0"
 tasks:
@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 29f65881-bbb5-4ead-82c6-9d454541d595
+    taskid: 49c55dd8-3f2e-4f90-8dcc-886753ee1d60
     type: regular
     task:
-      id: 29f65881-bbb5-4ead-82c6-9d454541d595
+      id: 49c55dd8-3f2e-4f90-8dcc-886753ee1d60
       version: -1
       name: Add indicator to miner
       script: Palo Alto Minemeld|||minemeld-add-to-miner
@@ -44,6 +44,8 @@ tasks:
     scriptarguments:
       comment:
         simple: test comment
+      indicator:
+        simple: 5.5.5.5
       miner:
         simple: Unmalicious
       share-level: {}
@@ -91,13 +93,13 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 697e1369-31be-4b01-8705-41e1e136951c
+    taskid: ea371861-f3b4-41bd-847b-871e1402fd03
     type: regular
     task:
-      id: 697e1369-31be-4b01-8705-41e1e136951c
+      id: ea371861-f3b4-41bd-847b-871e1402fd03
       version: -1
       name: Retrieve indicator from miner's list
-      script: Palo Alto Minemeld|||minemeld-get-item-from-list
+      script: Palo Alto Minemeld|||minemeld-get-indicator-from-miner
       type: regular
       iscommand: true
       brand: Palo Alto Minemeld
@@ -105,11 +107,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      item:
-        simple: 6.6.6.6
+      indicator:
+        simple: 5.5.5.5
       miner:
         simple: Unmalicious
-      type: {}
     separatecontext: false
     view: |-
       {
@@ -121,10 +122,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: b4b55e9d-09d9-44ca-8faa-20ca62a20722
+    taskid: 018f395a-c0d6-403c-8412-919f0318fb06
     type: condition
     task:
-      id: b4b55e9d-09d9-44ca-8faa-20ca62a20722
+      id: 018f395a-c0d6-403c-8412-919f0318fb06
       version: -1
       name: Test if indicator exists
       type: condition
@@ -161,26 +162,26 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: MineMeld.Item.indicator
+                        simple: MineMeld.Indicators.indicator
                       iscontext: true
                     right:
                       value:
-                        simple: 6.6.6.6
+                        simple: 5.5.5.5
             iscontext: true
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 719
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 926c2ebc-4a5e-41e3-8316-becf7529b67b
+    taskid: e5c8f21d-5245-43ff-8c81-d228ce1069f3
     type: regular
     task:
-      id: 926c2ebc-4a5e-41e3-8316-becf7529b67b
+      id: e5c8f21d-5245-43ff-8c81-d228ce1069f3
       version: -1
       name: Remove indicator from miner
       script: Palo Alto Minemeld|||minemeld-remove-from-miner
@@ -191,6 +192,8 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
+      indicator:
+        simple: 5.5.5.5
       miner:
         simple: Unmalicious
       type:
@@ -232,10 +235,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 349056ae-7e73-4add-83ab-1a8046e5af49
+    taskid: 8c0c7cf0-192b-4c00-81fb-48103c0fc600
     type: condition
     task:
-      id: 349056ae-7e73-4add-83ab-1a8046e5af49
+      id: 8c0c7cf0-192b-4c00-81fb-48103c0fc600
       version: -1
       name: Test if indicator exists
       type: condition
@@ -272,11 +275,11 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Minemeld.Miner.indicator
+                        simple: MineMeld.Indicators.indicator
                       iscontext: true
                     right:
                       value:
-                        simple: 6.6.6.6
+                        simple: 5.5.5.5
             iscontext: true
     view: |-
       {
@@ -332,13 +335,13 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: ee29a5eb-d4ae-4e8f-84fc-9c28ab624260
+    taskid: 93bda2ee-77b1-4784-8b59-298894c8ebc7
     type: regular
     task:
-      id: ee29a5eb-d4ae-4e8f-84fc-9c28ab624260
+      id: 93bda2ee-77b1-4784-8b59-298894c8ebc7
       version: -1
       name: Retrieve miner's indicators list
-      script: Palo Alto Minemeld|||minemeld-retrieve-list
+      script: Palo Alto Minemeld|||minemeld-retrieve-miner
       type: regular
       iscommand: true
       brand: Palo Alto Minemeld
@@ -346,10 +349,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      all: {}
       miner:
         simple: Unmalicious
-      type: {}
     separatecontext: false
     view: |-
       {
@@ -361,10 +362,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: 9fbf712c-a4d2-4ce9-851a-d989a62b0df2
+    taskid: fa756678-84bc-482d-8e1a-1d4f33ea400d
     type: regular
     task:
-      id: 9fbf712c-a4d2-4ce9-851a-d989a62b0df2
+      id: fa756678-84bc-482d-8e1a-1d4f33ea400d
       version: -1
       name: Delete Context
       description: Clear context before process starts
@@ -419,10 +420,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: 4fdccd0d-c0d1-4aa3-8cc8-dd082f1a21a5
+    taskid: 1811eee3-a8f3-4d14-8d72-cca02d30df5e
     type: regular
     task:
-      id: 4fdccd0d-c0d1-4aa3-8cc8-dd082f1a21a5
+      id: 1811eee3-a8f3-4d14-8d72-cca02d30df5e
       version: -1
       name: Check IP
       script: Palo Alto Minemeld|||ip
@@ -434,7 +435,7 @@ tasks:
       - "18"
     scriptarguments:
       ip:
-        simple: 7.7.7.7
+        simple: 25.25.25.25
     separatecontext: false
     view: |-
       {
@@ -446,10 +447,10 @@ tasks:
     note: false
   "17":
     id: "17"
-    taskid: 3c3a3427-190d-4007-8aca-8c6e5965e629
+    taskid: 9f4c81a3-8b2a-448d-8737-eb33cbb0e152
     type: regular
     task:
-      id: 3c3a3427-190d-4007-8aca-8c6e5965e629
+      id: 9f4c81a3-8b2a-448d-8737-eb33cbb0e152
       version: -1
       name: Add IP indicator to miner
       script: Palo Alto Minemeld|||minemeld-add-to-miner
@@ -462,6 +463,8 @@ tasks:
     scriptarguments:
       comment:
         simple: test ip 7777
+      indicator:
+        simple: 25.25.25.25
       miner:
         simple: Malicious
       type:
@@ -479,10 +482,10 @@ tasks:
     note: false
   "18":
     id: "18"
-    taskid: 5f2b5def-7727-4e8f-8e96-e2e49b30b45d
+    taskid: 0b3639c6-6ebd-43f1-8615-30743704a85d
     type: condition
     task:
-      id: 5f2b5def-7727-4e8f-8e96-e2e49b30b45d
+      id: 0b3639c6-6ebd-43f1-8615-30743704a85d
       version: -1
       name: Test if indicator exists
       type: condition
@@ -519,12 +522,12 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: IP.MineMeld.Item.indicator
+                        simple: IP.MineMeld.Indicators.indicator
                       iscontext: true
                     right:
                       value:
-                        simple: 7.7.7.7
-                accessor: MineMeld.Item
+                        simple: 25.25.25.25
+                accessor: MineMeld.Indicators
             iscontext: true
     view: |-
       {
