@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD"
+        },
+        {
             "playbookID": "exporttocsv_script_test"
         },
         {

@@ -28,3 +28,4 @@ outputs:
 - contextPath: IncidentOwner.roles
   description: Incident owner roles
 scripttarget: 0
+releaseNotes: Handling usernames with backslash
