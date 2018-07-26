@@ -6,6 +6,10 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD"
+        },
+        {
             "playbookID": "exporttocsv_script_test"
         },
         {
