@@ -566,4 +566,3 @@ script:
     description: Get a list of incidents
   dockerimage: demisto/symantec_mss
   isfetch: true
-releaseNotes: "Changed severities for fetching incidents to be a configurable parameter. Fixed incident occurrence time."

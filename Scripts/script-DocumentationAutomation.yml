@@ -159,4 +159,3 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/python
-releaseNotes: "Used to create integration documentation"
