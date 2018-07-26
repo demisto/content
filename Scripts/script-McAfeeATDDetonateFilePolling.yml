@@ -3,31 +3,37 @@ commonfields:
   version: -1
 name: McAfeeATDDetonateFilePolling
 script: |-
-  Ids = demisto.args().get('Ids')
+  Ids = demisto.getArg('Ids')
+  Ids = argToList(Ids)
 
-  failedTasks = 0
+  failTasks = 0
   successTasks = 0
   totalTasks = len(Ids) if Ids is not None else 0
   TasksOutput = []
   result = []
 
-  for i in range(0, totalScans):
-      taskId = Ids[i];
-      #check from context if that scan is already done or not
-      taskStatus = dq(invContext, 'ATD.Task(val.Id === ' + taskId + ').status');
+  for sampleId in Id:
+
+      taskStatus = dq(invContext, 'ATD.Task(val.Id === ' + sampleId + ').status');
+      #check from context if that task is already done
       if (taskStatus == 'completed'):
           successTasks += 1
           continue
       elif (taskStatus == 'cancelled' or taskStatus == 'invalid'):
-          failedTasks += 1
+          failTasks += 1
           continue
+
+      #if the task isn't done pull it's status from ATD
       else:
-          # Calling a command - returns a list of one or more entries
-          res = demisto.executeCommand("atd-check-status", { 'taskId': taskId })
-          taskStatus = dq(invContext, 'ATD.Task(val.Id === ' + taskId + ').status')
-          scansOutput.append(res.EntryContext['ATD.Task(val.Id === obj.Id)'])
-          result.append( { "Type" : entryTypes["note"],
-              "ContentsFormat" : formats["table"], "Contents" : scansOutput } )
+          res = demisto.executeCommand("atd-check-status", { 'taskId': sampleId })
+          taskStatus = dq(invContext, 'ATD.Task(val.Id === ' + sampleId + ').status')
+          if (taskStatus == 'completed'):
+              successTasks += 1
+          elif (taskStatus == 'cancelled' or taskStatus == 'invalid'):
+              failTasks += 1
+          #tasksOutput.append(res.EntryContext['ATD.Task(val.Id === obj.Id)'])
+          #result.append( { "Type" : entryTypes["note"],
+          #    "ContentsFormat" : formats["table"], "Contents" : scansOutput } )
 
   gloablStatus = 'Pending'
   if (successTasks == totalTasks):
@@ -36,7 +42,7 @@ script: |-
       gloablStatus = 'Fail'
 
 
-  demisto.results(globalstatus)
+  demisto.results({ 'McAfeeATDDetonateFilePollingScriptStatus': gloablStatus })
   #demisto.results(res)
 type: python
 tags: []
