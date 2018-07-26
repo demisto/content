@@ -3,7 +3,6 @@
 	"version": 3,
 	"modified": "2018-07-25T15:49:02.222234104+03:00",
 	"defaultIncidentType": "",
-	"instanceId": "d3beee4a-36c6-4913-8e62-716dc361f36d",
 	"mapping": {
 		"Phishing": {
 			"internalMapping": {
@@ -137,7 +136,6 @@
 		}
 	},
 	"unclassifiedCases": {},
-	"incidentSamples": [],
 	"custom": true,
 	"transformer": {
 		"simple": "Type",
@@ -146,6 +144,5 @@
 	"keyTypeMap": {
 		"Gmail": "Phishing"
 	},
-	"brandName": "Gmail",
-	"instanceName": "Gmail_instance_1"
+	"brandName": "Gmail"
 }
