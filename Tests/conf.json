@@ -6,6 +6,9 @@
             "playbookID": "dedup_-_generic_-_test"
         },
         {
+            "playbookID": "exporttocsv_script_test"
+        },
+        {
             "integrations": "Intezer",
             "playbookID": "Intezer Testing"
         },
@@ -386,6 +389,10 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
         }
     ],
     "skipped": [
