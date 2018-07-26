@@ -1,6 +1,6 @@
 {
   "name": "reputations",
-  "releaseNotes": "Add Domain type",
+  "releaseNotes": "Extract domain from urls, and Adding ssdeep reputation",
   "reputations": [
     {
       "id": "fileRep",
@@ -47,7 +47,8 @@
       "details": "IP",
       "enhancementScriptNames": [
         "IPReputation",
-        "SplunkSearch"
+        "SplunkSearch",
+        "SplunkPySearch"
       ],
       "formatScript": "UnEscapeIPs",
       "fromVersion": "3.5.1"
@@ -74,7 +75,8 @@
       "enhancementScriptNames": [
         "FileReputation",
         "SplunkSearch",
-        "WildfireReport"
+        "WildfireReport",
+        "SplunkPySearch"
       ],
       "fromVersion": "3.1.0"
     },
@@ -100,7 +102,8 @@
       "enhancementScriptNames": [
         "FileReputation",
         "SplunkSearch",
-        "WildfireReport"
+        "WildfireReport",
+        "SplunkPySearch"
       ],
       "fromVersion": "3.1.0"
     },
@@ -126,7 +129,8 @@
       "enhancementScriptNames": [
         "FileReputation",
         "SplunkSearch",
-        "WildfireReport"
+        "WildfireReport",
+        "SplunkPySearch"
       ],
       "fromVersion": "3.1.0"
     },
@@ -174,7 +178,8 @@
       "details": "URL",
       "enhancementScriptNames": [
         "URLReputation",
-        "SplunkSearch"
+        "SplunkSearch",
+        "SplunkPySearch"
       ],
       "formatScript": "UnEscapeURLs",
       "contextPath": "URL(val.Data && val.Data === obj.Data)",
@@ -223,6 +228,14 @@
       ]
     },
     {
+      "id": "ssdeepRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "ssdeep",
+      "enhancementScriptNames": []
+    },
+    {
       "id": "domainRep",
       "version": -1,
       "regex": "",
@@ -231,6 +244,18 @@
       "enhancementScriptNames": [
         "DomainReputation"
       ]
+    },
+    {
+      "id": "domainRep2",
+      "version": -1,
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\[?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!\\-:,.\\(\\);]*[A-Z0-9+&@#\\/%=~_$\\(\\);])?|\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+      "reputationCommand": "domain",
+      "details": "Domain",
+      "enhancementScriptNames": [
+        "DomainReputation"
+      ],
+      "formatScript": "ExtractDomainFromUrlAndEmail",
+      "fromVersion": "3.6"
     }
   ]
 }

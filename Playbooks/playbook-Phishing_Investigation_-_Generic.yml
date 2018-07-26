@@ -2,7 +2,10 @@ id: Phishing Investigation - Generic
 version: -1
 name: Phishing Investigation - Generic
 fromversion: 3.6.0
-description: Investigate a phishing incident using one or more integrations
+description: |-
+  Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
+
+  The final remediation tasks are always decided by a human analyst.
 starttaskid: "0"
 tasks:
   "0":
@@ -30,31 +33,33 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: dbc25dac-cf89-4d90-8ad4-94fac8d10b46
+    taskid: cb3d55b6-ccde-4466-8d45-f54917c994e9
     type: regular
     task:
-      id: dbc25dac-cf89-4d90-8ad4-94fac8d10b46
+      id: cb3d55b6-ccde-4466-8d45-f54917c994e9
       version: -1
-      name: Choose analyst
-      description: ""
+      name: Assign to analyst
+      description: Assign the incident to an analyst based on the analyst's organizational
+        role.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "15"
     scriptarguments:
-      assignBy:
-        simple: random
+      assignBy: {}
       email: {}
-      roles: {}
+      roles:
+        complex:
+          root: inputs.Role
       username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 865
         }
       }
@@ -74,7 +79,6 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-      - "15"
     separatecontext: false
     view: |-
       {
@@ -85,40 +89,44 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: be3a4087-bfd2-4975-8549-5c631a0cfb6c
+    taskid: 53e3bbf2-9498-4260-8255-065b62bb1d89
     type: regular
     task:
-      id: be3a4087-bfd2-4975-8549-5c631a0cfb6c
+      id: 53e3bbf2-9498-4260-8255-065b62bb1d89
       version: -1
       name: Manually review the incident
-      description: ""
+      description: Review the incident to determine if the email that the user reported
+        is malicious.
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "33"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1040
+          "x": 900,
+          "y": 1360
         }
       }
   "8":
     id: "8"
-    taskid: 57fa5f68-9202-477a-81a7-ca2cf3e8d3e9
+    taskid: 0c0c7936-8c77-48af-8e1f-9846f219007d
     type: regular
     task:
-      id: 57fa5f68-9202-477a-81a7-ca2cf3e8d3e9
+      id: 0c0c7936-8c77-48af-8e1f-9846f219007d
       version: -1
       name: Close investigation
-      description: ""
+      description: Close the investigation.
       scriptName: CloseInvestigation
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
     scriptarguments:
       notes:
         simple: 'Default enrichment playbook '
@@ -127,8 +135,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1215
+          "x": 480,
+          "y": 2350
         }
       }
   "11":
@@ -156,13 +164,13 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 18628020-bfee-4826-8fd7-624d48981319
+    taskid: 0c37f6e9-f8bc-483f-82bb-099cabf8f403
     type: regular
     task:
-      id: 18628020-bfee-4826-8fd7-624d48981319
+      id: 0c37f6e9-f8bc-483f-82bb-099cabf8f403
       version: -1
-      name: Store the sending account
-      description: Store the sending account email address for further use
+      name: Store the email address of the reporting user
+      description: Store the email address of the user that reported the incident.
       scriptName: Set
       type: regular
       iscommand: false
@@ -189,21 +197,21 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: e34f4190-0c4e-4a70-8a7e-e2fa29177b84
+    taskid: 57119f06-affa-4b76-8d6b-bb07fea4790a
     type: regular
     task:
-      id: e34f4190-0c4e-4a70-8a7e-e2fa29177b84
+      id: 57119f06-affa-4b76-8d6b-bb07fea4790a
       version: -1
-      name: Auto-respond to acknowledge receipt
+      name: Acknowledge incident was received
       description: |
-        Send an auto-response to the target telling them we are on it
+        Send an auto-response to user that reported the incident, informing them the incident was received and being handled.
       scriptName: SendEmail
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "2"
     scriptarguments:
       attachIDs: {}
       bcc: {}
@@ -256,21 +264,21 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: 407fc02c-9465-4a2e-84bf-b9d8b78b7b67
+    taskid: 12bf1beb-357e-49ee-85b1-faa777daf3e9
     type: condition
     task:
-      id: 407fc02c-9465-4a2e-84bf-b9d8b78b7b67
+      id: 12bf1beb-357e-49ee-85b1-faa777daf3e9
       version: -1
-      name: Auto-respond to user based on incident severity
-      description: ""
+      name: Is the email malicious?
+      description: Determine if the email is malicious based on the calculated severity.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+      - "31"
       'Malicious ':
-      - "17"
+      - "30"
     separatecontext: false
     conditions:
     - label: 'Malicious '
@@ -286,23 +294,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 865
+          "x": 480,
+          "y": 1040
         }
       }
   "16":
     id: "16"
-    taskid: b8020e76-f23b-47ff-8bca-ab2726ec57eb
+    taskid: 632a53fe-430e-4f3e-8767-ac4838002f85
     type: regular
     task:
-      id: b8020e76-f23b-47ff-8bca-ab2726ec57eb
+      id: 632a53fe-430e-4f3e-8767-ac4838002f85
       version: -1
-      name: Send email to user - email you reported is safe
-      description: ""
+      name: Update  the user that the reported email is safe
+      description: Send an email to the user explaining that the email they reported
+        is safe.
       scriptName: SendEmail
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
     scriptarguments:
       attachIDs: {}
       bcc: {}
@@ -326,23 +338,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1040
+          "x": 900,
+          "y": 2175
         }
       }
   "17":
     id: "17"
-    taskid: dc6d53be-322c-42ef-86b3-43674b9dc3d8
+    taskid: dbdbb84d-c13a-4264-84ba-d6153dc1d323
     type: regular
     task:
-      id: dc6d53be-322c-42ef-86b3-43674b9dc3d8
+      id: dbdbb84d-c13a-4264-84ba-d6153dc1d323
       version: -1
-      name: Send email to user - email you reported is malicious
-      description: ""
+      name: Update  the user that the reported email is malicious
+      description: Send an email to the user explaining that the email they reported
+        is malicious.
       scriptName: SendEmail
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
     scriptarguments:
       attachIDs: {}
       bcc: {}
@@ -365,8 +381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1040
+          "x": 265,
+          "y": 1854
         }
       }
   "18":
@@ -465,19 +481,187 @@ tasks:
           "y": 340
         }
       }
+  "27":
+    id: "27"
+    taskid: d4b01562-2d49-4f33-82c9-0419787fd04a
+    type: title
+    task:
+      id: d4b01562-2d49-4f33-82c9-0419787fd04a
+      version: -1
+      name: Remediate
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2030
+        }
+      }
+  "28":
+    id: "28"
+    taskid: b9bf9a85-de35-4ff6-832d-729b656f3fec
+    type: playbook
+    task:
+      id: b9bf9a85-de35-4ff6-832d-729b656f3fec
+      version: -1
+      name: Search And Delete Emails - Generic
+      description: ""
+      playbookName: Search And Delete Emails - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2175
+        }
+      }
+  "29":
+    id: "29"
+    taskid: b8f67d7a-0744-4ff5-8bb0-e9684c3e7d68
+    type: title
+    task:
+      id: b8f67d7a-0744-4ff5-8bb0-e9684c3e7d68
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2525
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 73cc9683-2aa6-48d1-8453-2465d7b04264
+    type: title
+    task:
+      id: 73cc9683-2aa6-48d1-8453-2465d7b04264
+      version: -1
+      name: Malicious
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1701
+        }
+      }
+  "31":
+    id: "31"
+    taskid: e4441aac-00cf-4251-89c0-5e336fa940c4
+    type: title
+    task:
+      id: e4441aac-00cf-4251-89c0-5e336fa940c4
+      version: -1
+      name: Undetermined
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1215
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 24b894a3-0bd7-472c-856f-a99047738698
+    type: condition
+    task:
+      id: 24b894a3-0bd7-472c-856f-a99047738698
+      version: -1
+      name: Is the email malicious?
+      description: Is the email that the user reported malicious?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "16"
+      "yes":
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1535
+        }
+      }
+  "34":
+    id: "34"
+    taskid: 80d2e8e0-0a77-42ab-8222-8aea55fcb475
+    type: regular
+    task:
+      id: 80d2e8e0-0a77-42ab-8222-8aea55fcb475
+      version: -1
+      name: Manually remediate  the incident
+      description: "Consider the following:\n1. Search for and delete similar emails\n2.
+        Inform the organization about the threat\n3. Hunt the relevant IOCs\n4. Update
+        proxies and firewalls as necessary\n5. Block the malicious sender/ domain
+        in the mail-gateway "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2175
+        }
+      }
 view: |-
   {
-    "linkLabelsPosition": {
-      "15_17_Malicious ": 0.52
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 2540,
         "width": 1240,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: Role
+  value:
+    simple: Administrator
+  required: true
+  description: The default role to assign the incident to.
 outputs: []

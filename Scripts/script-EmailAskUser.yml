@@ -97,6 +97,12 @@ script: |-
       if (reply) {
           emailArgs.replyTo = reply;
       }
+      if (args.cc) {
+          emailArgs.cc = args.cc;
+      }
+      if (args.bcc) {
+          emailArgs.bcc = args.bcc;
+      }
       return executeCommand('send-mail', emailArgs);
   } else {
       return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
@@ -105,7 +111,7 @@ type: javascript
 tags:
 - email
 comment: Ask a user a question via email and process the reply directly into the investigation.
-enabled: true
+system: true
 args:
 - name: email
   default: true
@@ -121,7 +127,8 @@ args:
 - name: option2
   description: Second option for the user reply. "no" is the default.
 - name: additionalOptions
-  description: A comma delimited list of additional options if you have more than 2
+  description: A comma delimited list of additional options if you have more than
+    2
 - name: task
   description: Which task should we close with the reply. If none then no playbook
     tasks will be closed.
@@ -141,14 +148,19 @@ args:
 - name: replyEntriesTag
   description: Tag to add on email reply entries
 - name: persistent
-  description: Indicates wether to use one-time entitlement or a persistent one
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
+  description: Indicates whether to use one-time entitlement or a persistent one
   defaultValue: "false"
 - name: retries
-  description: Indicates how many times to try and create an entitlement in case of failure
+  description: Indicates how many times to try and create an entitlement in case of
+    failure
   defaultValue: "10"
+- name: cc
+  description: The CC email address
+- name: bcc
+  description: The BCC email address
 scripttarget: 0
-releaseNotes: Added support for parallel execution of the script, with better error handling
+runonce: false

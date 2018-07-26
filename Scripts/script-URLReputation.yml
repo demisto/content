@@ -3,19 +3,22 @@ commonfields:
   version: -1
 name: URLReputation
 script: |-
-  return executeCommand('url', {url: args.url});
-type: javascript
+  results = demisto.executeCommand('url', {'url': demisto.get(demisto.args(),'url')})
+
+  for item in results:
+      if isError(item):
+          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+
+  demisto.results(results)
+type: python
 tags:
 - enhancement
 comment: A context script for URL entities
-system: true
+enabled: true
 args:
 - name: url
   required: true
   default: true
   description: URL to look up
 scripttarget: 0
-dependson:
-  must:
-  - url
-timeout: 0s
+runonce: false

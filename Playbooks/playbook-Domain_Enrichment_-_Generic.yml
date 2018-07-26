@@ -2,7 +2,6 @@ id: domain_enrichment_generic
 version: -1
 name: Domain Enrichment - Generic
 fromversion: 3.6.0
-releaseNotes: "Add support for auto-extract"
 description: Enrich Domain using one or more integrations
 starttaskid: "0"
 tasks:
@@ -36,7 +35,7 @@ tasks:
       id: cdbe7d29-d014-4ecd-8323-1ad5541cab78
       version: -1
       name: Are there Domains to check?
-      description: Determines wether the playbook's input contains a domain name.
+      description: Determines whether the playbook's input contains a domain name.
       type: condition
       iscommand: false
       brand: ""

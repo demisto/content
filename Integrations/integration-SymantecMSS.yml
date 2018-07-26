@@ -42,6 +42,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Fetch incidents for severities
+  name: severities
+  defaultvalue: Emergency,Critical
+  type: 0
+  required: false
 script:
   script: |
     import tempfile
@@ -53,12 +58,12 @@ script:
     import base64
     import re
     import datetime
+    import time
 
     # CONSTANTS
     SECURITY_INCIDENT_SUMMARY_NODE_XPATH = ".//SecurityIncidentSummary"
     SECURITY_INCIDENT_NODE_XPATH = ".//SecurityIncident"
     FETCH_MAX_INCIDENTS = 500
-    FETCH_SEVERITIES = "Emergency,Critical"
 
     # PREREQUISITES
     @contextlib.contextmanager
@@ -102,10 +107,24 @@ script:
         return proxy
 
 
+    def load_severities():
+        POSSIBLE_SEVERITIES = ["Emergency", "Critical", "Warning", "Informational"]
+        severities_list = None
+        try:
+            severities_list = demisto.params()["severities"].replace(" ", "").split(",")
+        except:
+            raise Exception("Error parsing severities parameter.")
+        for s in severities_list:
+            if s not in POSSIBLE_SEVERITIES:
+                raise Exception("Illegal argument in severities parameter.")
+        return ",".join(severities_list)
+
     # GLOBALS
     SERVER_URL = load_server_url()
     CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
     PROXY = load_proxy()
+    FETCH_SEVERITIES = load_severities()
+    DST = 1 if time.daylight else 0
 
     # HELPERS
     def api_call(body, headers):
@@ -121,7 +140,7 @@ script:
         """ Converts a Symantec event to a Demisto incident """
         incident = {}
         incident["name"] = "Incident: %s (%s)" % (event["IncidentNumber"], event["Classification"])
-        incident["occurred"] = event["TimeCreated"]
+        incident["occurred"] = event["TimeCreated"] + "+0%s:00" % DST
         incident["rawJSON"] = json.dumps(event)
 
         labels = []
@@ -547,3 +566,4 @@ script:
     description: Get a list of incidents
   dockerimage: demisto/symantec_mss
   isfetch: true
+releaseNotes: "Changed severities for fetching incidents to be a configurable parameter. Fixed incident occurrence time."
