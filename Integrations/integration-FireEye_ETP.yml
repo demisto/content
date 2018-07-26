@@ -143,14 +143,6 @@ script:
 
         return response.json()
 
-    def return_error_entry(message):
-        entry = {
-            'Type': entryTypes['error'],
-            'Contents': e.message,
-            'ContentsFormat': formats['text'],
-        }
-        demisto.results(entry)
-
     def to_search_attribute_object(value, filter=None, is_list=False ,valid_values=None):
 
         values = listify(value) if is_list else value
@@ -637,7 +629,7 @@ script:
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
-        return_error_entry(e.message)
+        return_error_and_exit(e.message)
   type: python
   commands:
   - name: fireeye-etp-search-messages
