@@ -275,7 +275,7 @@ tasks:
       {
         "position": {
           "x": 447,
-          "y": 1948
+          "y": 2301
         }
       }
   "10":
@@ -325,7 +325,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "12"
     scriptarguments:
       left:
         simple: ${ATD.Task.url}
@@ -341,12 +341,76 @@ tasks:
           "y": 1707
         }
       }
+  "12":
+    id: "12"
+    taskid: 697eef7a-b0d9-420f-8c15-eac16240770c
+    type: regular
+    task:
+      id: 697eef7a-b0d9-420f-8c15-eac16240770c
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      data:
+        simple: qwerty
+      entryId: {}
+      filename:
+        simple: test_file
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": 1927
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 265bd8ad-0759-45ca-864f-0c7a7b1939f6
+    type: regular
+    task:
+      id: 265bd8ad-0759-45ca-864f-0c7a7b1939f6
+      version: -1
+      name: detonate-file
+      description: Detonate file through McAfee ATD
+      script: McAfee Advanced Threat Defense|||detonate-file
+      type: regular
+      iscommand: true
+      brand: McAfee Advanced Threat Defense
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      fileName: {}
+      format: {}
+      threshold: {}
+      timeout: {}
+      upload:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": 2107
+        }
+      }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "11_12_yes": 0.89
+    },
     "paper": {
       "dimensions": {
-        "height": 2138,
+        "height": 2491,
         "width": 383,
         "x": 447,
         "y": -95
