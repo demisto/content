@@ -746,4 +746,3 @@ script:
         subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
     description: Search for SSL certificates based on field values
   runonce: false
-releaseNotes: "Added backward compatibility support for the new parameter: tags"
