@@ -1,0 +1,59 @@
+commonfields:
+  id: GenericPollingScheduledTask
+  version: -1
+name: GenericPollingScheduledTask
+script: |-
+  args = demisto.args()
+  ids = args['ids']
+  ids = (ids.split(',')) if not isinstance(ids, list) else ids
+  pollingScript = args['pollingScript']
+  uuid = args['uuid']
+  playbookId = args['playbookId'] if 'playbookId' in args else None
+  context_path = 'PollingScheduledTasks(val.UUID == "{}")'.format(uuid)
+
+  # Avoid race condition: TaskId key must exist before this script runs,
+  # but can only be set after scheduling this script.
+  task_id = demisto.dt(demisto.context(), '{}.TaskId'.format(context_path))
+  if not task_id:
+      exit(0)
+
+  res = demisto.executeCommand(pollingScript, {'ids': ids})
+
+  status = res[0]['Contents'][pollingScript + "Status"]
+  demisto.results({
+      'Type': entryTypes['note'],
+      'ContentsFormat': formats['json'],
+      'Contents': {},
+      'EntryContext': { context_path : {"Status": status}}
+  })
+
+  if not status.lower() == 'pending':
+      if playbookId:
+          demisto.executeCommand('taskComplete', {
+              'id': 'polling',
+              'parentPlaybookID': playbookId
+          })
+      else:
+          demisto.executeCommand('taskComplete', {
+              'id': 'polling'
+          })
+      demisto.executeCommand("scheduleEntry", {
+          'id': task_id,
+          'cancel': 'cancel'
+      })
+  if status.lower() not in ('success', 'fail', 'pending'):
+      raise ("Polling Script returned an invalid status: {}".format(status))
+type: python
+tags: []
+enabled: true
+args:
+- name: ids
+  required: true
+  isArray: true
+- name: pollingScript
+  required: true
+- name: uuid
+  required: true
+- name: playbookId
+scripttarget: 0
+runonce: false

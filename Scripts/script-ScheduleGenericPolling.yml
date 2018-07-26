@@ -1,0 +1,41 @@
+commonfields:
+  id: ScheduleGenericPolling
+  version: -1
+name: ScheduleGenericPolling
+script: |-
+  import random, string
+
+  args = demisto.args()
+  ids = args['ids']
+  pollingScript = args['pollingScript']
+  uuid = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+  playbookId = ' playbookId={}'.format(args['playbookId']) if 'playbookId' in args else ''
+  taskId = None
+
+  res = demisto.executeCommand("scheduleEntry", {
+      'command': '!GenericPollingScheduledTask ids={} pollingScript={} uuid={}{}'.format(ids, pollingScript, uuid, playbookId),
+      'cron': '* * * * *'
+  })
+  if isError(res[0]):
+      demisto.results(res)
+      exit(1)
+  else:
+      taskId = demisto.get(res[0],"Contents.id")
+
+  demisto.results({
+      'Type': entryTypes['note'],
+      'ContentsFormat': formats['json'],
+      'Contents': {},
+      'EntryContext': { 'PollingScheduledTasks': {"UUID": uuid, "TaskId": taskId}}
+  })
+type: python
+tags: []
+enabled: true
+args:
+- name: ids
+  required: true
+- name: pollingScript
+  required: true
+- name: playbookId
+scripttarget: 0
+runonce: false

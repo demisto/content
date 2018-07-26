@@ -1,0 +1,120 @@
+id: GenericPolling
+version: -1
+name: GenericPolling
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c644af04-2cd7-4462-83e3-5f55bc12aa73
+    type: start
+    task:
+      id: c644af04-2cd7-4462-83e3-5f55bc12aa73
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 20eb7c2a-aa39-454a-87db-d5cd9b44c789
+    type: regular
+    task:
+      id: 20eb7c2a-aa39-454a-87db-d5cd9b44c789
+      version: -1
+      name: Schedule Polling Task
+      scriptName: ScheduleGenericPolling
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ids:
+        simple: ${inputs.Ids}
+      playbookId:
+        simple: ${currentPlaybookID}
+      pollingScript:
+        simple: ${inputs.PollingScriptName}
+      scriptname:
+        simple: ${inputs.PollingScriptName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+    type: regular
+    task:
+      id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+      version: -1
+      name: Wait For Polling Task To Finish
+      tags:
+      - polling
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: admin
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 475,
+        "width": 380,
+        "x": 450,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: Ids
+  value: {}
+  required: true
+  description: ""
+- key: PollingScriptName
+  value: {}
+  required: true
+  description: ""
+- key: Interval
+  value: {}
+  required: false
+  description: ""
+- key: Timeout
+  value: {}
+  required: false
+  description: ""
+outputs:
+- contextPath: PollingScheduledTasks.UUID
+  type: unknown
+- contextPath: PollingScheduledTasks.TaskId
+  type: unknown
+- contextPath: PollingScheduledTasks.Status
+  type: unknown
