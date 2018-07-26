@@ -1,5 +1,6 @@
 {
   "name": "reputations",
+  "releaseNotes": "Extract domain from urls, and Adding ssdeep reputation",
   "reputations": [
     {
       "id": "fileRep",

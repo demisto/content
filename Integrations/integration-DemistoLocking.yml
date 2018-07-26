@@ -10,9 +10,9 @@ detaileddescription: "The Demisto Locking integration allows prevention of concu
   execution of scripts or commands, using a wait-lock-release flow (mutex). \nUse
   the lock name argument to support multiple locks in different flows."
 configuration:
-- display: Default timeout (minutes) for wait on locks to be released
+- display: Default timeout (seconds) for wait on locks to be released
   name: timeout
-  defaultvalue: "60"
+  defaultvalue: "600"
   type: 0
   required: true
 script:
@@ -130,8 +130,8 @@ script:
     - name: info
       description: Additional information to provide for the lock instance
     - name: timeout
-      description: Timeout (minutes) for wait on lock to be freed
-      defaultValue: "60"
+      description: Timeout (seconds) for wait on lock to be freed
+      defaultValue: "600"
     description: Get a lock. If the lock is already in use - will wait until it is
       released or until timeout is reached
   - name: demisto-lock-release
@@ -151,3 +151,4 @@ script:
     arguments: []
     description: Release all locks
   runonce: false
+releaseNotes: "Increase default timeout to 600 seconds"

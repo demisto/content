@@ -241,11 +241,9 @@ script:
 
     function prettifyTaskStatusByTaskIdRes(taskStatus){
         var prettyTaskStatus = {
-            'Id': taskStatus.taskid,
             'taskId': taskStatus.taskid,
             'jobId': taskStatus.jobid,
             'status': taskStatus.status,
-            'IsComplete': (taskStatus.status === "analyzing" || taskStatus.status === "waiting") ? "Failure" : "Success",
             'filename': taskStatus.filename,
             'MD5': taskStatus.md5,
             'submitTime': taskStatus.submitTime
@@ -311,7 +309,6 @@ script:
             EntryContext: {
                 "ATD.status": result.status, //backward compatability
                 "ATD.Task(val.taskId==obj.taskId)": result.tasks
-                "ATD.Task(val.Id==obj.Id)": result.tasks
             }
         };
     }
@@ -357,7 +354,6 @@ script:
 
     function prettifyFileUploadRes(fileUploadRes){
         var prettyFileUpload = {
-            'Id': fileUploadRes.results[0].taskId,
             'taskId': fileUploadRes.results[0].taskId,
             'jobId': fileUploadRes.subId,
             'messageId': fileUploadRes.fileId,
@@ -453,7 +449,7 @@ script:
                                 args.filePriorityQ, args.srcIp, args.destIp, args.fileName);
 
         var md = tableToMarkdown('ATD sandbox sample submission', prettifyFileUploadRes(result.resultObj),
-                                ['Id', 'taskId', 'jobId', 'messageId', 'url', 'destIp', 'srcIp', 'MD5', 'SHA1', 'SHA256']);
+                                ['taskId', 'jobId', 'messageId', 'url', 'destIp', 'srcIp', 'MD5', 'SHA1', 'SHA256']);
 
         return {
             Type: entryTypes.note,
@@ -462,7 +458,6 @@ script:
             HumanReadable: md,
             EntryContext: {
                 "ATD.Task(val.taskId==obj.taskId)": prettifyFileUploadRes(result.resultObj),
-                "ATD.Task(val.Id==obj.Id)": prettifyFileUploadRes(result.resultObj),
                 "ATD.taskId": result.resultObj.results[0].taskId //backward compatabillity
             }
         };
@@ -508,8 +503,6 @@ script:
                 context["ATD.Task(val.taskId===obj.taskId)"] =
                     {
                     'status': status,
-                    'IsComplete': (status === "analyzing" || status === "waiting") ? "Failure" : "Success",
-                    'Id': uploadData.taskId,
                     'taskId': uploadData.taskId,
                     'jobId': uploadData.subId,
                     'messageId': uploadData.messageId,
@@ -1069,9 +1062,6 @@ script:
     - contextPath: IP.Address
       description: IP's relevant to the sample
       type: string
-    - contextPath: ATD.Task.IsComplete
-      description: Stating if the detonation was complete or not
-      type: string
     description: Detonate file through McAfee ATD
   - name: detonate-url
     arguments:
@@ -1178,9 +1168,6 @@ script:
     - contextPath: IP.Address
       description: IP's relevant to the sample
       type: string
-    - contextPath: ATD.Task.IsComplete
-      description: Stating if the detonation was complete or not
-      type: string
     description: Detonate URL through McAfee ATD
   - name: atd-check-status
     arguments:
@@ -1215,9 +1202,5 @@ script:
     - contextPath: ATD.Task.submitTime
       description: Submission time of the sample
       type: string
-    - contextPath: ATD.Task.IsComplete
-      description: Stating if the detonation was complete or not
-      type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "-"
