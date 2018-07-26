@@ -126,7 +126,7 @@ script:
         # and check for errors
         if 'error' in response_json:
             LOG('Error: {!r} Description: {!r}'.format(response_json['error'], response_json['error_description']))
-            raise Exception('Error refreshing token')
+            raise Exception('Error refreshing token. Error: {!r} Description: {!r}'.format(response_json['error'], response_json['error_description']))
         # if all good, just return the new access token
         try:
             return response_json['access_token']
