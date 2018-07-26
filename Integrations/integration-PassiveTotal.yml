@@ -39,7 +39,7 @@ configuration:
   name: tags
   defaultvalue: "malware,blacklist,phishing,typo-squatting"
   type: 0
-  required: true
+  required: false
 script:
   script: |-
     // Use pt-enrichment for IP, URL and domain enrichment
