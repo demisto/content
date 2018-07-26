@@ -344,4 +344,3 @@ script:
       type: string
     description: Get miner indicators list.
   runonce: false
-releaseNotes: "Add new integration"

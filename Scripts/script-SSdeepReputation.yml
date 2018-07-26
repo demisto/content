@@ -91,4 +91,3 @@ args:
   defaultValue: "50"
 scripttarget: 0
 runonce: false
-releaseNotes: "Add ssdeep reputation script"
