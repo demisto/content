@@ -261,5 +261,4 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "-"
 fromversion: 3.6.0

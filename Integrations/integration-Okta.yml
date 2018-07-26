@@ -1667,4 +1667,3 @@ script:
     description: Get logs by providing optional filters
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Changed the proxy parameter from short text to boolean"
