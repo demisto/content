@@ -96,6 +96,14 @@ script:
     '''
     BASIC FUNCTIONS
     '''
+    def return_error_and_exit(message):
+        demisto.results({
+            'Type': entryTypes['error'], 
+            'ContentsFormat': formats['text'],
+            'Contents': message
+        })
+        sys.exit(0)
+    
     def listify(comma_separated_list):
 
         if isinstance(comma_separated_list, list):
@@ -131,7 +139,8 @@ script:
 
         #handle request failure
         if response.status_code not in range(200,205):
-            raise ValueError('Request failed with status code {}\n{}'.format(response.status_code, response.text))
+            return_error_and_exit('Request failed with status code {}\n{}'.format(response.status_code, response.text))
+
         return response.json()
 
     def return_error_entry(message):
