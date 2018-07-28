@@ -295,7 +295,7 @@ tasks:
         simple: dismissed
       fields: {}
       path:
-        simple: Redlock.Alert=>val[val.length-1].Status
+        simple: Redlock.Alert=>val[0].Status
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -404,7 +404,7 @@ tasks:
         simple: open
       fields: {}
       path:
-        simple: Redlock.Alert=>val[val.length-1].Status
+        simple: Redlock.Alert=>val[0].Status
     reputationcalc: 0
     separatecontext: false
     view: |-
