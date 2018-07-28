@@ -390,13 +390,13 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
-        },
-        {
-            "integrations": "QRadar",
-            "playbookID": "test_Qradar"
         }
     ],
     "skipped": [
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
+        },
         {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
