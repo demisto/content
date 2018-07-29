@@ -96,6 +96,14 @@ script:
     '''
     BASIC FUNCTIONS
     '''
+    def return_error_and_exit(message):
+        demisto.results({
+            'Type': entryTypes['error'], 
+            'ContentsFormat': formats['text'],
+            'Contents': message
+        })
+        sys.exit(0)
+    
     def listify(comma_separated_list):
 
         if isinstance(comma_separated_list, list):
@@ -131,16 +139,9 @@ script:
 
         #handle request failure
         if response.status_code not in range(200,205):
-            raise ValueError('Request failed with status code {}\n{}'.format(response.status_code, response.text))
-        return response.json()
+            return_error_and_exit('Request failed with status code {}\n{}'.format(response.status_code, response.text))
 
-    def return_error_entry(message):
-        entry = {
-            'Type': entryTypes['error'],
-            'Contents': e.message,
-            'ContentsFormat': formats['text'],
-        }
-        demisto.results(entry)
+        return response.json()
 
     def to_search_attribute_object(value, filter=None, is_list=False ,valid_values=None):
 
@@ -636,7 +637,7 @@ script:
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
-        return_error_entry(e.message)
+        return_error_and_exit(e.message)
   type: python
   commands:
   - name: fireeye-etp-search-messages
