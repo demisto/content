@@ -2,7 +2,7 @@ id: ServiceNow KeepAlive Test
 version: 3
 name: ServiceNow KeepAlive Test
 description: Made as dev-task to keep the account from "sleeping" or instance revoked,
-  in which case the dredentials will be of no use.
+  in which case the dredentials will be of no use..
 starttaskid: "0"
 tasks:
   "0":
