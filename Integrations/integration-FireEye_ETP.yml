@@ -226,7 +226,7 @@ script:
         context_data = copy.deepcopy(message)
 
         # remove 'attributes' level
-        context_data.update(context_data.pop('attributes', {}))
+        #context_data.update(context_data.pop('attributes', {}))
 
         # parse email sddresses
         match =  re.search('<(.*)>', context_data['senderHeader'].replace('\\"',''))
@@ -576,33 +576,41 @@ script:
     def fetch_incidents():
 
         if not MESSAGE_STATUS:
-            raise Exception('To fetch messages as incidents, the message status must be specified in the instance settings')
+        raise Exception('To fetch messages as incidents, the message status must be specified in the instance settings')
 
         last_run = demisto.getLastRun()
-
-        iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+        iso_format = "%Y-%m-%dT%H:%M:%S.%f"
 
         if not last_run.has_key('last_modified'):
             week_ago =  datetime.now() - timedelta(days=7)
             # parse datetime to iso format string and add Z suffix
-            last_run['last_modified'] = week_ago.isoformat()[:-3] + 'Z'
+            last_run['last_modified'] = week_ago.strftime(iso_format)[:-3] + 'Z'
 
         attributes = format_search_attributes(
             status=MESSAGE_STATUS,
             last_modified_date_time='>{}'.format(last_run['last_modified'])
         )
 
-        last_incident_datetime =  datetime.strptime(last_run['last_modified'], iso_format)
+        last_incident_datetime = datetime.strptime(last_run['last_modified'], iso_format + 'Z')
         messages = search_messages_request(attributes=attributes)
         incidents = []
         for message in messages:
             incidents.append(parse_message_to_incident(message))
             # set last_incident_datetime
-            message_last_modified = datetime.strptime(message['attributes']['lastModifiedDateTime'], iso_format)
+            message_last_modified = None
+            try:
+                message_last_modified = datetime.strptime(message['attributes']['lastModifiedDateTime'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            except ValueError:
+                try:
+                    message_last_modified = datetime.strptime(message['attributes']['lastModifiedDateTime'], "%Y-%m-%dT%H:%M:%SZ")
+                except ValueError:
+                    message_last_modified = datetime.strptime(message['attributes']['lastModifiedDateTime'], "%Y-%m-%dT%H:%MZ")
+
             if message_last_modified > last_incident_datetime:
                 last_incident_datetime = message_last_modified
 
-        last_run['last_modified'] = last_incident_datetime.isoformat()[:-3] + 'Z'
+        last_run['last_modified'] = last_incident_datetime.strftime(iso_format)[:-3] + 'Z'
+
         demisto.incidents(incidents)
         demisto.setLastRun(last_run)
 
