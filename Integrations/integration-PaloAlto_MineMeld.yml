@@ -49,10 +49,10 @@ script:
     import ssl
     import os.path
     import os
-    from urlparse import urljoin
     import sys
     import time
     import re
+    from urlparse import urljoin
 
     #globals and constants
     IPV4_CLASS = 'minemeld.ft.local.YamlIPv4FT'
@@ -257,6 +257,33 @@ script:
         return result_indicator
 
 
+    def get_indicator_type(indicator):
+        indicator_type = ''
+
+        if not indicator_type:
+            url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', indicator)
+            if url:
+                indicator_type = 'URL'
+
+        if not indicator_type:
+            ipv4 = re.findall('^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$', indicator)
+            if ipv4 and not indicator_type:
+                indicator_type = 'IPv4'
+
+        if not indicator_type:
+            ipv6 = re.findall('^(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)$', indicator)
+            if ipv6:
+                indicator_type = 'IPv6'
+
+        if not indicator_type:
+            file = get_hash_type(indicator)
+            if file != 'Unknown':
+                indicator_type = file
+
+        return indicator_type
+
+
+
     #commands
     def domain():
         domain = demisto.args()['domain']
@@ -294,7 +321,6 @@ script:
             if dbotscore ==3:
                 indicator_context_data = {
                     'MineMeld': {
-                        'Miner': { 'name': miner_name } ,
                         'Indicators': result_indicator
                     },
                     'Malicious': {
@@ -373,7 +399,6 @@ script:
             if dbotscore ==3:
                 indicator_context_data = {
                     'MineMeld': {
-                        'Miner': { 'name': miner_name } ,
                         'Indicators': result_indicator
                     },
                     'Malicious': {
@@ -452,7 +477,6 @@ script:
             if dbotscore ==3:
                 indicator_context_data = {
                     'MineMeld': {
-                        'Miner': { 'name': miner_name } ,
                         'Indicators': result_indicator
                     },
                     'Malicious': {
@@ -531,7 +555,6 @@ script:
             if dbotscore ==3:
                 indicator_context_data = {
                     'MineMeld': {
-                        'Miner': { 'name': miner_name },
                         'Indicators': result_indicator
                     },
                     'Malicious': {
@@ -652,7 +675,7 @@ script:
         else:
             result_list = get_indicators_from_miner(miner_name)
             miners_context = { 'name': miner_name }
-        demisto.log(json.dumps(miners_context))
+
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': result_list,
@@ -669,7 +692,7 @@ script:
     def update_miner():
         miner = demisto.args()['miner']
         indicator = demisto.args()['indicator']
-        type_ = demisto.args().get('type',False)
+        type_ = demisto.args().get('type',get_indicator_type(indicator))
         comment = demisto.args().get('comment','')
 
         if ' ' in indicator:
@@ -1092,4 +1115,4 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
-releaseNotes: "Added support for miners that can support any indicator type + 4 commands for threat intel"
+releaseNotes: "Palo Alto MineMeld as threat intel, after complete code refactor"

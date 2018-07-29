@@ -1,5 +1,5 @@
 id: minemeld_test
-version: 85
+version: 87
 name: Palo Alto MineMeld Test
 description: This is a playbook test for Palo Alto minemeld Node's indicators integration.
 starttaskid: "0"
@@ -328,8 +328,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 58,
-          "y": 2305
+          "x": 30,
+          "y": 2435
         }
       }
     note: false
@@ -495,7 +495,7 @@ tasks:
       '#default#':
       - "19"
       "yes":
-      - "9"
+      - "20"
     scriptarguments:
       value:
         complex:
@@ -561,6 +561,39 @@ tasks:
         }
       }
     note: false
+  "20":
+    id: "20"
+    taskid: 5d431886-abf2-47e6-8335-4b09da6a6a5e
+    type: regular
+    task:
+      id: 5d431886-abf2-47e6-8335-4b09da6a6a5e
+      version: -1
+      name: Remove indicator from miner
+      script: Palo Alto Minemeld|||minemeld-remove-from-miner
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      indicator:
+        simple: 25.25.25.25
+      miner:
+        simple: Malicious
+      type:
+        simple: IPv4
+      value:
+        simple: 6.6.6.6
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -322,
+          "y": 2268
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -569,9 +602,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2320,
-        "width": 1017,
-        "x": 58,
+        "height": 2450,
+        "width": 1397,
+        "x": -322,
         "y": 50
       }
     }
