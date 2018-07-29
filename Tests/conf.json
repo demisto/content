@@ -390,6 +390,10 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "ServiceNow",
+            "playbookID": "ServiceNow KeepAlive Test"
         }
     ],
     "skipped": [
