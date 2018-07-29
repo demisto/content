@@ -199,6 +199,28 @@ script:
       };
     }
 
+    var addSingleOffenseToEntryContext = function(resObject) {
+        resObject.EntryContext = {"QRadar.Offense.id": resObject.Contents.id};
+        return resObject;
+    }
+
+    var addOffensesToEntryContext = function(resObject) {
+        resObject.EntryContext = {"QRadar.Offense": []};
+        for (var i = 0; i < resObject.Contents.length; i++) {
+            resObject.EntryContext["QRadar.Offense"].push({"id": resObject.Contents[i].id });
+        }
+        return resObject;
+    }
+
+    var addSearchToEntryContext = function(resObject) {
+        resObject.EntryContext = {
+            "QRadar.Search(val.id == obj.id)" :[{
+                "id": resObject.Contents.search_id,
+                "status":  resObject.Contents.status
+                }]};
+        return resObject;
+    }
+
     var updateOffense = function(offense_id, args) {
         if (!args['closing_reason_id'] && args['status'] === 'CLOSED') {
             throw 'Invalid input - must provide closing reason id (may use "qradar-get-closing-reasons" command to get them) to close offense';
@@ -257,19 +279,19 @@ script:
             return JSON.stringify(incidents);
         case 'qr-offenses':
         case 'qradar-offenses':
-            return addHumanRedable(getOffenses(args.filter, args.fields, args.range), 'QRadar offenses', headers);
+            return addOffensesToEntryContext(addHumanRedable(getOffenses(args.filter, args.fields, args.range), 'QRadar offenses', headers));
         case 'qr-get-assets':
         case 'qradar-get-assets':
             return addHumanRedable(getAssets(args.filter, args.fields, args.range), 'QRadar get assets', headers);
         case 'qr-update-offense':
         case 'qradar-update-offense':
-            return addHumanRedable(updateOffense(args.offense_id, args), 'QRadar update offense', headers);
+            return addSingleOffenseToEntryContext(addHumanRedable(updateOffense(args.offense_id, args), 'QRadar update offense', headers));
         case 'qr-searches':
         case 'qradar-searches':
-            return addHumanRedable(search(args.query_expression, args.fields), 'QRadar searches', headers);
+            return addSearchToEntryContext(addHumanRedable(search(args.query_expression, args.fields), 'QRadar searches', headers));
         case 'qr-get-search':
         case 'qradar-get-search':
-            return addHumanRedable(getSearch(args.search_id, args.fields), 'QRadar get search', headers);
+            return addSearchToEntryContext(addHumanRedable(getSearch(args.search_id, args.fields), 'QRadar get search', headers));
         case 'qr-get-search-results':
         case 'qradar-get-search-results':
             return addHumanRedable(getSearchResults(args.search_id, args.range), 'QRadar get search results', headers, 'events');
