@@ -580,4 +580,5 @@ outputs:
 scripttarget: 0
 dockerimage: demisto/machine-learning
 fromversion: 3.5.0
-releaseNotes: "Find email from label automatically."
+deprecated: true
+releaseNotes: "Deprecated - please use GetDuplicatesMlv2"
