@@ -4,24 +4,27 @@ commonfields:
 name: DeleteContext
 script: |
   var fieldsToDelete;
-  var shouldDeleteAll = (args.all === 'yes')
+  var shouldDeleteAll = (args.all === 'yes');
   if(!shouldDeleteAll && !args.key) {
       return {Contents: 'You must specify key or all=yes',
                       ContentsFormat: formats.text,
                       Type: entryTypes.error};
   }
   if(shouldDeleteAll) {
+      var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',') : [];
       fieldsToDelete = Object.keys(invContext);
 
       // delete each field in context
-      var errorsStr = ""
+      var errorsStr = "";
       for (var i = 0; i < fieldsToDelete.length; i++) {
-          var result = executeCommand('delContext', { key: fieldsToDelete[i], id: args.id });
-          if(!result || result.type === entryTypes.error) {
-              errorsStr = "errorsStr" + "\n" + result.Contents;
+          if (keysToKeep.indexOf(fieldsToDelete[i]) == -1) {
+              var result = executeCommand('delContext', { key: fieldsToDelete[i], id: args.id });
+              if(!result || result.type === entryTypes.error) {
+                  errorsStr = "errorsStr" + "\n" + result.Contents;
+              }
           }
       }
-      if(errorsStr) {
+      if (errorsStr) {
           return "Context cleared with the folloing errors:" + errorsStr;
       } else {
           return "Context cleared";
@@ -44,4 +47,7 @@ args:
   - "yes"
   - "no"
   description: if you choose yes - all context will be deleted
+- name: keysToKeep
+  description: Context keys (top-level keys) to keep when deleting all context. Use comma to specify multiple values 
 scripttarget: 0
+runonce: false

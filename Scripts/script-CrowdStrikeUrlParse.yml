@@ -1,0 +1,79 @@
+commonfields:
+  id: CrowdStrikeUrlParse
+  version: -1
+name: CrowdStrikeUrlParse
+script: |-
+  import re
+
+  def agent_extract(url):
+      '''
+      Use regex to extract the CrowdStrike Agent ID (aid) from a CrowdStrike alert URL.
+      The output of this can be passed to cs-device-details for a host lookup.
+      It will also pull out the detection part of the URL, to be used for resolving detections in CrowdStrike
+
+      url = 'https://falcon.crowdstrike.com/activity/detections/detail/4ae027b246528y357r1a01e9cdf55724/176094545335?_cid=21aadgime3514d6fa68df313d7b1937d'
+
+      # Find the Agent ID and map it to the "aid" group name.
+      match = re.search(r'detail\/(?P<aid>(\w{32}))\/(?P<detect>([0-9]+))', url)
+
+      # returns '4ae027b246528y357r1a01e9cdf55724'
+      match.group('aid')
+
+      # returns '176094545335'
+      match.group('detect')
+      '''
+
+      match = re.search(r'detail\/(?P<aid>(\w{32}))\/(?P<detect>([0-9]+))', url)
+      aid = match.group('aid')
+      detect = match.group('detect')
+
+      # Concatenate the detection ID into the proper format for CrowdStrike
+      # returns 'ldt:4ae027b246528y357r1a01e9cdf55724:176094545335'
+      detID = 'ldt:{}:{}'.format(aid, detect)
+
+      return aid, detID
+
+  AgentId, DetectId = agent_extract(demisto.args()['url'])
+
+  output = []
+  context = {}
+
+  output.append({
+      'Type': entryTypes['note'],
+      'Contents': AgentId,
+      'ContentsFormat': formats['text'],
+      'ReadableContentsFormat': formats['text'],
+      'HumanReadable': AgentId if AgentId else '{} doesn\'t contain an agent id',
+  })
+  output.append({
+      'Type': entryTypes['note'],
+      'Contents': DetectId,
+      'ContentsFormat': formats['text'],
+      'ReadableContentsFormat': formats['text'],
+      'HumanReadable': DetectId if DetectId else '{} doesn\'t contain a detect id'
+  })
+
+  demisto.results(output)
+
+  demisto.setContext('CrowdStrikeUrlParse.AgentId', AgentId)
+  demisto.setContext('CrowdStrikeUrlParse.DetectId', DetectId)
+type: python
+tags:
+- crowdstrike
+comment: |-
+  This will parse a CrowdStrike alert URL and pull out the Agent ID. Useful for passing to the cs-device-details command to return device details.
+
+  It also returns the detection ID for the specific alert. Used for modifying the state of the alert for CrowdStrike.
+enabled: true
+args:
+- name: url
+  required: true
+  default: true
+  description: URL to parse
+outputs:
+- contextPath: CrowdStrikeUrlParse.AgentId
+  description: Agent ID for CrowdStrike host
+- contextPath: CrowdStrikeUrlParse.DetectId
+  description: Detection ID for CrowdStrike alert
+scripttarget: 0
+runonce: false

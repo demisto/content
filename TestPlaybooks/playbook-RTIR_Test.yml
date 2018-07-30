@@ -1,0 +1,262 @@
+id: RTIR Test
+version: -2
+name: RTIR Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: be7d4fb7-7390-4950-8fee-e02d73f246ba
+    type: start
+    task:
+      id: be7d4fb7-7390-4950-8fee-e02d73f246ba
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 375f3407-3f68-4438-879c-da619e7754a7
+    type: regular
+    task:
+      id: 375f3407-3f68-4438-879c-da619e7754a7
+      version: -1
+      name: rtir-create-ticket
+      description: Create new ticket on RTIR
+      script: RTIR|||rtir-create-ticket
+      type: regular
+      iscommand: true
+      brand: RTIR
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      admin-cc: {}
+      attachment: {}
+      cc: {}
+      customfields: {}
+      final-priority: {}
+      initial-priority: {}
+      owner: {}
+      priority:
+        simple: "50"
+      queue:
+        simple: General
+      requestor: {}
+      status: {}
+      subject:
+        simple: TestTicket
+      text: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 462eb0bf-f708-4d6f-8fa9-45ec9e7b7be6
+    type: regular
+    task:
+      id: 462eb0bf-f708-4d6f-8fa9-45ec9e7b7be6
+      version: -1
+      name: rtir-edit-ticket
+      description: Modify a ticket on RTIR
+      script: RTIR|||rtir-edit-ticket
+      type: regular
+      iscommand: true
+      brand: RTIR
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      due: {}
+      final-priority: {}
+      owner: {}
+      priority: {}
+      status: {}
+      subject:
+        simple: EditedNewTicket
+      ticket-id:
+        simple: ${RTIR.Ticket.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 3f2670e7-5abc-433e-85dd-de7c1bfee972
+    type: regular
+    task:
+      id: 3f2670e7-5abc-433e-85dd-de7c1bfee972
+      version: -1
+      name: rtir-resolve-ticket
+      description: Sets a ticket as resolved on RTIR
+      script: RTIR|||rtir-resolve-ticket
+      type: regular
+      iscommand: true
+      brand: RTIR
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ticket-id:
+        simple: ${RTIR.Ticket.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 30e7fd06-f67d-47e3-86ab-98e956cff273
+    type: regular
+    task:
+      id: 30e7fd06-f67d-47e3-86ab-98e956cff273
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: fad313da-f74b-4f10-8556-7c15dca07924
+    type: regular
+    task:
+      id: fad313da-f74b-4f10-8556-7c15dca07924
+      version: -1
+      name: rtir-search-ticket
+      description: Search for tickets on RTIR
+      script: RTIR|||rtir-search-ticket
+      type: regular
+      iscommand: true
+      brand: RTIR
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      created-after: {}
+      created-before: {}
+      created-on: {}
+      creator: {}
+      due: {}
+      owner: {}
+      priority-equal-to: {}
+      priority-greater-than: {}
+      queue:
+        simple: General
+      status: {}
+      subject: {}
+      ticket-id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 600f23fb-8490-4c4b-831b-a4f44fe8154c
+    type: regular
+    task:
+      id: 600f23fb-8490-4c4b-831b-a4f44fe8154c
+      version: -1
+      name: rtir-get-ticket
+      description: Gets the data for a single ticket.
+      script: RTIR|||rtir-get-ticket
+      type: regular
+      iscommand: true
+      brand: RTIR
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ticket-id:
+        simple: ${RTIR.Ticket.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 63778cb6-2e41-4663-8cc5-38aa6ac5ae84
+    type: title
+    task:
+      id: 63778cb6-2e41-4663-8cc5-38aa6ac5ae84
+      version: -1
+      name: Success!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
