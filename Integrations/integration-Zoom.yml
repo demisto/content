@@ -399,5 +399,6 @@ script:
       defaultValue: disassociate
     description: Delete a user from Zoom
     execution: true
-  dockerimage: pyjwt
+  dockerimage: demisto/pyjwt:1.0
   runonce: false
+releaseNotes: "-"
