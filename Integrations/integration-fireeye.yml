@@ -109,7 +109,7 @@ script:
             ],
         },
         'fe-submit-url-result': {
-            url: 'submissions/results/%submission_Key%',
+            url: 'submissions/results/%submissionID%',
             method: 'GET',
             setContentType: true,
             extended: true,
@@ -118,7 +118,7 @@ script:
                     contextPath: 'FireEyeAX.Submissions.URL(val.Key==obj.Key)',
                     title: 'FireEye Submission Result',
                     data: [
-                        {to: 'Key', from: 'submission_Key'},
+                        {to: 'ID', from: 'alerts.alert.-id'},
                         {to: 'Severity', from: 'alerts.alert.-severity'},
                     ]
                 }
@@ -460,6 +460,7 @@ script:
   - name: fe-submit-result
     arguments:
     - name: submission_Key
+      required: true
       description: commands.server.feSubmit.arguments.submissionKey.description
     - name: info_level
       description: commands.server.feAlert.arguments.infoLevel.description
@@ -610,8 +611,9 @@ script:
     description: Get a status for a url submitted to FireEye analysis
   - name: fe-submit-url-result
     arguments:
-    - name: submission_Key
-      description: Submission key of the submission
+    - name: submissionID
+      required: true
+      description: Submission ID of the submission
     - name: info_level
       description: 'Specifies the level of information to be returned. Unless otherwise
         specified, the info_level is set to concise. You can select the following
