@@ -1,0 +1,780 @@
+commonfields:
+  id: TrendMicroDDA
+  version: -1
+name: TrendMicroDDA
+display: TrendMicroDDA
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+detaileddescription: |-
+  In order to allow the integration to work, the following configurations are required:
+  1) Enter the DDA server and port into the server parameter in the integration
+  2) Copy the IP address value from  Administration --> System Settings --> Network
+  3) Paste this value into the ip_address parameter in the integration
+  4) Copy the API key to the clipboard from Help --> About
+  5) Paste this value into the apiKey parameter in the integration
+configuration:
+- display: Server (e.g https://192.168.10.23:{port})
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: IP address
+  name: ip_address
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Protocol Version
+  name: protocolVersion
+  defaultvalue: "1.5"
+  type: 0
+  required: false
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: Proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |-
+    import hashlib
+    from datetime import datetime, timedelta
+    import uuid
+    import json
+    import requests
+    import re
+    import platform
+    from requests.adapters import HTTPAdapter
+    from requests.packages.urllib3.util.retry import Retry
+    import zipfile
+    from zipfile import ZipFile
+    import os.path
+    from StringIO import StringIO
+    import copy
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get("proxy", True):
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
+
+    #HELPER FUNCTIONS#
+
+    def load_server_url():
+        ''' Cleans and loads the server url from the configuration '''
+        url = demisto.params()['server']
+        url = re.sub('/[\/]+$/', '', url)
+        url = re.sub('\/$', '', url)
+        return url
+
+    def hash_file(filename):
+        '''Calculate the SHA1 of a file'''
+        h = hashlib.sha1()
+        with open(filename,'rb') as f:
+            chunk = 0
+            while chunk != '':
+                chunk = f.read(1024)
+                h.update(chunk)
+        return h.hexdigest()
+
+    def hash_url(url):
+        '''Calculate the SHA1 of a URL'''
+        h = hashlib.sha1()
+        h.update(url)
+        return h.hexdigest()
+
+    def get_epoch_time():
+        '''Get the epoch time (for the X-DTAS-Time header value.'''
+        epoch_time = str(int(time.time()))
+        return epoch_time
+
+    def get_epoch_from_datetime(dt):
+        '''Calculate epoch time from a datetime object'''
+        epoch_format = str(int(time.mktime(dt.timetuple())))
+        return epoch_format
+
+    def getSize(fileobject):
+        ''' Get a file size from a file object'''
+        fileobject.seek(0,2) # move the cursor to the end of the file
+        size = fileobject.tell()
+        return size
+
+    def calculateChecksum(apiKey, headers, body = ''):
+        ''' Generates a Checksum for the api call '''
+        temp = str(apiKey)
+        if 'X-DTAS-ChecksumCalculatingOrder' in headers:
+            xDtasChecksumcalculatingorderList = headers['X-DTAS-ChecksumCalculatingOrder'].split(",")
+            for key in xDtasChecksumcalculatingorderList:
+                temp = temp + str(headers[key])
+        else:
+            for key, value in headers.iteritems():
+                if ('X-DTAS-' in key and 'X-DTAS-Checksum' not in key and 'X-DTAS-ChecksumCalculatingOrder' not in key):
+                    temp = temp + str(value)
+
+        temp = temp + str(body)
+        return hashlib.sha1(temp)
+
+    def pretty_print_http(req):
+        print('{}\n{}\n{}\n\n{}'.format(
+            '-----------START-----------',
+            req.method + ' ' + req.url,
+            '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
+            req.body,
+        ))
+
+    def http_request(uri, method, headers, body = {}, params = {}, files = {}):
+        ''' Makes an API call to the server URL with the supplied uri, method, headers, body and params '''
+        url = '%s/%s' % (SERVER_URL, uri)
+        #LOG('api_call url {}'.format(url))
+        #req = requests.Request(method, url, headers=headers)
+        #prepared = req.prepare()
+        #LOG(pretty_print_http(prepared)) # prints the http request nicely to the log
+        res = requests.request(
+            method,
+            url,
+            headers=headers,
+            data=json.dumps(body),
+            verify=USE_SSL,
+            proxies=USE_PROXY,
+            params=params,
+            files = files)
+
+        if (res.status_code != 102 and (res.status_code < 200 or res.status_code >= 300)):
+            raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+        return res
+
+    def http_post(uri, headers, files):
+        ''' Makes an API call to the server URL with the supplied uri, method, headers, body and params '''
+        url = '%s/%s' % (SERVER_URL, uri)
+        #LOG('api_call url {}'.format(url))
+        #req = requests.Request('post', url, headers=headers)
+        #prepared = req.prepare()
+        #LOG(pretty_print_http(prepared)) # prints the http request nicely to the log
+        res = requests.post(
+            url,
+            headers=headers,
+            verify=USE_SSL,
+            proxies=USE_PROXY,
+            files = files)
+        if res.status_code < 200 or res.status_code >= 300:
+                raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+        return res
+
+    def file_uploaded_to_incident(file, file_sha1):
+        ''' Converts an uploaded file to a Demisto incident '''
+        incident = {}
+        incident["name"] = "Incident: %s " % (file_sha1)
+        incident["occurred"] = CURRENT_TIME
+        incident["rawJSON"] = "TODO"
+
+        labels = []
+        incident["labels"] = labels
+        return incident
+
+    #GLOBAL VARIABLES#
+    API_KEY = str(demisto.params()["apiKey"])
+    PROTOCOL_VERSION = str(demisto.params()["protocolVersion"])
+    SERVER_URL = load_server_url()
+    USE_SSL = not demisto.params().get('insecure', True)
+    USE_PROXY = demisto.params().get('proxy', None)
+    UUID = str(uuid.uuid4())
+    DEFAULT_HEADERS = {
+        'Host' : str(demisto.params()["ip_address"]),
+        'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
+        'X-DTAS-ClientUUID': UUID,
+        'X-DTAS-Time' : get_epoch_time(),
+        'X-DTAS-Challenge' : str(uuid.uuid4()),
+        'X-DTAS-ProductName' : 'TDA',
+        'X-DTAS-ClientHostname' : platform.node(),
+        'X-DTAS-SourceID': '1',
+        'X-DTAS-SourceName': 'DemistoIntegration',
+    }
+
+    CURRENT_TIME = datetime.utcnow()
+
+    #COMMAND FUNCTIONS#
+
+    def register():
+        headersRegister = copy.deepcopy(DEFAULT_HEADERS)
+        tmp_checksum = calculateChecksum(API_KEY, headersRegister, '')
+        headersRegister['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        res = http_request('web_service/sample_upload/register', 'get', headersRegister)
+
+
+    def unregister():
+        headersUnregister = copy.deepcopy(DEFAULT_HEADERS)
+        tmp_checksum = calculateChecksum(API_KEY, headersUnregister, '')
+        headersUnregister['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        res = http_request('web_service/sample_upload/unregister', 'get', headersUnregister)
+
+
+    def test():
+        headersTest = copy.deepcopy(DEFAULT_HEADERS)
+        tmp_checksum = calculateChecksum(API_KEY, headersTest, '')
+        headersTest['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        res = http_request('web_service/sample_upload/test_connection', 'get', headersTest)
+        demisto.results('ok')
+
+    def prettifySimpleUploadSample(sample, sha1):
+        prettySample = {
+            'Date': sample.headers['Date'],
+            'X-DTAS-Checksum': sample.headers['X-DTAS-Checksum'],
+            'SHA1' : sha1.upper()
+        }
+        return prettySample;
+
+    def simple_upload_sample_file(sampleFile):
+        '''Upload a file to Analyzer for analysis'''
+        with open(demisto.getFilePath(sampleFile)['path'], 'rb') as f:
+            headersSimpleUploadSampleFile = {
+                #'Host' : str(demisto.params()["ip_address"]),
+                #'Content-Type' : 'multipart/form-data',
+                #'Content-Length' : str(getSize(f)),
+                'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
+                'X-DTAS-ClientUUID': UUID,
+                'X-DTAS-SourceID': '1',
+                'X-DTAS-SourceName': 'DemistoIntegration',
+                'X-DTAS-SHA1' : hash_file(demisto.getFilePath(sampleFile)['path']),
+                'X-DTAS-Time' : get_epoch_time(),
+                'X-DTAS-SampleType' : '0', #0 for file, 1 for URL
+                'X-DTAS-Challenge' : str(uuid.uuid4()),
+                #'X-DTAS-ProductName' : 'TDA',
+                #'X-DTAS-ClientHostname' : platform.node(),
+                'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
+                }
+            tmp_checksum = calculateChecksum(API_KEY, headersSimpleUploadSampleFile, '')
+            headersSimpleUploadSampleFile['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+
+            res = http_post(
+                'web_service/sample_upload/simple_upload_sample',
+                headersSimpleUploadSampleFile,
+                files = {'uploadsample' : f})
+
+        prettyRes = prettifySimpleUploadSample(res, headersSimpleUploadSampleFile['X-DTAS-SHA1'])
+        return res, prettyRes
+
+
+    def simple_upload_sample_url(sampleUrl):
+        '''Upload a URL to Analyzer for analysis'''
+        headersSimpleUploadSampleUrl = {
+                #'Host' : str(demisto.params()["ip_address"]),
+                #'Content-Type' : 'multipart/form-data',
+                'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
+                'X-DTAS-ClientUUID': UUID,
+                'X-DTAS-SourceID': '1',
+                'X-DTAS-SourceName': 'DemistoIntegration',
+                'X-DTAS-SHA1' : hash_url(sampleUrl),
+                'X-DTAS-Time' : get_epoch_time(),
+                'X-DTAS-SampleType' : '1', #0 for file, 1 for URL
+                'X-DTAS-Challenge' : str(uuid.uuid4()),
+                #'X-DTAS-ProductName' : 'TDA',
+                #'X-DTAS-ClientHostname' : platform.node(),
+                'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
+                }
+        tmp_checksum = calculateChecksum(API_KEY, headersSimpleUploadSampleUrl, '')
+        headersSimpleUploadSampleUrl['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+
+        res = http_post(
+            'web_service/sample_upload/simple_upload_sample',
+            headersSimpleUploadSampleUrl,
+            files = {'uploadsample' : sampleUrl})
+
+        prettyRes = prettifySimpleUploadSample(res, headersSimpleUploadSampleUrl['X-DTAS-SHA1'])
+        return res, prettyRes
+
+    def simple_upload_sample_command():
+        args = demisto.args()
+        sampleFile = args.get('sample')
+        sampleUrl = args.get('sample_url')
+        if( (sampleFile is not None) and (sampleUrl is not None) ):
+            raise ValueError('You must specify one (and only one) of the following: sample_url, sample.')
+
+        LOG('uploading sample')
+        if sampleFile is not None:
+            res, prettyRes = simple_upload_sample_file(sampleFile)
+        else:
+            res, prettyRes = simple_upload_sample_url(sampleUrl)
+
+        return demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': str(res.headers),
+            'ContentsFormat': formats['text'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('URL Sample uploaded to TrendMicroDDA', prettyRes),
+            'EntryContext': {
+                  'TrendMicroDDA.Samples': prettyRes
+            }
+        })
+
+    def get_sample(sample_sha1, archive_type, archive_encrypted):
+        '''Issue a request to retrieve an archive of the sample given its SHA1 hash'''
+        if not (re.match(r'\b[0-9a-fA-F]{40}\b', str(sample_sha1))):
+            raise Exception("get_sample parameter 'sample_sha1' must contain a valid sha1 string")
+        if not ((str(archive_type) == "zip") or (str(archive_type) == "tgz")):
+                raise Exception("get_sample parameter 'archive_type' must be a STRING whose value is either 'zip' or 'tgz'")
+        if not ((str(archive_encrypted) == "0") or (str(archive_encrypted) == "1")):
+                raise ValueError("get_sample parameter 'archive_encrypted' must be a STRING whose valie is either '0' (not encrypted) or '1' (encrypted with password 'virus'")
+
+        headersGetSample = copy.deepcopy(DEFAULT_HEADERS)
+        headersGetSample['X-DTAS-SHA1'] = sample_sha1 # SHA1 of the file/URL to download
+        headersGetSample['X-DTAS-ArchiveType'] = archive_type
+        headersGetSample['X-DTAS-ArchiveEncrypted'] = archive_encrypted
+
+        tmp_checksum = calculateChecksum(API_KEY, headersGetSample, '')
+        headersGetSample['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+
+        res = http_request(
+            'web_service/sample_upload/get_sample',
+            'get',
+            headersGetSample)
+
+        demisto.log(str(res))
+        demisto.log(str(dir(res)))
+        demisto.log(str(res.headers))
+        #demisto.log(str(res.content))
+
+        zipdata = StringIO()
+        zipdata.write(res.content)
+        myzipfile = zipfile.ZipFile(zipdata)
+        ll = myzipfile.namelist()
+        demisto.log(str(ll))
+        my_file_dir = myzipfile.extract(sample_sha1 + '.dat')
+        demisto.log(str(my_file_dir))
+
+        sys.exit(0)
+        if os.path.exists(my_file_dir):
+            demisto.log('success')
+        sys.exit(0)
+        my_file = myzipfile.extract('/var/lib/demisto/' + sample_sha1 + '.dat/common/sample/' + sample_sha1)
+        demisto.log('its something')
+        sys.exit(0)
+        demisto.log(str(my_file_dir))
+        demisto.log(str(my_file))
+
+
+        #fr = fileResult( file_name , res.content)
+        #demisto.log(fr['File'])
+
+        #with zipfile (res.content, 'rb') as z:
+
+            #data = z.read('common/sample/' + demisto.args()['sample_sha1'])
+            #file_name = demisto.args()['filename'] if demisto.args()['filename'] != 'sample' else (demisto.args()['filename'] + '_' + demisto.args()['sample_sha1'])
+            #return demisto.results(fileResult( file_name , data)
+
+    def get_sample_command():
+        sample_sha1 = demisto.args()['sample_sha1']
+        archive_type = str(demisto.args()['type'])
+        archive_encrypted = str(demisto.args()['encrypted'])
+        get_sample(sample_sha1, archive_type, archive_encrypted)
+
+    def get_sample_list(interval_start, interval_end, interval_type):
+
+        interval_start_dt = datetime.strptime(interval_start, "%Y-%m-%d %H:%M:%S")
+        interval_end_dt = datetime.strptime(interval_end, "%Y-%m-%d %H:%M:%S")
+
+        if not ((isinstance(interval_start_dt, datetime)) and (isinstance(interval_start_dt, datetime)) ):
+            raise Exception("get_sample_list parameters 'interval_start' and 'interval_end' must both be datetime.datetime objects")
+
+        if not ((type(interval_type) == str) and ((interval_type == "0") or (interval_type == "1"))):
+                raise Exception("get_sample_list parameter 'interval_type' must be a STRING whose value is either '0' or '1'")
+
+        headersGetSampleList = copy.deepcopy(DEFAULT_HEADERS)
+        headersGetSampleList['X-DTAS-IntervalStartingPoint'] = get_epoch_from_datetime(interval_start_dt)
+        headersGetSampleList['X-DTAS-IntervalEndPoint'] = get_epoch_from_datetime(interval_end_dt)
+        headersGetSampleList['X-DTAS-IntervalType'] = interval_type
+
+        tmp_checksum = calculateChecksum(API_KEY, headersGetSampleList, '')
+        headersGetSampleList['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+
+        res = http_request(
+            'web_service/sample_upload/get_sample_list',
+            'get',
+            headersGetSampleList)
+
+        return res #returns a list of SHA1 of the samples
+
+    def get_sample_list_command():
+        '''Issue a request to get a semi-colon separated values list of samples submitted within the given time interval'''
+        interval_start = str(demisto.args()['interval_start'])
+        interval_end = str(demisto.args()['interval_end'])
+        interval_type = str(demisto.args()['interval_type'])
+        result = get_sample_list(interval_start, interval_end, interval_type)
+        sha1List = result.text.split(';')
+        HR = []
+        for item in sha1List:
+            HR.append({'SHA1': item})
+
+        return demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': result.text,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('SHA1 values of the samples submitted within the time interval', HR)
+        })
+
+    def get_openioc_report(): #NEEDED?
+        headersGetOpenIOC = copy.deepcopy(DEFAULT_HEADERS)
+        headersGetOpenIOC['X-DTAS-SHA1'] = (demisto.args()['sample_sha1']) # SHA1 of the file/URL to download
+        headersGetOpenIOC['X-DTAS-Time'] = get_epoch_time()
+
+        tmp_checksum = calculateChecksum(API_KEY, headersGetOpenIOC, '')
+        headersGetOpenIOC['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+
+        res = http_request(
+            'web_service/sample_upload/get_openioc_report',
+            'get',
+            headersGetOpenIOC)
+
+        return demisto.results(res)
+
+
+    def prettifyGetReport(res, threshold, status):
+        reportJson = json.loads(xml2json(res.text))
+
+        demisto.log(str(reportJson['REPORTS']))
+        demisto.log(str(reportJson['REPORTS']['FILE_ANALYZE_REPORT']))
+
+        prettyReport = {
+            'status' : status,
+            'isCompleted' : 'True' if status == 'Completed' else 'False',
+            'RiskLevel': reportJson['REPORTS']['OVERALL_RISK_LEVEL'],
+            'SHA1' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA1'],
+            'SHA256' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA256'],
+            'MD5' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileMD5'],
+            'VirusDetected' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusDetected'],
+            #GO OVER FIELDS WITH MICHAL
+
+        }
+
+        if (prettyReport['RiskLevel'] > threshold):
+            a;
+        #    addMalicious(reportJson, {Type : subject.Type,
+        #                MD5 : prettyReport['MD5'],
+        #                SHA1 : prettyReport['SHA1'],
+        #                SHA256 : prettyReport['SHA256'],
+        #                Size : prettyReport['Size'],
+        #                Name : prettyReport['Name'],
+        #                Malicious: {Vendor: 'TrendMicroDDA',
+        #                    Description: 'Severity: ' + prettyReport['RiskLevel']}
+        #            });
+
+        return prettyReport
+
+    def get_report(sha1):
+        '''Issue a request to retrieve XML report for a given SHA1'''
+        headersGetReport = copy.deepcopy(DEFAULT_HEADERS)
+        headersGetReport['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
+        headersGetReport['X-DTAS-Time'] = get_epoch_time()
+
+        tmp_checksum = calculateChecksum(API_KEY, headersGetReport, '')
+        headersGetReport['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+
+        res = http_request(
+            'web_service/sample_upload/get_report',
+            'get',
+            headersGetReport)
+
+        return res
+
+    def get_report_command():
+        sample_sha1 = demisto.args()['sample_sha1']
+        threshold = demisto.args()['threshold']
+
+        res = get_report(sample_sha1)
+
+        if res.status_code == 102:
+            status = 'Analyzing'
+            return demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': "The report for the uploaded sample was not generated yet. Please try again later",
+                'EntryContext': {
+                      'TrendMicroDDA.Samples(val.SHA1==obj.SHA1).status': status
+                }
+            })
+        else:
+            status = 'Completed'
+            prettyReport = prettifyGetReport(res, threshold, status)
+            return demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': res.text,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Sample Report from TrendMicroDDA', prettyReport),
+                'EntryContext': {
+                      'TrendMicroDDA.Samples(val.SHA1==obj.SHA1)': prettyReport
+                }
+            })
+
+    def detonate(submitType ,sample, timeout, threshold):
+        '''Issue a request to detonate a sample in DDA'''
+        #sha1 = '', status = '', uploadRes = '' , reportRes = '', prettyUploadRes = '', prettyReportRes = ''
+
+        if (int(submitType) == 0):
+            sha1 = hash_file(demisto.getFilePath(sample)['path'])
+            uploadRes, prettyUploadRes = simple_upload_sample_file(sample)
+        elif (int(submitType) == 1):
+            sha1 = hash_url(sample)
+            uploadRes, prettyUploadRes = simple_upload_sample_url(sample)
+
+        start = datetime.now()
+        diff = 0;
+
+        while (float(diff) < float(timeout)):
+            demisto.log(str(diff))
+            demisto.log(str(timeout))
+            reportRes = get_report(sha1)
+            if reportRes.status_code == 102:
+                statusDict = {'status' : 'Analyzing', 'isCompleted' : 'False'}
+                time.sleep(1)
+            else:
+                status = 'Completed'
+                prettyReportRes = prettifyGetReport(reportRes, threshold, status)
+                return demisto.results({
+                    'Type': entryTypes['note'],
+                    'Contents': reportRes.text,
+                    'ContentsFormat': formats['json'],
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Sample Report from TrendMicroDDA', prettyReportRes),
+                    'EntryContext': {
+                          'TrendMicroDDA.Samples(val.SHA1==obj.SHA1)': prettyReportRes
+                    }
+                })
+            diff = (datetime.now() - start).total_seconds()
+
+        if reportRes.status_code == 102:
+            prettyUploadRes.update(statusDict)
+            return demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': "Timeout due to the fact that the report for the uploaded sample was not generated yet. Please try again later",
+                'EntryContext': {
+                      'TrendMicroDDA.Samples(val.SHA1==obj.SHA1)': prettyUploadRes,
+                }
+            })
+
+        raise Exception ("Timeout due to no answer after " + timeout + " seconds.");
+
+
+    def fetch_incidents():
+        t = datetime.datetime.utcnow()
+        now = isoformat(t)
+
+        lastRun = demisto.getLastRun() and demisto.getLastRun()["time"]
+        if len(lastRun) == 0:
+            t = t - timedelta(minutes=10)
+            lastRun = isoformat(t)
+
+        sha1List = get_sample_list(lastRun, t, 0)
+        filesList = []
+        for sha1 in sha1List:
+            filesList.append(get_sample(sha1, 'zip', '0'))
+
+        incidents = []
+        for file in filesList:
+            inc = file_uploaded_to_incident(file, file_sha1)
+            incidents.append(inc)
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({"time": CURRENT_TIME})
+
+
+    # EXECUTION
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        register()
+        if demisto.command() == 'test-module':
+            test()
+
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+
+        elif demisto.command() == 'trendmicrodda-upload-sample':
+            simple_upload_sample_command()
+
+        elif demisto.command() == 'trendmicrodda-get-sample':
+            get_sample_command()
+
+        elif demisto.command() == 'trendmicrodda-get-openioc':
+            get_openioc_report()
+
+        elif demisto.command() == 'trendmicrodda-get-report':
+            get_report_command()
+
+        elif demisto.command() == 'trendmicrodda-get-sample-list':
+            get_sample_list_command()
+
+        elif demisto.command() == 'detonate-file':
+            detonate(0, demisto.args()['upload'], demisto.args()['timeout'], demisto.args()['threshold'])
+
+        elif demisto.command() == 'detonate-url':
+            detonate(1, demisto.args()['url'], demisto.args()['timeout'], demisto.args()['threshold'])
+
+        unregister()
+        sys.exit(0)
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+    sys.exit(0)
+  type: python
+  commands:
+  - name: trendmicrodda-upload-sample
+    arguments:
+    - name: sample
+      description: the EntryID containing the file to upload
+    - name: sample_url
+      description: URL to submit
+    outputs:
+    - contextPath: TrendMicroDDA.XDtasChecksum
+      description: Checksum value of the sample uploaded
+      type: string
+    - contextPath: TrendMicroDDA.Date
+      description: Date of upload
+      type: date
+    - contextPath: TrendMicroDDA.SHA1
+      description: SHA1 of the sample
+      type: string
+    description: Uploads a sample to DDA sandbox
+  - name: trendmicrodda-get-sample
+    arguments:
+    - name: sample_sha1
+      required: true
+      description: The SHA1 of the file to get
+    - name: filename
+      description: The SHA1 of the file to get
+      defaultValue: sample
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - tgz
+      - zip
+      description: The export data type
+      defaultValue: zip
+    - name: encrypted
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: '0(not encrypted) or 1(Encrypted with password “virus”) '
+      defaultValue: "0"
+    - name: type_origin
+      description: type of the file to download
+    description: Retrieves a sample from DDA
+  - name: trendmicrodda-get-openioc
+    arguments:
+    - name: sample_sha1
+      description: The SHA1 of the sample
+    description: Retrieves IOC for a given sample
+  - name: trendmicrodda-get-report
+    arguments:
+    - name: sample_sha1
+      description: The SHA1 of the sample
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      description: If DDA severity is bigger than the threshold we will consider it
+        malicious
+      defaultValue: "1"
+    outputs:
+    - contextPath: TrendMicroDDA.status
+      description: The status of the sample
+      type: string
+    - contextPath: TrendMicroDDA.isCompleted
+      type: string
+    description: Retrieves the report for a given sample
+  - name: trendmicrodda-get-sample-list
+    arguments:
+    - name: interval_start
+      required: true
+      description: 'Start date and time. Example: 2008-11-22 19:53:42'
+    - name: interval_end
+      required: true
+      description: End date and time
+    - name: interval_type
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: '0: Submission time. 1: Completion time. Default is 0'
+      defaultValue: "0"
+    description: Retrieves a list of values of samples submitted within the given
+      time interval
+  - name: detonate-file
+    arguments:
+    - name: upload
+      required: true
+      description: ID of the entry containing the file to detonate
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "210"
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - ""
+      description: If DDA severity is bigger than the threshold we will consider it
+        malicious
+      defaultValue: "0"
+    outputs:
+    - contextPath: TrendMicroDDA.status
+      description: The status of the sample
+      type: string
+    - contextPath: TrendMicroDDA.isCompleted
+      type: string
+    description: Detonates a file in TrendMicroDDA
+  - name: detonate-url
+    arguments:
+    - name: url
+      required: true
+      description: URL to detonate
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "210"
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      description: If DDA severity is bigger than the threshold we will consider it
+        malicious
+      defaultValue: "1"
+    outputs:
+    - contextPath: TrendMicroDDA.status
+      description: The status of the sample
+      type: string
+    - contextPath: TrendMicroDDA.isCompleted
+      type: string
+    description: Detonates a url in TrendMicroDDA
+  isfetch: true
+  runonce: false
+releaseNotes: "-"
