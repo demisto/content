@@ -275,6 +275,9 @@ script:
             if (user.objectClass) {
                 ecItem.Groups = user.objectClass;
             }
+            if (user.group){
+                ecItem.Group = user.group;
+            }
             ec.Account.push(ecItem);
         }
         return ec;
@@ -517,9 +520,12 @@ script:
         var members = getGroupMembers(groupId, args.limit);
         var group = getGroupsHumanReadable(listGroups(groupName)[0]);
 
+        members.forEach(function(member){
+            member.group = group;
+        });
+
         var md = usersToMarkdown(members, args.verbose);
         var ec = usersToEntryContext(members);
-
 
         var entry = {
             Type: entryTypes.note,
@@ -528,8 +534,6 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md
         };
-
-        entry.EntryContext['Account(val.ID==obj.ID).Group'] = group;
 
         return entry;
     }
