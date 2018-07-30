@@ -108,12 +108,11 @@ script: |-
 
           #Inputs
           doc += '##### Input\n'
-          doc += '| **Argument Name** | **Type** | **Description** | **Required** |\n'
-          doc += '| --- | --- | --- | --- |\n'
+          doc += '| **Argument Name** | **Description** | **Required** |\n'
+          doc += '| --- | --- | --- |\n'
           if len(dataMap['script']['commands'][i]['arguments']) != 0:
               for j in range(len(dataMap['script']['commands'][i]['arguments'])):
                   doc += '| ' + dataMap['script']['commands'][i]['arguments'][j]['name'] + ' | '
-                  doc += " " + ' | '
                   if not (dataMap['script']['commands'][i]['arguments'][j].get('description', False)):
                       demisto.results("Error! You are missing description in input " + dataMap['script']['commands'][i]['arguments'][j]['name'] +\
                       " of command " + dataMap['script']['commands'][i]['arguments'][j]['name'])
