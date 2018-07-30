@@ -196,5 +196,4 @@ args:
   description: Known limitations. Number the steps by 'x.' (i.e. '1.')
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python
 releaseNotes: "New formats, better error handling"
