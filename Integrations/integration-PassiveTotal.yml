@@ -86,6 +86,12 @@ script:
         params.proxy = true;
     }
 
+    // Handle upgrade scenarios where there is no default
+    var tags = params.tags;
+    if (tags === undefined) {
+        tags = 'malware,blacklist,phishing,typo-squatting';
+    }
+
     var doReq = function(method, path, parameters, body) {
         var result = http(
             serverUrl + path + encodeToURLQuery(parameters),
@@ -207,11 +213,7 @@ script:
             if (jsonRes.classification === 'malicious') {
                 mal = true;
             } else {
-                // Handle upgrade scenarios where there is no default
-                if (!params.tags) {
-                    params.tags = 'malware,blacklist,phishing,typo-squatting';
-                }
-                var badTags = argToList(params.tags);
+                var badTags = argToList(tags);
                 var allTags = [jsonRes.tags, jsonRes.system_tags, jsonRes.global_tags];
                 for (var i=0; i<allTags.length && !mal; i++) {
                     for (var j=0; j<badTags.length && !mal; j++) {
