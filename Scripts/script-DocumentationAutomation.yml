@@ -68,7 +68,7 @@ script: |-
   doc += '''
   1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
   2. Search for ''' + name + '''.
-  3. Click ___Add instance__ to create and configure a new integration instance.
+  3. Click __Add instance__ to create and configure a new integration instance.
   You should configure the following settings:
     * __Name__: a textual name for the integration instance.
   '''
