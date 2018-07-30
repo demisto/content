@@ -193,3 +193,4 @@ script:
       IP connection (defined by protocol, destination address and port number) by
       AlphaSOC Threat Intelligence
   runonce: false
+releaseNotes: "-"
