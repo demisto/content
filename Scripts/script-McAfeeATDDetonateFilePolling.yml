@@ -1,0 +1,61 @@
+commonfields:
+  id: McAfeeATDDetonateFilePolling
+  version: -1
+name: McAfeeATDDetonateFilePolling
+script: |-
+  Ids = demisto.getArg('Ids')
+  Ids = argToList(Ids)
+
+  failTasks = 0
+  successTasks = 0
+  totalTasks = len(Ids) if Ids is not None else 0
+  TasksOutput = []
+  result = []
+
+  for sampleId in Id:
+
+      taskStatus = dq(invContext, 'ATD.Task(val.Id === ' + sampleId + ').status');
+      #check from context if that task is already done
+      if (taskStatus == 'completed'):
+          successTasks += 1
+          continue
+      elif (taskStatus == 'cancelled' or taskStatus == 'invalid'):
+          failTasks += 1
+          continue
+
+      #if the task isn't done pull it's status from ATD
+      else:
+          res = demisto.executeCommand("atd-check-status", { 'taskId': sampleId })
+          taskStatus = dq(invContext, 'ATD.Task(val.Id === ' + sampleId + ').status')
+          if (taskStatus == 'completed'):
+              successTasks += 1
+          elif (taskStatus == 'cancelled' or taskStatus == 'invalid'):
+              failTasks += 1
+          #tasksOutput.append(res.EntryContext['ATD.Task(val.Id === obj.Id)'])
+          #result.append( { "Type" : entryTypes["note"],
+          #    "ContentsFormat" : formats["table"], "Contents" : scansOutput } )
+
+  gloablStatus = 'Pending'
+  if (successTasks == totalTasks):
+      gloablStatus = 'Success'
+  elif (successTasks + failedTasks == totalTasks):
+      gloablStatus = 'Fail'
+
+
+  demisto.results({ 'McAfeeATDDetonateFilePollingScriptStatus': gloablStatus })
+  #demisto.results(res)
+type: python
+tags: []
+comment: |
+  Pools detonation statuses from McAfeeATD
+enabled: true
+args:
+- name: Ids
+  required: true
+  description: Ids of the detonation tasks
+  isArray: true
+outputs:
+- contextPath: McAfeeATDDetonateFilePolling
+  description: Success,Fail,Pending
+scripttarget: 0
+runonce: false
