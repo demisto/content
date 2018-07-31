@@ -2,7 +2,7 @@ id: GenericPolling
 version: -1
 name: GenericPolling
 description: Generic Polling Playbook
-fromversion: 4.0.0
+toversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -30,10 +30,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: c202a667-b138-4635-819f-56a7396cc7f8
+    taskid: 2e4566d1-484a-427f-829e-5dde956ba9f0
     type: regular
     task:
-      id: c202a667-b138-4635-819f-56a7396cc7f8
+      id: 2e4566d1-484a-427f-829e-5dde956ba9f0
       version: -1
       name: Schedule Polling Task
       scriptName: ScheduleGenericPolling
@@ -51,8 +51,7 @@ tasks:
         simple: ${inputs.Ids}
       interval:
         simple: ${inputs.Interval}
-      playbookId:
-        simple: ${currentPlaybookID}
+      playbookId: {}
       pollingCommand:
         simple: ${inputs.PollingCommandName}
       pollingCommandArgName:
@@ -68,7 +67,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -91,26 +90,26 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: bc152ecc-4c23-4296-844a-d21b32be0ec3
+    taskid: ce3cd921-9ba8-4c4c-8089-b6d8b2ca9c23
     type: regular
     task:
-      id: bc152ecc-4c23-4296-844a-d21b32be0ec3
+      id: ce3cd921-9ba8-4c4c-8089-b6d8b2ca9c23
       version: -1
-      name: RunPollingCommand
-      scriptName: RunPollingCommand
-      description: RunPollingCommand
+      name: ScheduleRunPollingCommand
+      scriptName: ScheduleRunPollingCommand
+      description: ScheduleRunPollingCommand
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     scriptarguments:
       ids:
         simple: ${inputs.Ids}
@@ -127,12 +126,38 @@ tasks:
         }
       }
     note: false
+  "4":
+    id: "4"
+    taskid: f4dd4995-b109-4706-87a4-8f4a22d7992e
+    type: regular
+    task:
+      id: f4dd4995-b109-4706-87a4-8f4a22d7992e
+      version: -1
+      name: Wait for first polling command to finish
+      description: Wait for first polling command to finish
+      tags:
+      - poll0
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50
@@ -148,11 +173,6 @@ inputs:
   value: {}
   required: true
   description: Name of the polling command to run
-- key: PollingCommandArgName
-  value:
-    simple: ids
-  required: true
-  description: Name of the argument of the polling command
 - key: Interval
   value:
     simple: "1"
@@ -168,3 +188,8 @@ inputs:
   value: {}
   required: true
   description: DT filter for polling IDs
+- key: PollingCommandArgName
+  value:
+    simple: ids
+  required: true
+  description: Name of the argument of the polling command
