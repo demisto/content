@@ -488,14 +488,14 @@ script:
     }
 
     function listGroups(query, filter, limit){
-        queryParams = {};
+        var queryParams = {};
+
+        if(filter){
+            queryParams.filter = filter;
+        }
 
         if(query){
             queryParams.q = encodeURIComponent(query);
-        }
-
-        if(filter){
-            queryParams.filter = encodeURIComponent(filter);
         }
 
         if(limit){
@@ -2091,5 +2091,5 @@ script:
       type: string
     description: Enumerates all users that are members of a group
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Added list-groups and get-groups-members, also added arguments for other group commands"
 fromversion: 3.6.0
