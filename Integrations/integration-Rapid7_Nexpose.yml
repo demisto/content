@@ -786,12 +786,17 @@ script:
         return get_list_response('assets', limit=limit, params=params)
 
     def get_scan_command():
-        scan = get_scan(demisto.args()['id'])
+        ids = argToList(str(demisto.args()['id']))
 
-        if(scan is None):
-            return 'Scan not found'
+        scans = []
+        for id in ids:
+            scan = get_scan(id)
+            if(scan is None):
+                return 'Scan not found'
+            scan_entry = get_scan_entry(scan)
+            scans.append(scan_entry)
 
-        return get_scan_entry(scan)
+        return scans
 
     def get_scan_entry(scan):
         scanHeaders = [
@@ -1336,7 +1341,8 @@ script:
     arguments:
     - name: id
       required: true
-      description: integer <int64> The identifier of the scan.
+      description: Multiple criteria of integer <int64> Identifiers of scans
+      isArray: true
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
