@@ -8,6 +8,8 @@ script: |-
   ids = demisto.getArg('ids')
   if not isinstance(ids, list):
       ids = [ids]
+  for i, val in enumerate(ids):
+      ids[i] = str(ids[i])
   demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), {demisto.getArg('pollingCommandArgName'): ','.join(argToList(ids))}))
 type: python
 tags: []
