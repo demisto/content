@@ -1,0 +1,91 @@
+id: ServiceNow KeepAlive Test
+version: 3
+name: ServiceNow KeepAlive Test
+description: Made as dev-task to keep the account from "sleeping" or instance revoked,
+  in which case the dredentials will be of no use..
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8ee6b7e1-167b-4931-8bb2-3a580c1c9d16
+    type: start
+    task:
+      id: 8ee6b7e1-167b-4931-8bb2-3a580c1c9d16
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: a4e36859-c4e6-4895-8522-86bd44902730
+    type: regular
+    task:
+      id: a4e36859-c4e6-4895-8522-86bd44902730
+      version: -1
+      name: servicenow-query
+      script: ServiceNow|||servicenow-query
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit: {}
+      sysparm_query: {}
+      ticket_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 219
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: c9c98c94-904a-4b85-89ec-173185f78930
+    type: title
+    task:
+      id: c9c98c94-904a-4b85-89ec-173185f78930
+      version: -1
+      name: Job's Done.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 419
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 434,
+        "width": 381,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
