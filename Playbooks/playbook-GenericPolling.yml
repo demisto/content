@@ -1,11 +1,14 @@
 id: GenericPolling
 version: -1
 name: GenericPolling
+description: Generic Polling Playbook
+fromversion: 3.6
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
     taskid: c644af04-2cd7-4462-83e3-5f55bc12aa73
+    description: -
     type: start
     task:
       id: c644af04-2cd7-4462-83e3-5f55bc12aa73
@@ -29,6 +32,7 @@ tasks:
     id: "1"
     taskid: c202a667-b138-4635-819f-56a7396cc7f8
     type: regular
+    description: Schedule Polling Task
     task:
       id: c202a667-b138-4635-819f-56a7396cc7f8
       version: -1
@@ -72,6 +76,7 @@ tasks:
     id: "2"
     taskid: 156abdbe-586e-4241-8ae6-364fe3d9d76a
     type: regular
+    description: Wait For Polling Task To Finish
     task:
       id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
       version: -1
@@ -96,6 +101,7 @@ tasks:
     id: "3"
     taskid: bc152ecc-4c23-4296-844a-d21b32be0ec3
     type: regular
+    description: RunPollingCommand
     task:
       id: bc152ecc-4c23-4296-844a-d21b32be0ec3
       version: -1

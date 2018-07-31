@@ -2,6 +2,7 @@ commonfields:
   id: RunPollingCommand
   version: -1
 name: RunPollingCommand
+comment: -
 script: 'demisto.results(demisto.executeCommand(demisto.getArg(''pollingCommand''),
   {demisto.getArg(''pollingCommandArgName''): '',''.join(argToList(demisto.getArg(''ids'')))}))'
 type: python

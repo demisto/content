@@ -2,6 +2,7 @@ commonfields:
   id: GenericPollingScheduledTask
   version: -1
 name: GenericPollingScheduledTask
+comment: -
 script: |-
   // https://stackoverflow.com/questions/16227197/compute-intersection-of-two-arrays-in-javascript#16227294
   function intersect(a, b) {
@@ -112,8 +113,10 @@ args:
   defaultValue: ids
 - name: interval
   required: true
+  description: Polling frequency - how often the polling command should run (minutes)
 - name: timeout
   required: true
+  description: How much time to poll before declaring a timeout and resuming the playbook (minutes)
 - name: playbookId
   description: The ID of the playbook that contains the manual task which will be
     completed once the polling is done.
