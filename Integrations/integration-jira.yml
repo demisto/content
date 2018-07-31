@@ -410,6 +410,18 @@ script:
             if (args.issueTypeId && args.issueTypeId.length > 0 ){
                 issue.fields.issuetype.id = args.issueTypeId;
             }
+            if (args.parentIssueId && args.parentIssueId.length > 0 ){
+                if (!issue.fields.parent) {
+                    issue.fields.parent = {};
+                }
+                issue.fields.parent.id = args.parentIssueId;
+            }
+            if (args.parentIssueKey && args.parentIssueKey.length > 0 ){
+                if (!issue.fields.parent) {
+                    issue.fields.parent = {};
+                }
+                issue.fields.parent.key = args.parentIssueKey;
+            }
             if (args.description && args.description.length > 0 ){
                 issue.fields.description = args.description;
             }
@@ -583,6 +595,10 @@ script:
       description: assignee name
     - name: reporter
       description: reporter name
+    - name: parentIssueKey
+      description: Parent issue key if you create a sub-task
+    - name: parentIssueId
+      description: Parent issue ID if you create a sub-task
     outputs:
     - contextPath: Ticket.Id
       description: Id of ticket
