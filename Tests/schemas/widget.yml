@@ -15,6 +15,7 @@ mapping:
     required: yes
   description:
     type: str
+    required: yes
   dataType:
     type: str
   widgetType:
@@ -25,6 +26,7 @@ mapping:
   isPredefined:
     type: bool
     required: yes
+    enum: [true]
   releaseNotes:
     type: str
   dateRange:

@@ -186,7 +186,7 @@ tasks:
       id: 769422b8-e388-4be4-8bd9-911fb17421f4
       version: -1
       name: Do we have IP Addresses?
-      description: Determine wether the playbook's input contains IP addresses.
+      description: Determine whether the playbook's input contains IP addresses.
       type: condition
       iscommand: false
       brand: ""
