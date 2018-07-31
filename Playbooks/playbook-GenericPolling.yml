@@ -87,8 +87,6 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
-    defaultassigneecomplex:
-      simple: admin
     view: |-
       {
         "position": {
