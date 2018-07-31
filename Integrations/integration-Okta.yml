@@ -259,7 +259,7 @@ script:
         }
         for (var i=0;i<users.length;i++) {
             var user=users[i];
-            var ecItem={ID:user.id,Type:'Okta'};
+            var ecItem={id:user.id, ID:user.id,Type:'Okta'};
             if (user.profile.firstName || user.profile.lastName) {
                 var displayName='';
                 displayName += (user.profile.firstName)? user.profile.firstName + ' ' : '';
@@ -2076,7 +2076,7 @@ script:
       description: Okta account display name
     - contextPath: Account.Type
       description: Account type - Okta
-    description: Enumerates all users that are a member of a group
+    description: Enumerates all users that are members of a group
   runonce: false
 releaseNotes: "-"
 fromversion: 3.6.0
