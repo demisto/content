@@ -2,7 +2,7 @@ commonfields:
   id: GenericPollingScheduledTask
   version: -1
 name: GenericPollingScheduledTask
-comment: -
+comment: "-"
 script: |-
   // https://stackoverflow.com/questions/16227197/compute-intersection-of-two-arrays-in-javascript#16227294
   function intersect(a, b) {

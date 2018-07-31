@@ -8,7 +8,7 @@ tasks:
   "0":
     id: "0"
     taskid: c644af04-2cd7-4462-83e3-5f55bc12aa73
-    description: -
+    description: "-"
     type: start
     task:
       id: c644af04-2cd7-4462-83e3-5f55bc12aa73
