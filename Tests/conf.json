@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Trend Micro Deep Discovery Analyzer",
+            "playbookID": "Test Playbook TrendMicroDDA"
+        },
+        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
