@@ -434,8 +434,8 @@ script:
         commandId = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.commandId;
 
         if(!commandId) {
-            errorCode = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode;
-            errorMessage = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage;
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
             if(errorCode || errorMessage){
               throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
             } else {
@@ -452,8 +452,8 @@ script:
         commandId = resJson.Envelope.Body.runClientCommandScanResponse.CommandClientResult.commandId;
 
         if(!commandId) {
-            errorCode = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode;
-            errorMessage = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage;
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
             if(errorCode || errorMessage){
               throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
             } else {
@@ -470,8 +470,8 @@ script:
         commandId = resJson.Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.commandId;
 
         if(!commandId) {
-            errorCode = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode;
-            errorMessage = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage;
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
             if(errorCode || errorMessage){
               throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
             } else {
