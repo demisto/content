@@ -4,8 +4,10 @@ commonfields:
 name: RunPollingCommand
 comment: "-"
 fromversion: 4.0.0
-script: 'demisto.results(demisto.executeCommand(demisto.getArg(''pollingCommand''),
-  {demisto.getArg(''pollingCommandArgName''): '',''.join(argToList(demisto.getArg(''ids'')))}))'
+script: |-
+  if not isinstance(ids, list):
+      ids = [ids]
+  demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), {demisto.getArg('pollingCommandArgName'): ','.join(argToList(demisto.getArg('ids')))}))
 type: python
 tags: []
 enabled: true
@@ -13,8 +15,11 @@ args:
 - name: ids
   description: List of IDs to poll
   required: true
+  description: List of IDs to poll
 - name: pollingCommand
+  required: true
   description: Name of the polling command to run
+- name: pollingCommandArgName
   required: true
 - name: pollingCommandArgName
   description: Name of the argument of the polling command
