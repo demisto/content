@@ -276,7 +276,7 @@ script:
         return commentOrLinkMd;
     }
 
-    var generateMdUplosdIssue = function(data) {
+    var generateMdUploadIssue = function(data) {
         var uploadMd = [];
         if(!Array.isArray(data)) {
             data = [data];
@@ -444,7 +444,7 @@ script:
             return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext: mdAndContext['context']};
         case 'jira-issue-upload-file':
             var jRes = uploadFile(args.upload, args.issueId);
-            var md = generateMdUplosdIssue(jRes);
+            var md = generateMdUploadIssue(jRes);
             md = tblToMd(command, md, "");
             return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown};
         case 'jira-issue-add-comment':
