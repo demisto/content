@@ -20,8 +20,6 @@ args:
   required: true
   description: Name of the polling command to run
 - name: pollingCommandArgName
-  required: true
-- name: pollingCommandArgName
   description: Name of the argument of the polling command
   required: true
   defaultValue: ids
