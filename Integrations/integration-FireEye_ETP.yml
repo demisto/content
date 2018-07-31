@@ -46,7 +46,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: |-
     from datetime import timedelta, datetime
     import requests
     import os
@@ -96,14 +96,6 @@ script:
     '''
     BASIC FUNCTIONS
     '''
-    def return_error_and_exit(message):
-        demisto.results({
-            'Type': entryTypes['error'], 
-            'ContentsFormat': formats['text'],
-            'Contents': message
-        })
-        sys.exit(0)
-    
     def listify(comma_separated_list):
 
         if isinstance(comma_separated_list, list):
@@ -136,12 +128,18 @@ script:
             url,
             **request_kwargs
         )
-
         #handle request failure
         if response.status_code not in range(200,205):
-            return_error_and_exit('Request failed with status code {}\n{}'.format(response.status_code, response.text))
-
+            raise ValueError('Request failed with status code {}\n{}'.format(response.status_code, response.text))
         return response.json()
+
+    def return_error_entry(message):
+        entry = {
+            'Type': entryTypes['error'],
+            'Contents': e.message,
+            'ContentsFormat': formats['text'],
+        }
+        demisto.results(entry)
 
     def to_search_attribute_object(value, filter=None, is_list=False ,valid_values=None):
 
@@ -227,7 +225,7 @@ script:
         context_data = copy.deepcopy(message)
 
         # remove 'attributes' level
-        #context_data.update(context_data.pop('attributes', {}))
+        context_data.update(context_data.pop('attributes', {}))
 
         # parse email sddresses
         match =  re.search('<(.*)>', context_data['senderHeader'].replace('\\"',''))
@@ -565,11 +563,22 @@ script:
             demisto.results(entry)
 
 
-    def parse_message_to_incident(message):
+    def parse_string_in_iso_format_to_datetime(iso_format_string):
+        alert_last_modified = None
+        try:
+            alert_last_modified = datetime.strptime(iso_format_string, "%Y-%m-%dT%H:%M:%S.%f")
+        except ValueError:
+            try:
+                alert_last_modified = datetime.strptime(iso_format_string, "%Y-%m-%dT%H:%M:%S")
+            except ValueError:
+                alert_last_modified = datetime.strptime(iso_format_string, "%Y-%m-%dT%H:%M")
+        return alert_last_modified
 
-        context_data = message_context_data(message)
+    def parse_alert_to_incident(alert):
+
+        context_data = alert_context_data(alert)
         incident = {
-            'name': context_data['subject'],
+            'name': context_data['email']['headers']['subject'],
             'rawJSON': json.dumps(context_data)
         }
         return incident
@@ -577,40 +586,35 @@ script:
     def fetch_incidents():
 
         if not MESSAGE_STATUS:
-        raise Exception('To fetch messages as incidents, the message status must be specified in the instance settings')
+            raise Exception('To fetch messages as incidents, the message status must be specified in the instance settings')
 
         last_run = demisto.getLastRun()
         iso_format = "%Y-%m-%dT%H:%M:%S.%f"
 
         if not last_run.has_key('last_modified'):
             week_ago =  datetime.now() - timedelta(days=7)
-            # parse datetime to iso format string and add Z suffix
-            last_run['last_modified'] = week_ago.strftime(iso_format)[:-3] + 'Z'
+            # parse datetime to iso format string yyy-mm-ddThh:mm:ss.fff
+            last_run['last_modified'] = week_ago.strftime(iso_format)[:-3]
 
-        attributes = format_search_attributes(
-            status=MESSAGE_STATUS,
-            last_modified_date_time='>{}'.format(last_run['last_modified'])
+        last_incident_datetime = datetime.strptime(last_run['last_modified'], iso_format)
+        alerts = get_alerts_request(
+            from_last_modified_on = last_run['last_modified'],
+            size = 100
         )
 
-        last_incident_datetime = datetime.strptime(last_run['last_modified'], iso_format + 'Z')
-        messages = search_messages_request(attributes=attributes)
         incidents = []
-        for message in messages:
-            incidents.append(parse_message_to_incident(message))
-            # set last_incident_datetime
-            message_last_modified = None
-            try:
-                message_last_modified = datetime.strptime(message['attributes']['lastModifiedDateTime'], "%Y-%m-%dT%H:%M:%S.%fZ")
-            except ValueError:
-                try:
-                    message_last_modified = datetime.strptime(message['attributes']['lastModifiedDateTime'], "%Y-%m-%dT%H:%M:%SZ")
-                except ValueError:
-                    message_last_modified = datetime.strptime(message['attributes']['lastModifiedDateTime'], "%Y-%m-%dT%H:%MZ")
+        for alert in alerts:
+            # filter by message status if specified
+            if MESSAGE_STATUS and alert['attributes']['email']['status'] != MESSAGE_STATUS:
+                continue
+            # append alert to incident
+            incidents.append(parse_alert_to_incident(alert))
+            # set last modified
+            alert_last_modified = parse_string_in_iso_format_to_datetime(alert['attributes']['meta']['last_modified_on'])
+            if alert_last_modified > last_incident_datetime:
+                last_incident_datetime = alert_last_modified
 
-            if message_last_modified > last_incident_datetime:
-                last_incident_datetime = message_last_modified
-
-        last_run['last_modified'] = last_incident_datetime.strftime(iso_format)[:-3] + 'Z'
+        last_run['last_modified'] = last_incident_datetime.strftime(iso_format)[:-3]
 
         demisto.incidents(incidents)
         demisto.setLastRun(last_run)
@@ -637,7 +641,7 @@ script:
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
-        return_error_and_exit(e.message)
+        return_error_entry(e.message)
   type: python
   commands:
   - name: fireeye-etp-search-messages
