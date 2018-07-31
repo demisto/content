@@ -110,7 +110,7 @@ tasks:
     task:
       id: 4b4ca0e2-1d6b-47d0-8c31-888ed934e728
       version: -1
-      name: VerifyContext we have more than 5 alerts
+      name: VerifyContext we have 5 alerts
       description: |-
         Verifies path in context:
         - Verifies path existence
@@ -129,7 +129,7 @@ tasks:
         simple: "true"
       fields: {}
       path:
-        simple: Redlock.Alert=>val.length > 5
+        simple: Redlock.Alert=>val.length == 5
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -396,9 +396,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
     scriptarguments:
       expectedValue:
         simple: open
@@ -414,38 +411,12 @@ tasks:
           "y": 1595
         }
       }
-  "12":
-    id: "12"
-    taskid: 375dc964-a389-4a8d-87be-010062b632d8
-    type: regular
-    task:
-      id: 375dc964-a389-4a8d-87be-010062b632d8
-      version: -1
-      name: Close investigation
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes:
-        simple: Done
-      reason:
-        simple: Done
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1770
-        }
-      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1815,
+        "height": 1640,
         "width": 830,
         "x": 50,
         "y": 50
