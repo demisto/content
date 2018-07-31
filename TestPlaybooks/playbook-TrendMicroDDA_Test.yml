@@ -54,12 +54,12 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 572daefc-b1dc-4c56-8f9d-a30b71cc3f0d
+    taskid: 12f16010-adf2-42f7-8990-f92c01ce2e71
     type: regular
     task:
-      id: 572daefc-b1dc-4c56-8f9d-a30b71cc3f0d
+      id: 12f16010-adf2-42f7-8990-f92c01ce2e71
       version: -1
-      name: upload-sample-url
+      name: upload-url
       script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-upload-url
       type: regular
       iscommand: true
@@ -94,7 +94,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "6"
     scriptarguments:
       left:
         simple: ${TrendMicroDDA.Submissions.SHA1}
@@ -106,68 +106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 478,
-          "y": 635
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 57d9b1b6-8167-41cf-8f75-10570d17dbb7
-    type: regular
-    task:
-      id: 57d9b1b6-8167-41cf-8f75-10570d17dbb7
-      version: -1
-      name: check-status
-      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-check-status
-      type: regular
-      iscommand: true
-      brand: Trend Micro Deep Discovery Analyzer
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      sha1:
-        simple: ${TrendMicroDDA.Submissions.SHA1}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
           "x": 476,
-          "y": 843
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 5c04948e-8f6d-4d44-8339-343ec1294fc5
-    type: condition
-    task:
-      id: 5c04948e-8f6d-4d44-8339-343ec1294fc5
-      version: -1
-      name: check-status AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    scriptarguments:
-      left:
-        complex:
-          root: TrendMicroDDA
-          accessor: status
-      right:
-        simple: Analyzing
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 476,
-          "y": 1023
+          "y": 680
         }
       }
   "6":
@@ -194,7 +134,7 @@ tasks:
       {
         "position": {
           "x": 476,
-          "y": 1203
+          "y": 968
         }
       }
   "7":
@@ -220,15 +160,15 @@ tasks:
       {
         "position": {
           "x": 476,
-          "y": 1375
+          "y": 1198
         }
       }
   "8":
     id: "8"
-    taskid: 406eee6e-b706-4c45-8c68-a552beab4a93
+    taskid: 420c902f-012a-4b49-8681-72f1ee35802c
     type: condition
     task:
-      id: 406eee6e-b706-4c45-8c68-a552beab4a93
+      id: 420c902f-012a-4b49-8681-72f1ee35802c
       version: -1
       name: check-status after sleep AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -242,7 +182,7 @@ tasks:
       - "9"
     scriptarguments:
       left:
-        simple: ${TrendMicroDDA.Submissions.SHA1.status}
+        simple: ${TrendMicroDDA.Submissions.status}
       right:
         simple: Completed
     results:
@@ -252,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 476,
-          "y": 1555
+          "y": 1454
         }
       }
   "9":
@@ -284,10 +224,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: f9d7448a-5e42-4598-8ffa-c207bd62293b
+    taskid: 88f590a6-f781-4c03-816b-1fa0e232e14c
     type: condition
     task:
-      id: f9d7448a-5e42-4598-8ffa-c207bd62293b
+      id: 88f590a6-f781-4c03-816b-1fa0e232e14c
       version: -1
       name: get-report AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -345,10 +285,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 3a0f117f-f384-4217-84ae-22c807ce06ed
+    taskid: f83a1490-70bb-4ec9-8bf2-93096b23cd3b
     type: regular
     task:
-      id: 3a0f117f-f384-4217-84ae-22c807ce06ed
+      id: f83a1490-70bb-4ec9-8bf2-93096b23cd3b
       version: -1
       name: FileCreateAndUpload
       scriptName: FileCreateAndUpload
@@ -363,7 +303,7 @@ tasks:
         simple: qwerty6
       entryId: {}
       filename:
-        simple: test_file
+        simple: test_file.txt
     separatecontext: false
     view: |-
       {
@@ -374,23 +314,21 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 2b5c848e-89d7-4d19-8a73-9bb29cb6b370
+    taskid: 095f832b-71bf-498e-82bd-ac606fcc27d3
     type: regular
     task:
-      id: 2b5c848e-89d7-4d19-8a73-9bb29cb6b370
+      id: 095f832b-71bf-498e-82bd-ac606fcc27d3
       version: -1
-      name: detonate-file
-      script: TrendMicroDDA|||detonate-file
+      name: upload-file
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-upload-file
       type: regular
       iscommand: true
-      brand: TrendMicroDDA
+      brand: Trend Micro Deep Discovery Analyzer
     nexttasks:
       '#none#':
-      - "14"
+      - "19"
     scriptarguments:
-      threshold: {}
-      timeout: {}
-      upload:
+      EntryID:
         simple: ${File.EntryID}
     separatecontext: false
     view: |-
@@ -402,12 +340,12 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: c733b389-bd73-4da9-869e-7bf3562e741f
+    taskid: b6d62f62-dfb7-44b2-8e09-90095e392338
     type: condition
     task:
-      id: c733b389-bd73-4da9-869e-7bf3562e741f
+      id: b6d62f62-dfb7-44b2-8e09-90095e392338
       version: -1
-      name: AreValuesEqual
+      name: get-report2 AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
@@ -419,7 +357,18 @@ tasks:
       - "15"
     scriptarguments:
       left:
-        simple: ${TrendMicroDDA.RiskLevel}
+        complex:
+          root: TrendMicroDDA
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: TrendMicroDDA.Submissions.SHA1
+                iscontext: true
+              right:
+                value:
+                  simple: 571AD0F7D5056F68D0F2B795EAF4618C082A89D9
+          accessor: Submissions.RiskLevel
       right:
         simple: "0"
     results:
@@ -429,15 +378,15 @@ tasks:
       {
         "position": {
           "x": 476,
-          "y": 2635
+          "y": 2850
         }
       }
   "15":
     id: "15"
-    taskid: cc63d3ef-8fde-46ce-8577-4e526af0f190
+    taskid: 24fb8a00-13d8-49b0-8a47-03ab84a862b7
     type: regular
     task:
-      id: cc63d3ef-8fde-46ce-8577-4e526af0f190
+      id: 24fb8a00-13d8-49b0-8a47-03ab84a862b7
       version: -1
       name: get-sample
       script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-sample
@@ -451,7 +400,7 @@ tasks:
       encrypted: {}
       filename: {}
       sample_sha1:
-        simple: ' bvcx'
+        simple: 571AD0F7D5056F68D0F2B795EAF4618C082A89D9
       type: {}
       type_origin: {}
     separatecontext: false
@@ -459,7 +408,7 @@ tasks:
       {
         "position": {
           "x": 478,
-          "y": 2830
+          "y": 3076
         }
       }
   "16":
@@ -486,8 +435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3039
+          "x": 476,
+          "y": 3275
         }
       }
   "17":
@@ -527,8 +476,35 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 481,
-          "y": 3208
+          "x": 476,
+          "y": 3452
+        }
+      }
+  "19":
+    id: "19"
+    taskid: daaedb7b-e604-4b15-86d0-553c5570e9a5
+    type: regular
+    task:
+      id: daaedb7b-e604-4b15-86d0-553c5570e9a5
+      version: -1
+      name: get-report2
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-report
+      type: regular
+      iscommand: true
+      brand: Trend Micro Deep Discovery Analyzer
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      sha1:
+        simple: 571ad0f7d5056f68d0f2b795eaf4618c082a89d9
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 476,
+          "y": 2658
         }
       }
 view: |-
@@ -536,8 +512,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3323,
-        "width": 385,
+        "height": 3567,
+        "width": 382,
         "x": 476,
         "y": -50
       }
