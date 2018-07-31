@@ -3,39 +3,69 @@ commonfields:
   version: -1
 name: ScheduleGenericPolling
 script: |-
-  import random, string
+  import random, string, json
+  from datetime import datetime, timedelta
 
   args = demisto.args()
   ids = args['ids']
-  pollingScript = args['pollingScript']
-  uuid = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-  playbookId = ' playbookId={}'.format(args['playbookId']) if 'playbookId' in args else ''
-  taskId = None
+  dt = args['dt']
+  pollingCommand = args['pollingCommand']
+  pollingCommandArgName = args['pollingCommandArgName']
+  playbookId = ' playbookId="{}"'.format(args['playbookId']) if 'playbookId' in args else ''
+  interval = int(demisto.get(args, 'interval'))
+  timeout = int(demisto.get(args, 'timeout'))
 
-  res = demisto.executeCommand("scheduleEntry", {
-      'command': '!GenericPollingScheduledTask ids={} pollingScript={} uuid={}{}'.format(ids, pollingScript, uuid, playbookId),
-      'cron': '* * * * *'
+  if interval <= 0 or timeout <= 0 :
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContensFormat': formats['text'],
+          'Contents': "Interval and timeout must be positive numbers"
+      })
+      exit(2)
+
+  # Verify correct dt path
+  if not demisto.dt(demisto.context(), dt):
+      return_error("Incorrect dt path")
+
+  res = demisto.executeCommand("ScheduleCommand", {
+      'command': '!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s" interval="%s" timeout="%s"' % (
+          pollingCommand, pollingCommandArgName, playbookId, json.dumps(ids).replace('"', r'\"'), dt.replace('"', r'\"'), interval, timeout),
+      'cron': '*/{} * * * *'.format(interval),
+      'times': 1
   })
   if isError(res[0]):
       demisto.results(res)
       exit(1)
-  else:
-      taskId = demisto.get(res[0],"Contents.id")
-
-  demisto.results({
-      'Type': entryTypes['note'],
-      'ContentsFormat': formats['json'],
-      'Contents': {},
-      'EntryContext': { 'PollingScheduledTasks': {"UUID": uuid, "TaskId": taskId}}
-  })
 type: python
 tags: []
+comment: Called by the GenericPolling playbook, schedules the polling task.
 enabled: true
 args:
 - name: ids
   required: true
-- name: pollingScript
+  description: List of IDs to poll
+  isArray: true
+- name: pollingCommand
   required: true
+  description: Name of the polling command to run
+- name: pollingCommandArgName
+  required: true
+  description: Name of the argument of the polling command
+  defaultValue: ids
+- name: dt
+  required: true
+  description: DT filter for polling IDs
 - name: playbookId
+  description: The ID of the playbook that contains the manual task which will be
+    completed once the polling is done.
+- name: interval
+  required: true
+  description: Polling frequency - how often the polling command should run (minutes)
+  defaultValue: "1"
+- name: timeout
+  required: true
+  description: How much time to poll before declaring a timeout and resuming the playbook
+    (minutes)
+  defaultValue: "60"
 scripttarget: 0
 runonce: false

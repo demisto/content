@@ -1,0 +1,22 @@
+commonfields:
+  id: RunPollingCommand
+  version: -1
+name: RunPollingCommand
+script: 'demisto.results(demisto.executeCommand(demisto.getArg(''pollingCommand''),
+  {demisto.getArg(''pollingCommandArgName''): '',''.join(argToList(demisto.getArg(''ids'')))}))'
+type: python
+tags: []
+enabled: true
+args:
+- name: ids
+  description: List of IDs to poll
+  required: true
+- name: pollingCommand
+  description: Name of the polling command to run
+  required: true
+- name: pollingCommandArgName
+  description: Name of the argument of the polling command
+  required: true
+  defaultValue: ids
+scripttarget: 0
+runonce: false

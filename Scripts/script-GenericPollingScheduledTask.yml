@@ -3,57 +3,119 @@ commonfields:
   version: -1
 name: GenericPollingScheduledTask
 script: |-
-  args = demisto.args()
-  ids = args['ids']
-  ids = (ids.split(',')) if not isinstance(ids, list) else ids
-  pollingScript = args['pollingScript']
-  uuid = args['uuid']
-  playbookId = args['playbookId'] if 'playbookId' in args else None
-  context_path = 'PollingScheduledTasks(val.UUID == "{}")'.format(uuid)
+  // https://stackoverflow.com/questions/16227197/compute-intersection-of-two-arrays-in-javascript#16227294
+  function intersect(a, b) {
+      var t;
+      if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
+      if (!Array.isArray(a)) {
+          a = [a];
+      }
+      if (!Array.isArray(b)) {
+          b = [b];
+      }
+      return a.filter(function (e) {
+          return b.indexOf(e) > -1;
+      }).filter(function (e, i, c) { // extra step to remove duplicates
+          return c.indexOf(e) === i;
+      });
+  }
 
-  # Avoid race condition: TaskId key must exist before this script runs,
-  # but can only be set after scheduling this script.
-  task_id = demisto.dt(demisto.context(), '{}.TaskId'.format(context_path))
-  if not task_id:
-      exit(0)
+  function finish() {
+      var params = { 'id': 'polling' };
+      if (args.playbookId) {
+          params.parentPlaybookID = args.playbookId;
+      }
+      return executeCommand("taskComplete", params);
+  }
 
-  res = demisto.executeCommand(pollingScript, {'ids': ids})
+  function setNextRun() {
+      var idsStr = args.ids.replace(/"/g, '\\"');
+      var playbookIdStr = '';
+      if ('playbookId' in args) {
+          playbookIdStr = ' playbookId="' + args.playbookId + '"';
+      }
+      var cmd = '!GenericPollingScheduledTask pollingCommand="' + args.pollingCommand + '" pollingCommandArgName="' + args.pollingCommandArgName + '"' + playbookIdStr;
+      cmd += ' ids="' + idsStr + '" pendingIds="' + args.pendingIds + '" interval="' + args.interval + '" timeout="' + (args.timeout - args.interval) + '"';
+      return executeCommand("ScheduleCommand", {
+          'command': cmd,
+          'cron': '*/' + args.interval + ' * * * *',
+          'times': 1
+      });
+  }
 
-  status = res[0]['Contents'][pollingScript + "Status"]
-  demisto.results({
-      'Type': entryTypes['note'],
-      'ContentsFormat': formats['json'],
-      'Contents': {},
-      'EntryContext': { context_path : {"Status": status}}
-  })
 
-  if not status.lower() == 'pending':
-      if playbookId:
-          demisto.executeCommand('taskComplete', {
-              'id': 'polling',
-              'parentPlaybookID': playbookId
-          })
-      else:
-          demisto.executeCommand('taskComplete', {
-              'id': 'polling'
-          })
-      demisto.executeCommand("scheduleEntry", {
-          'id': task_id,
-          'cancel': 'cancel'
-      })
-  if status.lower() not in ('success', 'fail', 'pending'):
-      raise ("Polling Script returned an invalid status: {}".format(status))
-type: python
+  if (args.timeout <= 0) {
+      return finish();
+  }
+
+  // Get ids that have not finished yet
+  ids = argToList(args.ids);
+  for (var i = 0; i < ids.length; i++) {
+      ids[i] = ids[i].replace(/[\\]*"/g, '');
+  }
+
+  idsToPoll = ids;
+  pendingPath = args.pendingIds;
+  if ('playbookId' in args) {
+      playbookContext = 'subplaybook-' + args.playbookId;
+      pendingPath = playbookContext + "." + args.pendingIds;
+  }
+  pendings = dq(invContext, pendingPath);
+  if (pendings === null) {
+      return finish();
+  }
+
+  idsToPoll = intersect(ids, pendings);
+  if (idsToPoll.length === 0) {
+      return finish();
+  }
+
+  // Schedule the next iteration
+  res = setNextRun();
+  if (isError(res[0])) {
+      return res;
+  }
+
+  // Run the polling command for each id
+  var pollingCommandArgs = {};
+  pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
+  res = executeCommand(args.pollingCommand, pollingCommandArgs);
+
+  // Change the context output of the polling results to the local playbook context
+  if ('playbookId' in args) {
+      for (var i = 0; i < res.length; i++) {
+          if ('EntryContext' in res[i]) {
+              for (var k in res[i].EntryContext) {
+                  res[i].EntryContext[playbookContext + "." + k] = res[i].EntryContext[k];
+                  delete res[i].EntryContext[k];
+              }
+          }
+      }
+  }
+  return res;
+type: javascript
 tags: []
 enabled: true
 args:
 - name: ids
   required: true
+  description: List of IDs to poll
   isArray: true
-- name: pollingScript
+- name: pendingIds
+  description: IDs with pending status
+- name: pollingCommand
   required: true
-- name: uuid
+  description: Name of the polling command to run
+- name: pollingCommandArgName
+  required: true
+  description: Name of the argument of the polling command
+  defaultValue: ids
+- name: interval
+  required: true
+- name: timeout
   required: true
 - name: playbookId
+  description: The ID of the playbook that contains the manual task which will be
+    completed once the polling is done.
 scripttarget: 0
 runonce: false
