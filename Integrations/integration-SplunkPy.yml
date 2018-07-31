@@ -212,6 +212,7 @@ script:
             'headers': response.info().dict,
             'body': StringIO(response.read())
         }
+        
     service = None
     proxy = demisto.params()['proxy']
     if proxy:
