@@ -459,8 +459,7 @@ script:
             Type: entryTypes.file,
             FileID: fileEntryId,
             File: fileName,
-            Contents: fileInfo.file_name,
-            EntryContext: context
+            Contents: fileInfo.file_name
         };
     }
 
