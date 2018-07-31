@@ -1588,7 +1588,7 @@ script:
             Contents: err,
             ContentsType: formats.json,
             ReadableContentsFormat: formats.text,
-            HumanReadable: err
+            HumanReadable: err.message
         };
     }
 
@@ -1648,7 +1648,7 @@ script:
             Contents: err,
             ContentsType: formats.json,
             ReadableContentsFormat: formats.text,
-            HumanReadable: err
+            HumanReadable: err.message
         };
     } finally {
         if (closeSessionAfterExecution) {
