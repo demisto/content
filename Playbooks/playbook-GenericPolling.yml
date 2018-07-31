@@ -2,7 +2,7 @@ id: GenericPolling
 version: -1
 name: GenericPolling
 description: Generic Polling Playbook
-fromversion: 3.6
+fromversion: 3.6.0
 starttaskid: "0"
 tasks:
   "0":
