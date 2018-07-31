@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: RunPollingCommand
 comment: "-"
-fromversion: 3.6.0
 toversion: 4.0.0
 script: |
   demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'),
