@@ -624,6 +624,7 @@ script:
 
     function setPassword(userId, password) {
         var uri = 'users/' + userId;
+
         var body =  {
             "credentials": {
                 "password" : { "value": password }
@@ -1064,11 +1065,13 @@ script:
     - name: username
       required: true
       default: true
-      description: Username in Okta to get groups for
+      description: Username in Okta to set the password for
     - name: password
       required: true
       description: The new password to set for the user
-    description: Set a new password for user
+    description: Creates a user without a recovery question & answer  The new user
+      is able to login immediately after activation with the assigned password. This
+      flow is common when developing a custom user registration experience.
     execution: true
   - name: okta-search
     arguments:
@@ -1087,14 +1090,19 @@ script:
     outputs:
     - contextPath: Account.ID
       description: Okta account IDs returned by search
+      type: string
     - contextPath: Account.Username
       description: Okta account usernames returned by search
+      type: string
     - contextPath: Account.Email
       description: Okta account emails returned by search
+      type: string
     - contextPath: Accout.DisplayName
       description: Okta account display names returned by search
+      type: string
     - contextPath: Account.Type
       description: Account type returned by search - Okta
+      type: string
     description: Search for Okta users
   - name: okta-get-user
     arguments:
@@ -1125,7 +1133,7 @@ script:
     - contextPath: Account.Type
       description: Account type - Okta
       type: string
-    description: Fetches a specific user when you know the user’s login, please note
+    description: Fetches a specific user given you know the user’s login, please note
       that one of the parameters bellow is mandatory.
   - name: okta-create-user
     arguments:
@@ -1841,28 +1849,6 @@ script:
       type: string
     description: Get events for when a user attempted to SSO to an application managed
       in Okta
-  - name: okta-add-to-group
-    arguments:
-    - name: userId
-      description: ID of the user to add
-    - name: groupId
-      description: ID of the group to add the user to
-    - name: username
-      description: Name of the user to add
-    - name: groupName
-      description: Name of the group to add the user to
-    description: Adds a user to a group with OKTA_GROUP type.
-  - name: okta-remove-from-group
-    arguments:
-    - name: userId
-      description: ID of the user to remove
-    - name: groupId
-      description: ID of the group to remove the user from
-    - name: username
-      description: Name of the user to add
-    - name: groupName
-      description: Name of the group to add the user to
-    description: Removes a user from a group with OKTA_GROUP type.
   - name: okta-get-logs
     arguments:
     - name: filter
@@ -2007,6 +1993,28 @@ script:
       description: Display name of a target
       type: string
     description: Get logs by providing optional filters
+  - name: okta-add-to-group
+    arguments:
+    - name: userId
+      description: ID of the user to add
+    - name: groupId
+      description: ID of the group to add the user to
+    - name: username
+      description: Name of the user to add
+    - name: groupName
+      description: Name of the group to add the user to
+    description: Adds a user to a group with OKTA_GROUP type.
+  - name: okta-remove-from-group
+    arguments:
+    - name: userId
+      description: ID of the user to remove
+    - name: groupId
+      description: ID of the group to remove the user from
+    - name: username
+      description: Name of the user to add
+    - name: groupName
+      description: Name of the group to add the user to
+    description: Removes a user from a group with OKTA_GROUP type.
   - name: okta-list-groups
     arguments:
     - name: query
@@ -2068,14 +2076,19 @@ script:
     outputs:
     - contextPath: Account.ID
       description: Okta account ID
+      type: string
     - contextPath: Account.Email
       description: Okta account email
+      type: string
     - contextPath: Account.Username
       description: Okta account username
+      type: string
     - contextPath: Account.DisplayName
       description: Okta account display name
+      type: string
     - contextPath: Account.Type
       description: Account type - Okta
+      type: string
     description: Enumerates all users that are members of a group
   runonce: false
 releaseNotes: "-"
