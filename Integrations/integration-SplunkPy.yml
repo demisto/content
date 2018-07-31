@@ -213,12 +213,7 @@ script:
             'body': StringIO(response.read())
         }
 
-    service = client.connect(
-            host=demisto.params()['host'],
-            port=demisto.params()['port'],
-            username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'])
-
+    service = None
     proxy = demisto.params()['proxy']
     if proxy:
         try:
@@ -233,6 +228,12 @@ script:
                 pass
             else:
                 raise
+    else:
+        service = client.connect(
+            host=demisto.params()['host'],
+            port=demisto.params()['port'],
+            username=demisto.params()['authentication']['identifier'],
+            password=demisto.params()['authentication']['password'])
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -394,14 +395,14 @@ script:
       required: true
       default: true
       description: search id
-    description: 'fetch splunk search results '
+    description: fetch splunk search results, can be used in conjunction with splunk-job-create
   - name: splunk-search
     arguments:
     - name: query
       required: true
       default: true
-      description: The splunk search language string to execute, example :"* | head
-        3"
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
     - name: earliest_time
       description: 'Specifies the earliest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
@@ -468,11 +469,11 @@ script:
     arguments:
     - name: query
       required: true
-      description: The splunk search language string to execute, example :"* | head
-        3"
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
     outputs:
     - contextPath: Splunk.Job
-      description: The created jon SID
+      description: The created job SID
     description: 'Create new search job in Splunk '
   - name: splunk-parse-raw
     arguments:
