@@ -1,5 +1,5 @@
-id: nexpose_scan_assets
-version: -1
+id: 1a457659-b9b4-47f4-853d-67a34e4b0784
+version: 10
 name: Nexpose Scan Assets
 description: Starts a Nexpose scan by site id and waits for it to finish by polling
   its status in pre-defined intervals.
@@ -13,7 +13,6 @@ tasks:
       id: c613b21c-e424-4a21-8151-1c4dc32caa7a
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -23,34 +22,34 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 50,
+          "y": 65
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 7234a0f8-b1af-4a32-8c9c-3d186525a57f
+    taskid: 2633f003-4a44-44aa-85cd-0c29572404fd
     type: regular
     task:
-      id: 7234a0f8-b1af-4a32-8c9c-3d186525a57f
+      id: 2633f003-4a44-44aa-85cd-0c29572404fd
       version: -1
       name: Start scan
-      description: "Starts a scan for specified asset IP addresses and host names."
-      script: Rapid7 Nexpose|||nexpose-start-assets-scan
+      description: Starts a scan for specified asset IP addresses and host names.
+      script: Rapid7 Nexpose2|||nexpose-start-assets-scan
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose2
     nexttasks:
       '#none#':
-      - "4"
+      - "8"
     scriptarguments:
       IPs:
         complex:
           root: inputs.IPs
       hostNames:
         complex:
-          root: inputs.Hosts
+          root: inputs.HostNames
       name:
         complex:
           root: inputs.Name
@@ -58,68 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 446c97fc-ff30-4c2e-8659-13577749b809
-    type: regular
-    task:
-      id: 446c97fc-ff30-4c2e-8659-13577749b809
-      version: -1
-      name: Wait for scan
-      description: Manual task that waits for the scan to finish
-      tags:
-      - scan
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 590
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: f89a816d-4016-441a-8d16-a26899436c09
-    type: regular
-    task:
-      id: f89a816d-4016-441a-8d16-a26899436c09
-      version: -1
-      name: ScheduleNexposePolling
-      description: Poll the scan status
-      scriptName: ScheduleNexposePolling
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      cron:
-        simple: '*/5 * * * *'
-      playbookId:
-        simple: ${currentPlaybookID}
-      scanId:
-        simple: ${Nexpose.Scan.Id}
-      tag:
-        simple: scan
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 420
+          "x": 50,
+          "y": 225
         }
       }
     note: false
@@ -131,7 +70,6 @@ tasks:
       id: 1c704f4c-7f5e-4225-869f-2fa09265d983
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -139,8 +77,79 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 770
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 6124a4a9-4fbc-4ab1-8483-cef020feb5f2
+    type: regular
+    task:
+      id: 6124a4a9-4fbc-4ab1-8483-cef020feb5f2
+      version: -1
+      name: nexpose-get-scan
+      description: Returns the specified scan.
+      script: Rapid7 Nexpose2|||nexpose-get-scan
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Scan.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: ecaf6904-281d-41f4-877a-305aa3642d0a
+    type: playbook
+    task:
+      id: ecaf6904-281d-41f4-877a-305aa3642d0a
+      version: -1
+      name: GenericPolling
+      description: Generic Polling Playbook
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Ids:
+        simple: ${Nexpose.Scan.Id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: nexpose-get-scan
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Nexpose.Scan(val.Status != 'finished' && val.Status != 'error' &&
+          val.Status != 'aborted' && val.Status != 'stopped').Id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
         }
       }
     note: false
@@ -149,10 +158,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 785,
+        "height": 750,
         "width": 380,
-        "x": 450,
-        "y": 50
+        "x": 50,
+        "y": 65
       }
     }
   }
@@ -160,8 +169,8 @@ inputs:
 - key: IPs
   value: {}
   required: false
-  description: IP addresses of the assets to scan
-- key: Hosts
+  description: Asset IPs to scan
+- key: HostNames
   value: {}
   required: false
   description: Host names of the assets to scan
@@ -170,18 +179,18 @@ inputs:
   required: false
   description: The scan name
 outputs:
+- contextPath: Nexpose.Scan.ScanType
+  description: The scan type (automated, manual, scheduled).
 - contextPath: Nexpose.Scan.Completed
   description: The end time of the scan in ISO8601 format.
-- contextPath: Nexpose.Scan.Id
-  description: The identifier of the scan.
 - contextPath: Nexpose.Scan.StartedBy
   description: The name of the user that started the scan.
 - contextPath: Nexpose.Scan.Assets
   description: The number of assets found in the scan
 - contextPath: Nexpose.Scan.TotalTime
   description: The duration of the scan in minutes.
-- contextPath: Nexpose.Scan.ScanType
-  description: The scan type (automated, manual, scheduled).
+- contextPath: Nexpose.Scan.Id
+  description: The identifier of the scan.
 - contextPath: Nexpose.Scan.Status
   description: The scan status. Valid values are aborted, unknown, running, finished,
     stopped, error, paused, dispatched, integrating
@@ -193,5 +202,5 @@ outputs:
   description: The number of severe vulnerabilities.
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
+releaseNotes: "-"
 fromversion: 4.0.0
-releaseNotes: "Use Nexpose to scan specified assets and poll the scan status until it's finished"

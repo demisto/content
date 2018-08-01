@@ -1191,7 +1191,7 @@ script:
       description: The identifier of the user account.
     - contextPath: Nexpose.Asset.Vulnerability.Id
       description: The identifier of the vulnerability.
-    - contextPath: Nexpose.Asset.Vulnerability.Instacnes
+    - contextPath: Nexpose.Asset.Vulnerability.Instances
       description: The number of vulnerable occurrences of the vulnerability. This
         does not include invulnerable instances.
     - contextPath: Nexpose.Asset.Vulnerability.Title
@@ -1624,4 +1624,4 @@ script:
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 fromversion: 4.0.0
-releaseNotes: "Added scan functionality"
+releaseNotes: "Added scan functionality using Nexpose Scan Site/Assets sub-playbooks"

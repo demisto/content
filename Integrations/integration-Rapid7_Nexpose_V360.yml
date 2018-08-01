@@ -1186,7 +1186,7 @@ script:
       description: The identifier of the user account.
     - contextPath: Nexpose.Asset.Vulnerability.Id
       description: The identifier of the vulnerability.
-    - contextPath: Nexpose.Asset.Vulnerability.Instacnes
+    - contextPath: Nexpose.Asset.Vulnerability.Instances
       description: The number of vulnerable occurrences of the vulnerability. This
         does not include invulnerable instances.
     - contextPath: Nexpose.Asset.Vulnerability.Title

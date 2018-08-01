@@ -112,13 +112,14 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: a1564136-628e-4b42-8888-1fe12117f370
+    taskid: 89b2d088-8a57-4f46-8496-dfcc2528b038
     type: playbook
     task:
-      id: a1564136-628e-4b42-8888-1fe12117f370
+      id: 89b2d088-8a57-4f46-8496-dfcc2528b038
       version: -1
-      name: GenericPolling_copy
-      playbookName: GenericPolling_copy
+      name: GenericPolling
+      description: Generic Polling Playbook
+      playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
@@ -137,7 +138,8 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: Nexpose.Scan(val.Status != 'finished').Id
+        simple: Nexpose.Scan(val.Status != 'finished' && val.Status != 'error' &&
+          val.Status != 'aborted' && val.Status != 'stopped').Id
     separatecontext: true
     loop:
       iscommand: false
