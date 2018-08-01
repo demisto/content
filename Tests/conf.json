@@ -14,7 +14,9 @@
         },
         {
             "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
+            "playbookID": "Intezer Testing",
+            "nightly": true,
+            "timeout": 500
         },
         {
             "integrations": "FalconIntel",
