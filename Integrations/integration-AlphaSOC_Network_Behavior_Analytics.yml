@@ -1,0 +1,292 @@
+commonfields:
+  id: AlphaSOC Network Behavior Analytics
+  version: -1
+name: AlphaSOC Network Behavior Analytics
+display: AlphaSOC Network Behavior Analytics
+category: Analytics & SIEM
+image: data:image/png;base64,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
+description: Retrieve alerts from the AlphaSOC Analytics Engine
+detaileddescription: |-
+  Not using the AlphaSOC Analytics Engine?
+  Review the deployment options at [https://www.alphasoc.com](https://www.alphasoc.com)
+configuration:
+- display: AlphaSOC Analytics Engine URL
+  name: server
+  defaultvalue: https://api.alphasoc.net
+  type: 0
+  required: true
+- display: AlphaSOC Wisdom API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Ignore events below severity
+  name: severity
+  defaultvalue: "3"
+  type: 0
+  required: true
+- display: Include policy violations
+  name: policy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |
+    var API_PATH_ALERTS = '/v1/alerts';
+
+    var SERVER = params.server.replace(/[\/]+$/, '');
+    var API_KEY = params.APIKey;
+
+    var INSECURE = params.insecure;
+    var PROXY = params.proxy;
+
+    var INCLUDE_POLICY = params.policy;
+    var SEVERITY = params.severity;
+
+    function sendRequest(requestUrl) {
+        logInfo('Sending HTTP request to: ' + requestUrl);
+
+        var response = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    Authorization: ['Basic ' + btoa(API_KEY + ':')],
+                    Accept: ['application/json']
+                }
+            },
+            INSECURE,
+            PROXY
+        );
+
+        var errorString = validateRequestResponse(requestUrl, response);
+        if (errorString) {
+            throw errorString;
+        }
+
+        try {
+            return JSON.parse(response.Body);
+        } catch (err) {
+            throw 'Failed to parse JSON response: ' + response.Body;
+        }
+    };
+
+    function validateRequestResponse(requestUrl, response) {
+        if (!response) {
+            return 'Error: Unexpected HTTP response\n\nRequest URL: ' + requestUrl;
+        } else if (response.StatusCode < 200 || response.StatusCode >= 300) {
+            var errorString = '';
+
+            if (response.StatusCode === 401 || response.StatusCode === 403) {
+                errorString = 'Error: Invalid API key\n';
+            } else if (response.StatusCode === 429) {
+                errorString = 'Error: Too many requests\n';
+            }
+
+            try {
+                var body = JSON.parse(response.Body);
+                if (body && body.message) {
+                    errorString += '\nMessage: ' + JSON.stringify(body.message);
+                }
+            } catch (err) {
+                errorString += '\nCould not parse response body';
+            }
+
+            errorString += '\nRequest URL: ' + requestUrl + '\nStatus code: ' + response.StatusCode;
+            return errorString;
+        }
+
+        return null;
+    }
+
+    function createAlertsURL(follow) {
+        return SERVER + API_PATH_ALERTS + '?follow=' + follow + '&threats=all';
+    }
+
+    function parseFollow() {
+        var lastRun = getLastRun();
+        return lastRun && lastRun.follow ? lastRun.follow : '0';
+    }
+
+    function saveFollow(follow) {
+        if (follow) {
+            setLastRun({ follow: follow });
+        }
+    }
+
+    function testGetAlerts() {
+        var response = sendRequest(createAlertsURL('0'));
+        return response && response.alerts ? true : false;
+    }
+
+    function getAlerts(follow) {
+        var response = sendRequest(createAlertsURL(follow));
+
+        return {
+            follow: response.follow,
+            content: response.alerts,
+            threats: response.threats
+        }
+    }
+
+    function appendIncidentsFromAlert(incidents, alert, threats) {
+        if (!threats || !alert || !alert.threats) {
+            logInfo('Invalid alert format or empty threats definition');
+            return;
+        }
+
+        var occurredTs = getOccurredTs(alert);
+        for (var i = 0; i < alert.threats.length; i++) {
+            var threatId = alert.threats[i];
+
+            var threat = threats[threatId];
+            if (!threat) {
+                logInfo('Error: Invalid alert content. Definition for threat "' + threatId + '" not found');
+                continue;
+            }
+
+            if (inScope(threat.severity, threat.policy)) {
+                alert.policy = threat.policy === true ? true : false;
+
+                incidents.push({
+                    'name': threat.title,
+                    'occurred': occurredTs,
+                    'severity': convertSeverity(threat.severity),
+                    'labels': getLabels(alert),
+                    'rawJSON': JSON.stringify(alert)
+                });
+            }
+        }
+    }
+
+    function getOccurredTs(alert) {
+        try {
+            return alert.event.ts;
+        } catch (exc) {
+            return null;
+        }
+    }
+
+    function getLabels(alert) {
+        var labels = [];
+        if (!alert) {
+            return labels;
+        }
+
+        if (alert.eventType) {
+            labels.push(createLabelEntry('eventType', alert.eventType));
+        }
+
+        if (alert.policy !== undefined && alert.policy !== null) {
+            labels.push(createLabelEntry('policy', alert.policy));
+        }
+
+        if (alert.event) {
+            var eventKeys = Object.keys(alert.event);
+            for (var i = 0; i < eventKeys.length; i++) {
+                var eventKey = eventKeys[i];
+                if (eventKey !== 'ts') {
+                    labels.push(createLabelEntry(eventKey, alert.event[eventKey]));
+                }
+            }
+        }
+
+        if (alert.wisdom) {
+            var wisdomKeys = Object.keys(alert.wisdom);
+            for (var i = 0; i < wisdomKeys.length; i++) {
+                var wisdomKey = wisdomKeys[i];
+                labels.push(createLabelEntry('wisdom.' + wisdomKey, alert.wisdom[wisdomKey]));
+            }
+        }
+
+        return labels;
+    }
+
+    function createLabelEntry(key, value) {
+        return { 'type': key, 'value': String(value) };
+    }
+
+    function inScope(severity, policy) {
+        var severityThereshold = getSeverityThereshold();
+        if (!severity || severity < severityThereshold) {
+            return false;
+        }
+
+        if (policy === true && !INCLUDE_POLICY) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function convertSeverity(severity) {
+        var demistoSeverity = 0;
+
+        try {
+            demistoSeverity = severity === 1 ? .5 : severity - 1;
+        } catch (exc) {
+            demistoSeverity = 0;
+        }
+
+        return demistoSeverity < 0 || demistoSeverity > 4 ? 0 : demistoSeverity;
+    }
+
+    function getSeverityThereshold() {
+        try {
+            var severity = parseInt(SEVERITY);
+        } catch (exc) {
+            var severity = NaN;
+        }
+
+        if (isNaN(severity) || severity > 5) {
+            throw 'Error: Invalid severity parameter. Please provide a number in range 0-5.';
+        }
+
+        return severity < 0 ? 0 : severity;
+    }
+
+    switch (command) {
+        case 'test-module':
+            try {
+                getSeverityThereshold();
+                return testGetAlerts() === true ? 'ok' : 'not ok';
+            } catch (exc) {
+                return String(exc);
+            }
+        case 'fetch-incidents':
+            var follow = parseFollow();
+            var alerts = getAlerts(follow);
+
+            var incidents = [];
+            if (alerts && alerts.content) {
+                for (var i = 0; i < alerts.content.length; i++) {
+                    appendIncidentsFromAlert(incidents, alerts.content[i], alerts.threats);
+                }
+            }
+
+            saveFollow(alerts.follow);
+            return JSON.stringify(incidents);
+    }
+  type: javascript
+  isfetch: true
+  runonce: false
