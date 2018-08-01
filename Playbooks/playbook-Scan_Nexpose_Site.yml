@@ -36,10 +36,10 @@ tasks:
       version: -1
       name: Start scan
       description: Starts a scan for specified asset IP addresses and host names.
-      script: Rapid7 Nexpose2|||nexpose-start-site-scan
+      script: Rapid7 Nexpose|||nexpose-start-site-scan
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "8"
@@ -91,10 +91,10 @@ tasks:
       version: -1
       name: nexpose-get-scan
       description: Returns the specified scan.
-      script: Rapid7 Nexpose2|||nexpose-get-scan
+      script: Rapid7 Nexpose|||nexpose-get-scan
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose2
+      brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
       - "5"
