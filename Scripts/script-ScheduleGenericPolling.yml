@@ -11,6 +11,7 @@ script: |-
   dt = args['dt']
   pollingCommand = args['pollingCommand']
   pollingCommandArgName = args['pollingCommandArgName']
+  tag = args['tag']
   playbookId = ' playbookId="{}"'.format(args['playbookId']) if 'playbookId' in args else ''
   interval = int(demisto.get(args, 'interval'))
   timeout = int(demisto.get(args, 'timeout'))
@@ -28,8 +29,8 @@ script: |-
       return_error("Incorrect dt path")
 
   res = demisto.executeCommand("ScheduleCommand", {
-      'command': '!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s" interval="%s" timeout="%s"' % (
-          pollingCommand, pollingCommandArgName, playbookId, json.dumps(ids).replace('"', r'\"'), dt.replace('"', r'\"'), interval, timeout),
+      'command': '!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s" interval="%s" timeout="%s" tag="%s"' % (
+          pollingCommand, pollingCommandArgName, playbookId, json.dumps(ids).replace('"', r'\"'), dt.replace('"', r'\"'), interval, timeout, tag),
       'cron': '*/{} * * * *'.format(interval),
       'times': 1
   })
@@ -67,5 +68,9 @@ args:
   description: How much time to poll before declaring a timeout and resuming the playbook
     (minutes)
   defaultValue: "60"
+- name: tag
+  required: true
+  description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
+  defaultValue: polling
 scripttarget: 0
 runonce: false

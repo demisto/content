@@ -36,8 +36,8 @@ tasks:
       id: c202a667-b138-4635-819f-56a7396cc7f8
       version: -1
       name: Schedule Polling Task
-      scriptName: ScheduleGenericPolling
       description: Schedule Polling Task
+      scriptName: ScheduleGenericPolling
       type: regular
       iscommand: false
       brand: ""
@@ -57,10 +57,6 @@ tasks:
         simple: ${inputs.PollingCommandName}
       pollingCommandArgName:
         simple: ${inputs.PollingCommandArgName}
-      pollingScript:
-        simple: ${inputs.PollingScriptName}
-      scriptname:
-        simple: ${inputs.PollingScriptName}
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
@@ -103,8 +99,8 @@ tasks:
       id: bc152ecc-4c23-4296-844a-d21b32be0ec3
       version: -1
       name: RunPollingCommand
-      scriptName: RunPollingCommand
       description: RunPollingCommand
+      scriptName: RunPollingCommand
       type: regular
       iscommand: false
       brand: ""
@@ -168,3 +164,4 @@ inputs:
   value: {}
   required: true
   description: DT filter for polling IDs
+outputs: []

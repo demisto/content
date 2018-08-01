@@ -2,7 +2,6 @@ commonfields:
   id: GenericPollingScheduledTask
   version: -1
 name: GenericPollingScheduledTask
-comment: "-"
 script: |-
   // https://stackoverflow.com/questions/16227197/compute-intersection-of-two-arrays-in-javascript#16227294
   function intersect(a, b) {
@@ -22,7 +21,7 @@ script: |-
   }
 
   function finish() {
-      var params = { 'id': 'polling' };
+      var params = { 'id': args.tag };
       if (args.playbookId) {
           params.parentPlaybookID = args.playbookId;
       }
@@ -36,7 +35,7 @@ script: |-
           playbookIdStr = ' playbookId="' + args.playbookId + '"';
       }
       var cmd = '!GenericPollingScheduledTask pollingCommand="' + args.pollingCommand + '" pollingCommandArgName="' + args.pollingCommandArgName + '"' + playbookIdStr;
-      cmd += ' ids="' + idsStr + '" pendingIds="' + args.pendingIds + '" interval="' + args.interval + '" timeout="' + (args.timeout - args.interval) + '"';
+      cmd += ' ids="' + idsStr + '" pendingIds="' + args.pendingIds + '" interval="' + args.interval + '" timeout="' + (args.timeout - args.interval) + '" tag="' + args.tag + '"';
       return executeCommand("ScheduleCommand", {
           'command': cmd,
           'cron': '*/' + args.interval + ' * * * *',
@@ -96,6 +95,8 @@ script: |-
   return res;
 type: javascript
 tags: []
+comment: Runs the polling command repeatedly, completes a blocking manual task when
+  polling is done.
 enabled: true
 args:
 - name: ids
@@ -116,9 +117,14 @@ args:
   description: Polling frequency - how often the polling command should run (minutes)
 - name: timeout
   required: true
-  description: How much time to poll before declaring a timeout and resuming the playbook (minutes)
+  description: How much time to poll before declaring a timeout and resuming the playbook
+    (minutes)
 - name: playbookId
   description: The ID of the playbook that contains the manual task which will be
     completed once the polling is done.
+- name: tag
+  required: true
+  description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
+  defaultValue: polling
 scripttarget: 0
 runonce: false
