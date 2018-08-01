@@ -123,11 +123,6 @@
             "timeout": 500
         },
         {
-            "integrations":"Cylance Protect",
-            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
-            "timeout": 240
-        },
-        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
@@ -163,10 +158,6 @@
                 "urlscan.io"
             ],
             "playbookID": "ip_enrichment_generic_test"
-        },
-        {
-            "integrations": "Cylance Protect",
-            "playbookID": "endpoint_enrichment_-_generic_test"
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -396,6 +387,15 @@
         }
     ],
     "skipped": [
+        {
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "Cylance Protect",
+            "playbookID": "endpoint_enrichment_-_generic_test"
+        },
         {
             "integrations": "QRadar",
             "playbookID": "test_Qradar"
