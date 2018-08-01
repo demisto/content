@@ -16,14 +16,12 @@ tags: []
 enabled: true
 args:
 - name: ids
-  description: List of IDs to poll
   required: true
   description: List of IDs to poll
 - name: pollingCommand
   required: true
   description: Name of the polling command to run
 - name: pollingCommandArgName
-  description: Name of the argument of the polling command
   required: true
   description: Name of the argument of the polling command
   defaultValue: ids
