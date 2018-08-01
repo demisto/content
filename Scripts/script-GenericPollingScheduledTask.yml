@@ -4,15 +4,19 @@ commonfields:
 name: GenericPollingScheduledTask
 script: |-
   // https://stackoverflow.com/questions/16227197/compute-intersection-of-two-arrays-in-javascript#16227294
+  function listOfStrings(v) {
+      if (!Array.isArray(v)) {
+          v = [v];
+      }
+      for (var i = 0; i < v.length; i++) {
+          v[i] = v[i].toString();
+      }
+      return v;
+  }
+
   function intersect(a, b) {
       var t;
       if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
-      if (!Array.isArray(a)) {
-          a = [a];
-      }
-      if (!Array.isArray(b)) {
-          b = [b];
-      }
       return a.filter(function (e) {
           return b.indexOf(e) > -1;
       }).filter(function (e, i, c) { // extra step to remove duplicates
@@ -65,7 +69,9 @@ script: |-
       return finish();
   }
 
-  idsToPoll = intersect(ids, pendings);
+  idsStrArr = listOfStrings(ids);
+  pendingsStrArr = listOfStrings(pendings);
+  idsToPoll = intersect(idsStrArr, pendingsStrArr);
   if (idsToPoll.length === 0) {
       return finish();
   }
