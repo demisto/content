@@ -13,6 +13,12 @@
             "playbookID": "exporttocsv_script_test"
         },
         {
+            "integrations": "Intezer",
+            "playbookID": "Intezer Testing",
+            "nightly": true,
+            "timeout": 500
+        },
+        {
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
@@ -383,11 +389,6 @@
         }
     ],
     "skipped": [
-        {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing",
-            "timeout": 500
-        },
         {
             "integrations":"Cylance Protect",
             "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
