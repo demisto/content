@@ -235,7 +235,7 @@ script:
             var totalOffenses = res.length;
             var lastCallOffenses = res.length;
             while (startTime && lastCallOffenses >= offensesPerCall) {
-                var from = totalOffenses; # we're counting from zero
+                var from = totalOffenses; // we're counting from zero
                 var to = from + offensesPerCall - 1;
                 var lastIncidentTime = res[res.length-1].start_time;
 
