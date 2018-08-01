@@ -67,6 +67,7 @@ script:
     from StringIO import StringIO
     import copy
     import requests
+    from collections import OrderedDict
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -91,7 +92,7 @@ script:
         host = str(demisto.params()["ip_address"])
         if len(host) == 0:
             #strip https://www. of the server address
-            url = re.compile(r"https?://(www\.)?[$:d{1,5}]?")
+            url = re.compile(r"https?://(www\.)?")
             host = url.sub('', demisto.params()['server']).strip().strip('/')
             #strip :{port} of the server address
             host = host.split(':')[0]
@@ -202,6 +203,12 @@ script:
         incident["labels"] = labels
         return incident
 
+    def binary_to_boolean(binary):
+        if (binary == '0'):
+            return False
+        else:
+            return True
+
     #GLOBAL VARIABLES#
     API_KEY = str(demisto.params()["apiKey"])
     PROTOCOL_VERSION = str(1.5) #hard-coded protocol version
@@ -252,9 +259,6 @@ script:
         '''Upload a file to Analyzer for analysis'''
         with open(demisto.getFilePath(sampleFile)['path'], 'rb') as f:
             headersSimpleUploadSampleFile = {
-                #'Host' : str(demisto.params()["ip_address"]),
-                #'Content-Type' : 'multipart/form-data',
-                #'Content-Length' : str(getSize(f)),
                 'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
                 'X-DTAS-ClientUUID': UUID,
                 'X-DTAS-SourceID': '1',
@@ -263,8 +267,6 @@ script:
                 'X-DTAS-Time' : get_epoch_time(),
                 'X-DTAS-SampleType' : '0', #0 for file, 1 for URL
                 'X-DTAS-Challenge' : str(uuid.uuid4()),
-                #'X-DTAS-ProductName' : 'TDA',
-                #'X-DTAS-ClientHostname' : platform.node(),
                 'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
                 }
             tmp_checksum = calculateChecksum(API_KEY, headersSimpleUploadSampleFile, '')
@@ -299,8 +301,6 @@ script:
     def simple_upload_sample_url(sampleUrl):
         '''Upload a URL to Analyzer for analysis'''
         headersSimpleUploadSampleUrl = {
-                #'Host' : str(demisto.params()["ip_address"]),
-                #'Content-Type' : 'multipart/form-data',
                 'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
                 'X-DTAS-ClientUUID': UUID,
                 'X-DTAS-SourceID': '1',
@@ -309,8 +309,6 @@ script:
                 'X-DTAS-Time' : get_epoch_time(),
                 'X-DTAS-SampleType' : '1', #0 for file, 1 for URL
                 'X-DTAS-Challenge' : str(uuid.uuid4()),
-                #'X-DTAS-ProductName' : 'TDA',
-                #'X-DTAS-ClientHostname' : platform.node(),
                 'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
                 }
         tmp_checksum = calculateChecksum(API_KEY, headersSimpleUploadSampleUrl, '')
@@ -340,9 +338,9 @@ script:
             }
         })
 
-    def get_sample(sample_sha1, archive_type, archive_encrypted):
+    def get_sample(sha1, archive_type, archive_encrypted):
         '''Issue a request to retrieve an archive of the sample given its SHA1 hash'''
-        if not (re.match(r'\b[0-9a-fA-F]{40}\b', str(sample_sha1))):
+        if not (re.match(r'\b[0-9a-fA-F]{40}\b', str(sha1))):
             raise Exception("get_sample parameter 'sample_sha1' must contain a valid sha1 string")
         if not ((str(archive_type) == "zip") or (str(archive_type) == "tgz")):
                 raise Exception("get_sample parameter 'archive_type' must be a STRING whose value is either 'zip' or 'tgz'")
@@ -350,7 +348,7 @@ script:
                 raise ValueError("get_sample parameter 'archive_encrypted' must be a STRING whose valie is either '0' (not encrypted) or '1' (encrypted with password 'virus'")
 
         headersGetSample = copy.deepcopy(DEFAULT_HEADERS)
-        headersGetSample['X-DTAS-SHA1'] = sample_sha1 # SHA1 of the file/URL to download
+        headersGetSample['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
         headersGetSample['X-DTAS-ArchiveType'] = archive_type
         headersGetSample['X-DTAS-ArchiveEncrypted'] = archive_encrypted
 
@@ -366,20 +364,20 @@ script:
         demisto.log(str(dir(res)))
         demisto.log(str(res.headers))
         #demisto.log(str(res.content))
-
+        sys.exit(0)
         zipdata = StringIO()
         zipdata.write(res.content)
         myzipfile = zipfile.ZipFile(zipdata)
         ll = myzipfile.namelist()
         demisto.log(str(ll))
-        my_file_dir = myzipfile.extract(sample_sha1 + '.dat')
+        my_file_dir = myzipfile.extract(sha1 + '.dat')
         demisto.log(str(my_file_dir))
 
         sys.exit(0)
         if os.path.exists(my_file_dir):
             demisto.log('success')
         sys.exit(0)
-        my_file = myzipfile.extract('/var/lib/demisto/' + sample_sha1 + '.dat/common/sample/' + sample_sha1)
+        my_file = myzipfile.extract('/var/lib/demisto/' + sha1 + '.dat/common/sample/' + sha1)
         demisto.log('its something')
         sys.exit(0)
         demisto.log(str(my_file_dir))
@@ -396,10 +394,10 @@ script:
             #return demisto.results(fileResult( file_name , data)
 
     def get_sample_command():
-        sample_sha1 = demisto.args()['sample_sha1']
+        sha1 = demisto.args()['sha1']
         archive_type = str(demisto.args()['type'])
         archive_encrypted = str(demisto.args()['encrypted'])
-        get_sample(sample_sha1, archive_type, archive_encrypted)
+        get_sample(sha1, archive_type, archive_encrypted)
 
     def get_sample_list(interval_start, interval_end, interval_type):
 
@@ -443,10 +441,11 @@ script:
             'ContentsFormat': formats['text'],
             'Contents': result.text,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('SHA1 values of the samples submitted within the time interval', HR)
+            'HumanReadable': tableToMarkdown('SHA1 values of submissions within the time interval', HR)
         })
 
 
+    ############################################################
     def get_query_sample_list(interval_start, interval_end):
         interval_start_dt = datetime.strptime(interval_start, "%Y-%m-%d %H:%M:%S")
         interval_end_dt = datetime.strptime(interval_end, "%Y-%m-%d %H:%M:%S")
@@ -480,14 +479,20 @@ script:
         demisto.log(str(dir(res)))
         sys.exit(0)
         return result
-
+    ############################################################
 
 
     def get_openioc_report(): #NEEDED?
-        headersGetOpenIOC = copy.deepcopy(DEFAULT_HEADERS)
-        headersGetOpenIOC['X-DTAS-SHA1'] = (demisto.args()['sample_sha1']) # SHA1 of the file/URL to download
-        headersGetOpenIOC['X-DTAS-Time'] = get_epoch_time()
-
+        demisto.log(str(demisto.args()['sha1']))
+        demisto.log(str(type(demisto.args()['sha1'])))
+        headersGetOpenIOC = {
+            "X-DTAS-ProtocolVersion": PROTOCOL_VERSION,
+            "X-DTAS-ClientUUID": UUID,
+            "X-DTAS-SHA1": str(demisto.args()['sha1']),
+            "X-DTAS-Time": get_epoch_time(),
+            "X-DTAS-Challenge": str(uuid.uuid4()),
+            "X-DTAS-ChecksumCalculatingOrder": "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-Challenge"
+            }
         tmp_checksum = calculateChecksum(API_KEY, headersGetOpenIOC, '')
         headersGetOpenIOC['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
 
@@ -499,26 +504,30 @@ script:
         return demisto.results(res)
 
 
-    def prettifyGetReport(res, threshold, status):
-
+    def buildReport(res, threshold, status):
         reportJson = json.loads(xml2json(res.text))
+        HR = {
+            'Risk Level' : reportJson['REPORTS']['OVERALL_RISK_LEVEL'],
+            'Image Type' : reportJson['REPORTS']['IMAGE_TYPE']['TYPE']['#text'],
+            'Malware Source IP' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceIP'],
+            'Malware Source Host' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceHost'],
+            'Total Dropped Files' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['DroppedFiles']['@Total'],
+            'Deny List' :  binary_to_boolean(reportJson['REPORTS']['FILE_ANALYZE_REPORT']['IsDenylisted']),
+            'White List' :  binary_to_boolean(reportJson['REPORTS']['FILE_ANALYZE_REPORT']['IsWhitelisted']),
+        }
+        if '#text' in reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusName']:
+            HR['Detection Name'] = reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusName']['#text']
+        #'Download URL': [FileItem']DownloadURL put in URL.Data, (not always in report)
 
-        DBotScoreDict = {
+
+        context = {}
+        context['DBotScore'] = {
             'Vendor' : 'Trend-Micro-Deep-Discovery-Analyzer',
             'Score' : '0',
             'Indicator' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA1'],
             'Type' : 'SHA1'
-            }
-
-        HR = {
-            'Image Type' : reportJson['REPORTS']['IMAGE_TYPE']['TYPE']['#text'],
-            'Risk Level' : reportJson['REPORTS']['OVERALL_RISK_LEVEL'],
-            'Protection Name' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusName']['#text'],
-            'Skipped Dropped Files' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['DroppedFiles']['@Skipped'],
-            'Total Dropped Files' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['DroppedFiles']['@Total'],
         }
-
-        prettyReport = {
+        context['TrendMicroDDA.Submissions(val.SHA1==obj.SHA1)'] = {
             'status' : status,
             'isCompleted' : 'True' if status == 'Completed' else 'False',
             'RiskLevel' : reportJson['REPORTS']['OVERALL_RISK_LEVEL'],
@@ -526,22 +535,30 @@ script:
             'SHA256' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA256'],
             'MD5' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileMD5'],
             'VirusDetected' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusDetected'],
-            #GO OVER FIELDS WITH MICHAL
         }
+        if reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceIP'] is not None :
+            context['IP'] = {}
+            context['IP']['Address'] = reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceIP']
+        if reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceHost'] is not None :
+            context['Domain'] = {}
+            context['Domain']['Name'] = reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceHost']
 
-        if (prettyReport['RiskLevel'] >= threshold):
-            DBotScoreDict['Score'] = 3
-        #    addMalicious(prettyReport, {Type : subject.Type,
-        #                MD5 : Submissions['MD5'],
-        #                SHA1 : Submissions['SHA1'],
-        #                SHA256 : Submissions['SHA256'],
-        #                Size : Submissions['Size'],
-        #                Name : Submissions['Name'],
-        #                Malicious: {Vendor: 'Trend-Micro-Deep-Discovery-Analyzer',
-        #                Description: 'Severity: ' + Submissions['RiskLevel']}
-        #            })
+        if (reportJson['REPORTS']['OVERALL_RISK_LEVEL'] >= threshold):
+            context['DBotScore']['Score'] = 3
+            if (reportJson['REPORTS']['FILE_ANALYZE_REPORT']['TrueFileType'] != 'URL'):
+                context['File'] = {
+                    'MD5' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileMD5'],
+                    'SHA1' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA1'],
+                    'SHA256' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA256'],
+                    'Size' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSize'],
+                    'Name' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusName']['#text'],
+                    'Malicious' : {
+                        'Vendor' : 'Trend-Micro-Deep-Discovery-Analyzer',
+                        'Description' : 'RiskLevel : ' + reportJson['REPORTS']['OVERALL_RISK_LEVEL']
+                        }
+                    }
 
-        return DBotScoreDict, prettyReport, HR
+        return context, HR
 
     def get_report(sha1):
         '''Issue a request to retrieve XML report for a given SHA1'''
@@ -577,17 +594,14 @@ script:
             })
         else:
             status = 'Completed'
-            DBotScoreDict, prettyReport, HR = prettifyGetReport(res, threshold, status)
+            context, HR = buildReport(res, threshold, status)
             return demisto.results({
                 'Type': entryTypes['note'],
                 'Contents': res.text,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Sample Report from TrendMicroDDA', HR),
-                'EntryContext': {
-                      'TrendMicroDDA.Submissions(val.SHA1==obj.SHA1)': prettyReport,
-                      'DBotScore(val.Indicator==obj.Indicator)': DBotScoreDict
-                }
+                'HumanReadable': tableToMarkdown('Sample Report from TrendMicroDDA', createContext(HR, id=None, keyTransform=None, removeNull=True)),
+                'EntryContext': context
             })
 
     def get_brief_report(sha1_list):
@@ -629,19 +643,35 @@ script:
 
     def get_screenshot(sha1, image_type_id):
         headersGetScreenshot = copy.deepcopy(DEFAULT_HEADERS)
-        headersGetScreenshot['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
-        headersGetScreenshot["X-DTAS-ImageTypeID"] = image_type_id    # Add the X-DTAS-ImageTypeID
-        headersGetScreenshot['X-DTAS-Time'] = get_epoch_time()
-
+        headersGetScreenshot['X-DTAS-SHA1'] = str(sha1) # SHA1 of the file/URL to download
+        headersGetScreenshot["X-DTAS-ImageTypeID"] = str(image_type_id)    # Add the X-DTAS-ImageTypeID
         tmp_checksum = calculateChecksum(API_KEY, headersGetScreenshot, '')
         headersGetScreenshot['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
 
         res = http_request(
-            'web_service/sample_upload/get_snadbox_screenshot',
+            'web_service/sample_upload/get_sandbox_screenshot',
             'get',
             headersGetScreenshot)
 
         return res
+
+        #headersGetScreenshot = {
+        #    'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
+        #    'X-DTAS-ClientUUID': UUID,
+        #    'X-DTAS-SHA1': sha1, # SHA1 of the file/URL to download
+        #    'X-DTAS-Time' : get_epoch_time(),
+        #    'X-DTAS-Challenge' : str(uuid.uuid4()),
+       #     'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SHA1,X-DTAS-ImageTypeID,X-DTAS-Time,X-DTAS-Challenge",
+      #      }
+
+     #   tmp_checksum = calculateChecksum(API_KEY, headersGetScreenshot, '')
+     #   headersGetScreenshot['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+
+    #    res = http_request(
+       #      'get',
+     #       headersGetScreenshot)
+    #
+        #return res
 
     def get_screenshot_command():
         '''Issue a request to retrieve sandbox screenshots for a given SHA1'''
@@ -685,8 +715,6 @@ script:
 
     def detonate(submitType ,sample, timeout, threshold):
         '''Issue a request to detonate a sample in DDA'''
-        #sha1 = '', status = '', uploadRes = '' , reportRes = '', prettyUploadRes = '', prettyReportRes = ''
-
         if (int(submitType) == 0):
             sha1 = hash_file(demisto.getFilePath(sample)['path'])
             uploadRes, prettyUploadRes = simple_upload_sample_file(sample)
@@ -815,12 +843,9 @@ script:
   commands:
   - name: trendmicro-dda-get-sample
     arguments:
-    - name: sample_sha1
+    - name: sha1
       required: true
       description: The SHA1 of the file to get
-    - name: filename
-      description: The SHA1 of the file to get
-      defaultValue: sample
     - name: type
       auto: PREDEFINED
       predefined:
@@ -840,8 +865,8 @@ script:
     description: Retrieves a sample from DDA
   - name: trendmicro-dda-get-openioc
     arguments:
-    - name: sample_sha1
-      description: The SHA1 of the sample
+    - name: sha1
+      description: SHA1 of the submission
     description: Retrieves IOC for a given sample
   - name: trendmicro-dda-get-report
     arguments:
@@ -857,6 +882,13 @@ script:
       description: If DDA severity is equal or bigger than the threshold we will consider
         it malicious
       defaultValue: "1"
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Show more detailed output, If 'True' FileItem will also return
+      defaultValue: "False"
     outputs:
     - contextPath: TrendMicroDDA.Submissions.status
       description: The status of the sample
@@ -881,6 +913,39 @@ script:
       type: string
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File.Size
+      description: 'File size '
+      type: number
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: IPs relevant to the submission
+      type: string
+    - contextPath: Domain.Name
+      description: Domains relevant to the submission
+      type: string
+    - contextPath: URL.Data
+      description: URL data
       type: string
     description: Retrieves the report for a given sample
   - name: trendmicro-dda-get-sample-list
@@ -942,17 +1007,16 @@ script:
     arguments:
     - name: sha1
       required: true
-  - name: trendmicro-dda-get-query-sample-list
-    arguments:
-    - name: interval_start
-      required: true
-    - name: interval_end
-      required: true
+      description: SHA1 of the submission
+    description: ' Retrieves the brief XML report for a given SHA1'
   - name: trendmicro-dda-get-screenshot
     arguments:
     - name: sha1
       required: true
+      description: SHA1 of the submission
     - name: image_type_id
+      description: ID of the Image
       defaultValue: "1"
+    description: Retrieves sandbox screenshots for a given SHA1
   isfetch: true
   runonce: false

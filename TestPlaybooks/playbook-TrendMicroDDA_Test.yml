@@ -80,10 +80,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: b7dd2ef4-9623-43f7-86f0-681a28fb56f4
+    taskid: 985daca9-b072-413f-84c5-1be2c1e3b002
     type: condition
     task:
-      id: b7dd2ef4-9623-43f7-86f0-681a28fb56f4
+      id: 985daca9-b072-413f-84c5-1be2c1e3b002
       version: -1
       name: upload-sample-url AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -383,10 +383,10 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: 24fb8a00-13d8-49b0-8a47-03ab84a862b7
+    taskid: 60269020-f21f-4ee3-822b-1ccda9f9f138
     type: regular
     task:
-      id: 24fb8a00-13d8-49b0-8a47-03ab84a862b7
+      id: 60269020-f21f-4ee3-822b-1ccda9f9f138
       version: -1
       name: get-sample
       script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-sample
@@ -401,6 +401,8 @@ tasks:
       filename: {}
       sample_sha1:
         simple: 571AD0F7D5056F68D0F2B795EAF4618C082A89D9
+      sha1:
+        simple: 571ad0f7d5056f68d0f2b795eaf4618c082a89d9
       type: {}
       type_origin: {}
     separatecontext: false
