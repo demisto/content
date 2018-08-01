@@ -133,6 +133,11 @@ script:
                 {to: 'Count', from: 'count'},
                 {to: 'ID', from: 'sample'},
             ],
+        'threat-grid-get-samples-state': [
+                {to: 'ID', from: 'sample'},
+                {to: 'State', from: 'state'},
+                {to: 'Status', from: 'status'}
+            ]
     }
 
     var titleDictionary = {
@@ -140,7 +145,8 @@ script:
         'threat-grid-get-sample-state-by-id': 'Threat grid sample state',
         'threat-grid-get-sample-by-id': 'Threat grid get sample',
         'threat-grid-get-samples': 'Threat grid get samples',
-        'threat-grid-get-threat-summary-by-id': 'Threat grid get threat summary'
+        'threat-grid-get-threat-summary-by-id': 'Threat grid get threat summary',
+        'threat-grid-get-samples-state': 'Threat grid get sample state'
     }
 
     var createHR = function(command, object) {
@@ -174,6 +180,10 @@ script:
             ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
             ContentPath: 'data',
         },
+        "threat-grid-get-samples-state": {
+            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
+            ContentPath: 'data',
+        }
     }
 
     var fileCommands = {
@@ -193,7 +203,7 @@ script:
         'threat-grid-get-samples': 'GET',
         'threat-grid-get-sample-by-id': 'GET',
         'threat-grid-get-sample-state-by-id': 'GET',
-        'threat-grid-get-samples-state': 'POST',
+        'threat-grid-get-samples-state': 'GET',
         'threat-grid-search-samples': 'GET',
         'threat-grid-upload-sample': 'POST',
         'threat-grid-search-submissions': 'GET',
@@ -1123,4 +1133,4 @@ script:
       description: File Size in bytes
       type: int
     description: Convert a URL into a file for Threat Grid file detonation.
-releaseNotes: "Added threat-grid-url-to-file for url detonation. Added DBot score output for threat-grid-get-summary-by-id."
+releaseNotes: "Added threat-grid-url-to-file for url detonation. Added DBot score output for threat-grid-get-summary-by-id. Improved support for threat-grid-get-samples-state"
