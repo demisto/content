@@ -1,5 +1,5 @@
-id: 1a457659-b9b4-47f4-853d-67a34e4b0784
-version: 10
+id: nexpose_scan_assets
+version: -1
 name: Nexpose Scan Assets
 description: Starts a Nexpose scan by site id and waits for it to finish by polling
   its status in pre-defined intervals.
@@ -13,6 +13,7 @@ tasks:
       id: c613b21c-e424-4a21-8151-1c4dc32caa7a
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -70,6 +71,7 @@ tasks:
       id: 1c704f4c-7f5e-4225-869f-2fa09265d983
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
