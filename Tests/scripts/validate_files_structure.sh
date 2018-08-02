@@ -54,6 +54,7 @@ validateFilesStructure Scripts script- .yml script
 validateFilesStructure Misc reputations .json
 validateFilesStructure Widgets widget- .json widget
 validateFilesStructure Dashboards dashboard- .json
+validateFilesStructure Connections canvas-context-connections .json canvas-context-connections
 
 # uncomment when creating dir
 validateFilesStructure Classifiers classifier- .json classifier
