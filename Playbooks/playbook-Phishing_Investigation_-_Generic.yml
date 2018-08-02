@@ -2,6 +2,7 @@ id: Phishing Investigation - Generic
 version: -1
 name: Phishing Investigation - Generic
 fromversion: 3.6.0
+releaseNotes: "Add support for indicators extraction from files"
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
@@ -23,6 +24,7 @@ tasks:
       '#none#':
       - "11"
       - "18"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -55,36 +57,13 @@ tasks:
         complex:
           root: inputs.Role
       username: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 865
-        }
-      }
-  "6":
-    id: "6"
-    taskid: 10a9ba52-86fa-4604-8dea-1fa7045fd3f2
-    type: playbook
-    task:
-      id: 10a9ba52-86fa-4604-8dea-1fa7045fd3f2
-      version: -1
-      name: ""
-      description: ""
-      playbookName: Calculate Severity - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 690
+          "y": 1040
         }
       }
   "7":
@@ -103,12 +82,13 @@ tasks:
     nexttasks:
       '#none#':
       - "33"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1360
+          "x": 60,
+          "y": 1535
         }
       }
   "8":
@@ -131,12 +111,13 @@ tasks:
       notes:
         simple: 'Default enrichment playbook '
       reason: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2350
+          "y": 2525
         }
       }
   "11":
@@ -153,7 +134,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "36"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -187,12 +169,13 @@ tasks:
         complex:
           root: incident
           accessor: labels.Email/from
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 340
+          "y": 515
         }
       }
   "13":
@@ -230,12 +213,13 @@ tasks:
         complex:
           root: incident
           accessor: labels.Email/from
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 690
+          "y": 865
         }
       }
   "14":
@@ -254,12 +238,13 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
+    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 515
+          "y": 690
         }
       }
   "15":
@@ -279,6 +264,7 @@ tasks:
       - "31"
       'Malicious ':
       - "30"
+    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: 'Malicious '
@@ -295,7 +281,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1040
+          "y": 1215
         }
       }
   "16":
@@ -334,12 +320,13 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 2175
+          "x": 60,
+          "y": 2350
         }
       }
   "17":
@@ -377,12 +364,13 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1854
+          "x": 695,
+          "y": 2030
         }
       }
   "18":
@@ -400,12 +388,13 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 195
+          "y": 355
         }
       }
   "22":
@@ -423,13 +412,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "35"
+    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 690
         }
       }
   "25":
@@ -447,38 +437,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "35"
+    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 515
-        }
-      }
-  "26":
-    id: "26"
-    taskid: eff3c1ea-a788-45db-8f09-38dfee0f8857
-    type: playbook
-    task:
-      id: eff3c1ea-a788-45db-8f09-38dfee0f8857
-      version: -1
-      name: Process Email - Generic
-      description: ""
-      playbookName: Process Email - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-      - "22"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 340
+          "y": 690
         }
       }
   "27":
@@ -497,12 +463,13 @@ tasks:
       '#none#':
       - "28"
       - "34"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2030
+          "x": 695,
+          "y": 2205
         }
       }
   "28":
@@ -521,12 +488,13 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2175
+          "x": 480,
+          "y": 2350
         }
       }
   "29":
@@ -541,12 +509,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2525
+          "y": 2700
         }
       }
   "30":
@@ -564,12 +533,13 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1701
+          "x": 695,
+          "y": 1885
         }
       }
   "31":
@@ -587,12 +557,13 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1215
+          "x": 60,
+          "y": 1390
         }
       }
   "33":
@@ -612,12 +583,13 @@ tasks:
       - "16"
       "yes":
       - "30"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1535
+          "x": 60,
+          "y": 1710
         }
       }
   "34":
@@ -638,20 +610,99 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2175
+          "x": 910,
+          "y": 2350
+        }
+      }
+  "35":
+    id: "35"
+    taskid: 100c8cb8-93ff-4340-8bc7-a549deab6749
+    type: playbook
+    task:
+      id: 100c8cb8-93ff-4340-8bc7-a549deab6749
+      version: -1
+      name: Calculate Severity - Generic
+      playbookName: Calculate Severity - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+  "36":
+    id: "36"
+    taskid: 8a96005f-1ad7-41ce-8e0e-b2bf8569a523
+    type: playbook
+    task:
+      id: 8a96005f-1ad7-41ce-8e0e-b2bf8569a523
+      version: -1
+      name: Process Email - Generic
+      description: ""
+      playbookId: 35feaddd-a31c-44df-8c72-6d7898eb2cd4
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+  "37":
+    id: "37"
+    taskid: 9e28b295-29fb-42e7-844f-bfa6b71f5390
+    type: playbook
+    task:
+      id: 9e28b295-29fb-42e7-844f-bfa6b71f5390
+      version: -1
+      name: Extract Indicators From Files - Generic
+      description: ""
+      playbookName: Extract Indicators From Files - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+      - "25"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "15_30_Malicious ": 0.26,
+      "33_30_yes": 0.4
+    },
     "paper": {
       "dimensions": {
-        "height": 2540,
+        "height": 2715,
         "width": 1240,
         "x": 50,
         "y": 50
