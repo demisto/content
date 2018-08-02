@@ -28,16 +28,17 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 37f4c9da-9eb3-4a92-83d5-f5226b449485
+    taskid: 5459696e-6c12-4483-8fc3-6d5e264ae872
     type: regular
     task:
-      id: 37f4c9da-9eb3-4a92-83d5-f5226b449485
+      id: 5459696e-6c12-4483-8fc3-6d5e264ae872
       version: -1
       name: McafeeATD Upload File
-      script: McAfee Advanced Threat Defense|||atd-file-upload
+      description: Uploads the submission to McAfee ATD.
+      script: McAfee Advanced Threat Defense_2do|||atd-file-upload
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense
+      brand: McAfee Advanced Threat Defense_2do
     nexttasks:
       '#none#':
       - "2"
@@ -67,12 +68,13 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 2d26186f-7b7e-4895-854f-4f7cad92ea6e
+    taskid: de5e15a9-6849-40ca-8e5e-6c1a381867e4
     type: playbook
     task:
-      id: 2d26186f-7b7e-4895-854f-4f7cad92ea6e
+      id: de5e15a9-6849-40ca-8e5e-6c1a381867e4
       version: -1
       name: GenericPolling
+      description: Generic Polling Playbook
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -108,16 +110,17 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 4c471e24-3601-457d-856e-8655c4b6cd89
+    taskid: 24dfef0c-2212-4615-8d85-9b882db9b34b
     type: regular
     task:
-      id: 4c471e24-3601-457d-856e-8655c4b6cd89
+      id: 24dfef0c-2212-4615-8d85-9b882db9b34b
       version: -1
       name: McAfeeATD Get Report
-      script: McAfee Advanced Threat Defense|||atd-get-report
+      description: Retrieve the reports from McAfee ATD.
+      script: McAfee Advanced Threat Defense_2do|||atd-get-report
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense
+      brand: McAfee Advanced Threat Defense_2do
     nexttasks:
       '#none#':
       - "5"
@@ -159,12 +162,14 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: ea83dc64-924f-4d05-81d0-a05e48d570b0
+    taskid: e6d67fab-5303-4b1e-8cf4-32ec2bdd35b5
     type: condition
     task:
-      id: ea83dc64-924f-4d05-81d0-a05e48d570b0
+      id: e6d67fab-5303-4b1e-8cf4-32ec2bdd35b5
       version: -1
       name: Is there a File to detonate?
+      description: |
+        Verify that there is a File to detonate.
       type: condition
       iscommand: false
       brand: ""
@@ -193,12 +198,14 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 9a2b3652-1cc8-4d46-8c75-6c7f98086a1b
+    taskid: abcaa1d2-029b-41c1-8234-bdddd15c80e8
     type: condition
     task:
-      id: 9a2b3652-1cc8-4d46-8c75-6c7f98086a1b
+      id: abcaa1d2-029b-41c1-8234-bdddd15c80e8
       version: -1
       name: Is McAfee ATD sandbox enabled?
+      description: |
+        Verify that there is a valid instance of McAfee ATD enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -224,7 +231,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: McAfee Advanced Threat Defense
+                        simple: McAfee Advanced Threat Defense_2do
                 - - operator: isEqualString
                     left:
                       value:
