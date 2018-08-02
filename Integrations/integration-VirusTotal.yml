@@ -509,33 +509,91 @@ script:
                 }
             }
         }
+
+        var detected_downloaded_samples = o.detected_downloaded_samples
+        if (detected_downloaded_samples == undefined) {
+            detected_downloaded_samples = []
+        } else {
+            detected_downloaded_samples = detected_downloaded_samples.slice(0,maxLen)
+        }
+
+        var undetected_downloaded_samples = o.undetected_downloaded_samples
+        if (undetected_downloaded_samples == undefined) {
+            undetected_downloaded_samples = []
+        } else {
+            undetected_downloaded_samples = undetected_downloaded_samples.slice(0,maxLen)
+        }
+
+        var detected_urls = o.detected_urls
+        if (detected_urls == undefined) {
+            detected_urls = []
+        } else {
+            detected_urls = detected_urls.slice(0,maxLen)
+        }
+
+        var detected_communicating_samples = o.detected_communicating_samples
+        if (detected_communicating_samples == undefined) {
+            detected_communicating_samples = []
+        } else {
+            detected_communicating_samples = detected_communicating_samples.slice(0,maxLen)
+        }
+        var undetected_communicating_samples = o.undetected_communicating_samples
+        if (undetected_communicating_samples == undefined) {
+            undetected_communicating_samples = []
+        } else {
+            undetected_communicating_samples = undetected_communicating_samples.slice(0,maxLen)
+        }
+        var resolutions = o.resolutions
+        if (resolutions == undefined) {
+            resolutions = []
+        } else {
+            resolutions = resolutions.slice(0,maxLen)
+        }
+        var detected_referrer_samples = o.detected_referrer_samples
+        if (detected_referrer_samples == undefined) {
+            detected_referrer_samples = []
+        } else {
+            detected_referrer_samples = detected_referrer_samples.slice(0,maxLen)
+        }
+        var undetected_referrer_samples = o.undetected_referrer_samples
+        if (undetected_referrer_samples == undefined) {
+            undetected_referrer_samples = []
+        } else {
+            undetected_referrer_samples = undetected_referrer_samples.slice(0,maxLen)
+        }
+        var domain_siblings = o.domain_siblings
+        if (domain_siblings == undefined) {
+            domain_siblings = []
+        } else {
+            domain_siblings = domain_siblings.slice(0,maxLen)
+        }
         domain_ec = {
             "Name": domain,
             "VirusTotal": {
-                'DownloadedHashes': o.detected_downloaded_samples,
-                'UnAVDetectedDownloadedHashes': o.undetected_downloaded_samples,
-                "DetectedURLs": o.detected_urls,
-                'CommunicatingHashes': o.detected_communicating_samples,
-                'UnAVDetectedCommunicatingHashes': o.undetected_communicating_samples,
-                'Resolutions': o.resolutions.slice(0,maxLen),
-                'ReferrerHashes': o.detected_referrer_samples,
-                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples
+                'DownloadedHashes': detected_downloaded_samples,
+                'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
+                "DetectedURLs": detected_urls,
+                'CommunicatingHashes': detected_communicating_samples,
+                'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
+                'Resolutions': resolutions,
+                'ReferrerHashes': detected_referrer_samples,
+                'UnAVDetectedReferrerHashes': undetected_referrer_samples,
                 'Whois': o.whois,
-                'Subdomains': o.domain_siblings,
+                'Subdomains': domain_siblings,
             }
         };
         if (ec[outputPaths.domain]){
             ec['Domain(val.Name==obj.Name)'].VirusTotal = {
-                'DownloadedHashes': o.detected_downloaded_samples,
-                'UnAVDetectedDownloadedHashes': o.undetected_downloaded_samples,
-                "DetectedURLs": o.detected_urls,
-                'CommunicatingHashes': o.detected_communicating_samples,
-                'UnAVDetectedCommunicatingHashes': o.undetected_communicating_samples,
-                'Resolutions': o.resolutions.slice(0,maxLen),
-                'ReferrerHashes': o.detected_referrer_samples,
-                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples
+                'DownloadedHashes': detected_downloaded_samples,
+                'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
+                "DetectedURLs": detected_urls,
+                'CommunicatingHashes': detected_communicating_samples,
+                'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
+                'Resolutions': resolutions,
+                'ReferrerHashes': detected_referrer_samples,
+                'UnAVDetectedReferrerHashes': undetected_referrer_samples,
                 'Whois': o.whois,
-                'Subdomains': o.domain_siblings,
+                'Subdomains': domain_siblings,
             }
         } else {
             ec[outputPaths.domain] = domain_ec;
@@ -989,4 +1047,4 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
-releaseNotes: "Enhanced outputs for ip,domain,file commands. Scans table is now available as output in file,url commands"
+releaseNotes: "-"
