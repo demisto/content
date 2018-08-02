@@ -282,31 +282,31 @@ inputs:
   required: false
   description: timeout to stop pooling and resume the playbook
 outputs:
-- contextPath: File.Name
+- contextPath: InfoFile.Name
   description: Filename (only in case of report type=json)
   type: string
-- contextPath: File.EntryID
+- contextPath: InfoFile.EntryID
   description: The Entry ID of the sample
   type: string
-- contextPath: File.Size
+- contextPath: InfoFile.Size
   description: File size (only in case of report type=json)
   type: number
-- contextPath: File.MD5
+- contextPath: InfoFile.MD5
   description: MD5 hash of the file (only in case of report type=json)
   type: string
-- contextPath: File.SHA1
+- contextPath: InfoFile.SHA1
   description: SHA1 hash of the file (only in case of report type=json)
   type: string
-- contextPath: File.Type
+- contextPath: InfoFile.Type
   description: File type e.g. "PE" (only in case of report type=json)
   type: string
-- contextPath: File.SHA256
+- contextPath: InfoFile.SHA256
   description: SHA256 hash of the file (only in case of report type=json)
   type: string
-- contextPath: File.Malicious.Vendor
+- contextPath: InfoFile.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
-- contextPath: File.Malicious.Description
+- contextPath: InfoFile.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
 - contextPath: DBotScore.Indicator
