@@ -813,7 +813,7 @@ script:
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
-            list_users()
+            list_users(ADMIN_EMAIL.split('@')[1])
             demisto.results('ok')
             sys.exit(0)
 
