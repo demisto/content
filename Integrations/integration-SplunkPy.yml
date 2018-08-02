@@ -98,7 +98,7 @@ script:
               for dictkey, dictvalue in result.items():
                 if dictkey == key:
                   alreadyThere = True
-                  result[dictkey] = dictvalue + ", " + val
+                  result[dictkey] = dictvalue + "," + val
 
               if alreadyThere == False:
                 result[key] = val
