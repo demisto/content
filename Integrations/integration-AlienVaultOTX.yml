@@ -117,10 +117,7 @@ script:
         'alienvault-query-file': {
             type: 'file',
             argName: getArgName,
-            contextKey: function(args) {
-                argName = getArgName(args).toUpperCase();
-                return 'File(val.' + argName + ' && val.' + argName + '==obj.' + argName + ')';
-            },
+            contextKey: outputPaths.file,
             translator: function(args) {
                 return [
                     {to: getArgName(args).toUpperCase(), from: 'indicator'},
@@ -273,44 +270,22 @@ script:
     if (currentCommand.contextKey) {
         ec = {};
         contextKey = currentCommand.getContextKey instanceof Function ? currentCommand.contextKey(args) : currentCommand.contextKey;
-        dbotScore = 0;
         outputPath = outputPaths.file;
-        dbotScoreType = argName;
-        malInfo = {
-            Malicious: {Vendor: 'AlienVault OTX', Description: 'Found in ' + dq(raw, 'pulse_info.count') + ' pulses'}
-        };
         if (argName) {
             switch (argName) {
                 case 'ip':
-                    malInfo['Address'] = args[argName];
                     outputPath = outputPaths.ip;
                     break;
                 case 'domain':
-                    malInfo['Name'] = args[argName];
                     outputPath = outputPaths.domain;
-                    dbotScoreType = 'domain';
                     break;
                 case 'url':
-                    malInfo['Data'] = args[argName];
                     outputPath = outputPaths.url;
                     break;
-                case 'file':
-                    delete(malInfo[argName.toUpperCase()]);
-                    malInfo.MD5 = args[argName];
-                    dbotScoreType = 'hash';
-                    break;
-                default:
-                    dbotScoreType = 'hash';
-                    malInfo[argName.toUpperCase()] = args[argName];
             }
-            if (dq(raw, 'pulse_info.count') > 0) {
-                dbotScore = dq(raw, 'pulse_info.count');
-                malInfo.Malicious.PulseIDs = dq(raw, 'pulse_info.pulses.id');
-                addMalicious(ec, outputPath, malInfo);
-            }
+
             ec[contextKey] = createContext(translated);
         }
-        ec.DBotScore = {Indicator: args[argName], Type: dbotScoreType, Vendor: 'AlienVault OTX', Score: dbotScore};
         entry.EntryContext = ec;
         if (ec && ec[contextKey] && ec[contextKey].Geo && ec[contextKey].Geo.Latitude && ec[contextKey].Geo.Longitude) {
             entry = [
@@ -347,14 +322,6 @@ script:
       description: IP longitude
     - contextPath: AlienVaultOTX.Reputation
       description: IP reputation
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Score
-      description: The score from AlienVault
-    - contextPath: DBotScore.Type
-      description: Indicator type
-    - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
     description: Query IP in AlienVault OTX
   - name: domain
     arguments:
@@ -369,14 +336,6 @@ script:
       description: Alexa URL for domain data
     - contextPath: Domain.AlienVaultOTX.Whois
       description: Whois URL for domain data
-    - contextPath: DBotScore.Indicator
-      description: The indicator checked
-    - contextPath: DBotScore.Score
-      description: The score from AlienVault
-    - contextPath: DBotScore.Type
-      description: Indicator type
-    - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
     description: Query domain in AlienVault OTX
   - name: ipv6
     arguments:
@@ -391,14 +350,6 @@ script:
       description: IP ASN
     - contextPath: IP.AlienVaultOTX.Reputation
       description: AlienVault IP reputation
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Score
-      description: The score from AlienVault
-    - contextPath: DBotScore.Type
-      description: Indicator type
-    - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
     description: Query IP in AlienVault OTX
   - name: hostname
     arguments:
@@ -423,16 +374,6 @@ script:
     outputs:
     - contextPath: File.MD5
       description: File md5
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Score
-      description: The score from AlienVault
-    - contextPath: DBotScore.Type
-      description: Indicator type
-    - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
-    - contextPath: File.Malicious.PulseIDs
-      description: IDs of pulses marked this as malicious
     description: Query file in AlienVault OTX
   - name: alienvault-query-file
     arguments:
@@ -449,14 +390,6 @@ script:
       description: File sha1
     - contextPath: File.SHA256
       description: File sha256
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-    - contextPath: DBotScore.Score
-      description: The score from AlienVault
-    - contextPath: DBotScore.Type
-      description: Indicator type
-    - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
     description: Query file in AlienVault OTX
   - name: alienvault-search-pulses
     arguments:

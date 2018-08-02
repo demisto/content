@@ -1,0 +1,196 @@
+commonfields:
+  id: AlphaSOC Wisdom
+  version: -1
+name: AlphaSOC Wisdom
+display: AlphaSOC Wisdom
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: DNS and IP threat intelligence via the AlphaSOC platform
+detaileddescription: |-
+  Don’t have an API key? Register at [https://alphasoc.com/wisdom](https://alphasoc.com/wisdom)
+
+  ---
+
+  [Click here](https://www.alphasoc.com/docs/wisdom-output-format) to discover the various flags returned by Wisdom.
+configuration:
+- display: AlphaSOC Wisdom API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    var wisdomURL = 'https://api.alphasoc.net/v1/wisdom'
+
+    var sendRequest = function(requestUrl) {
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: {
+                    Authorization: ['Basic ' + btoa(params.APIKey + ':')],
+                    Accept: ['application/json']
+                }
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (!res || res.StatusCode < 200 || res.StatusCode >= 300) {
+            var errorString = '';
+
+            if (res.StatusCode === 401 || res.StatusCode === 403) {
+                errorString = '\n\nError: Invalid API key\n';
+            }
+
+            errorString += '\nRequest Failed'
+                + '\nRequestUrl: ' + requestUrl
+                + '\nStatus code: ' + res.StatusCode
+                + '\nResponse: ' + JSON.stringify(res);
+            throw errorString;
+        }
+
+        try {
+            return JSON.parse(res.Body);
+        } catch (err) {
+            throw 'Failed to parse JSON response: ' + res.Body + '\n';
+        }
+    };
+
+    var extractDomainName = function(url) {
+        var hostname;
+
+        //find & remove protocol (http, ftp, etc.) and get the hostname
+        if (url.indexOf("://") > -1) {
+            hostname = url.split('/')[2];
+        }
+        else {
+            hostname = url ? url.split('/')[0] : '';
+        }
+
+        //find & remove port number
+        hostname = hostname.split(':')[0];
+
+        return hostname;
+    }
+
+    var getDomainWisdom = function(domain) {
+        var extractedDomain = extractDomainName(domain);
+        var url = wisdomURL + '?q=' + extractedDomain;
+        var result = sendRequest(url);
+
+        var ec = {
+            Domain: {Name: extractedDomain},
+            Wisdom: {Flag: result.flags}
+        }
+
+        var md = '#### AlphaSOC Wisdom Flags for __' + extractedDomain + '__\n';
+
+        if (result.flags.length === 0) {
+            md += '__No flags.__\n';
+        } else {
+            for (var i = 0; i < result.flags.length; i++) {
+                md += '- ' + result.flags[i] + '\n';
+            }
+        }
+
+        return {
+            Type: entryTypes.note,
+            EntryContext: ec,
+
+            ContentsFormat: formats.json,
+            Contents: result,
+
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md
+        };
+    }
+
+    var getIPWisdom = function(proto, ip, port) {
+        var escapedIP = ip.indexOf(':') > 0 ? '[' + ip + ']' : ip;
+        var query = proto + ':' + escapedIP + ':' + port;
+        var url = wisdomURL + '?q=' + query;
+        var result = sendRequest(url);
+
+        var ec = {
+            Wisdom: {Flag: result.flags}
+        }
+
+        var md = '#### AlphaSOC Wisdom Flags for __' + query + '__\n';
+
+        if (result.flags.length === 0) {
+            md += '__No flags.__\n';
+        } else {
+            for (var i = 0; i < result.flags.length; i++) {
+                md += '- ' + result.flags[i] + '\n';
+            }
+        }
+
+        return {
+            Type: entryTypes.note,
+            EntryContext: ec,
+
+            ContentsFormat: formats.json,
+            Contents: result,
+
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md
+        };
+    }
+
+    // The command input arg holds the command sent from the user.
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            getDomainWisdom('example.com');
+            return 'ok';
+        case 'wisdom-domain-flags':
+            return getDomainWisdom(args.domain);
+        case 'wisdom-ip-flags':
+            return getIPWisdom(args.proto, args.ip, args.port)
+        default:
+    }
+  type: javascript
+  commands:
+  - name: wisdom-domain-flags
+    arguments:
+    - name: domain
+      required: true
+      description: Enter a domain or URL (e.g. www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Wisdom.Flag
+      description: The AlphaSOC security category or feature
+    description: Returns a list of flags (categories and features) assigned to a domain
+      by AlphaSOC Threat Intelligence
+  - name: wisdom-ip-flags
+    arguments:
+    - name: proto
+      required: true
+      description: Transport layer protocol (tcp, udp, icmp)
+      defaultValue: tcp
+    - name: ip
+      required: true
+      description: IPv4 or IPv6
+    - name: port
+      required: true
+      description: Destination port
+    outputs:
+    - contextPath: Wisdom.Flag
+      description: The AlphaSOC security category or feature
+    description: Returns a list of flags (categories and features) assigned to an
+      IP connection (defined by protocol, destination address and port number) by
+      AlphaSOC Threat Intelligence
+  runonce: false
+releaseNotes: "-"

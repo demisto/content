@@ -1,0 +1,308 @@
+id: test_Qradar
+version: -1
+name: test_Qradar
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0a901319-78e6-4052-85b2-5ce4056dad91
+    type: start
+    task:
+      id: 0a901319-78e6-4052-85b2-5ce4056dad91
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 9c37d8eb-4006-4dd5-867d-48cd9bff4dac
+    type: regular
+    task:
+      id: 9c37d8eb-4006-4dd5-867d-48cd9bff4dac
+      version: -1
+      name: qradar-get-assets
+      script: QRadar|||qradar-get-assets
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      fields: {}
+      filter: {}
+      headers: {}
+      range: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 402e7b15-4977-4a69-89a1-27497517bdfb
+    type: regular
+    task:
+      id: 402e7b15-4977-4a69-89a1-27497517bdfb
+      version: -1
+      name: qradar-create-note in existing offense
+      script: QRadar|||qradar-create-note
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      fields: {}
+      headers: {}
+      note_text:
+        simple: This is a test note
+      offense_id:
+        simple: "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: bbe7e9c1-c64a-4561-8ce1-3c431ccd4cae
+    type: regular
+    task:
+      id: bbe7e9c1-c64a-4561-8ce1-3c431ccd4cae
+      version: -1
+      name: qradar-offenses
+      script: QRadar|||qradar-offenses
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      fields: {}
+      filter: {}
+      headers: {}
+      range: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: f21022bf-2056-424c-8dda-3c62472bb635
+    type: regular
+    task:
+      id: f21022bf-2056-424c-8dda-3c62472bb635
+      version: -1
+      name: qradar-searches
+      script: QRadar|||qradar-searches
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      headers: {}
+      query_expression:
+        simple: SELECT RULENAME(123) FROM events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 4629d30f-0405-4c2f-86a1-ed7d8c2c46b5
+    type: regular
+    task:
+      id: 4629d30f-0405-4c2f-86a1-ed7d8c2c46b5
+      version: -1
+      name: qradar-get-search-results
+      script: QRadar|||qradar-get-search-results
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      headers: {}
+      range: {}
+      search_id:
+        simple: d8c94425-d257-4a32-9c05-3388af704232
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 4140d728-b9f5-484f-8cd3-7993911d6e39
+    type: regular
+    task:
+      id: 4140d728-b9f5-484f-8cd3-7993911d6e39
+      version: -1
+      name: qradar-get-note
+      script: QRadar|||qradar-get-note
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fields: {}
+      headers: {}
+      note_id:
+        simple: "103"
+      offense_id:
+        simple: "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 6a9f1004-0488-478e-8dad-4710b6960951
+    type: regular
+    task:
+      id: 6a9f1004-0488-478e-8dad-4710b6960951
+      version: -1
+      name: qradar-update-offense
+      script: QRadar|||qradar-update-offense
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      assigned_to: {}
+      closing_reason_id: {}
+      fields: {}
+      follow_up: {}
+      headers: {}
+      offense_id:
+        simple: "70"
+      protected: {}
+      status:
+        simple: OPEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 1ea55ba6-bd85-48f9-81a7-0848d7b651ab
+    type: regular
+    task:
+      id: 1ea55ba6-bd85-48f9-81a7-0848d7b651ab
+      version: -1
+      name: qradar-get-search
+      script: QRadar|||qradar-get-search
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      headers: {}
+      search_id:
+        simple: d8c94425-d257-4a32-9c05-3388af704232
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 743d634d-2596-44c5-8e80-a7e8942ff3d4
+    type: regular
+    task:
+      id: 743d634d-2596-44c5-8e80-a7e8942ff3d4
+      version: -1
+      name: qradar-get-closing-reasons
+      script: QRadar|||qradar-get-closing-reasons
+      type: regular
+      iscommand: true
+      brand: QRadar
+    scriptarguments:
+      fields: {}
+      filter: {}
+      include_deleted: {}
+      include_reserved: {}
+      range: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1580
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1625,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
