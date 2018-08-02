@@ -28,11 +28,11 @@
 						"accessor": "",
 						"transformers": [
 							{
-								"operator": "split",
+								"operator": "splitAndTrim",
 								"args": {
 									"delimiter": {
 										"value": {
-											"simple": ".",
+											"simple": ",",
 											"complex": null
 										},
 										"isContext": false
@@ -40,12 +40,20 @@
 								}
 							},
 							{
-								"operator": "ReverseList",
-								"args": {}
-							},
-							{
-								"operator": "e56a7467-e156-4296-8c87-25b64aa20b3a",
-								"args": {}
+								"operator": "replaceMatch",
+								"args": {
+									"regex": {
+										"value": {
+											"simple": ".*\\.",
+											"complex": null
+										},
+										"isContext": false
+									},
+									"replaceWith": {
+										"value": null,
+										"isContext": false
+									}
+								}
 							}
 						]
 					}

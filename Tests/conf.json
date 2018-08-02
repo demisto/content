@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Gmail",
+            "playbookID": "GmailTest"
+        },
+        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
