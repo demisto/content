@@ -20,7 +20,7 @@ script: |-
       'ContentsFormat' : formats['json'],
       'HumanReadable': resp,
       'ReadableContentsFormat' : formats['markdown'],
-      'EntryContext' : {"openPort":openPort}})
+      'EntryContext' : {"portOpen":openPort}})
 type: python
 tags: []
 comment: 'Checks whether a port was open on given host'
@@ -31,7 +31,7 @@ args:
   description: hostname to check
 - name: port
 outputs:
-- contextPath: openPort
+- contextPath: portOpen
   description: Returns true if given port on host was open
   type: boolean
 scripttarget: 0
