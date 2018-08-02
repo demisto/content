@@ -981,18 +981,30 @@ script:
         must be provided
     outputs:
     - contextPath: Bigfix.Patch.ID
+      description: Patch(fixlet) id
     - contextPath: Bigfix.Patch.Name
+      description: Patch name
     - contextPath: Bigfix.Patch.Resource
+      description: Link (URL) to the patch
     - contextPath: Bigfix.Patch.Description
+      description: Description
     - contextPath: Bigfix.Patch.Relevance
+      description:
     - contextPath: Bigfix.Patch.Category
       type: string
+      description:
     - contextPath: Bigfix.Patch.DownloadSize
+      description:
     - contextPath: Bigfix.Patch.Source
+      description:
     - contextPath: Bigfix.Patch.SourceID
+      description:
     - contextPath: Bigfix.Patch.SourceSeverity
+      description:
     - contextPath: Bigfix.Patch.SourceReleaseDate
+      description:
     - contextPath: Bigfix.Patch.ActionID
+      description: Action ID
       type: string
     - contextPath: Bigfix.Patch.ActionScript
       type: string
