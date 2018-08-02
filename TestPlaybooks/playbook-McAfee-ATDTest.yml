@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 44099fd7-56f7-4135-877b-51ddaf6d1000
+    taskid: 1695be4e-86eb-460d-8f57-1c6fb1da76c8
     type: start
     task:
-      id: 44099fd7-56f7-4135-877b-51ddaf6d1000
+      id: 1695be4e-86eb-460d-8f57-1c6fb1da76c8
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,13 @@ tasks:
           "y": -95
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 2611454a-d0f3-4e8b-860c-92dfb8d81ea2
+    taskid: 76832232-858b-4af1-8405-abe340e809af
     type: regular
     task:
-      id: 2611454a-d0f3-4e8b-860c-92dfb8d81ea2
+      id: 76832232-858b-4af1-8405-abe340e809af
       version: -1
       name: atd-login
       description: Returns a logon result for ATD
@@ -48,12 +49,13 @@ tasks:
           "y": 364
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 66a7d1eb-ef1c-429f-8ecb-301f144e49e0
+    taskid: 0364ee54-17ad-4f94-85be-c832da7680d0
     type: regular
     task:
-      id: 66a7d1eb-ef1c-429f-8ecb-301f144e49e0
+      id: 0364ee54-17ad-4f94-85be-c832da7680d0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -76,12 +78,13 @@ tasks:
           "y": 199
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: b1f52733-0e7a-48bf-8fc5-8da573381b8b
+    taskid: a3af1124-c93a-4418-82b5-a04e68ed0390
     type: title
     task:
-      id: b1f52733-0e7a-48bf-8fc5-8da573381b8b
+      id: a3af1124-c93a-4418-82b5-a04e68ed0390
       version: -1
       name: Test Playbook McAfee ATD
       type: title
@@ -98,12 +101,13 @@ tasks:
           "y": 48
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 7cd35ec8-bb22-43d2-8568-2c90e6cd67ee
+    taskid: 205d1e49-816d-4cb2-8d5a-9b38a901ffcf
     type: condition
     task:
-      id: 7cd35ec8-bb22-43d2-8568-2c90e6cd67ee
+      id: 205d1e49-816d-4cb2-8d5a-9b38a901ffcf
       version: -1
       name: atd-login AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -130,12 +134,13 @@ tasks:
           "y": 551
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: b15e504b-63f1-4aa7-8021-7eef98a797d8
+    taskid: a325df6f-a81b-4977-86c5-6240758b6f1b
     type: regular
     task:
-      id: b15e504b-63f1-4aa7-8021-7eef98a797d8
+      id: a325df6f-a81b-4977-86c5-6240758b6f1b
       version: -1
       name: atd-list-user
       description: ' displays the user profile information present on the McAfee Advanced
@@ -157,12 +162,13 @@ tasks:
           "y": 731
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: c4f0ce37-2185-4716-880f-96934b8e2e9c
+    taskid: e7b0d713-fe33-4e8f-8031-deb06d75059e
     type: condition
     task:
-      id: c4f0ce37-2185-4716-880f-96934b8e2e9c
+      id: e7b0d713-fe33-4e8f-8031-deb06d75059e
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -179,7 +185,7 @@ tasks:
         complex:
           root: ATD
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: ATD.Users.FullName
@@ -200,12 +206,13 @@ tasks:
           "y": 911
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: d1a7a8d5-e2ea-4a50-84af-6c9a57ca44d8
+    taskid: e9c304e9-6d55-4b55-8de3-28ac89b12028
     type: regular
     task:
-      id: d1a7a8d5-e2ea-4a50-84af-6c9a57ca44d8
+      id: e9c304e9-6d55-4b55-8de3-28ac89b12028
       version: -1
       name: atd-list-analyzer-profiles
       description: ' display the analyzer profiles. Only the analyzer profiles to
@@ -225,12 +232,13 @@ tasks:
           "y": 1091
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 875e2fc6-bdd9-4b3f-827e-7eb93fb35e67
+    taskid: 716b76f9-2b49-44bd-8ac8-6747c1e38f51
     type: condition
     task:
-      id: 875e2fc6-bdd9-4b3f-827e-7eb93fb35e67
+      id: 716b76f9-2b49-44bd-8ac8-6747c1e38f51
       version: -1
       name: Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -253,12 +261,13 @@ tasks:
           "y": 1271
         }
       }
+    note: false
   "9":
     id: "9"
-    taskid: 4ed42f5b-ae2f-479e-8e78-9d4774655bc2
+    taskid: 5516d48e-86d5-4e8a-81cd-e8f0638a3602
     type: regular
     task:
-      id: 4ed42f5b-ae2f-479e-8e78-9d4774655bc2
+      id: 5516d48e-86d5-4e8a-81cd-e8f0638a3602
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -266,6 +275,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
     scriptarguments:
       all:
         simple: "yes"
@@ -278,12 +290,13 @@ tasks:
           "y": 2301
         }
       }
+    note: false
   "10":
     id: "10"
-    taskid: ac02cb5a-143a-4ac1-8491-95e96dfb5d9a
+    taskid: 8f121db1-dd42-4ab3-8bcb-3d6d0949c63a
     type: regular
     task:
-      id: ac02cb5a-143a-4ac1-8491-95e96dfb5d9a
+      id: 8f121db1-dd42-4ab3-8bcb-3d6d0949c63a
       version: -1
       name: detonate-url
       description: Detonate URL through McAfee ATD
@@ -309,12 +322,13 @@ tasks:
           "y": 1527
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: e052b609-1228-4957-8a1c-2339a397c1ea
+    taskid: 8af01ba9-663c-4562-8d74-81df87f5940f
     type: condition
     task:
-      id: e052b609-1228-4957-8a1c-2339a397c1ea
+      id: 8af01ba9-663c-4562-8d74-81df87f5940f
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -341,12 +355,13 @@ tasks:
           "y": 1707
         }
       }
+    note: false
   "12":
     id: "12"
-    taskid: 697eef7a-b0d9-420f-8c15-eac16240770c
+    taskid: 75d0f8db-ba3e-417a-8176-1ab5f64b571b
     type: regular
     task:
-      id: 697eef7a-b0d9-420f-8c15-eac16240770c
+      id: 75d0f8db-ba3e-417a-8176-1ab5f64b571b
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -372,12 +387,13 @@ tasks:
           "y": 1927
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 265bd8ad-0759-45ca-864f-0c7a7b1939f6
+    taskid: 6a8ca3ec-906d-4c8f-8003-6ef6ab7e5d01
     type: regular
     task:
-      id: 265bd8ad-0759-45ca-864f-0c7a7b1939f6
+      id: 6a8ca3ec-906d-4c8f-8003-6ef6ab7e5d01
       version: -1
       name: detonate-file
       description: Detonate file through McAfee ATD
@@ -403,6 +419,166 @@ tasks:
           "y": 2107
         }
       }
+    note: false
+  "14":
+    id: "14"
+    taskid: eb1afe30-f813-4af2-839b-06f93377646a
+    type: playbook
+    task:
+      id: eb1afe30-f813-4af2-839b-06f93377646a
+      version: -1
+      name: McAfee ATD Detonate File
+      playbookName: McAfee ATD Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      EntryID:
+        simple: ${File.EntryID}
+      interval:
+        simple: "1"
+      timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3195
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 0fa7a0de-e06d-4d30-80fe-7d28eea3ba34
+    type: playbook
+    task:
+      id: 0fa7a0de-e06d-4d30-80fe-7d28eea3ba34
+      version: -1
+      name: McAfee ATD Detonate URL
+      playbookName: McAfee ATD Detonate URL
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      URL:
+        simple: https://www.demisto.com
+      interval:
+        simple: "1"
+      timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 445,
+          "y": 2516
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 5489b7a2-8d1a-4374-8dcf-3652312cb337
+    type: regular
+    task:
+      id: 5489b7a2-8d1a-4374-8dcf-3652312cb337
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      data:
+        simple: dancingqueen
+      entryId: {}
+      filename:
+        simple: abba
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2972
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: fc39a322-b385-402e-89e5-6716c5d470a2
+    type: regular
+    task:
+      id: fc39a322-b385-402e-89e5-6716c5d470a2
+      version: -1
+      name: DeleteContext
+      description: Delete all fields from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2722
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: bc5c47ef-2c4c-4b43-8b17-229aaf55bb8d
+    type: regular
+    task:
+      id: bc5c47ef-2c4c-4b43-8b17-229aaf55bb8d
+      version: -1
+      name: DeleteContext
+      description: Delete all fields from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": 3420
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -410,9 +586,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2491,
-        "width": 383,
-        "x": 447,
+        "height": 3610,
+        "width": 385,
+        "x": 445,
         "y": -95
       }
     }
