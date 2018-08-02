@@ -829,4 +829,3 @@ script:
       type: string
     description: Look up threat intel context for an indicator in Recorded Future.
   runonce: false
-releaseNotes: "-"

@@ -21,6 +21,5 @@
     "params": {
         "timeFrame": "minutes"
     },
-    "size": 1440,
-    "releaseNotes": "Added support for last 24 hours data"
+    "size": 1440
 }
