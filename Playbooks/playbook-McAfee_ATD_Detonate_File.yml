@@ -1,6 +1,7 @@
 id: McAfee ATD Detonate File
 version: -1
 name: McAfee ATD Detonate File
+fromversion: 4.0.0
 description: Detonates a File using the McAfee Advanced Threat Defense sandbox
 starttaskid: "0"
 tasks:
@@ -12,6 +13,7 @@ tasks:
       id: 489b704c-bef9-40e7-8aa8-f74cca308a94
       version: -1
       name: ""
+      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
@@ -148,6 +150,7 @@ tasks:
       id: e589b774-3cee-4dff-8e14-788ef3590dfa
       version: -1
       name: Done
+      description: "-"
       type: title
       iscommand: false
       brand: ""

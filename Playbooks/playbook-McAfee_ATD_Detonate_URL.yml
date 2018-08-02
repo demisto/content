@@ -1,6 +1,7 @@
 id: McAfee ATD Detonate URL
 version: -1
 name: McAfee ATD Detonate URL
+fromversion: 4.0.0
 description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
 starttaskid: "0"
 tasks:
@@ -12,6 +13,7 @@ tasks:
       id: 08e29819-73da-4fab-8f7e-b99064f37a49
       version: -1
       name: ""
+      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
@@ -74,6 +76,7 @@ tasks:
       id: d5b61611-c28b-4cd4-81ca-aed5aa175791
       version: -1
       name: GenericPolling
+      description: "-"
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -181,6 +184,7 @@ tasks:
       id: 05df36f0-af05-42aa-8621-87675e7e8054
       version: -1
       name: Done
+      description: "-"
       type: title
       iscommand: false
       brand: ""
