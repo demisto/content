@@ -4,6 +4,7 @@ name: ThreatGrid - Detonate URL
 description: Detonate one or more files using the Wildfire integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
 starttaskid: "0"
+fromversion: "3.6.0"
 tasks:
   "0":
     id: "0"
@@ -15,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: "-"
     nexttasks:
       '#none#':
       - "5"
@@ -94,6 +96,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: "Done"
     separatecontext: false
     view: |-
       {
@@ -143,6 +146,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: "Generic polling"
     nexttasks:
       '#none#':
       - "8"
@@ -184,6 +188,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Threat Grid
+      description: Uplads a sample to threat grid
     nexttasks:
       '#none#':
       - "12"
@@ -225,6 +230,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Threat Grid
+      description: "Create a file from url"
     nexttasks:
       '#none#':
       - "13"
