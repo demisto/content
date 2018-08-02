@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9377edf1-cff9-45d7-8b4b-915f63d842ec
+    taskid: 866194e1-a181-4860-89c3-12c399906661
     type: start
     task:
-      id: 9377edf1-cff9-45d7-8b4b-915f63d842ec
+      id: 866194e1-a181-4860-89c3-12c399906661
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: b237fcd1-5931-4c8c-8e44-26d00da229ee
+    taskid: 3c58da08-7839-4473-8319-bf44ec6db001
     type: regular
     task:
-      id: b237fcd1-5931-4c8c-8e44-26d00da229ee
+      id: 3c58da08-7839-4473-8319-bf44ec6db001
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -56,17 +56,17 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: feb684af-3d58-4214-8012-ecdca0b1be17
+    taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
     type: regular
     task:
-      id: feb684af-3d58-4214-8012-ecdca0b1be17
+      id: 1b267d2e-ce51-4d14-8248-fd63c504da3f
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
-      script: jira_copy|||jira-create-issue
+      script: jira_copy3|||jira-create-issue
       type: regular
       iscommand: true
-      brand: jira_copy
+      brand: jira_copy3
     nexttasks:
       '#none#':
       - "3"
@@ -78,7 +78,7 @@ tasks:
       issueJson: {}
       issueTypeId: {}
       issueTypeName:
-        simple: Incident
+        simple: Bug
       labels: {}
       priority: {}
       projectKey:
@@ -98,17 +98,17 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 872daff4-f81a-4a8c-8ffa-a16de29e9029
+    taskid: de36e03d-39df-47f0-8770-3814fb47309d
     type: regular
     task:
-      id: 872daff4-f81a-4a8c-8ffa-a16de29e9029
+      id: de36e03d-39df-47f0-8770-3814fb47309d
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
-      script: jira_copy|||jira-get-issue
+      script: jira_copy3|||jira-get-issue
       type: regular
       iscommand: true
-      brand: jira_copy
+      brand: jira_copy3
     nexttasks:
       '#none#':
       - "4"
@@ -127,10 +127,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 0cfd18d5-085f-40f1-8156-0f99fb22cf33
+    taskid: ef93cc85-2f16-4f5a-893a-2736c25a6508
     type: regular
     task:
-      id: 0cfd18d5-085f-40f1-8156-0f99fb22cf33
+      id: ef93cc85-2f16-4f5a-893a-2736c25a6508
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -164,17 +164,17 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 73e9fe52-4681-4330-8253-ff199fcdc9b4
+    taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
     type: regular
     task:
-      id: 73e9fe52-4681-4330-8253-ff199fcdc9b4
+      id: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
-      script: jira_copy|||jira-issue-add-comment
+      script: jira_copy3|||jira-issue-add-comment
       type: regular
       iscommand: true
-      brand: jira_copy
+      brand: jira_copy3
     nexttasks:
       '#none#':
       - "6"
@@ -190,22 +190,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 896
         }
       }
   "6":
     id: "6"
-    taskid: a8604437-4b1d-4c8e-87f2-15365215f4d4
+    taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
     type: regular
     task:
-      id: a8604437-4b1d-4c8e-87f2-15365215f4d4
+      id: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
-      script: jira_copy|||jira-issue-add-link
+      script: jira_copy3|||jira-issue-add-link
       type: regular
       iscommand: true
-      brand: jira_copy
+      brand: jira_copy3
     nexttasks:
       '#none#':
       - "13"
@@ -230,17 +230,17 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 304aa79e-bd7c-4a51-8725-c40ff810fc01
+    taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
     type: regular
     task:
-      id: 304aa79e-bd7c-4a51-8725-c40ff810fc01
+      id: 9f28722d-9a90-4567-83a6-981df7a5d32e
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
-      script: jira_copy|||jira-issue-upload-file
+      script: jira_copy3|||jira-issue-upload-file
       type: regular
       iscommand: true
-      brand: jira_copy
+      brand: jira_copy3
     nexttasks:
       '#none#':
       - "12"
@@ -260,10 +260,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: 8f2fc21a-5e01-4f38-803f-39b4c5b59895
+    taskid: f0a00a75-2589-4912-8d4f-5db6ca467b93
     type: regular
     task:
-      id: 8f2fc21a-5e01-4f38-803f-39b4c5b59895
+      id: f0a00a75-2589-4912-8d4f-5db6ca467b93
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -297,17 +297,17 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: 38edd903-23a1-43b4-8838-d7a1d7b1dd76
+    taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
     type: regular
     task:
-      id: 38edd903-23a1-43b4-8838-d7a1d7b1dd76
+      id: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
       version: -1
       name: jira-issue-query
       description: Query Jira issues
-      script: jira_copy|||jira-issue-query
+      script: jira_copy3|||jira-issue-query
       type: regular
       iscommand: true
-      brand: jira_copy
+      brand: jira_copy3
     nexttasks:
       '#none#':
       - "11"
@@ -328,10 +328,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: 8fe72d56-ec6f-439e-8238-04186475b097
+    taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
     type: regular
     task:
-      id: 8fe72d56-ec6f-439e-8238-04186475b097
+      id: 94503749-9577-49e0-843c-f1ec13b3e38f
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -359,19 +359,19 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 8135cdce-2ef2-4c7a-8c56-d93116a2bb76
+    taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
     type: regular
     task:
-      id: 8135cdce-2ef2-4c7a-8c56-d93116a2bb76
+      id: b64bfaf1-2688-4b84-8e40-12f88afda0dd
       version: -1
       name: jira-edit-issue
-      script: jira_copy|||jira-edit-issue
+      script: jira_copy3|||jira-edit-issue
       type: regular
       iscommand: true
-      brand: jira_copy
+      brand: jira_copy3
     nexttasks:
       '#none#':
-      - "15"
+      - "18"
     scriptarguments:
       assignee: {}
       description: {}
@@ -381,6 +381,8 @@ tasks:
       issueJson: {}
       labels: {}
       priority: {}
+      status:
+        simple: Done
       summary:
         simple: Edited
     reputationcalc: 0
@@ -389,73 +391,15 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
-        }
-      }
-  "15":
-    id: "15"
-    taskid: 18cec7c7-a797-42a4-8894-c17095512fac
-    type: regular
-    task:
-      id: 18cec7c7-a797-42a4-8894-c17095512fac
-      version: -1
-      name: jira-get-status-ids
-      script: jira_copy|||jira-get-status-ids
-      type: regular
-      iscommand: true
-      brand: jira_copy
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      issueId:
-        simple: ${Ticket.Id}
-      using:
-        simple: jira_copy_instance_1
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-  "16":
-    id: "16"
-    taskid: a3781b2b-eb5f-4fec-88f1-db2b5e997116
-    type: regular
-    task:
-      id: a3781b2b-eb5f-4fec-88f1-db2b5e997116
-      version: -1
-      name: jira-issue-update-status
-      script: jira_copy|||jira-issue-update-status
-      type: regular
-      iscommand: true
-      brand: jira_copy
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      issueId:
-        simple: ${Ticket.Id}
-      statusId:
-        simple: "31"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
+          "y": 1944
         }
       }
   "18":
     id: "18"
-    taskid: e2ce8e9e-7993-4186-897f-e3ac0e7a24f3
+    taskid: 4c264332-3528-4f2b-812c-bd29fc08cfe6
     type: regular
     task:
-      id: e2ce8e9e-7993-4186-897f-e3ac0e7a24f3
+      id: 4c264332-3528-4f2b-812c-bd29fc08cfe6
       version: -1
       name: VerifyContext - Summary
       scriptName: VerifyContext
@@ -477,50 +421,24 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2684
-        }
-      }
-  "20":
-    id: "20"
-    taskid: 5d27f49d-c6aa-4aa7-8e34-dab55d46a6f5
-    type: regular
-    task:
-      id: 5d27f49d-c6aa-4aa7-8e34-dab55d46a6f5
-      version: -1
-      name: jira-get-issue
-      description: Fetch issue from Jira
-      script: jira_copy|||jira-get-issue
-      type: regular
-      iscommand: true
-      brand: jira_copy
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      headers: {}
-      issueId:
-        simple: ${Ticket.Id}
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2491
+          "y": 2179
         }
       }
   "21":
     id: "21"
-    taskid: c80c3fa7-6677-48ff-89f1-11ac2ff9508f
+    taskid: 4f94c3a0-5c82-473f-8604-2f010861a7a7
     type: regular
     task:
-      id: c80c3fa7-6677-48ff-89f1-11ac2ff9508f
+      id: 4f94c3a0-5c82-473f-8604-2f010861a7a7
       version: -1
       name: VerifyContext - Status
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
     scriptarguments:
       expectedValue:
         simple: Done
@@ -532,8 +450,62 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 34,
+          "y": 2421
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 178e2167-e603-4868-8920-20489b8227e4
+    type: regular
+    task:
+      id: 178e2167-e603-4868-8920-20489b8227e4
+      version: -1
+      name: jira-get-comments
+      script: jira_copy3|||jira-get-comments
+      type: regular
+      iscommand: true
+      brand: jira_copy3
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      issueId:
+        simple: ${Ticket.Id}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 46,
+          "y": 2596
+        }
+      }
+  "23":
+    id: "23"
+    taskid: 44df5166-91cf-498c-88b6-66dc581ffcb1
+    type: regular
+    task:
+      id: 44df5166-91cf-498c-88b6-66dc581ffcb1
+      version: -1
+      name: VerifyContext - comment
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '["Test Comment"]'
+      fields: {}
+      path:
+        simple: Ticket.Comment.Comment
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 50,
-          "y": 2868
+          "y": 2800
         }
       }
 view: |-
@@ -541,9 +513,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2913,
-        "width": 380,
-        "x": 50,
+        "height": 2845,
+        "width": 396,
+        "x": 34,
         "y": 50
       }
     }
