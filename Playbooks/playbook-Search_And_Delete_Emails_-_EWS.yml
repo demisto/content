@@ -263,7 +263,10 @@ tasks:
         complex:
           root: EWS
           accessor: Items.itemId
-      target-mailbox: {}
+      target-mailbox:
+        complex:
+          root: EWS
+          accessor: Items.mailbox
     separatecontext: false
     view: |-
       {

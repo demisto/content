@@ -435,7 +435,7 @@ script: |-
                   print("Directory: " + str(dir))
                   print("Contents: " + self._getStream(dir))
   ########################################################################################################################
-  REGEX_EXTRACT_EMAIL = '.*<([^>]*)>.*'
+  REGEX_EXTRACT_EMAIL = '[\s\S]*<([^>]*)>.*'
 
 
 
@@ -580,7 +580,7 @@ script: |-
       temp1, temp2 = handleEml(filePath)
       res += temp1
       res += temp2
-  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType or 'ASCII text, with CRLF, LF line terminators' in fileType:
+  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType or 'ASCII text, with CRLF, LF line terminators' in fileType or 'SMTP mail text, ASCII text' in fileType:
       try:
           # Try to open the email as-is
           with open(filePath, 'rb') as f:
@@ -642,5 +642,3 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
-runonce: false
-releaseNotes: "-"
