@@ -1,0 +1,349 @@
+id: b951e7f9-dd19-4394-8c15-ef415b820b38
+version: 9
+name: ThreatGrid - Detonate file
+description: Detonate one or more files using the Wildfire integration. This playbook
+  returns relevant reports to the War Room and file reputations to the context data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    type: start
+    task:
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": -10
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: cacefc85-644c-48de-8ff3-545308a282eb
+    type: condition
+    task:
+      id: cacefc85-644c-48de-8ff3-545308a282eb
+      version: -1
+      name: Is ThreatGrid enabled?
+      description: |
+        Verify that there is a valid instance of Wildfire enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Threat Grid
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 145
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    type: title
+    task:
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1280
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 0e1f072a-09ab-4bb2-832e-c16ff150f6f3
+    type: regular
+    task:
+      id: 0e1f072a-09ab-4bb2-832e-c16ff150f6f3
+      version: -1
+      name: ThreatGrid Get Samples State
+      description: Get the sample state.
+      script: Threat Grid|||threat-grid-get-samples-state
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ids:
+        simple: ${ThreatGrid.Sample.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 961
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
+    type: regular
+    task:
+      id: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
+      version: -1
+      name: Set file to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 365
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
+    type: playbook
+    task:
+      id: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        simple: ${ThreatGrid.Sample.ID}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: threat-grid-get-samples-state
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: ThreatGrid.Sample(val.State!=='succ' && val.State!=='fail').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 770
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
+    type: regular
+    task:
+      id: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
+      version: -1
+      name: ThreatGrid Upload File
+      script: Threat Grid|||threat-grid-upload-sample
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      file-id:
+        simple: ${File.EntryID}
+      filename:
+        simple: ${inputs.FileName}
+      os:
+        simple: ${inputs.os}
+      osver:
+        simple: ${inputs.osver}
+      private:
+        simple: ${inputs.private}
+      source:
+        simple: ${inputs.source}
+      tags:
+        simple: ${inputs.tags}
+      vm:
+        simple: ${inputs.vm}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 570
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1355,
+        "width": 390,
+        "x": 140,
+        "y": -10
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate.
+- key: FileName
+  value:
+    simple: file-detonated-via-demisto
+  required: false
+  description: File name to be used in Threat Grid detonation
+- key: os
+  value: {}
+  required: false
+  description: a string identifying the source OS
+- key: osver
+  value: {}
+  required: false
+  description: a string defining the OS version.
+- key: vm
+  value: {}
+  required: false
+  description: a string identifying a specific VM to use
+- key: private
+  value: {}
+  required: false
+  description: if present, and set to any value but “false” the sample will be marked
+    private
+- key: source
+  value: {}
+  required: false
+  description: a string identifying the source (user defined)
+- key: tags
+  value: {}
+  required: false
+  description: A comma-separated list of tags applied to this sample.
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs  (minutes)
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
