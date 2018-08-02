@@ -26,7 +26,7 @@ configuration:
   type: 4
   required: true
 - display: Trust any certificate (unsecure)
-  name: insecure
+  name: unsecure
   defaultvalue: "true"
   type: 8
   required: false
@@ -36,83 +36,450 @@ configuration:
   type: 8
   required: false
 script:
-  script: |2-
+  script: |-
+    //GLOBALS//
+    var BASE = params.baseUrl;
+    // handle '/' at the end of the url
+    if (BASE[BASE.length - 1] === '/') {
+        BASE = BASE.substring(0, BASE.length - 1);
+    }
 
-    var base = params.baseUrl;
+    var USERNAME = params.username;
+    var PASSWORD = params.password;
+    var UNSECURE = params.unsecure;
+    var PROXY = params.proxy;
 
-    var getSession = function() {
-        res = sendRequest('/php/session.php','GET', loginHeaders);
+    //DICTIONARIES//
+    var LOGINHEADERS = {
+        'Accept': ['application/vnd.ve.v1.0+json'],
+        'Content-Type': ['application/json'],
+        'VE-SDK-API': [Base64.encode(USERNAME + ':' + PASSWORD)]
+    };
+    var HEARTBEATHEADERS = {
+        'Accept': ['application/vnd.ve.v1.0+json'],
+        'Content-Type': ['application/json']
+    };
+
+    //HELPER FUNCTIONS//
+    function stringArrToIntArr(stringArr){
+        var intArr = [];
+        for (index = 0; index < stringArr.length; index++) {
+            if(stringArr[index]){
+                intArr.push(parseInt(stringArr[index]));
+            }
+        }
+        return intArr;
+    }
+
+    function resToMD(body, title){
+        return tblToMd(title, body, Object.keys(body));
+    }
+
+    function castToInt(val){
+        if (typeof val === 'string') {
+            return parseInt(val);
+        } else {
+            return val;
+        }
+    }
+
+    function getSessionCredentials(){
+        res = sendRequest('/php/session.php','GET', LOGINHEADERS);
         if (res) {
             return res.results;
         }
-    };
-
-
-    // handle '/' at the end of the url
-    if (base[base.length - 1] === '/') {
-        base = base.substring(0, base.length - 1);
     }
 
-    var username = params.username;
-    var password = params.password;
-    var insecure = params.insecure;
-    var proxy = params.proxy;
+    function getHeaders(){
+        var sess = getSessionCredentials();
+        return {'Accept': ['application/vnd.ve.v1.0+json'],
+                'VE-SDK-API':[Base64.encode(sess.session + ':' + sess.userId)]
+        };
+    }
 
-    var loginHeaders = {'Accept': ['application/vnd.ve.v1.0+json'], 'Content-Type': ['application/json'], 'VE-SDK-API':[Base64.encode(username + ':' + password)]};
+    function sendRequestRaw(uri, method, headers, body){
+        var res = http(
+                BASE+uri,
+                {
+                    Method: method,
+                    Headers: headers,
+                    Body: body
+                },
+                UNSECURE,
+                PROXY
+            );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to use uri ' + BASE+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        var uriStr = String(uri);
+        if (uriStr.indexOf("session") === -1) {
+            logout();
+        }
+        return res;
+    }
 
-    var heartbeatHeaders = {'Accept': ['application/vnd.ve.v1.0+json'], 'Content-Type': ['application/json']};
+    function sendRequest(uri, method, headers, body){
+        body = sendRequestRaw(uri,method, headers, body).Body;
+        var res = JSON.parse(body);
+        if (res.success) {
+            if (res.success === 'false') {
+                throw 'ATD Api call to '+uri+' failed with request body: '+body;
+            }
+        }
+        return res;
+    }
 
-    var verifyHash = function() {
+    //COMMAND FUNCTIONS//
+
+    function verifyHash(){
         var body = {};
         holder = {};
         holder.md5 = args.hash;
         body.data = JSON.stringify(holder);
         return sendRequest('/php/atdHashLookup.php','POST', getHeaders(), body);
-    };
+    }
 
-    var listUsers = function() {
-        var userType = 'STAND_ALONE';
-        if (args.userType) {
-            userType = args.userType;
+    function heartBeat(){
+        return sendRequest('/php/heartbeat.php','GET', getHeaders(), HEARTBEATHEADERS);
+    }
+
+    function prettifyCurrentUserRes(currentUser){
+        var prettyCurrentUser = {
+            'APIVersion': currentUser.apiVersion,
+            'IsAdmin': currentUser.isAdmin === '1' ? 'True' : 'False',
+            'SessionId': currentUser.session,
+            'UserId': currentUser.userId
+        };
+        return prettyCurrentUser;
+    }
+
+    function getSession(){
+        var res = sendRequest('/php/session.php','GET', LOGINHEADERS);
+        var md = tableToMarkdown('ATD Current User',prettifyCurrentUserRes(res.results),
+                                ['APIVersion', 'IsAdmin', 'SessionId', 'UserId']);
+        return {
+            Type: entryTypes.note,
+            Contents: res.results,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: md,
+            EntryContext: {
+                "ATD.Session(val.SessionId==obj.SessionId)": prettifyCurrentUserRes(res.results)
+            }
+        };
+    }
+
+    function prettifyListUsersRes(users){
+        var prettyUsers = [];
+        for (i = 0; i < users.length; i++) {
+            var user = users[i];
+            prettyUsers[i] = {
+                'FullName': user.fullName,
+                'UserId': user.idx,
+                'LoginId': user.loginId,
+                'UserType': user.userType
+            };
         }
+        return prettyUsers;
+    }
+
+    function listUsers (userType){
+        userType = userType ? userType : 'STAND_ALONE';
         var result = sendRequest('/php/briefUserList.php?userType='+userType,'GET', getHeaders());
+        var users = result.results;
+        return users;
+    }
 
-        var md = tableToMarkdown('ATD User List',result.results);
-        return {Type: entryTypes.note,
-              Contents: JSON.stringify(result),
-              ContentsFormat: formats.json,
-              HumanReadable: md
+    function listUsersCommand(){
+        var users = listUsers(args.userType);
+
+        var prettyUsers = prettifyListUsersRes(users);
+        var md = tableToMarkdown('ATD User List', prettyUsers,
+                                ['FullName', 'UserId', 'LoginId', 'UserType']);
+        return {
+            Type: entryTypes.note,
+            Contents: users,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                "ATD.Users(val.UserId==obj.UserId)": prettyUsers,
+            }
         };
-    };
+    }
 
-    var listProfiles = function() {
-        var result =  sendRequest('/php/vmprofiles.php','GET', getHeaders());
-        var md = tableToMarkdown('ATD VM Profile List',result.results,['name','vmProfileid','vmDesc','sandbox','summary','internet','locBlackList']);
+    function prettifyListProfilesRes(profiles){
+        var prettyProfiles = [];
+        for (i = 0; i < profiles.length; i++){
+            prettyProfiles[i] = {
+                'Name': profiles[i].name,
+                'AnalyzerProfileId': profiles[i].vmProfileid,
+                'Description': profiles[i].vmDesc,
+                'Sandbox': profiles[i].sandbox === 1 ? 'True' : 'False',
+                'Internet': profiles[i].internet === 1 ? 'True' : 'False',
+                'LocalBlackList': profiles[i].locBlackList === 1 ? 'True' : 'False'
+            }
+        }
+        return prettyProfiles;
+    }
+
+    function listProfiles(){
+        var res =  sendRequest('/php/vmprofiles.php','GET', getHeaders());
+        var md = tableToMarkdown('ATD Analyzers Profile List',prettifyListProfilesRes(res.results),
+                                    ['Name','AnalyzerProfileId','Description',
+                                    'Sandbox','Internet','LocalBlackList']);
+
         return {Type: entryTypes.note,
-              Contents: JSON.stringify(result),
+              Contents: res.results,
               ContentsFormat: formats.json,
-              HumanReadable: md
+              HumanReadable: md,
+              EntryContext: {
+                  "ATD.ListAnalyzerProfiles(val.AnalyzerProfileId==obj.AnalyzerProfileId)":
+                  prettifyListProfilesRes(res.results)
+              }
         };
+    }
+
+    function prettifyTaskStatusByTaskIdRes(taskStatus){
+        var prettyTaskStatus = {
+            'Id': taskStatus.taskid,
+            'taskId': taskStatus.taskid,
+            'jobId': taskStatus.jobid,
+            'status': taskStatus.status,
+            'IsComplete': (taskStatus.status === "analyzing" || taskStatus.status === "waiting") ? "Failure" : "Success",
+            'filename': taskStatus.filename,
+            'MD5': taskStatus.md5,
+            'submitTime': taskStatus.submitTime
+        }
+        return prettyTaskStatus;
+    }
+
+    function checkTaskStatusByTaskId(taskIds){
+        var res;
+        var multipleResults = [];
+        var tasks = [];
+        var requestSuffix;
+
+        for (i = 0; i < taskIds.length; i++) {
+            requestSuffix = 'iTaskId=' + taskIds[i];
+            res = sendRequest('/php/samplestatus.php?'+requestSuffix,'GET', getHeaders());
+            // when you use TaskID, you get results in res.results
+            tasks.push(prettifyTaskStatusByTaskIdRes(res.results));
+            multipleResults.push(res.results);
+        }
+
+        var status = res.results.status; //backward compatability
+        return {
+            status: status,
+            tasks: tasks,
+            multipleResults: multipleResults
+        };
+    }
+
+    function checkTaskStatusByJobId(jobIds){
+        var taskIds = [];
+        for (i = 0; i < jobIds.length; i++) {
+            taskIds.push((sendRequest('/php/getTaskIdList.php?jobId='+jobIds[i],'GET', getHeaders())).result.taskIdList);
+        }
+        return checkTaskStatusByTaskId(taskIds);
+    }
+
+    function checkTaskStatusCommand(){
+        var ids = [];
+        var result;
+
+        if ( (!args.jobId && !args.taskId) || (args.jobId && args.taskId) ){
+            throw 'You must specify one (and only one) of the following: jobId, taskId.';
+        }
+
+        if (args.jobId) {
+            ids = stringArrToIntArr(argToList(args.jobId));
+            result = checkTaskStatusByJobId(ids);
+        }
+
+        if (args.taskId) {
+            ids = stringArrToIntArr(argToList(args.taskId));
+            result = checkTaskStatusByTaskId(ids);
+        }
+
+        var md = tableToMarkdown('ATD Sandbox Task Status', result.tasks, Object.keys(result.tasks[0]));
+
+        return {
+            Type: entryTypes.note,
+            Contents: result.multipleResults,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                "ATD.status": result.status, //backward compatability
+                "ATD.Task(val.taskId==obj.taskId)": result.tasks
+                "ATD.Task(val.Id==obj.Id)": result.tasks
+            }
+        };
+    }
+
+    function getTaskIds(jobIds){
+        var results = [];
+        var res;
+        for (i = 0; i < jobIds.length; i++) {
+            res = sendRequest('/php/getTaskIdList.php?jobId='+jobIds[i],'GET', getHeaders());
+            results.push(res);
+        }
+        return results;
+    }
+
+    function getTaskIdsCommand(){
+        var jobIds = stringArrToIntArr(argToList(args.jobId));
+        var results = getTaskIds(jobIds);
+
+        var multipleMd = [];
+        var ec = [];
+        for (i = 0; i < results.length; i++) {
+            multipleMd.push({
+                taskId: results[i].result.taskIdList,
+                jobId: jobIds[i]
+            });
+            ec.push({
+                taskId: results[i].result.taskIdList,
+                jobId: jobIds[i]
+            });
+        }
+
+        var md = tblToMd('ATD TaskIds and JobIds List', multipleMd, ["taskId", "jobId"]);
+        return {
+            Type: entryTypes.note,
+            Contents: results,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                "ATD.Task(val.jobId==obj.jobId)": ec
+            }
+        };
+    }
+
+    function prettifyFileUploadRes(fileUploadRes){
+        var prettyFileUpload = {
+            'Id': fileUploadRes.results[0].taskId,
+            'taskId': fileUploadRes.results[0].taskId,
+            'jobId': fileUploadRes.subId,
+            'messageId': fileUploadRes.fileId,
+            'url': fileUploadRes.results[0].url,
+            'srcIp': fileUploadRes.results[0].srcIp,
+            'destIp': fileUploadRes.results[0].destIp,
+            'MD5': fileUploadRes.results[0].md5,
+            'SHA1': fileUploadRes.results[0].sha1,
+            'SHA256': fileUploadRes.results[0].sha256,
+        }
+        return prettyFileUpload;
+    }
+
+    function fileUploadRaw(body, fileEntryId, filenameToUpload) {
+        var uri = '/php/fileupload.php'
+
+
+        if (typeof fileEntryId !== undefined) { //checking that it's a file upload and not url
+            if (typeof filenameToUpload == undefined) { //first priority for the file name is user's argument
+                //second priority for the file name is the file name in the context
+                var filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileEntryId +'")=val.Name');
+                if (filenameDq && filenameDq[0]) {
+                    filenameToUpload = filenameDq;
+                }
+                else {
+                    filenameToUpload = fileEntryId; //last priority for the file name is demisto's entryID
+                }
+            }
+        }
+
+        res = httpMultipart(
+            BASE+uri,
+            fileEntryId,
+            {
+                Method: 'POST',
+                Headers: getHeaders(),
+            },
+            body,
+            UNSECURE,
+            PROXY,
+            false,
+            'amas_filename',
+            filenameToUpload
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to use uri ' + BASE+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        var result = res.Body;
+        var uriStr = String(uri);
+        if (uriStr.indexOf("session") === -1) {
+            logout();
+        }
+        return result;
     };
 
-    var heartBeat = function() {
-        return sendRequest('/php/heartbeat.php','GET', getHeaders(), heartbeatHeaders);
-    };
+    function fileUpload(submitType, sample, vmProfileList,
+                                skipTaskId, analyzeAgain, xMode, messageId,
+                                filePriorityQ, srcIp, destIp, fileName){
+        var body = {};
+        body.data = {};
+        var data = {};
+        data.data = {};
 
-    var getTaskIDs = function() {
-        return sendRequest('/php/getTaskIdList.php?jobId='+args.jobId,'GET', getHeaders());
-    };
+        data.data.vmProfileList = vmProfileList;
+        data.data.submitType = submitType;
+        data.data.messageId = messageId;
+        data.data.srcIp = srcIp;
+        data.data.destIp = destIp;
+        data.data.url = (submitType == '0') ? '' : sample;
+        data.data.skipTaskId = castToInt(skipTaskId);
+        data.data.analyzeAgain = analyzeAgain;
+        data.data.xMode = xMode;
+        data.filePriorityQ = filePriorityQ ? filePriorityQ : 'run_now';
 
-    var buildReportContext = function(reportSummary) {
+        body.data = JSON.stringify(data);
+        var file = (submitType == '0') ? sample : undefined;
+        var filenameToUpload = (submitType == '0' && fileName) ? fileName : undefined;
+        var resultObj = fileUploadRaw(body, file, filenameToUpload);
+        resultObj = JSON.parse(resultObj);
+        return{
+            taskId: resultObj.results[0].taskId,
+            resultObj: resultObj
+        };
+    }
+
+    function fileUploadCommand(){
+        var sample = args.entryID ? args.entryID : args.url;
+        var vmProfileList = args.vmProfileList ? castToInt(args.vmProfileList) : null;
+
+        var result = fileUpload(castToInt(args.submitType), sample,
+                                vmProfileList, castToInt(args.skipTaskId),
+                                castToInt(args.analyzeAgain), castToInt(args.xMode), args.messageId,
+                                args.filePriorityQ, args.srcIp, args.destIp, args.fileName);
+
+        var md = tableToMarkdown('ATD sandbox sample submission', prettifyFileUploadRes(result.resultObj),
+                                ['Id', 'taskId', 'jobId', 'messageId', 'url', 'destIp', 'srcIp', 'MD5', 'SHA1', 'SHA256']);
+
+        return {
+            Type: entryTypes.note,
+            Contents: result.resultObj,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                "ATD.Task(val.taskId==obj.taskId)": prettifyFileUploadRes(result.resultObj),
+                "ATD.Task(val.Id==obj.Id)": prettifyFileUploadRes(result.resultObj),
+                "ATD.taskId": result.resultObj.results[0].taskId //backward compatabillity
+            }
+        };
+    }
+
+    function buildReportContext(reportSummary, uploadData, status, threshold){
         var context = {};
+
         if ((reportSummary) && (reportSummary.Subject)) {
             var subject = reportSummary.Subject;
             context = { DBotScore: {Vendor: 'McAfee-Advanced-Threat-Defense', Score: 0 }};
             if ( subject.FileType ) {//file
                 context.DBotScore.Indicator = subject.md5;
                 context.DBotScore.Type = 'hash';
-                if (reportSummary.Verdict.Severity > 3) {
+                if (reportSummary.Verdict.Severity > threshold) {//default threshold for McAfee ATD is 3
                     context.DBotScore.Score = 3;
+
                     addMalicious(context, outputPaths.file, {
                         Type : subject.Type,
                         MD5 : subject.md5,
@@ -123,270 +490,184 @@ script:
                         Malicious: {Vendor: 'McAfee-Advanced-Threat-Defense',
                             Description: 'Severity: ' + reportSummary.Verdict.Severity}
                     });
-                } else {
+                }
+                else {
                     context.DBotScore.Score = 1;
                 }
             }
+            if (uploadData){
+
+                if (reportSummary.Ips){
+                    var ip_addresses = [];
+                    for (i=0; i < reportSummary.Ips.length; i++){
+                        ip_addresses.push(reportSummary.Ips[i].Ipv4);
+                    };
+                    context["IP.Address"] = ip_addresses;
+                }
+
+                context["ATD.Task(val.taskId===obj.taskId)"] =
+                    {
+                    'status': status,
+                    'IsComplete': (status === "analyzing" || status === "waiting") ? "Failure" : "Success",
+                    'Id': uploadData.taskId,
+                    'taskId': uploadData.taskId,
+                    'jobId': uploadData.subId,
+                    'messageId': uploadData.messageId,
+                    'url': uploadData.url,
+                    'srcIp': uploadData.srcIp,
+                    'destIp': uploadData.destIp,
+                    'MD5': uploadData.md5,
+                    'SHA1': uploadData.sha1,
+                    'SHA256': uploadData.sha256,
+                    'Report':
+                        {
+                        'Attachments': reportSummary.Attachments,
+                        'Environment': reportSummary.Environment,
+                        'Environment': reportSummary.Environment,
+                        'Ips': reportSummary.Ips,
+                        'Verdict':reportSummary.Verdict,
+                        'Data': reportSummary.Data,
+                        'Selectors': reportSummary.Selectors,
+                        }
+                    }
+            }
         }
-
         return context;
-    };
+    }
 
-    var getReport = function() {
-        uriSuffix = jobOrTaskId();
-        if ((args.type) && ( (args.type === 'table') || (args.type === 'json') )) {
-            var res = sendRequest('/php/showreport.php?'+uriSuffix+'&iType=json', 'GET', getHeaders());
-            var resString = JSON.stringify(res);
+    function getReport(uriSuffix, filename, type, uploadData, status, threshold){
+        var jres = sendRequest('/php/showreport.php?'+uriSuffix+'&iType=json', 'GET', getHeaders());
+        var summary = jres.Summary;
+        summary.VerdictDescription = summary.Verdict.Description;
+        summary.VerdictSeverity = summary.Verdict.Severity;
 
-            var summary = res.Summary;
-            summary.VerdictDescription = summary.Verdict.Description;
-            summary.VerdictSeverity = summary.Verdict.Severity ;
-            var context = buildReportContext(summary);
+        var ec = buildReportContext(summary, uploadData, status, threshold);
+        var jresString = JSON.stringify(jres);
+
+        if (type === 'json'){
             summary = formatTableValues(summary);
             var md = resToMD(summary,'ATD Sandbox Report');
-
-            return {
-                Type: entryTypes.note,
-                Contents: resString,
-                ContentsFormat: formats.json,
-                HumanReadable: md,
-                EntryContext: context
+            return{
+                content: jresString,
+                md: md,
+                ec: ec
             };
         }
-        if (args.type === 'pdf') {
-            if (!getSession().isAdmin) {
-                return 'No permission to download PDF'
+
+        var res = sendRequestRaw('/php/showreport.php?'+uriSuffix+'&iType='+type, 'GET', getHeaders());
+        if (type === 'pdf' || type === 'zip') {
+            if(type === 'pdf' && !getSessionCredentials().isAdmin){
+                return 'No permission to download PDF';
             }
-            var filename = args.jobId;
-            if ((!filename) || (filename.length === 0)) {
-                filename = args.taskId;
+            else{
+                filename = filename + '.' + type;
+                return{
+                    content: res.Bytes,
+                    filename: filename,
+                    ec: ec
+                };
             }
-            filename = filename + '.pdf';
-            return downloadReport('/php/showreport.php?'+uriSuffix+'&iType='+args.type, 'GET', getHeaders(), filename);
         }
-        if (args.type === 'sample') {
-            var permissionCheck = sendRequestRaw('/php/showreport.php?'+uriSuffix+'&iType='+args.type, 'GET', getHeaders()).Body;
-            if (permissionCheck.substring(11,16) === 'false') {
+        if (type === 'sample') {
+            if (res.Body.substring(11,16) === 'false') {
                 return 'No permission to download sample'
             }
-            var filename = args.jobId;
-            if ((!filename) || (filename.length === 0)) {
-                filename = args.taskId;
+            else{
+                return{
+                        content: res.Bytes,
+                        filename: filename + '.zip',
+                        ec: ec
+                    };
             }
-            filename = filename + '.zip';
-            return downloadReport('/php/showreport.php?'+uriSuffix+'&iType='+args.type, 'GET', getHeaders(), filename);
         }
-        return sendRequestRaw('/php/showreport.php?'+uriSuffix+'&iType='+args.type, 'GET', getHeaders()).Body;
-    };
+        return res;
+    }
 
+    function getReportCommand(){
+        var uriSuffix = jobOrTaskId();
+        var type = args.type ? args.type : 'pdf';
+        var threshold = args.threshold;
 
-    var getTaskStatus = function() {
-        uriSuffix = jobOrTaskId();
-
-        var res = sendRequest('/php/samplestatus.php?'+uriSuffix,'GET', getHeaders());
-
-        var status = res.status;
-        resForMd = res;
-        if ((res) && (res.results)) { // when you use TaskID, you get results in res.results
-            resForMd = res.results;
-            status = res.results.status;
+        var filename = args.jobId;
+        if ((!filename) || (filename.length === 0)) {
+            filename = args.taskId;
         }
-        var md = resToMD(resForMd,'ATD Sandbox Task Status');
-        return {Type: entryTypes.note,
-              Contents: JSON.stringify(res),
-              ContentsFormat: formats.json,
-              HumanReadable: md,
-              EntryContext: {"ATD.status": status}
-        };
-    };
+        return returnReport(uriSuffix, filename, type, threshold);
+    }
 
-    var jobOrTaskId = function() {
+    function jobOrTaskId(){
         uriSuffix = '';
         if ((args.jobId) && (args.jobId.length > 0)) {
             uriSuffix = 'jobId='+ args.jobId;
         }
-        if (args.taskId) {
+        if (args.taskId && (args.taskId.length > 0)) {
             uriSuffix = 'iTaskId='+ args.taskId;
         }
-
         return uriSuffix;
-    };
-
-    var getBulkStatus = function() {
-        var body = {};
-        var data = {};
-
-        data.data = {};
-        data.data.bulkrequest = {};
-        var total = 0;
-        if (args.jobIDs) {
-            data.data.bulkrequest.jobIDs = stringArrToIntArr(args.jobIDs.split(","));
-            total = data.data.bulkrequest.jobIDs.length;
-        }
-        if (args.taskIDs) {
-            data.data.bulkrequest.taskIDs = stringArrToIntArr(args.taskIDs.split(","));
-            total = total + data.data.bulkrequest.taskIDs.length;
-        }
-        data.data.bulkrequest.numRequest = total;
-        body.data = JSON.stringify(data);
-        return sendRequest('/php/getBulkStatus.php','POST', getHeaders(), body.data);
-    };
-
-    var stringArrToIntArr = function(stringArr){
-        var intArr = [];
-        for (index = 0; index < stringArr.length; ++index) {
-            intArr.push(parseInt(stringArr[index]));
-        }
-        return intArr;
     }
 
-    var resToMD = function(body, title) {
-        return tblToMd(title, body, Object.keys(body));
-    };
+    function detonate(submitType ,sample, timeout, type, threshold, fileName){
+        var result = fileUpload(submitType, sample, fileName);
+        var taskId = result.taskId;
+        var uploadData = result.resultObj.results[0];
 
-    var castToInt = function(val) {
-        if (typeof val === 'string') {
-            return parseInt(val);
-        } else {
-            return val;
-        }
-    };
+        var status;
+        var start = (new Date).getTime();
+        var diff = 0;
 
-    var fileUpload = function() {
-        var body = {};
-        body.data = {};
-
-        data = {};
-        data.data = {};
-        data.data.vmProfileList = castToInt(args.vmProfileList);
-        data.data.submitType = castToInt(args.submitType);
-
-        data.data.url = args.url;
-        data.data.messageId = args.messageId;
-        data.data.srcIp = args.srcIp;
-        data.data.destIp = args.destIp;
-        if (args.skipTaskId) {
-            data.data.skipTaskId = castToInt(args.skipTaskId);
-        }
-        if (args.analyzeAgain) {
-            data.data.analyzeAgain = castToInt(args.analyzeAgain);
-        }
-        if (args.xMode) {
-            data.data.xMode = castToInt(args.xMode);
-        }
-        data.filePriorityQ = args.filePriorityQ;
-        if (!data.filePriorityQ) {
-            data.filePriorityQ = 'run_now';
-        }
-        body.data = JSON.stringify(data);
-        var result =  uploadFile(body,args.entryID);
-
-        var resultObj = JSON.parse(result);
-        var results = resultObj.results;
-        var taskId = '';
-        if ((results) && (results.length > 0)) {
-            var subId = resultObj.subId;
-            resultObj = results[0];
-            taskId = resultObj.taskId;
-            resultObj.subId = subId;// need subId too sometimes
-            if (taskId === -1) {
-                taskId = subId;
+        while (diff < timeout) {
+            status = checkTaskStatusByTaskId([taskId]).status;
+            if (status === 'Completed'){
+                var uriSuffix = 'iTaskId='+ taskId;
+                return returnReport(uriSuffix, taskId, type, uploadData, status, threshold);
             }
+            diff = ( (new Date).getTime() - start ) / 1000;
         }
-        var md = resToMD(resultObj,'ATD sandbox file upload');
-        return {Type: entryTypes.note,
-              Contents: result,
-              ContentsFormat: formats.json,
-              HumanReadable: md,
-              EntryContext: {"ATD.taskId": taskId}
-        };
-    };
+        throw ("Timeout due to no answer after " + args.timeout +
+                " seconds. Check the status using '!atd-check-status' in a while and if 'completed' execute '!atd-get-report'.");
+    }
 
-    var uploadFile = function(body,fileParam) {
-        uri = '/php/fileupload.php'
-        filenameDq = dq(invContext, 'File(val=val.EntryID==="' + fileParam +'")=val.Name')
-        filename = undefined
-        if (filenameDq && filenameDq[0]) {
-            filename = filenameDq[0]
+    function returnReport(uriSuffix, taskId, type, uploadData, status, threshold){
+        var res = getReport(uriSuffix, taskId, type, uploadData, status, threshold);
+        if(type === 'json'){
+            return {
+                Type: entryTypes.note,
+                Contents: res.content,
+                ContentsFormat: formats.json,
+                HumanReadable: res.md,
+                EntryContext: res.ec
+            };
         }
-        res = httpMultipart(
-            base+uri,
-            fileParam,
-            {
-                Method: 'POST',
-                Headers: getHeaders(),
-            },
-            body,
-            insecure,
-            proxy,
-            false,
-            'amas_filename',
-            filename
-        );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to use uri ' + base+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        else if (type === 'pdf' || type === 'zip'){
+            return {
+                Type: 9,
+                FileID: saveFile(res.content),
+                Contents: res.filename,
+                File: res.filename,
+                EntryContext: res.ec
+            };
         }
-        var b = res.Body;
-        var uriStr = String(uri);
-        if (uriStr.indexOf("session") === -1) {
-            logout();
+        else if (type === 'sample'){
+            //used to retrieve a sample from McAfee ATD to demisto
+            return {
+                Type: 3,
+                FileID: saveFile(res.content),
+                Contents: res.filename,
+                File: res.filename,
+                EntryContext: res.ec
+            };
         }
-        return b;
-    };
+        else{
+            return res;
+        }
+    }
 
-    var logout = function() {
+    function logout(){
         res = sendRequest('/php/session.php','DELETE', getHeaders());
         if (res) {
             return res.results;
         }
-    };
-
-    var getHeaders = function() {
-        var sess = getSession();
-        return {'Accept': ['application/vnd.ve.v1.0+json'],'VE-SDK-API':[Base64.encode(sess.session + ':' + sess.userId)]};
-    };
-
-    var sendRequestRaw = function(uri, method, headers, body) {
-        var res = http(
-                base+uri,
-                {
-                    Method: method,
-                    Headers: headers,
-                    Body: body
-                },
-                insecure,
-                proxy
-            );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Failed to use uri ' + base+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        var uriStr = String(uri);
-        if (uriStr.indexOf("session") === -1) {
-            logout();
-        }
-        return res;
-    };
-
-    var downloadReport = function(uri,method, headers, filename) {
-        var res = sendRequestRaw(uri, method, headers);
-        return {
-            Type: 9,
-            FileID: saveFile(res.Bytes),
-            File: filename,
-            Contents: filename
-        };
     }
-
-    var sendRequest = function(uri, method, headers, body) {
-        var body = sendRequestRaw(uri,method, headers, body).Body;
-        var res = JSON.parse(body);
-        if (res.success) {
-            if (res.success === 'false') {
-                throw 'ATD Api call to '+uri+' failed with body: '+body;
-            }
-        }
-        return res;
-    };
 
     // The command input arg holds the command sent from the user.
     switch (command) {
@@ -396,22 +677,29 @@ script:
             return 'ok';
         case 'atd-login':
             return getSession();
-        case 'atd-file-upload':
-            return fileUpload();
-        case 'atd-get-task-ids':
-            return getTaskIDs();
-        case 'atd-get-bulk-status':
-            return getBulkStatus();
-        case 'atd-check-status':
-            return getTaskStatus();
-        case 'atd-get-report':
-            return getReport();
         case 'atd-list-analyzer-profiles':
             return listProfiles();
         case 'atd-list-user':
-            return listUsers();
-        case 'atd-verify-blacklisted-whitelisted-hashs':
-            return verifyHash();
+            return listUsersCommand();
+        //case 'atd-verify-blacklisted-whitelisted-hashs':
+        //    return verifyHash();
+        case 'atd-check-status':
+            return checkTaskStatusCommand();
+        case 'atd-get-task-ids':
+            return getTaskIdsCommand();
+        case 'atd-file-upload':
+            return fileUploadCommand();
+        case 'atd-get-report':
+            return getReportCommand();
+        case 'detonate-file':
+            return detonate(0, args.upload, args.timeout, args.format, args.threshold);
+            //submit type for regular file is 0
+        case 'detonate-url':
+            return detonate(1, args.url, args.timeout, args.format, args.threshold, args.fileName);
+            //submit type for url submission is 1
+        //case 'detonate-file-remote':
+            //return detonate(3, args.url, args.timeout, args.format, args.threshold);
+            //submit type for url-download is 3
         default:
     }
   type: javascript
@@ -474,30 +762,56 @@ script:
         sample in waiting state if there is a waiting queue of samples, default is
         run_now'
     - name: entryID
-      description: entry ID
+      description: entry ID f the file to upload
+    - name: fileName
+      description: The name of the file
     outputs:
+    - contextPath: ATD.Task.taskId
+      description: The task ID of the sample uploaded
+      type: number
+    - contextPath: ATD.Task.jobId
+      description: The job ID of the sample uploaded
+      type: number
+    - contextPath: ATD.Task.messageId
+      description: The message Id relevant to the sample uploaded
+      type: string
+    - contextPath: ATD.Task.url
+      description: The URL detonated
+      type: string
+    - contextPath: ATD.Task.srcIp
+      description: Source IPv4 address
+      type: string
+    - contextPath: ATD.Task.destIp
+      description: Destination IPv4 address
+      type: string
+    - contextPath: ATD.Task.MD5
+      description: MD5 of the sample uploaded
+      type: string
+    - contextPath: ATD.Task.SHA1
+      description: SHA1 of the sample uploaded
+      type: string
+    - contextPath: ATD.Task.SHA256
+      description: SHA256 of the sample uploaded
+      type: string
     - contextPath: ATD.taskId
-      description: The task ID of the file upload
+      description: The task ID of the sample uploaded
+      type: number
     description: upload a file/web URL for dynamic analysis by using the provided
       Analyzer Profile. Only single file/web URL can be submitted at a time.
   - name: atd-get-task-ids
     arguments:
     - name: jobId
       required: true
-      default: true
       description: Serves as an identifier for the previously submitted file.
-    description: fetches the list of task id's associated with a job id
-  - name: atd-check-status
-    arguments:
-    - name: taskId
-      description: This is the returned TaskId value in the submission step, previously
-        returned value in the File/URL submission step
-    - name: jobId
-      description: Job id
+      isArray: true
     outputs:
-    - contextPath: ATD.status
-      description: The task ID statues (Completed or Analyzing)
-    description: checks the analysis status
+    - contextPath: ATD.Task.jobId
+      description: The corresponding taskId of the jobId sent
+      type: number
+    - contextPath: ATD.Task.jobId
+      description: The jobId sent
+      type: number
+    description: fetches the list of task id's associated with a job id
   - name: atd-get-report
     arguments:
     - name: taskId
@@ -513,57 +827,396 @@ script:
       - txt
       - xml
       - zip
-      - table
+      - json
       - ioc
       - stix
       - pdf
       - sample
-      description: 'iType can be one of the following types: • html — HTML report
-        • txt — Text report • xml — XML report • zip — All files packaged in a single
+      description: 'Type can be one of the following types: • html — HTML report •
+        txt — Text report • xml — XML report • zip — All files packaged in a single
         zip file • json — Same as xml but in the JSON format • ioc - Indicators of
         Compromise format • stix - Structured Threat Information expression. Stix
         generation is disabled, by default. Use set stixreportstatus enable to enable
         it. • pdf - Portable Document Format • sample - Download sample from McAfee
         Advanced Threat Defense'
+      defaultValue: pdf
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      description: If ATD severity is bigger than the threshold we will consider it
+        malicious
+      defaultValue: "3"
     outputs:
     - contextPath: File.Name
       description: Filename (only in case of report type=json)
+      type: string
     - contextPath: File.Type
       description: File type e.g. "PE" (only in case of report type=json)
+      type: string
     - contextPath: File.Size
       description: File size (only in case of report type=json)
+      type: number
     - contextPath: File.MD5
       description: MD5 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.SHA1
       description: SHA1 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.SHA256
       description: SHA256 hash of the file (only in case of report type=json)
+      type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
+      type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator we tested (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Type
       description: The type of the indicator (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score (only in case of report type=json)
+      type: string
     - contextPath: DBotScore.Score
       description: The actual score (only in case of report type=json)
+      type: number
+    - contextPath: File.EntryID
+      description: The Entry ID of the sample
+      type: string
+    - contextPath: IP.Address
+      description: IP's relevant to the sample
+      type: string
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
     arguments: []
+    outputs:
+    - contextPath: ATD.ListAnalyzerProfiles.Name
+      description: The Analyzer's profile name
+      type: string
+    - contextPath: ATD.ListAnalyzerProfiles.AnalyzerProfileId
+      description: The Analyzer's profile id
+      type: number
+    - contextPath: ATD.ListAnalyzerProfiles.Description
+      description: The Analyzer's profile description
+      type: string
+    - contextPath: ATD.ListAnalyzerProfiles.Sandbox
+      description: If the Analyzer's profile has access to the sandbox
+      type: boolean
+    - contextPath: ATD.ListAnalyzerProfiles.Internet
+      description: If the Analyzer's profile has access to the internet
+      type: boolean
+    - contextPath: ATD.ListAnalyzerProfiles.LocalBlackList
+      description: If the Analyzer's profile has access to the local black list
+      type: boolean
     description: ' display the analyzer profiles. Only the analyzer profiles to which
       the user has access are displayed.'
   - name: atd-list-user
     arguments:
     - name: userType
       default: true
+      auto: PREDEFINED
+      predefined:
+      - STAND_ALONE
+      - MWG
+      - NSP
       description: This is the user type associated with a user profile. For example
         NSP, MWG, STAND_ALONE (default) and so on.
+      isArray: true
+      defaultValue: STAND_ALONE
+    outputs:
+    - contextPath: ATD.Users.FullName
+      description: The user's fullname
+      type: string
+    - contextPath: ATD.Users.UserId
+      description: The user's id
+      type: number
+    - contextPath: ATD.Users.LoginId
+      description: The user's login id
+      type: string
+    - contextPath: ATD.Users.UserType
+      description: The user type
+      type: string
     description: ' displays the user profile information present on the McAfee Advanced
       Threat Defense.'
   - name: atd-login
     arguments: []
-    description: Returns a logon result for ATD
+    outputs:
+    - contextPath: ATD.Session.APIVersion
+      description: The API version used in the session
+      type: string
+    - contextPath: ATD.Session.IsAdmin
+      description: If the current user is admin
+      type: boolean
+    - contextPath: ATD.Session.SessionId
+      description: The session id
+      type: string
+    - contextPath: ATD.Session.UserId
+      description: The UserId of the User logged in in the session
+      type: number
+    description: Returns the current session details
+  - name: detonate-file
+    arguments:
+    - name: upload
+      required: true
+      description: ID of the entry containing the file to detonate
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "210"
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - html
+      - txt
+      - xml
+      - zip
+      - json
+      - ioc
+      - stix
+      - pdf
+      - sample
+      description: Optional - request the format of the report
+      defaultValue: json
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      description: If ATD severity is bigger than the threshold we will consider it
+        malicious
+      defaultValue: "3"
+    - name: fileName
+      description: The name of the file
+    outputs:
+    - contextPath: File.Name
+      description: Filename (only in case of report type=json)
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE" (only in case of report type=json)
+      type: string
+    - contextPath: File.Size
+      description: File size (only in case of report type=json)
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score (only in case of report type=json)
+      type: number
+    - contextPath: ATD.Task.taskId
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
+      type: number
+    - contextPath: ATD.Task.jobId
+      description: This is the returned JobId value in the submission step, previously
+        returned value in the File/URL submission step
+      type: number
+    - contextPath: ATD.Task.status
+      description: The task ID status (Completed or Analyzing)
+      type: string
+    - contextPath: ATD.Task.messageId
+      description: The message Id relevant to the sample uploaded
+      type: string
+    - contextPath: ATD.Task.url
+      description: The URL detonated
+      type: string
+    - contextPath: ATD.Task.srcIp
+      description: Source IPv4 address
+      type: string
+    - contextPath: ATD.Task.destIp
+      description: Destination IPv4 address
+      type: string
+    - contextPath: ATD.Task.MD5
+      description: MD5 of the sample uploaded
+      type: string
+    - contextPath: ATD.Task.SHA256
+      description: SHA256 of the sample uploaded
+      type: string
+    - contextPath: ATD.Task.SHA1
+      description: SHA1 of the sample uploaded
+      type: string
+    - contextPath: IP.Address
+      description: IP's relevant to the sample
+      type: string
+    - contextPath: ATD.Task.IsComplete
+      description: Stating if the detonation was complete or not
+      type: string
+    description: Detonate file through McAfee ATD
+  - name: detonate-url
+    arguments:
+    - name: url
+      required: true
+      description: URL to detonate
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "200"
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - html
+      - txt
+      - xml
+      - zip
+      - json
+      - ioc
+      - stix
+      - pdf
+      - sample
+      description: Optional - request the format of the report
+      defaultValue: json
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      description: If ATD severity is bigger than the threshold we will consider it
+        malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: File.Name
+      description: Filename (only in case of report type=json)
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE" (only in case of report type=json)
+      type: string
+    - contextPath: File.Size
+      description: File size (only in case of report type=json)
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file (only in case of report type=json)
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score (only in case of report type=json)
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score (only in case of report type=json)
+      type: number
+    - contextPath: ATD.Task.taskId
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
+      type: number
+    - contextPath: ATD.Task.jobId
+      description: This is the returned JobId value in the submission step, previously
+        returned value in the File/URL submission step
+      type: number
+    - contextPath: ATD.Task.status
+      description: The task ID status (Completed or Analyzing)
+      type: string
+    - contextPath: ATD.Task.messageId
+      description: The message Id relevant to the sample uploaded
+      type: string
+    - contextPath: ATD.Task.url
+      description: The URL detonated
+      type: string
+    - contextPath: ATD.Task.srcIp
+      description: Source IPv4 address
+      type: string
+    - contextPath: ATD.Task.destIp
+      description: Destination IPv4 address
+      type: string
+    - contextPath: ATD.Task.MD5
+      description: MD5 of the sample uploaded
+      type: string
+    - contextPath: ATD.Task.SHA256
+      description: SHA256 of the sample uploaded
+      type: string
+    - contextPath: ATD.Task.SHA1
+      description: SHA1 of the sample uploaded
+      type: string
+    - contextPath: IP.Address
+      description: IP's relevant to the sample
+      type: string
+    - contextPath: ATD.Task.IsComplete
+      description: Stating if the detonation was complete or not
+      type: string
+    description: Detonate URL through McAfee ATD
+  - name: atd-check-status
+    arguments:
+    - name: taskId
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
+      isArray: true
+    - name: jobId
+      description: Job Id
+      isArray: true
+    outputs:
+    - contextPath: ATD.status
+      description: The task ID status (Completed or Analyzing)
+      type: string
+    - contextPath: ATD.Task.taskId
+      description: This is the returned TaskId value in the submission step, previously
+        returned value in the File/URL submission step
+      type: number
+    - contextPath: ATD.Task.jobId
+      description: This is the returned JobId value in the submission step, previously
+        returned value in the File/URL submission step
+      type: number
+    - contextPath: ATD.Task.status
+      description: The task ID status (Completed or Analyzing)
+      type: string
+    - contextPath: ATD.Task.filename
+      description: The name of the uploaded sample
+      type: string
+    - contextPath: ATD.Task.MD5
+      description: The MD5 of the sample
+      type: string
+    - contextPath: ATD.Task.submitTime
+      description: Submission time of the sample
+      type: string
+    - contextPath: ATD.Task.IsComplete
+      description: Stating if the detonation was complete or not
+      type: string
+    description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
