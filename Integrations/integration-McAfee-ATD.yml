@@ -111,6 +111,7 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to use uri ' + BASE+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
+
         var uriStr = String(uri);
         if (uriStr.indexOf("session") === -1) {
             logout();
@@ -401,6 +402,7 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to use uri ' + BASE+uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
+
         var result = res.Body;
         var uriStr = String(uri);
         if (uriStr.indexOf("session") === -1) {
@@ -433,6 +435,10 @@ script:
         var filenameToUpload = (submitType == '0' && fileName) ? fileName : undefined;
         var resultObj = fileUploadRaw(body, file, filenameToUpload);
         resultObj = JSON.parse(resultObj);
+        if (resultObj.success === false){
+            throw 'Command failed due to: ' + resultObj.errorMessage;
+        }
+
         return{
             taskId: resultObj.results[0].taskId,
             resultObj: resultObj
@@ -585,15 +591,26 @@ script:
         if ((!filename) || (filename.length === 0)) {
             filename = args.taskId;
         }
-        return returnReport(uriSuffix, filename, type, threshold);
+        try{
+            return returnReport(uriSuffix, filename, type, threshold);
+        }
+        catch(error){
+            if (error.message === 'EOF'){
+                throw "The submission doesn't exist in McAfee ATD";
+            }
+        }
     }
 
     function jobOrTaskId(){
         uriSuffix = '';
-        if ((args.jobId) && (args.jobId.length > 0)) {
+        if ( (!args.jobId && !args.taskId) || (args.jobId && args.taskId) ){
+            throw 'You must specify one (and only one) of the following: jobId, taskId.';
+        }
+
+        if (args.jobId) {
             uriSuffix = 'jobId='+ args.jobId;
         }
-        if (args.taskId && (args.taskId.length > 0)) {
+        if (args.taskId) {
             uriSuffix = 'iTaskId='+ args.taskId;
         }
         return uriSuffix;
