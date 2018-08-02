@@ -155,9 +155,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "5"
-      "yes":
       - "6"
+      "yes":
+      - "5"
     scriptarguments:
       value:
         simple: ${Redlock.Alert.Status(val != 'open')}
@@ -167,7 +167,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 545
+          "y": 540
         }
       }
   "5":
@@ -416,9 +416,7 @@ tasks:
       }
 view: |-
   {
-    "linkLabelsPosition": {
-      "4_5_no": 0.54
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1815,

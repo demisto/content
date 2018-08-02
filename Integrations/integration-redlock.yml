@@ -247,7 +247,7 @@ script:
         return {
             'ID': a.get('id'),
             'Status': a.get('status'),
-            'AlertTime': a.get('alertTime'),
+            'AlertTime': convertUnixToDate(a.get('alertTime')),
             'Policy': {
                 'ID': demisto.get(a, 'policy.policyId'),
                 'Name': demisto.get(a, 'policy.name'),
@@ -619,7 +619,7 @@ script:
       type: string
     - contextPath: Redlock.Alert.AlertTime
       description: The time of the alert
-      type: string
+      type: date
     - contextPath: Redlock.Alert.Policy.ID
       description: The policy ID
       type: string
@@ -634,7 +634,7 @@ script:
       type: string
     - contextPath: Redlock.Alert.Policy.Remediable
       description: Whether or not the policy is remediable
-      type: string
+      type: boolean
     - contextPath: Redlock.Alert.RiskDetail.Rating
       description: The risk rating
       type: string
