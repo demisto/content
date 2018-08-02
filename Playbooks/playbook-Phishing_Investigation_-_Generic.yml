@@ -627,6 +627,7 @@ tasks:
       id: 100c8cb8-93ff-4340-8bc7-a549deab6749
       version: -1
       name: Calculate Severity - Generic
+      description: ""
       playbookName: Calculate Severity - Generic
       type: playbook
       iscommand: false
@@ -652,7 +653,7 @@ tasks:
       version: -1
       name: Process Email - Generic
       description: ""
-      playbookId: 35feaddd-a31c-44df-8c72-6d7898eb2cd4
+      playbookName: Process Email - Generic
       type: playbook
       iscommand: false
       brand: ""
