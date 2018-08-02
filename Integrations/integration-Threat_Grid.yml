@@ -1156,4 +1156,3 @@ script:
       description: The URL to convert.
     description: Convert a URL into a file for Threat Grid file detonation.
   runonce: false
-releaseNotes: "Added threat-grid-detonate-file and threat-grid-url-to-file commands."

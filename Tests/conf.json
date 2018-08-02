@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "dedup_-_generic_-_test"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD"
         },
@@ -390,13 +393,13 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
-        },
-        {
-            "integrations": "QRadar",
-            "playbookID": "test_Qradar"
         }
     ],
     "skipped": [
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
+        },
         {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
