@@ -398,7 +398,7 @@ script:
         return 'ok';
 
       case 'threat-grid-url-to-file':
-        var urls = args.urls.split(',');
+        var urls = argToList(args.urls);
         var files = [];
         for (i = 0; i < urls.length; i++) {
             var url = urls[i];
@@ -431,7 +431,7 @@ script:
         rawResponse = JSON.parse(res.Body);
         break;
       case 'threat-grid-get-samples-state':
-        args.ids = JSON.stringify(args.ids.split(','));
+          args.ids = JSON.stringify(args.ids.split(','));
       default:
         // Get file name if such exists
         var filename = command in fileCommands && replaceInTemplates(fileCommands[command], args);
@@ -795,6 +795,13 @@ script:
       required: true
       default: true
       description: IDs to get state of, comma separated
+    outputs:
+    - contextPath: Sample.State
+      description: The sample state.
+      type: string
+    - contextPath: Sample.ID
+      description: The sample ID.
+      type: unknown
     description: Get threat grid samples state
   - name: threat-grid-upload-sample
     arguments:
@@ -852,7 +859,7 @@ script:
         as determined by the value of api_key.
     - name: term
       description: Restrict matches to a subset of submission fields. The value of
-        'term' is a comma-delimited list of strings which select groups of fields
+                     'term' is a comma-delimited list of strings which select groups of fields
     - name: before
       description: Return submissions created before specified time. Value is a timestring,
         either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic)
@@ -1133,4 +1140,5 @@ script:
       description: File Size in bytes
       type: int
     description: Convert a URL into a file for Threat Grid file detonation.
-releaseNotes: "Added threat-grid-url-to-file for url detonation. Added DBot score output for threat-grid-get-summary-by-id. Improved support for threat-grid-get-samples-state"
+  runonce: false
+releaseNotes: "-"
