@@ -1,0 +1,316 @@
+id: McAfee ATD Detonate File
+version: -1
+name: McAfee ATD Detonate File
+description: Detonates a File using the McAfee Advanced Threat Defense sandbox
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
+    type: start
+    task:
+      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -324
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 37f4c9da-9eb3-4a92-83d5-f5226b449485
+    type: regular
+    task:
+      id: 37f4c9da-9eb3-4a92-83d5-f5226b449485
+      version: -1
+      name: McafeeATD Upload File
+      script: McAfee Advanced Threat Defense|||atd-file-upload
+      type: regular
+      iscommand: true
+      brand: McAfee Advanced Threat Defense
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      analyzeAgain: {}
+      dstIp: {}
+      entryID:
+        simple: ${inputs.EntryID}
+      fileName: {}
+      filePriorityQ: {}
+      messageId: {}
+      skipTaskId: {}
+      srcIp: {}
+      submitType:
+        simple: "0"
+      url: {}
+      vmProfileList: {}
+      xMode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 321
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 2d26186f-7b7e-4895-854f-4f7cad92ea6e
+    type: playbook
+    task:
+      id: 2d26186f-7b7e-4895-854f-4f7cad92ea6e
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        simple: ${ATD.Task.taskId}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: taskId
+      PollingCommandName:
+        simple: atd-check-status
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: ATD.Task(val.status != 'Completed').taskId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 483
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 4c471e24-3601-457d-856e-8655c4b6cd89
+    type: regular
+    task:
+      id: 4c471e24-3601-457d-856e-8655c4b6cd89
+      version: -1
+      name: McAfeeATD Get Report
+      script: McAfee Advanced Threat Defense|||atd-get-report
+      type: regular
+      iscommand: true
+      brand: McAfee Advanced Threat Defense
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      jobId: {}
+      taskId:
+        simple: ${ATD.Task.taskId}
+      threshold: {}
+      type:
+        simple: pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 658
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
+    type: title
+    task:
+      id: e589b774-3cee-4dff-8e14-788ef3590dfa
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 991
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: ea83dc64-924f-4d05-81d0-a05e48d570b0
+    type: condition
+    task:
+      id: ea83dc64-924f-4d05-81d0-a05e48d570b0
+      version: -1
+      name: Is there a File to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 103
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 9a2b3652-1cc8-4d46-8c75-6c7f98086a1b
+    type: condition
+    task:
+      id: 9a2b3652-1cc8-4d46-8c75-6c7f98086a1b
+      version: -1
+      name: Is McAfee ATD sandbox enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: McAfee Advanced Threat Defense
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -115
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1380,
+        "width": 380,
+        "x": 450,
+        "y": -324
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: true
+  description: Demisto EntryID of the file to detonate from the context
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: The duration of an interval of executing the pooling in minutes
+- key: timeout
+  value:
+    simple: "15"
+  required: false
+  description: timeout to stop pooling and resume the playbook
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
