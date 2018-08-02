@@ -360,6 +360,16 @@
             "playbookID": "test-domain-indicator"
         },
         {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "nightly": true
+        },
+        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
