@@ -30,6 +30,7 @@ args:
   required: true
   description: hostname to check
 - name: port
+  description: port to check
 outputs:
 - contextPath: portOpen
   description: Returns true if given port on host was open
