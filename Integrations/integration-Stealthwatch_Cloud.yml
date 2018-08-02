@@ -1,0 +1,752 @@
+commonfields:
+  id: Stealthwatch Cloud
+  version: -1
+name: Stealthwatch Cloud
+display: Stealthwatch Cloud
+category: Network Security
+image: data:image/png;base64,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
+description: Protect your cloud assets and private network
+configuration:
+- display: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<api_key>"
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useProxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Stealthwatch's server URL
+  name: serverURL
+  defaultvalue: ""
+  type: 0
+  required: true
+script:
+  script: |+
+    ''' IMPORTS '''
+    import requests
+    import json
+    import os
+    from datetime import datetime, timedelta
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    SERVER_URL=demisto.params().get('serverURL') + '/api/v3'
+    API_KEY=demisto.params()['APIKey']
+
+    USE_SSL = True if demisto.params().get('insecure') else False
+
+    DEFAULT_HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': API_KEY
+    }
+
+    ''' HELPER FUNCTIONS '''
+
+    def load_proxy():
+        """ Loads the system configured proxy if enabled in configuration """
+        proxy = {}
+        if "proxy" in demisto.params():
+            proxy["http"] = os.environ["http_proxy"]
+            proxy["https"] = os.environ["https_proxy"]
+        return proxy
+
+    PROXY = load_proxy()
+
+    def http_request(method, url_suffix, params_dict, headers, data=None):
+        req_params = {
+        }
+        if params_dict is not None:
+            req_params.update(params_dict)
+
+        url = SERVER_URL + url_suffix
+
+        LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, headers, json.dumps(req_params)))
+
+        try:
+            res = requests.request(method,
+                url,
+                verify=USE_SSL,
+                params=req_params,
+                headers=headers,
+                proxies=PROXY,
+                data=data
+            )
+            res.raise_for_status()
+            try:
+                return res.json()
+            except ValueError:
+                # in case the response doesn't have JSON
+                return "Request completed"
+        except Exception, e:
+            LOG(e)
+            raise(e)
+
+    def create_incident_data_from_alert(alert):
+        alert.pop('comments')
+        alert.pop('observations')
+        return {
+            'name': 'Stealthwatch alert ' + str(alert.get('id', '')),
+            'rawJSON': json.dumps(alert),
+            'occurred': alert.get('created', '')
+        }
+
+    def get_latest_id(alerts_data):
+        latest_id = 0
+        for alert in alerts_data:
+            current_id = alert.get('id', None)
+            if current_id is not None and current_id > latest_id:
+                latest_id = current_id
+
+        return latest_id
+
+        ''' COMMANDS FUNCTIONS '''
+
+    def show_alert(alert_id):
+        """
+        Returns alert by specific id
+        """
+
+        api_endpoint = "/alerts/alert/{}/".format(alert_id)
+        return http_request('GET', api_endpoint, {}, DEFAULT_HEADERS)
+
+    def show_alert_command():
+        """
+        corresponds to 'sw-show-alert' command. Returns information about a specific alert
+        """
+        alert_id = demisto.args().get('alertID')
+
+        alert_data = show_alert(alert_id)
+
+        if not demisto.args().get('addComments', False) == 'true':
+            alert_data.pop('comments')
+            alert_data.pop('new_comment')
+
+        alert_data.pop('observations')
+
+        list_for_md = ['resolved','id', 'last_modified', 'obj_created', 'assigned_to']
+
+        dict_for_md = {k:v for k,v in alert_data.iteritems() if k in list_for_md}
+        md = tableToMarkdown(alert_data.get('text',''), dict_for_md)
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': alert_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                "Stealthwatch.Alert(val.id==obj.id)": alert_data
+            }
+        }
+
+    def update_alert(alert_id, params):
+        """
+        Updates alert by specific id
+        """
+
+        api_endpoint = "/alerts/alert/{}/".format(alert_id)
+        return http_request('PUT', api_endpoint, params, DEFAULT_HEADERS)
+
+    def update_alert_command():
+        """
+        corresponds to 'sw-update-alert' command. Returns information about a specific alert
+        """
+        args = demisto.args()
+        alert_id = args.get('alertID')
+        update_params = {}
+        # adding the possible params for update
+        possible_params = ['new_comment', 'tags', 'publish_time', 'resolved', 'snooze_settings', 'merit', 'assigned_to']
+        for param in possible_params:
+            current_param = args.get(param, False)
+            if current_param:
+                update_params[param] = current_param
+        username = args.get('resolved_user', None)
+        if username is not None:
+            update_params['resolved_user'] = {
+                'username': username
+            }
+
+        alert_data = update_alert(alert_id, update_params)
+
+        alert_data.pop('comments')
+        alert_data.pop('new_comment')
+        alert_data.pop('observations')
+
+        list_for_md = ['resolved','id', 'last_modified', 'obj_created', 'assigned_to']
+
+        dict_for_md = {k:v for k,v in alert_data.iteritems() if k in list_for_md}
+        md = tableToMarkdown(alert_data.get('text',''), dict_for_md)
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': alert_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                "Stealthwatch.Alert(val.id==obj.id)": alert_data
+            }
+        }
+
+    def list_alerts(params):
+        """
+        Retrieves alerts
+        """
+
+        api_endpoint = "/alerts/alert/"
+        return http_request('GET', api_endpoint, params, DEFAULT_HEADERS)
+
+    def list_alerts_command():
+        """
+        corresponds to 'sw-list-alerts' command. Returns a list of Stealthwatch alerts
+        """
+        args = demisto.args()
+        alert_id = args.get('alertID')
+        list_params = {}
+        # adding the possible params for update
+        possible_params = ['status', 'tags', 'search', 'assignee', 'limit']
+        for param in possible_params:
+            current_param = args.get(param, False)
+            if current_param:
+                list_params[param] = current_param
+
+        alerts_data = list_alerts(list_params).get('objects')
+        list_for_md = ['resolved','id', 'last_modified', 'obj_created', 'assigned_to','text', 'description']
+        md_dicts_list = []
+        for alert in alerts_data:
+            if not demisto.args().get('addComments', False) == 'true':
+                alert.pop('comments')
+                alert.pop('new_comment')
+            alert.pop('observations')
+            md_dicts_list.append({k:v for k,v in alert.iteritems() if k in list_for_md})
+
+        md = tableToMarkdown("The following alerts were retrieved", md_dicts_list)
+        return {
+            'Type': entryTypes['note'],
+            'Contents': alerts_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                "Stealthwatch.Alert(val.id==obj.id)": alerts_data
+            }
+        }
+
+    def domain_block(params):
+        """
+        Updates domain blacklist status
+        """
+
+        api_endpoint = "/blacklist/domains/"
+        return http_request('POST', api_endpoint, {}, DEFAULT_HEADERS, params)
+
+    def block_domain_command():
+        """
+        corresponds to 'sw-block-domain' command. Adds a domain to the blacklist
+        """
+        domain = demisto.args().get('domain')
+
+        domain_params = {
+            "identifier": domain,
+            "category": "domain",
+            "list_on": "blacklist"
+        }
+
+        domain_result = domain_block(json.dumps(domain_params))
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': domain_result,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Blacklist ' + domain + ' result', domain_result),
+            'EntryContext': {
+                "Stealthwatch.Domain(val.identifier==obj.identifier)": domain_result
+            }
+        }
+
+    def domain_unblock(domain_id):
+        """
+        Removes domain from the blacklist
+        """
+
+        api_endpoint = "/blacklist/domains/{}/".format(domain_id)
+        return http_request('DELETE', api_endpoint, None, DEFAULT_HEADERS, None)
+
+    def unblock_domain_command():
+        """
+        corresponds to 'sw-unblock-domain' command. Removes a domain to the blacklist
+        """
+        domain_id = demisto.args().get('id')
+
+        domain_result = domain_unblock(domain_id)
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': domain_result,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Unblocked domain with id: ' + domain_id,
+        }
+
+    def list_domains(list_params):
+        """
+        Lists blacklisted domains
+        """
+
+        api_endpoint = "/blacklist/domains/"
+        return http_request('GET', api_endpoint, list_params, DEFAULT_HEADERS, {})
+
+    def list_blocked_domains_command():
+        """
+        corresponds to 'sw-list-blocked-domains' command. Returns a list of the blocked domains
+        """
+        args = demisto.args()
+        list_params = {}
+        # adding the possible params for update
+        possible_params = ['search', 'limit']
+        for param in possible_params:
+            current_param = args.get(param, False)
+            if current_param:
+                list_params[param] = current_param
+
+        specific_domain = args.get('domain', None)
+        if specific_domain is not None:
+            list_params['identifier'] = specific_domain
+
+        domains_data = list_domains(list_params)
+
+        domains_result = domains_data.get('objects', {})
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': domains_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Current blacklisted domains are', domains_result),
+            'EntryContext': {
+                "Stealthwatch.Domain(val.identifier==obj.identifier)": domains_result
+            }
+        }
+
+    def list_observations(params):
+        """
+        Lists observations
+        """
+
+        api_endpoint = "/observations/all/"
+        return http_request('GET', api_endpoint, params, DEFAULT_HEADERS)
+
+    def list_observations_command():
+        """
+        corresponds to 'sw-list-observations' command. Returns a list of Stealthwatch observations
+        """
+        args = demisto.args()
+        list_params = {}
+        # adding the possible params for update
+        possible_params = ['alert', 'id', 'search', 'limit']
+        for param in possible_params:
+            current_param = args.get(param, False)
+            if current_param:
+                list_params[param] = current_param
+
+        observations_data = list_observations(list_params).get('objects')
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': observations_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Found the following observations', observations_data),
+            'EntryContext': {
+                "Stealthwatch.Observation(val.id==obj.id)": observations_data
+            }
+        }
+
+    def list_sessions(params):
+        """
+        Lists observations
+        """
+
+        api_endpoint = "/snapshots/session-data/"
+        return http_request('GET', api_endpoint, params, DEFAULT_HEADERS)
+
+    def list_sessions_command():
+        """
+        corresponds to 'sw-list-sessions' command. Returns a list of Stealthwatch observations
+        """
+        date_format = "%Y-%m-%dT%H:%M:%SZ"
+        list_params = {}
+
+        limit = demisto.args().get('limit')
+        start_time = demisto.args().get('startTime', None)
+        end_time = demisto.args().get('endTime', None)
+
+        if start_time and end_time:
+            list_params['start_datetime'] = start_time
+            list_params['end_datetime'] = end_time
+        elif end_time is None:
+            start_time_object = datetime.strptime(start_time, date_format)
+            end_time_object = start_time_object + timedelta(hours=1)
+            start_time = start_time_object.strftime(date_format)
+            end_time = end_time_object.strftime(date_format)
+
+        list_params['limit'] = limit
+        list_params['start_datetime'] = start_time
+        list_params['end_datetime'] = end_time
+
+        sessions_data = list_sessions(list_params).get('objects')
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': sessions_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Found the following session data', sessions_data),
+            'EntryContext': {
+                "Stealthwatch.Session(val==obj)": sessions_data
+            }
+        }
+
+    def fetch_incidents():
+
+        list_params = {
+            "order_by": 'newest',
+            "limit": 100
+        }
+        final_alerts = []
+
+        known_ids = demisto.getLastRun().get('ids',None)
+        if known_ids is None or not known_ids:
+            known_ids = []
+
+        alerts_response = list_alerts(list_params)
+
+        alerts_data = alerts_response.get('objects', None)
+
+        for alert in alerts_data:
+            current_alert_id = alert.get('id')
+            if current_alert_id not in known_ids:
+                incident_from_alert = create_incident_data_from_alert(alert)
+                final_alerts.append(incident_from_alert)
+
+                # maintaining queue of 100 last seen alert ids
+                if len(known_ids) >= 100:
+                    known_ids.pop(0)
+                known_ids.append(current_alert_id)
+
+        demisto.setLastRun({
+            'ids': known_ids
+        })
+        demisto.incidents(final_alerts)
+
+    ''' EXECUTION CODE '''
+    try:
+        if demisto.command() == 'test-module':
+            #This is the call made when pressing the integration test button.
+            if list_alerts_command():
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
+        elif demisto.command() == 'sw-show-alert':
+            demisto.results(show_alert_command())
+        elif demisto.command() == 'sw-update-alert':
+            demisto.results(update_alert_command())
+        elif demisto.command() == 'sw-list-alerts':
+            demisto.results(list_alerts_command())
+        elif demisto.command() == 'sw-block-domain':
+            demisto.results(block_domain_command())
+        elif demisto.command() == 'sw-unblock-domain':
+            demisto.results(unblock_domain_command())
+        elif demisto.command() == 'sw-list-blocked-domains':
+            demisto.results(list_blocked_domains_command())
+        elif demisto.command() == 'sw-list-observations':
+            demisto.results(list_observations_command())
+        elif demisto.command() == 'sw-list-sessions':
+            demisto.results(list_sessions_command())
+        elif demisto.command() == 'fetch-incidents':
+            demisto.results(fetch_incidents())
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+  type: python
+  commands:
+  - name: sw-show-alert
+    arguments:
+    - name: alertID
+      required: true
+      description: The id of the required alert
+    - name: addComments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Add comments information, can be long
+      defaultValue: "false"
+    outputs:
+    - contextPath: Stealthwatch.Alert.id
+      description: Alert's id
+      type: number
+    - contextPath: Stealthwatch.Alert.assigned_to
+      description: Alert's assignee
+      type: string
+    - contextPath: Stealthwatch.Alert.obj_created
+      description: Alert's creation date
+      type: date
+    - contextPath: Stealthwatch.Alert.last_modified
+      description: Alert's last modification
+      type: date
+    - contextPath: Stealthwatch.Alert.resolved
+      description: 'Alert''s state '
+      type: boolean
+    - contextPath: Stealthwatch.Alert.source_info.ips
+      description: IP of the alert's source
+      type: string
+    - contextPath: Stealthwatch.Alert.source_info.hostnames
+      description: Hostname of the alert's source
+      type: string
+    description: Get info about a specific alert by its ID
+  - name: sw-update-alert
+    arguments:
+    - name: alertID
+      required: true
+      description: The id of the alert for update
+    - name: resolved
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set the resolved field to true and set the merit field to close
+        an alert. merit can be 8 ("helpful") or 9 ("not helpful").
+    - name: merit
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "8"
+      - "9"
+      description: Set the resolved field to true and set the merit field to close
+        an alert. merit can be 8 ("helpful") or 9 ("not helpful").
+    - name: tags
+      description: Tags (string)
+    - name: new_comment
+      description: Set the new_comment field to add a comment to the alert.
+    - name: publish_time
+      description: Publish time (string). Example, publish_time=2018-08-01T07:54:39Z
+    - name: snooze_settings
+      description: Snooze settings (string)
+    - name: resolved_user
+      description: 'Username (string) '
+    - name: assigned_to
+      description: Assigned to (integer)
+    outputs:
+    - contextPath: Stealthwatch.Alert.id
+      description: Alert's id
+      type: number
+    - contextPath: Stealthwatch.Alert.assigned_to
+      description: Alert's assignee
+      type: string
+    - contextPath: Stealthwatch.Alert.obj_created
+      description: Alert's creation date
+      type: date
+    - contextPath: Stealthwatch.Alert.last_modified
+      description: Alert's last modification
+      type: date
+    - contextPath: Stealthwatch.Alert.resolved
+      description: 'Alert''s state '
+      type: boolean
+    - contextPath: Stealthwatch.Alert.source_info.ips
+      description: IP of the alert's source
+    - contextPath: Stealthwatch.Alert.source_info.hostname
+      description: Hostname of the alert's source
+      type: string
+    description: Update the state of an alert
+  - name: sw-list-alerts
+    arguments:
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - closed
+      - all
+      description: 'status filters alerts by status: open, closed, or all. Default
+        is open. all allows you to see an individual alert regardless of whether it''s
+        open or closed.'
+    - name: search
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
+    - name: assignee
+      description: assignee filters shows only alerts assigned to a particular user.
+    - name: tags
+      description: tags shows alerts that are assigned a particular incident tag.
+    - name: limit
+      description: Amount of alerts to list. Default is 5
+      defaultValue: "5"
+    - name: addComments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Add comments information, can be long
+      defaultValue: "false"
+    outputs:
+    - contextPath: Stealthwatch.Alert.id
+      description: Alert's id
+      type: number
+    - contextPath: Stealthwatch.Alert.assigned_to
+      description: Alert's assignee
+      type: string
+    - contextPath: Stealthwatch.Alert.obj_created
+      description: Alert's creation date
+      type: date
+    - contextPath: Stealthwatch.Alert.last_modified
+      description: Alert's last modification
+      type: date
+    - contextPath: Stealthwatch.Alert.resolved
+      description: 'Alert''s state '
+      type: boolean
+    - contextPath: Stealthwatch.Alert.source_info.ips
+      description: IP of the alert's source
+    - contextPath: Stealthwatch.Alert.source_info.hostname
+      description: Hostname of the alert's source
+      type: string
+    description: Get the list of Stealthwatch alerts
+  - name: sw-block-domain
+    arguments:
+    - name: domain
+      description: Domain to add to the blacklist
+    outputs:
+    - contextPath: Stealthwatch.Domain.identifier
+      description: Domain name
+      type: string
+    - contextPath: Stealthwatch.Domain.title
+      description: Domain title
+      type: string
+    - contextPath: Stealthwatch.Domain.id
+      description: Domain id
+      type: number
+    description: Add a domain to the blacklist
+  - name: sw-unblock-domain
+    arguments:
+    - name: id
+      required: true
+      description: ID of the domain to remove from the blacklist. You can find the
+        id using 'sw-list-blocked-domains'
+    description: Remove a domain from the blacklist
+  - name: sw-list-blocked-domains
+    arguments:
+    - name: search
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
+    - name: domain
+      description: Search for specific domain
+    - name: limit
+      description: Amount of domains to list. Default is 5
+      defaultValue: "5"
+    outputs:
+    - contextPath: Stealthwatch.Domain.identifier
+      description: Domain name
+      type: string
+    - contextPath: Stealthwatch.Domain.title
+      description: Domain title
+      type: string
+    - contextPath: Stealthwatch.Domain.id
+      description: Domain id
+      type: number
+    description: ' Returns list of the blocked domains'
+  - name: sw-list-observations
+    arguments:
+    - name: search
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
+    - name: alert
+      description: Use the alert query parameter with an alert id to only show observations
+        referenced by the alert.
+    - name: id
+      description: Get a specific observation by its id
+    - name: limit
+      description: Amount of observations to list. Default is 5
+      defaultValue: "5"
+    outputs:
+    - contextPath: Stealthwatch.Observation.id
+      description: Observation ID
+      type: number
+    - contextPath: Stealthwatch.Observation.port_count
+      description: Observation port count
+      type: number
+    - contextPath: Stealthwatch.Observation.creation_time
+      description: Observation creation time
+      type: string
+    - contextPath: Stealthwatch.Observation.end_time
+      description: Observation end time
+      type: string
+    - contextPath: Stealthwatch.Observation.scanned_ip
+      description: Observation scanned ip
+      type: string
+    - contextPath: Stealthwatch.Observation.scanner_ip
+      description: Observation scanner ip
+      type: string
+    - contextPath: Stealthwatch.Observation.source
+      description: Observation source
+      type: unknown
+    description: Get observations by alert ID, observation ID, or free search
+  - name: sw-list-sessions
+    arguments:
+    - name: startTime
+      required: true
+      description: Session's start time (UTC). For example, startTime="2018-07-31T12:00:00Z"
+    - name: endTime
+      description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
+    - name: limit
+      description: Amount of observations to list. Default is 5
+      defaultValue: "5"
+    outputs:
+    - contextPath: Stealthwatch.Session.id
+      description: Session ID
+      type: number
+    - contextPath: Stealthwatch.Session.port
+      description: Session port
+      type: number
+    - contextPath: Stealthwatch.Session.start_timestamp_utc
+      description: Session start time
+      type: string
+    - contextPath: Stealthwatch.Session.ip
+      description: Session IP
+      type: string
+    - contextPath: Stealthwatch.Session.connected_ip
+      description: Session connected IP
+      type: string
+    - contextPath: Stealthwatch.Session.device_id
+      description: Session device ID
+      type: number
+    description: 'Get Sessions by the session''s occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)'
+  isfetch: true
+  runonce: false
+releaseNotes: "Stealthwatch integration"
