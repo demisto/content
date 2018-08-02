@@ -33,4 +33,3 @@ outputs:
 - contextPath: expectBadSsdeepValue
 scripttarget: 0
 runonce: false
-releaseNotes: "-"
