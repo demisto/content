@@ -519,7 +519,7 @@ script:
                 'UnAVDetectedCommunicatingHashes': o.undetected_communicating_samples,
                 'Resolutions': o.resolutions.slice(0,maxLen),
                 'ReferrerHashes': o.detected_referrer_samples,
-                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples
+                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples,
                 'Whois': o.whois,
                 'Subdomains': o.domain_siblings,
             }
@@ -533,7 +533,7 @@ script:
                 'UnAVDetectedCommunicatingHashes': o.undetected_communicating_samples,
                 'Resolutions': o.resolutions.slice(0,maxLen),
                 'ReferrerHashes': o.detected_referrer_samples,
-                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples
+                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples,
                 'Whois': o.whois,
                 'Subdomains': o.domain_siblings,
             }
