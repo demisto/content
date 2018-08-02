@@ -2,6 +2,7 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
+releaseNotes: "Auto-extract indicator from email inline"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -87,7 +88,7 @@ tasks:
         simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
           Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
           Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
-    reputationcalc: 0
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -386,7 +387,7 @@ tasks:
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
-    reputationcalc: 0
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
