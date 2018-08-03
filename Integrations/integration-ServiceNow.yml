@@ -578,9 +578,7 @@ script:
         if (computerName) {
             var path = "table/" + ticket_type + encodeToURLQuery({ sysparm_query: "u_code=" + computerName });
 
-            // log('path: '+ path)
             res = sendRequest('GET', path);
-            // log('res: \n'+ JSON.stringify(res.obj));
 
             var md = '## ServiceNow Computer\n';
             var ec = { ServiceNowComputer: [] };
@@ -1594,5 +1592,17 @@ script:
     - name: computerName
       required: true
       description: machine name
+    outputs:
+    - contextPath: ServiceNowComputer.sys_id
+      description: Id
+    - contextPath: ServiceNowComputer.u_code
+      description: Code
+    - contextPath: ServiceNowComputer.support_group
+      description: Support group
+    - contextPath: ServiceNowComputer.os
+      description: Operation System
+    - contextPath: ServiceNowComputer.comments
+      description: Comments
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
+releaseNotes: "Add servicenow-get-computer command"
