@@ -58,6 +58,8 @@ script:
         del os.environ['https_proxy']
 
     URL = demisto.getParam('URL')
+    if URL[-1] != '/':
+        URL += '/'
     QUERY = {'username': demisto.getParam('Username'), 'api_key': demisto.getParam('APIKey')}
 
 
