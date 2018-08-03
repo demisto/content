@@ -572,7 +572,50 @@ script:
         }
         return {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": ec};
     };
+    
+    var SNGetComputer = function (computerName) {
+        var ticket_type = "cmdb_ci_computer";
+        if (computerName) {
+            var path = "table/" + ticket_type + encodeToURLQuery({ sysparm_query: "u_code=" + computerName });
 
+            // log('path: '+ path)
+            res = sendRequest('GET', path);
+            // log('res: \n'+ JSON.stringify(res.obj));
+
+            var md = '## ServiceNow Computer\n';
+            var ec = { ServiceNowComputer: [] };
+
+            var headerTran = function (headerName) {
+                var headers = {
+                    sys_id: 'Id',
+                    u_code: 'u_code (computer name)',
+                    support_group: 'support group',
+                    os: 'operating system',
+                    comments: 'comments'
+                }
+                if (headers[headerName]) {
+                    return headers[headerName];
+                } else {
+                    return headerName;
+                }
+            };
+
+            if (res.obj.result[0].u_code === computerName) {
+                md += tableToMarkdown('ServiceNow Computer', res.obj.result[0], ['sys_id', 'u_code', 'support_group','os','comments'], '', headerTran);
+                ec.ServiceNowComputer.push({
+                    sys_id: res.obj.result[0].sys_id,
+                    u_code: res.obj.result[0].u_code,
+                    support_group: res.obj.result[0].support_group.value,
+                    os: res.obj.result[0].os,
+                    comments: res.obj.result[0].comments
+                });
+            }
+
+            return { 'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": ec };
+        } else {
+            throw 'incident-get-computer requires a computerName (snow field u_code)';
+        }
+    };
     if (!params.ticket_type) {
         params.ticket_type = 'incident';
     }
@@ -601,6 +644,8 @@ script:
             return SNUploadFile();
         case 'servicenow-get-groups':
             return SNGetGroups(args.name);
+        case 'servicenow-get-computer':
+            return SNGetComputer(args.computerName);
         case 'fetch-incidents':
             return fetchIncidents();
         case 'test-module':
@@ -1544,4 +1589,10 @@ script:
       required: true
       description: Servicenow group name
     description: Return information about specific servicenow group
+  - name: servicenow-get-computer
+    arguments:
+    - name: computerName
+      required: true
+      description: machine name
+    description: query the cmdb_ci_computer table with a computer code
   isfetch: true
