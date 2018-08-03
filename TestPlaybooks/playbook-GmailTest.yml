@@ -369,7 +369,7 @@ tasks:
                   simple: Gmail.Attachments
                 iscontext: true
           transformers:
-          - operator: e56a7467-e156-4296-8c87-25b64aa20b3a
+          - operator: GetFirstObject
           - operator: getField
             args:
               field:
@@ -442,7 +442,7 @@ tasks:
               field:
                 value:
                   simple: ID
-          - operator: e56a7467-e156-4296-8c87-25b64aa20b3a
+          - operator: GetFirstObject
       user-key:
         simple: admin@demistodev.com
     separatecontext: false
