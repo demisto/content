@@ -168,7 +168,7 @@ tasks:
         simple: '"0"'
       fields: {}
       path:
-        simple: DBotScore(val.Vendor=='ipinfo').Score=val+''
+        simple: DBotScore(val.Vendor=='ipinfo').Score=>val.length&&val.length>0?val[0]+'':val+''
     separatecontext: false
     view: |-
       {
