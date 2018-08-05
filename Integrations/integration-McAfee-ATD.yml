@@ -63,10 +63,15 @@ script:
     //HELPER FUNCTIONS//
     function stringArrToIntArr(stringArr){
         var intArr = [];
-        for (index = 0; index < stringArr.length; index++) {
-            if(stringArr[index]){
-                intArr.push(parseInt(stringArr[index]));
+        if (stringArr.length > 0){
+            for (index = 0; index < stringArr.length; index++) {
+                if(stringArr[index]){
+                    intArr.push(parseInt(stringArr[index]));
+                }
             }
+        }
+        else{
+            intArr = [parseInt(stringArr)]
         }
         return intArr;
     }

@@ -1,7 +1,6 @@
 id: McAfee ATD Detonate URL
 version: -1
 name: McAfee ATD Detonate URL
-fromversion: 4.0.0
 description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
 starttaskid: "0"
 tasks:
@@ -13,37 +12,36 @@ tasks:
       id: 08e29819-73da-4fab-8f7e-b99064f37a49
       version: -1
       name: ""
-      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -442
+          "x": 387.5,
+          "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: effa8833-67f9-475b-815e-fc15f743b216
+    taskid: 6ba1da17-5ecc-41f2-8926-86a34760388b
     type: regular
     task:
-      id: effa8833-67f9-475b-815e-fc15f743b216
+      id: 6ba1da17-5ecc-41f2-8926-86a34760388b
       version: -1
       name: McAfee ATD Upload URL
       description: Uploads the submission to McAfee ATD.
-      script: McAfee Advanced Threat Defense_2do|||atd-file-upload
+      script: McAfee Advanced Threat Defense|||atd-file-upload
       type: regular
       iscommand: true
       brand: McAfee Advanced Threat Defense_2do
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
       analyzeAgain: {}
       dstIp: {}
@@ -63,30 +61,30 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 226
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: d5b61611-c28b-4cd4-81ca-aed5aa175791
+    taskid: abc3c7b8-60f6-47b5-8304-b8e0241b6d0f
     type: playbook
     task:
-      id: d5b61611-c28b-4cd4-81ca-aed5aa175791
+      id: abc3c7b8-60f6-47b5-8304-b8e0241b6d0f
       version: -1
       name: GenericPolling
-      description: "-"
+      description: Generic Polling Playbook
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "10"
     scriptarguments:
       Ids:
-        simple: ${ATD.Task.taskId}
+        simple: ${ATD.Task.taskId(val !== -1)}
       Interval:
         simple: ${inputs.interval}
       PollingCommandArgName:
@@ -105,52 +103,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 50,
+          "y": 895
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: acca07d2-7ed7-4ebf-8e04-f361472fecf3
+    taskid: 483be3f9-3107-43d9-89a2-52e7c9b5ca8b
     type: regular
     task:
-      id: acca07d2-7ed7-4ebf-8e04-f361472fecf3
+      id: 483be3f9-3107-43d9-89a2-52e7c9b5ca8b
       version: -1
       name: McAfee ATD Get Report
       description: Retrieve the reports from McAfee ATD.
-      script: McAfee Advanced Threat Defense_2do|||atd-get-report
+      script: McAfee Advanced Threat Defense|||atd-get-report
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense_2do
+      brand: McAfee Advanced Threat Defense
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
       jobId: {}
       taskId:
-        simple: ${ATD.Task.taskId}
+        simple: ${ATD.Task(val.status == 'Completed').taskId}
       threshold: {}
-      type: {}
+      type:
+        simple: pdf
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 621
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: cc57bf2b-a9d7-405a-82bd-d4f1cbb43a74
+    taskid: f759fa2c-df8d-49c0-8098-aaf10a97c727
     type: condition
     task:
-      id: cc57bf2b-a9d7-405a-82bd-d4f1cbb43a74
+      id: f759fa2c-df8d-49c0-8098-aaf10a97c727
       version: -1
       name: Is there a URL to detonate?
-      description: |
-        Verify that there is a URL to detonate.
+      description: Checks that there is a URL in the playbook’s input.
       type: condition
       iscommand: false
       brand: ""
@@ -171,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -16
+          "x": 275,
+          "y": 370
         }
       }
     note: false
@@ -184,7 +182,6 @@ tasks:
       id: 05df36f0-af05-42aa-8621-87675e7e8054
       version: -1
       name: Done
-      description: "-"
       type: title
       iscommand: false
       brand: ""
@@ -192,20 +189,53 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 989
+          "x": 387.5,
+          "y": 1420
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: dfa9fd98-fbf2-4aed-8b23-167a3626c097
+  "8":
+    id: "8"
+    taskid: cb9974ce-a82a-4bb3-8185-d0dae4500f1d
     type: condition
     task:
-      id: dfa9fd98-fbf2-4aed-8b23-167a3626c097
+      id: cb9974ce-a82a-4bb3-8185-d0dae4500f1d
+      version: -1
+      name: filter taskId
+      description: Checks that valid URLs only have been sent to detonation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${ATD.Task.taskId(val !== -1)}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: ff90cd61-0826-43d4-8924-dbdd3fbb21e7
+    type: condition
+    task:
+      id: ff90cd61-0826-43d4-8924-dbdd3fbb21e7
       version: -1
       name: Is McAfee ATD sandbox enabled?
-      description: Verify that there is a valid instance of McAfee ATD enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -231,22 +261,51 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: McAfee Advanced Threat Defense_2do
-                - - operator: isEqualString
+                        simple: McAfee Advanced Threat Defense
+                  - operator: isEqualString
                     left:
                       value:
                         simple: modules.state
                       iscontext: true
                     right:
                       value:
-                        simple: enabled
+                        simple: active
                 accessor: brand
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -257
+          "x": 387.5,
+          "y": 195
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: f52ecc2b-7e20-40a5-8f90-84fcc7413647
+    type: regular
+    task:
+      id: f52ecc2b-7e20-40a5-8f90-84fcc7413647
+      version: -1
+      name: atd-check-status
+      description: Updates the status of the tasks in the context.
+      script: McAfee Advanced Threat Defense|||atd-check-status
+      type: regular
+      iscommand: true
+      brand: McAfee Advanced Threat Defense
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      jobId: {}
+      taskId:
+        simple: ${ATD.Task.taskId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -255,10 +314,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1496,
-        "width": 380,
-        "x": 450,
-        "y": -442
+        "height": 1435,
+        "width": 717.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -279,7 +338,7 @@ inputs:
   required: false
   description: timeout to stop pooling and resume the playbook
 outputs:
-- contextPath: InfoFile.Size
+- contextPath: File.Size
   description: File size (only in case of report type=json)
   type: number
 - contextPath: DBotScore.Indicator
@@ -297,27 +356,27 @@ outputs:
 - contextPath: DBotScore.Type
   description: The type of the indicator (only in case of report type=json)
   type: string
-- contextPath: InfoFile.Name
+- contextPath: File.Name
   description: Filename (only in case of report type=json)
   type: string
-- contextPath: InfoFile.Type
+- contextPath: File.Type
   description: File type e.g. "PE" (only in case of report type=json)
   type: string
-- contextPath: InfoFile.MD5
+- contextPath: File.MD5
   description: MD5 hash of the file (only in case of report type=json)
   type: string
-- contextPath: InfoFile.SHA1
+- contextPath: File.SHA1
   description: SHA1 hash of the file (only in case of report type=json)
   type: string
-- contextPath: InfoFile.SHA256
+- contextPath: File.SHA256
   description: SHA256 hash of the file (only in case of report type=json)
   type: string
-- contextPath: InfoFile.EntryID
+- contextPath: File.EntryID
   description: The Entry ID of the sample
   type: string
-- contextPath: InfoFile.Malicious.Vendor
+- contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
-- contextPath: InfoFile.Malicious.Description
+- contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
