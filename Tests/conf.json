@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
+        },
+        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
@@ -137,11 +141,6 @@
                 "byoi": false
             },
             "playbookID": "account_enrichment_-_generic_test"
-        },
-        {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
         },
         {
             "integrations": {
