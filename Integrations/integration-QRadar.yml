@@ -235,13 +235,13 @@ script:
             var totalOffenses = res.length;
             var lastCallOffenses = res.length;
             while (startTime && lastCallOffenses >= offensesPerCall) {
-                var min = res.length;
-                var max = min + offensesPerCall;
+                var from = totalOffenses; // we're counting from zero
+                var to = from + offensesPerCall - 1;
                 var lastIncidentTime = res[res.length-1].start_time;
 
-                res = res.concat(getOffenses('start_time>' + startTime + ' AND start_time<' + lastIncidentTime + (query ? (' AND (' + query +')') : ''), undefined, min + '-' + max));
-                lastCallOffenses = res.length - totalOffenses;
-                totalOffenses = res.length;
+                res = res.concat(getOffenses('start_time>' + startTime + ' AND start_time<' + lastIncidentTime + (query ? (' AND (' + query +')') : ''), undefined, from + '-' + to));
+                lastCallOffenses = res.length;
+                totalOffenses = totalOffenses + res.length;
             }
 
             var incidents = [];
@@ -534,4 +534,4 @@ script:
     description: Retrieve a note for an offense
   isfetch: true
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Fix bug where pagination missed some incidents"
