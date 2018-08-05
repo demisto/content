@@ -8,6 +8,8 @@ script: |-
 
   args = demisto.args()
   ids = argToList(args['ids'])
+  if not isinstance(ids, list):
+      ids = [ids]
   dt = args['dt']
   pollingCommand = args['pollingCommand']
   pollingCommandArgName = args['pollingCommandArgName']
