@@ -382,7 +382,7 @@ tasks:
       labels: {}
       priority: {}
       status:
-        simple: Done
+        simple: Resolve this issue
       summary:
         simple: Edited
     reputationcalc: 0
