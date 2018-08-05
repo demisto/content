@@ -43,8 +43,8 @@ script: |-
   }
 
   function finish(playbookId, tag) {
-      var params = { 'id': tag };
-      if (playbookId) {
+      var params = {'id' : tag };
+      if (playbookId !== undefined) {
           params.parentPlaybookID = playbookId;
       }
       return executeCommand("taskComplete", params);
