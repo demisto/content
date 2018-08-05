@@ -63,10 +63,10 @@ tasks:
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
-      script: jira_copy3|||jira-create-issue
+      script: jira|||jira-create-issue
       type: regular
       iscommand: true
-      brand: jira_copy3
+      brand: jira
     nexttasks:
       '#none#':
       - "3"
@@ -105,10 +105,10 @@ tasks:
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
-      script: jira_copy3|||jira-get-issue
+      script: jira|||jira-get-issue
       type: regular
       iscommand: true
-      brand: jira_copy3
+      brand: jira
     nexttasks:
       '#none#':
       - "4"
@@ -171,10 +171,10 @@ tasks:
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
-      script: jira_copy3|||jira-issue-add-comment
+      script: jira|||jira-issue-add-comment
       type: regular
       iscommand: true
-      brand: jira_copy3
+      brand: jira
     nexttasks:
       '#none#':
       - "6"
@@ -202,10 +202,10 @@ tasks:
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
-      script: jira_copy3|||jira-issue-add-link
+      script: jira|||jira-issue-add-link
       type: regular
       iscommand: true
-      brand: jira_copy3
+      brand: jira
     nexttasks:
       '#none#':
       - "13"
@@ -237,10 +237,10 @@ tasks:
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
-      script: jira_copy3|||jira-issue-upload-file
+      script: jira|||jira-issue-upload-file
       type: regular
       iscommand: true
-      brand: jira_copy3
+      brand: jira
     nexttasks:
       '#none#':
       - "12"
@@ -304,10 +304,10 @@ tasks:
       version: -1
       name: jira-issue-query
       description: Query Jira issues
-      script: jira_copy3|||jira-issue-query
+      script: jira|||jira-issue-query
       type: regular
       iscommand: true
-      brand: jira_copy3
+      brand: jira
     nexttasks:
       '#none#':
       - "11"
@@ -365,10 +365,10 @@ tasks:
       id: b64bfaf1-2688-4b84-8e40-12f88afda0dd
       version: -1
       name: jira-edit-issue
-      script: jira_copy3|||jira-edit-issue
+      script: jira|||jira-edit-issue
       type: regular
       iscommand: true
-      brand: jira_copy3
+      brand: jira
     nexttasks:
       '#none#':
       - "18"
@@ -462,10 +462,10 @@ tasks:
       id: 178e2167-e603-4868-8920-20489b8227e4
       version: -1
       name: jira-get-comments
-      script: jira_copy3|||jira-get-comments
+      script: jira|||jira-get-comments
       type: regular
       iscommand: true
-      brand: jira_copy3
+      brand: jira
     nexttasks:
       '#none#':
       - "23"
