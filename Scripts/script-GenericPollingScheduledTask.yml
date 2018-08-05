@@ -53,7 +53,7 @@ script: |-
   function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag) {
       var idsStr = ids.replace(/"/g, '\\"');
       var playbookIdStr = '';
-      if (playbookId === undefined) {
+      if (playbookId !== undefined) {
           playbookIdStr = ' playbookId="' + playbookId + '"';
       }
       var cmd = '!GenericPollingScheduledTask pollingCommand="' + pollingCommand + '" pollingCommandArgName="' + pollingCommandArgName + '"' + playbookIdStr;
