@@ -139,6 +139,11 @@
             "playbookID": "account_enrichment_-_generic_test"
         },
         {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
+        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
@@ -411,11 +416,6 @@
         {
             "integrations": "QRadar",
             "playbookID": "test_Qradar"
-        },
-        {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
         },
         {
             "integrations": "VMware",
