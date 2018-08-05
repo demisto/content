@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: "Start"
     nexttasks:
       '#none#':
       - "5"
@@ -176,6 +177,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Threat Grid
+      description: "Uploads a file to Threat Grid"
     nexttasks:
       '#none#':
       - "15"
@@ -269,6 +271,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: "Calls the generic polling sub-playbook"
     nexttasks:
       '#none#':
       - "8"
@@ -309,6 +312,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Checks whether there's a file to detonate - if not then the detonation is skipped"
     nexttasks:
       '#default#':
       - "6"
