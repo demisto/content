@@ -64,10 +64,10 @@ tasks:
       name: ip
       description: Check IP reputation (when information is available, returns a JSON
         with details).  Uses all configured Threat Intelligence feeds
-      script: Shodan_copy|||ip
+      script: Shodan|||ip
       type: regular
       iscommand: true
-      brand: Shodan_copy
+      brand: Shodan
     nexttasks:
       '#none#':
       - "3"
