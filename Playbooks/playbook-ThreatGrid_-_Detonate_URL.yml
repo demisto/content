@@ -1,10 +1,10 @@
-id: f4305da5-b150-42f4-89b5-32c316b97e73
-version: 10
+id: ThreatGrid_Detonate_URL
+version: -1
 name: ThreatGrid - Detonate URL
-description: Detonate one or more files using the Wildfire integration. This playbook
+description: Detonate one or more files using the ThreatGrid integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
 starttaskid: "0"
-fromversion: "3.6.0"
+fromversion: "4.0.0"
 tasks:
   "0":
     id: "0"
@@ -38,7 +38,7 @@ tasks:
       version: -1
       name: Is ThreatGrid enabled?
       description: |
-        Verify that there is a valid instance of Wildfire enabled.
+        Verify that there is a valid instance of Threat Grid enabled.
       type: condition
       iscommand: false
       brand: ""

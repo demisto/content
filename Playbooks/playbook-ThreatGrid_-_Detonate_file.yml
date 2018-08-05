@@ -1,10 +1,10 @@
-id: b951e7f9-dd19-4394-8c15-ef415b820b38
-version: 9
-name: ThreatGrid - Detonate file
-description: Detonate one or more files using the Wildfire integration. This playbook
+id: ThreatGrid_Detonate_File
+version: -1
+name: ThreatGrid - Detonate File
+description: Detonate one or more files using the ThreatGrid integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
 starttaskid: "0"
-fromversion: "3.6.0"
+fromversion: "4.0.0"
 tasks:
   "0":
     id: "0"
@@ -16,7 +16,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: "-"
     nexttasks:
       '#none#':
       - "5"
@@ -24,21 +23,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": -10
+          "x": 20,
+          "y": 60
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: cacefc85-644c-48de-8ff3-545308a282eb
+    taskid: 1378d2a9-9fcc-47d0-817f-9d9145740752
     type: condition
     task:
-      id: cacefc85-644c-48de-8ff3-545308a282eb
+      id: 1378d2a9-9fcc-47d0-817f-9d9145740752
       version: -1
       name: Is ThreatGrid enabled?
-      description: |
-        Verify that there is a valid instance of Wildfire enabled.
+      description: Verify that there is a valid instance of ThreatGrid is enabled
       type: condition
       iscommand: false
       brand: ""
@@ -46,7 +44,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "11"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -80,8 +78,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 145
+          "x": 20,
+          "y": 195
         }
       }
     note: false
@@ -101,24 +99,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 1280
+          "x": 10,
+          "y": 1450
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: 0e1f072a-09ab-4bb2-832e-c16ff150f6f3
+    taskid: 2ef569c7-fa31-45cc-80a0-e03b12b49815
     type: regular
     task:
-      id: 0e1f072a-09ab-4bb2-832e-c16ff150f6f3
+      id: 2ef569c7-fa31-45cc-80a0-e03b12b49815
       version: -1
       name: ThreatGrid Get Samples State
-      description: Get the sample state.
       script: Threat Grid|||threat-grid-get-samples-state
       type: regular
       iscommand: true
       brand: Threat Grid
+      description: Get the sample state.
     nexttasks:
       '#none#':
       - "6"
@@ -129,8 +127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 961
+          "x": 10,
+          "y": 1245
         }
       }
     note: false
@@ -149,7 +147,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "14"
     scriptarguments:
       append: {}
       key:
@@ -161,24 +159,116 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 365
+          "x": 20,
+          "y": 555
         }
       }
     note: false
-  "12":
-    id: "12"
-    taskid: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
+  "13":
+    id: "13"
+    taskid: 0245c2ab-485d-4994-8da0-63d10d247a77
+    type: regular
+    task:
+      id: 0245c2ab-485d-4994-8da0-63d10d247a77
+      version: -1
+      name: ThreatGrid Upload File
+      script: Threat Grid|||threat-grid-upload-sample
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      file-id:
+        simple: ${File.EntryID}
+      filename:
+        simple: ${inputs.FileName}
+      os:
+        simple: ${inputs.os}
+      osver:
+        simple: ${inputs.osver}
+      private:
+        simple: ${inputs.private}
+      source:
+        simple: ${inputs.source}
+      tags:
+        simple: ${inputs.tags}
+      vm:
+        simple: ${inputs.vm}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 920
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: c1d5b196-d934-4ef2-8e01-3487eae58533
+    type: condition
+    task:
+      id: c1d5b196-d934-4ef2-8e01-3487eae58533
+      version: -1
+      name: Is the file type supported?
+      description: Will fail if file type is not supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 720
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 97fcf073-c63a-42d4-8e65-ba6d4814d859
     type: playbook
     task:
-      id: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
+      id: 97fcf073-c63a-42d4-8e65-ba6d4814d859
       version: -1
       name: GenericPolling
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: "Generic polling playbook"
     nexttasks:
       '#none#':
       - "8"
@@ -203,62 +293,56 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 770
+          "x": 10,
+          "y": 1080
         }
       }
     note: false
-  "13":
-    id: "13"
-    taskid: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
-    type: regular
+  "16":
+    id: "16"
+    taskid: 93e193f6-a438-4349-861c-f0f99b4b3997
+    type: condition
     task:
-      id: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
+      id: 93e193f6-a438-4349-861c-f0f99b4b3997
       version: -1
-      name: ThreatGrid Upload File
-      script: Threat Grid|||threat-grid-upload-sample
-      type: regular
-      iscommand: true
-      brand: Threat Grid
-      description: "Upload a file to Threat Grid"
+      name: Is there a file to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      file-id:
-        simple: ${File.EntryID}
-      filename:
-        simple: ${inputs.FileName}
-      os:
-        simple: ${inputs.os}
-      osver:
-        simple: ${inputs.osver}
-      private:
-        simple: ${inputs.private}
-      source:
-        simple: ${inputs.source}
-      tags:
-        simple: ${inputs.tags}
-      vm:
-        simple: ${inputs.vm}
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 570
+          "x": 20,
+          "y": 380
         }
       }
     note: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_13_yes": 0.52,
+      "5_6_#default#": 0.37
+    },
     "paper": {
       "dimensions": {
-        "height": 1355,
+        "height": 1455,
         "width": 390,
-        "x": 140,
-        "y": -10
+        "x": 10,
+        "y": 60
       }
     }
   }
@@ -310,12 +394,12 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs  (minutes)
 outputs:
-- contextPath: File.SHA256
-  description: SHA256 hash of the file
-  type: string
 - contextPath: File.Malicious
   description: The File malicious description
   type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
 - contextPath: File.Type
   description: File type e.g. "PE"
   type: string
@@ -334,8 +418,8 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
   type: string
 - contextPath: DBotScore
   description: The DBotScore object
@@ -352,3 +436,7 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+- contextPath: Sample.State
+  description: The sample state.
+- contextPath: Sample.ID
+  description: The sample ID.
