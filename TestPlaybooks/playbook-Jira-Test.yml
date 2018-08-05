@@ -78,7 +78,7 @@ tasks:
       issueJson: {}
       issueTypeId: {}
       issueTypeName:
-        simple: Bug
+        simple: Incident
       labels: {}
       priority: {}
       projectKey:
