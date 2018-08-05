@@ -335,7 +335,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
       - "6"
       "yes":
       - "11"
@@ -419,3 +419,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+releaseNotes: "-"
