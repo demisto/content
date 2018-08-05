@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
+        },
+        {
             "integrations": "Intezer",
             "playbookID": "Intezer Testing"
         },
