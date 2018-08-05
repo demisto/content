@@ -9,6 +9,7 @@ description: |-
   .dll, .doc, .docm, .docx, .dotm, .dotx, .eml, .exe, .htm,
   .html, .inf, .ins,. js, .lnk, .lzh, l.zma, .mof, .msg,
   .ocx, .pdf, .potm, .potx, .ppam, .pps, .ppsm, .ppsx
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +20,7 @@ tasks:
       id: 489b704c-bef9-40e7-8aa8-f74cca308a94
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -155,6 +157,7 @@ tasks:
       id: e589b774-3cee-4dff-8e14-788ef3590dfa
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
