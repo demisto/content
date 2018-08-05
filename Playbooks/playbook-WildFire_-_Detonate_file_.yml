@@ -3,6 +3,8 @@ version: -1
 name: WildFire - Detonate file
 description: Detonate one or more files using the Wildfire integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types -
+  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
 fromversion: 3.6.0
 starttaskid: "0"
 tasks:
@@ -211,7 +213,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
                     ignorecase: true
                   - operator: string.match
                     left:
@@ -220,7 +222,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
                     ignorecase: true
                 accessor: EntryID
             iscontext: true
