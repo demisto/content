@@ -293,61 +293,6 @@ script:
         return 0;
     }
 
-    function get_sample_state(id) {
-        var rawResponse = sendRequest(
-            'GET',
-            'samples/' + id + '/state',
-            args,
-            null
-        );
-        return rawResponse.data.state;
-    }
-
-    function wait_for_report(id, delay, timeout) {
-        var time = 0;
-        var done = false;
-        do {
-            var state = get_sample_state(id);
-            if (state == 'fail')
-                throw "Threat Grid failed to process the sample (sample state: fail).";
-            done = state == 'succ';
-            if (done)
-                break;
-            wait(delay);
-            time += delay;
-        } while (!done && time < timeout);
-        if (!done) {
-            throw "Timeout while waiting for report. Sample ID: " + id;
-        }
-    }
-
-    function get_report(id, type) { //Complete
-        if (type.lower() == 'html') {
-            rawResponse = sendRequest(
-                'GET',
-                'samples/' + id + '/report.html',
-                args,
-                id + '-report.html'
-            );
-            var fileId = rawResponse.FileID;
-            return ({Type: 3, FileID: fileId, File: 'ThreatGridReport.html', Contents: 'ThreatGridReport.html'});
-        }
-        rawResponse = sendRequest(
-            'GET',
-            'samples/' + id + '/analysis.json',
-            args,
-            null
-        );
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: rawResponse,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: createHR(command, returnObject),
-            EntryContext: (contextData && returnObject && ec) ? ec : undefined
-        };
-    }
-
     function get_threat_summary(id) {
         rawResponse = sendRequest(
             'GET',
@@ -444,7 +389,7 @@ script:
 
         if (command === 'threat-grid-get-html-report-by-id') {
             var fileId = rawResponse.FileID;
-            return ({Type: 3, FileID: fileId, File: 'ThreatGreadReport.html', Contents: 'ThreatGreadReport.html'});
+            return ({Type: 9, FileID: fileId, File: 'ThreatGreadReport.html', Contents: 'ThreatGreadReport.html'});
         }
 
         if (filename){
