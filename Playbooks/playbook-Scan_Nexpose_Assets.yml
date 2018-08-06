@@ -7,33 +7,33 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c613b21c-e424-4a21-8151-1c4dc32caa7a
+    taskid: 391dde59-b247-4641-8ef2-24a5c11b6d39
     type: start
     task:
-      id: c613b21c-e424-4a21-8151-1c4dc32caa7a
+      id: 391dde59-b247-4641-8ef2-24a5c11b6d39
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: "start"
     nexttasks:
       '#none#':
-      - "1"
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 2633f003-4a44-44aa-85cd-0c29572404fd
+    taskid: f123b950-46f6-4ffe-8ba5-3e327482cccd
     type: regular
     task:
-      id: 2633f003-4a44-44aa-85cd-0c29572404fd
+      id: f123b950-46f6-4ffe-8ba5-3e327482cccd
       version: -1
       name: Start scan
       description: Starts a scan for specified asset IP addresses and host names.
@@ -43,7 +43,7 @@ tasks:
       brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
-      - "8"
+      - "11"
     scriptarguments:
       IPs:
         complex:
@@ -58,38 +58,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 225
+          "x": 380,
+          "y": 545
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 1c704f4c-7f5e-4225-869f-2fa09265d983
+    taskid: 25518fb4-9985-4885-8d24-e3886014b9e3
     type: title
     task:
-      id: 1c704f4c-7f5e-4225-869f-2fa09265d983
+      id: 25518fb4-9985-4885-8d24-e3886014b9e3
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: "Final task"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 1245
         }
       }
     note: false
   "7":
     id: "7"
-    taskid: 6124a4a9-4fbc-4ab1-8483-cef020feb5f2
+    taskid: bcc7a757-5464-43d9-8b00-756116fae3fa
     type: regular
     task:
-      id: 6124a4a9-4fbc-4ab1-8483-cef020feb5f2
+      id: bcc7a757-5464-43d9-8b00-756116fae3fa
       version: -1
       name: nexpose-get-scan
       description: Returns the specified scan.
@@ -107,17 +107,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 575
+          "x": 380,
+          "y": 1070
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: ecaf6904-281d-41f4-877a-305aa3642d0a
+    taskid: d8fac3db-f673-4daf-8ad8-a1cb112ddd01
     type: playbook
     task:
-      id: ecaf6904-281d-41f4-877a-305aa3642d0a
+      id: d8fac3db-f673-4daf-8ad8-a1cb112ddd01
       version: -1
       name: GenericPolling
       description: Generic Polling Playbook
@@ -150,8 +150,134 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 380,
+          "y": 895
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 6d61b22a-1fbe-4ffe-866a-81b522256c65
+    type: condition
+    task:
+      id: 6d61b22a-1fbe-4ffe-866a-81b522256c65
+      version: -1
+      name: Is Nexpose enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Checks wheter nexpose is enabled
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rapid7 Nexpose
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
           "x": 50,
-          "y": 400
+          "y": 195
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 0f6c2fdc-f87f-4397-87a7-bcc7f8a54b50
+    type: condition
+    task:
+      id: 0f6c2fdc-f87f-4397-87a7-bcc7f8a54b50
+      version: -1
+      name: Is there an ip or host to scan?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Checks whether there's an ip or an host to scan.
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.IPs
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.HostNames
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 360
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: db034839-f7e3-4f93-8cdc-b9541313ac97
+    type: condition
+    task:
+      id: db034839-f7e3-4f93-8cdc-b9541313ac97
+      version: -1
+      name: Did scan find assets?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Checks whether the assets were found
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Nexpose.Scan.Id}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 720
         }
       }
     note: false
@@ -160,20 +286,22 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 750,
-        "width": 380,
+        "height": 1260,
+        "width": 710,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }
 inputs:
 - key: IPs
-  value: {}
+  value:
+    simple: ${IP.Address}
   required: false
   description: Asset IPs to scan
 - key: HostNames
-  value: {}
+  value:
+    simple: ${Nexpose.HostNames}
   required: false
   description: Host names of the assets to scan
 - key: Name
