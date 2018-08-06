@@ -247,7 +247,7 @@ script:
         return {
             'ID': a.get('id'),
             'Status': a.get('status'),
-            'AlertTime': a.get('alertTime'),
+            'AlertTime': convertUnixToDate(a.get('alertTime')),
             'Policy': {
                 'ID': demisto.get(a, 'policy.policyId'),
                 'Name': demisto.get(a, 'policy.name'),
@@ -277,10 +277,11 @@ script:
         handle_filters(payload)
         r = req('POST', 'alert', payload, {'detailed':'true'})
         alerts = []
-        ec = {'Redlock.Alert': []}
+        context_path = 'Redlock.Alert(val.ID === obj.ID)'
+        ec = {context_path: []}
         for k in r:
             alerts.append(alert_to_readable(k))
-            ec['Redlock.Alert'].append(alert_to_context(k))
+            ec[context_path].append(alert_to_context(k))
         ec['Redlock.Metadata.CountOfAlerts'] = len(r)
         demisto.results({
             'Type': entryTypes['note'],
@@ -319,7 +320,7 @@ script:
             'ResourceInactiveSinceTs': demisto.get(r, 'resource.additionalInfo.inactiveSinceTs')
         })
 
-        ec = {'Redlock.Alert': alert_to_context(r)}
+        ec = {'Redlock.Alert(val.ID === obj.ID)': alert_to_context(r)}
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -346,7 +347,7 @@ script:
         r = req('POST', 'alert/dismiss', payload, None)
         ec = {}
         if ids:
-            ec['Redlock.Alert.ID'] = ids
+            ec['Redlock.DismissedAlert.ID'] = ids
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -371,7 +372,7 @@ script:
         r = req('POST', 'alert/reopen', payload, None)
         ec = {}
         if ids:
-            ec['Redlock.Alert.ID'] = ids
+            ec['Redlock.ReopenedAlert.ID'] = ids
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -618,7 +619,7 @@ script:
       type: string
     - contextPath: Redlock.Alert.AlertTime
       description: The time of the alert
-      type: string
+      type: date
     - contextPath: Redlock.Alert.Policy.ID
       description: The policy ID
       type: string
@@ -633,7 +634,7 @@ script:
       type: string
     - contextPath: Redlock.Alert.Policy.Remediable
       description: Whether or not the policy is remediable
-      type: string
+      type: boolean
     - contextPath: Redlock.Alert.RiskDetail.Rating
       description: The risk rating
       type: string
@@ -755,7 +756,7 @@ script:
     - name: policy-id
       description: comma separated string of policy IDs
     outputs:
-    - contextPath: Redlock.Alert.ID
+    - contextPath: Redlock.DismissedAlert.ID
       description: The IDs of the dismissed alerts
       type: string
     description: Dismiss the alerts matching the given filter. Must provide either
@@ -870,7 +871,7 @@ script:
       - low
       description: The policy severity
     outputs:
-    - contextPath: Redlock.Alert.ID
+    - contextPath: Redlock.ReopenedAlert.ID
       description: IDs of the re-opened alerts
       type: string
     description: Re-open the alerts matching the given filter.  Must provide either
@@ -881,5 +882,4 @@ script:
     description: List the acceptable filters and values for alerts
   isfetch: true
   runonce: false
-releaseNotes: "Support RedLock alert management"
-
+releaseNotes: "-"

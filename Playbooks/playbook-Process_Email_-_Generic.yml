@@ -2,7 +2,7 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
-releaseNotes: "Remove special support for EWS - Work in generic way with all relevant integrations"
+releaseNotes: "Auto-extract indicator from email inline"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -88,12 +88,12 @@ tasks:
         simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
           Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
           Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
-    reputationcalc: 0
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 45,
+          "x": 51,
           "y": 370
         }
       }
@@ -168,10 +168,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 0c8947d2-ede9-41d6-862d-1aba4611a826
+    taskid: 2373f9de-c13d-42ca-84be-8735743156e6
     type: regular
     task:
-      id: 0c8947d2-ede9-41d6-862d-1aba4611a826
+      id: 2373f9de-c13d-42ca-84be-8735743156e6
       version: -1
       name: Render HTML to an image
       description: ""
@@ -181,7 +181,7 @@ tasks:
       brand: Rasterize
     nexttasks:
       '#none#':
-      - "6"
+      - "15"
     scriptarguments:
       height: {}
       htmlBody:
@@ -217,7 +217,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1215
+          "y": 1565
         }
       }
   "11":
@@ -387,7 +387,7 @@ tasks:
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
-    reputationcalc: 0
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -396,14 +396,163 @@ tasks:
           "y": 545
         }
       }
+  "14":
+    id: "14"
+    taskid: 89a7a856-46ff-46f6-8f1c-b2f772c12881
+    type: regular
+    task:
+      id: 89a7a856-46ff-46f6-8f1c-b2f772c12881
+      version: -1
+      name: Set HTML Image custom field
+      description: Set the base64 of the rendered image to the custom field and the
+        Summary page
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      addLabels: {}
+      app: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      htmlimage:
+        simple: '![HTML render](data:image/png;base64,${Base64.encoded})'
+      id: {}
+      important: {}
+      importantfield: {}
+      labels: {}
+      malwarefamily: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity: {}
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1390
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 50661f40-4640-4b90-8f01-8143cec44c79
+    type: condition
+    task:
+      id: 50661f40-4640-4b90-8f01-8143cec44c79
+      version: -1
+      name: Is there a base64 encoding for the rendered image?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: Base64.encoded
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1215
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1230,
-        "width": 815,
-        "x": 45,
+        "height": 1580,
+        "width": 819,
+        "x": 51,
         "y": 50
       }
     }

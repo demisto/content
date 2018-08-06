@@ -73,17 +73,17 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: Endpoint
+          root: CylanceProtect
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
-                  simple: Endpoint.State
+                  simple: CylanceProtect.Device.State
                 iscontext: true
               right:
                 value:
                   simple: Online
-          accessor: Id
+          accessor: Device.ID
       pageNumber: {}
       pageSize: {}
       threshold: {}
