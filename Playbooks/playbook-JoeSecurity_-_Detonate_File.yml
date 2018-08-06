@@ -16,6 +16,7 @@ tasks:
       id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -38,7 +39,7 @@ tasks:
       id: 96f24672-03e9-4b5f-8976-44cb1a1d273e
       version: -1
       name: JoeSecurity Upload File
-      description: ' '
+      description: ""
       script: Joe Security|||joe-analysis-submit-sample
       type: regular
       iscommand: true
@@ -116,7 +117,7 @@ tasks:
       id: 5bcb48a2-b804-4fa2-8f07-4b36c8708668
       version: -1
       name: JoeSecurity Get Report
-      description: ' '
+      description: ""
       script: Joe Security|||joe-download-report
       type: regular
       iscommand: true
@@ -146,6 +147,7 @@ tasks:
       id: 93fac7de-168e-4b60-8172-1d0d8cc46702
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
