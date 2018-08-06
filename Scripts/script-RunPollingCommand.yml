@@ -2,7 +2,6 @@ commonfields:
   id: RunPollingCommand
   version: -1
 name: RunPollingCommand
-comment: "-"
 fromversion: 4.0.0
 script: |-
   ids = demisto.getArg('ids')
@@ -13,6 +12,8 @@ script: |-
   demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), {demisto.getArg('pollingCommandArgName'): ','.join(argToList(ids))}))
 type: python
 tags: []
+comment: Run a given polling command once, useful for initiating a local playbook
+  context before running a polling scheduled task.
 enabled: true
 args:
 - name: ids

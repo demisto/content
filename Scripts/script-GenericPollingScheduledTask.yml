@@ -42,9 +42,14 @@ script: |-
       });
   }
 
-  function finish(playbookId, tag) {
-      var params = {'id' : tag };
-      if (playbookId !== undefined) {
+  function finish(playbookId, tag, err) {
+      var params = { 'id': tag };
+      if (err === undefined) {
+          params.input = 'YES';
+      } else {
+          params.input = 'NO'
+      }
+      if (playbookId) {
           params.parentPlaybookID = playbookId;
       }
       return executeCommand("taskComplete", params);
@@ -65,62 +70,67 @@ script: |-
       });
   }
 
+  try {
+      if (args.timeout <= 0) {
+          return finish(args.playbookId, args.tag);
+      }
 
-  if (args.timeout <= 0) {
-      return finish(args.playbookId, args.tag);
-  }
-
-  // Get ids that have not finished yet
-  var ids = argToList(args.ids);
-  for (var i = 0; i < ids.length; i++) {
-      ids[i] = ids[i].replace(/[\\]*"/g, '');
-  }
+      // Get ids that have not finished yet
+      var ids = argToList(args.ids);
+      for (var i = 0; i < ids.length; i++) {
+          ids[i] = ids[i].replace(/[\\]*"/g, '');
+      }
 
 
-  // Set the context of the scheduled task to the local playbook context
-  var idsToPoll = ids;
-  var pendingPath = args.pendingIds;
-  if ('playbookId' in args) {
-      playbookContext = 'subplaybook-' + args.playbookId;
-      pendingPath = playbookContext + "." + args.pendingIds;
-  }
-  var pendings = dq(invContext, pendingPath);
+      // Set the context of the scheduled task to the local playbook context
+      var idsToPoll = ids;
+      var pendingPath = args.pendingIds;
+      if ('playbookId' in args) {
+          playbookContext = 'subplaybook-' + args.playbookId;
+          pendingPath = playbookContext + "." + args.pendingIds;
+      }
+      var pendings = dq(invContext, pendingPath);
 
-  if (pendings === null) {
-      return finish(args.playbookId, args.tag);
-  }
+      if (pendings === null) {
+          return finish(args.playbookId, args.tag);
+      }
 
-  var idsStrArr = listOfStrings(ids);
-  var pendingsStrArr = listOfStrings(pendings);
-  idsToPoll = intersect(idsStrArr, pendingsStrArr);
-  if (idsToPoll.length === 0) {
-      return finish(args.playbookId, args.tag);
-  }
+      var idsStrArr = listOfStrings(ids);
+      var pendingsStrArr = listOfStrings(pendings);
+      idsToPoll = intersect(idsStrArr, pendingsStrArr);
+      if (idsToPoll.length === 0) {
+          return finish(args.playbookId, args.tag);
+      }
 
-  // Run the polling command for each id
-  var pollingCommandArgs = {};
-  pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
-  var res = executeCommand(args.pollingCommand, pollingCommandArgs);
+      // Run the polling command for each id
+      var pollingCommandArgs = {};
+      pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
+      var res = executeCommand(args.pollingCommand, pollingCommandArgs);
 
-  // Change the context output of the polling results to the local playbook context
-  if ('playbookId' in args) {
-      for (var i = 0; i < res.length; i++) {
-          if ('EntryContext' in res[i]) {
-              for (var k in res[i].EntryContext) {
-                  res[i].EntryContext[playbookContext + "." + k] = res[i].EntryContext[k];
-                  delete res[i].EntryContext[k];
+      // Change the context output of the polling results to the local playbook context
+      if ('playbookId' in args) {
+          for (var i = 0; i < res.length; i++) {
+              if ('EntryContext' in res[i]) {
+                  for (var k in res[i].EntryContext) {
+                      res[i].EntryContext[playbookContext + "." + k] = res[i].EntryContext[k];
+                      delete res[i].EntryContext[k];
+                  }
               }
           }
       }
-  }
 
-  // Schedule the next iteration
-  var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag);
-  if (isError(scheduleTaskRes[0])) {
-      res.push(scheduleTaskRes);
-  }
+      // Schedule the next iteration
+      var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag);
+      if (isError(scheduleTaskRes[0])) {
+          res.push(scheduleTaskRes);
+      }
 
-  return res;
+      return res;
+  }
+  catch (err) {
+      finish(args.playbookId, args.tag, err);
+      throw err;
+  }
 type: javascript
 tags: []
 comment: Runs the polling command repeatedly, completes a blocking manual task when

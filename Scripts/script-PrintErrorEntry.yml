@@ -1,0 +1,20 @@
+commonfields:
+  id: PrintErrorEntry
+  version: -1
+name: PrintErrorEntry
+fromversion: 4.0.0
+script: |-
+  demisto.results({
+    "Type" : entryTypes["error"],
+    "ContentsFormat" : formats["text"],
+    "Contents" : demisto.getArg("message")
+  })
+type: python
+tags: []
+comment: Print an error entry with the given message
+enabled: true
+args:
+- name: message
+  default: true
+scripttarget: 0
+runonce: false

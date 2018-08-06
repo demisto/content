@@ -2,6 +2,7 @@ commonfields:
   id: ScheduleGenericPolling
   version: -1
 name: ScheduleGenericPolling
+fromversion: 4.0.0
 script: |-
   import random, string, json, re
   from datetime import datetime, timedelta
