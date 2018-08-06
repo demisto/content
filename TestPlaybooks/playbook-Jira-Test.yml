@@ -441,7 +441,7 @@ tasks:
       - "22"
     scriptarguments:
       expectedValue:
-        simple: Done
+        simple: Resolved
       fields: {}
       path:
         simple: Ticket.[0].Status
