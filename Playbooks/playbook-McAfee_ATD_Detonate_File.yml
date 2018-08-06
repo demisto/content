@@ -14,6 +14,7 @@ description: "Detonates a File using the McAfee Advanced Threat Defense sandbox.
   types \n• .cmd • .ace\n• .bat • .arj\n• .vbs • .chm\n• .xml • .lnk\n• .url • .mof\n•
   .htm • .ocx\n• .html • .potm\n• .eml • .potx\n• .msg • .ps1\n• .vb • .reg\n• .vba
   • .wsc\n• .vbe • .wsf\n• .vbs • .wsh"
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
