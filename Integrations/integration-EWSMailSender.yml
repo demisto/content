@@ -56,7 +56,7 @@ configuration:
 script:
   script: |
     from cStringIO import StringIO
-    import logging, warnings, traceback
+    import logging, warnings
 
     warnings.filterwarnings("ignore")
     log_stream = StringIO()
@@ -143,17 +143,22 @@ script:
 
         file_entries_for_attachments = attachIDs.split(",") if attachIDs else []
         attachments_names = attachNames.split(",") if attachNames else []
-        if len(file_entries_for_attachments) != len(attachments_names):
-            raise Exception("attachIDs and attachNames lists should be the same length")
+
+        res = demisto.getFilePath(file_entries_for_attachments[0])
+
+        if len(attachments_names) > 0  and len(file_entries_for_attachments) != len(attachments_names):
+            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "attachIDs and attachNames lists should be the same length in case both are provided" } )
+            sys.exit(0)
         attachments = []
         for i in range(0, len(file_entries_for_attachments)):
             entry_id = file_entries_for_attachments[i]
-            attachment_name = attachments_names[i]
             try:
                 res = demisto.getFilePath(entry_id)
             except:
                 raise Exception("entry %s does not contain a file" % entry_id)
             file_path = res["path"]
+            attachment_name = attachments_names[i] if len(attachments_names) > 0 else res["name"]
+
             with open(file_path, 'rb') as f:
                 attachments.append(FileAttachment(content=f.read(), name=attachment_name))
 
@@ -281,3 +286,6 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
+  runonce: false
+releaseNotes: Getting filenames from the entries when attachNames are ommited
+
