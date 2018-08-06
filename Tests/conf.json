@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
+        },
+        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
@@ -413,11 +417,6 @@
             "playbookID": "test_Qradar"
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
-        },
-        {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
         },
@@ -557,6 +556,10 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook"
         }
     ]
 }
