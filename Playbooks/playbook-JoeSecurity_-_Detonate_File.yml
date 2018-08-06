@@ -1,0 +1,335 @@
+id: JoeSecurity - Detonate File
+version: -1
+name: JoeSecurity - Detonate File
+description: |-
+  Detonates one or more files using the Joe Security sandbox integration.
+  returns relevant reports to the War Room and file reputations to the context data.
+  This type of analysis supports all file types.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+    type: start
+    task:
+      id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -324
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 6870eca8-7ada-4c46-8048-eecf528d292e
+    type: regular
+    task:
+      id: 6870eca8-7ada-4c46-8048-eecf528d292e
+      version: -1
+      name: JoeSecurity Upload File
+      script: Joe Security|||joe-analysis-submit-sample
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      comments:
+        simple: ${inputs.comments}
+      file_id:
+        simple: ${inputs.EntryID}
+      internet-access:
+        simple: ${inputs.internet-access}
+      sample_url: {}
+      should_wait: {}
+      systems:
+        simple: ${inputs.systems}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 321
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 4d982bec-49b1-485f-85f2-8f2117818166
+    type: playbook
+    task:
+      id: 4d982bec-49b1-485f-85f2-8f2117818166
+      version: -1
+      name: GenericPolling
+      description: Generic Polling Playbook
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        simple: ${Joe.Analysis.ID}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: webid
+      PollingCommandName:
+        simple: joe-analysis-info
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: Joe.Analysis(val.Status != 'finished').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 483
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 8e7b841d-0212-47bc-85ae-e5305156c6c5
+    type: regular
+    task:
+      id: 8e7b841d-0212-47bc-85ae-e5305156c6c5
+      version: -1
+      name: JoeSecurity Get Report
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      type:
+        simple: ${inputs.report-file-type}
+      webid:
+        simple: ${Joe.Analysis.WebID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 658
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
+    type: title
+    task:
+      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 991
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: f9958802-5c07-432c-8d88-3f420b5eb4de
+    type: condition
+    task:
+      id: f9958802-5c07-432c-8d88-3f420b5eb4de
+      version: -1
+      name: Is there a File to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 103
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: e4ba04b1-f1a1-4072-869a-6be17b41156d
+    type: condition
+    task:
+      id: e4ba04b1-f1a1-4072-869a-6be17b41156d
+      version: -1
+      name: Is JoeSecurity sandbox enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Joe Security
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -115
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1380,
+        "width": 380,
+        "x": 450,
+        "y": -324
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: true
+  description: Demisto EntryID of the file to detonate from the context
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: The duration of an interval of executing the pooling in minutes
+- key: timeout
+  value:
+    simple: "15"
+  required: false
+  description: timeout to stop pooling and resume the playbook
+- key: systems
+  value: {}
+  required: false
+  description: 'Operating System to run analysis on (comma separated). possible values
+    are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10,
+    android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64,
+    w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1,
+    lnxcentos1, android7_nougat'
+- key: comments
+  value: {}
+  required: false
+  description: Comments for the analysis.
+- key: internet-access
+  value:
+    simple: "True"
+  required: false
+  description: Enable full internet access. Default is True.
+- key: report-file-type
+  value: {}
+  required: false
+  description: The resource type to download. Defaults to html.
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+releaseNotes: "File detonation using polling playbook"

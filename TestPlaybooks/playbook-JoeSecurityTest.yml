@@ -1,5 +1,5 @@
 id: JoeSecurityTestPlaybook
-version: 24
+version: -1
 name: JoeSecurityTestPlaybook
 starttaskid: "0"
 tasks:
@@ -20,10 +20,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 65
+          "x": 480,
+          "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 3e175f62-728f-4863-809e-08c04f75646d
@@ -47,10 +48,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 225
+          "x": 480,
+          "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 136469b7-cc7b-49cf-8ba9-44a06b641931
@@ -70,10 +72,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 400
+          "x": 480,
+          "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
     taskid: f8df841b-1ed1-4a02-842b-602586d42184
@@ -102,9 +105,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 895
         }
       }
+    note: false
   "4":
     id: "4"
     taskid: 1a0a19dd-5d4d-4412-871b-cbd85a954ba2
@@ -132,9 +136,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 1070
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 12077a28-82e3-4e50-86a8-beec870e9342
@@ -158,9 +163,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 1245
         }
       }
+    note: false
   "6":
     id: "6"
     taskid: 1b5701d0-bd7a-4bb1-8261-55c7fb3c6409
@@ -175,7 +181,7 @@ tasks:
       brand: Joe Security
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     scriptarguments:
       webid:
         simple: ${Joe.Analysis.[1].WebID}
@@ -184,41 +190,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 1420
         }
       }
-  "7":
-    id: "7"
-    taskid: 5f17b470-20c9-4f8f-8e65-b6df2390e874
-    type: regular
-    task:
-      id: 5f17b470-20c9-4f8f-8e65-b6df2390e874
-      version: -1
-      name: Analyse url with polling
-      script: Joe Security|||joe-analysis-submit-url
-      type: regular
-      iscommand: true
-      brand: Joe Security
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      comments: {}
-      internet-access:
-        simple: "False"
-      should_wait:
-        simple: "True"
-      systems: {}
-      url:
-        simple: http://www.tutorialspoint.com/java/java_tutorial.pdf
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 750
-        }
-      }
+    note: false
   "9":
     id: "9"
     taskid: dd4587a0-c399-43a2-8c68-4d26c4c11b23
@@ -245,9 +220,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1595
         }
       }
+    note: false
   "10":
     id: "10"
     taskid: ba14db75-ccd1-4571-89c4-0be8c92bc335
@@ -267,7 +243,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: File.Name
@@ -276,7 +252,7 @@ tasks:
                 value:
                   simple: zaq.txt
           transformers:
-          - operator: general.getField
+          - operator: getField
             args:
               field:
                 value:
@@ -291,15 +267,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1275
+          "y": 1770
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: b14e8d4c-db43-41eb-805a-2c129109400c
+    taskid: 3262021e-e7b4-45b9-8e96-13e7221081c2
     type: regular
     task:
-      id: b14e8d4c-db43-41eb-805a-2c129109400c
+      id: 3262021e-e7b4-45b9-8e96-13e7221081c2
       version: -1
       name: Search command
       script: Joe Security|||joe-search
@@ -308,28 +285,29 @@ tasks:
       brand: Joe Security
     nexttasks:
       '#none#':
-      - "13"
       - "14"
-      - "15"
+      - "16"
+      - "17"
     scriptarguments:
       query:
-        simple: for next run
+        simple: file
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 575
+          "x": 480,
+          "y": 545
         }
       }
-  "13":
-    id: "13"
-    taskid: f13efe19-3484-4cf6-8c13-cf76b156cf17
+    note: false
+  "14":
+    id: "14"
+    taskid: c7c50781-96e4-4227-8e86-5812b398c756
     type: regular
     task:
-      id: f13efe19-3484-4cf6-8c13-cf76b156cf17
+      id: c7c50781-96e4-4227-8e86-5812b398c756
       version: -1
-      name: Download fie Report - HTML
+      name: Download url Report - PDF
       script: Joe Security|||joe-download-report
       type: regular
       iscommand: true
@@ -339,50 +317,44 @@ tasks:
       - "3"
     scriptarguments:
       type:
-        simple: html
+        simple: pdf
       webid:
-        simple: ${Joe.Analysis.[0].WebID}
+        complex:
+          root: Joe
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Joe.Analysis.Status
+                iscontext: true
+              right:
+                value:
+                  simple: finished
+          accessor: Analysis
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: WebID
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 750
+          "y": 720
         }
       }
-  "14":
-    id: "14"
-    taskid: 96cc4b19-4a75-41da-8872-643ac565484b
+    note: false
+  "16":
+    id: "16"
+    taskid: 40f65532-783b-43d1-8dfe-d37fae76cc44
     type: regular
     task:
-      id: 96cc4b19-4a75-41da-8872-643ac565484b
+      id: 40f65532-783b-43d1-8dfe-d37fae76cc44
       version: -1
-      name: Download url Report - PDF
-      script: Joe Security|||joe-download-report
-      type: regular
-      iscommand: true
-      brand: Joe Security
-    scriptarguments:
-      type:
-        simple: pdf
-      webid:
-        simple: ${Joe.Analysis.[0].WebID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 750
-        }
-      }
-  "15":
-    id: "15"
-    taskid: b760fed3-67dd-4e56-8d9b-5a0758badb3e
-    type: regular
-    task:
-      id: b760fed3-67dd-4e56-8d9b-5a0758badb3e
-      version: -1
-      name: Download url Report -JSON
+      name: Download url Report - JSON
       script: Joe Security|||joe-download-report
       type: regular
       iscommand: true
@@ -391,22 +363,85 @@ tasks:
       type:
         simple: json
       webid:
-        simple: ${Joe.Analysis.[0].WebID}
+        complex:
+          root: Joe
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Joe.Analysis.Status
+                iscontext: true
+              right:
+                value:
+                  simple: finished
+          accessor: Analysis
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: WebID
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 750
+          "x": 950,
+          "y": 720
         }
       }
+    note: false
+  "17":
+    id: "17"
+    taskid: 66f25ad9-cb02-4ef8-89fc-d750791e7d3e
+    type: regular
+    task:
+      id: 66f25ad9-cb02-4ef8-89fc-d750791e7d3e
+      version: -1
+      name: Download url Report - HTML
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    scriptarguments:
+      type:
+        simple: html
+      webid:
+        complex:
+          root: Joe
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Joe.Analysis.Status
+                iscontext: true
+              right:
+                value:
+                  simple: finished
+          accessor: Analysis
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: WebID
+          - operator: GetFirstObject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1320,
-        "width": 1670,
+        "height": 1815,
+        "width": 1280,
         "x": 50,
         "y": 50
       }

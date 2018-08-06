@@ -1,0 +1,363 @@
+id: JoeSecurity - Detonate URL
+version: -1
+name: JoeSecurity - Detonate URL
+description: |-
+  Detonates one or more URLs using the Joe Security sandbox integration.
+  Returns relevant reports to the War Room and url reputations to the context data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ff3cef2b-5cb4-479d-8a7e-6d1b13494b8d
+    type: start
+    task:
+      id: ff3cef2b-5cb4-479d-8a7e-6d1b13494b8d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -324
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: cf916eff-693f-4bbc-842a-11b5718927e9
+    type: regular
+    task:
+      id: cf916eff-693f-4bbc-842a-11b5718927e9
+      version: -1
+      name: JoeSecurity Upload File
+      script: Joe Security|||joe-analysis-submit-url
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      comments:
+        simple: ${inputs.comments}
+      internet-access:
+        simple: ${inputs.internet-access}
+      should_wait: {}
+      systems:
+        simple: ${inputs.systems}
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 321
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: b750ba1c-2178-4892-8060-6c0211030b13
+    type: playbook
+    task:
+      id: b750ba1c-2178-4892-8060-6c0211030b13
+      version: -1
+      name: GenericPolling
+      description: Generic Polling Playbook
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        simple: ${Joe.Analysis.ID}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: webid
+      PollingCommandName:
+        simple: joe-analysis-info
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: Joe.Analysis(val.Status != 'finished').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 483
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 504adc48-5f0a-42b9-8418-4df7f84e0fe7
+    type: regular
+    task:
+      id: 504adc48-5f0a-42b9-8418-4df7f84e0fe7
+      version: -1
+      name: JoeSecurity Get Report
+      script: Joe Security|||joe-download-report
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      type:
+        simple: ${inputs.report-file-type}
+      webid:
+        simple: ${Joe.Analysis.WebID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 658
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: d9d5e450-eaa1-4e03-8d76-b98c25dcc13b
+    type: title
+    task:
+      id: d9d5e450-eaa1-4e03-8d76-b98c25dcc13b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 991
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: e48bfeaa-e477-4233-8aaa-cdff6fcb61e5
+    type: condition
+    task:
+      id: e48bfeaa-e477-4233-8aaa-cdff6fcb61e5
+      version: -1
+      name: Is there a URL to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 103
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: b8ba7d54-5190-47e3-8af4-3950ec480aa5
+    type: condition
+    task:
+      id: b8ba7d54-5190-47e3-8af4-3950ec480aa5
+      version: -1
+      name: Is JoeSecurity sandbox enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Joe Security
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -115
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1380,
+        "width": 380,
+        "x": 450,
+        "y": -324
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    simple: ${URL.Data}
+  required: true
+  description: URL to detonate
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: The duration of an interval of executing the pooling in minutes
+- key: timeout
+  value:
+    simple: "15"
+  required: false
+  description: timeout to stop pooling and resume the playbook
+- key: systems
+  value: {}
+  required: false
+  description: 'Operating System to run analysis on (comma separated). possible values
+    are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10,
+    android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64,
+    w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1,
+    lnxcentos1, android7_nougat'
+- key: comments
+  value: {}
+  required: false
+  description: Comments for the analysis.
+- key: internet-access
+  value:
+    simple: "True"
+  required: false
+  description: Enable full internet access. Default is True.
+- key: report-file-type
+  value:
+    simple: html
+  required: false
+  description: The resource type to download. Defaults to html.
+outputs:
+- contextPath: DBotScore.Vendor
+  description: 'The name of the vendor: JoeSecurity'
+  type: string
+- contextPath: Joe.Analysis.WebID
+  description: Web ID
+  type: string
+- contextPath: Joe.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: Joe.Analysis.Comments
+  description: Analysis Comments
+  type: string
+- contextPath: Joe.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: Joe.Analysis.Runs
+  description: Sub-Analysis Information
+- contextPath: Joe.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: Joe.Analysis.Errors
+  description: Raised errors during sampling
+- contextPath: Joe.Analysis.Systems
+  description: Analysis OS
+- contextPath: Joe.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The name of the sample file or URL
+- contextPath: DBotScore.Type
+  description: '''url'' for url samples, otherwise ''file'''
+  type: string
+- contextPath: DBotScore.Score
+  description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
+  type: string
+- contextPath: DBotScore.Malicious.Vendor
+  description: 'The name of the vendor: JoeSecurity'
+  type: string
+- contextPath: DBotScore.Malicious.Detections
+  description: The sub analysis detection statuses
+  type: string
+- contextPath: DBotScore.Malicious.SHA1
+  description: The SHA1 of the file
+  type: string
+- contextPath: InfoFile.Name
+  description: FileName
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the sample
+  type: string
+- contextPath: InfoFile.Size
+  description: File Size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: File.Extension
+  description: File Extension
+  type: string
+releaseNotes: "URL detonation using polling playbook"
