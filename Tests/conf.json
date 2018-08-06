@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
+        },
+        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
@@ -14,7 +18,9 @@
         },
         {
             "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
+            "playbookID": "Intezer Testing",
+            "nightly": true,
+            "timeout": 500
         },
         {
             "integrations": "FalconIntel",
@@ -123,11 +129,6 @@
             "timeout": 500
         },
         {
-            "integrations":"Cylance Protect",
-            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
-            "timeout": 240
-        },
-        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
@@ -163,10 +164,6 @@
                 "urlscan.io"
             ],
             "playbookID": "ip_enrichment_generic_test"
-        },
-        {
-            "integrations": "Cylance Protect",
-            "playbookID": "endpoint_enrichment_-_generic_test"
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -367,6 +364,16 @@
             "playbookID": "test-domain-indicator"
         },
         {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
+        {
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "nightly": true
+        },
+        {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
         },
@@ -397,13 +404,17 @@
     ],
     "skipped": [
         {
-            "integrations": "QRadar",
-            "playbookID": "test_Qradar"
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "timeout": 240
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
+            "integrations": "Cylance Protect",
+            "playbookID": "endpoint_enrichment_-_generic_test"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
         },
         {
             "integrations": "VMware",
@@ -545,6 +556,10 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook"
         }
     ]
 }
