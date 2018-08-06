@@ -1,6 +1,7 @@
 id: JoeSecurity - Detonate URL
 version: -1
 name: JoeSecurity - Detonate URL
+fromversion: 4.0.0
 description: |-
   Detonates one or more URLs using the Joe Security sandbox integration.
   Returns relevant reports to the War Room and url reputations to the context data.
