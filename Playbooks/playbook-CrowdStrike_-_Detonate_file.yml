@@ -6,6 +6,7 @@ description: Detonate one or more files using the CrowdStrike integration. This 
   The detonation supports the following file types -
   EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
 starttaskid: "0"
+fromversion: "4.0.0"
 tasks:
   "0":
     id: "0"
@@ -17,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: "Start"
     nexttasks:
       '#none#':
       - "5"
@@ -96,6 +98,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: "When this task is reached, then the playbook is complete"
     separatecontext: false
     view: |-
       {
@@ -177,6 +180,7 @@ tasks:
       type: regular
       iscommand: true
       brand: VxStream
+      description: "Submits a sample to CrowdStrike"
     nexttasks:
       '#none#':
       - "16"
@@ -205,6 +209,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Asserts there's a file to detonate"
     nexttasks:
       '#default#':
       - "6"
@@ -238,6 +243,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Asserts the file type is supported"
     nexttasks:
       '#default#':
       - "6"
@@ -290,6 +296,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: "Initiated the generic polling playbook that will do the polling command"
     nexttasks:
       '#none#':
       - "8"
