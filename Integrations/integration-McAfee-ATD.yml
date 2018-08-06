@@ -866,28 +866,28 @@ script:
         malicious
       defaultValue: "3"
     outputs:
-    - contextPath: InfoFile.Name
+    - contextPath: File.Name
       description: Filename (only in case of report type=json)
       type: string
-    - contextPath: InfoFile.Type
+    - contextPath: File.Type
       description: File type e.g. "PE" (only in case of report type=json)
       type: string
-    - contextPath: InfoFile.Size
+    - contextPath: File.Size
       description: File size (only in case of report type=json)
       type: number
-    - contextPath: InfoFile.MD5
+    - contextPath: File.MD5
       description: MD5 hash of the file (only in case of report type=json)
       type: string
-    - contextPath: InfoFile.SHA1
+    - contextPath: File.SHA1
       description: SHA1 hash of the file (only in case of report type=json)
       type: string
-    - contextPath: InfoFile.SHA256
+    - contextPath: File.SHA256
       description: SHA256 hash of the file (only in case of report type=json)
       type: string
-    - contextPath: InfoFile.Malicious.Vendor
+    - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
       type: string
-    - contextPath: InfoFile.Malicious.Description
+    - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: string
     - contextPath: DBotScore.Indicator
@@ -907,6 +907,24 @@ script:
       type: string
     - contextPath: IP.Address
       description: IP's relevant to the sample
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the report file
       type: string
     description: ' download the analysis report files'
   - name: atd-list-analyzer-profiles
