@@ -143,17 +143,22 @@ script:
 
         file_entries_for_attachments = attachIDs.split(",") if attachIDs else []
         attachments_names = attachNames.split(",") if attachNames else []
-        if len(file_entries_for_attachments) != len(attachments_names):
-            raise Exception("attachIDs and attachNames lists should be the same length")
+
+        if len(attachments_names) > 0  and len(file_entries_for_attachments) != len(attachments_names):
+            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "attachIDs and attachNames lists should be the same length in case both are provided" } )
+            sys.exit(0)
         attachments = []
         for i in range(0, len(file_entries_for_attachments)):
             entry_id = file_entries_for_attachments[i]
-            attachment_name = attachments_names[i]
             try:
                 res = demisto.getFilePath(entry_id)
             except:
-                raise Exception("entry %s does not contain a file" % entry_id)
+                err = "entry %s does not contain a file" % entry_id
+                demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : err } )
+                sys.exit(0)
             file_path = res["path"]
+            attachment_name = attachments_names[i] if len(attachments_names) > 0 else res["name"]
+
             with open(file_path, 'rb') as f:
                 attachments.append(FileAttachment(content=f.read(), name=attachment_name))
 
@@ -281,3 +286,6 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
+  runonce: false
+releaseNotes: Added the ability to omit the attachNames argument 
+ 
