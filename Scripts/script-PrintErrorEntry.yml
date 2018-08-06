@@ -11,10 +11,12 @@ script: |-
   })
 type: python
 tags: []
-comment: Print an error entry with the given message
+comment: Prints an error entry with a given message
 enabled: true
 args:
 - name: message
+  description: The error message to be printed.
   default: true
+  required: true
 scripttarget: 0
 runonce: false
