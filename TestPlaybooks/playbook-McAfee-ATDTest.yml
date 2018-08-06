@@ -1,6 +1,7 @@
 id: Test Playbook McAfee ATD
-version: 5
+version: -1
 name: Test Playbook McAfee ATD
+description: Test playbook for mcafee ATD and for its File and URL detonation playbooks.
 starttaskid: "0"
 tasks:
   "0":
@@ -11,6 +12,7 @@ tasks:
       id: 1695be4e-86eb-460d-8f57-1c6fb1da76c8
       version: -1
       name: ""
+      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
@@ -20,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": -95
+          "x": 265,
+          "y": 50
         }
       }
     note: false
@@ -45,8 +47,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 364
+          "x": 265,
+          "y": 515
         }
       }
     note: false
@@ -74,8 +76,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 199
+          "x": 265,
+          "y": 340
         }
       }
     note: false
@@ -97,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 48
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -130,8 +132,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 551
+          "x": 265,
+          "y": 690
         }
       }
     note: false
@@ -158,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 731
+          "x": 265,
+          "y": 865
         }
       }
     note: false
@@ -202,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 911
+          "x": 265,
+          "y": 1040
         }
       }
     note: false
@@ -228,8 +230,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 1091
+          "x": 265,
+          "y": 1215
         }
       }
     note: false
@@ -249,7 +251,8 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "16"
+      - "20"
     scriptarguments:
       value:
         simple: ${ATD.ListAnalyzerProfiles}
@@ -257,46 +260,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 1271
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 5516d48e-86d5-4e8a-81cd-e8f0638a3602
-    type: regular
-    task:
-      id: 5516d48e-86d5-4e8a-81cd-e8f0638a3602
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 447,
-          "y": 1678
+          "x": 265,
+          "y": 1390
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 5489b7a2-8d1a-4374-8dcf-3652312cb337
+    taskid: b1f199db-9238-4932-88c9-3f25a408aba3
     type: regular
     task:
-      id: 5489b7a2-8d1a-4374-8dcf-3652312cb337
+      id: b1f199db-9238-4932-88c9-3f25a408aba3
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -310,84 +284,62 @@ tasks:
       - "19"
     scriptarguments:
       data:
-        simple: dancingqueen
+        simple: jmyetnrhk96lktrshfdghj74
       entryId: {}
       filename:
-        simple: abba
+        simple: excel.xls
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 2708
-        }
-      }
-    note: false
-  "17":
-    id: "17"
-    taskid: fc39a322-b385-402e-89e5-6716c5d470a2
-    type: regular
-    task:
-      id: fc39a322-b385-402e-89e5-6716c5d470a2
-      version: -1
-      name: DeleteContext
-      description: Delete all fields from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 447,
-          "y": 2350
+          "x": 50,
+          "y": 1565
         }
       }
     note: false
   "18":
     id: "18"
-    taskid: bc5c47ef-2c4c-4b43-8b17-229aaf55bb8d
-    type: regular
+    taskid: 1f689e94-7938-46d0-817c-96e807b7ed45
+    type: title
     task:
-      id: bc5c47ef-2c4c-4b43-8b17-229aaf55bb8d
+      id: 1f689e94-7938-46d0-817c-96e807b7ed45
       version: -1
-      name: DeleteContext
-      description: Delete all fields from context
-      scriptName: DeleteContext
-      type: regular
+      name: Done
+      description: finished
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 3275
+          "x": 186,
+          "y": 1969
         }
       }
     note: false
   "19":
     id: "19"
-    taskid: 2fd55fe8-4814-4af2-82f7-b1525dbc6947
+    taskid: f95e5b13-ced2-41d4-89a1-dcccd1b4b10a
     type: playbook
     task:
-      id: 2fd55fe8-4814-4af2-82f7-b1525dbc6947
+      id: f95e5b13-ced2-41d4-89a1-dcccd1b4b10a
       version: -1
       name: McAfee ATD Detonate File
+      description: "Detonates a File using the McAfee Advanced Threat Defense sandbox.\nAdvanced
+        Threat Defense uses the following supported\n\nSupported File Types:\n32-bit
+        Portable Executables (PE)files; 64-bit PE+files\n• .exe • .sys\n• .dll • .com\n•
+        .scr • .cpl\n• .ocx • .cgi\nMicrosoft Office Suite documents\n• .doc • .dotm\n•
+        .docx • .dotx\n• .xls • .ppam\n• .xlsx • .pps\n• .xlsb • .ppsx\n• .xlsm •
+        .ppsm\n• .ppt • .ppt\n• .pptx • .pptm\n• .rtf • .shs\n• .xltm • .sldm\n• .xltx
+        • .sldx\n• .xlam • .thmx\n• .docm • .xar\nJustSystems Ichitaro documents\n•
+        .jtd\n• .jtdc\n• .jtd\n• .jtdc\nAdobe \n• .pdf\n• .swf\nCompressed files \n•
+        .gz • .7z\n• .tgz • .msi\n• .zip • .lzh\n• .cab • .lzma\n• .rar\nAndroid application
+        package\n.apk .apk\nJava \n• JAR\n• CLASS\n• Java Script\n• Java bin files\nImage
+        files \n• .jpeg\n• .png\n• .gif\nOther file types \n• .cmd • .ace\n• .bat
+        • .arj\n• .vbs • .chm\n• .xml • .lnk\n• .url • .mof\n• .htm • .ocx\n• .html
+        • .potm\n• .eml • .potx\n• .msg • .ps1\n• .vb • .reg\n• .vba • .wsc\n• .vbe
+        • .wsf\n• .vbs • .wsh"
       playbookName: McAfee ATD Detonate File
       type: playbook
       iscommand: false
@@ -395,12 +347,23 @@ tasks:
     nexttasks:
       '#none#':
       - "18"
+    scriptarguments:
+      EntryID:
+        simple: ${File}
+      interval:
+        simple: "1"
+      timeout:
+        simple: "15"
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 2949
+          "x": 50,
+          "y": 1740
         }
       }
     note: false
@@ -418,7 +381,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "18"
     scriptarguments:
       URL:
         simple: https://www.demisto.com
@@ -434,8 +397,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 447,
-          "y": 2028
+          "x": 540,
+          "y": 1645
         }
       }
     note: false
@@ -444,10 +407,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3465,
-        "width": 383,
-        "x": 447,
-        "y": -95
+        "height": 1984,
+        "width": 870,
+        "x": 50,
+        "y": 50
       }
     }
   }
