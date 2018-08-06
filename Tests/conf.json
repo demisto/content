@@ -3,8 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+<<<<<<< HEAD
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
+=======
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
+        },
+        {
+            "playbookID": "dedup_-_generic_-_test"
+>>>>>>> master
         },
         {
             "integrations": "McAfee Advanced Threat Defense",
@@ -414,11 +422,6 @@
             "playbookID": "test_Qradar"
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
-        },
-        {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
         },
@@ -558,6 +561,10 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook"
         }
     ]
 }
