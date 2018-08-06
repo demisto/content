@@ -25,19 +25,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -324
+          "x": 275,
+          "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 6870eca8-7ada-4c46-8048-eecf528d292e
+    taskid: 96f24672-03e9-4b5f-8976-44cb1a1d273e
     type: regular
     task:
-      id: 6870eca8-7ada-4c46-8048-eecf528d292e
+      id: 96f24672-03e9-4b5f-8976-44cb1a1d273e
       version: -1
       name: JoeSecurity Upload File
+      description: ' '
       script: Joe Security|||joe-analysis-submit-sample
       type: regular
       iscommand: true
@@ -60,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 321
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -102,19 +103,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 483
+          "x": 50,
+          "y": 720
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 8e7b841d-0212-47bc-85ae-e5305156c6c5
+    taskid: 5bcb48a2-b804-4fa2-8f07-4b36c8708668
     type: regular
     task:
-      id: 8e7b841d-0212-47bc-85ae-e5305156c6c5
+      id: 5bcb48a2-b804-4fa2-8f07-4b36c8708668
       version: -1
       name: JoeSecurity Get Report
+      description: ' '
       script: Joe Security|||joe-download-report
       type: regular
       iscommand: true
@@ -131,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 658
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -151,19 +153,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 991
+          "x": 275,
+          "y": 1070
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: f9958802-5c07-432c-8d88-3f420b5eb4de
+    taskid: f40cdb2c-ed11-4489-8977-4f6a105304d4
     type: condition
     task:
-      id: f9958802-5c07-432c-8d88-3f420b5eb4de
+      id: f40cdb2c-ed11-4489-8977-4f6a105304d4
       version: -1
       name: Is there a File to detonate?
+      description: Look for files to detonate
       type: condition
       iscommand: false
       brand: ""
@@ -184,19 +187,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 103
+          "x": 162.5,
+          "y": 370
         }
       }
     note: false
   "7":
     id: "7"
-    taskid: e4ba04b1-f1a1-4072-869a-6be17b41156d
+    taskid: ce04663d-aaca-47c5-8c3a-392987e23dfa
     type: condition
     task:
-      id: e4ba04b1-f1a1-4072-869a-6be17b41156d
+      id: ce04663d-aaca-47c5-8c3a-392987e23dfa
       version: -1
       name: Is JoeSecurity sandbox enabled?
+      description: Check if integration instance is enabled
       type: condition
       iscommand: false
       brand: ""
@@ -236,8 +240,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -115
+          "x": 275,
+          "y": 195
         }
       }
     note: false
@@ -246,10 +250,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1380,
-        "width": 380,
-        "x": 450,
-        "y": -324
+        "height": 1085,
+        "width": 605,
+        "x": 50,
+        "y": 50
       }
     }
   }
