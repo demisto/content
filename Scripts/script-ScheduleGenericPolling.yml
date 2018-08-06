@@ -2,12 +2,27 @@ commonfields:
   id: ScheduleGenericPolling
   version: -1
 name: ScheduleGenericPolling
+fromversion: 4.0.0
 script: |-
   import random, string, json, re
   from datetime import datetime, timedelta
 
+  # Returns a comma-separated string representation of a list
+  # Possible inputs: null, int, str, bytes, ["","",...], [int, int], 'a,b,...', '"a","b",...', '["","",...]'
+  def parseIds(idsArg):
+      if idsArg is None:
+          return
+      if isinstance(idsArg, list):
+          if len(idsArg) == 0 or isinstance(idsArg[0], str):
+              return idsArg
+          return ','.join(map(str, idsArg))
+      if isinstance(idsArg, str) or isinstance(idsArg, bytes):
+          return ','.join(argToList(idsArg))
+      return str(idsArg)
+
+
   args = demisto.args()
-  ids = args['ids']
+  ids = parseIds(args['ids'])
   dt = args['dt']
   pollingCommand = args['pollingCommand']
   pollingCommandArgName = args['pollingCommandArgName']
@@ -32,7 +47,7 @@ script: |-
 
   res = demisto.executeCommand("ScheduleCommand", {
       'command': '!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s" interval="%s" timeout="%s" tag="%s"' % (
-          pollingCommand, pollingCommandArgName, playbookId, str(ids).replace('"', r'\"'), dt.replace('"', r'\"'), interval, timeout, tag),
+                    pollingCommand, pollingCommandArgName, playbookId, ids.replace('"', r'\"'), dt.replace('"', r'\"'), interval, timeout, tag),
       'cron': '*/{} * * * *'.format(interval),
       'times': 1
   })
