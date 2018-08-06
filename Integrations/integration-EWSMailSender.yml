@@ -287,3 +287,5 @@ script:
     description: Send email via EWS
   dockerimage: demisto/py-ews
   runonce: false
+releaseNotes: Added the ability to omit the attachNames argument 
+ 
