@@ -326,20 +326,24 @@ tasks:
       id: f95e5b13-ced2-41d4-89a1-dcccd1b4b10a
       version: -1
       name: McAfee ATD Detonate File
-      description: "Detonates a File using the McAfee Advanced Threat Defense sandbox.\nAdvanced
-        Threat Defense uses the following supported\n\nSupported File Types:\n32-bit
-        Portable Executables (PE)files; 64-bit PE+files\n• .exe • .sys\n• .dll • .com\n•
-        .scr • .cpl\n• .ocx • .cgi\nMicrosoft Office Suite documents\n• .doc • .dotm\n•
-        .docx • .dotx\n• .xls • .ppam\n• .xlsx • .pps\n• .xlsb • .ppsx\n• .xlsm •
-        .ppsm\n• .ppt • .ppt\n• .pptx • .pptm\n• .rtf • .shs\n• .xltm • .sldm\n• .xltx
-        • .sldx\n• .xlam • .thmx\n• .docm • .xar\nJustSystems Ichitaro documents\n•
-        .jtd\n• .jtdc\n• .jtd\n• .jtdc\nAdobe \n• .pdf\n• .swf\nCompressed files \n•
-        .gz • .7z\n• .tgz • .msi\n• .zip • .lzh\n• .cab • .lzma\n• .rar\nAndroid application
-        package\n.apk .apk\nJava \n• JAR\n• CLASS\n• Java Script\n• Java bin files\nImage
-        files \n• .jpeg\n• .png\n• .gif\nOther file types \n• .cmd • .ace\n• .bat
-        • .arj\n• .vbs • .chm\n• .xml • .lnk\n• .url • .mof\n• .htm • .ocx\n• .html
-        • .potm\n• .eml • .potx\n• .msg • .ps1\n• .vb • .reg\n• .vba • .wsc\n• .vbe
-        • .wsf\n• .vbs • .wsh"
+      description: Detonates a File using the McAfee Advanced Threat Defense sandbox.
+        Advanced Threat Defense uses the following supported File Types
+        32-bit Portable Executables (PE)files; 64-bit PE+files
+        exe, sys, dll, com, scr, cpl, ocx, cgi
+        Microsoft Office Suite documents
+        doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
+        Just Systems Ichitaro documents
+        jtd, jtdc
+        Adobe
+        pdf, swf
+        Compressed files
+        gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
+        Android application package
+        apk, Java, JAR, CLASS, Java Script, Java bin files
+        Image files
+        jpeg, png, gif
+        Other file types
+        cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
       playbookName: McAfee ATD Detonate File
       type: playbook
       iscommand: false
