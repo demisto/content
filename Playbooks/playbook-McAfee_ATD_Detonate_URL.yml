@@ -40,7 +40,7 @@ tasks:
       script: McAfee Advanced Threat Defense|||atd-file-upload
       type: regular
       iscommand: true
-      brand: McAfee Advanced Threat Defense_2do
+      brand: McAfee Advanced Threat Defense
     nexttasks:
       '#none#':
       - "8"

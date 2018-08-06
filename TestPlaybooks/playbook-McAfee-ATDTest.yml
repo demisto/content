@@ -1,5 +1,5 @@
 id: Test Playbook McAfee ATD
-version: -1
+version: 5
 name: Test Playbook McAfee ATD
 starttaskid: "0"
 tasks:
@@ -27,10 +27,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 76832232-858b-4af1-8405-abe340e809af
+    taskid: 090ff599-33a9-4364-8ed2-b5d3b3554e57
     type: regular
     task:
-      id: 76832232-858b-4af1-8405-abe340e809af
+      id: 090ff599-33a9-4364-8ed2-b5d3b3554e57
       version: -1
       name: atd-login
       description: Returns a logon result for ATD
@@ -137,10 +137,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: a325df6f-a81b-4977-86c5-6240758b6f1b
+    taskid: 19aa3680-2d8c-4554-84ba-e50ee421f145
     type: regular
     task:
-      id: a325df6f-a81b-4977-86c5-6240758b6f1b
+      id: 19aa3680-2d8c-4554-84ba-e50ee421f145
       version: -1
       name: atd-list-user
       description: ' displays the user profile information present on the McAfee Advanced
@@ -209,10 +209,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: e9c304e9-6d55-4b55-8de3-28ac89b12028
+    taskid: b8694360-700f-432c-8638-e5aa7871f12b
     type: regular
     task:
-      id: e9c304e9-6d55-4b55-8de3-28ac89b12028
+      id: b8694360-700f-432c-8638-e5aa7871f12b
       version: -1
       name: atd-list-analyzer-profiles
       description: ' display the analyzer profiles. Only the analyzer profiles to
@@ -249,7 +249,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "9"
     scriptarguments:
       value:
         simple: ${ATD.ListAnalyzerProfiles}
@@ -277,7 +277,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "20"
     scriptarguments:
       all:
         simple: "yes"
@@ -287,206 +287,7 @@ tasks:
       {
         "position": {
           "x": 447,
-          "y": 2301
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 8f121db1-dd42-4ab3-8bcb-3d6d0949c63a
-    type: regular
-    task:
-      id: 8f121db1-dd42-4ab3-8bcb-3d6d0949c63a
-      version: -1
-      name: detonate-url
-      description: Detonate URL through McAfee ATD
-      script: McAfee Advanced Threat Defense|||detonate-url
-      type: regular
-      iscommand: true
-      brand: McAfee Advanced Threat Defense
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      format:
-        simple: json
-      threshold: {}
-      timeout: {}
-      url:
-        simple: https://demisto.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 447,
-          "y": 1527
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: 8af01ba9-663c-4562-8d74-81df87f5940f
-    type: condition
-    task:
-      id: 8af01ba9-663c-4562-8d74-81df87f5940f
-      version: -1
-      name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    scriptarguments:
-      left:
-        simple: ${ATD.Task.url}
-      right:
-        simple: https://demisto.com
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 447,
-          "y": 1707
-        }
-      }
-    note: false
-  "12":
-    id: "12"
-    taskid: 75d0f8db-ba3e-417a-8176-1ab5f64b571b
-    type: regular
-    task:
-      id: 75d0f8db-ba3e-417a-8176-1ab5f64b571b
-      version: -1
-      name: FileCreateAndUpload
-      description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      data:
-        simple: qwerty
-      entryId: {}
-      filename:
-        simple: test_file
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 447,
-          "y": 1927
-        }
-      }
-    note: false
-  "13":
-    id: "13"
-    taskid: 6a8ca3ec-906d-4c8f-8003-6ef6ab7e5d01
-    type: regular
-    task:
-      id: 6a8ca3ec-906d-4c8f-8003-6ef6ab7e5d01
-      version: -1
-      name: detonate-file
-      description: Detonate file through McAfee ATD
-      script: McAfee Advanced Threat Defense|||detonate-file
-      type: regular
-      iscommand: true
-      brand: McAfee Advanced Threat Defense
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      fileName: {}
-      format: {}
-      threshold: {}
-      timeout: {}
-      upload:
-        simple: ${File.EntryID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 447,
-          "y": 2107
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: eb1afe30-f813-4af2-839b-06f93377646a
-    type: playbook
-    task:
-      id: eb1afe30-f813-4af2-839b-06f93377646a
-      version: -1
-      name: McAfee ATD Detonate File
-      playbookName: McAfee ATD Detonate File
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      EntryID:
-        simple: ${File.EntryID}
-      interval:
-        simple: "1"
-      timeout:
-        simple: "15"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3195
-        }
-      }
-    note: false
-  "15":
-    id: "15"
-    taskid: 0fa7a0de-e06d-4d30-80fe-7d28eea3ba34
-    type: playbook
-    task:
-      id: 0fa7a0de-e06d-4d30-80fe-7d28eea3ba34
-      version: -1
-      name: McAfee ATD Detonate URL
-      playbookName: McAfee ATD Detonate URL
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      URL:
-        simple: https://www.demisto.com
-      interval:
-        simple: "1"
-      timeout:
-        simple: "15"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 445,
-          "y": 2516
+          "y": 1678
         }
       }
     note: false
@@ -506,7 +307,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "19"
     scriptarguments:
       data:
         simple: dancingqueen
@@ -517,8 +318,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2972
+          "x": 447,
+          "y": 2708
         }
       }
     note: false
@@ -547,8 +348,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2722
+          "x": 447,
+          "y": 2350
         }
       }
     note: false
@@ -575,20 +376,77 @@ tasks:
       {
         "position": {
           "x": 447,
-          "y": 3420
+          "y": 3275
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 2fd55fe8-4814-4af2-82f7-b1525dbc6947
+    type: playbook
+    task:
+      id: 2fd55fe8-4814-4af2-82f7-b1525dbc6947
+      version: -1
+      name: McAfee ATD Detonate File
+      playbookName: McAfee ATD Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": 2949
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: cd7b3bed-45c6-40d9-86b2-392587db7d85
+    type: playbook
+    task:
+      id: cd7b3bed-45c6-40d9-86b2-392587db7d85
+      version: -1
+      name: McAfee ATD Detonate URL
+      playbookName: McAfee ATD Detonate URL
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      URL:
+        simple: https://www.demisto.com
+      interval:
+        simple: "1"
+      timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": 2028
         }
       }
     note: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "11_12_yes": 0.89
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3610,
-        "width": 385,
-        "x": 445,
+        "height": 3465,
+        "width": 383,
+        "x": 447,
         "y": -95
       }
     }
