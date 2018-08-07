@@ -3,8 +3,9 @@ commonfields:
   version: -1
 name: Trend Micro Deep Discovery Analyzer
 display: Trend Micro Deep Discovery Analyzer
+fromversion: 4.0.0
 category: Forensics & Malware Analysis
-image: data:image/png;base64,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
+image: data:image/png;base64,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
 description: Deep Discovery Analyzer is a turnkey appliance that uses virtual images
   of endpoint configurations to analyze and detect targeted attacks.
 detaileddescription: |-
@@ -15,12 +16,12 @@ detaileddescription: |-
   4) Copy the API key to the clipboard from Help --> About
   5) Paste this value into the apiKey parameter in the integration
 configuration:
-- display: DDA Server and Port  (e.g https://192.168.10.23:{port})
+- display: DDA Server and Port  (e.g https://192.168.10.23:20002)
   name: server
   defaultvalue: ""
   type: 0
   required: true
-- display: Internal IP address(only needed if the above URL is external)
+- display: Internal IP address (only needed if the server URL is external)
   name: ip_address
   defaultvalue: ""
   type: 0
@@ -30,7 +31,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -40,15 +41,10 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Fetch incidents
-  name: isFetch
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
+- display: Protocol Version
+  name: protocol_version
+  defaultvalue: "1.5"
+  type: 0
   required: false
 script:
   script: |-
@@ -57,14 +53,11 @@ script:
     import uuid
     import json
     import requests
-    import re
-    import platform
     from requests.adapters import HTTPAdapter
     from requests.packages.urllib3.util.retry import Retry
-    import zipfile
-    from zipfile import ZipFile
+    import re
+    import platform
     import os.path
-    from StringIO import StringIO
     import copy
     import requests
     from collections import OrderedDict
@@ -80,17 +73,10 @@ script:
 
     #HELPER FUNCTIONS#
 
-    def load_server_url():
-        ''' Cleans and loads the server url from the configuration '''
-        url = demisto.params()['server']
-        url = re.sub('/[\/]+$/', '', url)
-        url = re.sub('\/$', '', url)
-        return url
-
     def load_host_url():
-        ''' loads the host url from the configuration or sr strips the server url to get valid host url '''
-        host = str(demisto.params()["ip_address"])
-        if len(host) == 0:
+        ''' loads the host url from the configuration or strips the server url to get valid host url '''
+        host = demisto.params()['ip_address']
+        if host:
             #strip https://www. of the server address
             url = re.compile(r"https?://(www\.)?")
             host = url.sub('', demisto.params()['server']).strip().strip('/')
@@ -125,71 +111,38 @@ script:
         epoch_format = str(int(time.mktime(dt.timetuple())))
         return epoch_format
 
-    def getSize(fileobject):
-        ''' Get a file size from a file object'''
-        fileobject.seek(0,2) # move the cursor to the end of the file
-        size = fileobject.tell()
-        return size
-
-    def calculateChecksum(apiKey, headers, body = ''):
+    def calculate_checksum(api_key, headers, body=''):
         ''' Generates a Checksum for the api call '''
-        temp = str(apiKey)
+        temp = api_key
         if 'X-DTAS-ChecksumCalculatingOrder' in headers:
-            xDtasChecksumcalculatingorderList = headers['X-DTAS-ChecksumCalculatingOrder'].split(",")
-            for key in xDtasChecksumcalculatingorderList:
-                temp = temp + str(headers[key])
+            x_dtas_checksum_calculating_order_list = headers['X-DTAS-ChecksumCalculatingOrder'].split(",")
+            for key in x_dtas_checksum_calculating_order_list:
+                temp += headers[key]
         else:
             for key, value in headers.iteritems():
                 if ('X-DTAS-' in key and 'X-DTAS-Checksum' not in key and 'X-DTAS-ChecksumCalculatingOrder' not in key):
-                    temp = temp + str(value)
+                    temp += value
 
-        temp = temp + str(body)
+        temp += body
         return hashlib.sha1(temp)
 
-    def pretty_print_http(req):
-        print('{}\n{}\n{}\n\n{}'.format(
-            '-----------START-----------',
-            req.method + ' ' + req.url,
-            '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
-            req.body,
-        ))
-
-    def http_request(uri, method, headers, body = {}, params = {}, files = {}):
+    def http_request(uri, method, headers, body={}, params={}, files={}):
         ''' Makes an API call to the server URL with the supplied uri, method, headers, body and params '''
         url = '%s/%s' % (SERVER_URL, uri)
-        #LOG('api_call url {}'.format(url))
-        #req = requests.Request(method, url, headers=headers)
-        #prepared = req.prepare()
-        #LOG(pretty_print_http(prepared)) # prints the http request nicely to the log
+        if bool(body):
+            body=json.dumps(body)
         res = requests.request(
             method,
             url,
             headers=headers,
-            data=json.dumps(body),
+            data=body,
             verify=USE_SSL,
-            proxies=USE_PROXY,
             params=params,
-            files = files)
+            files=files
+        )
 
         if (res.status_code != 102 and (res.status_code < 200 or res.status_code >= 300)):
             raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
-        return res
-
-    def http_post(uri, headers, files):
-        ''' Makes an API call to the server URL with the supplied uri, method, headers, body and params '''
-        url = '%s/%s' % (SERVER_URL, uri)
-        #LOG('api_call url {}'.format(url))
-        #req = requests.Request('post', url, headers=headers)
-        #prepared = req.prepare()
-        #LOG(pretty_print_http(prepared)) # prints the http request nicely to the log
-        res = requests.post(
-            url,
-            headers=headers,
-            verify=USE_SSL,
-            proxies=USE_PROXY,
-            files = files)
-        if res.status_code < 200 or res.status_code >= 300:
-                raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return res
 
     def file_uploaded_to_incident(file, file_sha1):
@@ -203,6 +156,12 @@ script:
         incident["labels"] = labels
         return incident
 
+    def binary_to_booleanic_string(binary):
+        if (binary == '0'):
+            return 'False'
+        else:
+            return 'True'
+
     def binary_to_boolean(binary):
         if (binary == '0'):
             return False
@@ -210,11 +169,10 @@ script:
             return True
 
     #GLOBAL VARIABLES#
-    API_KEY = str(demisto.params()["apiKey"])
-    PROTOCOL_VERSION = str(1.5) #hard-coded protocol version
-    SERVER_URL = load_server_url()
+    API_KEY = demisto.params()['apiKey']
+    PROTOCOL_VERSION = demisto.params()['protocol_version']
+    SERVER_URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
     USE_SSL = not demisto.params().get('insecure', True)
-    USE_PROXY = demisto.params().get('proxy', None)
     UUID = str(uuid.uuid4())
     HOST = load_host_url()
 
@@ -222,410 +180,489 @@ script:
         'Host' : HOST,
         'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
         'X-DTAS-ClientUUID': UUID,
-        'X-DTAS-Time' : get_epoch_time(),
-        'X-DTAS-Challenge' : str(uuid.uuid4()),
-        'X-DTAS-ProductName' : 'TDA',
-        'X-DTAS-ClientHostname' : platform.node(),
+        'X-DTAS-Time': get_epoch_time(),
+        'X-DTAS-Challenge': str(uuid.uuid4()),
+        'X-DTAS-ProductName': 'TDA',
+        'X-DTAS-ClientHostname': platform.node(),
         'X-DTAS-SourceID': '1',
         'X-DTAS-SourceName': 'DemistoIntegration',
     }
 
+    #for fetch incident
     CURRENT_TIME = datetime.utcnow()
 
     #COMMAND FUNCTIONS#
 
     def register():
-        headersRegister = copy.deepcopy(DEFAULT_HEADERS)
-        tmp_checksum = calculateChecksum(API_KEY, headersRegister, '')
-        headersRegister['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-        res = http_request('web_service/sample_upload/register', 'get', headersRegister)
-
+        headers_register = copy.deepcopy(DEFAULT_HEADERS)
+        tmp_checksum = calculate_checksum(API_KEY, headers_register)
+        headers_register['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        res = http_request(
+            'web_service/sample_upload/register',
+            'get',
+            headers_register
+        )
 
     def unregister():
-        headersUnregister = copy.deepcopy(DEFAULT_HEADERS)
-        tmp_checksum = calculateChecksum(API_KEY, headersUnregister, '')
-        headersUnregister['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-        res = http_request('web_service/sample_upload/unregister', 'get', headersUnregister)
-
+        headers_unregister = copy.deepcopy(DEFAULT_HEADERS)
+        tmp_checksum = calculate_checksum(API_KEY, headers_unregister)
+        headers_unregister['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        res = http_request(
+            'web_service/sample_upload/unregister',
+            'get',
+            headers_unregister
+        )
 
     def test():
-        headersTest = copy.deepcopy(DEFAULT_HEADERS)
-        tmp_checksum = calculateChecksum(API_KEY, headersTest, '')
-        headersTest['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-        res = http_request('web_service/sample_upload/test_connection', 'get', headersTest)
+        headers_test = copy.deepcopy(DEFAULT_HEADERS)
+        tmp_checksum = calculate_checksum(API_KEY, headers_test)
+        headers_test['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        res = http_request(
+            'web_service/sample_upload/test_connection',
+            'get',
+            headers_test
+        )
         demisto.results('ok')
 
-    def simple_upload_sample_file(sampleFile):
-        '''Upload a file to Analyzer for analysis'''
-        with open(demisto.getFilePath(sampleFile)['path'], 'rb') as f:
-            headersSimpleUploadSampleFile = {
-                'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
+    def prettify_simple_upload_sample_file(sha1):
+        pretty_sample = {
+            'SHA1': sha1.upper()
+        }
+        return pretty_sample
+
+    def simple_upload_sample_file(sample_file):
+        '''Upload a file to Deep Discovery Analyzer for analysis'''
+        with open(demisto.getFilePath(sample_file)['path'], 'rb') as f:
+            headers_simple_upload_sample_file = {
+                'X-DTAS-ProtocolVersion': PROTOCOL_VERSION,
                 'X-DTAS-ClientUUID': UUID,
                 'X-DTAS-SourceID': '1',
                 'X-DTAS-SourceName': 'DemistoIntegration',
-                'X-DTAS-SHA1' : hash_file(demisto.getFilePath(sampleFile)['path']),
-                'X-DTAS-Time' : get_epoch_time(),
-                'X-DTAS-SampleType' : '0', #0 for file, 1 for URL
-                'X-DTAS-Challenge' : str(uuid.uuid4()),
-                'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
-                }
-            tmp_checksum = calculateChecksum(API_KEY, headersSimpleUploadSampleFile, '')
-            headersSimpleUploadSampleFile['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-
-            res = http_post(
-                'web_service/sample_upload/simple_upload_sample',
-                headersSimpleUploadSampleFile,
-                files = {'uploadsample' : f})
-
-        return res
+                'X-DTAS-SHA1': hash_file(demisto.getFilePath(sampleFile)['path']),
+                'X-DTAS-Time': get_epoch_time(),
+                'X-DTAS-SampleType': '0', #0 for file, 1 for URL
+                'X-DTAS-Challenge': str(uuid.uuid4()),
+                'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
+            }
+            tmp_checksum = calculate_checksum(API_KEY, headers_simple_upload_sample_file)
+            headers_simple_upload_sample_file['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+            cmd_url = 'web_service/sample_upload/simple_upload_sample'
+            res = http_request(
+                cmd_url,
+                'post',
+                headers_simple_upload_sample_file,
+                files = {'uploadsample': f}
+            )
+        pretty_res = prettify_simple_upload_sample_file(headers_simple_upload_sample_url['X-DTAS-SHA1'])
+        return res, pretty_res
 
     def simple_upload_sample_file_command():
-        args = demisto.args()
-        sampleFile = args.get('EntryID')
-        res = simple_upload_sample_file(sampleFile)
+        sample_file = demisto.args().get('entryID')
+        res, pretty_res = simple_upload_sample_file(sample_file)
 
-        return demisto.results({
+        demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': "File uploaded to Trend Micro DDA"
+            'Contents': 'File was uploaded to Trend Micro DDA successfully',
+            'EntryContext': {
+                  'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': pretty_res
+            }
         })
 
 
-    def prettifySimpleUploadSampleUrl(url, sha1):
-        prettySample = {
-            'SHA1' : sha1.upper(),
-            'url' : url
+    def prettify_simple_upload_sample_url(url, sha1):
+        pretty_sample = {
+            'SHA1': sha1.upper(),
+            'URL': url
         }
-        return prettySample;
+        return pretty_sample
 
-    def simple_upload_sample_url(sampleUrl):
+    def simple_upload_sample_url(sample_url):
         '''Upload a URL to Analyzer for analysis'''
-        headersSimpleUploadSampleUrl = {
-                'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
-                'X-DTAS-ClientUUID': UUID,
-                'X-DTAS-SourceID': '1',
-                'X-DTAS-SourceName': 'DemistoIntegration',
-                'X-DTAS-SHA1' : hash_url(sampleUrl),
-                'X-DTAS-Time' : get_epoch_time(),
-                'X-DTAS-SampleType' : '1', #0 for file, 1 for URL
-                'X-DTAS-Challenge' : str(uuid.uuid4()),
-                'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
-                }
-        tmp_checksum = calculateChecksum(API_KEY, headersSimpleUploadSampleUrl, '')
-        headersSimpleUploadSampleUrl['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        headers_simple_upload_sample_url = {
+            'X-DTAS-ProtocolVersion': PROTOCOL_VERSION,
+            'X-DTAS-ClientUUID': UUID,
+            'X-DTAS-SourceID': '1',
+            'X-DTAS-SourceName': 'DemistoIntegration',
+            'X-DTAS-SHA1': hash_url(sample_url),
+            'X-DTAS-Time': get_epoch_time(),
+            'X-DTAS-SampleType': '1', #0 for file, 1 for URL
+            'X-DTAS-Challenge': str(uuid.uuid4()),
+            'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
+        }
+        tmp_checksum = calculate_checksum(API_KEY, headers_simple_upload_sample_url)
+        headers_simple_upload_sample_url['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
 
-        res = http_post(
-            'web_service/sample_upload/simple_upload_sample',
-            headersSimpleUploadSampleUrl,
-            files = {'uploadsample' : sampleUrl})
+        cmd_url = 'web_service/sample_upload/simple_upload_sample'
+        res = http_request(
+            cmd_url,
+            'post',
+            headers_simple_upload_sample_url,
+            files = {'uploadsample' : sample_url}
+        )
 
-        prettyRes = prettifySimpleUploadSampleUrl(sampleUrl, headersSimpleUploadSampleUrl['X-DTAS-SHA1'])
-        return res, prettyRes
+        pretty_res = prettify_simple_upload_sample_url(sample_url, headers_simple_upload_sample_url['X-DTAS-SHA1'])
+        return res, pretty_res
 
     def simple_upload_sample_url_command():
-        args = demisto.args()
-        sampleUrl = args.get('url')
-        res, prettyRes = simple_upload_sample_url(sampleUrl)
+        sample_url = demisto.args().get('url')
+        res, pretty_res = simple_upload_sample_url(sample_url)
 
-        return demisto.results({
+        demisto.results({
             'Type': entryTypes['note'],
             'Contents': str(res.headers),
             'ContentsFormat': formats['text'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('URL uploaded to Trend Micro DDA', prettyRes),
+            'HumanReadable': tableToMarkdown('URL was uploaded to Trend Micro DDA successfully', pretty_res),
             'EntryContext': {
-                  'TrendMicroDDA.Submissions(val.SHA1==obj.SHA1)': prettyRes
+                  'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': pretty_res
             }
         })
 
-    def get_sample(sha1, archive_type, archive_encrypted):
+    def get_sample(sha1, archive_type, archive_encrypted, archive_name):
         '''Issue a request to retrieve an archive of the sample given its SHA1 hash'''
-        if not (re.match(r'\b[0-9a-fA-F]{40}\b', str(sha1))):
-            raise Exception("get_sample parameter 'sample_sha1' must contain a valid sha1 string")
-        if not ((str(archive_type) == "zip") or (str(archive_type) == "tgz")):
-                raise Exception("get_sample parameter 'archive_type' must be a STRING whose value is either 'zip' or 'tgz'")
-        if not ((str(archive_encrypted) == "0") or (str(archive_encrypted) == "1")):
-                raise ValueError("get_sample parameter 'archive_encrypted' must be a STRING whose valie is either '0' (not encrypted) or '1' (encrypted with password 'virus'")
+        if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
+            return_error('Provided SHA1 is unvalid.')
 
-        headersGetSample = copy.deepcopy(DEFAULT_HEADERS)
-        headersGetSample['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
-        headersGetSample['X-DTAS-ArchiveType'] = archive_type
-        headersGetSample['X-DTAS-ArchiveEncrypted'] = archive_encrypted
+        headers_get_sample = copy.deepcopy(DEFAULT_HEADERS)
+        headers_get_sample['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
+        headers_get_sample['X-DTAS-ArchiveType'] = archive_type
+        headers_get_sample['X-DTAS-ArchiveEncrypted'] = archive_encrypted
 
-        tmp_checksum = calculateChecksum(API_KEY, headersGetSample, '')
-        headersGetSample['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        tmp_checksum = calculate_checksum(API_KEY, headers_get_sample)
+        headers_get_sample['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
 
+        cmd_url = 'web_service/sample_upload/get_sample'
         res = http_request(
-            'web_service/sample_upload/get_sample',
+            cmd_url,
             'get',
-            headersGetSample)
+            headers_get_sample
+        )
+        file = fileResult(archive_name, res.content)
 
-        demisto.log(str(res))
-        demisto.log(str(dir(res)))
-        demisto.log(str(res.headers))
-        #demisto.log(str(res.content))
-        sys.exit(0)
-        zipdata = StringIO()
-        zipdata.write(res.content)
-        myzipfile = zipfile.ZipFile(zipdata)
-        ll = myzipfile.namelist()
-        demisto.log(str(ll))
-        my_file_dir = myzipfile.extract(sha1 + '.dat')
-        demisto.log(str(my_file_dir))
-
-        sys.exit(0)
-        if os.path.exists(my_file_dir):
-            demisto.log('success')
-        sys.exit(0)
-        my_file = myzipfile.extract('/var/lib/demisto/' + sha1 + '.dat/common/sample/' + sha1)
-        demisto.log('its something')
-        sys.exit(0)
-        demisto.log(str(my_file_dir))
-        demisto.log(str(my_file))
-
-
-        #fr = fileResult( file_name , res.content)
-        #demisto.log(fr['File'])
-
-        #with zipfile (res.content, 'rb') as z:
-
-            #data = z.read('common/sample/' + demisto.args()['sample_sha1'])
-            #file_name = demisto.args()['filename'] if demisto.args()['filename'] != 'sample' else (demisto.args()['filename'] + '_' + demisto.args()['sample_sha1'])
-            #return demisto.results(fileResult( file_name , data)
+        return res, file
 
     def get_sample_command():
         sha1 = demisto.args()['sha1']
-        archive_type = str(demisto.args()['type'])
-        archive_encrypted = str(demisto.args()['encrypted'])
-        get_sample(sha1, archive_type, archive_encrypted)
+        archive_type = demisto.args()['type']
+        archive_encrypted = demisto.args()['encrypted']
+        archive_name = demisto.args()['archive_name'] if 'archive_name' in demisto.args() else sha1
+        archive_name += '.{}'.format(archive_type)
+        res, file = get_sample(sha1, archive_type, archive_encrypted, archive_name)
+
+        return demisto.results(file)
 
     def get_sample_list(interval_start, interval_end, interval_type):
 
-        interval_start_dt = datetime.strptime(interval_start, "%Y-%m-%d %H:%M:%S")
-        interval_end_dt = datetime.strptime(interval_end, "%Y-%m-%d %H:%M:%S")
+        try:
+            interval_start_dt = datetime.strptime(interval_start, "%Y-%m-%d %H:%M:%S")
+            interval_end_dt = datetime.strptime(interval_end, "%Y-%m-%d %H:%M:%S")
+        except:
+            return_error('Given interval times are not in the required format, which is: YYYY-MM-DD HH:MM:SS, e.g. 2008-11-22 19:53:42')
 
-        if not ((isinstance(interval_start_dt, datetime)) and (isinstance(interval_start_dt, datetime)) ):
-            raise Exception("get_sample_list parameters 'interval_start' and 'interval_end' must both be datetime.datetime objects")
+        headers_get_sample_list = copy.deepcopy(DEFAULT_HEADERS)
+        headers_get_sample_list['X-DTAS-IntervalStartingPoint'] = get_epoch_from_datetime(interval_start_dt)
+        headers_get_sample_list['X-DTAS-IntervalEndPoint'] = get_epoch_from_datetime(interval_end_dt)
+        headers_get_sample_list['X-DTAS-IntervalType'] = interval_type
 
-        if not ((type(interval_type) == str) and ((interval_type == "0") or (interval_type == "1"))):
-                raise Exception("get_sample_list parameter 'interval_type' must be a STRING whose value is either '0' or '1'")
+        tmp_checksum = calculate_checksum(API_KEY, headers_get_sample_list)
+        headers_get_sample_list['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
 
-        headersGetSampleList = copy.deepcopy(DEFAULT_HEADERS)
-        headersGetSampleList['X-DTAS-IntervalStartingPoint'] = get_epoch_from_datetime(interval_start_dt)
-        headersGetSampleList['X-DTAS-IntervalEndPoint'] = get_epoch_from_datetime(interval_end_dt)
-        headersGetSampleList['X-DTAS-IntervalType'] = interval_type
-
-        tmp_checksum = calculateChecksum(API_KEY, headersGetSampleList, '')
-        headersGetSampleList['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-
+        cmd_url = 'web_service/sample_upload/get_sample_list'
         res = http_request(
-            'web_service/sample_upload/get_sample_list',
+            cmd_url,
             'get',
-            headersGetSampleList)
+            headers_get_sample_list
+        )
 
         return res #returns a list of SHA1 of the samples
 
     def get_sample_list_command():
-        '''Issue a request to get a semi-colon separated values list of samples submitted within the given time interval'''
-        interval_start = str(demisto.args()['interval_start'])
-        interval_end = str(demisto.args()['interval_end'])
-        interval_type = str(demisto.args()['interval_type'])
+        '''Issue a request to get a semi-colon separated values list of submissions within the given time interval'''
+        interval_start = demisto.args()['interval_start']
+        interval_end = demisto.args()['interval_end']
+        interval_type = demisto.args()['interval_type']
         result = get_sample_list(interval_start, interval_end, interval_type)
-        sha1List = result.text.split(';')
-        HR = []
-        for item in sha1List:
-            HR.append({'SHA1': item})
+        if result.text:
+            sha1_list = result.text.split(';')
+            hr = '### Trend Micro DDA submissions SHA1\n'
+            for sha1 in sha1_list:
+                hr += '- {}\n'.format(sha1)
 
-        return demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': result.text,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('SHA1 values of submissions within the time interval', HR)
-        })
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': result.text,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr
+            })
+        else:
+            demisto.results('No results found.')
 
+    def build_report(res, threshold, status, verbose):
+        report_json = xml2json(res.text)
+        reports = report_json['REPORTS']
+        #true if list, false if dict
+        reports_type_is_list = isinstance(reports['FILE_ANALYZE_REPORT'], list)
 
-    ############################################################
-    def get_query_sample_list(interval_start, interval_end):
-        interval_start_dt = datetime.strptime(interval_start, "%Y-%m-%d %H:%M:%S")
-        interval_end_dt = datetime.strptime(interval_end, "%Y-%m-%d %H:%M:%S")
-
-        if not ((isinstance(interval_start_dt, datetime)) and (isinstance(interval_start_dt, datetime)) ):
-            raise Exception("get_sample_list parameters 'interval_start' and 'interval_end' must both be datetime.datetime objects")
-
-        headersGetQuerySampleList = copy.deepcopy(DEFAULT_HEADERS)
-        headersGetQuerySampleList['X-DTAS-IntervalStartingPoint'] = get_epoch_from_datetime(interval_start_dt)
-        headersGetQuerySampleList['X-DTAS-IntervalEndPoint'] = get_epoch_from_datetime(interval_end_dt)
-        headersGetQuerySampleList['X-DTAS-SourceID'] = '99'
-
-        tmp_checksum = calculateChecksum(API_KEY, headersGetQuerySampleList, '')
-        headersGetQuerySampleList['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-
-        res = http_request(
-            'web_service/sample_upload/get_sample_list',
-            'get',
-            headersGetQuerySampleList)
-
-        return res
-
-
-    def get_query_sample_list_command():
-        '''Issue a request to get the report summary.....'''
-        interval_start = str(demisto.args()['interval_start'])
-        interval_end = str(demisto.args()['interval_end'])
-        res = get_query_sample_list(interval_start, interval_end)
-
-        demisto.log(res.text)
-        demisto.log(str(dir(res)))
-        sys.exit(0)
-        return result
-    ############################################################
-
-
-    def get_openioc_report(): #NEEDED?
-        demisto.log(str(demisto.args()['sha1']))
-        demisto.log(str(type(demisto.args()['sha1'])))
-        headersGetOpenIOC = {
-            "X-DTAS-ProtocolVersion": PROTOCOL_VERSION,
-            "X-DTAS-ClientUUID": UUID,
-            "X-DTAS-SHA1": str(demisto.args()['sha1']),
-            "X-DTAS-Time": get_epoch_time(),
-            "X-DTAS-Challenge": str(uuid.uuid4()),
-            "X-DTAS-ChecksumCalculatingOrder": "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-Challenge"
-            }
-        tmp_checksum = calculateChecksum(API_KEY, headersGetOpenIOC, '')
-        headersGetOpenIOC['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-
-        res = http_request(
-            'web_service/sample_upload/get_openioc_report',
-            'get',
-            headersGetOpenIOC)
-
-        return demisto.results(res)
-
-
-    def buildReport(res, threshold, status):
-        reportJson = json.loads(xml2json(res.text))
-        HR = {
-            'Risk Level' : reportJson['REPORTS']['OVERALL_RISK_LEVEL'],
-            'Image Type' : reportJson['REPORTS']['IMAGE_TYPE']['TYPE']['#text'],
-            'Malware Source IP' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceIP'],
-            'Malware Source Host' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceHost'],
-            'Total Dropped Files' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['DroppedFiles']['@Total'],
-            'Deny List' :  binary_to_boolean(reportJson['REPORTS']['FILE_ANALYZE_REPORT']['IsDenylisted']),
-            'White List' :  binary_to_boolean(reportJson['REPORTS']['FILE_ANALYZE_REPORT']['IsWhitelisted']),
+        hr = {
+            'Risk Level': reports['OVERALL_RISK_LEVEL'],
+            'Image Type': reports['IMAGE_TYPE']['TYPE']['#text'],
+            'Sum of Files Analyzed': (len(reports['FILE_ANALYZE_REPORT'])) if reports_type_is_list  else '1',
         }
-        if '#text' in reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusName']:
-            HR['Detection Name'] = reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusName']['#text']
-        #'Download URL': [FileItem']DownloadURL put in URL.Data, (not always in report)
-
 
         context = {}
+        dbot_score = 0
         context['DBotScore'] = {
-            'Vendor' : 'Trend-Micro-Deep-Discovery-Analyzer',
-            'Score' : '0',
-            'Indicator' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA1'],
-            'Type' : 'SHA1'
+            'Vendor': 'Trend Micro DDA',
+            'Score': 0, #check thattttttttt
+            'Type': 'hash'
         }
-        context['TrendMicroDDA.Submissions(val.SHA1==obj.SHA1)'] = {
-            'status' : status,
-            'isCompleted' : 'True' if status == 'Completed' else 'False',
-            'RiskLevel' : reportJson['REPORTS']['OVERALL_RISK_LEVEL'],
-            'SHA1' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA1'],
-            'SHA256' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA256'],
-            'MD5' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileMD5'],
-            'VirusDetected' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusDetected'],
-        }
-        if reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceIP'] is not None :
-            context['IP'] = {}
-            context['IP']['Address'] = reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceIP']
-        if reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceHost'] is not None :
-            context['Domain'] = {}
-            context['Domain']['Name'] = reportJson['REPORTS']['FILE_ANALYZE_REPORT']['MalwareSourceHost']
+        #if type is list, the submission was divided to sub-files and the first file_analyze_report is of the main submission
+        context['DBotScore']['Indicator'] = (reports['FILE_ANALYZE_REPORT']['FileSHA1']) if not reports_type_is_list else (reports['FILE_ANALYZE_REPORT'][0]['FileSHA1'])
 
-        if (reportJson['REPORTS']['OVERALL_RISK_LEVEL'] >= threshold):
-            context['DBotScore']['Score'] = 3
-            if (reportJson['REPORTS']['FILE_ANALYZE_REPORT']['TrueFileType'] != 'URL'):
-                context['File'] = {
-                    'MD5' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileMD5'],
-                    'SHA1' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA1'],
-                    'SHA256' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSHA256'],
-                    'Size' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['FileSize'],
-                    'Name' : reportJson['REPORTS']['FILE_ANALYZE_REPORT']['VirusName']['#text'],
-                    'Malicious' : {
-                        'Vendor' : 'Trend-Micro-Deep-Discovery-Analyzer',
-                        'Description' : 'RiskLevel : ' + reportJson['REPORTS']['OVERALL_RISK_LEVEL']
+        if not reports_type_is_list: #if the submission doesn't have sub-files
+            file_analyze_report = reports['FILE_ANALYZE_REPORT']
+            hr['Malware Source IP'] = file_analyze_report['MalwareSourceIP']
+            hr['Malware Source Host'] = file_analyze_report['MalwareSourceHost']
+            hr['Total Dropped Files'] = file_analyze_report['DroppedFiles']['@Total']
+            hr['Deny List'] = binary_to_booleanic_string(file_analyze_report['IsDenylisted'])
+            hr['White List'] = binary_to_booleanic_string(file_analyze_report['IsWhitelisted'])
+
+            if '#text' in file_analyze_report['VirusName']: #the submission has a detection
+                hr['Detection Name'] = file_analyze_report['VirusName']['#text']
+            #set the filename
+            filename = hr['Detection Name'] if ('Detection Name' in hr) else file_analyze_report['FileSHA1']
+
+            #add data regarding the submission to the context
+            context['TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)'] = {
+                'Status' : status,
+                'RiskLevel' : reports['OVERALL_RISK_LEVEL'],
+                'SHA1' : file_analyze_report['FileSHA1'],
+                'SHA256' : file_analyze_report['FileSHA256'],
+                'MD5' : file_analyze_report['FileMD5'],
+                'VirusDetected' : binary_to_boolean(file_analyze_report['VirusDetected'])
+            }
+
+            if file_analyze_report['TrueFileType'] == 'URL':
+                context[outputPaths['url']] = {
+                    'Data' : 'fr' #############################
+                    ###########check for more things that return#########################################
+                }
+            else:
+                context[outputPaths['file']] = {
+                    'MD5': file_analyze_report['FileMD5'],
+                    'SHA1': file_analyze_report['FileSHA1'],
+                    'SHA256': file_analyze_report['FileSHA256'],
+                    'Size': file_analyze_report['FileSize'],
+                    'Name': file_analyze_report['VirusName']['#text'],
+                }
+
+            #add data regarding the File to the context if file is malicious
+            if (reports['OVERALL_RISK_LEVEL'] >= threshold):
+                dbot_score = 3
+                if file_analyze_report['TrueFileType'] != 'URL':
+                    context[outputPaths['url']].update(
+                        'Malicious' : {
+                            'Vendor': 'Trend Micro DDA',
+                            'Description': 'RiskLevel: ' + reports['OVERALL_RISK_LEVEL']
                         }
-                    }
+                    )
+                else:
+                    context[outputPaths['file']].update(
+                        'Malicious' : {
+                            'Vendor': 'Trend Micro DDA',
+                            'Description': 'RiskLevel: ' + reports['OVERALL_RISK_LEVEL']
+                        }
+                    )
 
-        return context, HR
+            #extracting IP and Domains from the report
+            if file_analyze_report['MalwareSourceIP']:
+                context['IP.Address(val.Address && val.Address == obj.Address)'] = file_analyze_report['MalwareSourceIP']
+            if file_analyze_report['MalwareSourceHost']:
+                context['Domain.Name(val.Name && val.Name == obj.Name)'] = file_analyze_report['MalwareSourceHost']
+            if verbose == 'true':
+                dropped_files = file_analyze_report['DroppedFiles']
+                if 'FileItem' in dropped_files:
+                    if 'DownloadURL' in dropped_files['FileItem']:
+                        context['URL.Data(val.Data && val.Data == obj.Data)'] = dropped_files['FileItem']['DownloadURL']
+                        hr['Download URL'] = dropped_files['FileItem']['DownloadURL']
+                        context['TrendMicroDDA.Submission'].update({
+                            'DownloadURL': dropped_files['FileItem']['DownloadURL']
+                        })
+
+        elif reports_type_is_list: #if the submission have sub-files
+
+            main_file_analyze_report = reports['FILE_ANALYZE_REPORT'][0]
+            #add data to the war room
+            file_name_string = ''
+            malware_source_ip_string = ''
+            malware_source_host_string = ''
+            total_dropped_files_string = ''
+            deny_list_string = ''
+            white_list_string = ''
+            detection_name_string = ''
+            download_url_string = ''
+
+            for item in reports['FILE_ANALYZE_REPORT']:
+                file_name_string += (item['OrigFileName'] + ', ') if item['OrigFileName'] is not None else ''
+                malware_source_ip_string += (item['MalwareSourceIP'] + ', ') if item['MalwareSourceIP'] is not None else ''
+                malware_source_host_string += (item['MalwareSourceHost'] + ', ') if item['MalwareSourceHost'] is not None else ''
+                total_dropped_files_string += (item['DroppedFiles']['@Total'] + ', ') if item['DroppedFiles']['@Total'] is not None else ''
+                deny_list_string += (binary_to_booleanic_string(item['IsDenylisted']) + ', ') if item['IsDenylisted'] is not None else ''
+                white_list_string += (binary_to_booleanic_string(item['IsWhitelisted']) + ', ') if item['IsWhitelisted'] is not None else ''
+                if '#text' in item['VirusName']:
+                    detection_name_string += item['VirusName']['#text'] + ', '
+                if verbose == 'true':
+                    if 'FileItem' in item['DroppedFiles']:
+                        for i in item['DroppedFiles']['FileItem']:
+                            download_url_string += (i['DownloadURL'] + ', ') if i['DownloadURL'] is not None else ''
+
+            hr['File Name'] = file_name_string[:-2]
+            hr['Malware Source IP'] = malware_source_ip_string[:-2]
+            hr['Malware Source HOST'] = malware_source_host_string[:-2]
+            hr['Total Dropped Files'] = total_dropped_files_string[:-2]
+            hr['Deny List'] = deny_list_string[:-2]
+            hr['White List'] = white_list_string[:-2]
+            hr['Detection Name'] = detection_name_string[:-2]
+            #set the filename
+            filename = hr['Detection Name'] if len(hr['Detection Name']) > 0 else main_file_analyze_report['OrigFileName']
+            if verbose == 'true':
+                hr['Download URL'] = download_url_string[:-2]
+                context['URL.Data'] = download_url_string[:-2]
+                context['TrendMicroDDA.Submission'].update({
+                            'DownloadURL': download_url_string[:-2]
+
+            #add data regarding the submission to the context
+            fileAnalyzedList = []
+            for fileAnalyzed in reports['FILE_ANALYZE_REPORT'][1:]: #iterate over all the subfiles
+                fileAnalyzedDict = {
+                    'SHA1': fileAnalyzed['FileSHA1'],
+                    'SHA256': fileAnalyzed['FileSHA256'],
+                    'MD5': fileAnalyzed['FileMD5'],
+                    'VirusDetected': binary_to_boolean(fileAnalyzed['VirusDetected']),
+                }
+                fileAnalyzedList.append(fileAnalyzedDict)
+
+            context['TrendMicroDDA.Submission(val.SHA1==obj.SHA1)'] = {
+                'status' : status,
+                'RiskLevel' : reports['OVERALL_RISK_LEVEL'],
+                'SHA1' : main_file_analyze_report['FileSHA1'],
+                'SHA256' : main_file_analyze_report['FileSHA256'],
+                'MD5' : main_file_analyze_report['FileMD5'],
+                'VirusDetected' : binary_to_boolean(main_file_analyze_report['VirusDetected']),
+                'FileAnalyzed' : fileAnalyzedList,
+            }
+
+            #add data regarding the File to the context
+            if (reports['OVERALL_RISK_LEVEL'] >= threshold):
+                context['DBotScore']['Score'] = 3
+                if (main_file_analyze_report['TrueFileType'] != 'URL'):
+                    context['File'] = {
+                        'MD5': main_file_analyze_report['FileMD5'],
+                        'SHA1': main_file_analyze_report['FileSHA1'],
+                        'SHA256': main_file_analyze_report['FileSHA256'],
+                        'Size': main_file_analyze_report['FileSize'],
+                        'Name': main_file_analyze_report['VirusName']['#text'],
+                        'Malicious' : {
+                            'Vendor' : 'Trend Micro DDA',
+                            'Description' : 'RiskLevel: ' + reports['OVERALL_RISK_LEVEL']
+                            }
+                        }
+
+            #extracting IP and Domains from the report
+            if main_file_analyze_report['MalwareSourceIP']:
+                context['IP'] = {}
+                context['IP']['Address'] = main_file_analyze_report['MalwareSourceIP']
+            if main_file_analyze_report['MalwareSourceHost']:
+                context['Domain'] = {}
+                context['Domain']['Name'] = main_file_analyze_report['MalwareSourceHost']
+
+        return context, hr, filename
 
     def get_report(sha1):
         '''Issue a request to retrieve XML report for a given SHA1'''
-        headersGetReport = copy.deepcopy(DEFAULT_HEADERS)
-        headersGetReport['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
-        headersGetReport['X-DTAS-Time'] = get_epoch_time()
+        if not (re.match(r'\b[0-9a-fA-F]{40}\b', str(sha1))):
+            return_error('get_report parameter sha1 must contain a valid sha1 string')
 
-        tmp_checksum = calculateChecksum(API_KEY, headersGetReport, '')
-        headersGetReport['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        headers_get_report = copy.deepcopy(DEFAULT_HEADERS)
+        headers_get_report['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
+        headers_get_report['X-DTAS-Time'] = get_epoch_time()
 
+        tmp_checksum = calculate_checksum(API_KEY, headers_get_report)
+        headers_get_report['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+
+        cmd_url = 'web_service/sample_upload/get_report'
         res = http_request(
-            'web_service/sample_upload/get_report',
+            cmd_url,
             'get',
-            headersGetReport)
+            headers_get_report
+        )
 
         return res
 
     def get_report_command():
         sha1 = demisto.args()['sha1']
         threshold = demisto.args()['threshold']
-
+        verbose = demisto.args()['verbose']
         res = get_report(sha1)
 
         if res.status_code == 102:
-            d = {'status' : 'Analyzing', 'isCompleted' : 'False', 'SHA1' : sha1}
-            return demisto.results({
+            ec = {
+                'Status': 'Analyzing',
+                'SHA1': sha1
+            }
+            demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
-                'Contents': "The report for the uploaded sample was not generated yet. Please try again later",
+                'Content': res,
+                'HumanReadable': 'Submission analyzation was not finished yet.',
                 'EntryContext': {
-                      'TrendMicroDDA.Submissions(val.SHA1==obj.SHA1)': d
+                    'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': ec
                 }
             })
         else:
             status = 'Completed'
-            context, HR = buildReport(res, threshold, status)
-            return demisto.results({
-                'Type': entryTypes['note'],
+            context, hr, filename = build_report(res, threshold, status, verbose)
+            demisto.results({
+                'Type': 9,
+                'FileID': fileResult(filename, res.text),
                 'Contents': res.text,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Sample Report from TrendMicroDDA', createContext(HR, id=None, keyTransform=None, removeNull=True)),
+                'File': filename,
                 'EntryContext': context
+                #'Contents': res.text,
+                #'ContentsFormat': formats['json'],
+                #'ReadableContentsFormat': formats['markdown'],
+                #'HumanReadable': tableToMarkdown('Sample Report from TrendMicroDDA', hr, removeNull = True),
+                #'EntryContext': context
             })
 
     def get_brief_report(sha1_list):
-        headersGetBriefReport = {
-            'Content-Type' : 'text/plain',
-            'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
+        for sha1 in sha1_list:
+            if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
+                return_error('get_brief_report parameter sha1 must contain a valid sha1 string')
+
+        headers_get_brief_report = {
+            'Content-Type': 'text/plain',
+            'X-DTAS-ProtocolVersion': PROTOCOL_VERSION,
             'X-DTAS-ClientUUID': UUID,
-            'X-DTAS-Time' : get_epoch_time(),
-            'X-DTAS-Challenge' : str(uuid.uuid4()),
-            'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-Time,X-DTAS-Challenge",
+            'X-DTAS-Time': get_epoch_time(),
+            'X-DTAS-Challenge': str(uuid.uuid4()),
+            'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-Time,X-DTAS-Challenge",
             }
         data=";".join(sha1_list)
-        tmp_checksum = calculateChecksum(API_KEY, headersGetBriefReport, data)
-        headersGetBriefReport['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
+        tmp_checksum = calculate_checksum(API_KEY, headers_get_brief_report, data)
+        headers_get_brief_report['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
 
-        u = '%s/%s' % (SERVER_URL, 'web_service/sample_upload/get_brief_report')
+        url = '%s/%s' % (SERVER_URL, 'web_service/sample_upload/get_brief_report')
         res =  requests.put(
-            u,
+            url,
             verify=False,
-            headers=headersGetBriefReport,
-            data=data)
+            headers=headers_get_brief_report,
+            data=data
+        )
 
         return res
-
 
     def get_brief_report_command():
         '''Issue a request to retrieve the brief XML report for a given SHA1'''
@@ -633,56 +670,7 @@ script:
         #threshold = demisto.args()['threshold']
         res = get_brief_report(sha1_list)
 
-        demisto.log(str(res))
-        demisto.log(str(dir(res)))
-        demisto.log(str(res.text))
-        demisto.log(str(res.headers))
-        demisto.log(str(res.content))
-
-        return res
-
-    def get_screenshot(sha1, image_type_id):
-        headersGetScreenshot = copy.deepcopy(DEFAULT_HEADERS)
-        headersGetScreenshot['X-DTAS-SHA1'] = str(sha1) # SHA1 of the file/URL to download
-        headersGetScreenshot["X-DTAS-ImageTypeID"] = str(image_type_id)    # Add the X-DTAS-ImageTypeID
-        tmp_checksum = calculateChecksum(API_KEY, headersGetScreenshot, '')
-        headersGetScreenshot['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-
-        res = http_request(
-            'web_service/sample_upload/get_sandbox_screenshot',
-            'get',
-            headersGetScreenshot)
-
-        return res
-
-        #headersGetScreenshot = {
-        #    'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
-        #    'X-DTAS-ClientUUID': UUID,
-        #    'X-DTAS-SHA1': sha1, # SHA1 of the file/URL to download
-        #    'X-DTAS-Time' : get_epoch_time(),
-        #    'X-DTAS-Challenge' : str(uuid.uuid4()),
-       #     'X-DTAS-ChecksumCalculatingOrder' : "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SHA1,X-DTAS-ImageTypeID,X-DTAS-Time,X-DTAS-Challenge",
-      #      }
-
-     #   tmp_checksum = calculateChecksum(API_KEY, headersGetScreenshot, '')
-     #   headersGetScreenshot['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-
-    #    res = http_request(
-       #      'get',
-     #       headersGetScreenshot)
-    #
-        #return res
-
-    def get_screenshot_command():
-        '''Issue a request to retrieve sandbox screenshots for a given SHA1'''
-        sha1 = demisto.args()['sha1']
-        image_type_id = demisto.args()['image_type_id']
-
-        res = get_screenshot(sha1, image_type_id)
-        demisto.log(dir(res))
-        demisto.log(res)
-        demisto.log(res.text)
-        return res
+        demisto.results(res.text)
 
     def check_status(sha1_list):
         manyRes = []
@@ -692,9 +680,15 @@ script:
             res = get_report(sha1)
             manyRes.append(res.text)
             if res.status_code == 102:
-                manyEC.append({'status' : 'Analyzing', 'isCompleted' : 'False', 'SHA1' : sha1})
+                manyEC.append({
+                    'status': 'Analyzing',
+                    'SHA1': sha1
+                })
             else:
-                manyEC.append({'status' : 'Completed', 'isCompleted' : 'True', 'SHA1' : sha1})
+                manyEC.append({
+                    'status': 'Completed',
+                    'SHA1': sha1
+                })
 
         return manyRes, manyEC
 
@@ -702,87 +696,16 @@ script:
         sha1_list = argToList(demisto.args()['sha1'])
         manyRes, manyEC, = check_status(sha1_list)
 
-        return demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': manyRes,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Status of samples in TrendMicroDDA', manyEC),
-                'EntryContext': {
-                      'TrendMicroDDA.Submissions(val.SHA1==obj.SHA1)': manyEC
-                }
-            })
-
-    def detonate(submitType ,sample, timeout, threshold):
-        '''Issue a request to detonate a sample in DDA'''
-        if (int(submitType) == 0):
-            sha1 = hash_file(demisto.getFilePath(sample)['path'])
-            uploadRes, prettyUploadRes = simple_upload_sample_file(sample)
-        elif (int(submitType) == 1):
-            sha1 = hash_url(sample)
-            uploadRes, prettyUploadRes = simple_upload_sample_url(sample)
-
-        start = datetime.now()
-        diff = 0;
-
-        while (float(diff) < float(timeout)):
-            demisto.log(str(diff))
-            demisto.log(str(timeout))
-            reportRes = get_report(sha1)
-            if reportRes.status_code == 102:
-                statusDict = {'status' : 'Analyzing', 'isCompleted' : 'False'}
-                time.sleep(1)
-            else:
-                status = 'Completed'
-                prettyReportRes = prettifyGetReport(reportRes, threshold, status)
-                return demisto.results({
-                    'Type': entryTypes['note'],
-                    'Contents': reportRes.text,
-                    'ContentsFormat': formats['json'],
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': tableToMarkdown('Sample Report from TrendMicroDDA', prettyReportRes),
-                    'EntryContext': {
-                          'TrendMicroDDA.Submissions(val.SHA1==obj.SHA1)': prettyReportRes
-                    }
-                })
-            diff = (datetime.now() - start).total_seconds()
-
-        if reportRes.status_code == 102:
-            prettyUploadRes.update(statusDict)
-            return demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': "Timeout due to the fact that the report for the uploaded sample was not generated yet. Please try again later",
-                'EntryContext': {
-                      'TrendMicroDDA.Submissions(val.SHA1==obj.SHA1)': prettyUploadRes,
-                }
-            })
-
-        raise Exception ("Timeout due to no answer after " + timeout + " seconds.");
-
-
-    def fetch_incidents():
-        t = datetime.datetime.utcnow()
-        now = isoformat(t)
-
-        lastRun = demisto.getLastRun() and demisto.getLastRun()["time"]
-        if len(lastRun) == 0:
-            t = t - timedelta(minutes=10)
-            lastRun = isoformat(t)
-
-        sha1List = get_sample_list(lastRun, t, 0)
-        filesList = []
-        for sha1 in sha1List:
-            filesList.append(get_sample(sha1, 'zip', '0'))
-
-        incidents = []
-        for file in filesList:
-            inc = file_uploaded_to_incident(file, file_sha1)
-            incidents.append(inc)
-
-        demisto.incidents(incidents)
-        demisto.setLastRun({"time": CURRENT_TIME})
-
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': manyRes,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Status of the submissions in TrendMicroDDA', manyEC),
+            'EntryContext': {
+                  'TrendMicroDDA.Submissions(val.SHA1 && val.SHA1==obj.SHA1)': manyEC
+            }
+        })
 
     # EXECUTION
     LOG('command is %s' % (demisto.command(), ))
@@ -804,48 +727,35 @@ script:
         elif demisto.command() == 'trendmicro-dda-get-sample':
             get_sample_command()
 
-        elif demisto.command() == 'trendmicro-dda-get-openioc':
-            get_openioc_report()
-
-        elif demisto.command() == 'trendmicro-dda-get-report':
-            get_report_command()
+        elif demisto.command() == 'trendmicro-dda-check-status':
+            check_status_command()
 
         elif demisto.command() == 'trendmicro-dda-get-brief-report':
             get_brief_report_command()
 
+        elif demisto.command() == 'trendmicro-dda-get-report':
+            get_report_command()
+
+        elif demisto.command() == 'trendmicro-dda-get-openioc':
+            get_openioc_report_command()
+
         elif demisto.command() == 'trendmicro-dda-get-sample-list':
             get_sample_list_command()
-
-        elif demisto.command() == 'trendmicro-dda-check-status':
-            check_status_command()
-
-        elif demisto.command() == 'trendmicro-dda-get-query-sample-list':
-            get_query_sample_list_command()
-
-        elif demisto.command() == 'trendmicro-dda-get-screenshot':
-            get_screenshot_command()
-
-        #elif demisto.command() == 'detonate-file':
-        #    detonate(0, demisto.args()['upload'], demisto.args()['timeout'], demisto.args()['threshold'])
-
-        #elif demisto.command() == 'detonate-url':
-        #    detonate(1, demisto.args()['url'], demisto.args()['timeout'], demisto.args()['threshold'])
-
-        unregister()
-        sys.exit(0)
 
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
         raise
-    sys.exit(0)
+
+    finally:
+        unregister()
   type: python
   commands:
   - name: trendmicro-dda-get-sample
     arguments:
     - name: sha1
       required: true
-      description: The SHA1 of the file to get
+      description: The SHA1 of the sample to get
     - name: type
       auto: PREDEFINED
       predefined:
@@ -858,16 +768,48 @@ script:
       predefined:
       - "0"
       - "1"
-      description: '0(not encrypted) or 1(Encrypted with password “virus”) '
+      description: '0 (not encrypted) or 1 (Encrypted with password “virus”) '
       defaultValue: "0"
-    - name: type_origin
-      description: type of the file to download
-    description: Retrieves a sample from DDA
+    - name: archive_name
+      description: A name for the retrieved archive
+    outputs:
+    - contextPath: File.EntryID
+      description: Demisto entry ID of archive
+      type: string
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File SHA256
+      description: File SHA256
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.SSDeep
+      description: File SSDeep
+      type: string
+    - contextPath: File.Info
+      description: File info
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.Extension
+      description: File extension
+      type: string
+    description: Retrieves a sample
   - name: trendmicro-dda-get-openioc
     arguments:
     - name: sha1
       description: SHA1 of the submission
-    description: Retrieves IOC for a given sample
+    description: Retrieves IOC for a given submission, returns an error if submission
+      has no IOC
   - name: trendmicro-dda-get-report
     arguments:
     - name: sha1
@@ -879,28 +821,25 @@ script:
       - "0"
       - "1"
       - "2"
-      description: If DDA severity is equal or bigger than the threshold we will consider
-        it malicious
+      description: DDA severity score (greater or equal to) for which the submission
+        will be considered malicious
       defaultValue: "1"
     - name: verbose
       auto: PREDEFINED
       predefined:
-      - "False"
-      - "True"
-      description: Show more detailed output, If 'True' FileItem will also return
-      defaultValue: "False"
+      - "false"
+      - "true"
+      description: Return detailed report
+      defaultValue: "false"
     outputs:
-    - contextPath: TrendMicroDDA.Submissions.status
-      description: The status of the sample
+    - contextPath: TrendMicroDDA.Submission.Status
+      description: The status of the submission
       type: string
-    - contextPath: TrendMicroDDA.Submissions.isCompleted
-      description: Stating if the detonation was complete or not
+    - contextPath: TrendMicroDDA.Submission.SHA1
+      description: SHA1 of the submission
       type: string
-    - contextPath: TrendMicroDDA.Submissions.SHA1
-      description: SHA1 of the sample
-      type: string
-    - contextPath: TrendMicroDDA.Submissions.RiskLevel
-      description: The Risk Level of the sample
+    - contextPath: TrendMicroDDA.Submission.RiskLevel
+      description: The Risk Level of the submission
       type: number
     - contextPath: DBotScore.Score
       description: The actual score
@@ -914,23 +853,23 @@ script:
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
       type: string
-    - contextPath: File.MD5
-      description: MD5 hash of the file
+    - contextPath: InfoFile.MD5
+      description: MD5 hash of the report file
       type: string
-    - contextPath: File.SHA1
-      description: SHA1 hash of the file
+    - contextPath: InfoFile.SHA1
+      description: SHA1 hash of the report file
       type: string
-    - contextPath: File.SHA256
-      description: SHA256 hash of the file
+    - contextPath: InfoFile.SHA256
+      description: SHA256 hash of the report  file
       type: string
-    - contextPath: File.Name
-      description: File name
+    - contextPath: InfoFile.Name
+      description: Report file name
       type: string
-    - contextPath: File.Type
-      description: File type e.g. "PE"
+    - contextPath: InfoFile.Type
+      description: Report file type e.g. "PE"
       type: string
-    - contextPath: File.Size
-      description: 'File size '
+    - contextPath: InfoFile.Size
+      description: 'Report file size '
       type: number
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
@@ -947,24 +886,53 @@ script:
     - contextPath: URL.Data
       description: URL data
       type: string
-    description: Retrieves the report for a given sample
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: TrendMicroDDA.Submission.SHA256
+      description: SHA256 of the submission
+      type: string
+    - contextPath: TrendMicroDDA.Submission.MD5
+      description: MD5 of the submission
+      type: string
+    - contextPath: TrendMicroDDA.Submission.VirusDetected
+      description: True if virus detected, else Flase
+      type: boolean
+    - contextPath: TrendMicroDDA.Submission.DownloadURL
+      description: Download URL address of files
+      type: string
+    description: Retrieves XML report of a given submission
   - name: trendmicro-dda-get-sample-list
     arguments:
     - name: interval_start
       required: true
-      description: 'Start date and time. Example: 2008-11-22 19:53:42'
+      description: Interval start time, given in format ~~YYYY-MM-DD HH:MM:SS, e.g.
+        2008-11-22 19:53:42
     - name: interval_end
       required: true
-      description: End date and time
+      description: Interval end time, given in format YYYY-MM-DD HH:MM:SS, e.g. 2008-11-22
+        19:53:42
     - name: interval_type
       auto: PREDEFINED
       predefined:
       - "0"
       - "1"
-      description: '0: Submission time. 1: Completion time. Default is 0'
+      description: '0: Submission time, 1: Completion time'
       defaultValue: "0"
-    description: Retrieves a list of values of samples submitted within the given
-      time interval
+    description: Retrieves a list of SHA1 of samples submitted within the given time
+      interval
   - name: trendmicro-dda-check-status
     arguments:
     - name: sha1
@@ -975,9 +943,6 @@ script:
     - contextPath: TrendMicroDDA.Submissions.SHA1.status
       description: The status of the submission
       type: string
-    - contextPath: TrendMicroDDA.Submissions.SHA1.isCompleted
-      description: Stating if the detonation was complete or not
-      type: string
     - contextPath: TrendMicroDDA.Submissions.SHA1
       description: SHA1 of the submission
       type: string
@@ -986,22 +951,26 @@ script:
     arguments:
     - name: url
       required: true
-      description: The URL to detonate
+      description: The URL to upload
       isArray: true
     outputs:
-    - contextPath: TrendMicroDDA.Submissions.SHA1
+    - contextPath: TrendMicroDDA.Submission.SHA1
       description: The SHA1 of the submission
       type: string
-    - contextPath: TrendMicroDDA.Submissions.URL
+    - contextPath: TrendMicroDDA.Submission.URL
       description: The submitted URL
       type: string
     description: 'Upload a URL to Trend Micro DDA '
   - name: trendmicro-dda-upload-file
     arguments:
-    - name: EntryID
+    - name: entryID
       required: true
       description: EntryID of the file to upload
       isArray: true
+    outputs:
+    - contextPath: TrendMicroDDA.Submission.SHA1
+      description: The SHA1 of the submission
+      type: string
     description: 'Upload a file to Trend Micro DDA '
   - name: trendmicro-dda-get-brief-report
     arguments:
@@ -1009,14 +978,5 @@ script:
       required: true
       description: SHA1 of the submission
     description: ' Retrieves the brief XML report for a given SHA1'
-  - name: trendmicro-dda-get-screenshot
-    arguments:
-    - name: sha1
-      required: true
-      description: SHA1 of the submission
-    - name: image_type_id
-      description: ID of the Image
-      defaultValue: "1"
-    description: Retrieves sandbox screenshots for a given SHA1
-  isfetch: true
   runonce: false
+releaseNotes: "New integration, sandbox"

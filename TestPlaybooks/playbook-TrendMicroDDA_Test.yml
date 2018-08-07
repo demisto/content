@@ -1,6 +1,8 @@
 id: Test Playbook TrendMicroDDA
 version: -1
 name: Test Playbook TrendMicroDDA
+description: Test playbook for Trend Micro DDA integration, including the detonate
+  File/URL playbooks.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,240 +22,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": -50
+          "x": 265,
+          "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: b8460130-c568-48d2-87fd-0d2673317b45
-    type: regular
-    task:
-      id: b8460130-c568-48d2-87fd-0d2673317b45
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 476,
-          "y": 240
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 12f16010-adf2-42f7-8990-f92c01ce2e71
-    type: regular
-    task:
-      id: 12f16010-adf2-42f7-8990-f92c01ce2e71
-      version: -1
-      name: upload-url
-      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-upload-url
-      type: regular
-      iscommand: true
-      brand: Trend Micro Deep Discovery Analyzer
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      url:
-        simple: https://www.demisto.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 478,
-          "y": 455
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 985daca9-b072-413f-84c5-1be2c1e3b002
-    type: condition
-    task:
-      id: 985daca9-b072-413f-84c5-1be2c1e3b002
-      version: -1
-      name: upload-sample-url AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    scriptarguments:
-      left:
-        simple: ${TrendMicroDDA.Submissions.SHA1}
-      right:
-        simple: BCF5132CDC4F74112868C2AEFF9740B5034873D2
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 476,
-          "y": 680
-        }
-      }
-  "6":
-    id: "6"
-    taskid: 2808fbbd-fc41-4749-8a70-f48dfc7b1f0f
-    type: regular
-    task:
-      id: 2808fbbd-fc41-4749-8a70-f48dfc7b1f0f
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      seconds:
-        simple: "30"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 476,
-          "y": 968
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 8b36c63d-a8cb-4ca8-890f-5066923c015b
-    type: regular
-    task:
-      id: 8b36c63d-a8cb-4ca8-890f-5066923c015b
-      version: -1
-      name: check-status after sleep
-      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-check-status
-      type: regular
-      iscommand: true
-      brand: Trend Micro Deep Discovery Analyzer
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      sha1:
-        simple: ${TrendMicroDDA.Submissions.SHA1}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 476,
-          "y": 1198
-        }
-      }
-  "8":
-    id: "8"
-    taskid: 420c902f-012a-4b49-8681-72f1ee35802c
-    type: condition
-    task:
-      id: 420c902f-012a-4b49-8681-72f1ee35802c
-      version: -1
-      name: check-status after sleep AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    scriptarguments:
-      left:
-        simple: ${TrendMicroDDA.Submissions.status}
-      right:
-        simple: Completed
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 476,
-          "y": 1454
-        }
-      }
-  "9":
-    id: "9"
-    taskid: 2dd842be-42ad-4cb4-8d5f-ddf2abc2b916
-    type: regular
-    task:
-      id: 2dd842be-42ad-4cb4-8d5f-ddf2abc2b916
-      version: -1
-      name: get-report
-      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-report
-      type: regular
-      iscommand: true
-      brand: Trend Micro Deep Discovery Analyzer
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      sha1:
-        simple: ${TrendMicroDDA.Submissions.SHA1}
-      threshold: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 476,
-          "y": 1735
-        }
-      }
-  "10":
-    id: "10"
-    taskid: 88f590a6-f781-4c03-816b-1fa0e232e14c
-    type: condition
-    task:
-      id: 88f590a6-f781-4c03-816b-1fa0e232e14c
-      version: -1
-      name: get-report AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    scriptarguments:
-      left:
-        simple: ${TrendMicroDDA.Submissions.RiskLevel}
-      right:
-        simple: "0"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 476,
-          "y": 1915
-        }
-      }
+    note: false
   "11":
     id: "11"
     taskid: b536bfcb-65c4-41ea-80ae-f0266b3ec006
@@ -279,10 +52,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": 2095
+          "x": 265,
+          "y": 515
         }
       }
+    note: false
   "12":
     id: "12"
     taskid: f83a1490-70bb-4ec9-8bf2-93096b23cd3b
@@ -308,10 +82,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": 2275
+          "x": 265,
+          "y": 690
         }
       }
+    note: false
   "13":
     id: "13"
     taskid: 095f832b-71bf-498e-82bd-ac606fcc27d3
@@ -334,18 +109,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": 2455
+          "x": 265,
+          "y": 865
         }
       }
+    note: false
   "14":
     id: "14"
-    taskid: b6d62f62-dfb7-44b2-8e09-90095e392338
+    taskid: 467aee9d-43b3-4a19-8ee5-8faf5dd846ff
     type: condition
     task:
-      id: b6d62f62-dfb7-44b2-8e09-90095e392338
+      id: 467aee9d-43b3-4a19-8ee5-8faf5dd846ff
       version: -1
-      name: get-report2 AreValuesEqual
+      name: get-report AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
@@ -354,13 +130,13 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "20"
     scriptarguments:
       left:
         complex:
           root: TrendMicroDDA
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: TrendMicroDDA.Submissions.SHA1
@@ -377,16 +153,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": 2850
+          "x": 265,
+          "y": 1215
         }
       }
+    note: false
   "15":
     id: "15"
-    taskid: 60269020-f21f-4ee3-822b-1ccda9f9f138
+    taskid: 4183fa35-576e-41b2-8d2a-9fd0ad62728b
     type: regular
     task:
-      id: 60269020-f21f-4ee3-822b-1ccda9f9f138
+      id: 4183fa35-576e-41b2-8d2a-9fd0ad62728b
       version: -1
       name: get-sample
       script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-sample
@@ -395,8 +172,9 @@ tasks:
       brand: Trend Micro Deep Discovery Analyzer
     nexttasks:
       '#none#':
-      - "16"
+      - "21"
     scriptarguments:
+      archive_name: {}
       encrypted: {}
       filename: {}
       sample_sha1:
@@ -409,10 +187,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 478,
-          "y": 3076
+          "x": 265,
+          "y": 1565
         }
       }
+    note: false
   "16":
     id: "16"
     taskid: c5382a0a-70ba-46ba-8ea1-cee235e5ff55
@@ -427,7 +206,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "23"
+      - "24"
     scriptarguments:
       all:
         simple: "yes"
@@ -437,10 +217,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": 3275
+          "x": 265,
+          "y": 1915
         }
       }
+    note: false
   "17":
     id: "17"
     taskid: 0f31cae0-ecc0-4009-8938-a65d9caf1192
@@ -454,15 +235,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "25"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": 80
+          "x": 265,
+          "y": 195
         }
       }
+    note: false
   "18":
     id: "18"
     taskid: 6b323d98-d937-45c3-8eb3-975db9f29e01
@@ -478,18 +260,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": 3452
+          "x": 265,
+          "y": 2440
         }
       }
+    note: false
   "19":
     id: "19"
-    taskid: daaedb7b-e604-4b15-86d0-553c5570e9a5
+    taskid: c6b92a06-2180-48f0-8894-f925ec986fbb
     type: regular
     task:
-      id: daaedb7b-e604-4b15-86d0-553c5570e9a5
+      id: c6b92a06-2180-48f0-8894-f925ec986fbb
       version: -1
-      name: get-report2
+      name: get-report
       script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-report
       type: regular
       iscommand: true
@@ -501,23 +284,239 @@ tasks:
       sha1:
         simple: 571ad0f7d5056f68d0f2b795eaf4618c082a89d9
       threshold: {}
+      verbose: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 476,
-          "y": 2658
+          "x": 265,
+          "y": 1040
         }
       }
+    note: false
+  "20":
+    id: "20"
+    taskid: 8f1f6e95-3a23-4793-80b1-4e7ec2d31757
+    type: regular
+    task:
+      id: 8f1f6e95-3a23-4793-80b1-4e7ec2d31757
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: e31ff852-3899-4260-8a1e-128918d9bc04
+    type: condition
+    task:
+      id: e31ff852-3899-4260-8a1e-128918d9bc04
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    scriptarguments:
+      left:
+        simple: ${File.Size}
+      right:
+        simple: "245"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1740
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: b594a365-41a4-42cb-8855-9a0777b99b7b
+    type: playbook
+    task:
+      id: b594a365-41a4-42cb-8855-9a0777b99b7b
+      version: -1
+      name: Trend Micro Deep Discovery Analyzer Detonate File
+      playbookName: Trend Micro Deep Discovery Analyzer Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: 68906ce1-76f2-403d-8935-9738d005d79b
+    type: playbook
+    task:
+      id: 68906ce1-76f2-403d-8935-9738d005d79b
+      version: -1
+      name: Trend Micro Deep Discovery Analyzer Detonate URL
+      playbookName: Trend Micro Deep Discovery Analyzer Detonate URL
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      URL:
+        simple: https://github.com
+      interval:
+        simple: "1"
+      timeput:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2265
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: f5ee3ab1-34d2-4e1f-8a58-a0b14b3dcb26
+    type: regular
+    task:
+      id: f5ee3ab1-34d2-4e1f-8a58-a0b14b3dcb26
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      data:
+        simple: |-
+          Ooh
+          You can dance
+          You can jive
+          Having the time of your life
+          Ooh, see that girl
+          Watch that scene
+          Dig in the dancing queen
+          Friday night and the lights are low
+          Looking out for a place to go
+          Where they play the right music
+          Getting in the swing
+          You come to look for a king
+          Anybody could be that guy
+          Night is young and the music's high
+          With a bit of rock music
+          Everything is fine
+          You're in the mood for a dance
+          And when you get the chance
+          You are the dancing queen
+          Young and sweet
+          Only seventeen
+          Dancing queen
+          Feel the beat from the tambourine, oh yeah
+          You can dance
+          You can jive
+          Having the time of your life
+          Ooh, see that girl
+          Watch that scene
+          Dig in the dancing queen
+          You're a teaser, you turn 'em on
+          Leave 'em burning and then you're gone
+          Looking out…
+      entryId: {}
+      filename:
+        simple: abba.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: c98e55b2-5370-4e5d-870f-3fa2eefc5b0b
+    type: regular
+    task:
+      id: c98e55b2-5370-4e5d-870f-3fa2eefc5b0b
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3567,
-        "width": 382,
-        "x": 476,
-        "y": -50
+        "height": 2455,
+        "width": 810,
+        "x": 50,
+        "y": 50
       }
     }
   }
