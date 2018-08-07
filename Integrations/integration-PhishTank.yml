@@ -111,6 +111,9 @@ script:
             md += 'Additional details at ['+phishTankURL+']('+phishTankURL+')\n';
         } else {
             md += "#### No matches for URL " + args.url + "\n";
+            ec.URL = {
+                Data: args.url
+            };
             ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'PhishTank', Score: 0};
         }
         var res = {'url':args.url, 'match': true};

@@ -2,7 +2,6 @@ id: Calculate Severity - Generic
 version: -1
 name: Calculate Severity - Generic
 fromversion: 3.6.0
-releaseNotes: "Separate logic into sub-playbooks and improve documentation"
 description: |-
   Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
 
@@ -28,7 +27,8 @@ tasks:
       '#none#':
       - "14"
       - "13"
-      - "12"
+      - "16"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -135,6 +135,7 @@ tasks:
       username: {}
       vendorid: {}
       vulnerabilitycategory: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -241,6 +242,7 @@ tasks:
       username: {}
       vendorid: {}
       vulnerabilitycategory: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -347,6 +349,7 @@ tasks:
       username: {}
       vendorid: {}
       vulnerabilitycategory: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -367,6 +370,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -470,48 +474,13 @@ tasks:
       username: {}
       vendorid: {}
       vulnerabilitycategory: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 292,
           "y": 545
-        }
-      }
-  "12":
-    id: "12"
-    taskid: f4a92f4a-0c4d-4fbc-8d96-bf6bd2480871
-    type: playbook
-    task:
-      id: f4a92f4a-0c4d-4fbc-8d96-bf6bd2480871
-      version: -1
-      name: Calculate Severity - 3rd parity
-      description: |-
-        Calculate incident severity by indicators reputation and user/endpoint membership in critical groups.
-
-        Playbook inputs:
-        * QualysSeverity - A Qualys severity score (1-5) to calculate severity from
-      playbookName: Calculate Severity - 3rd-party integrations
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      QualysSeverity:
-        complex:
-          root: inputs.QualysSeverity
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 1237.5,
-          "y": 195
         }
       }
   "13":
@@ -543,6 +512,7 @@ tasks:
       Endpoint:
         complex:
           root: inputs.Endpoint
+    reputationcalc: 0
     separatecontext: true
     loop:
       iscommand: false
@@ -584,6 +554,7 @@ tasks:
       DBotScore:
         complex:
           root: inputs.DBotScore
+    reputationcalc: 0
     separatecontext: true
     loop:
       iscommand: false
@@ -620,6 +591,7 @@ tasks:
       - "4"
       Medium:
       - "5"
+    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: Critical
@@ -702,6 +674,43 @@ tasks:
           "y": 370
         }
       }
+  "16":
+    id: "16"
+    taskid: e628aa74-143a-4068-8a75-3abd96479000
+    type: playbook
+    task:
+      id: e628aa74-143a-4068-8a75-3abd96479000
+      version: -1
+      name: Calculate Severity - 3rd-party integrations
+      description: Calculates the incident severity level according to the methodology
+        of a 3rd-party integration.
+      playbookName: Calculate Severity - 3rd-party integrations
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      NexposeSeverity:
+        complex:
+          root: inputs.NexposeSeverity
+      QualysSeverity:
+        complex:
+          root: inputs.QualysSeverity
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1258.5,
+          "y": 195
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
@@ -740,4 +749,11 @@ inputs:
       root: Account
   required: false
   description: A User account to check against the critical lists.
+- key: NexposeSeverity
+  value:
+    complex:
+      root: Nexpose
+      accessor: Asset.Vulnerability.Severity
+  required: false
+  description: Nexpose Vulnerability Severity score (Moderate, Severe, Critical)
 outputs: []

@@ -11,6 +11,7 @@
 	},
 	"fromDateLicense": "0001-01-01T00:00:00Z",
 	"name": "System Health",
+	"description": "",
 	"layout": [
 		{
 			"id": "2a235a60-2ead-11e8-be34-cd9a232a8686",
