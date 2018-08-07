@@ -1,8 +1,7 @@
 id: ThreatGrid_Detonate_URL
 version: -1
 name: ThreatGrid - Detonate URL
-description: Detonate one or more files using the ThreatGrid integration. This playbook
-  returns relevant reports to the War Room and URL reputations to the context data.
+description: Detonate one or more URLs using the Threat Grid integration. This playbook returns relevant reports to the War Room and URL reputations to the context data.
 starttaskid: "0"
 fromversion: "4.0.0"
 tasks:
@@ -266,37 +265,37 @@ inputs:
   value:
     simple: ${URL.Data}
   required: false
-  description: URL of sites to be detonated.
+  description: URL of the sites to detonate.
 - key: FileName
   value:
     simple: file-detonated-via-demisto
   required: false
-  description: File name to be used in Threat Grid detonation
+  description: Name of the file to detonate.
 - key: os
   value: {}
   required: false
-  description: a string identifying the source OS
+  description: Source OS (string)
 - key: osver
   value: {}
   required: false
-  description: a string defining the OS version.
+  description: OS version (string)
 - key: vm
   value: {}
   required: false
-  description: a string identifying a specific VM to use
+  description: The VM to use (string)
 - key: private
   value: {}
   required: false
-  description: if present, and set to any value but “false” the sample will be marked
+  description: The sample is marked private if this is present, and set to any value other than false.
     private
 - key: source
   value: {}
   required: false
-  description: a string identifying the source (user defined)
+  description: a string used for identifying the source of the detonation (user defined)
 - key: tags
   value: {}
   required: false
-  description: A comma-separated list of tags applied to this sample.
+  description: A comma-separated list of tags applied to the sample.
 - key: interval
   value:
     simple: "1"
@@ -306,7 +305,7 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: How much time to wait before a timeout occurs  (minutes)
+  description: How much time to wait before a timeout occurs (minutes)
 outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file
