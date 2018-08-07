@@ -19,7 +19,7 @@ configuration:
   required: true
 - display: API url
   name: APIUrl
-  defaultvalue: https://172.28.128.10/externalApi
+  defaultvalue: https://172.28.128.10
   type: 0
   required: true
 - display: Trust any certificate (unsecure)
@@ -54,7 +54,7 @@ script:
     requests.packages.urllib3.disable_warnings()
 
     ''' GLOBAL VARS '''
-    API_URL=demisto.params()['APIUrl']
+    API_URL= demisto.params()['APIUrl'].rstrip('/') + '/externalApi'
     API_KEY=demisto.params()['APIKey']
     API_SECRET=demisto.params()['APISecret']
     ALERT_SEVERITY = demisto.params()['AlertSeverity']
