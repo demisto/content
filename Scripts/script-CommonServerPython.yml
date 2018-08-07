@@ -697,7 +697,7 @@ script: |-
       return mdResult
 
 
-  def fileResult(filename, data):
+  def fileResult(filename, data, file_type=None):
       """
          Creates a file from the given data
 
@@ -707,13 +707,18 @@ script: |-
          :type data: ``str``
          :param data: The file data (required)
 
+         :type file_type: ``str``
+         :param file_type: one of the entryTypes file or entryInfoFile (optional)
+
          :return: A Demisto war room entry
          :rtype: ``dict``
       """
+      if file_type is None:
+          file_type = entryTypes['entryInfoFile']
       temp = demisto.uniqueFile()
       with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
-      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
+      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
   def file_result_existing_file(filename, saveFilename = None):
