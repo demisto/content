@@ -1,7 +1,7 @@
 id: McAfee ATD Detonate URL
 version: -1
 name: McAfee ATD Detonate URL
-description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+description: Detonates a URL using the McAfee Advanced Threat Defense sandbox integration.
 fromversion: 4.0.0
 starttaskid: "0"
 tasks:
@@ -331,17 +331,17 @@ inputs:
   value:
     simple: ${URL.Data}
   required: true
-  description: URL to detonate
+  description: URL to detonate.
 - key: interval
   value:
     simple: "1"
   required: false
-  description: The duration of an interval of executing the pooling in minutes
+  description: Polling frequency - how often the polling command should run (minutes)
 - key: timeout
   value:
     simple: "15"
   required: false
-  description: timeout to stop pooling and resume the playbook
+  description: How much time to wait before a timeout occurs (minutes)
 outputs:
 - contextPath: File.Size
   description: File size (only in case of report type=json)

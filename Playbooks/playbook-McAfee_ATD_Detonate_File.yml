@@ -1,8 +1,9 @@
 id: e167067b-b399-4571-8d70-ac4a1ab140d0
 version: 105
 name: McAfee ATD Detonate File
-description: Detonates a File using the McAfee Advanced Threat Defense sandbox.
-  Advanced Threat Defense uses the following supported File Types
+description: |-
+  Detonates a File using the McAfee Advanced Threat Defense sandbox.
+  Advanced Threat Defense supports the following File Types:
   32-bit Portable Executables (PE)files; 64-bit PE+files
   exe, sys, dll, com, scr, cpl, ocx, cgi
   Microsoft Office Suite documents
@@ -445,17 +446,17 @@ inputs:
   value:
     simple: ${File}
   required: true
-  description: The File to detonate from the context
+  description: The file to detonate. File is taken from the context.
 - key: interval
   value:
     simple: "1"
   required: false
-  description: The duration of an interval of executing the pooling in minutes
+  description: Polling frequency - how often the polling command should run (minutes)
 - key: timeout
   value:
     simple: "15"
   required: false
-  description: timeout to stop pooling and resume the playbook
+  description: How much time to wait before a timeout occurs (minutes)
 outputs:
 - contextPath: DBotScore.Type
   description: The type of the indicator (only in case of report type=json)
