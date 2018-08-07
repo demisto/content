@@ -100,9 +100,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "5"
       "yes":
       - "4"
-      - "5"
     reputationcalc: 0
     separatecontext: false
     conditions:
