@@ -1,8 +1,7 @@
 id: nexpose_scan_assets
 version: -1
 name: Nexpose Scan Assets
-description: Starts a Nexpose scan by site id and waits for it to finish by polling
-  its status in pre-defined intervals.
+description: Starts a Nexpose scan according to Site ID, and waits for the scan to finish by polling the scan status in pre-defined intervals.
 starttaskid: "0"
 tasks:
   "0":
@@ -303,11 +302,11 @@ inputs:
   value:
     simple: ${Nexpose.HostNames}
   required: false
-  description: Host names of the assets to scan
+  description: Hostnames of the assets to scan
 - key: Name
   value: {}
   required: false
-  description: The scan name
+  description: The scan name as specified by the user.
 outputs:
 - contextPath: Nexpose.Scan.ScanType
   description: The scan type (automated, manual, scheduled).
