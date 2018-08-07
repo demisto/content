@@ -251,6 +251,7 @@ tasks:
       id: 2f4e5909-e9e1-4e6e-8df8-81d87b71ea8d
       version: -1
       name: Get report on domain
+      description: ""
       script: VirusTotal - Private API|||vt-private-get-domain-report
       type: regular
       iscommand: true

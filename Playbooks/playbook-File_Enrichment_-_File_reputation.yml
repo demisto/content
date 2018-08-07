@@ -1,6 +1,7 @@
 id: file_enrichment_-_file_reputation
 version: -1
 name: File Enrichment - File reputation
+fromversion: 3.6.0
 description: Get file reputation using one or more integrations
 starttaskid: "0"
 tasks:
