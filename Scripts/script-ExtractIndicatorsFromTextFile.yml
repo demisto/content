@@ -16,11 +16,7 @@ script: |-
   try:
       filePath = res[0]['Contents']['path']
   except:
-      demisto.results({
-          "Type" : entryTypes["error"],
-          "ContentsFormat" : formats["text"],
-          "Contents" : "File was not found"
-      })
+      return_error("File was not found")
 
   with open(filePath, mode='r') as f:
       data = f.read(maxFileSize).decode('unicode_escape').encode('utf-8')
@@ -70,17 +66,24 @@ args:
 outputs:
 - contextPath: Domain.Name
   description: Extracted domains
+  type: string
 - contextPath: Account.Email.Address
   description: Extracted emails
+  type: string
 - contextPath: File.MD5
   description: Extracted MD5
+  type: string
 - contextPath: File.SHA1
   description: Extracted SHA1
+  type: string
 - contextPath: File.SHA256
   description: Extracted SHA256
+  type: string
 - contextPath: IP.Address
   description: Extracted IPs
+  type: string
 - contextPath: URL.Data
   description: Extracted URLs
+  type: string
 scripttarget: 0
 runonce: false
