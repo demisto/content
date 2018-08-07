@@ -53,20 +53,20 @@ script: |-
 type: python
 tags: []
 comment: |-
-  Extract indicators from a text based file.
-  Indicators that would be extracted:
+  Extract indicators from a text-based file.
+  Indicators that can be extracted:
   * IP
   * Domain
   * URL
   * File Hash
   * Email Address
-system: true
+enabled: true
 args:
 - name: entryID
   required: true
-  description: War room entryID of the file to read.
+  description: War Room entryID of the file to read.
 - name: maxFileSize
-  description: Maximal file size to load, in bytes. Default is 1MB.
+  description: Maximal file size to load, in bytes. Default is 1000000 (1MB).
 outputs:
 - contextPath: Domain.Name
   description: Extracted domains

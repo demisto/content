@@ -2,8 +2,9 @@ id: extract_indicators_from_files_-_generic
 version: -1
 name: Extract Indicators From Files - Generic
 fromversion: 3.6.0
-description: Extract indicators from files. Currently supports text based files and
-  PDFs.
+description: |-
+  Extract indicators from a file.
+  Currently supports PDFs and text-based file types (e.g., .txt, .htm, .html, and so on).
 starttaskid: "0"
 tasks:
   "0":
@@ -31,14 +32,14 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 7af6f99c-ff2f-4b56-8f36-ed296fff3ef0
+    taskid: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
     type: condition
     task:
-      id: 7af6f99c-ff2f-4b56-8f36-ed296fff3ef0
+      id: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
       version: -1
       name: Is there a file in context?
       description: |
-        Check if there is a file  in the playbook inputs.
+        Check if there is a file in the playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -68,13 +69,13 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 1abd8622-88ac-4d64-8b4c-9ac5233e6afc
+    taskid: 49a307bb-ec5a-41bb-8f75-658e444f1f94
     type: regular
     task:
-      id: 1abd8622-88ac-4d64-8b4c-9ac5233e6afc
+      id: 49a307bb-ec5a-41bb-8f75-658e444f1f94
       version: -1
       name: Set file to local context
-      description: Set input file into local context.
+      description: Set the input file into local context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -146,13 +147,13 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: ad9717fe-6130-49aa-8ca2-db09ed1d6403
+    taskid: 779f5b67-d538-4619-8c66-94d78925fa2e
     type: condition
     task:
-      id: ad9717fe-6130-49aa-8ca2-db09ed1d6403
+      id: 779f5b67-d538-4619-8c66-94d78925fa2e
       version: -1
-      name: Is there a text based file
-      description: Verify that there is a text base file in context.
+      name: Is there a text-based file
+      description: Check if there is a text-based file in context.
       type: condition
       iscommand: false
       brand: ""
@@ -192,13 +193,13 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 238beddf-bc0c-4563-88a7-3d59223e4a38
+    taskid: 01cd1380-8b6c-4a75-8602-832daeb2bfd5
     type: regular
     task:
-      id: 238beddf-bc0c-4563-88a7-3d59223e4a38
+      id: 01cd1380-8b6c-4a75-8602-832daeb2bfd5
       version: -1
-      name: Extract indicators from text file
-      description: Extract indicators from text base files.
+      name: Extract indicators from text-based file
+      description: Extract indicators from text-based files.
       scriptName: ExtractIndicatorsFromTextFile
       type: regular
       iscommand: false
@@ -222,7 +223,7 @@ tasks:
               ignorecase: true
           accessor: EntryID
       maxFileSize: {}
-    reputationcalc: 0
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -233,13 +234,13 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: bfaf79c6-5493-4b61-8642-f2f9fc566d26
+    taskid: 70a28ee2-dff5-41d3-805a-6b067f81349e
     type: condition
     task:
-      id: bfaf79c6-5493-4b61-8642-f2f9fc566d26
+      id: 70a28ee2-dff5-41d3-805a-6b067f81349e
       version: -1
       name: Is there a PDF file
-      description: Verify that there is a PDF file in context.
+      description: Check if there is a PDF file in context.
       type: condition
       iscommand: false
       brand: ""
@@ -279,10 +280,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 7b27e02b-e7c8-4901-8a2c-a78743dc4e62
+    taskid: 10d138ff-19b1-449b-89e3-5432719e47d5
     type: regular
     task:
-      id: 7b27e02b-e7c8-4901-8a2c-a78743dc4e62
+      id: 10d138ff-19b1-449b-89e3-5432719e47d5
       version: -1
       name: Read PDF file
       description: Extract indicators from PDF files.
@@ -309,7 +310,7 @@ tasks:
               ignorecase: true
           accessor: EntryID
       maxFileSize: {}
-    reputationcalc: 0
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -336,12 +337,12 @@ inputs:
     complex:
       root: File
   required: false
-  description: The file to extract indicators from
+  description: The file to extract indicators from.
 outputs:
+- contextPath: File.ModDate
+  description: The PDF File ModDate
 - contextPath: File.dc
   description: The PDF File dc
-- contextPath: File.xapmm
-  description: The PDF File xapmm
 - contextPath: File.Producer
   description: The PDF File producer
 - contextPath: File.Title
@@ -354,8 +355,8 @@ outputs:
   description: The PDF File Author
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
-- contextPath: File.ModDate
-  description: The PDF File ModDate
+- contextPath: File.xapmm
+  description: The PDF File xapmm
 - contextPath: File.CreationDate
   description: The PDF File CreationDate
 - contextPath: File.Pages
