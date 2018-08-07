@@ -926,7 +926,7 @@ script:
 
 
     function test() {
-        var uri = 'users?limit=1';
+        var uri = 'users/me';
         var res = sendRequest(uri);
 
         return res ? 'ok' : 'not ok';
