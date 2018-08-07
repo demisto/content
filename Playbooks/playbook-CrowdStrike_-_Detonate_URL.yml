@@ -14,6 +14,7 @@ tasks:
       id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -92,6 +93,7 @@ tasks:
       id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -140,6 +142,7 @@ tasks:
       id: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
       version: -1
       name: CrowdStrike Upload Sample
+      description: "Submit the URL for detonation"
       script: VxStream1|||crowdstrike-submit-url
       type: regular
       iscommand: true
@@ -169,6 +172,7 @@ tasks:
       id: 6ffba508-37e1-4647-88ea-265cd5475d61
       version: -1
       name: Is there a url to detonate?
+      description: "Check if there is a URL to detonate"
       type: condition
       iscommand: false
       brand: ""
