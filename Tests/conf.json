@@ -7,6 +7,10 @@
             "playbookID": "GmailTest"
         },
         {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
+        },
+        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
@@ -415,11 +419,6 @@
         {
             "integrations": "QRadar",
             "playbookID": "test_Qradar"
-        },
-        {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
         },
         {
             "integrations": "VMware",
