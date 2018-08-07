@@ -267,18 +267,19 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: The duration of an interval of executing the pooling in minutes
+  description: Duration for executing the pooling (in minutes)
 - key: timeout
   value:
     simple: "15"
   required: false
-  description: timeout to stop pooling and resume the playbook
+  description: The duration after which to stop pooling and to resume the playbook
+    (in minutes)
 - key: systems
   value: {}
   required: false
-  description: 'Operating System to run analysis on (comma separated). possible values
-    are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10,
-    android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64,
+  description: 'Operating system to run the analysis on (comma-separated). Supported
+    values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l,
+    w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64,
     w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1,
     lnxcentos1, android7_nougat'
 - key: comments
@@ -289,12 +290,18 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Enable full internet access. Default is True.
+  description: Enable internet access (boolean). True= internet access (default),
+    False= no internet access.
 - key: report-file-type
   value:
     simple: html
   required: false
-  description: The resource type to download. Defaults to html.
+  description: 'The resource type to download. Default is html. Supported values are:
+    html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml,
+    irxml, json, jsonfixed, lightjson, lightjsonfixed, irjson, irjsonfixed, shoots
+    (screenshots), openioc, maec, misp, graphreports, memstrings, binstrings, sample,
+    cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap,
+    pcapslim, memdumps, yara'
 outputs:
 - contextPath: DBotScore.Vendor
   description: 'The name of the vendor: JoeSecurity'
