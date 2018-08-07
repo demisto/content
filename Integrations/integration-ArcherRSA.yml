@@ -71,11 +71,12 @@ configuration:
   required: false
 script:
   script: |
-    var server = params.server.replace(/[\/]+$/, '');
+    var server = params.server.replace(/\/+$/, "");
 
     var commands = {
       createRecord:     'archer-create-record',
       updateRecord:     'archer-update-record',
+      updateRecordREST: 'archer-update-record-rest',
       getRecord:        'archer-get-record',
       searchApps:       'archer-search-applications',
       searchRecords:    'archer-search-records',
@@ -751,7 +752,7 @@ script:
         var result = dq(response, 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult');
         result = dq(JSON.parse(x2j(result)), 'SelectDef.SelectDefValues.SelectDefValue(true)={Name: val.Name, Id : val.Id}');
         var ret = {};
-        for(key in result){
+        for (var key in result){
             ret[result[key]['Name']] = result[key]['Id'];
         }
         return ret;
@@ -906,7 +907,7 @@ script:
                             'Type': 1,
                             'FieldId': parseInt(fieldNameMapping.Id),
                             'Value': fieldValue
-                         }
+                         };
                          break;
 
                     case 2:
@@ -914,7 +915,7 @@ script:
                             'Type': 2,
                             'FieldId': parseInt(fieldNameMapping.Id),
                             'Value': fieldValue
-                        }
+                        };
                         break;
 
                     case 3:
@@ -928,7 +929,7 @@ script:
                     case 4:
                         //fieldValue is of the form [value1, value2,...]
                         var listValueIdtoName = getValueListForField(commands.valueListForField, {fieldID : fieldNameMapping.Id});
-                        var valueList = []
+                        var valueList = [];
                         if (listValueIdtoName !== {}){
                             if (Array.isArray(fieldValue)){
                                 for(var i=0; i<fieldValue.length; i++){
@@ -940,7 +941,7 @@ script:
                                     valueList = fieldValue;
                                 }
                             } else if (listValueIdtoName[fieldValue] !== undefined) {
-                                valueList.push(listValueIdtoName[fieldValue])
+                                valueList.push(listValueIdtoName[fieldValue]);
                             }
                         }
                         if (valueList.length === 0) {
@@ -960,7 +961,7 @@ script:
 
                     case 7:
                         //fieldValue is of the form [{value: ___ , link: ___}, {value: ___ , link: ___}, ...]
-                        var valueList = []
+                        var valueList = [];
 
                         valueList.push({
                             'Name': fieldValue[0].value,
@@ -1055,7 +1056,7 @@ script:
                         break;
 
                     case 12:
-                        valueList = []
+                        valueList = [];
                         if (Array.isArray(fieldValue)){
                             for(var i=0; i<fieldValue.length; i++){
                                 valueList.push(fieldValue[i])
@@ -1080,13 +1081,13 @@ script:
                         break;
 
                     case 18:
-                        valueList = []
+                        valueList = [];
                         if (Array.isArray(fieldValue)){
                             for(var i=0; i<fieldValue.length; i++){
-                                valueList.push(fieldValue[i])
+                                valueList.push(fieldValue[i]);
                             }
                         } else {
-                            valueList.push(fieldValue)
+                            valueList.push(fieldValue);
                         }
 
                         fieldsContent[fieldNameMapping.Id.toString()] = {
@@ -1098,7 +1099,7 @@ script:
                         break;
 
                     case 23:
-                        valueList = []
+                        valueList = [];
                         if (Array.isArray(fieldValue)){
                             for(var i=0; i<fieldValue.length; i++){
                                 valueList.push(fieldValue[i])
@@ -1116,7 +1117,7 @@ script:
                         break;
                     case 24: // subform - we need to create a sub record of another module id and then add its id to our record
                         // get subform id
-                        valueList = []
+                        valueList = [];
                         if (Array.isArray(fieldValue)){
                             for(var i=0; i<fieldValue.length; i++){
                                 valueList.push(fieldValue[i])
@@ -1372,7 +1373,7 @@ script:
         var innerRecordsArray = [];
         if (fields) {
             fields.forEach(function (field) {
-                var groupValue
+                var groupValue;
                 if (field.Groups) { // handling the nested Groups field
                     groupValue = getGroupsString(field.Groups);
                 }
@@ -1452,6 +1453,7 @@ script:
                 }
                 else if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
                     dateValue = getOccurredTime(field['-value'], 0);
+                    fieldName = GLOBAL_MAPPING[field['-id']].Name;
                 }
                 else if (field['-fileID']){ // attached files
                     files = getFilesString(field);
@@ -2614,7 +2616,7 @@ script:
             } else {
                 moreRecords = false;
             }
-        } while (moreRecords)
+        } while (moreRecords);
 
 
         return {
@@ -2685,7 +2687,7 @@ script:
         contentIdsArr.forEach(function (contentId){
             var record = getFullRecord(contentId, applicationId);
             incidents.push(buildIncident(record, contentId, applicationId));
-        })
+        });
         return incidents;
     }
 
@@ -3166,3 +3168,4 @@ script:
     description: Get the user id of an Archer user
   isfetch: true
   runonce: false
+releaseNotes: "-"
