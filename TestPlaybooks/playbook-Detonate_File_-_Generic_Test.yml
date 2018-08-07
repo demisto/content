@@ -162,3 +162,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "New version of this playbook for 4.0.0"
