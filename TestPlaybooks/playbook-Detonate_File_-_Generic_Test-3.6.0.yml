@@ -1,19 +1,22 @@
 id: Detonate File - Generic Test
 version: -1
 name: Detonate File - Generic Test
-fromversion: "4.0.0"
+description: ""
+fromversion: "3.5.0"
+toversion: "4.0.0"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92d25eae-3591-4dfc-8a74-1028622b183d
+    taskid: 99099309-5ec7-4029-8402-b0fdc1c99346
     type: start
     task:
-      id: 92d25eae-3591-4dfc-8a74-1028622b183d
+      id: 99099309-5ec7-4029-8402-b0fdc1c99346
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -25,13 +28,12 @@ tasks:
           "y": 50
         }
       }
-    note: false
   "1":
     id: "1"
-    taskid: bdcd4aa1-45e9-4c55-87f2-fefc936910f1
+    taskid: 47bf3938-b0b4-4543-884b-6372cf47c902
     type: regular
     task:
-      id: bdcd4aa1-45e9-4c55-87f2-fefc936910f1
+      id: 47bf3938-b0b4-4543-884b-6372cf47c902
       version: -1
       name: Download PDF file
       description: Sends http request. Returns the response as json.
@@ -41,7 +43,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "3"
     scriptarguments:
       body: {}
       filename:
@@ -65,13 +67,12 @@ tasks:
           "y": 437
         }
       }
-    note: false
   "2":
     id: "2"
-    taskid: 87a4a8be-a86c-4d11-8489-81da1bb327fd
+    taskid: ae5f0e0d-a260-41c2-8858-5c3cf0c6bc68
     type: regular
     task:
-      id: 87a4a8be-a86c-4d11-8489-81da1bb327fd
+      id: ae5f0e0d-a260-41c2-8858-5c3cf0c6bc68
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -94,13 +95,35 @@ tasks:
           "y": 232
         }
       }
-    note: false
+  "3":
+    id: "3"
+    taskid: bddecd02-5749-4955-80c0-5ef8d180f01c
+    type: playbook
+    task:
+      id: bddecd02-5749-4955-80c0-5ef8d180f01c
+      version: -1
+      name: Detonate File - Generic
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 635
+        }
+      }
   "4":
     id: "4"
-    taskid: a1709d1f-6858-4dc7-80eb-7f31feb141ac
+    taskid: 357115ce-97f4-4cd8-8ab3-38b157f2e847
     type: title
     task:
-      id: a1709d1f-6858-4dc7-80eb-7f31feb141ac
+      id: 357115ce-97f4-4cd8-8ab3-38b157f2e847
       version: -1
       name: Done
       type: title
@@ -114,40 +137,6 @@ tasks:
           "y": 815
         }
       }
-    note: false
-  "5":
-    id: "5"
-    taskid: 4227e833-67b4-4502-8d54-ea74af0f7457
-    type: playbook
-    task:
-      id: 4227e833-67b4-4502-8d54-ea74af0f7457
-      version: -1
-      name: Detonate File - Generic_copy
-      playbookName: Detonate File - Generic_copy
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      EntryID:
-        simple: ${File.EntryID}
-      File:
-        simple: ${File}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 605
-        }
-      }
-    note: false
 view: |-
   {
     "linkLabelsPosition": {},
