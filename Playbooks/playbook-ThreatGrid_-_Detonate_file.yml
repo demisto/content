@@ -363,28 +363,27 @@ inputs:
   value:
     simple: file-detonated-via-demisto
   required: false
-  description: File name to be used in Threat Grid detonation
+  description: Name of the file to detonate.
 - key: os
   value: {}
   required: false
-  description: a string identifying the source OS
+  description: Source OS (string)
 - key: osver
   value: {}
   required: false
-  description: a string defining the OS version.
+  description: OS version (string)
 - key: vm
   value: {}
   required: false
-  description: a string identifying a specific VM to use
+  description: The VM to use (string)
 - key: private
   value: {}
   required: false
-  description: if present, and set to any value but “false” the sample will be marked
-    private
+  description: The sample is marked private if this is present, and set to any value other than false.
 - key: source
   value: {}
   required: false
-  description: a string identifying the source (user defined)
+  description: a string used for identifying the source of the detonation (user defined)
 - key: tags
   value: {}
   required: false
@@ -398,7 +397,7 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: How much time to wait before a timeout occurs  (minutes)
+  description: How much time to wait before a timeout occurs (minutes)
 outputs:
 - contextPath: File.Malicious
   description: The File malicious description
