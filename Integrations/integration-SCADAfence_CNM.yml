@@ -280,7 +280,6 @@ script:
         data = get_alerts(demisto.args()['severity'], None)
         md = '## Following alerts were found\n'
         md += tableToMarkdown('Alerts are: ', data)
-        # tableToMarkdown('header', [{}, {}, {}...])
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': data,
