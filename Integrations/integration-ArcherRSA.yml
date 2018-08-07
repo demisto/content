@@ -1453,6 +1453,7 @@ script:
                 }
                 else if (field['-value'] !== undefined && dateRe.test(field['-value'])){ // a datetime field
                     dateValue = getOccurredTime(field['-value'], 0);
+                    fieldName = GLOBAL_MAPPING[field['-id']].Name;
                 }
                 else if (field['-fileID']){ // attached files
                     files = getFilesString(field);
