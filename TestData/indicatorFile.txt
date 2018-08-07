@@ -1,4 +1,0 @@
-demisto@gmail.com
-102.101.1.1
-https://www.google.com
-6687532d5ff5254f3a95da1e8c381dd5
