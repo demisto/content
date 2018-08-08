@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d3dfd1d2-103a-4dc0-8d3a-a6c7b99f1662
+    taskid: 7b815d6d-0497-47ca-8d86-3fae4cfb42d7
     type: start
     task:
-      id: d3dfd1d2-103a-4dc0-8d3a-a6c7b99f1662
+      id: 7b815d6d-0497-47ca-8d86-3fae4cfb42d7
       version: -1
       name: ""
       iscommand: false
@@ -27,109 +27,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 5b3b0e14-9410-4c39-88fe-9dc0396d4ef8
+    taskid: 3de124f9-b8a0-4611-87c9-47a7f25a80bd
     type: regular
     task:
-      id: 5b3b0e14-9410-4c39-88fe-9dc0396d4ef8
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 128d92d9-6c2f-4e7a-84c6-cabf2869208c
-    type: regular
-    task:
-      id: 128d92d9-6c2f-4e7a-84c6-cabf2869208c
-      version: -1
-      name: ip
-      description: Check IP Reputation
-      script: VirusTotal|||ip
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      ip:
-        simple: 8.8.8.8
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: d7362a0b-8ef1-4196-8949-0d8ce7a560e5
-    type: regular
-    task:
-      id: d7362a0b-8ef1-4196-8949-0d8ce7a560e5
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expectedValue:
-        simple: 8.8.8.8
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 590
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: e60479cb-9cbd-4730-84b1-94b89a8c9119
-    type: regular
-    task:
-      id: e60479cb-9cbd-4730-84b1-94b89a8c9119
+      id: 3de124f9-b8a0-4611-87c9-47a7f25a80bd
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -150,16 +51,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 780
+          "y": 230
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 60b01773-fa85-490e-8890-bd847b02af76
+    taskid: 2db14790-2186-45a8-8cbf-8e08f3157376
     type: regular
     task:
-      id: 60b01773-fa85-490e-8890-bd847b02af76
+      id: 2db14790-2186-45a8-8cbf-8e08f3157376
       version: -1
       name: VerifyContext
       description: |-
@@ -186,16 +87,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1110
+          "y": 700
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: 7f2ab5ca-1fe5-4ab9-867f-598fa45e1606
+    taskid: a9d8cf82-d7dc-4f80-83a5-c602dfc02abc
     type: regular
     task:
-      id: 7f2ab5ca-1fe5-4ab9-867f-598fa45e1606
+      id: a9d8cf82-d7dc-4f80-83a5-c602dfc02abc
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -216,16 +117,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1270
+          "y": 860
         }
       }
     note: false
   "7":
     id: "7"
-    taskid: 2533b166-5d46-42de-828d-820f10908092
+    taskid: 31b89840-e40c-4d43-8034-c875e34f4292
     type: regular
     task:
-      id: 2533b166-5d46-42de-828d-820f10908092
+      id: 31b89840-e40c-4d43-8034-c875e34f4292
       version: -1
       name: domain
       description: Check domain reputation
@@ -249,16 +150,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 945
+          "y": 475
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: 2d958b35-c76f-41df-8736-726cd4804ac9
+    taskid: 65a099db-c386-410a-8fb7-2c3a1486a841
     type: regular
     task:
-      id: 2d958b35-c76f-41df-8736-726cd4804ac9
+      id: 65a099db-c386-410a-8fb7-2c3a1486a841
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -281,16 +182,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1440
+          "y": 1030
         }
       }
     note: false
   "9":
     id: "9"
-    taskid: 5d528406-2bc0-4f3a-8dbc-616ef79ea122
+    taskid: 74ee47f2-87f7-44f9-8ee2-4496b9185e41
     type: regular
     task:
-      id: 5d528406-2bc0-4f3a-8dbc-616ef79ea122
+      id: 74ee47f2-87f7-44f9-8ee2-4496b9185e41
       version: -1
       name: VerifyContext
       description: |-
@@ -317,16 +218,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1610
+          "y": 1200
         }
       }
     note: false
   "10":
     id: "10"
-    taskid: af49d726-07fe-408b-810e-ebc14c9486e0
+    taskid: 83791d53-f11d-4113-82c6-68e55dbe5fcf
     type: regular
     task:
-      id: af49d726-07fe-408b-810e-ebc14c9486e0
+      id: 83791d53-f11d-4113-82c6-68e55dbe5fcf
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -347,16 +248,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1770
+          "y": 1360
         }
       }
     note: false
   "14":
     id: "14"
-    taskid: b8771649-d206-4338-80b9-9cb5c5db43fc
+    taskid: e8188ea4-e8a7-4818-80d4-0dc83da4f9ab
     type: regular
     task:
-      id: b8771649-d206-4338-80b9-9cb5c5db43fc
+      id: e8188ea4-e8a7-4818-80d4-0dc83da4f9ab
       version: -1
       name: url
       description: Check URL Reputation
@@ -381,16 +282,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1960
+          "y": 1550
         }
       }
     note: false
   "15":
     id: "15"
-    taskid: b172c31a-6905-48ae-80c9-c135561985d6
+    taskid: e9befa83-c1f9-40cc-857c-eba7aa9c27e5
     type: regular
     task:
-      id: b172c31a-6905-48ae-80c9-c135561985d6
+      id: e9befa83-c1f9-40cc-857c-eba7aa9c27e5
       version: -1
       name: VerifyContext
       description: |-
@@ -417,16 +318,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2120
+          "y": 1710
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 9ea3d366-e768-4e18-8e2c-4dedad45353a
+    taskid: 37080afc-8f3b-4771-8693-6bea98fe0474
     type: regular
     task:
-      id: 9ea3d366-e768-4e18-8e2c-4dedad45353a
+      id: 37080afc-8f3b-4771-8693-6bea98fe0474
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -444,7 +345,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2280
+          "y": 1870
         }
       }
     note: false
@@ -453,7 +354,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2325,
+        "height": 1915,
         "width": 380,
         "x": 450,
         "y": 50
