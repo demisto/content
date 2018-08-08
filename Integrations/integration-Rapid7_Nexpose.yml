@@ -786,12 +786,17 @@ script:
         return get_list_response('assets', limit=limit, params=params)
 
     def get_scan_command():
-        scan = get_scan(demisto.args()['id'])
+        ids = argToList(str(demisto.args()['id']))
 
-        if(scan is None):
-            return 'Scan not found'
+        scans = []
+        for id in ids:
+            scan = get_scan(id)
+            if(scan is None):
+                return 'Scan not found'
+            scan_entry = get_scan_entry(scan)
+            scans.append(scan_entry)
 
-        return get_scan_entry(scan)
+        return scans
 
     def get_scan_entry(scan):
         scanHeaders = [
@@ -834,7 +839,7 @@ script:
             {'from': 'total', 'to': 'Total'}
         ])
 
-        scanMd = tableToMarkdown('Nexpose scan ' + str(demisto.args()['id']), scanOutput, scanHeaders,removeNull=True)
+        scanMd = tableToMarkdown('Nexpose scan ' + str(scan['id']), scanOutput, scanHeaders,removeNull=True)
         vulnMd = tableToMarkdown('Vulnerabilities', vulnOutput, vulnHeaders, removeNull=True)
         md = scanMd + vulnMd
 
@@ -1041,10 +1046,10 @@ script:
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
 
         textFilters = None
-        if ips is not None:
+        if ips:
             ips = ips.split(',')
             textFilters = ['ip-address is ' + ips[0]]
-        elif hostNames is not None:
+        elif hostNames:
             hostNames = hostNames.split(',')
             textFilters = ['host-name is ' + hostNames[0]]
 
@@ -1062,17 +1067,17 @@ script:
             return 'Could not find site'
 
         hosts = []
-        if ips is not None:
+        if ips:
             hosts += ips
-        if hostNames is not None:
+        if hostNames:
             hosts += hostNames
 
         scan_response = start_scan(site['id'], hosts, name)
 
-        if(scan_response is None):
+        if(scan_response is None or 'id' not in scan_response):
             return 'Could not start scan'
 
-        scan = wait_until_scan_finished(scan_response['id'])
+        scan = get_scan(scan_response['id'])
 
         return get_scan_entry(scan)
 
@@ -1083,22 +1088,12 @@ script:
 
         scan_response = start_scan(site, hosts.split(','), name)
 
-        if(scan_response is None):
+        if(scan_response is None or 'id' not in scan_response):
             return 'Could not start scan'
 
-        scan = wait_until_scan_finished(scan_response['id'])
+        scan = get_scan(scan_response['id'])
 
         return get_scan_entry(scan)
-
-    def wait_until_scan_finished(scan_id):
-        while True:
-            scan = get_scan(scan_id)
-            status = scan['status']
-            if status not in ['running','dispatched','integrating','unknown']:
-                break
-            time.sleep(60)
-
-        return scan
 
     def start_scan(site, hosts, name):
         path = 'sites/' + str(site) + '/scans'
@@ -1196,7 +1191,7 @@ script:
       description: The identifier of the user account.
     - contextPath: Nexpose.Asset.Vulnerability.Id
       description: The identifier of the vulnerability.
-    - contextPath: Nexpose.Asset.Vulnerability.Instacnes
+    - contextPath: Nexpose.Asset.Vulnerability.Instances
       description: The number of vulnerable occurrences of the vulnerability. This
         does not include invulnerable instances.
     - contextPath: Nexpose.Asset.Vulnerability.Title
@@ -1346,7 +1341,8 @@ script:
     arguments:
     - name: id
       required: true
-      description: integer <int64> The identifier of the scan.
+      description: Multiple criteria of integer <int64> Identifiers of scans
+      isArray: true
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
@@ -1553,5 +1549,79 @@ script:
       - text
       description: <string> The report format, default is PDF
     description: Generates a new report for a specified scan.
+  - name: nexpose-start-site-scan
+    arguments:
+    - name: site
+      required: true
+      description: integer <int32> The identifier of the site.
+    - name: hosts
+      description: Multiple criteria of <string> The hosts that should be included
+        as a part of the scan. This should be a mixture of IP Addresses and Hostnames
+        as a comma separated string array.
+    - name: name
+      description: <string> The user-driven scan name for the scan.
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
+    description: Starts a scan for the specified site.
+  - name: nexpose-start-assets-scan
+    arguments:
+    - name: IPs
+      description: Multiple criteria of <string> IP addresses of assets, comma separated.
+    - name: hostNames
+      description: Multiple criteria of <string> Host names of assets, comma separated.
+    - name: name
+      description: <string> The user-driven scan name for the scan.
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
+    description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
-fromversion: 3.6.0
+fromversion: 4.0.0
+releaseNotes: "Added scan functionality using Nexpose Scan Site/Assets sub-playbooks"
