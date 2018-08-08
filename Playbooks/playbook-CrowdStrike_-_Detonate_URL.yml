@@ -146,6 +146,7 @@ tasks:
       type: regular
       iscommand: true
       brand: VxStream
+      description: Upload samle to crowdstrike.
     nexttasks:
       '#none#':
       - "16"
@@ -174,6 +175,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Checks whether there's a file to detonate.
     nexttasks:
       '#default#':
       - "6"
