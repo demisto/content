@@ -14,12 +14,12 @@ configuration:
   required: true
 - display: API auth key
   name: APIKey
-  defaultvalue: 
+  defaultvalue:
   type: 4
   required: true
 - display: API url
   name: APIUrl
-  defaultvalue: https://172.28.128.10
+  defaultvalue:
   type: 0
   required: true
 - display: Trust any certificate (unsecure)
