@@ -397,6 +397,10 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook"
         }
     ],
     "skipped": [
@@ -553,10 +557,6 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
-        },
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook"
         }
     ]
 }
