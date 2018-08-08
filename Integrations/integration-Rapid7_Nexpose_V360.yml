@@ -786,17 +786,12 @@ script:
         return get_list_response('assets', limit=limit, params=params)
 
     def get_scan_command():
-        ids = argToList(str(demisto.args()['id']))
+        scan = get_scan(demisto.args()['id'])
 
-        scans = []
-        for id in ids:
-            scan = get_scan(id)
-            if(scan is None):
-                return 'Scan not found'
-            scan_entry = get_scan_entry(scan)
-            scans.append(scan_entry)
+        if(scan is None):
+            return 'Scan not found'
 
-        return scans
+        return get_scan_entry(scan)
 
     def get_scan_entry(scan):
         scanHeaders = [
@@ -1341,8 +1336,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Multiple criteria of integer <int64> Identifiers of scans
-      isArray: true
+      description: integer <int64> The identifier of the scan.
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
@@ -1623,5 +1617,5 @@ script:
       description: The total number of vulnerabilities.
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
-fromversion: 4.0.0
-releaseNotes: "Added scan functionality using Nexpose Scan Site/Assets sub-playbooks"
+fromversion: 3.6.0
+toversion: 4.0.0

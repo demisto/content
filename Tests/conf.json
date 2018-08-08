@@ -7,6 +7,11 @@
             "playbookID": "ShodanTest"
         },
         {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500
+        },
+        {
             "integrations": "Jask",
             "playbookID": "Jask_Test"
         },
@@ -15,7 +20,8 @@
         },
         {
             "integrations": "McAfee Advanced Threat Defense",
-            "playbookID": "Test Playbook McAfee ATD"
+            "playbookID": "Test Playbook McAfee ATD",
+            "timeout": 500
         },
         {
             "playbookID": "exporttocsv_script_test"
