@@ -5,7 +5,8 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
+            "timeout": 500,
+            "nightly": true
         },
         {
             "integrations": "Jask",
@@ -450,11 +451,6 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
         },
         {
             "playbookID": "TestParseCSV"
