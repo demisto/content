@@ -714,7 +714,7 @@ script: |-
          :rtype: ``dict``
       """
       if file_type is None:
-          file_type = entryTypes['entryInfoFile']
+          file_type = entryTypes['file']
       temp = demisto.uniqueFile()
       with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
