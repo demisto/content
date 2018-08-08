@@ -122,8 +122,8 @@ tasks:
     task:
       id: 4227e833-67b4-4502-8d54-ea74af0f7457
       version: -1
-      name: Detonate File - Generic_copy
-      playbookName: Detonate File - Generic_copy
+      name: Detonate File - Generic
+      playbookName: Detonate File - Generic
       type: playbook
       iscommand: false
       brand: ""
