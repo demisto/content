@@ -165,3 +165,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "added task to check if there is an email in the context"
