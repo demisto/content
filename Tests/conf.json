@@ -310,7 +310,8 @@
         },
         {
             "integrations": "carbonblackliveresponse",
-            "playbookID": "CarbonBlackLiveResponseTest"
+            "playbookID": "CarbonBlackLiveResponseTest",
+            "nightly": true
         },
         {
             "playbookID": "TestSafeBreach",
