@@ -17,15 +17,10 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Database username
-  name: user
+- display: Username
+  name: credentials
   defaultvalue: ""
-  type: 0
-  required: true
-- display: Database User password
-  name: password
-  defaultvalue: ""
-  type: 4
+  type: 9
   required: true
 - display: Database name
   name: dbname
@@ -44,17 +39,22 @@ script:
           conn.close()
 
     def pgsqlConnect():
-        connectionString = "dbname='" + demisto.params()['dbname'] +"' ";
-        connectionString +="user='" + demisto.params()['user'] +"' ";
-        connectionString +="host='" + demisto.params()['host'] +"' ";
-        connectionString +="port='" + str(demisto.params()['port']) +"' ";
-        connectionString +="password='" + demisto.params()['password'] +"'";
+        params = demisto.params()
+        username = params.get('username') or params.get('credentials')['identifier']
+        password = params.get('password') or params.get('credentials')['password']
+
+        connectionString = "dbname='" + params.get('dbname') + "' ";
+        connectionString +="user='" + username + "' ";
+        connectionString +="host='" + params.get('host') + "' ";
+        connectionString +="port='" + str(params.get('port')) + "' ";
+        connectionString +="password='" + password + "'";
+
         try:
             conn = psycopg2.connect(connectionString)
             conn.autocommit = True
         except Exception as e:
             demisto.results(e.message)
-            return None
+            sys.exit(0)
         return conn
 
     if demisto.command() == 'test-module':
@@ -136,4 +136,5 @@ script:
       description: SQL Statement
     description: Query PostgreSQL database
   dockerimage: demisto/psycopg2
-hidden: false
+  runonce: false
+releaseNotes: "Replaced username/password fields with Credentials store."
