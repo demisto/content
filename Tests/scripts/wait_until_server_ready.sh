@@ -11,7 +11,7 @@ GET_HTTP_CODE_COMMAND="curl --write-out %{http_code} --silent --output /dev/null
 NEXT_WAIT_TIME=0
 HTTP_CODE=$($GET_HTTP_CODE_COMMAND)
 
-MAX_TRIES=8
+MAX_TRIES=20
 TRY_COUNT=1
 until [ $HTTP_CODE != 433 ] || [ $TRY_COUNT = $MAX_TRIES ]; do
     echo "server is not yet ready - wait another 45 seconds"
