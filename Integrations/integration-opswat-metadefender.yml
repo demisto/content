@@ -325,4 +325,3 @@ script:
       description: OPSWAT scan id
     description: Get OPSWAT result
   runonce: false
-releaseNotes: "Now supports cloud Metadefender."
