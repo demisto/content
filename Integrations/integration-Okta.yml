@@ -2094,3 +2094,4 @@ script:
     description: Enumerates all users that are members of a group
   runonce: false
 fromversion: 3.6.0
+releaseNotes: "-"
