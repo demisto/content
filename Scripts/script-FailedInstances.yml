@@ -68,4 +68,5 @@ outputs:
   type: string
 scripttarget: 0
 system: true
+timeout: 10.8µs
 runonce: false
