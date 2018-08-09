@@ -401,7 +401,8 @@
         },
         {
             "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook"
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
         }
     ],
     "skipped": [
