@@ -20,223 +20,174 @@ configuration:
   required: false
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: "false"
   type: 8
   required: false
 script:
   script: |-
-    baseUrl = params.server.replace(/[\/]+$/, '') + '/JSSResource/';
-    commandDictionary = {
-        'jamf-get-computers': {
-            url: 'computers',
-            method: 'GET',
-            extended: true,
-            translator: [
+    import requests
+    from requests.auth import HTTPBasicAuth
+    import re
+    import os
+
+    HEADERS = {"Accept":"application/json"}
+
+    base_url = demisto.params()['server']
+    user = demisto.params()['credentials']['identifier']
+    password = demisto.params()['credentials']['password']
+    auth = HTTPBasicAuth(user,password)
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    def jamf_get_computers():
+        endpoint = "/JSSResource/computers"
+        try:
+            contents = requests.get(base_url + endpoint,auth=auth,headers=HEADERS).json()
+            ec = {}
+            ec["JAMF"] = [{"ID": item["id"], "Name":item["name"]} for item in contents['computers']]
+
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("Computers", ec["JAMF"])})
+        except Exception,e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings" })
+            sys.exit(0)
+
+    def jamf_get_computers_match(match):
+        endpoint = "/JSSResource/computers/match/{match}"
+        try:
+            contents = requests.get(base_url + endpoint.format(match=match),auth=auth,headers=HEADERS).json()
+            ec = {}
+            ec["JAMF"] = [
+                {"ID": item["id"],
+                "Name": item["name"],
+                "AltMAC": item["alt_mac_address"],
+                "MAC": item["mac_address"],
+                "Serial": item["serial_number"],
+                "UDID": item["udid"],
+                "AssetTag": item["asset_tag"],
+                "BarCode-1": item["bar_code_1"],
+                "BarCode-2": item["bar_code_2"],
+                "Building": item["building"],
+                "BuildingName": item["building_name"],
+                "Department": item["department"],
+                "DepartmentName": item["department_name"],
+                "Email": item["email"],
+                "EmailAddress": item["email_address"],
+                "Position": item["position"],
+                "Username": item["username"],
+                "Realname": item["realname"],
+                "Room": item["room"]}
+                for item in contents["computers"]
+            ]
+
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("Computers", ec["JAMF"])})
+        except Exception,e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings" })
+            sys.exit(0)
+
+    def jamf_computers_hardware(computer_id):
+        endpoint = "/JSSResource/computers/id/{computer_id}/subset/hardware"
+
+        try:
+            contents = requests.get(base_url + endpoint.format(computer_id=computer_id),auth=auth,headers=HEADERS).json()
+            ec = {}
+            ec["JAMF"] = {
+                "Make": contents["computer"]["hardware"]["make"],
+                "Model": contents["computer"]["hardware"]["model"],
+                "ModelIdentifier": contents["computer"]["hardware"]["model_identifier"],
+                "OSName": contents["computer"]["hardware"]["os_name"],
+                "OSVersion": contents["computer"]["hardware"]["os_version"],
+                "OSBuild": contents["computer"]["hardware"]["os_build"],
+                "MasterPasswordSet": contents["computer"]["hardware"]["master_password_set"],
+                "ActiveDirectoryStatus": contents["computer"]["hardware"]["active_directory_status"],
+                "ServicePack": contents["computer"]["hardware"]["service_pack"],
+                "ProcessorType": contents["computer"]["hardware"]["processor_type"],
+                "ProcessorArchitecture": contents["computer"]["hardware"]["processor_architecture"],
+                "NumberProcessors": contents["computer"]["hardware"]["number_processors"],
+                "NumberCores": contents["computer"]["hardware"]["number_cores"],
+                "TotalRam": contents["computer"]["hardware"]["total_ram"],
+            }
+
+            ec["JAMF"]["Storage"] = [
                 {
-                    contextPath: 'Jamf.Computers(val.ID==obj.ID)',
-                    title: 'Jamf get computers result',
-                    innerPath: 'computers',
-                    data: [
-                        {to: 'ID', from: 'id'},
-                        {to: 'Name', from: 'name'},
-                    ]
+                    "Disk": item["disk"],
+                    "Model": item["model"],
+                    "SerialNumber": item["serial_number"],
+                    "Size": item["size"],
+                    "DriveCapacityMB": item["drive_capacity_mb"],
+                    "PartitionName": item["partition"]["name"],
+                    "Size": item["partition"]["size"],
+                    "Type": item["partition"]["type"],
+                    "PartitionCapacityMB": item["partition"]["partition_capacity_mb"],
+                    "FilevaultStatus": item["partition"]["filevault_status"],
+                    "Filevault2Status": item["partition"]["filevault2_status"]
                 }
-            ],
-        },
-        'jamf-get-computers-match': {
-            url: 'computers/match/%match%',
-            method: 'GET',
-            extended: true,
-            argsToURLEncode: ['match'],
-            translator: [
-                {
-                    contextPath: 'Jamf.Computers(val.ID==obj.ID)',
-                    title: 'Jamf get computer match result',
-                    innerPath: 'computers',
-                    data: [
-                        {to: 'ID', from: 'id'},
-                        {to: 'Name', from: 'name'},
-                        {to: 'AltMAC', from: 'alt_mac_address'},
-                        {to: 'MAC', from: 'mac_address'},
-                        {to: 'Serial', from: 'serial_number'},
-                        {to: 'UDID', from: 'udid'},
-                        {to: 'AssetTag', from: 'asset_tag'},
-                        {to: 'BarCode-1', from: 'bar_code_1'},
-                        {to: 'BarCode-2', from: 'bar_code_2'},
-                        {to: 'Building', from: 'building'},
-                        {to: 'BuildingName', from: 'building_name'},
-                        {to: 'Department', from: 'department'},
-                        {to: 'DepartmentName', from: 'department_name'},
-                        {to: 'Email', from: 'email'},
-                        {to: 'EmailAddress', from: 'email_address'},
-                        {to: 'Position', from: 'position'},
-                        {to: 'Username', from: 'username'},
-                        {to: 'Realname', from: 'realname'},
-                        {to: 'Room', from: 'room'},
-                    ]
-                }
-            ],
-        },
-        'test-module': {
-            url: 'computers',
-            method: 'GET',
-        },
-    };
+                    for item in contents["computer"]["hardware"]["storage"]
+                ]
 
-    function createContext(data, id) {
-        var createContextSingle = function(obj) {
-            var res = {};
-            var keys = Object.keys(obj);
-            keys.forEach(function(k) {
-                var values = k.split('-');
-                var current = res;
-                for (var j = 0; j<values.length - 1; j++) {
-                    if (!current[values[j]]) {
-                        current[values[j]] = {};
-                    }
-                    current = current[values[j]];
-                }
-                current[values[j]] = obj[k];
-            });
-            if (!res.ID && id) {
-                res.ID = id;
-            }
-            return res;
-        };
-        if (data instanceof Array) {
-            var res = [];
-            for (var j=0; j < data.length; j++) {
-                res.push(createContextSingle(data[j]));
-            }
-            return res;
-        }
-        return createContextSingle(data);
-    }
+            demisto.results({ 'Type' : entryTypes['note'], 'ContentsFormat' : formats['json'], 'Contents' : contents, "EntryContext": ec,"HumanReadable": tableToMarkdown("Hardware Information", ec["JAMF"]) + "\n\n" + tableToMarkdown("Storage Information", ec["JAMF"]["Storage"]) })
 
-    function mapObjFunction(mapFields, filter) {
-        var transformSingleObj= function(obj) {
-            var res = {};
-            mapFields.forEach(function(f) {
-                result = dq(obj, f.from);
-                console.log(result)
-                if (result || result === false) {
-                    res[f.to] = result;
-                }
-            });
-            if (filter && !filter(res)) {
-                return undefined;
-            }
-            return res;
-        };
-        return function(obj) {
-            if (obj instanceof Array) {
-                var res = [];
-                for (var j=0; j < obj.length; j++) {
-                    var current = transformSingleObj(obj[j]);
-                    if (current) {
-                        res.push(current);
-                    }
-                }
-                return res;
-            }
-            return transformSingleObj(obj);
-        };
-    }
+        except Exception,e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings\n" + str(e) })
+            sys.exit(0)
 
+    def jamf_erase_device(computer_id,passcode):
+        endpoint = "/JSSResource/computercommands/command/EraseDevice/passcode/{passcode}/id/{computer_id}"
+        data = None
 
-    var sendRequest = function(url, method, args) {
-        var httpParams = {
-           Method: method,
-           Headers: {
-                'Content-Type': ['application/json'],
-                'Accept': ['application/json']
-           },
-           Username: params.credentials.identifier,
-           Password: params.credentials.password,
-           Body: method !== 'GET' ? JSON.stringify(args) : undefined
-        };
-        var res = http(
-                baseUrl + url + (method === 'GET' && method ? encodeToURLQuery(args) : ''),
-                httpParams,
-                params.insecure,
-                params.proxy
-            );
+        try:
+            contents = requests.post(base_url + endpoint.format(computer_id=computer_id,passcode=passcode),auth=auth,headers=HEADERS).text
+            demisto.results(contents)
+            sys.exit(0)
+        except Exception, e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : "Unable to complete command.  Please check credentials and/or proxy settings\n" + str(e) })
+            sys.exit(0)
 
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        if (!res.Body) {
-            return 'Done';
-        }
-        try {
-            return JSON.parse(res.Body);
-        }
-        catch (ex) {
-            throw 'Failed to create JSON from response ' + res.Body + ', exception is ' + ex;
-        }
-    }
+    if demisto.command() == 'test-module':
+        try:
+            endpoint = "/JSSResource/users"
+            contents = requests.get(base_url + endpoint,auth=auth,headers=HEADERS).json()
+            demisto.results('ok')
+            sys.exit(0)
+        except Exception, e:
+            demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unable to login.  Please check credentials and/or proxy settings.'})
+            sys.exit(0)
 
-    currentCommand = commandDictionary[command];
-    if (currentCommand.defaultArgs) {
-        keys = Object.keys(currentCommand.defaultArgs);
-        for (var k in keys) {
-            if (!args[keys[k]] && args[keys[k]] !== false) {
-                args[keys[k]] = currentCommand.defaultArgs[keys[k]];
-            }
-        }
-    }
-    if (currentCommand.argsToURLEncode) {
-        for (var k in currentCommand.argsToURLEncode) {
-            args[currentCommand.argsToURLEncode[k]] = encodeURIComponent(args[currentCommand.argsToURLEncode[k]]);
-        }
-    }
-    var result = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args), currentCommand.method, args);
-    if (command === 'test-module') {
-        return 'ok';
-    }
-    var entries = [];
-    if (currentCommand.extended) {
-        for (var j in currentCommand.translator) {
-            var current = currentCommand.translator[j];
-            var entry = {
-                Type: entryTypes.note,
-                Contents: result,
-                ContentsFormat: formats.json,
-            };
-            var currentContent = current.innerPath ? dq(result, current.innerPath) : result;
-            var translated = mapObjFunction(current.data) (current.countingDict ? toArray(currentContent) : currentContent);
-            entry.ReadableContentsFormat = formats.markdown;
-            entry.HumanReadable = tableToMarkdown(current.title,translated);
-            entry.EntryContext = {};
-            var context = createContext(translated);
-            entry.EntryContext[current.contextPath] = context;
-            entries.push(entry);
-        }
-    } else {
-        return result;
-    }
-    return entries;
-  type: javascript
+    if demisto.command() == 'jamf-get-computers':
+        jamf_get_computers()
+
+    if demisto.command() == 'jamf-get-computers-match':
+        jamf_get_computers_match(demisto.args()['match'])
+
+    if demisto.command() == 'jamf-get-computer-hardware':
+        jamf_computers_hardware(demisto.args()['id'])
+
+    if demisto.command() == 'jamf-erase-device':
+        jamf_erase_device(demisto.args()['id'],demisto.args()['passcode'])
+  type: python
   commands:
   - name: jamf-get-computers
-    description: Get a list of managed computers
     arguments: []
     outputs:
     - contextPath: Jamf.Computers.ID
       description: Computer ID
     - contextPath: Jamf.Computers.Name
       description: Computer name
+    description: Get a list of managed computers
   - name: jamf-get-computers-match
-    description: Get a list of managed computers that matches inputs query
     arguments:
     - name: match
       required: true
-      description: Match criteria. e.g. to retrieve all computers associated with a user use $UserID
+      description: Match criteria. e.g. to retrieve all computers associated with
+        a user use $UserID
     outputs:
     - contextPath: Jamf.Computers.ID
       description: Computer ID
@@ -276,4 +227,60 @@ script:
       description: Computer real name
     - contextPath: Jamf.Computers.Room
       description: Computer room
+    description: Get a list of managed computers that matches inputs query
+  - name: jamf-get-computer-hardware
+    arguments:
+    - name: id
+      required: true
+      description: Lookup by ID
+    outputs:
+    - contextPath: JAMF.Make
+      description: Make of device
+    - contextPath: JAMF.Model
+      description: Model of device
+    - contextPath: JAMF.ModelIdentifier
+      description: Model Identifier of device
+    - contextPath: JAMF.OSName
+      description: Operating System of device
+    - contextPath: JAMF.OSVersion
+      description: OS Version of device
+    - contextPath: JAMF.OSBuild
+      description: OS Build of device
+    - contextPath: JAMF.MasterPasswordSet
+      description: Is Master Password Set
+    - contextPath: JAMF.ActiveDirectoryStatus
+      description: Active Directory Status
+    - contextPath: JAMF.ServicePack
+      description: Service Pack of device
+    - contextPath: JAMF.ProcessorType
+      description: Processor Type
+    - contextPath: JAMF.ProcessorArchitecture
+      description: Processor Architecture
+    - contextPath: JAMF.NumberProcessors
+      description: Number Processors
+    - contextPath: JAMF.NumberCores
+      description: Number of Cores
+    - contextPath: JAMF.TotalRam
+      description: Total RAM (MB)
+    - contextPath: JAMF.Storage.Size
+      description: Size of storage device (MB)
+    - contextPath: JAMF.Storage.FilevaultStatus
+      description: FileVault Status of storage device
+    - contextPath: JAMF.Storage.Filevault2Status
+      description: Filevault2 Status of storage device
+    description: Display a subset of hardware information for a computer
+  - name: jamf-erase-device
+    arguments:
+    - name: id
+      required: true
+      description: Lookup by ID
+    - name: passcode
+      required: true
+      description: 6 digit passcode you that must be presented upon unlocking the
+        device
+    description: Send Erase command to device. Erases all content on the specified
+      device
+    execution: true
+  runonce: false
 hidden: false
+releaseNotes: 'Converted integration to Python, added jamf-erase-device and jamf-get-computer-hardware command'
