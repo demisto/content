@@ -38,6 +38,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch type (cases/comments)
+  name: fetchType
+  defaultvalue: cases
+  type: 0
+  required: false
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: ""
@@ -483,8 +488,8 @@ script:
             body : {
                 messageSegments : [{
                     type : 'Text',
-                    text : text}
-                ]
+                    text : text
+                }],
             },
             feedElementType : 'FeedItem',
             subjectId : oid
@@ -513,23 +518,37 @@ script:
         });
     }
 
+    function pushCommentThread(id, text) {
+        data = {
+            body : {
+                messageSegments : [{
+                    type : 'Text',
+                    text : text}
+                ]
+            }
+        };
+
+        response = sendRequestInSession('POST', 'chatter/feed-elements/'+ id +'/capabilities/comments/items', JSON.stringify(data));
+        message = JSON.parse(response.Body);
+
+        return createEntry(message, {
+            title : 'New Comment',
+            data : [
+                {to : 'body', from : 'body.text'},
+                {to : 'Created Date', from : 'createdDate'},
+                {to : 'URL', from : 'url'},
+                {to : 'Visibility', from : 'Visibility'}
+                ]
+        });
+    }
+
     function casesToIncidents(raw_info, userMapping) {
         var cases = [];
         for (var i in raw_info) {
             cases.push({
                 name : raw_info[i].Id + " " + raw_info[i].Subject,
                 details : raw_info[i].Description,
-                //severity : raw_info[i].Priority,
                 rawJSON : JSON.stringify(raw_info[i]),
-                //rawJSON : raw_info[i],
-
-                // CaseNumber : raw_info[i].CaseNumber,
-                // Description : raw_info[i].Description,
-                // CreatedDate : raw_info[i].CreatedDate,
-                // ClosedDate : raw_info[i].ClosedDate,
-                // Owner : (user_dict && userMapping[raw_info[i].OwnerId]) || raw_info[i].OwnerId,
-                // Origin : raw_info[i].Origin,
-                // Status : raw_info[i].Status,
                 Reason : raw_info[i].Reason
             });
         }
@@ -540,33 +559,82 @@ script:
         }
     }
 
+
     function fetchIncident() {
+        var fetchType = params.fetchType
+
         lastRun = getLastRun();
         if (lastRun.last_case_time === undefined) {
             current_time = new Date();
             current_time.setMonth(current_time.getMonth() - 1); // TODO - remove this line
-            // logInfo(dateToString(current_time, "%Y-%m-%dT%H:%M:%S.%fZ"));
             lastRun.last_case_time = dateToString(current_time, "%Y-%m-%dT%H:%M:%S.%fZ");
             setLastRun(lastRun);
         }
 
-        // query cases from last time
-        condition = "CreatedDate>" + lastRun.last_case_time + " ORDER BY CreatedDate DESC";
-        properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate', 'OwnerID', 'Priority', 'Origin', 'Status', 'Reason'];
+        var condition;
+        var properties;
+        var incidents;
 
-        var cases = queryObjects(properties, "Case", condition).records;
+        if (fetchType === 'cases') {
+            // query cases from last time
+            condition = "CreatedDate>" + lastRun.last_case_time + " ORDER BY CreatedDate DESC";
+            properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate', 'OwnerID', 'Priority', 'Origin', 'Status', 'Reason'];
 
-        if (cases.length > 0) {
-            new_time = stringToDate(cases[0].CreatedDate, "%Y-%m-%dT%H:%M:%S.%fZ");
-            lastRun.last_case_time = dateToString(new_time, "%Y-%m-%dT%H:%M:%S.%fZ");
+            var cases = queryObjects(properties, "Case", condition).records;
 
-            setLastRun(lastRun);
-            logInfo(lastRun.last_case_time);
-            // logInfo(JSON.stringify(cases));
+            if (cases.length > 0) {
+                new_time = stringToDate(cases[0].CreatedDate, "%Y-%m-%dT%H:%M:%S.%fZ");
+                lastRun.last_case_time = dateToString(new_time, "%Y-%m-%dT%H:%M:%S.%fZ");
+
+                setLastRun(lastRun);
+                logInfo(lastRun.last_case_time);
+                var userMapping = getUserNames();
+                incidents = casesToIncidents(cases, userMapping);
+            }
+
+        } else { //fetchType === 'comment'
+
+            //query comments from last time
+
+            incidents = '[]';
+
+            //Fetch comment replies
+            properties = ['Id', 'CommentBody', 'CreatedDate'];
+            condition = "CreatedDate>" + lastRun.last_case_time + " ORDER BY CreatedDate DESC LIMIT 10";
+            var replies = queryObjects(properties, "FeedComment", condition).records;
+
+            if (replies.length > 0) {
+
+                var newTime = stringToDate(replies[0].CreatedDate, "%Y-%m-%dT%H:%M:%S.%fZ");
+                lastRun.last_case_time = dateToString(newTime, "%Y-%m-%dT%H:%M:%S.%fZ");
+                setLastRun(lastRun);
+
+                for (var i = 0; i < replies.length; i++) {
+
+                    //Get reply details
+                    var replyDetails = sendRequestInSession('GET', 'chatter/comments/' + replies[i].Id);
+                    var data = JSON.parse(replyDetails.Body);
+                    var feedElement = data.feedElement;
+                    var parentID = feedElement.id;
+
+                    //Get parent details
+                    var parentDetails = getObject('CaseFeed/' + parentID);
+                    var parentText = parentDetails.Body;
+
+                    if (parentText.indexOf('DemistoID') !== -1) {
+
+                        var messageSegments = data.body.messageSegments;
+                        for (var j = 0; j < messageSegments.length; j++)
+                        if (messageSegments[j].type === 'Text') {
+                            return JSON.stringify([{
+                                name: parentText,
+                                details: messageSegments[j].text
+                            }]);
+                        }
+                    }
+                }
+            }
         }
-
-        var userMapping = getUserNames();
-        incidents = casesToIncidents(cases, userMapping);
         return incidents;
     }
 
@@ -600,6 +668,8 @@ script:
             return closeCase(args.oid, args.caseNumber);
         case 'salesforce-push-comment':
             return pushComment(args.oid, args.text, args.link);
+        case 'salesforce-push-comment-threads':
+            return pushCommentThread(args.id, args.text);
         case 'test-module':
             try {
                 sendRequestInSession('GET', '', '');
@@ -1373,5 +1443,16 @@ script:
       description: Case Status. Will be 'Closed'.
       related: ""
     description: Close a case
+  - name: salesforce-push-comment-threads
+    arguments:
+    - name: id
+      required: true
+      description: The Chatter comment Thread ID
+    - name: text
+      required: true
+      description: The comment text
+    description: Add the comment to the chatter thread. Use this command only after
+      salesforce-push-comment
   isfetch: true
   runonce: false
+releaseNotes: "Added comments fetch to use with SalesforceAskUser script and added command salesforce-push-comment-threads"
