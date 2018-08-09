@@ -36,10 +36,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: af173601-cffd-482a-804b-848e2e20a685
+    taskid: 7fd055ad-aeb8-476b-8ba9-ab33781d2185
     type: condition
     task:
-      id: af173601-cffd-482a-804b-848e2e20a685
+      id: 7fd055ad-aeb8-476b-8ba9-ab33781d2185
       version: -1
       name: Is there a domain to check?
       description: Determines whether the playbook's input contains a domain name.
@@ -60,7 +60,7 @@ tasks:
       - - operator: general.isExists
           left:
             value:
-              simple: inputs.Domain.Name
+              simple: inputs.Domain
             iscontext: true
     view: |-
       {
@@ -316,6 +316,7 @@ inputs:
   value:
     complex:
       root: Domain
+      accessor: Name
   required: false
   description: The domain name to enrich
 - key: GetReputation
