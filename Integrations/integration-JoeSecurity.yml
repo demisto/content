@@ -342,9 +342,9 @@ script:
 
         info = info_request(webid)
         if rsc_type == 'sample':
-            return fileResult('%s.dontrun' % (info.get('filename', webid), ), res, entryTypes['file'])
+            return fileResult('%s.dontrun' % (info.get('filename', webid), ), res)
         else:
-            return fileResult('%s_report.%s' % (info.get('filename', webid), rsc_type, ), res)
+            return fileResult('%s_report.%s' % (info.get('filename', webid), rsc_type, ), res, entryTypes['entryInfoFile'])
 
 
     ''' EXECUTION CODE '''

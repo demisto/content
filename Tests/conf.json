@@ -5,7 +5,8 @@
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
+            "timeout": 500,
+            "nightly": true
         },
         {
             "integrations": "Jask",
@@ -310,7 +311,8 @@
         },
         {
             "integrations": "carbonblackliveresponse",
-            "playbookID": "CarbonBlackLiveResponseTest"
+            "playbookID": "CarbonBlackLiveResponseTest",
+            "nightly": true
         },
         {
             "playbookID": "TestSafeBreach",
@@ -397,6 +399,11 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
         }
     ],
     "skipped": [
@@ -553,10 +560,6 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
-        },
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook"
         }
     ]
 }
