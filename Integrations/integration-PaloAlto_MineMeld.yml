@@ -1115,4 +1115,3 @@ script:
     description: Returns all miners names (with supported classes of custom indicators
       lists)
   runonce: false
-releaseNotes: "Palo Alto MineMeld as threat intel, after complete code refactor"
