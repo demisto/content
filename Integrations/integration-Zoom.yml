@@ -401,4 +401,3 @@ script:
     execution: true
   dockerimage: demisto/pyjwt:1.0
   runonce: false
-releaseNotes: "-"
