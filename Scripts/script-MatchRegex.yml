@@ -4,7 +4,7 @@ commonfields:
 name: MatchRegex
 script: |-
   var data = (typeof args.data) === 'string' ? args.data : JSON.stringify(args.data);
-  var flags = args.flags ? args.flags : 'im';
+  var flags = args.flags ? args.flags : 'gim';
   var r = new RegExp(args.regex, flags);
   var m;
   var vals = [];
@@ -22,16 +22,20 @@ script: |-
           vals.push(val);
       }
   }
-  setContext('MatchRegex.results', vals)
-  if (vals.length) {
-      return {Type: entryTypes.note, Contents: vals, ContentsFormat: formats.text, EntryContext: ec};
+  if (vals.length == 1) {
+    setContext('MatchRegex.results', vals[0])
+    return {Type: entryTypes.note, Contents: vals[0], ContentsFormat: formats.text, EntryContext: ec};
+  } else if (vals.length) {
+    setContext('MatchRegex.results', vals)
+    return {Type: entryTypes.note, Contents: vals, ContentsFormat: formats.text, EntryContext: ec};
+  } else {
+    setContext('MatchRegex.results', vals)
+    return {Type: entryTypes.note, Contents: 'Regex does not match', ContentsFormat: formats.text};
   }
-  return {Type: entryTypes.note, Contents: 'Regex does not match', ContentsFormat: formats.text};
 type: javascript
 tags:
 - Utility
 comment: Extract regex data from given text - supports groups and looping as well.
-  May need to provide 'g' in flags argument.
 enabled: true
 args:
 - name: data
@@ -47,7 +51,7 @@ args:
 - name: contextKey
   description: The context key to populate with the result
 - name: flags
-  description: The regex flags to match. Default is -im.
+  description: The regex flags to match. Default is -gim.
   defaultValue: 
 outputs:
 - contextPath: MatchRegex.results
