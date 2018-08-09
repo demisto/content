@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -50,7 +50,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
@@ -80,7 +80,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 370
         }
       }
@@ -110,7 +110,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 545
         }
       }
@@ -128,40 +128,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
       - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-  "6":
-    id: "6"
-    taskid: 006d25b5-ecf4-403e-87e9-6eaf14ec9715
-    type: regular
-    task:
-      id: 006d25b5-ecf4-403e-87e9-6eaf14ec9715
-      version: -1
-      name: Verify File.Malicious context fields
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Vendor
-      path:
-        simple: File.Malicious
-    separatecontext: false
-    view: |-
-      {
-        "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
   "7":
@@ -187,7 +160,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 895
         }
       }
@@ -197,7 +170,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 940,
-        "width": 810,
+        "width": 380,
         "x": 50,
         "y": 50
       }
