@@ -21,11 +21,12 @@ tasks:
       '#none#':
       - "1"
       - "2"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 50
         }
       }
@@ -109,8 +110,40 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 597f13ae-ce69-46e9-88de-1ce218c7c355
+    type: playbook
+    task:
+      id: 597f13ae-ce69-46e9-88de-1ce218c7c355
+      version: -1
+      name: ATD - Detonate File
+      description: Detonate a file through McAfee ATD
+      playbookName: ATD - Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.EntryID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
         }
       }
 view: |-
@@ -119,7 +152,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 810,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
