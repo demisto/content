@@ -71,10 +71,10 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: 918a449b-b852-4ea9-89c7-2aa34137a8c4
+    taskid: 1d8b490b-45a3-4155-8773-a55a106aab5e
     type: regular
     task:
-      id: 918a449b-b852-4ea9-89c7-2aa34137a8c4
+      id: 1d8b490b-45a3-4155-8773-a55a106aab5e
       version: -1
       name: Get domain Reputation
       description: |-
@@ -91,7 +91,6 @@ tasks:
       domain:
         complex:
           root: inputs.Domain
-          accessor: Name
     reputationcalc: 0
     continueonerror: true
     separatecontext: false
@@ -132,7 +131,7 @@ tasks:
       version: -1
       name: Should we get the Domain Reputation?
       description: "Should the system retrieve the domain reputation from all of the
-        relevant integration?\nDefault: False\n "
+        relevant integration?\nDefault: True\n "
       type: condition
       iscommand: false
       brand: ""
@@ -245,10 +244,10 @@ tasks:
       }
   "28":
     id: "28"
-    taskid: 2f4e5909-e9e1-4e6e-8df8-81d87b71ea8d
+    taskid: 70059258-fba3-4615-8fe6-b36360e23e18
     type: regular
     task:
-      id: 2f4e5909-e9e1-4e6e-8df8-81d87b71ea8d
+      id: 70059258-fba3-4615-8fe6-b36360e23e18
       version: -1
       name: Get report on domain
       description: ""
@@ -263,7 +262,6 @@ tasks:
       domain:
         complex:
           root: inputs.Domain
-          accessor: Name
       fullResponse: {}
       threshold: {}
     reputationcalc: 0
