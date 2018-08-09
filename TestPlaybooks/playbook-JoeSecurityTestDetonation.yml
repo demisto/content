@@ -1,0 +1,223 @@
+id: JoeSecurityTestDetonation
+version: -1
+name: JoeSecurityTestDetonation
+fromversion: 4.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 74f5bd5f-389c-4711-8c19-28816e4268a7
+    type: start
+    task:
+      id: 74f5bd5f-389c-4711-8c19-28816e4268a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: aa10000d-1cda-4d0a-8b96-36d7150f90ea
+    type: regular
+    task:
+      id: aa10000d-1cda-4d0a-8b96-36d7150f90ea
+      version: -1
+      name: Clean Start
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "6"
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 5657f7ff-af2e-417a-80a9-a8b711a68079
+    type: playbook
+    task:
+      id: 5657f7ff-af2e-417a-80a9-a8b711a68079
+      version: -1
+      name: JoeSecurity - Detonate URL
+      description: Detonates an URL using the Joe Security sandbox
+      playbookName: JoeSecurity - Detonate URL
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      URL:
+        simple: https://www.facebook.com
+      comments:
+        simple: this is detonation test
+      internet-access:
+        simple: "True"
+      interval:
+        simple: "1"
+      report-file-type:
+        simple: pdf
+      systems:
+        simple: w10
+      timeout:
+        simple: "20"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 01b7fa21-89b2-4bc7-84a7-4de09bc8e13d
+    type: playbook
+    task:
+      id: 01b7fa21-89b2-4bc7-84a7-4de09bc8e13d
+      version: -1
+      name: JoeSecurity - Detonate File
+      description: Detonates a File using the Joe Security sandbox
+      playbookName: JoeSecurity - Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      EntryID:
+        simple: ${File.EntryID}
+      comments:
+        simple: file detonation
+      internet-access:
+        simple: "True"
+      interval:
+        simple: "1"
+      report-file-type: {}
+      systems:
+        simple: w10
+      timeout:
+        simple: "20"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 45165634-8ed7-496e-8e6e-0a2fa4849a90
+    type: regular
+    task:
+      id: 45165634-8ed7-496e-8e6e-0a2fa4849a90
+      version: -1
+      name: Create a sample file
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: this is a regular file
+      entryId: {}
+      filename:
+        simple: suspicious.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 3822349a-51f7-4c96-8f08-915c1ab769d1
+    type: playbook
+    task:
+      id: 3822349a-51f7-4c96-8f08-915c1ab769d1
+      version: -1
+      name: JoeSecurity - Detonate File From URL
+      playbookName: JoeSecurity - Detonate File From URL
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      FileUrl:
+        simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
+      comments:
+        simple: File Detonation from url
+      internet-access:
+        simple: "True"
+      interval:
+        simple: "1"
+      report-file-type: {}
+      systems:
+        simple: w7_5
+      timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
