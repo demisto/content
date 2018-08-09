@@ -3,9 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Extract Indicators From File - test"
+        },
+        {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
+            "timeout": 500,
+            "nightly": true
         },
         {
             "integrations": "Jask",
@@ -310,7 +314,8 @@
         },
         {
             "integrations": "carbonblackliveresponse",
-            "playbookID": "CarbonBlackLiveResponseTest"
+            "playbookID": "CarbonBlackLiveResponseTest",
+            "nightly": true
         },
         {
             "playbookID": "TestSafeBreach",
@@ -400,7 +405,8 @@
         },
         {
             "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook"
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
         }
     ],
     "skipped": [

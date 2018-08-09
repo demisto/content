@@ -2091,5 +2091,4 @@ script:
       type: string
     description: Enumerates all users that are members of a group
   runonce: false
-releaseNotes: "Added list-groups and get-groups-members, also added arguments for other group commands"
 fromversion: 3.6.0
