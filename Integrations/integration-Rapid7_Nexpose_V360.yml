@@ -1619,3 +1619,4 @@ script:
   runonce: false
 fromversion: 3.6.0
 toversion: 4.0.0
+releaseNotes: "-"
