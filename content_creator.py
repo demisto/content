@@ -29,6 +29,8 @@ def is_ge_version(ver1, ver2):
     for v1, v2 in zip(ver1, ver2):
         if v1 > v2:
             return False
+        elif v2 > v1:
+            return True
 
     # most significant values are equal
     return len(ver1) <= len(ver2)
@@ -139,7 +141,7 @@ def main(circle_artifacts):
 
 
 def test_version_compare(version_num):
-    V = ['3.5', '2.0', '2.1', '4.7', '1.1.1', '1.5', '3.10.0', '2.7.1', '3', '3.4.9', '3.5.1', '3.6']
+    V = ['3.5', '2.0', '2.1', '4.7', '1.1.1', '1.5', '3.10.0', '2.7.1', '3', '3.4.9', '3.5.1', '3.6', '4.0.0', '5.0.1']
 
     lower = []
     greater = []
