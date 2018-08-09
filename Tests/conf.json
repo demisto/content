@@ -3,8 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Gmail",
-            "playbookID": "GmailTest"
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500
         },
         {
             "integrations": "Jask",
@@ -15,7 +16,8 @@
         },
         {
             "integrations": "McAfee Advanced Threat Defense",
-            "playbookID": "Test Playbook McAfee ATD"
+            "playbookID": "Test Playbook McAfee ATD",
+            "timeout": 500
         },
         {
             "playbookID": "exporttocsv_script_test"
@@ -307,16 +309,7 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": [
-                {
-                    "name": "carbonblackliveresponse",
-                    "byoi": true
-                },
-                {
-                    "name": "carbonblack-v2",
-                    "byoi": true
-                }
-            ],
+            "integrations": "carbonblackliveresponse",
             "playbookID": "CarbonBlackLiveResponseTest"
         },
         {
@@ -404,6 +397,10 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook"
         }
     ],
     "skipped": [
@@ -560,10 +557,6 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
-        },
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook"
         }
     ]
 }
