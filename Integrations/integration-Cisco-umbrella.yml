@@ -1092,5 +1092,335 @@ script:
       Investigate uses regular expressions (RegEx) to search against the Investigate
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: 'The domain name you would like to categorize. (e.g. : www.amazon.com)
+        Comma separated list allowed. (e.g. : www.amazon.com,www.facebook.com,www.yahoo.com)'
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain's name.
+      type: string
+    - contextPath: Domain.Umbrella.RiskScore
+      description: The status will be "-1" if the domain is believed to be malicious,
+                     "1" if the domain is believed to be benign, "0" if it hasn't been classified
+                     yet.
+      type: number
+    - contextPath: Domain.Umbrella.SecureRank 
+      description: Suspicious rank for a domain that reviews based on the lookup behavior
+        of client IP for the domain. Securerank is designed to identify hostnames
+        requested by known infected clients but never requested by clean clients,
+        assuming these domains are more likely to be bad. Scores returned range from
+        -100 (suspicious) to 100 (benign).
+      type: number
+    - contextPath: Domain.Umbrella.FirstQueriedTime
+      description: The time when the attribution for this Domain was made.
+      type: number
+    - contextPath: DBotScore.Indicator
+    - contextPath: DBotScore.Score
+    - contextPath: DBotScore.Type
+    - contextPath: DBotScore.Vendor
+    - contextPath: Domain.Umbrella.ContentCategories
+      description: The Umbrella content category or categories that match this domain.
+        If none of them match, the return will be blank.
+      type: string
+    - contextPath: Domain.Umbrella.MalwareCategories
+      description: The Umbrella security category, or categories, that match this
+        domain or that this domain is associated with. If none match, the return will
+        be blank.
+      type: string
+    description: Get Domain Reputation info using Cisco Umbrella Investigate.
+  - name: umbrella-get-related-domains
+    arguments:
+    - name: domain
+      required: true
+      description: 'The domain name you would like see related domains for. (e.g.
+        : www.cnn.com)'
+    - name: co-occurences
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Set to true to get a list of co-occurences. (A co-occurrence is
+        when two or more domains are being accessed by the same users within a small
+        window of time) By default, this value will be false.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain's name.
+      type: string
+    - contextPath: Domain.Umbrella.RelatedDomains.Name
+      description: Domain names that have been frequently seen requested around the
+        same time (up to 60 seconds before or after) as the given domain name.
+      type: string
+    - contextPath: Domain.Umbrella.CoOccurences.Name
+      description: All co-occurences of requests from client IPs are returned for
+        the previous seven days whether the co-occurence is suspicious or not.
+      type: string
+    - contextPath: Domain.Umbrella.CoOccurences.Score
+      description: The values range between 0 and 1 and should not exceed 1.
+      type: number
+    description: Get a list of domain names that have been frequently seen requested
+      around the same time (up to 60 seconds before or after) as the given domain
+      name. And also a list of co-occurences.
+  - name: umbrella-get-domain-classifiers
+    arguments:
+    - name: domain
+      description: 'The domain name you would like see classifiers for. (e.g. : www.cnn.com)'
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain's name.
+      type: string
+    - contextPath: Domain.Umbrella.MalwareCategories
+      description: Which Umbrella security category, if any, matched the input
+      type: string
+    - contextPath: Domain.Umbrella.AttackNames
+      description: Which named attacks, if any, matched the input
+      type: string
+    - contextPath: Domain.Umbrella.ThreatTypes
+      description: Which threat type, if any, matched in the input.
+      type: string
+    description: List all the classifiers used for a particular domain to assign a
+      particular security categorization or threat type (indicators of compromise).
+  - name: umbrella-get-domain-queryvolume
+    arguments:
+    - name: domain
+      required: true
+      description: 'The domain name you would like see volume for. (e.g. : www.cnn.com)'
+    - name: start
+      required: true
+      description: '"Point in time in the past, expressed as a timestamp in the following
+        format or relative time. Valid formats: start=-2days start=-2hours start=1997-07-16T19:20:30+01:00
+        i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative sign. The max is 30 days."'
+    - name: stop
+      description: '"Point in time in the past expressed as a timestamp in milliseconds
+        or relative time. Also valid is ''now''. Valid formats: stop=-1days stop=now
+        start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative
+        sign. The max is 30 days."'
+    - name: match
+      description: 'Valid options are: exact, component, or all (default).     1.Using
+        "cisco.com" as an example, "exact" only gives results for cisco.com.    2.
+        Component gives results for every component of cisco.com, but not cisco.com.
+        Examples are www.cisco.com, mail.cisco.com, wwwin.cisco.com, something.else.cisco.com.     3.All
+        returns the sum of component and exact, this is the default.'
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain's name.
+      type: string
+    - contextPath: Domain.Umbrella.QueryVolume.StartDate
+      description: Start date for which the volume data is returned.
+      type: string
+    - contextPath: Domain.Umbrella.QueryVolume.StopDate
+      description: Stop date for which the volume data is returned.
+      type: string
+    - contextPath: Domain.Umbrella.QueryVolume.QueryHour
+      description: Query hour for which the queries data is returned.
+      type: string
+    - contextPath: Domain.Umbrella.QueryVolume.Queries
+      description: Number of DNS queries per hour, in ascending order, to the specified
+        domain.
+      type: string
+    description: The domain volume command shows the number of DNS queries made per
+      hour to the specified domain by users of Umbrella's recursive DNS servers.
+  - name: umbrella-get-domain-details
+    arguments:
+    - name: domain
+      description: 'The domain name you would like see the security info for. (e.g.
+        : www.cnn.com)'
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain's name.
+    - contextPath: Domain.Umbrella.Details.DGA
+      description: Domain Generation Algorithm. This score is generated based on the
+        likeliness of the domain name being generated by an algorithm rather than
+        a human. This score ranges from -100 (suspicious) to 0 (benign).
+    - contextPath: Domain.Umbrella.Details.Entropy
+      description: The number of bits required to encode the domain name, as a score.
+        This score is to be used in conjunction with DGA and Perplexity.
+    - contextPath: Domain.Umbrella.Details.SecureRank 
+      description: Suspicious rank for a domain that reviews based on the lookup behavior
+        of client IP for the domain. Securerank is designed to identify hostnames
+        requested by known infected clients but never requested by clean clients,
+        assuming these domains are more likely to be bad. Scores returned range from
+        -100 (suspicious) to 100 (benign).
+    - contextPath: Domain.Umbrella.Details.PrefixScore
+      description: Prefix ranks domains given their IP prefixes (an IP prefix is the
+        first three octets in an IP address) and the reputation score of these prefixes.
+        Ranges from -100 to 0, -100 being very suspicious.
+    - contextPath: Domain.Umbrella.Details.RipScore
+      description: RIP ranks domains given their IP addresses and the reputation score
+        of these IP addresses. Ranges from -100 to 0, -100 being very suspicious.
+    - contextPath: Domain.Umbrella.Details.Popularity
+      description: The number of unique client IPs visiting this site, relative to
+        the all requests to all sites. A score of how many different client/unique
+        IPs go to this domain compared to others.
+    - contextPath: Domain.Umbrella.Details.Geodiversity
+      description: A score representing the number of queries from clients visiting
+        the domain, broken down by country. Score is a non-normalized ratio between
+        0 and 1.
+    - contextPath: Domain.Umbrella.Details.TldGeodiversity
+      description: A score that represents the TLD country code geodiversity as a
+        percentage of clients visiting the domain. Occurs most often with domains
+        that have a ccTLD. Score is normalized ratio between 0 and 1.
+    - contextPath: Domain.Umbrella.Details.KolmogorovSmirnovTest
+      description: Kolmogorov–Smirnov test on geodiversity. 0 means that the client
+        traffic matches what is expected for this TLD.
+    - contextPath: DBotScore.Indicator
+    - contextPath: DBotScore.Score
+    - contextPath: DBotScore.Type
+    - contextPath: DBotScore.Vendor
+    description: The security information API method contains multiple scores or security
+      features, which can act as relevant datapoints to build insight on the reputation.
+  - name: umbrella-get-whois-for-email-registrar
+    arguments:
+    - name: email
+      required: true
+      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
+        separated list allowed. (e.g. : ns2.google.com, ns1.google.com)'
+      defaultValue: 'Email address following rfc5322 conventions. (e.g. : admin@google.com)
+        Comma separated list allowed. (e.g. : admin@google.com, dns-admin@google.com,
+        hostmaster@charter.com)'
+    - name: offset
+      description: For paging with offset for domains with more than 500 results,
+        set the url-param limit. Default value is 10.
+    - name: sort
+      description: '"To sort the list of domains based on timestamp. By default, domains
+        are simply sorted by name in alphabetical order.  Possible values are: ""created"",
+        ""updated"", and ""expired"", each of which sorts from the most recent date
+        for the value of the WHOIS entry."'
+    - name: limit
+      description: To limit the total number of results (domains).
+    outputs:
+    - contextPath: Email.Address
+      description: Email address.
+    - contextPath: Email.Umbrella.Whois.TotalResults
+      description: Total number of results for this email.
+    - contextPath: Email.Umbrella.Whois.MoreDataAvailable
+      description: Whether or not there are more than 500 results for this email,
+        either yes or no.
+    - contextPath: Email.Umbrella.Whois.ResultLimit
+      description: Total number of results for this page of results, default 500.
+    - contextPath: Email.Umbrella.Whois.Domains.Name
+      description: 'Domains registered by this email and '
+    - contextPath: Email.Umbrella.Whois.Domains.Name.SecurityCategories
+      description: Security Categories associated with the domain.
+    - contextPath: Email.Umbrella.Whois.Domains.Name.ContentCategories
+      description: Content Categories associated with the domain.
+    - contextPath: Email.Umbrella.Whois.Domains.LastObserved
+      description: 'Whether the domain is current, meaning currently registered by
+        this email address. Values : Past or Current'
+    description: The WHOIS email command will return the email address or addresses
+      of the registrar for the domain or domains that are looked up.
+  - name: umbrella-get-whois-for-nameserver
+    arguments:
+    - name: nameserver
+      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
+        separated list allowed. (e.g. : ns2.google.com, ns1.google.com)'
+    - name: offset
+      description: For paging with offset for domains with more than 500 results,
+        set the url-param limit. Default value is 10.
+    - name: sort
+      description: '"To sort the list of domains based on timestamp. By default, domains
+        are simply sorted by name in alphabetical order.  Possible values are: ""created"",
+        ""updated"", and ""expired"", each of which sorts from the most recent date
+        for the value of the WHOIS entry."'
+    - name: limit
+      description: To limit the total number of results (domains).
+    outputs:
+    - contextPath: Nameserver.Name
+      description: Nameserver's domain name.
+    - contextPath: Nameserver.Umbrella.Whois.TotalResults
+      description: Total number of results for this nameserver domain name.
+    - contextPath: Nameserver.Umbrella.Whois.MoreDataAvailable
+      description: Whether or not there are more than 500 results for this email,
+        either yes or no.
+    - contextPath: Nameserver.Umbrella.Whois.ResultLimit
+      description: Total number of results for this page of results, default 500.
+    - contextPath: Nameserver.Umbrella.Whois.Domains.Name
+      description: Domains registered by this nameserver.
+    - contextPath: Nameserver.Umbrella.Whois.Domains.Name.SecurityCategories
+      description: Security Categories associated with the domain.
+    - contextPath: Nameserver.Umbrella.Whois.Domains.Name.ContentCategories
+      description: Content Categories associated with the domain.
+    - contextPath: Nameserver.Umbrella.Whois.Domains.LastObserved
+      description: 'Whether the domain is current, meaning currently registered by
+        this email address. Values : Past or Current'
+    description: The Nameserver command allows you to search a nameserver to find
+      all domains registered by that nameserver. You can search against a single nameserver
+      or multiple nameservers in a query.
+  - name: umbrella-get-whois-for-domain
+    arguments:
+    - name: domain
+      required: true
+      description: 'Domain name without wildcards and including TLD. (e.g. : www.cnn.com)'
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain's name.
+    - contextPath: Domain.Umbrella.Whois.RegistrarName
+    - contextPath: Domain.Umbrella.Whois.LastRetrieved
+    - contextPath: Domain.Umbrella.Whois.Created
+    - contextPath: Domain.Umbrella.Whois.Updated
+    - contextPath: Domain.Umbrella.Whois.Exprires
+    - contextPath: Domain.Umbrella.Whois.IANAID
+    - contextPath: Domain.Umbrella.Whois.LastObserved
+    - contextPath: Domain.Umbrella.Whois.Nameservers.Name
+    - contextPath: Domain.Umbrella.Whois.Emails.Name
+    description: This command will provide a standard WHOIS response record for a
+      single domain with all available WHOIS data returned. 
+  - name: umbrella-get-malicious-domains-for-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP Address to check for malicious domains.
+    outputs:
+    - contextPath: IP.Address
+      description: IP address.
+    - contextPath: IP.Umbrella.MaliciousDomains.Name
+      description: The block list domain associated with the IP
+    - contextPath: IP.Umbrella.MaliciousDomains.LastObserved
+      description: 'Whether the domain is current, meaning currently registered by
+        this email address. Values : Past or Current'
+    description: Test whether the IP address you’ve entered as input has any known
+      malicious domains associated with it.
+  - name: umbrella-get-domains-using-regex
+    arguments:
+    - name: expression
+      required: true
+      description: 'A standard RegEx search pattern, must be encoded in a double quoted
+        bracket. e.g. :'
+    - name: start
+      required: true
+      description: '"Can either be specified in relative or absolute time. Point in
+        time in the past, expressed as a timestamp in the following format or relative
+        time. Valid formats: start=-2days start=-2hours start=-1000minutes start=-3weeks
+        start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative
+        sign for relative time. """'
+    - name: includeCategory
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Default is false, if set to true this will include security categories
+        in the results and may slow the return times.
+      defaultValue: "false"
+    - name: stop
+      description: 'The exclusive end time in milliseconds absolute or relative time
+        (eg: ''now'', ''-2days'',''1997-07-16T19:20:30+01:00'') for a query.'
+    - name: limit
+      description: The maximum number of items to return - combine with offset for
+        result pagination
+    - name: type
+      description: Search database node type (URL, IP, HOST).
+    outputs:
+    - contextPath: Umbrella.DomainSearch.TotalResults
+      description: Total results from this search string. The default number of results
+        is 100 and can be expanded using the limit parameter. 
+    - contextPath: Umbrella.DomainSearch.Domain.Name
+      description: Name of the domain found.
+    - contextPath: Umbrella.DomainSearch.Domain.FirstSeen
+      description: First Seen of the domain found.
+    description: 'Get the list of matching domains (Investigate Database) based on
+      a regular expression. '
 releaseNotes: "TODO: Add proper release notes"
 hidden: false
