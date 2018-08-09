@@ -1605,4 +1605,3 @@ script:
       description: Comments
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
-releaseNotes: "Add servicenow-get-computer command"
