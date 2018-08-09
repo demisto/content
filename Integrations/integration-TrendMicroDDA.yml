@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: Trend Micro Deep Discovery Analyzer
 display: Trend Micro Deep Discovery Analyzer
-fromversion: 4.0.0
 category: Forensics & Malware Analysis
 image: data:image/png;base64,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
 description: Deep Discovery Analyzer is a turnkey appliance that uses virtual images
@@ -129,7 +128,7 @@ script:
     def http_request(uri, method, headers, body={}, params={}, files={}):
         ''' Makes an API call to the server URL with the supplied uri, method, headers, body and params '''
         url = '%s/%s' % (SERVER_URL, uri)
-        if bool(body):
+        if method not in ['put', 'post']:
             body=json.dumps(body)
         res = requests.request(
             method,
@@ -238,7 +237,7 @@ script:
                 'X-DTAS-ClientUUID': UUID,
                 'X-DTAS-SourceID': '1',
                 'X-DTAS-SourceName': 'DemistoIntegration',
-                'X-DTAS-SHA1': hash_file(demisto.getFilePath(sampleFile)['path']),
+                'X-DTAS-SHA1': hash_file(demisto.getFilePath(sample_file)['path']),
                 'X-DTAS-Time': get_epoch_time(),
                 'X-DTAS-SampleType': '0', #0 for file, 1 for URL
                 'X-DTAS-Challenge': str(uuid.uuid4()),
@@ -253,7 +252,7 @@ script:
                 headers_simple_upload_sample_file,
                 files = {'uploadsample': f}
             )
-        pretty_res = prettify_simple_upload_sample_file(headers_simple_upload_sample_url['X-DTAS-SHA1'])
+        pretty_res = prettify_simple_upload_sample_file(headers_simple_upload_sample_file['X-DTAS-SHA1'])
         return res, pretty_res
 
     def simple_upload_sample_file_command():
@@ -322,7 +321,7 @@ script:
     def get_sample(sha1, archive_type, archive_encrypted, archive_name):
         '''Issue a request to retrieve an archive of the sample given its SHA1 hash'''
         if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
-            return_error('Provided SHA1 is unvalid.')
+            return_error('Provided SHA1: {} is unvalid.'.format(sha1))
 
         headers_get_sample = copy.deepcopy(DEFAULT_HEADERS)
         headers_get_sample['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
@@ -400,12 +399,12 @@ script:
             demisto.results('No results found.')
 
     def build_report(res, threshold, status, verbose):
-        report_json = xml2json(res.text)
+        report_json = json.loads(xml2json(res.text))
         reports = report_json['REPORTS']
         #true if list, false if dict
         reports_type_is_list = isinstance(reports['FILE_ANALYZE_REPORT'], list)
-
-        hr = {
+        hr = {}
+        hr_headers = {
             'Risk Level': reports['OVERALL_RISK_LEVEL'],
             'Image Type': reports['IMAGE_TYPE']['TYPE']['#text'],
             'Sum of Files Analyzed': (len(reports['FILE_ANALYZE_REPORT'])) if reports_type_is_list  else '1',
@@ -415,14 +414,16 @@ script:
         dbot_score = 0
         context['DBotScore'] = {
             'Vendor': 'Trend Micro DDA',
-            'Score': 0, #check thattttttttt
-            'Type': 'hash'
+            'Score': dbot_score, #check that------------------ TODO --------------------
+            'Type': 'hash',
+            'Indicator': reports['FILE_ANALYZE_REPORT']['FileSHA1'] if not reports_type_is_list else reports['FILE_ANALYZE_REPORT'][0]['FileSHA1']
         }
         #if type is list, the submission was divided to sub-files and the first file_analyze_report is of the main submission
-        context['DBotScore']['Indicator'] = (reports['FILE_ANALYZE_REPORT']['FileSHA1']) if not reports_type_is_list else (reports['FILE_ANALYZE_REPORT'][0]['FileSHA1'])
+        #context['DBotScore.Indicator'] = reports['FILE_ANALYZE_REPORT']['FileSHA1'] if not reports_type_is_list else reports['FILE_ANALYZE_REPORT'][0]['FileSHA1']
 
         if not reports_type_is_list: #if the submission doesn't have sub-files
             file_analyze_report = reports['FILE_ANALYZE_REPORT']
+            hr['File Name'] = file_analyze_report['OrigFileName']
             hr['Malware Source IP'] = file_analyze_report['MalwareSourceIP']
             hr['Malware Source Host'] = file_analyze_report['MalwareSourceHost']
             hr['Total Dropped Files'] = file_analyze_report['DroppedFiles']['@Total']
@@ -436,18 +437,18 @@ script:
 
             #add data regarding the submission to the context
             context['TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)'] = {
-                'Status' : status,
-                'RiskLevel' : reports['OVERALL_RISK_LEVEL'],
-                'SHA1' : file_analyze_report['FileSHA1'],
-                'SHA256' : file_analyze_report['FileSHA256'],
-                'MD5' : file_analyze_report['FileMD5'],
-                'VirusDetected' : binary_to_boolean(file_analyze_report['VirusDetected'])
+                'Status': status,
+                'RiskLevel': reports['OVERALL_RISK_LEVEL'],
+                'SHA1': file_analyze_report['FileSHA1'],
+                'SHA256': file_analyze_report['FileSHA256'],
+                'MD5': file_analyze_report['FileMD5'],
+                'VirusDetected' : binary_to_boolean(file_analyze_report['VirusDetected']),
             }
 
             if file_analyze_report['TrueFileType'] == 'URL':
+                #add the URL address
                 context[outputPaths['url']] = {
-                    'Data' : 'fr' #############################
-                    ###########check for more things that return#########################################
+                    'Data': file_analyze_report['OrigFileName']
                 }
             else:
                 context[outputPaths['file']] = {
@@ -455,26 +456,26 @@ script:
                     'SHA1': file_analyze_report['FileSHA1'],
                     'SHA256': file_analyze_report['FileSHA256'],
                     'Size': file_analyze_report['FileSize'],
-                    'Name': file_analyze_report['VirusName']['#text'],
+                    'Name': file_analyze_report['OrigFileName'],
                 }
 
-            #add data regarding the File to the context if file is malicious
+            #add data regarding the submission to the context if file is malicious
             if (reports['OVERALL_RISK_LEVEL'] >= threshold):
                 dbot_score = 3
-                if file_analyze_report['TrueFileType'] != 'URL':
-                    context[outputPaths['url']].update(
-                        'Malicious' : {
+                if file_analyze_report['TrueFileType'] == 'URL':
+                    context[outputPaths['url']].update({
+                        'Malicious': {
                             'Vendor': 'Trend Micro DDA',
                             'Description': 'RiskLevel: ' + reports['OVERALL_RISK_LEVEL']
                         }
-                    )
+                    })
                 else:
-                    context[outputPaths['file']].update(
+                    context[outputPaths['file']].update({
                         'Malicious' : {
                             'Vendor': 'Trend Micro DDA',
                             'Description': 'RiskLevel: ' + reports['OVERALL_RISK_LEVEL']
                         }
-                    )
+                    })
 
             #extracting IP and Domains from the report
             if file_analyze_report['MalwareSourceIP']:
@@ -491,99 +492,109 @@ script:
                             'DownloadURL': dropped_files['FileItem']['DownloadURL']
                         })
 
-        elif reports_type_is_list: #if the submission have sub-files
+        else: #if the submission have sub-files
 
             main_file_analyze_report = reports['FILE_ANALYZE_REPORT'][0]
+
             #add data to the war room
-            file_name_string = ''
-            malware_source_ip_string = ''
-            malware_source_host_string = ''
-            total_dropped_files_string = ''
-            deny_list_string = ''
-            white_list_string = ''
-            detection_name_string = ''
-            download_url_string = ''
-
-            for item in reports['FILE_ANALYZE_REPORT']:
-                file_name_string += (item['OrigFileName'] + ', ') if item['OrigFileName'] is not None else ''
-                malware_source_ip_string += (item['MalwareSourceIP'] + ', ') if item['MalwareSourceIP'] is not None else ''
-                malware_source_host_string += (item['MalwareSourceHost'] + ', ') if item['MalwareSourceHost'] is not None else ''
-                total_dropped_files_string += (item['DroppedFiles']['@Total'] + ', ') if item['DroppedFiles']['@Total'] is not None else ''
-                deny_list_string += (binary_to_booleanic_string(item['IsDenylisted']) + ', ') if item['IsDenylisted'] is not None else ''
-                white_list_string += (binary_to_booleanic_string(item['IsWhitelisted']) + ', ') if item['IsWhitelisted'] is not None else ''
-                if '#text' in item['VirusName']:
-                    detection_name_string += item['VirusName']['#text'] + ', '
+            hr = copy.deepcopy(reports['FILE_ANALYZE_REPORT'])
+            for item in hr:
+                item['File Name'] = item['OrigFileName']
+                item['Detection Name'] = item['VirusName']['#text'] if '#text' in item['VirusName'] else None
+                item['Malware Source IP'] = item['MalwareSourceIP']
+                item['Malware Source Host'] = item['MalwareSourceHost']
                 if verbose == 'true':
-                    if 'FileItem' in item['DroppedFiles']:
-                        for i in item['DroppedFiles']['FileItem']:
-                            download_url_string += (i['DownloadURL'] + ', ') if i['DownloadURL'] is not None else ''
+                    item['Download URL'] = item['DroppedFiles'].get('FileItem')
+                item['Deny List'] = binary_to_booleanic_string(item['IsDenylisted']) if item['IsDenylisted'] else None
+                item['White List'] = binary_to_booleanic_string(item['IsWhitelisted']) if item['IsWhitelisted'] else None
 
-            hr['File Name'] = file_name_string[:-2]
-            hr['Malware Source IP'] = malware_source_ip_string[:-2]
-            hr['Malware Source HOST'] = malware_source_host_string[:-2]
-            hr['Total Dropped Files'] = total_dropped_files_string[:-2]
-            hr['Deny List'] = deny_list_string[:-2]
-            hr['White List'] = white_list_string[:-2]
-            hr['Detection Name'] = detection_name_string[:-2]
             #set the filename
-            filename = hr['Detection Name'] if len(hr['Detection Name']) > 0 else main_file_analyze_report['OrigFileName']
+            filename = main_file_analyze_report['OrigFileName']
+
             if verbose == 'true':
-                hr['Download URL'] = download_url_string[:-2]
-                context['URL.Data'] = download_url_string[:-2]
+                hr['Download URL'] = download_url_list
+                context['URL.Data(val.Data && val.Data == obj.Data)'] = download_url_list
                 context['TrendMicroDDA.Submission'].update({
-                            'DownloadURL': download_url_string[:-2]
+                    'DownloadURL': download_url_list
+                })
 
             #add data regarding the submission to the context
-            fileAnalyzedList = []
-            for fileAnalyzed in reports['FILE_ANALYZE_REPORT'][1:]: #iterate over all the subfiles
-                fileAnalyzedDict = {
-                    'SHA1': fileAnalyzed['FileSHA1'],
-                    'SHA256': fileAnalyzed['FileSHA256'],
-                    'MD5': fileAnalyzed['FileMD5'],
-                    'VirusDetected': binary_to_boolean(fileAnalyzed['VirusDetected']),
+            file_analyzed_list = []
+            for file_analyzed in reports['FILE_ANALYZE_REPORT'][1:]: #iterate over all the subfiles excluding the main file
+                file_analyzed_dict = {
+                    'SHA1': file_analyzed['FileSHA1'],
+                    'SHA256': file_analyzed['FileSHA256'],
+                    'MD5': file_analyzed['FileMD5'],
+                    'Name': file_analyzed['VirusName']['#text'] if '#text' in file_analyzed['VirusName'] else '',
+                    'VirusDetected': binary_to_boolean(file_analyzed['VirusDetected']),
                 }
-                fileAnalyzedList.append(fileAnalyzedDict)
+                if file_analyzed['TrueFileType'] == 'URL':
+                    #add the URL address
+                    context[outputPaths['url']] = {
+                        'Data': file_analyzed['OrigFileName']
+                    }
+                else:
+                    context[outputPaths['file']] = {
+                        'MD5': file_analyzed['FileMD5'],
+                        'SHA1': file_analyzed['FileSHA1'],
+                        'SHA256': file_analyzed['FileSHA256'],
+                        'Size': file_analyzed['FileSize'],
+                        'Name': file_analyzed['VirusName']['#text'] if '#text' in file_analyzed['VirusName'] else '',
+                        ##add score of some sort from virusdetected? ask michal.------------------ TODO --------------------
+                    }
+                file_analyzed_list.append(file_analyzed_dict)
 
-            context['TrendMicroDDA.Submission(val.SHA1==obj.SHA1)'] = {
-                'status' : status,
-                'RiskLevel' : reports['OVERALL_RISK_LEVEL'],
-                'SHA1' : main_file_analyze_report['FileSHA1'],
-                'SHA256' : main_file_analyze_report['FileSHA256'],
-                'MD5' : main_file_analyze_report['FileMD5'],
-                'VirusDetected' : binary_to_boolean(main_file_analyze_report['VirusDetected']),
-                'FileAnalyzed' : fileAnalyzedList,
+            context['TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)'] = {
+                'Status': status,
+                'RiskLevel': reports['OVERALL_RISK_LEVEL'],
+                'SHA1': main_file_analyze_report['FileSHA1'],
+                'SHA256': main_file_analyze_report['FileSHA256'],
+                'MD5': main_file_analyze_report['FileMD5'],
+                'VirusDetected': binary_to_boolean(main_file_analyze_report['VirusDetected']),
+                'FileAnalyzed': file_analyzed_list,
             }
-
-            #add data regarding the File to the context
+            if main_file_analyze_report['TrueFileType'] == 'URL':
+                context['URL(val.Data && val.Data==obj.Data)'] = {
+                    'Data': main_file_analyze_report['OrigFileName'],
+                }
+            else:
+                context['File(val.SHA1 && val.SHA1==obj.SHA1)'] = {
+                    'MD5': main_file_analyze_report['FileMD5'],
+                    'SHA1': main_file_analyze_report['FileSHA1'],
+                    'SHA256': main_file_analyze_report['FileSHA256'],
+                    'Size': main_file_analyze_report['FileSize'],
+                    'Name': main_file_analyze_report['VirusName']['#text'] if '#text' in file_analyzed['VirusName'] else '',
+                }
+            #add data regarding the submission to the context if it is malicious
             if (reports['OVERALL_RISK_LEVEL'] >= threshold):
-                context['DBotScore']['Score'] = 3
-                if (main_file_analyze_report['TrueFileType'] != 'URL'):
-                    context['File'] = {
-                        'MD5': main_file_analyze_report['FileMD5'],
-                        'SHA1': main_file_analyze_report['FileSHA1'],
-                        'SHA256': main_file_analyze_report['FileSHA256'],
-                        'Size': main_file_analyze_report['FileSize'],
-                        'Name': main_file_analyze_report['VirusName']['#text'],
+                context['DBotScore.Score'] = 3
+                if (main_file_analyze_report['TrueFileType'] == 'URL'):
+                    context[outputPaths['url']] = {
                         'Malicious' : {
                             'Vendor' : 'Trend Micro DDA',
                             'Description' : 'RiskLevel: ' + reports['OVERALL_RISK_LEVEL']
                             }
-                        }
+                    }
+                else:
+                    context[outputPaths['file']] = {
+                        'Malicious' : {
+                            'Vendor' : 'Trend Micro DDA',
+                            'Description' : 'RiskLevel: ' + reports['OVERALL_RISK_LEVEL']
+                            }
+                    }
 
             #extracting IP and Domains from the report
             if main_file_analyze_report['MalwareSourceIP']:
-                context['IP'] = {}
-                context['IP']['Address'] = main_file_analyze_report['MalwareSourceIP']
+                context['IP.Address(val.Address && val.Address == obj.Address)'] = main_file_analyze_report['MalwareSourceIP']
             if main_file_analyze_report['MalwareSourceHost']:
-                context['Domain'] = {}
-                context['Domain']['Name'] = main_file_analyze_report['MalwareSourceHost']
+                context['Domain.Name(val.Name && val.Name == obj.Name)'] = main_file_analyze_report['MalwareSourceHost']
 
-        return context, hr, filename
+        return context, hr, hr_headers, filename
 
     def get_report(sha1):
         '''Issue a request to retrieve XML report for a given SHA1'''
-        if not (re.match(r'\b[0-9a-fA-F]{40}\b', str(sha1))):
-            return_error('get_report parameter sha1 must contain a valid sha1 string')
+        if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
+            return_error('Provided SHA1: {} is unvalid.'.format(sha1))
 
         headers_get_report = copy.deepcopy(DEFAULT_HEADERS)
         headers_get_report['X-DTAS-SHA1'] = sha1 # SHA1 of the file/URL to download
@@ -623,24 +634,46 @@ script:
             })
         else:
             status = 'Completed'
-            context, hr, filename = build_report(res, threshold, status, verbose)
-            demisto.results({
+
+            context, hr, hr_headers, filename = build_report(res, threshold, status, verbose)
+            markdown_table_headers = ['File Name', 'Detection Name', 'Malware Source IP', 'Malware Source Host']
+            if verbose == 'true':
+                markdown_table_headers.append('Download URL')
+            markdown_table_headers.extend(('Deny List', 'White List'))
+
+            demisto.results({ #add context and the Report File to the war room
                 'Type': 9,
-                'FileID': fileResult(filename, res.text),
-                'Contents': res.text,
+                'FileID': res.text,
+                'Contents': '',
+                'ContentsFormat': formats['text'],
                 'File': filename,
-                'EntryContext': context
-                #'Contents': res.text,
-                #'ContentsFormat': formats['json'],
-                #'ReadableContentsFormat': formats['markdown'],
-                #'HumanReadable': tableToMarkdown('Sample Report from TrendMicroDDA', hr, removeNull = True),
-                #'EntryContext': context
+                'EntryContext': context,
+            })
+            demisto.results({ #add table to the war room
+                'Type': entryTypes['note'],
+                'Contents': res.text,
+                'ContentsFormat': formats['text'],
+                'HumanReadableFormat': formats['markdown'],
+                'HumanReadable':
+                    '## Submission Report from TrendMicroDDA\n' +
+                    '### Risk Level: {}, Sum of Files Analyzed: {}, Image Type: {}\n'.format(hr_headers['Risk Level'], hr_headers['Sum of Files Analyzed'],hr_headers['Image Type']) +
+                    tableToMarkdown('Report Summary', hr, headers=markdown_table_headers),
             })
 
-    def get_brief_report(sha1_list):
-        for sha1 in sha1_list:
-            if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
-                return_error('get_brief_report parameter sha1 must contain a valid sha1 string')
+    def build_brief_report(res, sha1, threshold):
+        report_json = json.loads(xml2json(res.text))
+        brief_report_json = report_json['REPORT']['BRIEF_REPORT']
+        hr = {
+            'SHA1': sha1,
+            'Risk Level': brief_report_json['RiskLevel'],
+            'Status': brief_report_json['STATUS'],
+        }
+        return hr
+
+
+    def get_brief_report(sha1):
+        if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
+            return_error('Provided SHA1 is unvalid.')
 
         headers_get_brief_report = {
             'Content-Type': 'text/plain',
@@ -649,30 +682,43 @@ script:
             'X-DTAS-Time': get_epoch_time(),
             'X-DTAS-Challenge': str(uuid.uuid4()),
             'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-Time,X-DTAS-Challenge",
-            }
-        data=";".join(sha1_list)
+        }
+        sha1_list = argToList(sha1)
+        data = ';'.join(sha1_list)
         tmp_checksum = calculate_checksum(API_KEY, headers_get_brief_report, data)
         headers_get_brief_report['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
 
-        url = '%s/%s' % (SERVER_URL, 'web_service/sample_upload/get_brief_report')
-        res =  requests.put(
-            url,
-            verify=False,
+        cmd_url = 'web_service/sample_upload/get_brief_report'
+        res = http_request(
+            cmd_url,
+            'put',
             headers=headers_get_brief_report,
-            data=data
+            body=data
         )
-
         return res
 
     def get_brief_report_command():
         '''Issue a request to retrieve the brief XML report for a given SHA1'''
-        sha1_list = argToList(demisto.args()['sha1'])
-        #threshold = demisto.args()['threshold']
-        res = get_brief_report(sha1_list)
+        sha1 = demisto.args()['sha1']
+        threshold = demisto.args()['threshold']
+        res = get_brief_report(sha1)
 
-        demisto.results(res.text)
+        hr = build_brief_report(res, sha1, threshold)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': res.text,
+            'HumanReadableFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Sample Brief Report from TrendMicroDDA', hr, removeNull=True),
+            #'EntryContext': {
+            #    'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': context
+            #}
+        })
 
     def check_status(sha1_list):
+        for sha1 in sha1_list:
+            if not (re.match(r'\b[0-9a-fA-F]{40}\b', sha1)):
+                return_error('Provided SHA1: {} is unvalid.'.format(sha1))
         manyRes = []
         manyEC = []
 
@@ -681,12 +727,12 @@ script:
             manyRes.append(res.text)
             if res.status_code == 102:
                 manyEC.append({
-                    'status': 'Analyzing',
+                    'Status': 'Analyzing',
                     'SHA1': sha1
                 })
             else:
                 manyEC.append({
-                    'status': 'Completed',
+                    'Status': 'Completed',
                     'SHA1': sha1
                 })
 
@@ -703,7 +749,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Status of the submissions in TrendMicroDDA', manyEC),
             'EntryContext': {
-                  'TrendMicroDDA.Submissions(val.SHA1 && val.SHA1==obj.SHA1)': manyEC
+                  'TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)': manyEC
             }
         })
 
@@ -733,7 +779,7 @@ script:
         elif demisto.command() == 'trendmicro-dda-get-brief-report':
             get_brief_report_command()
 
-        elif demisto.command() == 'trendmicro-dda-get-report':
+        elif demisto.command() == 'trendmicro-dda-get-report':##add !file !url command? ask anar
             get_report_command()
 
         elif demisto.command() == 'trendmicro-dda-get-openioc':
@@ -821,6 +867,7 @@ script:
       - "0"
       - "1"
       - "2"
+      - "3"
       description: DDA severity score (greater or equal to) for which the submission
         will be considered malicious
       defaultValue: "1"
@@ -937,14 +984,14 @@ script:
     arguments:
     - name: sha1
       required: true
-      description: The SHA1 of the submission
+      description: 'The SHA1 of the submissions. Example: "2492A18532745251FBC5DAF7160DAA49B90DBBE1,  52483514F07EB14570142F6927B77DEB7B4DA99F"'
       isArray: true
     outputs:
-    - contextPath: TrendMicroDDA.Submissions.SHA1.status
+    - contextPath: TrendMicroDDA.Submission.Status
       description: The status of the submission
       type: string
-    - contextPath: TrendMicroDDA.Submissions.SHA1
-      description: SHA1 of the submission
+    - contextPath: TrendMicroDDA.Submission.SHA1
+      description: The SHA1 of the submission
       type: string
     description: Checks the analysis status of the submissions
   - name: trendmicro-dda-upload-url
@@ -977,6 +1024,16 @@ script:
     - name: sha1
       required: true
       description: SHA1 of the submission
-    description: ' Retrieves the brief XML report for a given SHA1'
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      description: DDA severity score (greater or equal to) for which the submission
+        will be considered malicious
+      defaultValue: "1"
+    description: Retrieves a brief XML report of a given submission
   runonce: false
-releaseNotes: "New integration, sandbox"
+releaseNotes: "New integration"

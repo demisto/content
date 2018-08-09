@@ -89,10 +89,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: 095f832b-71bf-498e-82bd-ac606fcc27d3
+    taskid: 25336071-2e11-45aa-866e-e6b7378a7bd1
     type: regular
     task:
-      id: 095f832b-71bf-498e-82bd-ac606fcc27d3
+      id: 25336071-2e11-45aa-866e-e6b7378a7bd1
       version: -1
       name: upload-file
       script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-upload-file
@@ -105,6 +105,8 @@ tasks:
     scriptarguments:
       EntryID:
         simple: ${File.EntryID}
+      entryID:
+        simple: ${File.EntryID}
     separatecontext: false
     view: |-
       {
@@ -116,10 +118,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: 467aee9d-43b3-4a19-8ee5-8faf5dd846ff
+    taskid: 2e89f1f0-ccde-416f-8175-1b25c774f6a3
     type: condition
     task:
-      id: 467aee9d-43b3-4a19-8ee5-8faf5dd846ff
+      id: 2e89f1f0-ccde-416f-8175-1b25c774f6a3
       version: -1
       name: get-report AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -135,18 +137,9 @@ tasks:
       left:
         complex:
           root: TrendMicroDDA
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: TrendMicroDDA.Submissions.SHA1
-                iscontext: true
-              right:
-                value:
-                  simple: 571AD0F7D5056F68D0F2B795EAF4618C082A89D9
-          accessor: Submissions.RiskLevel
+          accessor: Submission.RiskLevel
       right:
-        simple: "0"
+        simple: "-1"
     results:
     - AreValuesEqual
     separatecontext: false
@@ -206,7 +199,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "27"
       - "24"
     scriptarguments:
       all:
@@ -325,10 +318,10 @@ tasks:
     note: false
   "21":
     id: "21"
-    taskid: e31ff852-3899-4260-8a1e-128918d9bc04
+    taskid: 94c93df3-86c3-4484-838e-89993d79c75e
     type: condition
     task:
-      id: e31ff852-3899-4260-8a1e-128918d9bc04
+      id: 94c93df3-86c3-4484-838e-89993d79c75e
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -342,7 +335,9 @@ tasks:
       - "16"
     scriptarguments:
       left:
-        simple: ${File.Size}
+        complex:
+          root: File
+          accessor: Size
       right:
         simple: "245"
     results:
@@ -356,71 +351,12 @@ tasks:
         }
       }
     note: false
-  "22":
-    id: "22"
-    taskid: b594a365-41a4-42cb-8855-9a0777b99b7b
-    type: playbook
-    task:
-      id: b594a365-41a4-42cb-8855-9a0777b99b7b
-      version: -1
-      name: Trend Micro Deep Discovery Analyzer Detonate File
-      playbookName: Trend Micro Deep Discovery Analyzer Detonate File
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2265
-        }
-      }
-    note: false
-  "23":
-    id: "23"
-    taskid: 68906ce1-76f2-403d-8935-9738d005d79b
-    type: playbook
-    task:
-      id: 68906ce1-76f2-403d-8935-9738d005d79b
-      version: -1
-      name: Trend Micro Deep Discovery Analyzer Detonate URL
-      playbookName: Trend Micro Deep Discovery Analyzer Detonate URL
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      URL:
-        simple: https://github.com
-      interval:
-        simple: "1"
-      timeput:
-        simple: "15"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2265
-        }
-      }
-    note: false
   "24":
     id: "24"
-    taskid: f5ee3ab1-34d2-4e1f-8a58-a0b14b3dcb26
+    taskid: 07f5d0a6-616c-41ae-886b-ac74353656f2
     type: regular
     task:
-      id: f5ee3ab1-34d2-4e1f-8a58-a0b14b3dcb26
+      id: 07f5d0a6-616c-41ae-886b-ac74353656f2
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -431,7 +367,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "26"
     scriptarguments:
       data:
         simple: |-
@@ -505,6 +441,65 @@ tasks:
         "position": {
           "x": 265,
           "y": 340
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 86700a5d-f744-402d-8201-69812002210e
+    type: playbook
+    task:
+      id: 86700a5d-f744-402d-8201-69812002210e
+      version: -1
+      name: Detonate File - Trend Micro Deep Discovery Analyzer
+      playbookName: Detonate File - Trend Micro Deep Discovery Analyzer
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 927cfb35-eb2b-4d84-85cf-1d21a0cf855d
+    type: playbook
+    task:
+      id: 927cfb35-eb2b-4d84-85cf-1d21a0cf855d
+      version: -1
+      name: Detonate URL - Trend Micro Deep Discovery Analyzer
+      playbookName: Detonate URL - Trend Micro Deep Discovery Analyzer
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      URL:
+        simple: https://github.com
+      interval:
+        simple: "1"
+      timeput:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2265
         }
       }
     note: false

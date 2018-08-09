@@ -1,7 +1,8 @@
-id: Trend Micro Deep Discovery Analyzer Detonate URL
+id: Detonate URL - Trend Micro Deep Discovery Analyzer
 version: -1
-name: Trend Micro Deep Discovery Analyzer Detonate URL
-description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+name: Detonate URL - Trend Micro Deep Discovery Analyzer
+fromversion: 4.0.0
+description: Detonates a URL using the Trend Micro Deep Discovery Analyzer sandbox.
 starttaskid: "0"
 tasks:
   "0":
@@ -166,12 +167,13 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 616654ab-7067-47c1-8a8c-25d36cfbebe2
+    taskid: ac91e98c-c048-4e83-8ecc-5136ef9ec6a8
     type: playbook
     task:
-      id: 616654ab-7067-47c1-8a8c-25d36cfbebe2
+      id: ac91e98c-c048-4e83-8ecc-5136ef9ec6a8
       version: -1
       name: GenericPolling
+      description: Generic Polling Playbook
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -181,7 +183,7 @@ tasks:
       - "6"
     scriptarguments:
       Ids:
-        simple: ${TrendMicroDDA.Submissions.SHA1}
+        simple: ${TrendMicroDDA.Submission.SHA1}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -191,7 +193,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: TrendMicroDDA.Submissions(val.status != 'Completed').SHA1
+        simple: TrendMicroDDA.Submission(val.Status != 'Completed').SHA1
     separatecontext: true
     loop:
       iscommand: false
@@ -207,10 +209,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 866bdb84-f5ce-4b5d-8a1a-7c8196bb192c
+    taskid: 6e9c7162-7dda-4c05-8df8-44215feb1674
     type: regular
     task:
-      id: 866bdb84-f5ce-4b5d-8a1a-7c8196bb192c
+      id: 6e9c7162-7dda-4c05-8df8-44215feb1674
       version: -1
       name: trendmicro-dda-check-status
       description: Updates the status of the submissions in the context.
@@ -224,7 +226,7 @@ tasks:
     scriptarguments:
       extend-context: {}
       sha1:
-        simple: ${TrendMicroDDA.Submissions.SHA1}
+        simple: ${TrendMicroDDA.Submission.SHA1}
     separatecontext: false
     view: |-
       {
@@ -236,10 +238,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: bd51bb0d-be05-4b18-873a-7985dde3f7e5
+    taskid: db69eb80-00f4-41ed-8844-b434ca5a0e62
     type: regular
     task:
-      id: bd51bb0d-be05-4b18-873a-7985dde3f7e5
+      id: db69eb80-00f4-41ed-8844-b434ca5a0e62
       version: -1
       name: Trend Micro DDA Get Report
       description: Retrieve the reports from Trend Micro DDA.
@@ -252,7 +254,7 @@ tasks:
       - "1"
     scriptarguments:
       sha1:
-        simple: ${TrendMicroDDA.Submissions(val.status != 'Completed').SHA1}
+        simple: ${TrendMicroDDA.Submission(val.Status == 'Completed').SHA1}
       threshold: {}
       verbose: {}
     separatecontext: false
@@ -279,7 +281,9 @@ view: |-
 inputs:
 - key: URL
   value:
-    simple: ${URL.Data}
+    complex:
+      root: URL
+      accessor: Data
   required: true
   description: URL to detonate.
 - key: interval
