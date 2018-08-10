@@ -15,16 +15,16 @@ script: |
           var cmd = m.replace(/\s/g,'_') + '-test-module';
           var firstRest = executeCommand("addEntries", {"entries": JSON.stringify([{
               Type: entryTypes.note,
-              Contents: 'testing **' + cmd + '**',
-              HumanReadable: 'testing **' + cmd + '**',
+              Contents: 'testing **' + m + '**',
+              HumanReadable: 'testing **' + m + '**',
               ContentsFormat: formats.markdown
           }])});
 
           var res =  executeCommand(cmd, {});
           executeCommand("addEntries", {"entries": JSON.stringify([{
               Type: entryTypes.note,
-              Contents: 'done testing **' + all[m].brand + '**:\n' + res[0].Contents,
-              HumanReadable: 'done testing **' + all[m].brand + '**:\n' + res[0].Contents,
+              Contents: 'done testing **' + m + '**:\n' + res[0].Contents,
+              HumanReadable: 'done testing **' + m + '**:\n' + res[0].Contents,
               ContentsFormat: formats.markdown
           }])});
 
