@@ -640,7 +640,7 @@ script:
       description: value of indicator (hash,ip, url...)
     - name: owner
       description: filter by owner
-    description: associate an indicator to an existing incident
+    description: "associate an indicator to an existing incident, please note indicator MUST exist prior to using this command, look at tc-add-indicator for that"
   - name: domain
     arguments:
     - name: domain

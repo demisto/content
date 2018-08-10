@@ -36,7 +36,47 @@ script:
         serverURL = serverURL.slice(0,-1);
     }
 
-    var sendRequest = function(method, uri, body) {
+    sendMultipart = function (uri, entryID, body) {
+        var requestUrl = serverURL;
+        if (uri.slice(-1) !== '/') {
+            requestUrl += '/';
+        }
+        requestUrl += uri;
+
+        var res = httpMultipart(
+            requestUrl,
+            entryID,
+            {
+                Headers: {
+                    'Authorization': [params.apikey],
+                    'Content-Type': ['multipart/form-data'],
+                    'Accept': ['application/json']
+                },
+            },
+            body,
+            params.insecure,
+            params.proxy,
+            undefined,
+            'file'
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Demisto REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        try {
+            var response = res.Body;
+            try {
+                response = JSON.parse(res.Body);
+            } catch (ex) {
+                // do nothing, already handled prior the try/catch
+            }
+            return {response: response};
+        } catch (ex) {
+            throw 'Demisto REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+        }
+
+    };
+
+    var sendRequest = function(method, uri, body, raw) {
         var requestUrl = serverURL;
         if (uri.slice(-1) !== '/') {
             requestUrl += '/';
@@ -52,7 +92,8 @@ script:
                     'content-type': ['application/json'],
                     'authorization': [params.apikey]
                 },
-                Body: body
+                Body: body,
+                SaveToFile: raw
             },
             params.insecure,
             params.proxy
@@ -61,12 +102,20 @@ script:
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Demisto REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-
-        try {
-            var json = JSON.parse(res.Body);
-            return {response:json};
-        } catch (ex) {
-            throw 'Demisto REST APIs - Error parsing response - ' + ex;
+        if (raw) {
+            return res;
+        } else {
+            try {
+                var response = res.Body;
+                try {
+                    response = JSON.parse(res.Body);
+                } catch (ex) {
+                    // do nothing, already handled prior the try/catch
+                }
+                return {response: response};
+            } catch (ex) {
+                throw 'Demisto REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+            }
         }
     };
 
@@ -84,6 +133,21 @@ script:
             return sendRequest('PUT',args.uri, args.body);
         case 'demisto-api-delete':
             return sendRequest('DELETE',args.uri);
+        case 'demisto-api-multipart':
+            return sendMultipart(args.uri, args.entryID, args.body);
+        case 'demisto-api-download':
+            var res = sendRequest('GET',args.uri,args.body,true);
+            var filename = res.Path;
+            if (args.filename) {
+                filename = args.filename;
+            } else {
+                var disposition = res.Headers['Content-Disposition'][0].split('=');
+                if (disposition.length === 2) {
+                    filename = disposition[1];
+                }
+            }
+            var desc = args.description || '';
+            return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
         default:
             throw 'Demisto REST APIs - unknown command';
     }
@@ -124,3 +188,25 @@ script:
       description: Request URI (i.e. /user)
     description: send HTTP DELETE request
     execution: true
+  - name: demisto-api-download
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI
+    - name: filename
+      description: File name of download
+    - name: description
+      description: Description of file entry
+    description: Download files from Demisto server
+  - name: demisto-api-multipart
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI
+    - name: entryID
+      required: true
+      description: File entry ID
+    - name: body
+      description: Request body
+    description: Send HTTP Multipart request to upload files to Demisto server
+  runonce: false

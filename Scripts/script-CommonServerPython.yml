@@ -367,6 +367,24 @@ script: |-
       return strRegistryPath
 
 
+  def scoreToReputation(score):
+      """
+         Converts score (in number format) to human readable reputation format
+
+         :type score: ``int``
+         :param score: The score to be formatted (required)
+
+         :return: The formatted score
+         :rtype: ``str``
+      """
+      to_str = {
+          3 : 'Bad',
+          2 : 'Suspicious',
+          1 : 'Good',
+      }
+      return to_str.get(score, 'None')
+
+
   class IntegrationLogger(object):
       """
         a logger for python integrations:
@@ -419,6 +437,7 @@ script: |-
       else:
           return flattenCell(data, is_pretty)
 
+
   def flattenCell(data, is_pretty=True):
       """
          Flattens a markdown table cell content into a single string
@@ -435,8 +454,11 @@ script: |-
       indent = 4 if is_pretty else None
       if type(data) in STRING_TYPES:
           return data
+      elif isinstance(data, list):
+          return ',\n'.join(str(d) for d in data)
       else:
           return json.dumps(data, indent=indent)
+
 
   def FormatIso8601(t):
       """
@@ -449,6 +471,7 @@ script: |-
          :rtype: ``str``
       """
       return t.strftime("%Y-%m-%dT%H:%M:%S")
+
 
   def argToList(arg):
       """
@@ -543,10 +566,10 @@ script: |-
       if removeNull:
           headers_aux = headers[:]
           for header in headers_aux:
-              if all(obj[header] is None for obj in t):
+              if all(obj.get(header) is None for obj in t):
                   headers.remove(header)
 
-      if t:
+      if t and len(headers) > 0:
           newHeaders = []
           if headerTransform is None:
               headerTransform = lambda s: s
@@ -557,7 +580,7 @@ script: |-
               mdResult += newHeaders[0]
           else:
               mdResult += '|'.join(newHeaders)
-          mdResult = mdResult + '|\n'
+          mdResult += '|\n'
           sep = '-'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
@@ -674,7 +697,7 @@ script: |-
       return mdResult
 
 
-  def fileResult(filename, data):
+  def fileResult(filename, data, file_type=None):
       """
          Creates a file from the given data
 
@@ -684,13 +707,18 @@ script: |-
          :type data: ``str``
          :param data: The file data (required)
 
+         :type file_type: ``str``
+         :param file_type: one of the entryTypes file or entryInfoFile (optional)
+
          :return: A Demisto war room entry
          :rtype: ``dict``
       """
+      if file_type is None:
+          file_type = entryTypes['file']
       temp = demisto.uniqueFile()
       with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
-      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
+      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
   def file_result_existing_file(filename, saveFilename = None):
@@ -699,6 +727,9 @@ script: |-
 
          :type filename: ``str``
          :param filename: The name of the file to be modified (required)
+
+         :type saveFilename: ``str``
+         :param saveFilename: The new file name
 
          :return: A Demisto war room entry
          :rtype: ``dict``
@@ -1006,9 +1037,26 @@ script: |-
               return False
       return True
 
+  def return_error(message):
+      """
+         Returns error entry with given message and exits the script
+
+         :type message: ``str``
+         :param message: The message to return in the entry (required)
+
+         :return: Error entry object
+         :rtype: ``dict``
+      """
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': message
+      })
+      sys.exit(0)
+
   # Constants for common merge paths
   outputPaths = {
-    'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)',
+    'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
     'ip': 'IP(val.Address && val.Address == obj.Address)',
     'url': 'URL(val.Data && val.Data == obj.Data)',
     'domain': 'Domain(val.Name && val.Name == obj.Name)',
