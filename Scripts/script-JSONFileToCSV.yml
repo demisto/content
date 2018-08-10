@@ -1,7 +1,7 @@
 commonfields:
-  id: FILEtoCSV
+  id: JSONFileToCSV
   version: -1
-name: FILEtoCSV
+name: JSONFileToCSV
 script: |-
   import json
 
