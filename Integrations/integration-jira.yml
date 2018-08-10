@@ -275,7 +275,7 @@ script:
         return commentOrLinkMd;
     }
 
-    var generateMdUplosdIssue = function(data) {
+    var generateMdUploadIssue = function(data) {
         var uploadMd = [];
         if(!Array.isArray(data)) {
             data = [data];
@@ -409,6 +409,18 @@ script:
             if (args.issueTypeId && args.issueTypeId.length > 0 ){
                 issue.fields.issuetype.id = args.issueTypeId;
             }
+            if (args.parentIssueId && args.parentIssueId.length > 0 ){
+                if (!issue.fields.parent) {
+                    issue.fields.parent = {};
+                }
+                issue.fields.parent.id = args.parentIssueId;
+            }
+            if (args.parentIssueKey && args.parentIssueKey.length > 0 ){
+                if (!issue.fields.parent) {
+                    issue.fields.parent = {};
+                }
+                issue.fields.parent.key = args.parentIssueKey;
+            }
             if (args.description && args.description.length > 0 ){
                 issue.fields.description = args.description;
             }
@@ -443,7 +455,7 @@ script:
             return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext: mdAndContext['context']};
         case 'jira-issue-upload-file':
             var jRes = uploadFile(args.upload, args.issueId);
-            var md = generateMdUplosdIssue(jRes);
+            var md = generateMdUploadIssue(jRes);
             md = tblToMd(command, md, "");
             return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown};
         case 'jira-issue-add-comment':
@@ -582,6 +594,10 @@ script:
       description: assignee name
     - name: reporter
       description: reporter name
+    - name: parentIssueKey
+      description: Parent issue key if you create a sub-task
+    - name: parentIssueId
+      description: Parent issue ID if you create a sub-task
     outputs:
     - contextPath: Ticket.Id
       description: Id of ticket
@@ -606,7 +622,7 @@ script:
       required: true
       description: Comment - the actual comment body
     - name: visibility
-      description: Make comment visible ONLy to a certain role - like Administrators
+      description: Make comment visible only to a certain role - like Administrators
     description: Add new comment to existing Jira issue
   - name: jira-issue-add-link
     arguments:
