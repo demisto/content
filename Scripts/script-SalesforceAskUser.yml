@@ -40,6 +40,7 @@ script: |-
   demisto.results(comment)
 type: python
 tags: []
+comment: Ask a user a question via Salesforce Chatter and process the reply directly into the investigation.
 enabled: true
 args:
 - name: persistent
