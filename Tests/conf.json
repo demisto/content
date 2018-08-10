@@ -327,7 +327,8 @@
         },
         {
             "integrations": "VxStream",
-            "playbookID": "VxStream Test"
+            "playbookID": "VxStream Test",
+            "nightly": true
         },
         {
             "integrations": "Preempt",
