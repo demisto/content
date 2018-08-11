@@ -636,4 +636,3 @@ script:
       description: For malicious files, the vendor that made the decision
     description: Results of the URL submission
   runonce: false
-releaseNotes: "New submit-url command"

@@ -604,4 +604,3 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
-releaseNotes: "New version for get duplicate incidents by ML. change inputs \ outputs argument."

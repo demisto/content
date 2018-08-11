@@ -171,4 +171,3 @@ args:
   defaultValue: ${currentPlaybookID}
 scripttarget: 0
 runonce: false
-releaseNotes: Added support for providing playbook task ID to email signature
