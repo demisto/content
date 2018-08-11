@@ -127,7 +127,8 @@ script:
         }
 
         var result = http(params.url + resourceUrl, requestParams, params.insecure, params.proxy);
-        if (result.StatusCode !== 200 && result.StatusCode !== 201) {
+        // 204(No Content) is sent if transition issue was successful
+        if (result.StatusCode !== 200 && result.StatusCode !== 201 &&  result.StatusCode !== 204) {
             throw 'Failed to send request, request status code: ' + result.StatusCode + ', ' + result.Body;
         }
         return result;
@@ -228,7 +229,7 @@ script:
             mdObj['description'] = dq(element, 'fields.description');
             mdObj['duedate'] = dq(element, 'fields.duedate');
             mdObj['ticket_link'] = dq(element, 'self');
-            mdObj['creted'] = dq(element, 'fields.created');
+            mdObj['created'] = dq(element, 'fields.created');
             var attachments = dq(element, 'fields.attachment');
             if(Array.isArray(attachments) && attachments.length > 0) {
                 var attachmentNames = [];
@@ -512,6 +513,19 @@ script:
             }
             setLastRun({idOffset: idOffset});
             return JSON.stringify(incidents);
+        case 'jira-transition-issue':
+            var url = 'rest/api/2/issue/'+ args.issueId + '/transitions';
+            var transition = {};
+            transition.id = args.transitionId;
+            var payload = {};
+            payload.transition = transition;
+            sendRequest('POST', url, JSON.stringify(payload));
+            //get issue information after transition
+            var result = sendRequest('GET', 'rest/api/2/issue/'+args.issueId)
+            var jRes = JSON.parse(result.Body);
+            var mdAndContext = generateMDContextGetIssue(jRes);
+            md = tblToMd(command, mdAndContext['md'],argToList(args.headers));
+            return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext:{'Ticket(val.Id == obj.Id)' : mdAndContext['context']}};
         default:
     }
   type: javascript
@@ -643,5 +657,14 @@ script:
       required: true
       description: Issue Id
     description: Creates (or updates) issue link
+  - name: jira-transition-issue
+    arguments:
+    - name: transitionId
+      required: true
+      description: obtain this ID using this URL {yourJiraUrl}/rest/api/2/issue/{yourIssueKey}/transitions
+    - name: issueId
+      required: true
+      description: Issue ID or key
+    description: Transitions an existing JIRA issue from one status to another
   isfetch: true
 system: true
