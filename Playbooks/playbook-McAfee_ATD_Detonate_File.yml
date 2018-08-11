@@ -445,7 +445,7 @@ inputs:
 - key: File
   value:
     simple: ${File}
-  required: true
+  required: false
   description: The file to detonate. File is taken from the context.
 - key: interval
   value:
