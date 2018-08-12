@@ -522,6 +522,7 @@ script:
   type: javascript
   commands:
   - name: umbrella-domain-categorization
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -541,7 +542,6 @@ script:
       description: For malicious domains, the reason for the vendor to make the decision
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
-    deprecated: true
   - name: investigate-umbrella-domain-categorization
     arguments:
     - name: domain
@@ -563,6 +563,7 @@ script:
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
   - name: umbrella-domain-co-occurrences
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -579,7 +580,6 @@ script:
       isn't necessarily a bad thing, legitimate sites co-occur with each other as
       a part of normal web activity. However, unusual or suspicious co-occurence can
       provide additional information regarding attacks
-    deprecated: true
   - name: investigate-umbrella-domain-co-occurrences
     arguments:
     - name: domain
@@ -598,6 +598,7 @@ script:
       a part of normal web activity. However, unusual or suspicious co-occurence can
       provide additional information regarding attacks
   - name: umbrella-domain-related
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -613,7 +614,6 @@ script:
       seen requested b around the same time (up to 60 seconds before or after) as
       the given domain name, but that are not frequently associated with other domain
       names.
-    deprecated: true
   - name: investigate-umbrella-domain-related
     arguments:
     - name: domain
@@ -631,6 +631,7 @@ script:
       the given domain name, but that are not frequently associated with other domain
       names.
   - name: umbrella-domain-security
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -682,7 +683,6 @@ script:
       can be used to determine relevant datapoints to build insight on the reputation
       or security risk posed by the site. See security information about this specific
       domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
-    deprecated: true
   - name: investigate-umbrella-domain-security
     arguments:
     - name: domain
@@ -736,6 +736,7 @@ script:
       or security risk posed by the site. See security information about this specific
       domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
   - name: umbrella-domain-tags
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -759,7 +760,6 @@ script:
       a domain has been in the block list for domains being blocked currently. However
       it will also show a record of the history of the domain in the Umbrella block
       list.
-    deprecated: true
   - name: investigate-umbrella-domain-tags
     arguments:
     - name: domain
@@ -785,6 +785,7 @@ script:
       it will also show a record of the history of the domain in the Umbrella block
       list.
   - name: umbrella-domain-dns-history
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -851,7 +852,6 @@ script:
       has seen for a given domain. The most common use case is to obtain the RRs (Resource
       Record) history for a given domain, passing in the record query type as a parameter,
       to help build intelligence around an domain. '
-    deprecated: true
   - name: investigate-umbrella-domain-dns-history
     arguments:
     - name: domain
@@ -920,6 +920,7 @@ script:
       Record) history for a given domain, passing in the record query type as a parameter,
       to help build intelligence around an domain. '
   - name: umbrella-ip-dns-history
+    deprecated: true
     arguments:
     - name: ip
       required: true
@@ -963,7 +964,6 @@ script:
       Record (RR) history for a given IP, passing in the record query type as a parameter,
       to help build intelligence around an IP or a range of IPs. The information provided
       is from within the last 90 days.
-    deprecated: true
   - name: investigate-umbrella-ip-dns-history
     arguments:
     - name: ip
@@ -1027,6 +1027,7 @@ script:
       list. This endpoint will return an array with a single domain name for each
       domain associated with the IP, along with an id number that can be ignored.
   - name: umbrella-ip-malicious-domains
+    deprecated: true
     arguments:
     - name: ip
       required: true
@@ -1044,8 +1045,8 @@ script:
       when using this endpoint are those that currently exist in the Umbrella block
       list. This endpoint will return an array with a single domain name for each
       domain associated with the IP, along with an id number that can be ignored.
-    deprecated: true
   - name: umbrella-domain-search
+    deprecated: true
     arguments:
     - name: regex
       required: true
@@ -1068,7 +1069,6 @@ script:
       Investigate uses regular expressions (RegEx) to search against the Investigate
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
-    deprecated: true
   - name: investigate-umbrella-domain-search
     arguments:
     - name: regex
@@ -1104,8 +1104,8 @@ script:
       type: string
     - contextPath: Domain.Umbrella.RiskScore
       description: The status will be "-1" if the domain is believed to be malicious,
-                     "1" if the domain is believed to be benign, "0" if it hasn't been classified
-                     yet.
+        "1" if the domain is believed to be benign, "0" if it hasn't been classified
+        yet.
       type: number
     - contextPath: Domain.Umbrella.SecureRank 
       description: Suspicious rank for a domain that reviews based on the lookup behavior
@@ -1118,9 +1118,17 @@ script:
       description: The time when the attribution for this Domain was made.
       type: number
     - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
     - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
     - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
     - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
     - contextPath: Domain.Umbrella.ContentCategories
       description: The Umbrella content category or categories that match this domain.
         If none of them match, the return will be blank.
@@ -1231,45 +1239,63 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: The domain's name.
+      type: string
     - contextPath: Domain.Umbrella.Details.DGA
       description: Domain Generation Algorithm. This score is generated based on the
         likeliness of the domain name being generated by an algorithm rather than
         a human. This score ranges from -100 (suspicious) to 0 (benign).
+      type: string
     - contextPath: Domain.Umbrella.Details.Entropy
       description: The number of bits required to encode the domain name, as a score.
         This score is to be used in conjunction with DGA and Perplexity.
+      type: number
     - contextPath: Domain.Umbrella.Details.SecureRank 
       description: Suspicious rank for a domain that reviews based on the lookup behavior
         of client IP for the domain. Securerank is designed to identify hostnames
         requested by known infected clients but never requested by clean clients,
         assuming these domains are more likely to be bad. Scores returned range from
         -100 (suspicious) to 100 (benign).
+      type: number
     - contextPath: Domain.Umbrella.Details.PrefixScore
       description: Prefix ranks domains given their IP prefixes (an IP prefix is the
         first three octets in an IP address) and the reputation score of these prefixes.
         Ranges from -100 to 0, -100 being very suspicious.
+      type: number
     - contextPath: Domain.Umbrella.Details.RipScore
       description: RIP ranks domains given their IP addresses and the reputation score
         of these IP addresses. Ranges from -100 to 0, -100 being very suspicious.
+      type: number
     - contextPath: Domain.Umbrella.Details.Popularity
       description: The number of unique client IPs visiting this site, relative to
         the all requests to all sites. A score of how many different client/unique
         IPs go to this domain compared to others.
+      type: number
     - contextPath: Domain.Umbrella.Details.Geodiversity
       description: A score representing the number of queries from clients visiting
         the domain, broken down by country. Score is a non-normalized ratio between
         0 and 1.
+      type: number
     - contextPath: Domain.Umbrella.Details.TldGeodiversity
       description: A score that represents the TLD country code geodiversity as a
         percentage of clients visiting the domain. Occurs most often with domains
         that have a ccTLD. Score is normalized ratio between 0 and 1.
+      type: number
     - contextPath: Domain.Umbrella.Details.KolmogorovSmirnovTest
       description: Kolmogorov–Smirnov test on geodiversity. 0 means that the client
         traffic matches what is expected for this TLD.
+      type: number
     - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
     - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
     - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
     - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
     description: The security information API method contains multiple scores or security
       features, which can act as relevant datapoints to build insight on the reputation.
   - name: umbrella-get-whois-for-email-registrar
@@ -1294,22 +1320,30 @@ script:
     outputs:
     - contextPath: Email.Address
       description: Email address.
+      type: string
     - contextPath: Email.Umbrella.Whois.TotalResults
       description: Total number of results for this email.
+      type: number
     - contextPath: Email.Umbrella.Whois.MoreDataAvailable
       description: Whether or not there are more than 500 results for this email,
         either yes or no.
+      type: boolean
     - contextPath: Email.Umbrella.Whois.ResultLimit
       description: Total number of results for this page of results, default 500.
+      type: number
     - contextPath: Email.Umbrella.Whois.Domains.Name
-      description: 'Domains registered by this email and '
+      description: Domains registered by this email
+      type: string
     - contextPath: Email.Umbrella.Whois.Domains.Name.SecurityCategories
       description: Security Categories associated with the domain.
+      type: string
     - contextPath: Email.Umbrella.Whois.Domains.Name.ContentCategories
       description: Content Categories associated with the domain.
+      type: string
     - contextPath: Email.Umbrella.Whois.Domains.LastObserved
       description: 'Whether the domain is current, meaning currently registered by
         this email address. Values : Past or Current'
+      type: string
     description: The WHOIS email command will return the email address or addresses
       of the registrar for the domain or domains that are looked up.
   - name: umbrella-get-whois-for-nameserver
@@ -1330,22 +1364,30 @@ script:
     outputs:
     - contextPath: Nameserver.Name
       description: Nameserver's domain name.
+      type: string
     - contextPath: Nameserver.Umbrella.Whois.TotalResults
       description: Total number of results for this nameserver domain name.
+      type: string
     - contextPath: Nameserver.Umbrella.Whois.MoreDataAvailable
       description: Whether or not there are more than 500 results for this email,
         either yes or no.
+      type: boolean
     - contextPath: Nameserver.Umbrella.Whois.ResultLimit
       description: Total number of results for this page of results, default 500.
+      type: number
     - contextPath: Nameserver.Umbrella.Whois.Domains.Name
       description: Domains registered by this nameserver.
+      type: string
     - contextPath: Nameserver.Umbrella.Whois.Domains.Name.SecurityCategories
       description: Security Categories associated with the domain.
+      type: string
     - contextPath: Nameserver.Umbrella.Whois.Domains.Name.ContentCategories
       description: Content Categories associated with the domain.
+      type: string
     - contextPath: Nameserver.Umbrella.Whois.Domains.LastObserved
       description: 'Whether the domain is current, meaning currently registered by
         this email address. Values : Past or Current'
+      type: string
     description: The Nameserver command allows you to search a nameserver to find
       all domains registered by that nameserver. You can search against a single nameserver
       or multiple nameservers in a query.
@@ -1357,15 +1399,34 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain's name.
+      type: string
     - contextPath: Domain.Umbrella.Whois.RegistrarName
+      description: Domain registrar name
+      type: string
     - contextPath: Domain.Umbrella.Whois.LastRetrieved
+      description: Domain last retrieved date
+      type: string
     - contextPath: Domain.Umbrella.Whois.Created
+      description: Domain created date
+      type: string
     - contextPath: Domain.Umbrella.Whois.Updated
-    - contextPath: Domain.Umbrella.Whois.Exprires
+      description: Domain updated date
+      type: string
+    - contextPath: Domain.Umbrella.Whois.Expires
+      description: Domain expiry date
+      type: string
     - contextPath: Domain.Umbrella.Whois.IANAID
+      description: IANA ID
+      type: string
     - contextPath: Domain.Umbrella.Whois.LastObserved
+      description: Domain last observed
+      type: string
     - contextPath: Domain.Umbrella.Whois.Nameservers.Name
+      description: Domain's name servers
+      type: string
     - contextPath: Domain.Umbrella.Whois.Emails.Name
+      description: Domain's email
+      type: string
     description: This command will provide a standard WHOIS response record for a
       single domain with all available WHOIS data returned. 
   - name: umbrella-get-malicious-domains-for-ip
@@ -1376,11 +1437,14 @@ script:
     outputs:
     - contextPath: IP.Address
       description: IP address.
+      type: string
     - contextPath: IP.Umbrella.MaliciousDomains.Name
       description: The block list domain associated with the IP
+      type: string
     - contextPath: IP.Umbrella.MaliciousDomains.LastObserved
       description: 'Whether the domain is current, meaning currently registered by
         this email address. Values : Past or Current'
+      type: string
     description: Test whether the IP address you’ve entered as input has any known
       malicious domains associated with it.
   - name: umbrella-get-domains-using-regex
@@ -1416,11 +1480,13 @@ script:
     - contextPath: Umbrella.DomainSearch.TotalResults
       description: Total results from this search string. The default number of results
         is 100 and can be expanded using the limit parameter. 
+      type: number
     - contextPath: Umbrella.DomainSearch.Domain.Name
       description: Name of the domain found.
+      type: string
     - contextPath: Umbrella.DomainSearch.Domain.FirstSeen
       description: First Seen of the domain found.
+      type: string
     description: 'Get the list of matching domains (Investigate Database) based on
       a regular expression. '
-releaseNotes: "TODO: Add proper release notes"
-hidden: false
+  runonce: false
