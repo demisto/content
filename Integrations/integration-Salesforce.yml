@@ -588,7 +588,6 @@ script:
                 lastRun.last_case_time = dateToString(new_time, "%Y-%m-%dT%H:%M:%S.%fZ");
 
                 setLastRun(lastRun);
-                logInfo(lastRun.last_case_time);
                 var userMapping = getUserNames();
                 incidents = casesToIncidents(cases, userMapping);
             }
