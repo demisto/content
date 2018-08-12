@@ -61,6 +61,12 @@ script: |
     }
   }
 
+  if (!userToAssign) {
+      var usersRes = executeCommand('getUsers', { roles: args.roles });
+      var usersList = usersRes[0].Contents.map(function (u) { return u.username });
+      userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
+  }
+
   if (userToAssign) {
       var res = executeCommand("setOwner", { owner: userToAssign });
       if (!isError(res[0])) {
