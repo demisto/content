@@ -11,7 +11,7 @@ script: |
   var all = getModules();
 
   Object.keys(all).forEach(function(m) {
-      if (all[m].state === 'active' && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1) {
+      if (all[m].state === 'active' && !all[m].defaultIgnored && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1) {
           var cmd = m.replace(/\s/g,'_') + '-test-module';
           var firstRest = executeCommand("addEntries", {"entries": JSON.stringify([{
               Type: entryTypes.note,
