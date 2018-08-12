@@ -1,7 +1,7 @@
 id: Detonate File - Trend Micro Deep Discovery Analyzer
 version: -1
 name: Detonate File - Trend Micro Deep Discovery Analyzer
-from version: 4.0.0
+fromversion: 4.0.0
 description: "Detonates a File using the Trend Micro Deep Discovery Analyzer sandbox.\nDeep
   Discovery Analyzer(version 6.0.0) supports the following File Types:\nbat, cell,
   chm, class, cmd, dll, doc, docx, exe, gul, hta, htm, html, hwp, hwpx, jar, js, jse,
@@ -17,6 +17,7 @@ tasks:
       id: fbcc0577-3904-48a9-82c9-5bb0e70b19bd
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -39,6 +40,7 @@ tasks:
       id: c3878144-0a86-4654-8b08-63f655876242
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""

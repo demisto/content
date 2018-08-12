@@ -20,7 +20,7 @@ description: |-
   jpeg, png, gif
   Other file types
   cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
-fromversion: "4.0.0"
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -30,7 +30,7 @@ tasks:
     task:
       id: 489b704c-bef9-40e7-8aa8-f74cca308a94
       version: -1
-      name: "Start"
+      name: ""
       description: "-"
       iscommand: false
       brand: ""
