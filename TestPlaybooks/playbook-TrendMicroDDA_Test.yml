@@ -1,6 +1,6 @@
 id: Test Playbook TrendMicroDDA
-version: -1
-name: Test Playbook TrendMicroDDA
+version: 38
+name:-1est Playbook TrendMicroDDA
 description: Test playbook for Trend Micro DDA integration, including the detonate
   File/URL playbooks.
 starttaskid: "0"
@@ -165,7 +165,7 @@ tasks:
       brand: Trend Micro Deep Discovery Analyzer
     nexttasks:
       '#none#':
-      - "21"
+      - "16"
     scriptarguments:
       archive_name: {}
       encrypted: {}
@@ -211,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1915
+          "y": 1822
         }
       }
     note: false
@@ -313,41 +313,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 1390
-        }
-      }
-    note: false
-  "21":
-    id: "21"
-    taskid: 94c93df3-86c3-4484-838e-89993d79c75e
-    type: condition
-    task:
-      id: 94c93df3-86c3-4484-838e-89993d79c75e
-      version: -1
-      name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "16"
-    scriptarguments:
-      left:
-        complex:
-          root: File
-          accessor: Size
-      right:
-        simple: "245"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1740
         }
       }
     note: false

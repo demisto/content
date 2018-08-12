@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Trend Micro Deep Discovery Analyzer",
+            "playbookID": "Test Playbook TrendMicroDDA",
+            "timeout": 500
+        },
+        {
             "playbookID": "Extract Indicators From File - test"
         },
         {
