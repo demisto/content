@@ -76,6 +76,7 @@ script:
 
     var SERVER_URL = fixUrl(params.url) + 'api/v1/';
     var DEFAULT_SEARCH_LIMIT = 200;
+    var CLIENT_USERAGENT = 'Demisto/1.0'
 
     function createReadableLog(log){
         var logObject = {};
@@ -308,6 +309,7 @@ script:
             {
                 Method: method ? method : 'GET',
                 Headers: {
+                    'User-Agent': [CLIENT_USERAGENT],
                     Authorization: ['SSWS ' + params.apitoken],
                     Accept: ['application/json'],
                     'Content-Type': ['application/json']
@@ -926,7 +928,7 @@ script:
 
 
     function test() {
-        var uri = 'users?limit=1';
+        var uri = 'users/me';
         var res = sendRequest(uri);
 
         return res ? 'ok' : 'not ok';
@@ -2092,3 +2094,4 @@ script:
     description: Enumerates all users that are members of a group
   runonce: false
 fromversion: 3.6.0
+releaseNotes: "-"
