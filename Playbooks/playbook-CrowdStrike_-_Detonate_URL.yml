@@ -1,9 +1,8 @@
-id: CrowdStrike_DetonateUrl
-version: -1
-name: CrowdStrike - Detonate URL
+id: Detonate URL - CrowdStrike
+version: 4
+name: Detonate URL - CrowdStrike
 description: Detonate one or more files using the Wildfire integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
-fromversion: "4.0.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -16,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: Start
     nexttasks:
       '#none#':
       - "5"
@@ -96,7 +94,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: Final task - if reached then the playbook is done.
     separatecontext: false
     view: |-
       {
@@ -108,10 +105,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
+    taskid: d2a69807-063c-4773-8ae3-815dd1372cd2
     type: regular
     task:
-      id: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
+      id: d2a69807-063c-4773-8ae3-815dd1372cd2
       version: -1
       name: CrowdStrike Scan
       description: Download the pdf report to the War Room.
@@ -124,7 +121,9 @@ tasks:
       - "6"
     scriptarguments:
       file:
-        simple: ${File.SHA256}
+        complex:
+          root: File
+          accessor: SHA256
     separatecontext: false
     view: |-
       {
@@ -136,25 +135,27 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
+    taskid: 480ec5d3-087e-479d-8c29-0c70a1060ee0
     type: regular
     task:
-      id: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
+      id: 480ec5d3-087e-479d-8c29-0c70a1060ee0
       version: -1
       name: CrowdStrike Upload Sample
+      description: Upload samle to crowdstrike.
       script: VxStream|||crowdstrike-submit-url
       type: regular
       iscommand: true
       brand: VxStream
-      description: Upload samle to crowdstrike.
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
       environmentID:
-        simple: ${inputs.environmentID}
+        complex:
+          root: inputs.environmentID
       url:
-        simple: ${inputs.Url}
+        complex:
+          root: inputs.Url
     separatecontext: false
     view: |-
       {
@@ -172,10 +173,10 @@ tasks:
       id: 6ffba508-37e1-4647-88ea-265cd5475d61
       version: -1
       name: Is there a url to detonate?
+      description: Checks whether there's a file to detonate.
       type: condition
       iscommand: false
       brand: ""
-      description: Checks whether there's a file to detonate.
     nexttasks:
       '#default#':
       - "6"
@@ -200,10 +201,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: e34dd0a0-2806-4f3e-8c17-f4a05504222d
+    taskid: b7173e60-8b5e-490f-8b16-16c4bf67fcdf
     type: playbook
     task:
-      id: e34dd0a0-2806-4f3e-8c17-f4a05504222d
+      id: b7173e60-8b5e-490f-8b16-16c4bf67fcdf
       version: -1
       name: GenericPolling
       description: |-
@@ -223,15 +224,19 @@ tasks:
       - "8"
     scriptarguments:
       Ids:
-        simple: ${File.SHA256}
+        complex:
+          root: File
+          accessor: SHA256
       Interval:
-        simple: ${inputs.interval}
+        complex:
+          root: inputs.interval
       PollingCommandArgName:
         simple: file
       PollingCommandName:
         simple: crowdstrike-scan
       Timeout:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.timeout
       dt:
         simple: File(val.state === 'NO_CONTENT').hash
     separatecontext: true

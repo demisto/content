@@ -1,9 +1,10 @@
-id: ThreatGrid_Detonate_URL
+id: Detonate URL - ThreatGrid
 version: -1
-name: ThreatGrid - Detonate URL
-description: Detonate one or more URLs using the Threat Grid integration. This playbook returns relevant reports to the War Room and URL reputations to the context data.
+name: Detonate URL - ThreatGrid
+fromversion: 4.0.0
+description: Detonate one or more URLs using the Threat Grid integration. This playbook
+  returns relevant reports to the War Room and URL reputations to the context data.
 starttaskid: "0"
-fromversion: "4.0.0"
 tasks:
   "0":
     id: "0"
@@ -15,7 +16,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: "-"
     nexttasks:
       '#none#':
       - "5"
@@ -95,7 +95,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "Done"
     separatecontext: false
     view: |-
       {
@@ -107,10 +106,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 1c8055d2-4a2e-46cb-8022-90113cbf80c1
+    taskid: 3a210430-5697-4a8f-8e8b-c258dc5c9103
     type: regular
     task:
-      id: 1c8055d2-4a2e-46cb-8022-90113cbf80c1
+      id: 3a210430-5697-4a8f-8e8b-c258dc5c9103
       version: -1
       name: ThreatGrid Get Samples State
       description: Download the pdf report to the War Room.
@@ -123,7 +122,9 @@ tasks:
       - "6"
     scriptarguments:
       ids:
-        simple: ${ThreatGrid.Sample.ID}
+        complex:
+          root: ThreatGrid
+          accessor: Sample.ID
     separatecontext: false
     view: |-
       {
@@ -135,31 +136,42 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
+    taskid: 5b7bb345-701c-4899-8e22-0d0b8f13011e
     type: playbook
     task:
-      id: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
+      id: 5b7bb345-701c-4899-8e22-0d0b8f13011e
       version: -1
       name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: "Generic polling"
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
       Ids:
-        simple: ${ThreatGrid.Sample.ID}
+        complex:
+          root: ThreatGrid
+          accessor: Sample.ID
       Interval:
-        simple: ${inputs.interval}
+        complex:
+          root: inputs.interval
       PollingCommandArgName:
         simple: ids
       PollingCommandName:
         simple: threat-grid-get-samples-state
       Timeout:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.timeout
       dt:
         simple: ThreatGrid.Sample(val.State!=='succ' && val.State!=='fail').ID
     separatecontext: true
@@ -177,37 +189,46 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
+    taskid: ea4d6265-8b66-40dd-877c-313205f63c3b
     type: regular
     task:
-      id: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
+      id: ea4d6265-8b66-40dd-877c-313205f63c3b
       version: -1
       name: ThreatGrid Upload File
+      description: Uplads a sample to threat grid
       script: Threat Grid|||threat-grid-upload-sample
       type: regular
       iscommand: true
       brand: Threat Grid
-      description: Uplads a sample to threat grid
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
       file-id:
-        simple: ${File.EntryID}
+        complex:
+          root: File
+          accessor: EntryID
       filename:
-        simple: ${inputs.FileName}
+        complex:
+          root: inputs.FileName
       os:
-        simple: ${inputs.os}
+        complex:
+          root: inputs.os
       osver:
-        simple: ${inputs.osver}
+        complex:
+          root: inputs.osver
       private:
-        simple: ${inputs.private}
+        complex:
+          root: inputs.private
       source:
-        simple: ${inputs.source}
+        complex:
+          root: inputs.source
       tags:
-        simple: ${inputs.tags}
+        complex:
+          root: inputs.tags
       vm:
-        simple: ${inputs.vm}
+        complex:
+          root: inputs.vm
     separatecontext: false
     view: |-
       {
@@ -225,11 +246,11 @@ tasks:
       id: 41ac2f94-eae1-4116-8773-8912d1f99d37
       version: -1
       name: URL to File
+      description: Create a file from url
       script: Threat Grid|||threat-grid-url-to-file
       type: regular
       iscommand: true
       brand: Threat Grid
-      description: "Create a file from url"
     nexttasks:
       '#none#':
       - "13"
@@ -263,7 +284,9 @@ view: |-
 inputs:
 - key: url
   value:
-    simple: ${URL.Data}
+    complex:
+      root: URL
+      accessor: Data
   required: false
   description: URL of the sites to detonate.
 - key: FileName
@@ -286,8 +309,8 @@ inputs:
 - key: private
   value: {}
   required: false
-  description: The sample is marked private if this is present, and set to any value other than false.
-    private
+  description: The sample is marked private if this is present, and set to any value
+    other than false. private
 - key: source
   value: {}
   required: false
@@ -353,3 +376,4 @@ outputs:
   description: The sample state.
 - contextPath: Sample.ID
   description: The sample ID.
+releaseNotes: "-"

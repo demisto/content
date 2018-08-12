@@ -1,6 +1,6 @@
-id: JoeSecurity - Detonate File From URL
+id: Detonate File From URL - JoeSecurity
 version: -1
-name: JoeSecurity - Detonate File From URL
+name: Detonate File From URL - JoeSecurity
 fromversion: 4.0.0
 description: |-
   Detonates one or more remote files using the Joe Security sandbox integration.
@@ -16,7 +16,6 @@ tasks:
       id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -33,13 +32,12 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: b49662d2-b7f6-4642-87b5-34e29da977a4
+    taskid: f33ca887-1384-4cf6-83c7-9e5e43a5213b
     type: regular
     task:
-      id: b49662d2-b7f6-4642-87b5-34e29da977a4
+      id: f33ca887-1384-4cf6-83c7-9e5e43a5213b
       version: -1
       name: JoeSecurity Upload File
-      description: ""
       script: Joe Security|||joe-analysis-submit-sample
       type: regular
       iscommand: true
@@ -49,15 +47,19 @@ tasks:
       - "2"
     scriptarguments:
       comments:
-        simple: ${inputs.comments}
+        complex:
+          root: inputs.comments
       file_id: {}
       internet-access:
-        simple: ${inputs.internet-access}
+        complex:
+          root: inputs.internet-access
       sample_url:
-        simple: ${inputs.FileUrl}
+        complex:
+          root: inputs.FileUrl
       should_wait: {}
       systems:
-        simple: ${inputs.systems}
+        complex:
+          root: inputs.systems
     separatecontext: false
     view: |-
       {
@@ -69,13 +71,20 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: ae10c6a8-8407-4350-87fa-cb2e458c4257
+    taskid: d012db05-3ea1-41a5-8f5b-1fc8bdbe8d17
     type: playbook
     task:
-      id: ae10c6a8-8407-4350-87fa-cb2e458c4257
+      id: d012db05-3ea1-41a5-8f5b-1fc8bdbe8d17
       version: -1
       name: GenericPolling
-      description: Generic Polling Playbook
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -85,17 +94,21 @@ tasks:
       - "3"
     scriptarguments:
       Ids:
-        simple: ${Joe.Analysis.ID}
+        complex:
+          root: Joe
+          accessor: Analysis.WebID
       Interval:
-        simple: ${inputs.interval}
+        complex:
+          root: inputs.interval
       PollingCommandArgName:
         simple: webid
       PollingCommandName:
         simple: joe-analysis-info
       Timeout:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.timeout
       dt:
-        simple: Joe.Analysis(val.Status != 'finished').ID
+        simple: Joe.Analysis(val.Status != 'finished').WebID
     separatecontext: true
     loop:
       iscommand: false
@@ -111,13 +124,12 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 1d500d41-29b5-413b-8384-9535ccfd59fd
+    taskid: 1763ea33-f3ce-4dbe-8b98-5fed3a6d09e1
     type: regular
     task:
-      id: 1d500d41-29b5-413b-8384-9535ccfd59fd
+      id: 1763ea33-f3ce-4dbe-8b98-5fed3a6d09e1
       version: -1
       name: JoeSecurity Get Report
-      description: ""
       script: Joe Security|||joe-download-report
       type: regular
       iscommand: true
@@ -127,9 +139,12 @@ tasks:
       - "5"
     scriptarguments:
       type:
-        simple: ${inputs.report-file-type}
+        complex:
+          root: inputs.report-file-type
       webid:
-        simple: ${Joe.Analysis.WebID}
+        complex:
+          root: Joe
+          accessor: Analysis.WebID
     separatecontext: false
     view: |-
       {
@@ -141,13 +156,12 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
+    taskid: 29ff87c5-31c7-4ec0-8b28-d83509de8859
     type: title
     task:
-      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
+      id: 29ff87c5-31c7-4ec0-8b28-d83509de8859
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -345,4 +359,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
   type: number
-releaseNotes: "URL File detonation using polling playbook"
+releaseNotes: "-"
