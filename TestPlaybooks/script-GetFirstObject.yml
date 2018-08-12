@@ -24,4 +24,3 @@ args:
   description: List or single object
 scripttarget: 0
 runonce: false
-releaseNotes: "-"
