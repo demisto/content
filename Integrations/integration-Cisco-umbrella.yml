@@ -1891,3 +1891,6 @@ script:
     description: The timeline command shows when a URL was given attribution of a
       particular security categorization or threat type (indicators of compromise).
   runonce: false
+releaseNotes: "Timeline And Classifiers - The timeline shows when a domain was given attribution, whereas the classifiers shows when a domain was first queried and what it is now classified as.
+Domain Volume - Shows the number of DNS queries made per hour to the specified domain by users of Umbrella's recursive DNS servers.
+WHOIS Information For A Domain - Returns the WHOIS information for the specified email address(es), nameserver(s) and domains."
