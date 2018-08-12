@@ -1,0 +1,839 @@
+id: test_delete_context
+version: -1
+name: Test Delete Context
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4a9dc7a4-8d04-4fc0-86f6-562abd39c17f
+    type: start
+    task:
+      id: 4a9dc7a4-8d04-4fc0-86f6-562abd39c17f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 392d3583-7543-473c-879b-f79dd002a7be
+    type: regular
+    task:
+      id: 392d3583-7543-473c-879b-f79dd002a7be
+      version: -1
+      name: Set A
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: A
+      value:
+        simple: a1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 198e991c-dfb3-48bf-8f92-2ad24d01bd9e
+    type: regular
+    task:
+      id: 198e991c-dfb3-48bf-8f92-2ad24d01bd9e
+      version: -1
+      name: Delete A
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: A
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: a75d7d10-6632-4862-8bba-fe360575c01a
+    type: condition
+    task:
+      id: a75d7d10-6632-4862-8bba-fe360575c01a
+      version: -1
+      name: Ensure A doesn't exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: A
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: fb0e9f08-18f5-484d-81b5-f563e9bc863e
+    type: regular
+    task:
+      id: fb0e9f08-18f5-484d-81b5-f563e9bc863e
+      version: -1
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: ${A}
+      details: {}
+      error:
+        simple: A should not exists
+      expected:
+        simple: NONE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 864c1ac6-ab79-4fb6-81a4-db3f4353a6bf
+    type: regular
+    task:
+      id: 864c1ac6-ab79-4fb6-81a4-db3f4353a6bf
+      version: -1
+      name: Set B
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: B
+      value:
+        simple: b1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 678cc46c-361a-452e-8a38-26d170793d46
+    type: regular
+    task:
+      id: 678cc46c-361a-452e-8a38-26d170793d46
+      version: -1
+      name: Set C
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append: {}
+      key:
+        simple: C
+      value:
+        simple: c1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 60a6b7f6-668d-4878-8ffd-38460ba3521f
+    type: regular
+    task:
+      id: 60a6b7f6-668d-4878-8ffd-38460ba3521f
+      version: -1
+      name: Delete All Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: ef382153-98e2-4cdf-8535-a4d1453ee65b
+    type: condition
+    task:
+      id: ef382153-98e2-4cdf-8535-a4d1453ee65b
+      version: -1
+      name: Ensure context is empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: .
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 53932b83-3584-4d2d-8050-74a3e95a32c7
+    type: regular
+    task:
+      id: 53932b83-3584-4d2d-8050-74a3e95a32c7
+      version: -1
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: ${.}
+      details: {}
+      error:
+        simple: Context should be empty
+      expected:
+        simple: NONE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: e21660c2-2f1e-4f98-8c8b-0de890830612
+    type: regular
+    task:
+      id: e21660c2-2f1e-4f98-8c8b-0de890830612
+      version: -1
+      name: Set B
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append: {}
+      key:
+        simple: B
+      value:
+        simple: b1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1420
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 766b2c42-6457-45a4-80c8-6bc44bb42891
+    type: regular
+    task:
+      id: 766b2c42-6457-45a4-80c8-6bc44bb42891
+      version: -1
+      name: Set C
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append: {}
+      key:
+        simple: C
+      value:
+        simple: c1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1595
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: e4fa0cfe-1cea-4f29-8431-5fd5090b77cb
+    type: regular
+    task:
+      id: e4fa0cfe-1cea-4f29-8431-5fd5090b77cb
+      version: -1
+      name: Delete All Context expect B
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: B
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1770
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 5757d86c-316a-417b-8478-ed3ca18efa5a
+    type: condition
+    task:
+      id: 5757d86c-316a-417b-8478-ed3ca18efa5a
+      version: -1
+      name: Ensure context is empty expect B
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: C
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: B
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1945
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 92d8d31f-9d5f-47d7-87cd-6e22a8edf9b0
+    type: regular
+    task:
+      id: 92d8d31f-9d5f-47d7-87cd-6e22a8edf9b0
+      version: -1
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: B - ${B}, C - ${C}
+      details: {}
+      error:
+        simple: Context should be empty expect B
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 7b4e8928-df8a-49ba-81ee-446985dd6c05
+    type: regular
+    task:
+      id: 7b4e8928-df8a-49ba-81ee-446985dd6c05
+      version: -1
+      name: Set A 1
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append: {}
+      key:
+        simple: A
+      value:
+        simple: a1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 84f9525b-7ef5-4431-863d-4e3ba0d8d73c
+    type: regular
+    task:
+      id: 84f9525b-7ef5-4431-863d-4e3ba0d8d73c
+      version: -1
+      name: Set A 2
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: A
+      value:
+        simple: a2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2295
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: fab07c6a-b100-46ff-861c-8155ff109921
+    type: regular
+    task:
+      id: fab07c6a-b100-46ff-861c-8155ff109921
+      version: -1
+      name: Delete A at index 1
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "no"
+      index:
+        simple: "1"
+      key:
+        simple: A
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2470
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 082ef367-20b9-447f-8813-5e91fb33409b
+    type: condition
+    task:
+      id: 082ef367-20b9-447f-8813-5e91fb33409b
+      version: -1
+      name: Ensure A has been updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: A
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: A
+            iscontext: true
+          right:
+            value:
+              simple: a1
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2645
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: df5ad5b8-ec37-4e3b-8940-307f8949abb2
+    type: regular
+    task:
+      id: df5ad5b8-ec37-4e3b-8940-307f8949abb2
+      version: -1
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: B - ${B}, C - ${C}
+      details: {}
+      error:
+        simple: Context should be empty expect B
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2820
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: 2b83dee6-be57-4f9f-86ab-100e1eb3ab7f
+    type: regular
+    task:
+      id: 2b83dee6-be57-4f9f-86ab-100e1eb3ab7f
+      version: -1
+      name: Delete A at index 1 - should give error
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all: {}
+      index:
+        simple: "1"
+      key:
+        simple: A
+      keysToKeep: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2820
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 0ec846b3-e531-4367-87a9-37c25c9122e9
+    type: condition
+    task:
+      id: 0ec846b3-e531-4367-87a9-37c25c9122e9
+      version: -1
+      name: Ensure error occurred
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "24"
+      "yes":
+      - "25"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2995
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: 38812a17-b7e4-4b91-8b72-9e09751dd96d
+    type: regular
+    task:
+      id: 38812a17-b7e4-4b91-8b72-9e09751dd96d
+      version: -1
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: B - ${B}, C - ${C}
+      details: {}
+      error:
+        simple: Context should be empty expect B
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3170
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: 2a4405d1-454d-4abb-8969-bab250c5c3b4
+    type: regular
+    task:
+      id: 2a4405d1-454d-4abb-8969-bab250c5c3b4
+      version: -1
+      name: Delete A at index 0
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all: {}
+      index:
+        simple: "0"
+      key:
+        simple: A
+      keysToKeep: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3170
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 7381b35c-7713-478e-806e-01c95ae945c1
+    type: condition
+    task:
+      id: 7381b35c-7713-478e-806e-01c95ae945c1
+      version: -1
+      name: Ensure A doesn't exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: A
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3345
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 7e7d03f0-d6ad-43cb-8b7f-f7b117f02d95
+    type: regular
+    task:
+      id: 7e7d03f0-d6ad-43cb-8b7f-f7b117f02d95
+      version: -1
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: B - ${B}, C - ${C}
+      details: {}
+      error:
+        simple: Context should be empty expect B
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3520
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: a4667578-250c-4bb4-817b-c4bb18ebcc87
+    type: title
+    task:
+      id: a4667578-250c-4bb4-817b-c4bb18ebcc87
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 3535
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3565,
+        "width": 1885,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
