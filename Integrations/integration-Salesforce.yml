@@ -38,7 +38,8 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser automation)
+- display: 'Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser
+    automation)'
   name: fetchType
   defaultvalue: cases
   type: 0
