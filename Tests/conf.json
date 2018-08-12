@@ -3,14 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Trend Micro Deep Discovery Analyzer",
-            "playbookID": "Test Playbook TrendMicroDDA",
-            "timeout": 500
+            "playbookID": "Extract Indicators From File - test"
         },
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
+            "timeout": 500,
+            "nightly": true
         },
         {
             "integrations": "Jask",
@@ -314,17 +313,9 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": [
-                {
-                    "name": "carbonblackliveresponse",
-                    "byoi": true
-                },
-                {
-                    "name": "carbonblack-v2",
-                    "byoi": true
-                }
-            ],
-            "playbookID": "CarbonBlackLiveResponseTest"
+            "integrations": "carbonblackliveresponse",
+            "playbookID": "CarbonBlackLiveResponseTest",
+            "nightly": true
         },
         {
             "playbookID": "TestSafeBreach",
@@ -336,7 +327,8 @@
         },
         {
             "integrations": "VxStream",
-            "playbookID": "VxStream Test"
+            "playbookID": "VxStream Test",
+            "nightly": true
         },
         {
             "integrations": "Preempt",
@@ -411,6 +403,11 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
         }
     ],
     "skipped": [
@@ -567,10 +564,6 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
-        },
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook"
         }
     ]
 }
