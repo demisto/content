@@ -38,7 +38,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Fetch type (cases/comments)
+- display: Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser automation)
   name: fetchType
   defaultvalue: cases
   type: 0
@@ -626,6 +626,7 @@ script:
                         var messageSegments = data.body.messageSegments;
                         for (var j = 0; j < messageSegments.length; j++)
                         if (messageSegments[j].type === 'Text') {
+                            // Found the relavent comment (there's only one), so we return it
                             return JSON.stringify([{
                                 name: parentText,
                                 details: messageSegments[j].text
