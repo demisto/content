@@ -1,6 +1,6 @@
-id: CrowdStrike_DetonateFile
+id: CrowdStrike Falcon Sandbox - Detonate file
 version: -1
-name: CrowdStrike - Detonate file
+name: CrowdStrike Falcon Sandbox - Detonate file
 description: Detonate one or more files using the CrowdStrike integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
@@ -405,3 +405,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+releaseNotes: "-"
