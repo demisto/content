@@ -1066,6 +1066,8 @@ script: |-
 
   ############################### REGEX FORMATTING ###############################
   regexFlags = re.M #Multi line matching
+  #for the global(/g) flag use re.findall({regex_format},str)
+  #else, use re.match({regex_format},str)
 
   ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
   emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
