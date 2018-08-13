@@ -35,7 +35,7 @@ script: |-
 type: javascript
 tags:
 - Condition
-comment: Look for value in an array
+comment: Indicates whether a given value is a member of given array
 enabled: true
 args:
 - name: array
