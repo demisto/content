@@ -3,6 +3,18 @@
     "testInterval": 20,
     "tests": [
         {
+<<<<<<< HEAD
+<<<<<<< HEAD
+            "integrations": "Shodan",
+            "playbookID": "ShodanTest"
+=======
+            "playbookID": "Extract Indicators From File - test"
+>>>>>>> a121915bd4c808351f688bd09dbfea56d2ab8cee
+=======
+            "playbookID": "Extract Indicators From File - test"
+>>>>>>> a121915bd4c808351f688bd09dbfea56d2ab8cee
+        },
+        {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
             "timeout": 500,
@@ -324,7 +336,8 @@
         },
         {
             "integrations": "VxStream",
-            "playbookID": "VxStream Test"
+            "playbookID": "VxStream Test",
+            "nightly": true
         },
         {
             "integrations": "Preempt",

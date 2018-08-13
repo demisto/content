@@ -334,10 +334,13 @@ script:
     - name: to
       default: true
       description: Email addresses for the 'To' field
+      isArray: true
     - name: cc
       description: Email addresses for the 'Cc' field
+      isArray: true
     - name: bcc
       description: Email addresses for the 'Bcc' field
+      isArray: true
     - name: subject
       description: Subject for the email to be sent
     - name: body
@@ -349,13 +352,16 @@ script:
     - name: attachIDs
       description: A comma-separated list of IDs of war room entries that contain
         the files that should be attached to the email
+      isArray: true
     - name: attachNames
       description: A comma-separated list to rename file-names of corresponding attachments
         IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename
         first and third file - attachNames=file_name1,,file_name3)
+      isArray: true
     - name: attachCIDs
       description: A comma-separated list of CIDs to embed attachments inside the
         email itself
+      isArray: true
     - name: transientFile
       description: Desired name for attached file. Multiple files are supported. (e.g.
         transientFile.1="t1.txt" transientFileContent.1="test 2" transientFile.2="t3.txt"
@@ -376,3 +382,4 @@ script:
         the value or a context key to retrieve the value from.'
     description: Send an email
   runonce: false
+releaseNotes: "-"
