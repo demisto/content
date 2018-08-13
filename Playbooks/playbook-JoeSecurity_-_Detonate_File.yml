@@ -263,7 +263,7 @@ inputs:
 - key: EntryID
   value:
     simple: ${File.EntryID}
-  required: true
+  required: false
   description: Demisto EntryID of the file to detonate. The EntryID is taken from
     the context.
 - key: interval
@@ -347,3 +347,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
   type: number
+releaseNotes: "-"
