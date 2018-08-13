@@ -3,7 +3,7 @@ version: -1
 name: Detonate File - Generic Test
 description: ""
 fromversion: "3.5.0"
-toversion: "4.0.0"
+toversion: "3.6.0"
 starttaskid: "0"
 tasks:
   "0":

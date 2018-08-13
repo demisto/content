@@ -859,4 +859,3 @@ script:
       description: List of IP addresses in the category
     description: Removes IP address from given category
   runonce: false
-releaseNotes: "Added the commands: zscaler-category-add-url, zscaler-category-add-ip, zscaler-category-remove-url, zscaler-category-remove-ip"
