@@ -13,6 +13,7 @@ script: |-
   import optparse
   import sys
   import os
+  import re
   from collections import OrderedDict
 
   import xml.etree.cElementTree as ET
