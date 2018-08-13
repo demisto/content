@@ -11,6 +11,12 @@ script: |
   var emailToAssign = args.email;
   var userToAssign = args.username;
 
+  var getUserException = {
+                          ContentsFormat: formats.text,
+                          Type: entryTypes.error,
+                          Contents: "Error from getUsers."
+                         };
+
   if (emailToAssign) {
       userToAssign = '';
       var res = executeCommand('getUsers',{});
@@ -28,43 +34,60 @@ script: |
 
   assignBy = args.assignBy || 'random';
 
+  function chooseUser(usersRes){
+      var usersList = usersRes[0].Contents.map(function (u) { return u.username });
+      userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
+  }
+
   if (!userToAssign) {
-    switch(assignBy) {
-        case 'online':
-            var usersRes = executeCommand('getUsers', { roles: args.roles, online: true });
-            var usersList = usersRes[0].Contents.map(function (u) { return u.username });
-            userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
-            break;
-        case 'current':
-          var usersRes = executeCommand('getUsers', { current: true });
-          var usersList = usersRes[0].Contents.map(function (u) { return u.username });
-          userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
-          break;
-        case 'random':
-            var usersRes = executeCommand('getUsers', { roles: args.roles });
-            var usersList = usersRes[0].Contents.map(function (u) { return u.username });
-            userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
-            break;
-        default:
-            res = executeCommand("getOwnerSuggestion", {})[0].Contents;
-            switch (assignBy) {
-                case 'machine-learning':
-                    userToAssign = res.ownerByMl;
-                    break;
-                case 'top-user':
-                    userToAssign = res.topOwner;
-                    break;
-                case 'less-busy-user':
-                    userToAssign = res.userLeastLoad;
-                    break;
-            }
-    }
+      switch(assignBy) {
+          case 'online':
+              var usersRes = executeCommand('getUsers', { roles: args.roles, online: true });
+              if (isError(usersRes[0])) {
+                  return getUserException;
+              } else {
+                  chooseUser(usersRes);
+              }
+              break;
+          case 'current':
+              var usersRes = executeCommand('getUsers', { current: true });
+              if (isError(usersRes[0])) {
+                  return getUserException;
+              } else {
+                  chooseUser(usersRes);
+              }
+              break;
+          case 'random':
+              var usersRes = executeCommand('getUsers', { roles: args.roles });
+              if (isError(usersRes[0])) {
+                  return getUserException;
+              } else {
+                  chooseUser(usersRes);
+              }
+              break;
+          default:
+              res = executeCommand("getOwnerSuggestion", {})[0].Contents;
+              switch (assignBy) {
+                  case 'machine-learning':
+                      userToAssign = res.ownerByMl;
+                      break;
+                  case 'top-user':
+                      userToAssign = res.topOwner;
+                      break;
+                  case 'less-busy-user':
+                      userToAssign = res.userLeastLoad;
+                      break;
+              }
+      }
   }
 
   if (!userToAssign) {
       var usersRes = executeCommand('getUsers', { roles: args.roles });
-      var usersList = usersRes[0].Contents.map(function (u) { return u.username });
-      userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
+      if (isError(usersRes[0])) {
+          return getUserException;
+      } else {
+          chooseUser(usersRes);
+      }
   }
 
   if (userToAssign) {
@@ -112,11 +135,14 @@ args:
   - less-busy-user
   - online
   - current
-  description: '(default: random) You can pick how to assign the owner - by random, online, current,
-    machine-learning, top-user or less-busy-user.'
+  description: '(default: random) You can pick how to assign the owner - by random,
+    online, current, machine-learning, top-user or less-busy-user.'
 - name: username
-  description: When specified, the provided user will be assigned as the incident owner (optional).
+  description: When specified, the provided user will be assigned as the incident
+    owner (optional).
 - name: email
-  description: When specified, the user of provided email will be assigned as the incident owner (optional)
+  description: When specified, the user of provided email will be assigned as the
+    incident owner (optional)
 scripttarget: 0
+runonce: false
 releaseNotes: "-"
