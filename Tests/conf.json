@@ -6,6 +6,10 @@
             "playbookID": "test_delete_context"
         },
         {
+            "integrations": "Shodan",
+            "playbookID": "ShodanTest"
+        },
+        {
             "playbookID": "Extract Indicators From File - test"
         },
         {
