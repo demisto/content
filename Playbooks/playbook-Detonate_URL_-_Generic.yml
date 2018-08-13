@@ -1,7 +1,7 @@
-id: Detonate File - Generic
+id: Detonate URL - Generic
 version: -1
-name: Detonate File - Generic
-fromversion: "4.0.0"
+name: Detonate URL - Generic
+fromversion: 4.0.0
 description: Detonate file through active integrations that support file detonation
 starttaskid: "0"
 tasks:
@@ -18,10 +18,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
-      - "8"
-      - "10"
-      - "9"
+      - "11"
+      - "13"
+      - "12"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -52,63 +52,63 @@ tasks:
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: 941ada70-74e6-42a5-8197-ff7348b8bd52
+  "11":
+    id: "11"
+    taskid: 14465d51-f9b2-46bd-8e35-22fb08ca86c6
     type: playbook
     task:
-      id: 941ada70-74e6-42a5-8197-ff7348b8bd52
+      id: 14465d51-f9b2-46bd-8e35-22fb08ca86c6
       version: -1
-      name: CrowdStrike - Detonate file
-      description: Detonate one or more files using the CrowdStrike integration. This
-        playbook returns relevant reports to the War Room and file reputations to
-        the context data. The detonation supports the following file types - EXE,
-        DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ,
-        GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX,
-        BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
-      playbookName: CrowdStrike - Detonate file
+      name: Detonate URL - ThreatGrid
+      playbookName: Detonate URL - ThreatGrid
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      environmentID:
-        simple: "100"
-      interval:
-        simple: "5"
-      timeout:
-        simple: "30"
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 920,
           "y": 195
         }
       }
     note: false
-  "8":
-    id: "8"
-    taskid: 60defe17-6a73-4236-8eb3-4ba2c8e5514b
+  "12":
+    id: "12"
+    taskid: 9b945f0a-c0e4-4b17-8456-11b701ae35d9
     type: playbook
     task:
-      id: 60defe17-6a73-4236-8eb3-4ba2c8e5514b
+      id: 9b945f0a-c0e4-4b17-8456-11b701ae35d9
       version: -1
-      name: Detonate File - JoeSecurity
-      description: |-
-        Detonates one or more files using the Joe Security - Joe Sandbox integration.
-        Returns relevant reports to the War Room and file reputations to the context data.
-        All file types are supported.
-      playbookName: Detonate File - JoeSecurity
+      name: Detonate URL - McAfee ATD
+      playbookName: Detonate URL - McAfee ATD
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 195
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: f914c21c-c9dc-43e1-8bba-0d482fdfb851
+    type: playbook
+    task:
+      id: f914c21c-c9dc-43e1-8bba-0d482fdfb851
+      version: -1
+      name: Detonate URL - JoeSecurity
+      playbookName: Detonate URL - JoeSecurity
       type: playbook
       iscommand: false
       brand: ""
@@ -116,15 +116,17 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      File:
+      URL:
         complex:
-          root: inputs.File
+          root: URL
+          accessor: Data
       comments: {}
       internet-access:
         simple: "True"
       interval:
         simple: "1"
-      report-file-type: {}
+      report-file-type:
+        simple: html
       systems: {}
       timeout:
         simple: "15"
@@ -141,82 +143,26 @@ tasks:
         }
       }
     note: false
-  "9":
-    id: "9"
-    taskid: e028411a-442b-4450-84eb-275082a8679a
+  "14":
+    id: "14"
+    taskid: f497277e-c437-4727-8983-c915eb42682c
     type: playbook
     task:
-      id: e028411a-442b-4450-84eb-275082a8679a
+      id: f497277e-c437-4727-8983-c915eb42682c
       version: -1
-      name: Detonate File - McAfee ATD
-      playbookName: Detonate File - McAfee ATD
+      name: Detonate URL - CrowdStrike
+      playbookName: Detonate URL - CrowdStrike
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      interval:
-        simple: "1"
-      timeout:
-        simple: "15"
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 195
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 092742aa-8cf7-4572-8dee-d7d58a90d876
-    type: playbook
-    task:
-      id: 092742aa-8cf7-4572-8dee-d7d58a90d876
-      version: -1
-      name: Detonate File - ThreatGrid
-      playbookName: Detonate File - ThreatGrid
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      FileName:
-        simple: file-detonated-via-demisto
-      interval:
-        simple: "1"
-      os: {}
-      osver: {}
-      private: {}
-      source: {}
-      tags: {}
-      timeout:
-        simple: "15"
-      vm: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 910,
+          "x": 50,
           "y": 195
         }
       }
@@ -227,7 +173,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 1670,
+        "width": 1660,
         "x": 50,
         "y": 50
       }
@@ -293,4 +239,4 @@ outputs:
 - contextPath: File.Name
   description: Filename (only in case of report type=json)
   type: string
-releaseNotes: "New version of this playbook for 4.0.0"
+releaseNotes: "New generic detonation playbook for URL"
