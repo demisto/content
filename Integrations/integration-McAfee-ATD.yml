@@ -1243,5 +1243,5 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-fromversion: 4.1.0
+fromversion: 4.0.0
 releaseNotes: support credentials paramater and depracted detonate commands which are supported in dedicated playbooks.
