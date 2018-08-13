@@ -9,6 +9,10 @@ description: RSA NetWitness Platform provides systems Logs, Network, and endpoin
   visibility for real-time collection, detection, and automated response with the
   Demisto Enterprise platform. Providing full session analysis, customers can extract
   critical data and effectively operate security operations automated playbook.
+detaileddescription: |
+  Please note:
+
+  Importing alerts data when fetching incidents may lead to exceeding the rate limit. In that case, The alerts importation will be stopped and the incident will be displayed without the alerts data.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:30022)
   name: server
@@ -44,6 +48,11 @@ configuration:
   name: incidentType
   defaultvalue: ""
   type: 13
+  required: false
+- display: on 'Fetch incidents' import all alerts related to the incident
+  name: importAlerts
+  defaultvalue: "false"
+  type: 8
   required: false
 script:
   script: |2+
@@ -149,10 +158,12 @@ script:
             - unexpected response from the server
 
         """
+        LOG('Attempting to get token')
         response_body = get_token_request(
             USERNAME,
             PASSWORD
         )
+        LOG('Token recieved')
         token = response_body.get('accessToken')
         if not token:
             raise ValueError('Failed to access get_token token (Unexpected response)')
@@ -197,7 +208,7 @@ script:
         """
         args = demisto.args()
         incident_id = args.get('incidentId')
-
+        LOG('Requesting information on incident ' + incident_id)
         #call get_incident_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
@@ -275,10 +286,12 @@ script:
         has_next = True
         page_number = 0
         incidents = []
+        LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s = since or 'not specified', u = until or 'not specified'))
         while has_next and limit > len(incidents):
         #call get_incidents_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
+            LOG('Requesting for page {}'.format(page_number))
             response_body = get_incidents_request(
                 token,
                 since = since,
@@ -361,6 +374,8 @@ script:
             - response body does not contain valid json (ValueError)
 
         """
+        LOG('Requestig to update incident ' + incident_id)
+
         body = {
             'assignee': assignee,
             'status': status
@@ -435,10 +450,9 @@ script:
             - response status code diff from 204
 
         """
-
+        LOG('Requesting to delete incident ' + incident_id)
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
         headers = add_token_header(DEFAULT_HEADERS, token)
-
         response = requests.delete(
             url,
             headers = headers,
@@ -520,10 +534,12 @@ script:
         page_number = 0
         alerts = []
 
+        LOG('Requesting for data on alerts related to incident ' + incident_id)
         while has_next:
         #call get_alerts_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
+            LOG('Requesting for page {}'.format(page_number))
             response_body = get_alerts_request(
                 token,
                 incident_id,
@@ -587,6 +603,7 @@ script:
 
         token = get_token()
 
+        LOG('Fetching incidents since ' + timestamp)
         netwitness_incidents = get_all_incidents(
             token,
             since = timestamp,
@@ -598,6 +615,9 @@ script:
 
         last_incident_datetime = datetime.strptime(timestamp, iso_format)
         last_incident_timestamp = timestamp
+
+        # set boolean flag for fetching alerts per incident
+        import_alerts = demisto.params().get('importAlerts')
 
         for incident in netwitness_incidents:
 
@@ -613,7 +633,13 @@ script:
                 last_incident_timestamp = incident_timestamp
 
             # add to incident object an array of all related alerts
-            incident['alerts'] = get_all_alerts(token, incident.get('id'))
+            if import_alerts:
+                try:
+                    incident['alerts'] = get_all_alerts(token, incident.get('id'))
+                except ValueError as e:
+                    import_alerts = false
+                    LOG('Failed to fetch alerts related to incident ' + incident.get('id'))
+                    LOG('Stopping alert importation')
             demisto_incidents.append(parse_incident(incident))
 
         demisto.incidents(demisto_incidents)
@@ -635,9 +661,10 @@ script:
             'categories'
         ]
         incident_labels = [{'type': field, 'value': json.dumps(netwitness_incident.get(field))} for field in incident_fields ]
-        alerts = netwitness_incident.get('alerts', [])
-        alerts_ids = [alert.get('id') for alert in alerts]
-        incident_labels.append({ 'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
+        alerts = netwitness_incident.get('alerts')
+        if alerts:
+            alerts_ids = [alert.get('id') for alert in alerts]
+            incident_labels.append({ 'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
         incident = {
             'name': netwitness_incident.get('title'),
             'occurred': netwitness_incident.get('created'),
@@ -960,6 +987,8 @@ script:
             get_alerts()
         sys.exit(0)
     except ValueError as e:
+        LOG(E.message)
+        LOG.print_log()
         return_error_entry(e.message)
         sys.exit(1)
 
