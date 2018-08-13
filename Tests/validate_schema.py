@@ -1,7 +1,6 @@
 import sys
 from pykwalify.core import Core
 
-
 def main(argv):
     if len(argv) < 2:
         print('you must provide file path & content-type')
@@ -9,6 +8,12 @@ def main(argv):
 
     file_path = argv[0]
     schema_path = argv[1]
+    is_local = argv[2]
+
+    if is_local:
+        import logging
+        logging.basicConfig(level=logging.CRITICAL)
+
     c = Core(source_file=file_path, schema_files=[schema_path])
     try:
         c.validate(raise_exception=True)
