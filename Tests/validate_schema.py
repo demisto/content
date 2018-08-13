@@ -8,7 +8,10 @@ def main(argv):
 
     file_path = argv[0]
     schema_path = argv[1]
-    is_local = argv[2]
+    
+    is_local = False
+    if len(argv) == 3:
+        is_local = argv[2]
 
     if is_local:
         import logging
