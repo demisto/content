@@ -54,12 +54,15 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 14465d51-f9b2-46bd-8e35-22fb08ca86c6
+    taskid: b9153231-1e6d-4646-8f96-373a34716936
     type: playbook
     task:
-      id: 14465d51-f9b2-46bd-8e35-22fb08ca86c6
+      id: b9153231-1e6d-4646-8f96-373a34716936
       version: -1
       name: Detonate URL - ThreatGrid
+      description: Detonate one or more URLs using the Threat Grid integration. This
+        playbook returns relevant reports to the War Room and URL reputations to the
+        context data.
       playbookName: Detonate URL - ThreatGrid
       type: playbook
       iscommand: false
@@ -67,7 +70,28 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      FileName:
+        simple: file-detonated-via-demisto
+      interval:
+        simple: "1"
+      os: {}
+      osver: {}
+      private: {}
+      source: {}
+      tags: {}
+      timeout:
+        simple: "15"
+      url:
+        complex:
+          root: inputs.URL
+          accessor: Data
+      vm: {}
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -78,12 +102,14 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 9b945f0a-c0e4-4b17-8456-11b701ae35d9
+    taskid: a90cd865-1dbe-46ba-8cd9-65a3b13c74d6
     type: playbook
     task:
-      id: 9b945f0a-c0e4-4b17-8456-11b701ae35d9
+      id: a90cd865-1dbe-46ba-8cd9-65a3b13c74d6
       version: -1
       name: Detonate URL - McAfee ATD
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+        integration.
       playbookName: Detonate URL - McAfee ATD
       type: playbook
       iscommand: false
@@ -91,7 +117,20 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+      interval:
+        simple: "1"
+      timeout:
+        simple: "15"
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -102,12 +141,15 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: f914c21c-c9dc-43e1-8bba-0d482fdfb851
+    taskid: 1aaf0acd-d983-42a7-8ca3-50c3423b22d2
     type: playbook
     task:
-      id: f914c21c-c9dc-43e1-8bba-0d482fdfb851
+      id: 1aaf0acd-d983-42a7-8ca3-50c3423b22d2
       version: -1
       name: Detonate URL - JoeSecurity
+      description: |-
+        Detonates one or more URLs using the Joe Security sandbox integration.
+        Returns relevant reports to the War Room and url reputations to the context data.
       playbookName: Detonate URL - JoeSecurity
       type: playbook
       iscommand: false
@@ -118,7 +160,7 @@ tasks:
     scriptarguments:
       URL:
         complex:
-          root: URL
+          root: inputs.URL
           accessor: Data
       comments: {}
       internet-access:
@@ -145,12 +187,15 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: f497277e-c437-4727-8983-c915eb42682c
+    taskid: 2b121169-8285-479f-8bd2-5c356bcef363
     type: playbook
     task:
-      id: f497277e-c437-4727-8983-c915eb42682c
+      id: 2b121169-8285-479f-8bd2-5c356bcef363
       version: -1
       name: Detonate URL - CrowdStrike
+      description: Detonate one or more files using the Wildfire integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data.
       playbookName: Detonate URL - CrowdStrike
       type: playbook
       iscommand: false
@@ -158,7 +203,22 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      Url:
+        complex:
+          root: inputs.URL
+          accessor: Data
+      environmentID:
+        simple: "100"
+      interval:
+        simple: "5"
+      timeout:
+        simple: "30"
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -180,19 +240,12 @@ view: |-
     }
   }
 inputs:
-- key: EntryID
+- key: URL
   value:
     complex:
-      root: File
-      accessor: EntryID
+      root: URL
   required: false
-  description: Entry ID of file to be detonated
-- key: File
-  value:
-    complex:
-      root: File
-  required: false
-  description: File object of file to be detonated
+  description: URL object of url to be detonated.
 outputs:
 - contextPath: DBotScore
   description: The Indicator's object
