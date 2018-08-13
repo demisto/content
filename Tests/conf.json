@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Shodan",
+            "playbookID": "ShodanTest"
+        },
+        {
             "playbookID": "Extract Indicators From File - test"
         },
         {
