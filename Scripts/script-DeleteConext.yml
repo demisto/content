@@ -28,7 +28,7 @@ script: |
           if (keysToKeep.indexOf(fieldsToDelete[i]) == -1) {
               var result = executeCommand('delContext', { key: fieldsToDelete[i], id: args.id });
               if(!result || result.type === entryTypes.error) {
-                  errorsStr = "errorsStr" + "\n" + result.Contents;
+                  errorsStr = errorsStr + "\n" + result.Contents;
               }
           }
       }
