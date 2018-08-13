@@ -188,4 +188,3 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
-releaseNotes: "1. Support multiple time fields. 2. Custom text length."
