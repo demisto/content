@@ -2,7 +2,7 @@ commonfields:
   id: IsValueInArray
   version: -1
 name: IsValueInArray
-releasenotes: Better support for manually execute (try to parse string array)
+releaseNotes: Better support for manually execute (try to parse string array)
 script: |-
   var array = args.array;
   var value = args.value;
