@@ -462,11 +462,6 @@
             "playbookID": "SymantecMSSTest"
         },
         {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
-        },
-        {
             "playbookID": "TestParseCSV"
         },
         {
