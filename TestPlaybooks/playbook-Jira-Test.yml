@@ -1,14 +1,14 @@
 id: Jira-Test
-version: 33
+version: -1
 name: Jira-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4d8d69b9-5cae-4c7c-8742-ea044c8b8385
+    taskid: 866194e1-a181-4860-89c3-12c399906661
     type: start
     task:
-      id: 4d8d69b9-5cae-4c7c-8742-ea044c8b8385
+      id: 866194e1-a181-4860-89c3-12c399906661
       version: -1
       name: ""
       iscommand: false
@@ -16,19 +16,21 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
   "1":
     id: "1"
-    taskid: 52d8b87e-7a08-491c-8394-fae98891841b
+    taskid: 3c58da08-7839-4473-8319-bf44ec6db001
     type: regular
     task:
-      id: 52d8b87e-7a08-491c-8394-fae98891841b
+      id: 3c58da08-7839-4473-8319-bf44ec6db001
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -40,21 +42,24 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
         }
       }
   "2":
     id: "2"
-    taskid: f264f213-fd5b-4ffb-8ee0-e14ef80877ae
+    taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
     type: regular
     task:
-      id: f264f213-fd5b-4ffb-8ee0-e14ef80877ae
+      id: 1b267d2e-ce51-4d14-8248-fd63c504da3f
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
@@ -66,31 +71,37 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      assignee: ""
-      description: '"jira descriptions"'
-      dueDate: ""
-      issueJson: ""
-      issueTypeId: ""
-      issueTypeName: Incident
-      labels: ""
-      priority: ""
-      projectKey: SOC
-      projectName: ""
-      reporter: ""
-      summary: '"jira playbook test"'
+      assignee: {}
+      description:
+        simple: '"jira descriptions"'
+      dueDate: {}
+      issueJson: {}
+      issueTypeId: {}
+      issueTypeName:
+        simple: Incident
+      labels: {}
+      priority: {}
+      projectKey:
+        simple: SOC
+      projectName: {}
+      reporter: {}
+      summary:
+        simple: '"jira playbook test"'
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 50,
+          "y": 370
         }
       }
   "3":
     id: "3"
-    taskid: 353cf0b7-7690-46f6-8e5d-1d2b7cbd7878
+    taskid: de36e03d-39df-47f0-8770-3814fb47309d
     type: regular
     task:
-      id: 353cf0b7-7690-46f6-8e5d-1d2b7cbd7878
+      id: de36e03d-39df-47f0-8770-3814fb47309d
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
@@ -102,21 +113,24 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      headers: ""
-      issueId: ${Ticket.Id}
+      headers: {}
+      issueId:
+        simple: ${Ticket.Id}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 590
+          "x": 50,
+          "y": 545
         }
       }
   "4":
     id: "4"
-    taskid: bd9af92d-9a1e-4de2-8a8a-4442d075a82f
+    taskid: ef93cc85-2f16-4f5a-893a-2736c25a6508
     type: regular
     task:
-      id: bd9af92d-9a1e-4de2-8a8a-4442d075a82f
+      id: ef93cc85-2f16-4f5a-893a-2736c25a6508
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -127,27 +141,33 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      field1: Ticket.Summary
-      field2: Ticket.Id
-      field3: ""
-      field4: ""
-      value1: '"jira playbook test"'
-      value2: ${Ticket.Id}
-      value3: ""
-      value4: ""
+      field1:
+        simple: Ticket.Summary
+      field2:
+        simple: Ticket.Id
+      field3: {}
+      field4: {}
+      value1:
+        simple: '"jira playbook test"'
+      value2:
+        simple: ${Ticket.Id}
+      value3: {}
+      value4: {}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 783
+          "x": 50,
+          "y": 720
         }
       }
   "5":
     id: "5"
-    taskid: 75f9f167-7236-453b-8562-81c3a32a69a6
+    taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
     type: regular
     task:
-      id: 75f9f167-7236-453b-8562-81c3a32a69a6
+      id: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
@@ -159,22 +179,26 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      comment: Test Comment
-      issueId: ${Ticket.Id}
-      visibility: ""
+      comment:
+        simple: Test Comment
+      issueId:
+        simple: ${Ticket.Id}
+      visibility: {}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 963
+          "x": 50,
+          "y": 896
         }
       }
   "6":
     id: "6"
-    taskid: 3972190f-b891-4e3d-8be3-8752d9de6392
+    taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
     type: regular
     task:
-      id: 3972190f-b891-4e3d-8be3-8752d9de6392
+      id: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
@@ -186,25 +210,30 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      globalId: ""
-      issueId: ${Ticket.Id}
-      relationship: ""
-      summary: ""
-      title: Demisto
-      url: http://www.demisto.com
+      globalId: {}
+      issueId:
+        simple: ${Ticket.Id}
+      relationship: {}
+      summary: {}
+      title:
+        simple: Demisto
+      url:
+        simple: http://www.demisto.com
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1143
+          "x": 50,
+          "y": 1070
         }
       }
   "9":
     id: "9"
-    taskid: 0a643b7d-1c9d-477d-8d5d-7549b4dc599b
+    taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
     type: regular
     task:
-      id: 0a643b7d-1c9d-477d-8d5d-7549b4dc599b
+      id: 9f28722d-9a90-4567-83a6-981df7a5d32e
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
@@ -216,49 +245,62 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      issueId: ${File.EntryID}
-      upload: ""
+      issueId:
+        simple: ${Ticket.Id}
+      upload:
+        simple: ${File.EntryID}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1547
+          "x": 50,
+          "y": 1420
         }
       }
   "11":
     id: "11"
-    taskid: 00387e71-2136-49aa-8d49-6893c67d04e1
+    taskid: f0a00a75-2589-4912-8d4f-5db6ca467b93
     type: regular
     task:
-      id: 00387e71-2136-49aa-8d49-6893c67d04e1
+      id: f0a00a75-2589-4912-8d4f-5db6ca467b93
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
-      field1: Ticket.Summary
-      field2: Ticket.Id
-      field3: ""
-      field4: ""
-      value1: '"jira playbook test"'
-      value2: ${Ticket.Id}
-      value3: ""
-      value4: ""
+      field1:
+        simple: Ticket.Summary
+      field2:
+        simple: Ticket.Id
+      field3: {}
+      field4: {}
+      value1:
+        simple: '"jira playbook test"'
+      value2:
+        simple: ${Ticket.Id}
+      value3: {}
+      value4: {}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1923
+          "x": 50,
+          "y": 1770
         }
       }
   "12":
     id: "12"
-    taskid: cc4047c9-706d-4ccd-89ee-0ab30574bd13
+    taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
     type: regular
     task:
-      id: cc4047c9-706d-4ccd-89ee-0ab30574bd13
+      id: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
       version: -1
       name: jira-issue-query
       description: Query Jira issues
@@ -270,23 +312,26 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      headers: ""
-      maxResults: ""
-      query: id = ${Ticket.[0].Id}
-      startAt: ""
+      headers: {}
+      maxResults: {}
+      query:
+        simple: id = ${Ticket.[0].Id}
+      startAt: {}
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1728
+          "x": 50,
+          "y": 1595
         }
       }
   "13":
     id: "13"
-    taskid: a5cf70c1-deda-4da5-8e94-880df22e9136
+    taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
     type: regular
     task:
-      id: a5cf70c1-deda-4da5-8e94-880df22e9136
+      id: 94503749-9577-49e0-843c-f1ec13b3e38f
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -299,13 +344,168 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      data: Hello Demisto
-      filename: Ho
+      data:
+        simple: Hello Demisto
+      filename:
+        simple: Ho
+    reputationcalc: 0
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1349
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "14":
+    id: "14"
+    taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
+    type: regular
+    task:
+      id: b64bfaf1-2688-4b84-8e40-12f88afda0dd
+      version: -1
+      name: jira-edit-issue
+      script: jira|||jira-edit-issue
+      type: regular
+      iscommand: true
+      brand: jira
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      assignee: {}
+      description: {}
+      dueDate: {}
+      issueId:
+        simple: ${Ticket.Id}
+      issueJson: {}
+      labels: {}
+      priority: {}
+      status:
+        simple: Resolve this issue
+      summary:
+        simple: Edited
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1944
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 4c264332-3528-4f2b-812c-bd29fc08cfe6
+    type: regular
+    task:
+      id: 4c264332-3528-4f2b-812c-bd29fc08cfe6
+      version: -1
+      name: VerifyContext - Summary
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      expectedValue:
+        simple: Edited
+      fields: {}
+      path:
+        simple: Ticket.[0].Summary
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2179
+        }
+      }
+  "21":
+    id: "21"
+    taskid: 4f94c3a0-5c82-473f-8604-2f010861a7a7
+    type: regular
+    task:
+      id: 4f94c3a0-5c82-473f-8604-2f010861a7a7
+      version: -1
+      name: VerifyContext - Status
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      expectedValue:
+        simple: Resolved
+      fields: {}
+      path:
+        simple: Ticket.[0].Status
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 34,
+          "y": 2421
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 178e2167-e603-4868-8920-20489b8227e4
+    type: regular
+    task:
+      id: 178e2167-e603-4868-8920-20489b8227e4
+      version: -1
+      name: jira-get-comments
+      script: jira|||jira-get-comments
+      type: regular
+      iscommand: true
+      brand: jira
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      issueId:
+        simple: ${Ticket.Id}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 46,
+          "y": 2596
+        }
+      }
+  "23":
+    id: "23"
+    taskid: 44df5166-91cf-498c-88b6-66dc581ffcb1
+    type: regular
+    task:
+      id: 44df5166-91cf-498c-88b6-66dc581ffcb1
+      version: -1
+      name: VerifyContext - comment
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '["Test Comment"]'
+      fields: {}
+      path:
+        simple: Ticket.Comment.Comment
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
         }
       }
 view: |-
@@ -313,11 +513,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1968,
-        "width": 380,
-        "x": 450,
+        "height": 2845,
+        "width": 396,
+        "x": 34,
         "y": 50
       }
     }
   }
 inputs: []
+outputs: []
