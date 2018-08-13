@@ -16,6 +16,7 @@ tasks:
       id: b006cb52-026e-4b76-89f8-fcc14e949e16
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -38,6 +39,7 @@ tasks:
       id: 68871356-1b5b-4b6b-8a79-ca3fc1c009a1
       version: -1
       name: JoeSecurity Upload File
+      description: ""
       script: Joe Security|||joe-analysis-submit-sample
       type: regular
       iscommand: true
@@ -77,14 +79,7 @@ tasks:
       id: edd79bc6-8f93-4150-868d-76194a594bfc
       version: -1
       name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+      description: Generic Polling Playbook
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -95,8 +90,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: Joe
-          accessor: Analysis.WebID
+          root: Joe.Analysis.WebID
       Interval:
         complex:
           root: inputs.interval
@@ -130,6 +124,7 @@ tasks:
       id: 048ab629-6199-4309-8317-03feba659226
       version: -1
       name: JoeSecurity Get Report
+      description: ""
       script: Joe Security|||joe-download-report
       type: regular
       iscommand: true
@@ -143,8 +138,7 @@ tasks:
           root: inputs.report-file-type
       webid:
         complex:
-          root: Joe
-          accessor: Analysis.WebID
+          root: Joe.Analysis.WebID
     separatecontext: false
     view: |-
       {
@@ -162,6 +156,7 @@ tasks:
       id: 63879480-6669-45bd-8694-471c2b942969
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -277,9 +272,8 @@ inputs:
 - key: EntryID
   value:
     complex:
-      root: File
-      accessor: EntryID
-  required: true
+      root: File.EntryID
+  required: false
   description: Demisto EntryID of the file to detonate. The EntryID is taken from
     the context.
 - key: interval
@@ -363,4 +357,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
   type: number
-releaseNotes: "-"
+releaseNotes: "File detonation using polling playbook"

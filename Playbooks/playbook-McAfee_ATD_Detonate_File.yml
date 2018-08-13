@@ -31,7 +31,7 @@ tasks:
       id: 489b704c-bef9-40e7-8aa8-f74cca308a94
       version: -1
       name: ""
-      description: '-'
+      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
@@ -67,8 +67,7 @@ tasks:
       dstIp: {}
       entryID:
         complex:
-          root: inputs.File
-          accessor: EntryID
+          root: inputs.File.EntryID
       fileName: {}
       filePriorityQ: {}
       messageId: {}
@@ -96,14 +95,7 @@ tasks:
       id: d5be6c7b-6eb4-44dd-8ec7-9b627e8fb140
       version: -1
       name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+      description: Generic Polling Playbook
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -114,8 +106,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: ATD
-          accessor: Task.taskId
+          root: ATD.Task.taskId
       Interval:
         complex:
           root: inputs.interval
@@ -336,8 +327,7 @@ tasks:
       jobId: {}
       taskId:
         complex:
-          root: ATD
-          accessor: Task.taskId
+          root: ATD.Task.taskId
     separatecontext: false
     view: |-
       {
@@ -495,7 +485,7 @@ inputs:
   value:
     complex:
       root: File
-  required: true
+  required: false
   description: The file to detonate. File is taken from the context.
 - key: interval
   value:
@@ -540,3 +530,4 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
+releaseNotes: "-"

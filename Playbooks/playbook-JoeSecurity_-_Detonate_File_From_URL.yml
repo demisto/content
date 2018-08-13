@@ -16,6 +16,7 @@ tasks:
       id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -38,6 +39,7 @@ tasks:
       id: f33ca887-1384-4cf6-83c7-9e5e43a5213b
       version: -1
       name: JoeSecurity Upload File
+      description: ""
       script: Joe Security|||joe-analysis-submit-sample
       type: regular
       iscommand: true
@@ -77,14 +79,7 @@ tasks:
       id: d012db05-3ea1-41a5-8f5b-1fc8bdbe8d17
       version: -1
       name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+      description: Generic Polling Playbook
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -95,8 +90,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: Joe
-          accessor: Analysis.WebID
+          root: Joe.Analysis.WebID
       Interval:
         complex:
           root: inputs.interval
@@ -130,6 +124,7 @@ tasks:
       id: 1763ea33-f3ce-4dbe-8b98-5fed3a6d09e1
       version: -1
       name: JoeSecurity Get Report
+      description: ""
       script: Joe Security|||joe-download-report
       type: regular
       iscommand: true
@@ -143,8 +138,7 @@ tasks:
           root: inputs.report-file-type
       webid:
         complex:
-          root: Joe
-          accessor: Analysis.WebID
+          root: Joe.Analysis.WebID
     separatecontext: false
     view: |-
       {
@@ -162,6 +156,7 @@ tasks:
       id: 29ff87c5-31c7-4ec0-8b28-d83509de8859
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -359,4 +354,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
   type: number
-releaseNotes: "-"
+releaseNotes: "URL File detonation using polling playbook"

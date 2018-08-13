@@ -1047,4 +1047,3 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
-releaseNotes: "Enhanced outputs for ip,domain,file commands. Scans table is now available as output in file,url commands"
