@@ -335,10 +335,6 @@
             "nightly": true
         },
         {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
         },
@@ -415,6 +411,10 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
+        },
         {
             "integrations":"Cylance Protect",
             "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
