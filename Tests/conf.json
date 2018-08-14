@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Shodan",
+            "playbookID": "ShodanTest"
+        },
+        {
             "playbookID": "Extract Indicators From File - test"
         },
         {
@@ -456,11 +460,6 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
         },
         {
             "playbookID": "TestParseCSV"
