@@ -189,7 +189,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: ${IP.Address}
+        simple: IP.Address
     view: |-
       {
         "position": {
@@ -211,3 +211,4 @@ view: |-
   }
 inputs: []
 outputs: []
+

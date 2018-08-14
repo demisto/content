@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TestParseCSV"
+        },
+        {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
@@ -460,9 +463,6 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
-        },
-        {
-            "playbookID": "TestParseCSV"
         },
         {
             "integrations": [
