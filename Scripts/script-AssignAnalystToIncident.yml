@@ -11,11 +11,11 @@ script: |
   var emailToAssign = args.email;
   var userToAssign = args.username;
 
-  var getUserException = {
-                          ContentsFormat: formats.text,
-                          Type: entryTypes.error,
-                          Contents: "Error from getUsers."
-                         };
+  var getUserError = {
+                         ContentsFormat: formats.text,
+                         Type: entryTypes.error,
+                         Contents: "Error from getUsers."
+                     };
 
   if (emailToAssign) {
       userToAssign = '';
@@ -34,7 +34,7 @@ script: |
 
   assignBy = args.assignBy || 'random';
 
-  function chooseUser(usersRes){
+  function pickRandomUser(usersRes) {
       var usersList = usersRes[0].Contents.map(function (u) { return u.username });
       userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
   }
@@ -44,26 +44,23 @@ script: |
           case 'online':
               var usersRes = executeCommand('getUsers', { roles: args.roles, online: true });
               if (isError(usersRes[0])) {
-                  return getUserException;
-              } else {
-                  chooseUser(usersRes);
+                  return getUserError;
               }
+              pickRandomUser(usersRes);
               break;
           case 'current':
               var usersRes = executeCommand('getUsers', { current: true });
               if (isError(usersRes[0])) {
-                  return getUserException;
-              } else {
-                  chooseUser(usersRes);
+                  return getUserError;
               }
+              pickRandomUser(usersRes);
               break;
           case 'random':
               var usersRes = executeCommand('getUsers', { roles: args.roles });
               if (isError(usersRes[0])) {
-                  return getUserException;
-              } else {
-                  chooseUser(usersRes);
+                  return getUserError;
               }
+              pickRandomUser(usersRes);
               break;
           default:
               res = executeCommand("getOwnerSuggestion", {})[0].Contents;
@@ -78,15 +75,14 @@ script: |
                       userToAssign = res.userLeastLoad;
                       break;
               }
-      }
-  }
 
-  if (!userToAssign) {
-      var usersRes = executeCommand('getUsers', { roles: args.roles });
-      if (isError(usersRes[0])) {
-          return getUserException;
-      } else {
-          chooseUser(usersRes);
+              if (!userToAssign) {
+                  var usersRes = executeCommand('getUsers', { roles: args.roles });
+                  if (isError(usersRes[0])) {
+                      return getUserError;
+                  }
+                  pickRandomUser(usersRes);
+              }
       }
   }
 
