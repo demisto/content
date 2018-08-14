@@ -327,7 +327,8 @@
         },
         {
             "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
+            "playbookID": "Symantec Messaging Gateway Test",
+            "timeout" : 240
         },
         {
             "integrations": "VxStream",
