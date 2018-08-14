@@ -1356,4 +1356,5 @@ script:
     - contextPath: NetWitness.Alerts.events.destination.user.adDomain
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
+  releaseNotes: "Checkbox added to enable selection of alerts importation when fetching incidents"
   isfetch: true
