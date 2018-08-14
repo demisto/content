@@ -408,5 +408,5 @@ script:
     description: Retrieve the unique data for a field in json format
   runonce: false
 hidden: false
-fromVersion: 4.0.0
+fromversion: 4.0.0
 releaseNotes: "Updating Moloch Integration."
