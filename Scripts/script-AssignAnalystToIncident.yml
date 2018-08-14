@@ -11,12 +11,6 @@ script: |
   var emailToAssign = args.email;
   var userToAssign = args.username;
 
-  var getUserError = {
-                         ContentsFormat: formats.text,
-                         Type: entryTypes.error,
-                         Contents: "Error from getUsers."
-                     };
-
   if (emailToAssign) {
       userToAssign = '';
       var res = executeCommand('getUsers',{});
@@ -44,21 +38,21 @@ script: |
           case 'online':
               var usersRes = executeCommand('getUsers', { roles: args.roles, online: true });
               if (isError(usersRes[0])) {
-                  return getUserError;
+                  return usersRes[0];
               }
               pickRandomUser(usersRes);
               break;
           case 'current':
               var usersRes = executeCommand('getUsers', { current: true });
               if (isError(usersRes[0])) {
-                  return getUserError;
+                  return usersRes[0];
               }
               pickRandomUser(usersRes);
               break;
           case 'random':
               var usersRes = executeCommand('getUsers', { roles: args.roles });
               if (isError(usersRes[0])) {
-                  return getUserError;
+                  return usersRes[0];
               }
               pickRandomUser(usersRes);
               break;
@@ -79,7 +73,7 @@ script: |
               if (!userToAssign) {
                   var usersRes = executeCommand('getUsers', { roles: args.roles });
                   if (isError(usersRes[0])) {
-                      return getUserError;
+                      return usersRes[0];
                   }
                   pickRandomUser(usersRes);
               }
