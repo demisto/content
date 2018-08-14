@@ -364,7 +364,7 @@ script:
         args = demisto.args()
         list_params = {}
         # adding the possible params for update
-        possible_params = ['alert', 'id', 'search', 'limit']
+        possible_params = ['alert', 'id', 'search', 'limit', 'source']
         for param in possible_params:
             current_param = args.get(param, False)
             if current_param:
@@ -694,6 +694,8 @@ script:
     - name: limit
       description: Amount of observations to list. Default is 5
       defaultValue: "5"
+    - name: source
+      description: Get observations by specific source
     outputs:
     - contextPath: Stealthwatch.Observation.id
       description: Observation ID
