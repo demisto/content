@@ -506,6 +506,9 @@
             "nightly": true
         },
         {
+            "integrations": [
+                "VirusTotal"
+            ],
             "playbookID": "File Enrichment - Generic Test"
         },
         {
