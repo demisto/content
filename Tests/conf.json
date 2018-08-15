@@ -404,6 +404,10 @@
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true
+        },
+        {
+            "integrations": "Cisco pxGrid ISE",
+            "playbookID": "cisco-ise-test-playbook",
         }
     ],
     "skipped": [
