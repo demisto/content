@@ -360,9 +360,9 @@ tasks:
     scriptarguments:
       URL:
         simple: https://www.demisto.com
-      interval:
+      Interval:
         simple: "1"
-      timeout:
+      Timeout:
         simple: "15"
     separatecontext: true
     loop:

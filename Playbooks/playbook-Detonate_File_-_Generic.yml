@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
+    taskid: e32a1f9a-07bd-4930-858f-8379a4912b0f
     type: start
     task:
-      id: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
+      id: e32a1f9a-07bd-4930-858f-8379a4912b0f
       version: -1
       name: ""
       description: Playbook start point
@@ -18,10 +18,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
       - "8"
       - "10"
       - "9"
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -33,10 +33,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 9db19651-009c-468f-80b3-c58efea96ed2
+    taskid: fcaa5290-1c7a-448a-84e6-87662adf9a2e
     type: title
     task:
-      id: 9db19651-009c-468f-80b3-c58efea96ed2
+      id: fcaa5290-1c7a-448a-84e6-87662adf9a2e
       version: -1
       name: Done
       description: Done
@@ -52,56 +52,12 @@ tasks:
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: 941ada70-74e6-42a5-8197-ff7348b8bd52
-    type: playbook
-    task:
-      id: 941ada70-74e6-42a5-8197-ff7348b8bd52
-      version: -1
-      name: CrowdStrike - Detonate file
-      description: Detonate one or more files using the CrowdStrike integration. This
-        playbook returns relevant reports to the War Room and file reputations to
-        the context data. The detonation supports the following file types - EXE,
-        DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ,
-        GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX,
-        BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
-      playbookName: CrowdStrike - Detonate file
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      environmentID:
-        simple: "100"
-      interval:
-        simple: "5"
-      timeout:
-        simple: "30"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
   "8":
     id: "8"
-    taskid: 60defe17-6a73-4236-8eb3-4ba2c8e5514b
+    taskid: 48accd3a-0c84-484c-87ad-f8e83acd168b
     type: playbook
     task:
-      id: 60defe17-6a73-4236-8eb3-4ba2c8e5514b
+      id: 48accd3a-0c84-484c-87ad-f8e83acd168b
       version: -1
       name: Detonate File - JoeSecurity
       description: |-
@@ -143,10 +99,10 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: e028411a-442b-4450-84eb-275082a8679a
+    taskid: 9b2b52ec-bd2d-4249-803b-b68009f24234
     type: playbook
     task:
-      id: e028411a-442b-4450-84eb-275082a8679a
+      id: 9b2b52ec-bd2d-4249-803b-b68009f24234
       version: -1
       name: Detonate File - McAfee ATD
       playbookName: Detonate File - McAfee ATD
@@ -180,10 +136,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: 092742aa-8cf7-4572-8dee-d7d58a90d876
+    taskid: ae898390-2466-46de-8ea7-8d78e2fd0f04
     type: playbook
     task:
-      id: 092742aa-8cf7-4572-8dee-d7d58a90d876
+      id: ae898390-2466-46de-8ea7-8d78e2fd0f04
       version: -1
       name: Detonate File - ThreatGrid
       playbookName: Detonate File - ThreatGrid
@@ -219,6 +175,50 @@ tasks:
       {
         "position": {
           "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 46bc4d02-5636-4098-8772-3b7ac7c798cb
+    type: playbook
+    task:
+      id: 46bc4d02-5636-4098-8772-3b7ac7c798cb
+      version: -1
+      name: CrowdStrike Falcon Sandbox - Detonate file
+      description: Detonate one or more files using the CrowdStrike integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data. The detonation supports the following file types - EXE,
+        DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ,
+        GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX,
+        BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+      playbookName: CrowdStrike Falcon Sandbox - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      File:
+        complex:
+          root: inputs.File
+      Interval:
+        simple: "5"
+      Timeout:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 195
         }
       }

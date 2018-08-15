@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ff3cef2b-5cb4-479d-8a7e-6d1b13494b8d
+    taskid: 680422e2-0806-4f2d-8d20-bc7f2589238e
     type: start
     task:
-      id: ff3cef2b-5cb4-479d-8a7e-6d1b13494b8d
+      id: 680422e2-0806-4f2d-8d20-bc7f2589238e
       version: -1
       name: ""
       description: ""
@@ -32,13 +32,12 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 18cdef1c-e7a8-4d36-8318-1948b23380a9
+    taskid: 172af11a-ff1d-48ba-8d65-3c6f625689c5
     type: regular
     task:
-      id: 18cdef1c-e7a8-4d36-8318-1948b23380a9
+      id: 172af11a-ff1d-48ba-8d65-3c6f625689c5
       version: -1
-      name: JoeSecurity Upload File
-      description: ""
+      name: JoeSecurity Upload URL
       script: Joe Security|||joe-analysis-submit-url
       type: regular
       iscommand: true
@@ -49,14 +48,14 @@ tasks:
     scriptarguments:
       comments:
         complex:
-          root: inputs.comments
+          root: inputs.Comments
       internet-access:
         complex:
-          root: inputs.internet-access
+          root: inputs.InternetAccess
       should_wait: {}
       systems:
         complex:
-          root: inputs.systems
+          root: inputs.Systems
       url:
         complex:
           root: inputs.URL
@@ -71,13 +70,20 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 206eecf7-06d2-4986-835b-4611992d4d01
+    taskid: dba7628f-dc23-4f39-8024-fe36dcd71e94
     type: playbook
     task:
-      id: 206eecf7-06d2-4986-835b-4611992d4d01
+      id: dba7628f-dc23-4f39-8024-fe36dcd71e94
       version: -1
       name: GenericPolling
-      description: Generic Polling Playbook
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -91,14 +97,14 @@ tasks:
           root: Joe.Analysis.WebID
       Interval:
         complex:
-          root: inputs.interval
+          root: inputs.Interval
       PollingCommandArgName:
         simple: webid
       PollingCommandName:
         simple: joe-analysis-info
       Timeout:
         complex:
-          root: inputs.timeout
+          root: inputs.Timeout
       dt:
         simple: Joe.Analysis(val.Status != 'finished').WebID
     separatecontext: true
@@ -116,10 +122,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 48919439-899e-46f6-882d-c76427d0192f
+    taskid: 2e8a7348-8be0-44ac-821e-66db69ba0d74
     type: regular
     task:
-      id: 48919439-899e-46f6-882d-c76427d0192f
+      id: 2e8a7348-8be0-44ac-821e-66db69ba0d74
       version: -1
       name: JoeSecurity Get Report
       description: ""
@@ -133,7 +139,7 @@ tasks:
     scriptarguments:
       type:
         complex:
-          root: inputs.report-file-type
+          root: inputs.ReportFileType
       webid:
         complex:
           root: Joe.Analysis.WebID
@@ -148,10 +154,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: d9d5e450-eaa1-4e03-8d76-b98c25dcc13b
+    taskid: 8424c0cf-cc75-47b6-81f8-b4b382cb2a94
     type: title
     task:
-      id: d9d5e450-eaa1-4e03-8d76-b98c25dcc13b
+      id: 8424c0cf-cc75-47b6-81f8-b4b382cb2a94
       version: -1
       name: Done
       description: ""
@@ -169,10 +175,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 3a3731db-784f-4741-84ef-872855e23c0c
+    taskid: c02313e8-5f5f-4612-88dd-ff62f62ba263
     type: condition
     task:
-      id: 3a3731db-784f-4741-84ef-872855e23c0c
+      id: c02313e8-5f5f-4612-88dd-ff62f62ba263
       version: -1
       name: Is there a URL to detonate?
       description: Look for URLs to detonate
@@ -191,7 +197,8 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: inputs.URL
+              complex:
+                root: inputs.URL
             iscontext: true
     view: |-
       {
@@ -203,10 +210,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 4a751ff3-a1d0-45dd-8959-3ac57367556e
+    taskid: 250f4b2f-28ad-4d9c-8db7-01e64d60fade
     type: condition
     task:
-      id: 4a751ff3-a1d0-45dd-8959-3ac57367556e
+      id: 250f4b2f-28ad-4d9c-8db7-01e64d60fade
       version: -1
       name: Is JoeSecurity sandbox enabled?
       description: Check if integration instance is enabled
@@ -270,21 +277,22 @@ inputs:
 - key: URL
   value:
     complex:
-      root: URL.Data
-  required: true
-  description: URL to detonate
-- key: interval
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+- key: Interval
   value:
     simple: "1"
   required: false
   description: Duration for executing the pooling (in minutes)
-- key: timeout
+- key: Timeout
   value:
     simple: "15"
   required: false
   description: The duration after which to stop pooling and to resume the playbook
     (in minutes)
-- key: systems
+- key: Systems
   value: {}
   required: false
   description: 'Operating system to run the analysis on (comma-separated). Supported
@@ -292,17 +300,17 @@ inputs:
     w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64,
     w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1,
     lnxcentos1, android7_nougat'
-- key: comments
+- key: Comments
   value: {}
   required: false
   description: Comments for the analysis.
-- key: internet-access
+- key: InternetAccess
   value:
     simple: "True"
   required: false
   description: Enable internet access (boolean). True= internet access (default),
     False= no internet access.
-- key: report-file-type
+- key: ReportFileType
   value:
     simple: html
   required: false
@@ -384,4 +392,4 @@ outputs:
 - contextPath: File.Extension
   description: File Extension
   type: string
-releaseNotes: "URL detonation using polling playbook"
+releaseNotes: "-"

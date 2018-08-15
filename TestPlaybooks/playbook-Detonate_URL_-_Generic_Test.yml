@@ -1,15 +1,15 @@
 id: Detonate URL - Generic Test
-version: 7
+version: -1
 name: Detonate URL - Generic Test
 fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 16c4b867-d72a-4bc1-8025-53aa099cbd33
+    taskid: ef5d0e6d-b753-49ca-81d2-e1ee5daec953
     type: start
     task:
-      id: 16c4b867-d72a-4bc1-8025-53aa099cbd33
+      id: ef5d0e6d-b753-49ca-81d2-e1ee5daec953
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 4dd001b2-7f50-4d0f-8007-44d1b61535a2
+    taskid: 636adc72-71dd-4a27-880f-ff441ec8c753
     type: regular
     task:
-      id: 4dd001b2-7f50-4d0f-8007-44d1b61535a2
+      id: 636adc72-71dd-4a27-880f-ff441ec8c753
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -57,10 +57,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: ce941e05-48ca-49cb-81fd-8cd05ee8b0ab
+    taskid: 229ba268-d425-4bb2-84c6-f6648cc34c17
     type: playbook
     task:
-      id: ce941e05-48ca-49cb-81fd-8cd05ee8b0ab
+      id: 229ba268-d425-4bb2-84c6-f6648cc34c17
       version: -1
       name: Detonate URL - Generic
       description: Detonate file through active integrations that support file detonation
@@ -86,10 +86,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 8f6f58b7-5311-480e-8f14-f0737a1f8721
+    taskid: 0007ecc5-28a9-41c8-85c6-11566d11631c
     type: regular
     task:
-      id: 8f6f58b7-5311-480e-8f14-f0737a1f8721
+      id: 0007ecc5-28a9-41c8-85c6-11566d11631c
       version: -1
       name: Set URL
       scriptName: Set

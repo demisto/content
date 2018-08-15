@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    taskid: dfaa16ba-1c11-46e1-8e41-00b9b8bda66f
     type: start
     task:
-      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      id: dfaa16ba-1c11-46e1-8e41-00b9b8bda66f
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: cacefc85-644c-48de-8ff3-545308a282eb
+    taskid: 87509cb0-f8f9-4a19-8e14-008e29834b15
     type: condition
     task:
-      id: cacefc85-644c-48de-8ff3-545308a282eb
+      id: 87509cb0-f8f9-4a19-8e14-008e29834b15
       version: -1
       name: Is ThreatGrid enabled?
       description: |
@@ -87,10 +87,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    taskid: 37f6ee1f-fa5e-4979-864f-86d12f3df0f7
     type: title
     task:
-      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      id: 37f6ee1f-fa5e-4979-864f-86d12f3df0f7
       version: -1
       name: Done
       type: title
@@ -108,10 +108,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 3a210430-5697-4a8f-8e8b-c258dc5c9103
+    taskid: edb9cf66-9056-48dd-8487-7e1c7ab3ffa4
     type: regular
     task:
-      id: 3a210430-5697-4a8f-8e8b-c258dc5c9103
+      id: edb9cf66-9056-48dd-8487-7e1c7ab3ffa4
       version: -1
       name: ThreatGrid Get Samples State
       description: Download the pdf report to the War Room.
@@ -138,10 +138,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 5b7bb345-701c-4899-8e22-0d0b8f13011e
+    taskid: 49d088a9-ebc3-43fa-8227-238a30a0d745
     type: playbook
     task:
-      id: 5b7bb345-701c-4899-8e22-0d0b8f13011e
+      id: 49d088a9-ebc3-43fa-8227-238a30a0d745
       version: -1
       name: GenericPolling
       description: |-
@@ -166,14 +166,14 @@ tasks:
           accessor: Sample.ID
       Interval:
         complex:
-          root: inputs.interval
+          root: inputs.Interval
       PollingCommandArgName:
         simple: ids
       PollingCommandName:
         simple: threat-grid-get-samples-state
       Timeout:
         complex:
-          root: inputs.timeout
+          root: inputs.Timeout
       dt:
         simple: ThreatGrid.Sample(val.State!=='succ' && val.State!=='fail').ID
     separatecontext: true
@@ -191,10 +191,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: ea4d6265-8b66-40dd-877c-313205f63c3b
+    taskid: d4f9ce61-2198-4129-83e4-e7ef6a677b45
     type: regular
     task:
-      id: ea4d6265-8b66-40dd-877c-313205f63c3b
+      id: d4f9ce61-2198-4129-83e4-e7ef6a677b45
       version: -1
       name: ThreatGrid Upload File
       description: Uplads a sample to threat grid
@@ -215,22 +215,22 @@ tasks:
           root: inputs.FileName
       os:
         complex:
-          root: inputs.os
+          root: inputs.OS
       osver:
         complex:
-          root: inputs.osver
+          root: inputs.OSVersion
       private:
         complex:
-          root: inputs.private
+          root: inputs.Private
       source:
         complex:
-          root: inputs.source
+          root: inputs.Source
       tags:
         complex:
-          root: inputs.tags
+          root: inputs.Tags
       vm:
         complex:
-          root: inputs.vm
+          root: inputs.VM
     separatecontext: false
     view: |-
       {
@@ -242,10 +242,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: 41ac2f94-eae1-4116-8773-8912d1f99d37
+    taskid: 95a3678c-f16f-4d9a-8e63-42a536bb380c
     type: regular
     task:
-      id: 41ac2f94-eae1-4116-8773-8912d1f99d37
+      id: 95a3678c-f16f-4d9a-8e63-42a536bb380c
       version: -1
       name: URL to File
       description: Create a file from url
@@ -258,7 +258,8 @@ tasks:
       - "13"
     scriptarguments:
       urls:
-        simple: ${inputs.url}
+        complex:
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -284,7 +285,7 @@ view: |-
     }
   }
 inputs:
-- key: url
+- key: URL
   value:
     complex:
       root: URL
@@ -296,37 +297,37 @@ inputs:
     simple: file-detonated-via-demisto
   required: false
   description: Name of the file to detonate.
-- key: os
+- key: OS
   value: {}
   required: false
   description: Source OS (string)
-- key: osver
+- key: OSVersion
   value: {}
   required: false
   description: OS version (string)
-- key: vm
+- key: VM
   value: {}
   required: false
   description: The VM to use (string)
-- key: private
+- key: Private
   value: {}
   required: false
   description: The sample is marked private if this is present, and set to any value
     other than false. private
-- key: source
+- key: Source
   value: {}
   required: false
   description: a string used for identifying the source of the detonation (user defined)
-- key: tags
+- key: Tags
   value: {}
   required: false
   description: A comma-separated list of tags applied to the sample.
-- key: interval
+- key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-- key: timeout
+- key: Timeout
   value:
     simple: "15"
   required: false

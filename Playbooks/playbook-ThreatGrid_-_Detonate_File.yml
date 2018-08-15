@@ -12,10 +12,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    taskid: c4e9aab2-699c-4769-8cd3-d16837b79a52
     type: start
     task:
-      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      id: c4e9aab2-699c-4769-8cd3-d16837b79a52
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 1378d2a9-9fcc-47d0-817f-9d9145740752
+    taskid: 460ef9dc-0f88-4cf5-81fa-c22478883891
     type: condition
     task:
-      id: 1378d2a9-9fcc-47d0-817f-9d9145740752
+      id: 460ef9dc-0f88-4cf5-81fa-c22478883891
       version: -1
       name: Is ThreatGrid enabled?
       description: Verify that there is a valid instance of ThreatGrid is enabled
@@ -90,10 +90,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    taskid: 8a774711-833b-445b-8ae9-231b0459de1f
     type: title
     task:
-      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      id: 8a774711-833b-445b-8ae9-231b0459de1f
       version: -1
       name: Done
       type: title
@@ -111,10 +111,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: b9ba7c82-2fde-4b10-851c-4ba66d29b2b9
+    taskid: 38f5cfcb-f7a4-4861-853b-ce101b37f3d4
     type: regular
     task:
-      id: b9ba7c82-2fde-4b10-851c-4ba66d29b2b9
+      id: 38f5cfcb-f7a4-4861-853b-ce101b37f3d4
       version: -1
       name: ThreatGrid Get Samples State
       description: Get the sample state.
@@ -141,10 +141,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
+    taskid: 32bc3054-f7dd-40d1-8043-ec8987c64a5f
     type: regular
     task:
-      id: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
+      id: 32bc3054-f7dd-40d1-8043-ec8987c64a5f
       version: -1
       name: Set file to context
       description: Set the file object into context.
@@ -173,10 +173,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: 3c1eeda7-92cf-4281-89f3-fcb2a0e603be
+    taskid: 7b8ac3cc-20f1-4693-84b1-c0f812fb33a0
     type: regular
     task:
-      id: 3c1eeda7-92cf-4281-89f3-fcb2a0e603be
+      id: 7b8ac3cc-20f1-4693-84b1-c0f812fb33a0
       version: -1
       name: ThreatGrid Upload File
       description: Uploads a file to Threat Grid
@@ -197,22 +197,22 @@ tasks:
           root: inputs.FileName
       os:
         complex:
-          root: inputs.os
+          root: inputs.OS
       osver:
         complex:
-          root: inputs.osver
+          root: inputs.OSVersion
       private:
         complex:
-          root: inputs.private
+          root: inputs.Private
       source:
         complex:
-          root: inputs.source
+          root: inputs.Source
       tags:
         complex:
-          root: inputs.tags
+          root: inputs.Tags
       vm:
         complex:
-          root: inputs.vm
+          root: inputs.VM
     separatecontext: false
     view: |-
       {
@@ -224,10 +224,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: c1d5b196-d934-4ef2-8e01-3487eae58533
+    taskid: e3f25144-f9da-45d0-87d0-f37f260b7895
     type: condition
     task:
-      id: c1d5b196-d934-4ef2-8e01-3487eae58533
+      id: e3f25144-f9da-45d0-87d0-f37f260b7895
       version: -1
       name: Is the file type supported?
       description: Will fail if file type is not supported.
@@ -276,10 +276,10 @@ tasks:
     note: false
   "15":
     id: "15"
-    taskid: 32dda2ad-b017-4b82-8cb6-8272c539e511
+    taskid: 315d999b-85d7-4e9c-8495-830c8b788d32
     type: playbook
     task:
-      id: 32dda2ad-b017-4b82-8cb6-8272c539e511
+      id: 315d999b-85d7-4e9c-8495-830c8b788d32
       version: -1
       name: GenericPolling
       description: |-
@@ -304,14 +304,14 @@ tasks:
           accessor: Sample.ID
       Interval:
         complex:
-          root: inputs.interval
+          root: inputs.Interval
       PollingCommandArgName:
         simple: ids
       PollingCommandName:
         simple: threat-grid-get-samples-state
       Timeout:
         complex:
-          root: inputs.timeout
+          root: inputs.Timeout
       dt:
         simple: ThreatGrid.Sample(val.State!=='succ' && val.State!=='fail').ID
     separatecontext: true
@@ -329,10 +329,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: 93e193f6-a438-4349-861c-f0f99b4b3997
+    taskid: 3146567b-2f8a-4c14-880c-21d6ba502224
     type: condition
     task:
-      id: 93e193f6-a438-4349-861c-f0f99b4b3997
+      id: 3146567b-2f8a-4c14-880c-21d6ba502224
       version: -1
       name: Is there a file to detonate?
       description: Checks whether there's a file to detonate - if not then the detonation
@@ -389,37 +389,37 @@ inputs:
     simple: file-detonated-via-demisto
   required: false
   description: Name of the file to detonate.
-- key: os
+- key: OS
   value: {}
   required: false
   description: Source OS (string)
-- key: osver
+- key: OSVersion
   value: {}
   required: false
   description: OS version (string)
-- key: vm
+- key: VM
   value: {}
   required: false
   description: The VM to use (string)
-- key: private
+- key: Private
   value: {}
   required: false
   description: The sample is marked private if this is present, and set to any value
     other than false.
-- key: source
+- key: Source
   value: {}
   required: false
   description: a string used for identifying the source of the detonation (user defined)
-- key: tags
+- key: Tags
   value: {}
   required: false
   description: A comma-separated list of tags applied to this sample.
-- key: interval
+- key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-- key: timeout
+- key: Timeout
   value:
     simple: "15"
   required: false

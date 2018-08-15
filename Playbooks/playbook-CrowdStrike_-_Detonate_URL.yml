@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    taskid: 22ad464c-0c80-476b-8c6b-063135760ea0
     type: start
     task:
-      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      id: 22ad464c-0c80-476b-8c6b-063135760ea0
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
+    taskid: 7f5ff3a5-55e0-4aee-8c7d-d75e539e7702
     type: condition
     task:
-      id: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
+      id: 7f5ff3a5-55e0-4aee-8c7d-d75e539e7702
       version: -1
       name: Is CrowdStrike enabled?
       description: |
@@ -87,10 +87,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    taskid: 589641d2-705d-4b7d-844f-2a8ab60497c8
     type: title
     task:
-      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      id: 589641d2-705d-4b7d-844f-2a8ab60497c8
       version: -1
       name: Done
       type: title
@@ -108,10 +108,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: d2a69807-063c-4773-8ae3-815dd1372cd2
+    taskid: e427d919-35ef-454c-8ce3-d5f32add184c
     type: regular
     task:
-      id: d2a69807-063c-4773-8ae3-815dd1372cd2
+      id: e427d919-35ef-454c-8ce3-d5f32add184c
       version: -1
       name: CrowdStrike Scan
       description: Download the pdf report to the War Room.
@@ -138,10 +138,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: 480ec5d3-087e-479d-8c29-0c70a1060ee0
+    taskid: 65ba03f6-41d1-49b7-8a3d-f1c5524247db
     type: regular
     task:
-      id: 480ec5d3-087e-479d-8c29-0c70a1060ee0
+      id: 65ba03f6-41d1-49b7-8a3d-f1c5524247db
       version: -1
       name: CrowdStrike Upload Sample
       description: Upload samle to crowdstrike.
@@ -155,10 +155,10 @@ tasks:
     scriptarguments:
       environmentID:
         complex:
-          root: inputs.environmentID
+          root: inputs.EnvironmentID
       url:
         complex:
-          root: inputs.Url
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -170,12 +170,12 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: 6ffba508-37e1-4647-88ea-265cd5475d61
+    taskid: bb4c22c0-9471-4574-8989-67d2933b1982
     type: condition
     task:
-      id: 6ffba508-37e1-4647-88ea-265cd5475d61
+      id: bb4c22c0-9471-4574-8989-67d2933b1982
       version: -1
-      name: Is there a url to detonate?
+      name: Is there a URL to detonate?
       description: Checks whether there's a file to detonate.
       type: condition
       iscommand: false
@@ -192,7 +192,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: inputs.Url
+              simple: inputs.URL
             iscontext: true
     view: |-
       {
@@ -204,10 +204,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: b7173e60-8b5e-490f-8b16-16c4bf67fcdf
+    taskid: e73b0e53-2b56-4c8c-869d-e380178e3934
     type: playbook
     task:
-      id: b7173e60-8b5e-490f-8b16-16c4bf67fcdf
+      id: e73b0e53-2b56-4c8c-869d-e380178e3934
       version: -1
       name: GenericPolling
       description: |-
@@ -232,14 +232,14 @@ tasks:
           accessor: SHA256
       Interval:
         complex:
-          root: inputs.interval
+          root: inputs.Interval
       PollingCommandArgName:
         simple: file
       PollingCommandName:
         simple: crowdstrike-scan
       Timeout:
         complex:
-          root: inputs.timeout
+          root: inputs.Timeout
       dt:
         simple: File(val.state === 'NO_CONTENT').hash
     separatecontext: true
@@ -268,25 +268,25 @@ view: |-
     }
   }
 inputs:
-- key: Url
+- key: URL
   value:
     complex:
       root: URL
       accessor: Data
   required: false
   description: URL to detonate.
-- key: environmentID
+- key: EnvironmentID
   value:
     simple: "100"
   required: false
   description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
     command.
-- key: interval
+- key: Interval
   value:
     simple: "5"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-- key: timeout
+- key: Timeout
   value:
     simple: "30"
   required: false

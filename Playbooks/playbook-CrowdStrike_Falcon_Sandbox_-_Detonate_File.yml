@@ -188,7 +188,7 @@ tasks:
       entryId:
         simple: ${File.EntryID}
       environmentID:
-        simple: ${inputs.environmentID}
+        simple: ${inputs.EnvironmentID}
     separatecontext: false
     view: |-
       {
@@ -304,13 +304,13 @@ tasks:
       Ids:
         simple: ${File.SHA256}
       Interval:
-        simple: ${inputs.interval}
+        simple: ${inputs.Interval}
       PollingCommandArgName:
         simple: file
       PollingCommandName:
         simple: crowdstrike-scan
       Timeout:
-        simple: ${inputs.timeout}
+        simple: ${inputs.Timeout}
       dt:
         simple: File(val.state === 'NO_CONTENT').hash
     separatecontext: true
@@ -347,17 +347,17 @@ inputs:
       root: File
   required: false
   description: File object of the file to detonate.
-- key: environmentID
+- key: EnvironmentID
   value:
     simple: "100"
   required: false
   description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command.
-- key: interval
+- key: Interval
   value:
     simple: "5"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-- key: timeout
+- key: Timeout
   value:
     simple: "30"
   required: false

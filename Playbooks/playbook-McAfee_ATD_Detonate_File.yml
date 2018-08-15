@@ -25,13 +25,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
+    taskid: 96daa53e-7dc4-4627-8ded-f9d2d9effc0e
     type: start
     task:
-      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
+      id: 96daa53e-7dc4-4627-8ded-f9d2d9effc0e
       version: -1
       name: ""
-      description: "-"
+      description: '-'
       iscommand: false
       brand: ""
     nexttasks:
@@ -48,10 +48,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 2fba98e4-b5bf-4115-8c42-f121d66ab803
+    taskid: 9322d482-2fbb-49e2-8eb1-405540d5566f
     type: regular
     task:
-      id: 2fba98e4-b5bf-4115-8c42-f121d66ab803
+      id: 9322d482-2fbb-49e2-8eb1-405540d5566f
       version: -1
       name: McafeeATD Upload File
       description: Uploads the submission to McAfee ATD.
@@ -89,13 +89,20 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: d5be6c7b-6eb4-44dd-8ec7-9b627e8fb140
+    taskid: 7a66e1e0-9aee-47ea-8656-d5fb893e4534
     type: playbook
     task:
-      id: d5be6c7b-6eb4-44dd-8ec7-9b627e8fb140
+      id: 7a66e1e0-9aee-47ea-8656-d5fb893e4534
       version: -1
       name: GenericPolling
-      description: Generic Polling Playbook
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -109,14 +116,14 @@ tasks:
           root: ATD.Task.taskId
       Interval:
         complex:
-          root: inputs.interval
+          root: inputs.Interval
       PollingCommandArgName:
         simple: taskId
       PollingCommandName:
         simple: atd-check-status
       Timeout:
         complex:
-          root: inputs.timeout
+          root: inputs.Timeout
       dt:
         simple: ATD.Task(val.status != 'Completed').taskId
     separatecontext: true
@@ -134,10 +141,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: a9b8cda8-5f75-4a28-86e5-4f05a24cabee
+    taskid: a0bd90bf-819c-4cdc-8042-b2fec7d11fba
     type: regular
     task:
-      id: a9b8cda8-5f75-4a28-86e5-4f05a24cabee
+      id: a0bd90bf-819c-4cdc-8042-b2fec7d11fba
       version: -1
       name: McAfeeATD Get Report
       description: Retrieve the reports from McAfee ATD.
@@ -183,10 +190,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 6a66d6be-dde0-436b-8ca8-5f3729009282
+    taskid: d99dfba4-ef07-4d4e-8d1e-df1efb3f4b98
     type: title
     task:
-      id: 6a66d6be-dde0-436b-8ca8-5f3729009282
+      id: d99dfba4-ef07-4d4e-8d1e-df1efb3f4b98
       version: -1
       name: Done
       description: finished
@@ -204,10 +211,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: fddc93e3-f6fc-481c-8696-1bdaaf591562
+    taskid: 21b70868-a0cc-42a9-82af-df2a7f50f0b3
     type: condition
     task:
-      id: fddc93e3-f6fc-481c-8696-1bdaaf591562
+      id: 21b70868-a0cc-42a9-82af-df2a7f50f0b3
       version: -1
       name: Is McAfee ATD sandbox enabled?
       description: |
@@ -258,12 +265,12 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 921dfe15-c1c6-45d4-88a5-a7e00dee3942
+    taskid: 03944d64-6abd-48ad-8867-18784038057b
     type: condition
     task:
-      id: 921dfe15-c1c6-45d4-88a5-a7e00dee3942
+      id: 03944d64-6abd-48ad-8867-18784038057b
       version: -1
-      name: filter taskId
+      name: Filter taskId
       description: Checks that valid files only have been sent to detonation.
       type: condition
       iscommand: false
@@ -309,10 +316,10 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: 594fee2c-8e0b-4cc2-8141-bb95a4c99f8e
+    taskid: 47b0dcaa-96e7-4bb9-81ff-7281e13098ff
     type: regular
     task:
-      id: 594fee2c-8e0b-4cc2-8141-bb95a4c99f8e
+      id: 47b0dcaa-96e7-4bb9-81ff-7281e13098ff
       version: -1
       name: atd-check-status
       description: Updates the status of the tasks in the context.
@@ -339,10 +346,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
+    taskid: e31d8838-ba49-481b-8f63-ad0e147447f0
     type: condition
     task:
-      id: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
+      id: e31d8838-ba49-481b-8f63-ad0e147447f0
       version: -1
       name: Is File type supported?
       description: Check if file type is supported.
@@ -404,10 +411,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
+    taskid: 7f9c3d69-1369-4a6d-81bd-494dd37e4248
     type: regular
     task:
-      id: 3814f559-a639-4e80-8d6e-c74b9e96e495
+      id: 7f9c3d69-1369-4a6d-81bd-494dd37e4248
       version: -1
       name: Set File to context
       description: Set the file object into context.
@@ -436,10 +443,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
+    taskid: bf9c5c89-4440-432a-8071-b1d1a2784be7
     type: condition
     task:
-      id: 9b8022fc-dfd0-4806-8ead-65f53804065f
+      id: bf9c5c89-4440-432a-8071-b1d1a2784be7
       version: -1
       name: Is there a File to Detonate?
       description: Checks that there is a file in the playbook’s input.
@@ -487,12 +494,12 @@ inputs:
       root: File
   required: false
   description: The file to detonate. File is taken from the context.
-- key: interval
+- key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-- key: timeout
+- key: Timeout
   value:
     simple: "15"
   required: false
