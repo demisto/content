@@ -1089,12 +1089,12 @@ script: |-
         :param string: The string to be converted (required)
 
         :return: The converted string
-        :rtype: ``string``
+        :rtype: ``str``
       """
-      if isinstance(string, basestring):
+      if type(string) in STRING_TYPES:
           return " ".join(word.capitalize() for word in string.replace("_"," ").split())
       else:
-          return_error('The key is not a string: {}'.format(string))
+          raise Exception('The key is not a string: {}'.format(string))
 
   def key_to_context_key(string):
       """
@@ -1105,12 +1105,12 @@ script: |-
        :param string: The string to be converted (required)
 
        :return: The converted string
-       :rtype: ``string``
+       :rtype: ``str``
       """
-      if isinstance(string, basestring):
+      if type(string) in STRING_TYPES:
           return "".join(word.capitalize() for word in string.split('_'))
       else:
-          return_error('The key is not a string: {}'.format(string))
+          raise Exception('The key is not a string: {}'.format(string))
 
 type: python
 tags:
