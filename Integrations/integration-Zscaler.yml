@@ -872,7 +872,7 @@ script:
       required: true
       description: URL address to remove. Comma separated values supported, e.g. pandora.com,spotify.com
     outputs:
-    - contextPath: ' Zscaler.Category.CustomCategory'
+    - contextPath: Zscaler.Category.CustomCategory
       description: True if category is custom, else false.
       type: boolean
     - contextPath: Zscaler.Category.Description
@@ -880,7 +880,7 @@ script:
       type: string
     - contextPath: Zscaler.Category.ID
       description: Category ID
-      type: number
+      type: string
     - contextPath: Zscaler.Category.URL
       description: List of category URL addresses
       type: string
