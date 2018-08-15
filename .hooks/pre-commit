@@ -26,70 +26,45 @@ then
     exit 1
 fi
 
+checkForWrongSchema () {
+    if [[ $? -ne 0 ]]
+    then
+        foundWrongSchema=true
+    fi
+}
 # validating the commited files by schema
 for file in $(git diff-index --cached HEAD --name-only)
 do
     if [[ $file =~ $INTEGRATION_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/integration.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $PLAYBOOK_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/playbook.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $TEST_PLAYBOOK_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/test-playbook.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $SCRIPT_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/script.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
-
+        checkForWrongSchema
     elif [[ $file =~ $WIDGETS_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/widget.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $DASHBOARD_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/dashboard.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $CONNECTIONS_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/canvas-context-connections.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $CLASSIFIER_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/classifier.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $LAYOUT_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/layout.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $INCIDENT_FIELDS_REGEX ]]; then
         python Tests/validate_schema.py $file "Tests/schemas/incidentfields.yml" 'True'
-        if [[ $? -ne 0 ]]
-        then
-            foundWrongSchema=true
-        fi
+        checkForWrongSchema
     elif [[ $file =~ $MISC_REGEX ]]; then
        continue
     elif [[ $file =~ $REPORT_REGEX ]]; then

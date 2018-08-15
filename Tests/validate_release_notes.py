@@ -27,6 +27,7 @@ REPORT_REGEX = "(report-).*(.json)"
 KNOWN_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX,
                  CLASSIFIER_REGEX, LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, MISC_REGEX, REPORT_REGEX]
 
+ACTIONABLE_FILE_STATUSES = ['M', 'R100', 'R094', 'R093', 'R098', 'R078']
 
 def run_git_command(command):
     p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
@@ -53,7 +54,7 @@ def get_modified_files(files_string):
             continue
         file_status = file_data[0]
         file_path = file_data[1]
-        if file_status == "M" and not re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE) \
+        if file_status in ACTIONABLE_FILE_STATUSES and not re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE) \
                 and known_filetype(file_path):
             modified_files_list.append(file_path)
 
@@ -68,7 +69,7 @@ def validate_file_release_notes(file_path):
         elif file_path.endswith(".yaml") or file_path.endswith('.yml'):
             data_dictionary = yaml.safe_load(f)
 
-    if data_dictionary and data_dictionary.get('releaseNotes', None) is None:
+    if data_dictionary and data_dictionary.get('releaseNotes') is None:
         print "File " + file_path + " is missing releaseNotes, please add."
         return False
     return True

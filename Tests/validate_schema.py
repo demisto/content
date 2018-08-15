@@ -9,9 +9,15 @@ def main(argv):
     file_path = argv[0]
     schema_path = argv[1]
     
+    ''' 
+    This script runs both in a local and a remote environment. In a local environment we don't have any 
+    logger assigned, and then pykwalify raises an error, since it is logging the validation results.
+    Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
+    so the user won't be disturbed by non critical loggings
+    '''
     is_local = False
     if len(argv) == 3:
-        is_local = argv[2]
+        is_local = argv[2] and (argv[2] == True or argv[2].lower() == 'true')
 
     if is_local:
         import logging
