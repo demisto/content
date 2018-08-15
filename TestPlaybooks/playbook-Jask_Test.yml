@@ -33,7 +33,7 @@ tasks:
       id: ca722df1-ae4c-4833-82b4-612a31a83782
       version: -1
       name: Get insights for a given date
-      description: 'Search insights using the given filters.'
+      description: 'Search insights using the given filters. '
       script: Jask|||jask-search-insights
       type: regular
       iscommand: true
