@@ -7,7 +7,6 @@
             "timeout": 2000,
             "integrations": [
                 "VxStream",
-                "Threat Grid"
             ]
         },
         {
@@ -16,7 +15,6 @@
             "integrations": [
                 "McAfee Advanced Threat Defense",
                 "VxStream",
-                "Threat Grid"
             ]
         },
         {
