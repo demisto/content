@@ -1080,7 +1080,7 @@ script: |-
 
   ############################### REGEX FORMATTING end ###############################
 
-  def key_to_table_key(string):
+  def string_to_table_header(string):
       """
         Checks if string, change underscores to spaces, capitalize every word.
         Example: "one_two" to "One Two"
@@ -1096,7 +1096,7 @@ script: |-
       else:
           raise Exception('The key is not a string: {}'.format(string))
 
-  def key_to_context_key(string):
+  def string_to_context_key(string):
       """
        Checks if string, removes underscores, capitalize every word.
        Example: "one_two" to "OneTwo"
