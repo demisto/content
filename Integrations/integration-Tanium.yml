@@ -204,7 +204,6 @@ script:
         final_result = create_entry('Tanium Saved Question', parsed, {'Tanium.SavedQuestions' : parsed}, ['query_text', 'name', 'id'])
         return final_result
 
-
     def handle_cgs(handler, obj, kwargs):
         """Example PreAddAction callback that modifies the target_group of an Action if computer group names are supplied.
         callbacks = {}
@@ -224,6 +223,30 @@ script:
                 tg_obj.sub_groups.append(obj.target_group)
             obj.target_group = tg_obj
         return obj
+
+    def parseDeployActionRawResp(response):
+        saved_action_object = vars(response['saved_action_object'])
+        action_object =  vars(response['action_object'])
+        package_object=  vars(response['package_object'])
+
+        return {
+            'saved_action_object' : {
+                'id': saved_action_object.get('id', ''),
+                'name': saved_action_object.get('name', ''),
+                'action_group_id': saved_action_object.get('action_group_id', ''),
+                'last_start_time': saved_action_object.get('last_start_time', ''),
+                'target_group_id': saved_action_object['target_group'].id
+            },
+            'action_object' : {
+                'id': action_object.get('id', ''),
+                'name': action_object.get('name', '')
+            },
+            'package_object' : {
+                'id': package_object.get('id', ''),
+                'name': package_object.get('name', '')
+            }
+        }
+
 
     def deployAction(handler):
         package = demisto.args()['package']
@@ -256,9 +279,11 @@ script:
         ec = { 'Tanium.SavedActions' : {'Name': response['saved_action_object'].name, 'Id':response['saved_action_object'].id} }
 
         return {
-            'ContentsFormat': formats['text'],
+            'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
-            'Contents': 'Id of saved action is %s' % (response['saved_action_object'].id,),
+            'Contents': parseDeployActionRawResp(response),
+            'HumanReadable': 'Id of saved action is %s' % (response['saved_action_object'].id,),
+            'HumanReadableFormat': formats['text'],
             'EntryContext': ec
         }
 
@@ -270,14 +295,11 @@ script:
         final_result = create_entry('Action Approval', [parsed], {'Tanium.ActionApproval' : parsed})
         return final_result
 
-    def askQuestion(handler , question):
-        kwargs = {
-            'picker': 1,
-            'question_text': question,
-            'qtype': u'parsed',
-            'get_results' : True
-        }
+    def askQuestion(kwargs):
         response = handler.ask(**kwargs)
+
+        if isinstance(response, str):
+            return reponse
 
         query_text = response['question_object'].query_text
         if response['question_results']:
@@ -296,6 +318,36 @@ script:
         else:
             return 'Parsed query - %s\nNo results were found' % (query_text,)
 
+    def askManualQuestion(handler, args):
+        kwargs = {}
+        kwargs["qtype"] = u'manual'
+        kwargs["sensors_help"] = True if args.get('sensors_help') == 'True' else False
+        kwargs["filters_help"] = True if args.get('filters_help') == 'True' else False
+        kwargs["options_help"] = True if args.get('options_help') == 'True' else False
+
+        if kwargs["filters_help"] or kwargs["sensors_help"] or kwargs["options_help"]:
+            try:
+                response = handler.ask(**kwargs)
+                # should always throw an exception
+                return response
+            except Exception as ex:
+                return str(ex)
+
+        kwargs["question_filters"] = args.get('question_filters', '').split(';')
+        kwargs["sensors"] = args.get('sensors', '').split(';')
+        kwargs["polling_secs"] = int(args.get('polling_secs', '5'))
+        kwargs["complete_pct"] = int(args.get('complete_pct', '99'))
+        return askQuestion(kwargs)
+
+    def askParsedQuestion(handler , question):
+        kwargs = {
+            'picker': 1,
+            'question_text': question,
+            'qtype': u'parsed',
+            'get_results' : True
+        }
+        return askQuestion(kwargs)
+
     def createPackage(handler):
         kwargs = {}
         for key, value in demisto.args().items():
@@ -312,7 +364,7 @@ script:
         demisto.results(final_result)
         sys.exit(0)
 
-    # Dealing with Broken Pipe issues raised by some pytan commands
+    # Dealing with Broken Pipe issues raised by some commands
     sout = sys.stdout
     sys.stdout = StringIO()
 
@@ -344,13 +396,15 @@ script:
         if demisto.command() == 'tn-deploy-package':
             final_result = deployAction(handler)
         if demisto.command() == 'tn-ask-system':
-            final_result = askQuestion(handler, 'Get Computer Name from all machines with Computer Name matching \"'+ demisto.args()['hostname'] + '\"')
+            final_result = askParsedQuestion(handler, 'Get Computer Name from all machines with Computer Name matching \"'+ demisto.args()['hostname'] + '\"')
         if demisto.command() == 'tn-ask-question':
-            final_result = askQuestion(handler, demisto.args()['question'])
+            final_result = askParsedQuestion(handler, demisto.args()['question'])
         if demisto.command() == 'tn-create-package':
             final_result = createPackage(handler)
         if demisto.command() == 'tn-approve-pending-action':
             final_result = approveSavedAction(handler)
+        if demisto.command() == 'tn-ask-manual-question':
+            final_result = askManualQuestion(handler, demisto.args())
     except Exception as ex:
         final_result = { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(ex)}
 
@@ -673,4 +727,43 @@ script:
   - name: tn-get-all-sensors
     arguments: []
     description: Gets all sensors
+  - name: tn-parse-query
+    arguments:
+    - name: question
+  - name: tn-ask-manual-question
+    arguments:
+    - name: sensors
+      description: A semicolon separated list of sensors (columns) to include in question
+    - name: question_filters
+      description: A semicolon separated list of filters that apply to the whole question
+    - name: question_options
+      description: A comma separated list of options that apply to the whole question
+    - name: filters_help
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      description: Print the help string for filters and exit
+    - name: sensors_help
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      description: Print the help string for sensors and exit
+    - name: options_help
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      description: Print the help string for options and exit
+    - name: polling_secs
+      description: Number of seconds to wait in between result fetching attempts
+      defaultValue: "5"
+    - name: complete_pct
+      description: Percentage of mr_tested out of estimated_total to consider the question
+      defaultValue: "99"
+    description: Ask a manual question using human strings and get the results back
   dockerimage: demisto/pytan
