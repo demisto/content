@@ -6,9 +6,7 @@
             "playbookID": "Detonate File - Generic Test",
             "timeout": 2000,
             "integrations": [
-                "McAfee Advanced Threat Defense",
                 "VxStream",
-                "Joe Security",
                 "Threat Grid"
             ]
         },
@@ -18,7 +16,6 @@
             "integrations": [
                 "McAfee Advanced Threat Defense",
                 "VxStream",
-                "Joe Security",
                 "Threat Grid"
             ]
         },
@@ -28,12 +25,6 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
-            "nightly": true
         },
         {
             "integrations": "Jask",
@@ -427,6 +418,12 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500,
+            "nightly": true
+        },
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"

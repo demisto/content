@@ -294,10 +294,10 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: 2fe4519f-8919-414c-8527-2e08d87cda31
+    taskid: 35d8af19-10dd-43fa-855d-1a99e08bbf12
     type: condition
     task:
-      id: 2fe4519f-8919-414c-8527-2e08d87cda31
+      id: 35d8af19-10dd-43fa-855d-1a99e08bbf12
       version: -1
       name: Is McAfee ATD sandbox enabled?
       description: |
@@ -328,7 +328,7 @@ tasks:
                     right:
                       value:
                         simple: McAfee Advanced Threat Defense
-                  - operator: isEqualString
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.state
