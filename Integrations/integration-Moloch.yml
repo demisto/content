@@ -128,17 +128,12 @@ script:
 
             var res = sendRequest(urlDict[command] + encodeToURLQuery(args), urlDict[command]);
             if (!res || !res.Body) {
-                return 'empty';
+                return 'No data was found in Moloch';
             }
 
             if (jsonResponses.indexOf(command) !== -1) {
-                if (command == 'moloch_sessions_json' && res.Body) {
-                    var respBody = JSON.parse(res.Body);
-                    if (respBody && respBody.data) {
-                        return parseSessions(respBody);
-                    } else {
-                        return respBody;
-                    }
+                if (command == 'moloch_sessions_json') {
+                    return parseSessions(JSON.parse(res.Body));
                 } else {
                     return JSON.parse(res.Body);
                 }
@@ -234,8 +229,7 @@ script:
   - name: moloch_sessions_json
     arguments:
     - name: date
-      description: Statistics for the number of hours of data to return, -1 means
-        all data
+      description: The number of hours of data to return, -1 means all data
     - name: expression
       description: The expression string
     - name: facets
@@ -408,5 +402,5 @@ script:
     description: Retrieve the unique data for a field in json format
   runonce: false
 hidden: false
-fromversion: 4.0.0
+fromversion: 3.5.0
 releaseNotes: "Updating Moloch Integration."
