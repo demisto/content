@@ -38,6 +38,7 @@ tasks:
       id: 172af11a-ff1d-48ba-8d65-3c6f625689c5
       version: -1
       name: JoeSecurity Upload URL
+      description: ""
       script: Joe Security|||joe-analysis-submit-url
       type: regular
       iscommand: true
