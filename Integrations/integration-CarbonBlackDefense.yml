@@ -848,10 +848,22 @@ script:
                 throw 'SIEM connector is missing from parameters.';
             }
             var res = executeCommand(commands['cbd-get-notifications']);
-            if (res.StatusCode !== 200 ) {
-                throw 'Request failed with status code: ' + res.StatusCode;
+
+            var body = {}
+            try {
+                body = JSON.parse(res.Body);
+            } catch (err) {}
+
+            // do not fail fetch on internal server error
+            if (res.StatusCode === 500) {
+                log('Carbon Black Defense fetch incidents failed:\nRequest failed with status code 500 - internal server error\n' + (body.message ? body.message : ''));
+                return;
             }
-            var body = JSON.parse(res.Body);
+
+            if (res.StatusCode !== 200 ) {
+                throw 'Request failed with status code: ' + res.StatusCode + '\n' + (body.message ? body.message : '');
+            }
+
             if (!body.notifications) {
                 return;
             }
@@ -1588,3 +1600,4 @@ script:
       description: The modified policy
     description: Re-set policy fields.
   isfetch: true
+releaseNotes: "fetch incidents will not fail on internal server error"
