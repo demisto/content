@@ -737,7 +737,7 @@ script:
     - name: question_filters
       description: A semicolon separated list of filters that apply to the whole question
     - name: question_options
-      description: A comma separated list of options that apply to the whole question
+      description: A semicolon separated list of options that apply to the whole question. Options are ignore_case, match_case, match_any_value, match_all_values, max_data_age, value_type, and, or
     - name: filters_help
       auto: PREDEFINED
       predefined:
