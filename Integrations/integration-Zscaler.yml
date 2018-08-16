@@ -591,6 +591,7 @@ script:
         return response
 
     def get_categories_command():
+        display_urls = True if demisto.args()['displayURL'] == 'true' else False
         raw_categories = get_categories()
         categories = []
         for raw_category in raw_categories:
@@ -608,13 +609,17 @@ script:
         ec = {
             'Zscaler.Category(val.ID && val.ID === obj.ID)': categories
         }
+        if display_urls:
+            headers = ['ID', 'Description', 'URL', 'CustomCategory', 'Name']
+        else:
+            headers = ['ID', 'Description', 'CustomCategory', 'Name']
         title = 'Zscaler Categories'
         entry = {
             'Type': entryTypes['note'],
             'Contents': raw_categories,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, categories, ['ID', 'Description', 'URL', 'CustomCategory', 'Name']),
+            'HumanReadable': tableToMarkdown(title, categories, headers),
             'EntryContext': ec
         }
         return entry
@@ -909,7 +914,14 @@ script:
       type: string
     description: Removes IP address to given category
   - name: zscaler-get-categories
-    arguments: []
+    arguments:
+    - name: displayURL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: True to display URLs of each category in the war room, else false.
+      defaultValue: "false"
     outputs:
     - contextPath: Zscaler.Category.ID
       description: Category ID
