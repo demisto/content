@@ -385,11 +385,11 @@ script:
 
         try:
             endpoint_details['ERSEndPoint']['groupId']= endpoint_group_id
-
             update_result = update_endpoint_by_id(endpoint_id, endpoint_details)
 
             # Create result
-            msg = "Endpoint " + endpoint_id + " updated successfully" if update_result.status_code != 200 else "Update failed for endpoint " + endpoint_id
+            msg = "Endpoint " + endpoint_id + " updated successfully" if update_result.status_code == 200 else "Update failed for endpoint " + endpoint_id + ", got the following response: " + \
+                    json.dumps(json.loads(update_result.text).get('ERSResponse',{}).get('messages',[]))
             result = [{ "Update status": msg }]
 
         except Exception as e:
