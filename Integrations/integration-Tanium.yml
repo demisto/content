@@ -333,6 +333,7 @@ script:
             except Exception as ex:
                 return str(ex)
 
+        kwargs["question_options"] = args.get('question_options', '').split(';')
         kwargs["question_filters"] = args.get('question_filters', '').split(';')
         kwargs["sensors"] = args.get('sensors', '').split(';')
         kwargs["polling_secs"] = int(args.get('polling_secs', '5'))
