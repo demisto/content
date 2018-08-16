@@ -347,9 +347,9 @@ script:
             except Exception as ex:
                 return str(ex)
 
-        kwargs["question_options"] = args.get('question_options', '').split(';')
-        kwargs["question_filters"] = args.get('question_filters', '').split(';')
-        kwargs["sensors"] = args.get('sensors', '').split(';')
+        kwargs["question_options"] = args.get('question_options', '').split(';') if args.get('question_options', '') != '' else None
+        kwargs["question_filters"] = args.get('question_filters', '').split(';') if args.get('question_filters', '') != '' else None
+        kwargs["sensors"] = args.get('sensors', '').split(';') if args.get('sensors', '') != '' else None
         kwargs["polling_secs"] = int(args.get('polling_secs', '5'))
         kwargs["complete_pct"] = int(args.get('complete_pct', '99'))
         return askQuestion(kwargs)
@@ -571,7 +571,7 @@ script:
       description: The question text
     - name: index
       required: false
-      default: 1
+      defaultValue: "1"
       description: The index of the parsed question to be asked (as returned by tn-parse-query)
     outputs:
     - contextPath: Tanium.QuestionResults
