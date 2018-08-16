@@ -48,6 +48,12 @@ script:
 
     var pcap_command = 'moloch_sessions_pcap';
 
+    var other_fields = "ipProtocol";
+    var http_fields = "http.statuscode,http.method";
+    var src_fields = "srcPackets,srcBytes,srcDataBytes";
+    var dst_fields = "dstPackets,dstBytes,dstDataBytes";
+    var fields_to_req = "&fields={0},{1},{2},{3}&expression=http.statuscode==EXISTS!".format(http_fields, src_fields, dst_fields,other_fields);
+
     var urlDict = {
         'moloch_connections_json': 'connections.json',
         'moloch_connections_csv': 'connections.csv',
@@ -96,6 +102,9 @@ script:
             output['Destination Bytes'] = objects[i].dstBytes;
             output['Destination Databytes'] = objects[i].dstDataBytes;
 
+            output['HTTP method'] = objects[i].http.method;
+            output['HTTP Status code'] = objects[i].http.statuscode;
+
             outputs.push(output);
             contexts.push(convertKeysToPascalCase(output));
         }
@@ -126,7 +135,13 @@ script:
                 args.date = -1;
             }
 
-            var res = sendRequest(urlDict[command] + encodeToURLQuery(args), urlDict[command]);
+            if (command == 'moloch_sessions_json') {
+                url = urlDict[command] + encodeToURLQuery(args) + fields_to_req;
+            } else {
+                url = urlDict[command] + encodeToURLQuery(args);
+            }
+
+            var res = sendRequest(url, urlDict[command]);
             if (!res || !res.Body) {
                 return 'No data was found in Moloch';
             }
