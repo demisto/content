@@ -48,6 +48,7 @@ script:
 
     var pcap_command = 'moloch_sessions_pcap';
 
+    // Fields to get from the db while sending moloch_sessions_json requests
     var other_fields = "ipProtocol";
     var http_fields = "http.statuscode,http.method";
     var src_fields = "srcPackets,srcBytes,srcDataBytes";
