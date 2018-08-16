@@ -327,7 +327,7 @@ tasks:
       emailsubject:
         complex:
           root: Email
-          accessor: To
+          accessor: Subject
           transformers:
           - operator: general.uniq
           - operator: general.Stringify
