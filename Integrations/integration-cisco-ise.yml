@@ -99,11 +99,11 @@ script:
                 if headers is not None:
                     ISE.headers.update(headers)
                 result = ISE.get(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), verify=USE_SSL)
+
                 if result.status_code == 200:
                     return result.text
                 elif result.status_code == 404:
-                    raise Exception("Got status code: " + str(result.status_code) + " For the request to the " + url_suffix + " endpoint. Please make sure that your account settings support this action.")
-
+                    pass
                 else:
                     raise Exception("Got status code: " + str(result.status_code) + " For the request to the " + url_suffix + " endpoint.")
             elif method == 'PUT':
@@ -299,13 +299,12 @@ script:
         api_endpoint = "/ers/config/endpoint/{}".format(endpoint_id)
         return http_request('PUT', api_endpoint, {}, endpoint_details, headers)
 
-    def update_endpoint_to_blocked_command():
+    def update_endpoint_custom_attribute_command():
         """
-        corresponds to 'cisco-ise-update-endpoint-to-blocked' command. Blocks endpoint using predefined custom fields
+        corresponds to 'cisco-ise-update-endpoint-custom-attribute' command. Blocks endpoint using predefined custom fields
         """
 
         endpoint_id = demisto.args().get('id')
-
         endpoint_mac_address = demisto.args().get('macAddress')
 
         if endpoint_mac_address and not is_mac(endpoint_mac_address):
@@ -322,21 +321,29 @@ script:
         if "ERSEndPoint" not in endpoint_details:
             return 'Failed to get endpoint %s' % endpoint_id
 
+        attribute_names = demisto.args().get('attributeName').split(',')
+        attribute_values = demisto.args().get('attributeValue').split(',')
+
+        attributes_dic = {}
+        for couple in zip(attribute_names, attribute_values):
+            attributes_dic[couple[0]] = couple[1]
         try:
             del endpoint_details['ERSEndPoint']['link']
-            endpoint_details['ERSEndPoint']['customAttributes']= {
-                'customAttributes': {
-                    'ITSecurityBlock':'True',
-                    'ITSecurityBlockReason':'virus_detected'
-                }
-            }
+            endpoint_details['ERSEndPoint']['customAttributes']= attributes_dic
 
             update_result = update_endpoint_by_id(endpoint_id, endpoint_details)
-
             if update_result.status_code != 200:
-                return 'Failed to update endpoint %s' % endpoint_id
-            else:
-                return 'Successfully updated endpoint %s' % endpoint_id
+                return "Update failed for endpoint " + endpoint_id + ", got the following response: " + \
+                    json.dumps(json.loads(update_result.text).get('ERSResponse',{}).get('messages',[]))
+
+            update_json = json.loads(update_result.text)
+            updated_fields_dict_list = update_json.get('UpdatedFieldsList', {}).get('updatedField',[])
+            updated_fields_names_list = [field['field'] for field in updated_fields_dict_list]
+            for attribute in attribute_names:
+                if attribute not in updated_fields_names_list:
+                    return "Update failed for endpoint " + endpoint_id + " field " + attribute + "is missing. Please check if it is defined as a custom field"
+
+            return 'Successfully updated endpoint %s' % endpoint_id
 
         except Exception as e:
             raise Exception("Exception: Failed to update endpoint {}: ".format(endpoint_id) + str(e))
@@ -381,12 +388,6 @@ script:
 
             update_result = update_endpoint_by_id(endpoint_id, endpoint_details)
 
-            if update_result.status_code != 200:
-                return 'Failed to update endpoint %s' % endpoint_id
-            else:
-                return 'Successfully updated endpoint %s' % endpoint_id
-            success = True
-
             # Create result
             msg = "Endpoint " + endpoint_id + " updated successfully" if update_result.status_code != 200 else "Update failed for endpoint " + endpoint_id
             result = [{ "Update status": msg }]
@@ -418,8 +419,8 @@ script:
             demisto.results(reauthenticate_endpoint_command())
         elif demisto.command() == 'cisco-ise-get-endpoints':
             demisto.results(get_endpoints_command())
-        elif demisto.command() == 'cisco-ise-update-endpoint-to-blocked':
-            demisto.results(update_endpoint_to_blocked_command())
+        elif demisto.command() == 'cisco-ise-update-endpoint-custom-attribute':
+            demisto.results(update_endpoint_custom_attribute_command())
         elif demisto.command() == 'cisco-ise-update-endpoint-group':
             demisto.results(update_endpoint_group_command())
 
@@ -491,13 +492,21 @@ script:
       description: Endpoint description
       type: string
     description: Get data about the existing endpoints
-  - name: cisco-ise-update-endpoint-to-blocked
+  - name: cisco-ise-update-endpoint-custom-attribute
     arguments:
     - name: id
       description: Endpoint ID
     - name: macAddress
       description: MAC address of the endpoint (format 11:22:33:44:55:66)
-    description: Block endpoint using predefined custom fields
+    - name: attributeName
+      required: true
+      description: The name of the attribute. Can be a comma separated list. For example,
+        attributeName=firstAttribute,secondAttribute
+    - name: attributeValue
+      required: true
+      description: The value of the attribute. Can be a comma separated list. For
+        example, attributeValue=firstValue,secondValue
+    description: Update an endpoint custom attribute
   - name: cisco-ise-update-endpoint-group
     arguments:
     - name: groupId
@@ -510,4 +519,4 @@ script:
       description: Name of the new group for the endpoint
     description: Updates the group of an endpoint
   runonce: false
-releaseNotes: 'Cisco pxGrid ISE'
+releaseNotes: "CISCO ISE integration"
