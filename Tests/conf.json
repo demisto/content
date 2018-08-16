@@ -10,12 +10,6 @@
             "playbookID": "Extract Indicators From File - test"
         },
         {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
             "integrations": "Jask",
             "playbookID": "Jask_Test"
         },
@@ -78,10 +72,6 @@
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
-        },
-        {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "playbookID": "Test filters & transformers scripts"
@@ -399,14 +389,24 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        }
+    ],
+    "skipped": [
+        {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true
-        }
-    ],
-    "skipped": [
+        },
+        {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500,
+            "nightly": true
+        },
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
