@@ -862,6 +862,58 @@ script:
         path = 'scans/' + str(scan_id)
         return send_request(path)
 
+    def create_site_command():
+        assets = argToList(demisto.args()['assets'])
+        site = create_site(demisto.args()['name'], assets,
+        demisto.args().get('description'), demisto.args().get('importance'), demisto.args().get('scanTemplateId'))
+
+        if not site or 'id' not in site:
+            raise Exception('Site creation failed, could not get the new site')
+
+        output = {
+            'Id': site['id']
+        }
+
+        md = tableToMarkdown('New site created', output)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': site,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                  'Nexpose.Site(val.Id==obj.Id)': output,
+            }
+        }
+
+        return entry
+
+
+    def create_site(name, assets, description=None, importance=None, template_id=None):
+        site_body = {
+            'name': name
+        }
+
+        if assets:
+            site_body['scan'] = {
+                'assets': {
+                    'includedTargets': {
+                        'addresses': assets
+                    }
+                }
+            }
+        if description:
+            site_body['description'] = description
+        if importance:
+            site_body['importance'] = importance
+        if template_id:
+            site_body['scanTemplateId'] = template_id
+
+        path = 'sites'
+
+        return send_request(path, 'post', body=site_body)
+
     def get_sites_command():
         sites = get_sites(limit=demisto.args().get('limit'),sort=demisto.args().get('sort'))
 
@@ -1132,6 +1184,8 @@ script:
             demisto.results(start_site_scan_command())
         if demisto.command() == 'nexpose-start-assets-scan':
             demisto.results(start_assets_scan_command())
+        if demisto.command() == 'nexpose-create-site':
+            demisto.results(create_site_command())
     except Exception as e:
         LOG(e.message)
         LOG.print_log()
@@ -1445,6 +1499,31 @@ script:
       description: Common Vulnerabilities and Exposures ids
     description: Returns the details and possible remediations for an asset's given
       vulnerability.
+  - name: nexpose-create-site
+    arguments:
+    - name: name
+      required: true
+      description: <string> The site name. Name must be unique.
+    - name: description
+      description: <string> The site's description.
+    - name: assets
+      required: true
+      description: Multiple criteria of <string> Specify asset addresses to be included
+        in site scans
+      isArray: true
+    - name: scanTemplateId
+      description: <string> The identifier of a scan template. Default scan template
+        is selected when not specified.
+    - name: importance
+      auto: PREDEFINED
+      predefined:
+      - very_low
+      - low
+      - normal
+      - high
+      - very_high
+      description: <string> The site importance. Defaults to "normal" if not specified.
+    description: Creates a new site with the specified configuration.
   - name: nexpose-get-sites
     arguments:
     - name: limit
@@ -1623,4 +1702,5 @@ script:
       description: The total number of vulnerabilities.
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
-fromversion: 4.0.0
+fromversion: 3.6.0
+releaseNotes: "Added ability to create a site"
