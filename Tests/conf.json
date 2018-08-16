@@ -10,14 +10,6 @@
             ]
         },
         {
-            "playbookID": "Detonate URL - Generic Test",
-            "timeout": 2000,
-            "integrations": [
-                "McAfee Advanced Threat Defense",
-                "VxStream"
-            ]
-        },
-        {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
