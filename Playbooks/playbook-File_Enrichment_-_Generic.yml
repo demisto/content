@@ -1,16 +1,23 @@
 id: File Enrichment - Generic
 version: -1
 name: File Enrichment - Generic
-description: Get file reputation using one or more integrations
 fromversion: 3.6.0
+releaseNotes: "Add support to VirusTotal Private API and Palo Alto AppFramework"
+description: |-
+  Enrich a file using one or more integrations.
+
+  File enrichment includes:
+  * File history
+  * Threat information
+  * File reputation
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 214ebf34-1312-43ec-873d-41d45094ba22
+    taskid: 6fa65b00-15dc-4cab-8b4e-7ab8e2720215
     type: start
     task:
-      id: 214ebf34-1312-43ec-873d-41d45094ba22
+      id: 6fa65b00-15dc-4cab-8b4e-7ab8e2720215
       version: -1
       name: ""
       description: ""
@@ -19,97 +26,72 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
+      - "24"
+      - "31"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 735,
           "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 4f88c305-19b2-4d29-8284-0fe706b0b516
-    type: title
-    task:
-      id: 4f88c305-19b2-4d29-8284-0fe706b0b516
-      version: -1
-      name: Hash reputation
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-      - "15"
-      - "17"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 370
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 6e38288d-5ef5-4291-8b4b-286c7101a2b8
-    type: regular
-    task:
-      id: 6e38288d-5ef5-4291-8b4b-286c7101a2b8
-      version: -1
-      name: Check MD5s
-      description: Checks reputation of MD5
-      scriptName: FileReputation
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      file:
-        complex:
-          root: inputs.MD5
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 690
         }
       }
   "7":
     id: "7"
-    taskid: 66d74bf4-438c-40a8-840f-58052c181d0f
+    taskid: d2deb7de-75cc-4f33-8ba3-6f83370096f8
     type: title
     task:
-      id: 66d74bf4-438c-40a8-840f-58052c181d0f
+      id: d2deb7de-75cc-4f33-8ba3-6f83370096f8
       version: -1
       name: Done
       description: ""
       type: title
       iscommand: false
       brand: ""
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 865
+          "x": 407.5,
+          "y": 1010
         }
       }
-  "14":
-    id: "14"
-    taskid: e7b3a313-8f11-45ab-8b4d-2373184ed873
+  "19":
+    id: "19"
+    taskid: d92660c2-aae0-4955-8860-55b5a873ea84
+    type: title
+    task:
+      id: d92660c2-aae0-4955-8860-55b5a873ea84
+      version: -1
+      name: File history
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "20":
+    id: "20"
+    taskid: f9878c4a-43fa-4994-8919-012c91ef9e71
     type: condition
     task:
-      id: e7b3a313-8f11-45ab-8b4d-2373184ed873
+      id: f9878c4a-43fa-4994-8919-012c91ef9e71
       version: -1
-      name: Do we have MD5 hashes?
-      description: Checks if there MD5 hashes to check
+      name: Is there a SHA-256 hash?
+      description: |
+        Check if there is a SHA-256 hash in context.
       type: condition
       iscommand: false
       brand: ""
@@ -117,47 +99,11 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "5"
-    scriptarguments:
-      value:
-        simple: ${File.MD5}
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs.MD5
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 515
-        }
-      }
-  "15":
-    id: "15"
-    taskid: 201f454e-7e43-4b7a-86c1-cf184c3f4034
-    type: condition
-    task:
-      id: 201f454e-7e43-4b7a-86c1-cf184c3f4034
-      version: -1
-      name: Do we have SHA256 hashes?
-      description: Checks if there SHA256 hashes to check
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "16"
+      - "22"
     scriptarguments:
       value:
         simple: ${File.SHA256}
+    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -171,48 +117,77 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 515
+          "x": 50,
+          "y": 340
         }
       }
-  "16":
-    id: "16"
-    taskid: fa195b67-af7f-4d2c-8539-801984ffd27a
+  "21":
+    id: "21"
+    taskid: f41858a8-061a-46f6-8571-5169b0dc2142
     type: regular
     task:
-      id: fa195b67-af7f-4d2c-8539-801984ffd27a
+      id: f41858a8-061a-46f6-8571-5169b0dc2142
       version: -1
-      name: Check SHA256s
-      description: Checks reputation of SHA256
-      scriptName: FileReputation
+      name: Search for file history in Palo Alto AppFramework
+      description: Search for file history in the Palo Alto AppFramework integration.
+      script: Palo Alto AppFramework|||pan-appframework-search-by-file-hash
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Palo Alto AppFramework
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
-      file:
+      SHA256:
         complex:
           root: inputs.SHA256
-    continueonerror: true
+      endTime: {}
+      logsAmount: {}
+      rangeValue: {}
+      startTime: {}
+      timeRange: {}
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 690
+          "x": 162.5,
+          "y": 835
         }
       }
-  "17":
-    id: "17"
-    taskid: 3e168b3e-a583-4ebb-8b82-5a0924d6a204
+  "22":
+    id: "22"
+    taskid: 75a5af54-6369-48e2-804d-6720507be2c5
+    type: title
+    task:
+      id: 75a5af54-6369-48e2-804d-6720507be2c5
+      version: -1
+      name: Search file history in Palo Alto AppFramework
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "23":
+    id: "23"
+    taskid: 4849f994-cf74-4e29-80be-d8c8b5c01659
     type: condition
     task:
-      id: 3e168b3e-a583-4ebb-8b82-5a0924d6a204
+      id: 4849f994-cf74-4e29-80be-d8c8b5c01659
       version: -1
-      name: Do we have SHA1 hashes?
-      description: Checks if there SHA1 hashes to check
+      name: Is Palo Alto AppFramework enabled?
+      description: Checks if there is an active instance of Palo Alto AppFramework.
       type: condition
       iscommand: false
       brand: ""
@@ -220,10 +195,8 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "18"
-    scriptarguments:
-      value:
-        simple: ${File.SHA256}
+      - "21"
+    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
@@ -232,55 +205,69 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.SHA1
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto AppFramework
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 515
+          "x": 162.5,
+          "y": 660
         }
       }
-  "18":
-    id: "18"
-    taskid: 689b03e9-186f-4edd-8ae2-859b957487d7
-    type: regular
+  "24":
+    id: "24"
+    taskid: 9b849bc8-3a9b-46c5-802e-2fc25b7b1761
+    type: title
     task:
-      id: 689b03e9-186f-4edd-8ae2-859b957487d7
+      id: 9b849bc8-3a9b-46c5-802e-2fc25b7b1761
       version: -1
-      name: Check SHA1s
-      description: Checks reputation of SHA1
-      scriptName: FileReputation
-      type: regular
+      name: Threat information
+      description: ""
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
-    scriptarguments:
-      file:
-        complex:
-          root: inputs.SHA1
-    continueonerror: true
+      - "25"
+      - "29"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1155,
-          "y": 690
+          "x": 735,
+          "y": 195
         }
       }
-  "19":
-    id: "19"
-    taskid: f1c17fd6-bc64-422f-8776-2754a45c4f6d
+  "25":
+    id: "25"
+    taskid: 803cab60-a177-4bca-8890-267658a8e037
     type: condition
     task:
-      id: f1c17fd6-bc64-422f-8776-2754a45c4f6d
+      id: 803cab60-a177-4bca-8890-267658a8e037
       version: -1
-      name: Should the system get the File Reputation?
-      description: |
-        Should the system retrieve the file reputation from all of the relevant integration?
-        Default: True
+      name: Is there a SHA-256 hash?
+      description: Check if there is a SHA-256 hash in context.
       type: condition
       iscommand: false
       brand: ""
@@ -288,38 +275,246 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "1"
+      - "26"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: string.isEqual
+      - - operator: general.isExists
           left:
             value:
               complex:
-                root: inputs.GetReputation
+                root: inputs.SHA256
             iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 520,
+          "y": 340
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 977beaa5-2d82-4d11-815d-16c6b502b5af
+    type: title
+    task:
+      id: 977beaa5-2d82-4d11-815d-16c6b502b5af
+      version: -1
+      name: Get threat info from Cylance Protect v2
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 632.5,
+          "y": 515
+        }
+      }
+  "27":
+    id: "27"
+    taskid: a385675b-4d5d-40c4-8ea3-f9658e14ef91
+    type: condition
+    task:
+      id: a385675b-4d5d-40c4-8ea3-f9658e14ef91
+      version: -1
+      name: Is Cylance Protect v2 enabled?
+      description: Checks if there is an active instance of Cylance Protect v2.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "28"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cylance Protect v2
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 632.5,
+          "y": 660
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 5d1b9cb9-80ad-485a-80ba-e52f2bc9d2f0
+    type: regular
+    task:
+      id: 5d1b9cb9-80ad-485a-80ba-e52f2bc9d2f0
+      version: -1
+      name: Get threat information from Cylance Protect v2
+      description: Get threat information from the Cylance Protect v2 integration.
+      script: Cylance Protect v2|||cylance-protect-get-threat
+      type: regular
+      iscommand: true
+      brand: Cylance Protect v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sha256:
+        complex:
+          root: inputs.SHA256
+    reputationcalc: 0
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 632.5,
+          "y": 835
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 0357cc1e-4fed-4d34-8672-c44dde656382
+    type: playbook
+    task:
+      id: 0357cc1e-4fed-4d34-8672-c44dde656382
+      version: -1
+      name: File Enrichment - Virus Total private API
+      description: Get file reputation using one or more integrations
+      playbookName: File Enrichment - Virus Total Private API
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 988,
+          "y": 340
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 52857fb4-234a-41b3-863e-acedeb1b02b3
+    type: playbook
+    task:
+      id: 52857fb4-234a-41b3-863e-acedeb1b02b3
+      version: -1
+      name: File Enrichment - File reputation
+      description: Get file reputation using one or more integrations
+      playbookName: File Enrichment - File reputation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 340
+        }
+      }
+  "31":
+    id: "31"
+    taskid: e14e2725-8611-4089-8947-4db090c13347
+    type: title
+    task:
+      id: e14e2725-8611-4089-8947-4db090c13347
+      version: -1
+      name: File reputation
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1430,
           "y": 195
         }
       }
 view: |-
   {
-    "linkLabelsPosition": {
-      "14_7_#default#": 0.52,
-      "15_7_#default#": 0.61
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 880,
-        "width": 1485,
+        "height": 1025,
+        "width": 1760,
         "x": 50,
         "y": 50
       }
@@ -332,32 +527,27 @@ inputs:
       root: File
       accessor: MD5
   required: false
-  description: File MD5 to enrich
+  description: File MD5 hash to enrich.
 - key: SHA256
   value:
     complex:
       root: File
       accessor: SHA256
   required: false
-  description: File SHA256 to enrich
+  description: File SHA-256 hash to enrich.
 - key: SHA1
   value:
     complex:
       root: File
       accessor: SHA1
   required: false
-  description: File SHA1 to enrich
-- key: GetReputation
-  value:
-    simple: "True"
-  required: true
-  description: Should the playbook get reputation for the File
+  description: File SHA-1 hash to enrich.
 outputs:
-- contextPath: File
-  description: The file's object
-  type: unknown
-- contextPath: File.MD5
-  description: MD5 hash of the file
+- contextPath: DBotScore.Indicator
+  description: The tested indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
   type: string
 - contextPath: File.SHA1
   description: SHA1 hash of the file
@@ -368,18 +558,27 @@ outputs:
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
 - contextPath: DBotScore
   description: The DBotScore's object
   type: unknown
-- contextPath: DBotScore.Indicator
-  description: The tested indicator
-  type: string
-- contextPath: DBotScore.Type
-  description: The type of the indicator
-  type: string
+- contextPath: File
+  description: The file's object
+  type: unknown
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score
   type: string
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+- contextPath: File.VirusTotal.Scans
+  description: the scan object
+  type: unknown
+- contextPath: File.VirusTotal.Scans.Source
+  description: Scan vendor for this hash
+- contextPath: File.VirusTotal.Scans.Detected
+  description: Scan detection for this hash (True,False)
+- contextPath: File.VirusTotal.Scans.Result
+  description: Scan result for this hash - signature, etc.
