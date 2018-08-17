@@ -17,8 +17,8 @@ script: |
               'SHA256': e['FileMetadata'].get('sha256'),
               'SSDeep': e['FileMetadata'].get('ssdeep'),
               'Size': e['FileMetadata'].get('size'),
-              'Info': e['FileMetadata'].get('info'),
-              'Type': e['FileMetadata'].get('type'),
+              'Info': e['FileMetadata'].get('type'),
+              'Type': e['FileMetadata'].get('info'),
               'Extension': ext[1:] if ext else '',
               'EntryID': e['ID']
           })
