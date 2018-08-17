@@ -166,23 +166,23 @@ script:
         query_str = 'event_name:{}  AND severity:>{}'.format(event, score)
         ts_str = str(long(lastRunTime * 1000))
         query_json = { 'query':
-                            { 'bool':
-                                { 'must':
-                                    [ { 'query_string':
-                                        {
-                                          'query': query_str,
-                                          'analyze_wildcard': True
-                                        }
-                                      },
-                                      { 'range':
-                                         { 'timestamp':
-                                             { 'gt': ts_str }
-                                         }
-                                      }
-                                    ]
-                                }
-                            }
-                     }
+            { 'bool':
+                { 'must':
+                    [ { 'query_string':
+                        {
+                          'query': query_str,
+                          'analyze_wildcard': True
+                        }
+                      },
+                      { 'range':
+                         { 'timestamp':
+                             { 'gt': ts_str }
+                         }
+                      }
+                    ]
+                }
+            }
+        }
         end_point = URL + '/{0}/{1}/_search'.format(index_str, 'amsg')
 
         action_result = {}
@@ -221,10 +221,6 @@ script:
                 sdi = '{}_{}'.format(event_name, eid)
                 incident = {
                     'name' : sdi,
-                    'label' : 'Starlight event',
-                    'aella_eid' : eid,
-                    'aella_event' : event_name,
-                    'event_severity': severity,
                     'rawJSON':json.dumps({  'name':sdi,
                                             'label':'Starlight event',
                                             'aella_eid': eid,
@@ -256,6 +252,8 @@ script:
             response = action_result.get('data')
             timed_out = response.get('timed_out', False)
             hits = response.get('hits', {}).get('hits', [])
+            source = {}
+            dbot_scores = []
             if len(hits) == 0:
                 demisto.info('Get event got empty result')
             for item in hits:
@@ -265,17 +263,75 @@ script:
                     source['_index'] = index
                     source['timed_out'] = timed_out
                     demisto.debug('This is my run_query result aellaEvent {}'.format(source))
-                    demisto.results({
-                        'Type': entryTypes['note'],
-                        'ContentsFormat': formats['json'],
-                        'Contents': source,
-                        'HumanReadable': tableToMarkdown('Aella Star Light Event <{0}>'.format(event_id), source),
-                        'EntryContext': {
-                            'Aella.Event(val["_id"]==obj["_id"])': source
-                        }
-                    })
+
+                    # Check url reputation
+                    url_str = source.get('url', '')
+                    if url_str:
+                        url_reputation = source.get('url_reputation', '')
+                        if url_reputation and url_reputation != 'Good':
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : url_str,
+                                'Type' : 'url',
+                                'Score' : 3,
+                                'Malicious' : {
+                                    'Vendor' : 'Aella Data',
+                                    'Detections' : 'URL reputation {0}'.format(url_reputation),
+                                    'Url' : url_str
+                                }
+                            }
+                            dbot_scores.append(dbot_score)
+
+                    # Check src ip reputation
+                    srcip_str = source.get('srcip', '')
+                    if srcip_str:
+                        srcip_reputation = source.get('srcip_reputation', '')
+                        if srcip_reputation and srcip_reputation != 'Good':
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : srcip_str,
+                                'Type' : 'ip',
+                                'Score' : 3,
+                                'Malicious' : {
+                                    'Vendor' : 'Aella Data',
+                                    'Detections' : 'Source IP reputation {0}'.format(srcip_reputation),
+                                    'IP' : srcip_str
+                                }
+                            }
+                            dbot_scores.append(dbot_score)
+
+                    # Check dst ip reputation
+                    dstip_str = source.get('dstip', '')
+                    if dstip_str:
+                        dstip_reputation = source.get('dstip_reputation', '')
+                        if dstip_reputation and dstip_reputation != 'Good':
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : dstip_str,
+                                'Type' : 'ip',
+                                'Score' : 3,
+                                'Malicious' : {
+                                    'Vendor' : 'Aella Data',
+                                    'Detections' : 'Destination IP reputation {0}'.format(dstip_reputation),
+                                    'IP' : dstip_str
+                                }
+                            }
+                            dbot_scores.append(dbot_score)
+
+                break
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': source,
+                'HumanReadable': tableToMarkdown('Aella Star Light Event <{0}>'.format(event_id), source),
+                'EntryContext': {
+                    'Aella.Event(val["_id"]==obj["_id"])': source,
+                    'DbotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' : createContext(dbot_scores, removeNull=True),
+                }
+            })
         else:
             demisto.info('Get event failed {}'.format(action_result))
+            demisto.results(return_error('Failed to get event'))
 
     ''' EXECUTION CODE '''
     demisto.info('Command is {}'.format(demisto.command()))
