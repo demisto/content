@@ -15,7 +15,7 @@ configuration:
   defaultvalue: https://api.alphasoc.net
   type: 0
   required: true
-- display: AlphaSOC Wisdom API Key
+- display: AlphaSOC API Key
   name: APIKey
   defaultvalue: ""
   type: 4
