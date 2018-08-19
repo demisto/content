@@ -10,7 +10,7 @@
             ]
         },
         {
-            "playbookID": "detonateurl_-_generic_test",
+            "playbookID": "detonate_url_-_generic_test",
             "timeout": 2000,
             "integrations": [
                 "McAfee Advanced Threat Defense",
