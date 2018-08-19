@@ -75,10 +75,8 @@ script:
 
     def csvstr_to_list(str):
         lines = str.splitlines()
-        if len(lines) is 0:
+        if len(lines) < 2:
             return []
-        elif len(lines) is 1:
-            return lines[0].split(',')
         else:
             headers = lines[0].split(',')
             return [ dict(zip(headers, line.split(','))) for line in lines[1:] ]
