@@ -143,6 +143,7 @@ script:
     LAST_RUN_TIME = "lastRunTime"
     LAST_RUN_IDS = "ids"
     LAST_RUN_FOLDER = "folderName"
+    ERROR_COUNTER = "errors"
 
     ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
                              'toRecipients', ]
@@ -736,11 +737,14 @@ script:
 
             demisto.setLastRun(new_last_run)
             return incidents
+
         except RateLimitError:
-            if last_run[ERROR_COUNTER] > 2:
-                raise
+            if ERROR_COUNTER not in last_run:
+                last_run[ERROR_COUNTER] = 0
             last_run[ERROR_COUNTER] += 1
             demisto.setLastRun(last_run)
+            if last_run[ERROR_COUNTER] > 2:
+                raise
             return []
 
 
