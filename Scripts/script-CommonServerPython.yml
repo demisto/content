@@ -434,7 +434,7 @@ script: |-
       if type(data) in STRING_TYPES:
           return data
       elif isinstance(data, dict):
-          return l_format.join([k + ': ' + flattenCell(data[k], is_pretty) for k in data])
+          return '\n'.join(['%s: %s' % (k, flattenCell(v, is_pretty)) for k, v in data.items()])
       else:
           return flattenCell(data, is_pretty)
 
