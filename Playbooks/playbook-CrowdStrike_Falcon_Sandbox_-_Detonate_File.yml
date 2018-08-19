@@ -126,7 +126,8 @@ tasks:
       - "6"
     scriptarguments:
       file:
-        simple: ${File.SHA256}
+        complex:
+          root: File.SHA256
     separatecontext: false
     view: |-
       {
@@ -186,9 +187,11 @@ tasks:
       - "16"
     scriptarguments:
       entryId:
-        simple: ${File.EntryID}
+        complex:
+          root: File.EntryID
       environmentID:
-        simple: ${inputs.EnvironmentID}
+        complex:
+          root: inputs.EnvironmentID
     separatecontext: false
     view: |-
       {
@@ -302,15 +305,18 @@ tasks:
       - "8"
     scriptarguments:
       Ids:
-        simple: ${File.SHA256}
+        complex:
+          root: File.SHA256
       Interval:
-        simple: ${inputs.Interval}
+        complex:
+          root: inputs.Interval
       PollingCommandArgName:
         simple: file
       PollingCommandName:
         simple: crowdstrike-scan
       Timeout:
-        simple: ${inputs.Timeout}
+        complex:
+          root: inputs.Timeout
       dt:
         simple: File(val.state === 'NO_CONTENT').hash
     separatecontext: true

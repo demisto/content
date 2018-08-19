@@ -1,18 +1,19 @@
-id: Detonate URL - JoeSecurity
+id: detonate_file_from_url_-_joesecurity
 version: -1
-name: Detonate URL - JoeSecurity
+name: Detonate File From URL - JoeSecurity
 fromversion: 4.0.0
 description: |-
-  Detonates one or more URLs using the Joe Security sandbox integration.
-  Returns relevant reports to the War Room and url reputations to the context data.
+  Detonates one or more remote files using the Joe Security sandbox integration.
+  Returns relevant reports to the War Room and file reputations to the context data.
+  This type of analysis is available for Windows only and works only for direct download links.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 680422e2-0806-4f2d-8d20-bc7f2589238e
+    taskid: b04c121d-294e-4dd0-8148-d9fe0f44be04
     type: start
     task:
-      id: 680422e2-0806-4f2d-8d20-bc7f2589238e
+      id: b04c121d-294e-4dd0-8148-d9fe0f44be04
       version: -1
       name: ""
       description: ""
@@ -32,14 +33,14 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 172af11a-ff1d-48ba-8d65-3c6f625689c5
+    taskid: 30046540-617f-435d-82c9-5896133731c9
     type: regular
     task:
-      id: 172af11a-ff1d-48ba-8d65-3c6f625689c5
+      id: 30046540-617f-435d-82c9-5896133731c9
       version: -1
-      name: JoeSecurity Upload URL
+      name: JoeSecurity Upload File
       description: ""
-      script: Joe Security|||joe-analysis-submit-url
+      script: Joe Security|||joe-analysis-submit-sample
       type: regular
       iscommand: true
       brand: Joe Security
@@ -50,16 +51,17 @@ tasks:
       comments:
         complex:
           root: inputs.Comments
+      file_id: {}
       internet-access:
         complex:
           root: inputs.InternetAccess
+      sample_url:
+        complex:
+          root: inputs.FileURL
       should_wait: {}
       systems:
         complex:
           root: inputs.Systems
-      url:
-        complex:
-          root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -71,10 +73,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: dba7628f-dc23-4f39-8024-fe36dcd71e94
+    taskid: fa0efa09-f941-4246-8d98-ca8f49bfcb9f
     type: playbook
     task:
-      id: dba7628f-dc23-4f39-8024-fe36dcd71e94
+      id: fa0efa09-f941-4246-8d98-ca8f49bfcb9f
       version: -1
       name: GenericPolling
       description: |-
@@ -123,10 +125,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 2e8a7348-8be0-44ac-821e-66db69ba0d74
+    taskid: ee24b1e9-5f12-4937-8ab3-91e440ef548b
     type: regular
     task:
-      id: 2e8a7348-8be0-44ac-821e-66db69ba0d74
+      id: ee24b1e9-5f12-4937-8ab3-91e440ef548b
       version: -1
       name: JoeSecurity Get Report
       description: ""
@@ -155,10 +157,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 8424c0cf-cc75-47b6-81f8-b4b382cb2a94
+    taskid: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
     type: title
     task:
-      id: 8424c0cf-cc75-47b6-81f8-b4b382cb2a94
+      id: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
       version: -1
       name: Done
       description: ""
@@ -176,13 +178,13 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: c02313e8-5f5f-4612-88dd-ff62f62ba263
+    taskid: cae5f3d9-284f-4540-8155-670496cc11b8
     type: condition
     task:
-      id: c02313e8-5f5f-4612-88dd-ff62f62ba263
+      id: cae5f3d9-284f-4540-8155-670496cc11b8
       version: -1
-      name: Is there a URL to detonate?
-      description: Look for URLs to detonate
+      name: Is there a File to detonate?
+      description: Look for file URLs to detonate
       type: condition
       iscommand: false
       brand: ""
@@ -198,8 +200,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              complex:
-                root: inputs.URL
+              simple: inputs.FileURL
             iscontext: true
     view: |-
       {
@@ -211,10 +212,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 250f4b2f-28ad-4d9c-8db7-01e64d60fade
+    taskid: 9bd7ec07-2925-4bff-8116-3ea116ef4340
     type: condition
     task:
-      id: 250f4b2f-28ad-4d9c-8db7-01e64d60fade
+      id: 9bd7ec07-2925-4bff-8116-3ea116ef4340
       version: -1
       name: Is JoeSecurity sandbox enabled?
       description: Check if integration instance is enabled
@@ -275,13 +276,10 @@ view: |-
     }
   }
 inputs:
-- key: URL
-  value:
-    complex:
-      root: URL
-      accessor: Data
+- key: FileURL
+  value: {}
   required: false
-  description: URL to detonate.
+  description: URL of the web file to detonate. The FileUrl is taken from the context.
 - key: Interval
   value:
     simple: "1"
@@ -312,8 +310,7 @@ inputs:
   description: Enable internet access (boolean). True= internet access (default),
     False= no internet access.
 - key: ReportFileType
-  value:
-    simple: html
+  value: {}
   required: false
   description: 'The resource type to download. Default is html. Supported values are:
     html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml,
@@ -322,75 +319,46 @@ inputs:
     cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap,
     pcapslim, memdumps, yara'
 outputs:
-- contextPath: DBotScore.Vendor
-  description: 'The name of the vendor: JoeSecurity'
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
   type: string
-- contextPath: Joe.Analysis.WebID
-  description: Web ID
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
   type: string
-- contextPath: Joe.Analysis.Status
-  description: Analysis Status
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
   type: string
-- contextPath: Joe.Analysis.Comments
-  description: Analysis Comments
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
   type: string
-- contextPath: Joe.Analysis.Time
-  description: Submitted Time
-  type: date
-- contextPath: Joe.Analysis.Runs
-  description: Sub-Analysis Information
-- contextPath: Joe.Analysis.Result
-  description: Analysis Results
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
   type: string
-- contextPath: Joe.Analysis.Errors
-  description: Raised errors during sampling
-- contextPath: Joe.Analysis.Systems
-  description: Analysis OS
-- contextPath: Joe.Analysis.MD5
-  description: MD5 of analysis sample
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
   type: string
-- contextPath: Joe.Analysis.SHA1
-  description: SHA1 of analysis sample
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
   type: string
-- contextPath: Joe.Analysis.SHA256
-  description: SHA256 of analysis sample
-  type: string
-- contextPath: Joe.Analysis.SampleName
-  description: Sample Data, could be a file name or URL
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
   type: string
 - contextPath: DBotScore.Indicator
-  description: The name of the sample file or URL
+  description: The indicator we tested (only in case of report type=json)
+  type: string
 - contextPath: DBotScore.Type
-  description: '''url'' for url samples, otherwise ''file'''
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
   type: string
 - contextPath: DBotScore.Score
-  description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-  type: string
-- contextPath: DBotScore.Malicious.Vendor
-  description: 'The name of the vendor: JoeSecurity'
-  type: string
-- contextPath: DBotScore.Malicious.Detections
-  description: The sub analysis detection statuses
-  type: string
-- contextPath: DBotScore.Malicious.SHA1
-  description: The SHA1 of the file
-  type: string
-- contextPath: InfoFile.Name
-  description: FileName
-  type: string
-- contextPath: InfoFile.EntryID
-  description: The EntryID of the sample
-  type: string
-- contextPath: InfoFile.Size
-  description: File Size
+  description: The actual score (only in case of report type=json)
   type: number
-- contextPath: InfoFile.Type
-  description: File type e.g. "PE"
-  type: string
-- contextPath: InfoFile.Info
-  description: Basic information of the file
-  type: string
-- contextPath: File.Extension
-  description: File Extension
-  type: string
 releaseNotes: "-"

@@ -1,17 +1,17 @@
-id: Detonate URL - CrowdStrike
+id: detonate_url_-_threatgrid
 version: -1
-name: Detonate URL - CrowdStrike
+name: Detonate URL - ThreatGrid
 fromversion: 4.0.0
-description: Detonate one or more files using the Wildfire integration. This playbook
-  returns relevant reports to the War Room and file reputations to the context data.
+description: Detonate one or more URLs using the Threat Grid integration. This playbook
+  returns relevant reports to the War Room and URL reputations to the context data.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 22ad464c-0c80-476b-8c6b-063135760ea0
+    taskid: dfaa16ba-1c11-46e1-8e41-00b9b8bda66f
     type: start
     task:
-      id: 22ad464c-0c80-476b-8c6b-063135760ea0
+      id: dfaa16ba-1c11-46e1-8e41-00b9b8bda66f
       version: -1
       name: ""
       iscommand: false
@@ -24,21 +24,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 50
+          "x": 140,
+          "y": 220
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 7f5ff3a5-55e0-4aee-8c7d-d75e539e7702
+    taskid: 87509cb0-f8f9-4a19-8e14-008e29834b15
     type: condition
     task:
-      id: 7f5ff3a5-55e0-4aee-8c7d-d75e539e7702
+      id: 87509cb0-f8f9-4a19-8e14-008e29834b15
       version: -1
-      name: Is CrowdStrike enabled?
+      name: Is ThreatGrid enabled?
       description: |
-        Verify that there is a valid instance of CrowdStrike enabled.
+        Verify that there is a valid instance of Threat Grid enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -64,7 +64,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: VxStream
+                        simple: Threat Grid
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -80,17 +80,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 195
+          "x": 140,
+          "y": 390
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: 589641d2-705d-4b7d-844f-2a8ab60497c8
+    taskid: 37f6ee1f-fa5e-4979-864f-86d12f3df0f7
     type: title
     task:
-      id: 589641d2-705d-4b7d-844f-2a8ab60497c8
+      id: 37f6ee1f-fa5e-4979-864f-86d12f3df0f7
       version: -1
       name: Done
       type: title
@@ -101,113 +101,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1140
+          "x": 140,
+          "y": 1280
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: e427d919-35ef-454c-8ce3-d5f32add184c
+    taskid: edb9cf66-9056-48dd-8487-7e1c7ab3ffa4
     type: regular
     task:
-      id: e427d919-35ef-454c-8ce3-d5f32add184c
+      id: edb9cf66-9056-48dd-8487-7e1c7ab3ffa4
       version: -1
-      name: CrowdStrike Scan
+      name: ThreatGrid Get Samples State
       description: Download the pdf report to the War Room.
-      script: VxStream|||crowdstrike-scan
+      script: Threat Grid|||threat-grid-get-samples-state
       type: regular
       iscommand: true
-      brand: VxStream
+      brand: Threat Grid
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      file:
+      ids:
         complex:
-          root: File
-          accessor: SHA256
+          root: ThreatGrid
+          accessor: Sample.ID
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 925
+          "x": 140,
+          "y": 1101
         }
       }
     note: false
-  "13":
-    id: "13"
-    taskid: 65ba03f6-41d1-49b7-8a3d-f1c5524247db
-    type: regular
-    task:
-      id: 65ba03f6-41d1-49b7-8a3d-f1c5524247db
-      version: -1
-      name: CrowdStrike Upload Sample
-      description: Upload samle to crowdstrike.
-      script: VxStream|||crowdstrike-submit-url
-      type: regular
-      iscommand: true
-      brand: VxStream
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      environmentID:
-        complex:
-          root: inputs.EnvironmentID
-      url:
-        complex:
-          root: inputs.URL
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 550
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: bb4c22c0-9471-4574-8989-67d2933b1982
-    type: condition
-    task:
-      id: bb4c22c0-9471-4574-8989-67d2933b1982
-      version: -1
-      name: Is there a URL to detonate?
-      description: Checks whether there's a file to detonate.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.URL
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-  "16":
-    id: "16"
-    taskid: e73b0e53-2b56-4c8c-869d-e380178e3934
+  "12":
+    id: "12"
+    taskid: 49d088a9-ebc3-43fa-8227-238a30a0d745
     type: playbook
     task:
-      id: e73b0e53-2b56-4c8c-869d-e380178e3934
+      id: 49d088a9-ebc3-43fa-8227-238a30a0d745
       version: -1
       name: GenericPolling
       description: |-
@@ -228,20 +162,20 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: File
-          accessor: SHA256
+          root: ThreatGrid
+          accessor: Sample.ID
       Interval:
         complex:
           root: inputs.Interval
       PollingCommandArgName:
-        simple: file
+        simple: ids
       PollingCommandName:
-        simple: crowdstrike-scan
+        simple: threat-grid-get-samples-state
       Timeout:
         complex:
           root: inputs.Timeout
       dt:
-        simple: File(val.state === 'NO_CONTENT').hash
+        simple: ThreatGrid.Sample(val.State!=='succ' && val.State!=='fail').ID
     separatecontext: true
     loop:
       iscommand: false
@@ -250,20 +184,103 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 740
+          "x": 140,
+          "y": 940
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: d4f9ce61-2198-4129-83e4-e7ef6a677b45
+    type: regular
+    task:
+      id: d4f9ce61-2198-4129-83e4-e7ef6a677b45
+      version: -1
+      name: ThreatGrid Upload File
+      description: Uplads a sample to threat grid
+      script: Threat Grid|||threat-grid-upload-sample
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      file-id:
+        complex:
+          root: File
+          accessor: EntryID
+      filename:
+        complex:
+          root: inputs.FileName
+      os:
+        complex:
+          root: inputs.OS
+      osver:
+        complex:
+          root: inputs.OSVersion
+      private:
+        complex:
+          root: inputs.Private
+      source:
+        complex:
+          root: inputs.Source
+      tags:
+        complex:
+          root: inputs.Tags
+      vm:
+        complex:
+          root: inputs.VM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 780
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 95a3678c-f16f-4d9a-8e63-42a536bb380c
+    type: regular
+    task:
+      id: 95a3678c-f16f-4d9a-8e63-42a536bb380c
+      version: -1
+      name: URL to File
+      description: Create a file from url
+      script: Threat Grid|||threat-grid-url-to-file
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      urls:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 610
         }
       }
     note: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "5_14_yes": 0.58,
+      "5_6_#default#": 0.87
+    },
     "paper": {
       "dimensions": {
-        "height": 1155,
-        "width": 677.5,
-        "x": 162.5,
-        "y": 50
+        "height": 1125,
+        "width": 380,
+        "x": 140,
+        "y": 220
       }
     }
   }
@@ -274,23 +291,47 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: URL to detonate.
-- key: EnvironmentID
+  description: URL of the sites to detonate.
+- key: FileName
   value:
-    simple: "100"
+    simple: file-detonated-via-demisto
   required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
-    command.
+  description: Name of the file to detonate.
+- key: OS
+  value: {}
+  required: false
+  description: Source OS (string)
+- key: OSVersion
+  value: {}
+  required: false
+  description: OS version (string)
+- key: VM
+  value: {}
+  required: false
+  description: The VM to use (string)
+- key: Private
+  value: {}
+  required: false
+  description: The sample is marked private if this is present, and set to any value
+    other than false. private
+- key: Source
+  value: {}
+  required: false
+  description: a string used for identifying the source of the detonation (user defined)
+- key: Tags
+  value: {}
+  required: false
+  description: A comma-separated list of tags applied to the sample.
 - key: Interval
   value:
-    simple: "5"
+    simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
 - key: Timeout
   value:
-    simple: "30"
+    simple: "15"
   required: false
-  description: How much time to wait before a timeout occurs  (minutes)
+  description: How much time to wait before a timeout occurs (minutes)
 outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file
@@ -334,4 +375,8 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+- contextPath: Sample.State
+  description: The sample state.
+- contextPath: Sample.ID
+  description: The sample ID.
 releaseNotes: "-"

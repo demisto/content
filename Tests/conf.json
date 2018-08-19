@@ -3,6 +3,21 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "detonate_file_-_generic_test",
+            "timeout": 2000,
+            "integrations": [
+                "VxStream"
+            ]
+        },
+        {
+            "playbookID": "detonateurl_-_generic_test",
+            "timeout": 2000,
+            "integrations": [
+                "McAfee Advanced Threat Defense",
+                "VxStream"
+            ]
+        },
+        {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
