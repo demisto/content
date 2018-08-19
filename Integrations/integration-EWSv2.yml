@@ -95,7 +95,7 @@ script:
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -1222,7 +1222,7 @@ script:
         error_message = ""
 
         # Office365 regular maintenance case
-        if isinstance(e, ErrorMailboxStoreUnavailable) and 'outlook.office365.com' in EWS_SERVER:
+        if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) and 'outlook.office365.com' in EWS_SERVER:
             log_message = "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
             demisto.log(log_message)
             if demisto.command() == 'fetch-incidents':
