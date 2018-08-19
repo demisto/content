@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TestParseCSV"
+        },
+        {
             "playbookID": "detonate_file_-_generic_test",
             "timeout": 2000,
             "integrations": [
@@ -87,10 +90,6 @@
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
-        },
-        {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "playbookID": "Test filters & transformers scripts"
@@ -408,14 +407,18 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        }
+    ],
+    "skipped": [
+        {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true
-        }
-    ],
-    "skipped": [
+        },
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
@@ -475,9 +478,6 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
-        },
-        {
-            "playbookID": "TestParseCSV"
         },
         {
             "integrations": [
