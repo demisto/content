@@ -1079,6 +1079,39 @@ script: |-
   sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
   ############################### REGEX FORMATTING end ###############################
+
+  def string_to_table_header(string):
+      """
+        Checks if string, change underscores to spaces, capitalize every word.
+        Example: "one_two" to "One Two"
+
+        :type string: ``str``
+        :param string: The string to be converted (required)
+
+        :return: The converted string
+        :rtype: ``str``
+      """
+      if type(string) in STRING_TYPES:
+          return " ".join(word.capitalize() for word in string.replace("_"," ").split())
+      else:
+          raise Exception('The key is not a string: {}'.format(string))
+
+  def string_to_context_key(string):
+      """
+       Checks if string, removes underscores, capitalize every word.
+       Example: "one_two" to "OneTwo"
+
+       :type string: ``str``
+       :param string: The string to be converted (required)
+
+       :return: The converted string
+       :rtype: ``str``
+      """
+      if type(string) in STRING_TYPES:
+          return "".join(word.capitalize() for word in string.split('_'))
+      else:
+          raise Exception('The key is not a string: {}'.format(string))
+
 type: python
 tags:
 - infra
