@@ -715,24 +715,33 @@ script:
     def fetch_emails_as_incidents(account, folder_name):
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
-        last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = []
-        incidents = []
-        for item in last_emails:
-            if item.message_id:
-                ids.append(item.message_id)
-                incident = parse_incident_from_item(item)
-                incidents.append(incident)
+        try:
+            last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        new_last_run = {
-            LAST_RUN_TIME: start_time.ewsformat(),
-            LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: ids
-        }
+            ids = []
+            incidents = []
+            for item in last_emails:
+                if item.message_id:
+                    ids.append(item.message_id)
+                    incident = parse_incident_from_item(item)
+                    incidents.append(incident)
 
-        demisto.setLastRun(new_last_run)
-        return incidents
+            new_last_run = {
+                LAST_RUN_TIME: start_time.ewsformat(),
+                LAST_RUN_FOLDER: folder_name,
+                LAST_RUN_IDS: ids,
+                ERROR_COUNTER: 0
+            }
+
+            demisto.setLastRun(new_last_run)
+            return incidents
+        except RateLimitError:
+            if last_run[ERROR_COUNTER] > 2:
+                raise
+            last_run[ERROR_COUNTER] += 1
+            demisto.setLastRun(last_run)
+            return []
 
 
     def get_entry_for_file_attachment(item_id, attachment):
