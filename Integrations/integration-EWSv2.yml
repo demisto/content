@@ -95,7 +95,7 @@ script:
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-        ErrorFolderNotFound, ErrorToFolderNotFound
+        ErrorFolderNotFound, ErrorToFolderNotFound, RateLimitError
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -739,6 +739,9 @@ script:
             return incidents
 
         except RateLimitError:
+            if LAST_RUN_TIME in last_run:
+                last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
+            demisto.info(str(last_run))
             if ERROR_COUNTER not in last_run:
                 last_run[ERROR_COUNTER] = 0
             last_run[ERROR_COUNTER] += 1
