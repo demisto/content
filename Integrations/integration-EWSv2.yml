@@ -32,7 +32,7 @@ configuration:
   required: true
 - display: Server Version (2007,2010,2010_SP2,2013,2016)
   name: defaultServerVersion
-  defaultvalue: "2013"
+  defaultvalue: "2016"
   type: 0
   required: true
 - display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
