@@ -42,6 +42,7 @@ tags:
 - Condition
 comment: Returns yes if ip is in one of the ranges provided, returns no otherwise.
 enabled: true
+system: true
 args:
 - name: ip
   required: true
@@ -60,5 +61,4 @@ outputs:
 - contextPath: IP.InRange
   description: Is the IP is in the input ranges? (could be 'yes' or 'no)
 scripttarget: 0
-runonce: false
-releaseNotes: "Better handling of IP ranges array"
+releaseNotes: "Better handling of spaces and new lines in provided IP ranges string"
