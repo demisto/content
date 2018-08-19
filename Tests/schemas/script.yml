@@ -63,6 +63,8 @@ mapping:
     type: bool
   releaseNotes:
     type: str
+  sensitive:
+    type: bool
 
 # script->args
 schema;argument_schema:
