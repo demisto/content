@@ -94,7 +94,7 @@ script:
     log_stream = StringIO()
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
-    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
+    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
         ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
@@ -143,7 +143,7 @@ script:
     LAST_RUN_TIME = "lastRunTime"
     LAST_RUN_IDS = "ids"
     LAST_RUN_FOLDER = "folderName"
-    ERROR_COUNTER = "errors"
+    ERROR_COUNTER = "errorCounter"
 
     ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
                              'toRecipients', ]
