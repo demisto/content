@@ -741,7 +741,6 @@ script:
         except RateLimitError:
             if LAST_RUN_TIME in last_run:
                 last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
-            demisto.info(str(last_run))
             if ERROR_COUNTER not in last_run:
                 last_run[ERROR_COUNTER] = 0
             last_run[ERROR_COUNTER] += 1
