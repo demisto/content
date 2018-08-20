@@ -264,8 +264,8 @@ script:
             // Using startTime is deprecated, and is being supported here for backward compability - it should be removed once everyone use this code at least once
             var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
 
-            var offenseId = lastRun && lastRun.id ? lastRun.id ? 0;
-            var fetchQuery = (offenseId ? 'id>' offenseId : 'start_time>' + startTime) + (query ? (' AND (' + query +')') : '');
+            var offenseId = lastRun && lastRun.id ? lastRun.id : 0;
+            var fetchQuery = (offenseId ? 'id>' + offenseId : 'start_time>' + startTime) + (query ? (' AND (' + query +')') : '');
             /*
                 qradar returns offenses sorted desc on id and there's no way to change sorting.
                 if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
