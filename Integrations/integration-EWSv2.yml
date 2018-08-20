@@ -32,7 +32,7 @@ configuration:
   required: true
 - display: Server Version (2007,2010,2010_SP2,2013,2016)
   name: defaultServerVersion
-  defaultvalue: "2013"
+  defaultvalue: "2016"
   type: 0
   required: true
 - display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
@@ -95,7 +95,7 @@ script:
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-        ErrorFolderNotFound, ErrorToFolderNotFound, RateLimitError
+    ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -1236,6 +1236,20 @@ script:
         debug_log = log_stream.getvalue()
         error_message_simple = ""
         error_message = ""
+
+        # Office365 regular maintenance case
+        if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) and 'outlook.office365.com' in EWS_SERVER:
+            log_message = "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
+            if demisto.command() == 'fetch-incidents':
+                demisto.info(log_message)
+                demisto.incidents([])
+                exit(0)
+            if IS_TEST_MODULE:
+                demisto.results(log_message + " Please retry the instance configuration test.")
+                exit(0)
+            error_message_simple = log_message + " Please retry your request."
+
+        # Other exception handling
         if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. " \
                             "Check credentials are correct and authentication method are supported. "
