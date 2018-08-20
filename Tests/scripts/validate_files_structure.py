@@ -55,7 +55,7 @@ CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, WIDGET
 
 SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
-ACTIONABLE_FILE_STATUSES = ['A', 'M', 'R100', 'R094', 'R093', 'R098', 'R078']
+KNOWN_FILE_STATUSES = ['a', 'm', 'd']
 
 REGEXES_TO_SCHEMA_DIC={INTEGRATION_REGEX: "integration", PLAYBOOK_REGEX: "playbook", TEST_PLAYBOOK_REGEX:"test-playbook",
              SCRIPT_REGEX: "script", WIDGETS_REGEX: "widget", DASHBOARD_REGEX:"dashboard", CONNECTIONS_REGEX: "canvas-context-connections",
@@ -83,9 +83,10 @@ def get_modified_files(files_string):
             continue
         file_status = file_data[0]
         file_path = file_data[1]
-        if file_status in ACTIONABLE_FILE_STATUSES:
+        if file_status.lower() == 'm' and not file_path.startswith('.'):
             modified_files_list.append(file_path)
-
+        if file_status.lower() not in KNOWN_FILE_STATUSES:
+            print file_path + " file status is an unknown known one, please check. File status was: " + file_status
     return modified_files_list
 
 
@@ -93,7 +94,7 @@ def validate_file_release_notes(file_path):
     data_dictionary = None
     if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
         return True # Test playbooks don't need releaseNotes
-    with open(file_path, "r") as f:
+    with open(os.path.expanduser(file_path), "r") as f:
         if file_path.endswith(".json"):
             data_dictionary = json.load(f)
         elif file_path.endswith(".yaml") or file_path.endswith('.yml'):
