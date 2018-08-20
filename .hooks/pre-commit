@@ -1,86 +1,14 @@
 #!/bin/bash
 
-# case insensitivity for regex 
-shopt -s nocasematch
-
-# file types regexes
-INTEGRATION_REGEX="(integration-).*(.yml)"
-PLAYBOOK_REGEX="^(?!testPlaybooks).*(playbook-).*(.yml)"
-TEST_PLAYBOOK_REGEX="^(testPlaybooks).*(playbook-).*(.yml)"
-SCRIPT_REGEX="(script-).*(.yml)"
-WIDGETS_REGEX="(widget-).*(.json)"
-DASHBOARD_REGEX="(dashboard-).*(.json)"
-CONNECTIONS_REGEX="(canvas-context-connections-).*(.json)"
-CLASSIFIER_REGEX="(classifier-).*(.json)"
-LAYOUT_REGEX="(layout-).*(.json)"
-INCIDENT_FIELDS_REGEX="(incidentfields-).*(.json)"
-MISC_REGEX="(reputations).*(.json)"
-REPORT_REGEX="(report-).*(.json)"
-foundWrongSchema=false
-
-# validating that each modified file has release notes
-python Tests/validate_release_notes.py
+# validating that each modified file has a valid schema, release notes, proper prefix & suffix
+python Tests/scripts/validate_files_structure.py 'true'
 if [[ $? -ne 0 ]] 
-then
-    echo "\nPlease add release notes to the aforementioned files and then commit again"
-    exit 1
-fi
-
-checkForWrongSchema () {
-    if [[ $? -ne 0 ]]
-    then
-        foundWrongSchema=true
-    fi
-}
-# validating the commited files by schema
-for file in $(git diff-index --cached HEAD --name-only)
-do
-    if [[ $file =~ $INTEGRATION_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/integration.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $PLAYBOOK_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/playbook.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $TEST_PLAYBOOK_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/test-playbook.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $SCRIPT_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/script.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $WIDGETS_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/widget.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $DASHBOARD_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/dashboard.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $CONNECTIONS_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/canvas-context-connections.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $CLASSIFIER_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/classifier.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $LAYOUT_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/layout.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $INCIDENT_FIELDS_REGEX ]]; then
-        python Tests/validate_schema.py $file "Tests/schemas/incidentfields.yml" 'True'
-        checkForWrongSchema
-    elif [[ $file =~ $MISC_REGEX ]]; then
-       continue
-    elif [[ $file =~ $REPORT_REGEX ]]; then
-       continue
-    else
-        echo $file "doesn't match any of the known supported file prefix/suffix, please make sure that its naming is correct."
-    fi
-done
-
-if [ "$foundWrongSchema" == true ]
 then
     echo "\nPlease fix the aforementioned errors and then commit again"
     exit 1
 fi
 
-#prevent push to master
+# prevent push to master
 if [ -z "$1"  ]; then
     protected_branch='master'
     current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
