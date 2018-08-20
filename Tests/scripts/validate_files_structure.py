@@ -101,7 +101,8 @@ def validate_file_release_notes(file_path):
                 data_dictionary = yaml.safe_load(f)
             except Exception as e:
                 print file_path + " has yml structure issue. Error was: " + str(e)
-    
+                return False
+                
     if data_dictionary and data_dictionary.get('releaseNotes') is None:
         print "File " + file_path + " is missing releaseNotes, please add."
         return False
@@ -113,6 +114,7 @@ def validate_schema(file_path, matching_regex=None):
         for regex in CHECKED_TYPES_REGEXES:
             if re.match(regex, file_path, re.IGNORECASE):
                 matching_regex = regex
+                break
     
     if matching_regex in SKIPPED_SCHEMAS:
         return True
@@ -187,6 +189,7 @@ def main(argv):
     if len(argv) > 0:
         only_committed_files = argv[0] and (argv[0] == True or argv[0].lower() == 'true')
 
+    print "Starting to validating files structure"
     if only_committed_files:
         import logging
         logging.basicConfig(level=logging.CRITICAL)
@@ -196,7 +199,7 @@ def main(argv):
     else:
         # validates all of Content repo directories according to their schemas
         validate_all_files()
-
+    print "Finished validating files structure"
     sys.exit(0)
 
 
