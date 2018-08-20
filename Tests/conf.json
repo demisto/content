@@ -8,6 +8,8 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
+        },
+        {
             "playbookID": "TestParseCSV"
         },
         {
