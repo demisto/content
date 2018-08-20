@@ -13,9 +13,6 @@
             "playbookID": "TestParseCSV"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
-        },
-        {
             "integrations": "Jask",
             "playbookID": "Jask_Test"
         },
