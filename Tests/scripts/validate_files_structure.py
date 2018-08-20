@@ -102,7 +102,7 @@ def validate_file_release_notes(file_path):
             except Exception as e:
                 print file_path + " has yml structure issue. Error was: " + str(e)
                 return False
-                
+
     if data_dictionary and data_dictionary.get('releaseNotes') is None:
         print "File " + file_path + " is missing releaseNotes, please add."
         return False
@@ -147,8 +147,6 @@ def validate_committed_files():
     if missing_release_notes or wrong_schema:
         sys.exit(1)
 
-    sys.exit(0)
-
 def validate_all_files():
     found_wrong_name = False
     wrong_schema = False
@@ -189,7 +187,7 @@ def main(argv):
     if len(argv) > 0:
         only_committed_files = argv[0] and (argv[0] == True or argv[0].lower() == 'true')
 
-    print "Starting to validating files structure"
+    print "Starting validating files structure"
     if only_committed_files:
         import logging
         logging.basicConfig(level=logging.CRITICAL)
