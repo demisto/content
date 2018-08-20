@@ -95,7 +95,7 @@ script:
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-    ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
