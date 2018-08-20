@@ -498,19 +498,25 @@ script: |
   if len(result) > 0:
       hr_result = map(lambda row: dict((camel_case_to_space(k),v) for k,v in row.items()), result)
       markdown_result = tableToMarkdown("Duplicate incidents candidates", hr_result, headers=['Id', 'Name', 'Closed time', 'Duplicate probability', 'Time'])
-      demisto.setContext('isSimilarIncidentFound', True)
       demisto.results({
           'ContentsFormat': formats['markdown'],
           'Type': entryTypes['note'],
           'Contents': markdown_result,
           'EntryContext': {
               'similarIncident': result[0],
-              'similarIncidentList': result[:MAX_CANDIDATES_IN_LIST]
+              'similarIncidentList': result[:MAX_CANDIDATES_IN_LIST],
+              'isSimilarIncidentFound': True
           }
       })
   else:
-      demisto.setContext('isSimilarIncidentFound', False)
-      demisto.results('Did not find any duplicate incidents candidates')
+      context = {
+          'isSimilarIncidentFound': False
+      }
+      demisto.results({
+          'ContentsFormat': formats['markdown'],
+          'Type': entryTypes['note'],
+          'Contents': 'Did not find any duplicate incidents',
+          'EntryContext': context })
 type: python
 tags:
 - dedup
@@ -604,4 +610,4 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
-releaseNotes: "New version for get duplicate incidents by ML. change inputs \ outputs argument."
+releaseNotes: "Fix script output params."

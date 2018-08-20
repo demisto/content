@@ -92,7 +92,16 @@ script:
               val = val.strip("\"")
               val = val.strip("\\")
               key = single_key_val[0].strip()
-              result[key] = val
+
+              alreadyThere = False
+              for dictkey, dictvalue in result.items():
+                if dictkey == key:
+                  alreadyThere = True
+                  result[dictkey] = dictvalue + "," + val
+
+              if alreadyThere == False:
+                result[key] = val
+
         return result
 
     def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):

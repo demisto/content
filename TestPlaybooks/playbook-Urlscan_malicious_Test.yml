@@ -131,7 +131,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Urlscan.io
+                        simple: urlscan.io
                 - - operator: string.isEqual
                     left:
                       value:
@@ -270,7 +270,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Urlscan.io
+                        simple: urlscan.io
                 - - operator: string.isEqual
                     left:
                       value:
