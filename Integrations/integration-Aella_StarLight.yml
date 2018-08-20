@@ -277,10 +277,23 @@ script:
                                 'Malicious' : {
                                     'Vendor' : 'Aella Data',
                                     'Detections' : 'URL reputation {0}'.format(url_reputation),
-                                    'Url' : url_str
+                                    'URL' : url_str
                                 }
                             }
-                            dbot_scores.append(dbot_score)
+                        else:
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : url_str,
+                                'Type' : 'url',
+                                'Malicious' : None
+                            }
+                            if url_reputation is None:
+                                # Unknonw
+                                dbot_score['Score'] = 0
+                            else:
+                                # Good
+                                dbot_score['Score'] = 1
+                        dbot_scores.append(dbot_score)
 
                     # Check src ip reputation
                     srcip_str = source.get('srcip', '')
@@ -298,7 +311,20 @@ script:
                                     'IP' : srcip_str
                                 }
                             }
-                            dbot_scores.append(dbot_score)
+                        else:
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : srcip_str,
+                                'Type' : 'ip',
+                                'Malicious' : None
+                            }
+                            if srcip_reputation is None:
+                                # Unknonw
+                                dbot_score['Score'] = 0
+                            else:
+                                # Good
+                                dbot_score['Score'] = 1
+                        dbot_scores.append(dbot_score)
 
                     # Check dst ip reputation
                     dstip_str = source.get('dstip', '')
@@ -316,7 +342,20 @@ script:
                                     'IP' : dstip_str
                                 }
                             }
-                            dbot_scores.append(dbot_score)
+                        else:
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : dstip_str,
+                                'Type' : 'ip',
+                                'Malicious' : None
+                            }
+                            if dstip_reputation is None:
+                                # Unknonw
+                                dbot_score['Score'] = 0
+                            else:
+                                # Good
+                                dbot_score['Score'] = 1
+                        dbot_scores.append(dbot_score)
 
                 break
             demisto.results({
@@ -325,7 +364,7 @@ script:
                 'Contents': source,
                 'HumanReadable': tableToMarkdown('Aella Star Light Event <{0}>'.format(event_id), source),
                 'EntryContext': {
-                    'Aella.Event(val["_id"]==obj["_id"])': source,
+                    'Aella.Event(val._id==obj._id)': source,
                     'DbotScore(val.Vendor && val.Indicator && val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)' : createContext(dbot_scores, removeNull=True),
                 }
             })
