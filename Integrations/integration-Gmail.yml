@@ -375,7 +375,7 @@ script:
 
     def get_user_command():
         args = demisto.args()
-        user_key = args.get('user-key')
+        user_key = args.get('user-id')
         view_type = args.get('view-type-public-domain')
         projection = args.get('projection')
         customer_field_mask = args.get('customer-field-mask')
@@ -434,7 +434,7 @@ script:
 
     def delete_user_command():
         args = demisto.args()
-        user_key = args.get('user-key')
+        user_key = args.get('user-id')
 
         return delete_user(user_key)
 
@@ -453,7 +453,7 @@ script:
 
     def get_user_role_command():
         args = demisto.args()
-        user_key = args['user-key']
+        user_key = args['user-id']
 
         if GAPPS_ID is None:
             raise ValueError('Must provide Immutable GoogleApps Id')
@@ -482,7 +482,7 @@ script:
     def revoke_user_roles_command():
         args = demisto.args()
 
-        user_key = args.get('user-key')
+        user_key = args.get('user-id')
         role_assignment_id = args['role-assignment-id']
 
         return 'Role has been deleted.'
@@ -504,7 +504,7 @@ script:
 
     def get_user_tokens_command():
         args = demisto.args()
-        user_id = args.get('user-key')
+        user_id = args.get('user-id')
 
         tokens = get_user_tokens(user_id)
 
@@ -540,7 +540,7 @@ script:
     def search_command(mailbox=None):
         args = demisto.args()
 
-        user_id = args.get('user-key') if mailbox is None else mailbox
+        user_id = args.get('user-id') if mailbox is None else mailbox
         subject = args.get('subject', '')
         _from = args.get('from', '')
         to = args.get('to', '')
@@ -600,7 +600,7 @@ script:
 
     def get_mail_command():
         args = demisto.args()
-        user_id = args.get('user-key', ADMIN_EMAIL)
+        user_id = args.get('user-id', ADMIN_EMAIL)
         _id = args.get('message-id')
         _format = args.get('format')
 
@@ -624,7 +624,7 @@ script:
 
     def get_attachments_command():
         args = demisto.args()
-        user_id = args.get('user-key')
+        user_id = args.get('user-id')
         _id = args.get('message-id')
 
         attachments = get_attachments(user_id, _id)
@@ -659,7 +659,7 @@ script:
 
     def move_mail_command():
         args = demisto.args()
-        user_id = args.get('user-key')
+        user_id = args.get('user-id')
         _id = args.get('message-id')
         add_labels = [l for l in args.get('add-labels', '').split(',') if l != '']
         remove_labels = [l for l in args.get('remove-labels', '').split(',') if l != '']
@@ -687,9 +687,9 @@ script:
 
     def move_mail_to_mailbox_command():
         args = demisto.args()
-        src_user_id = args.get('src-user-key')
+        src_user_id = args.get('src-user-id')
         message_id = args.get('message-id')
-        dst_user_id = args.get('dst-user-key')
+        dst_user_id = args.get('dst-user-id')
 
         new_mail_id = move_mail_to_mailbox(src_user_id, message_id. dst_user_id)
 
@@ -745,7 +745,7 @@ script:
     def get_thread_command():
         args = demisto.args()
 
-        user_id = args.get('user-key', ADMIN_EMAIL)
+        user_id = args.get('user-id', ADMIN_EMAIL)
         _id = args.get('thread-id')
         _format = args.get('format')
 
@@ -866,7 +866,7 @@ script:
   commands:
   - name: gmail-delete-user
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: Identifies the user in the API request. The value can be the user's
@@ -874,7 +874,7 @@ script:
     description: Delete a User
   - name: gmail-get-tokens-for-user
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: Identifies the user in the API request. The value can be the user's
@@ -883,7 +883,7 @@ script:
       applications.
   - name: gmail-get-user
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: ' Identifies the user in the API request. The value can be the
@@ -935,7 +935,7 @@ script:
     description: Fetch info on specific user
   - name: gmail-get-user-roles
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: Identifies the user in the API request. The value can be the user's
@@ -965,14 +965,14 @@ script:
     - name: message-id
       required: true
       description: The ID of the message to retrieve
-    - name: user-key
+    - name: user-id
       required: true
       description: ' Identifies the user in the API request. The value can be the
         user''s primary email address, alias email address, or unique user ID.'
     description: Gets the all attachments of an Gmail.
   - name: gmail-get-mail
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: ' Identifies the user in the API request. The value can be the
@@ -1038,7 +1038,7 @@ script:
     description: Gets the specified message.
   - name: gmail-search
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: Identifies the user in the API request. The value can be the user's
@@ -1315,7 +1315,7 @@ script:
       a domain
   - name: gmail-revoke-user-role
     arguments:
-    - name: user-key
+    - name: user-id
       description: Identifies the user in the API request. The value can be the user's
         primary email address, alias email address, or unique user ID.
     - name: role-assignment-id
@@ -1362,7 +1362,7 @@ script:
     description: Creates a user.
   - name: gmail-delete-mail
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: ' Identifies the user in the API request. The value can be the
@@ -1379,7 +1379,7 @@ script:
     description: Delete a mail in the user's mailbox.
   - name: gmail-get-thread
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: ' Identifies the user in the API request. The value can be the
@@ -1445,7 +1445,7 @@ script:
     description: Gets all messages of a thread
   - name: gmail-move-mail
     arguments:
-    - name: user-key
+    - name: user-id
       required: true
       default: true
       description: ' Identifies the user in the API request. The value can be the
@@ -1502,7 +1502,7 @@ script:
     description: Move a mail to a different folder
   - name: gmail-move-mail-to-mailbox
     arguments:
-    - name: src-user-key
+    - name: src-user-id
       required: true
       default: true
       description: Identifies the source user in the API request. The value can be
@@ -1510,7 +1510,7 @@ script:
     - name: message-id
       required: true
       description: The ID of the message to retrieve
-    - name: dst-user-key
+    - name: dst-user-id
       required: true
       description: Identifies the destination user in the API request. The value can
         be the user's primary email address, alias email address, or unique user ID.
