@@ -121,7 +121,20 @@ script:
       required: true
       default: true
       description: Host IP address
+    outputs:
+    - contextPath: IP.ASN
+      description: Autonomous System Number (ASN) such as IP owner
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.Geo.Country
+      description: Country of given IP
+    - contextPath: IP.Geo.Description
+      description: 'Description of location '
+    - contextPath: IP.Geo.Location
+      description: Latitude and longitude of given IP
+    - contextPath: IP.Hostname
+      description: Hostname
     description: Returns all services that have been found on the given host IP.
   runonce: false
-releaseNotes: "Added error handling of 404 response and improved human readable output for ip command." 
+releaseNotes: "Added Outputs to Shodan integration." 
 
