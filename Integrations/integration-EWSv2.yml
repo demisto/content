@@ -94,7 +94,7 @@ script:
     log_stream = StringIO()
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
-    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
+    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
         ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
@@ -1272,12 +1272,13 @@ script:
         if debug_log:
             error_message += "\nFull debug log:\n" + debug_log
 
+        if demisto.command() == 'fetch-incidents':
+            raise
         if IS_TEST_MODULE:
             demisto.results(error_message_simple)
         else:
-            demisto.results({ "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
+            demisto.results({ "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple })
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
-
   type: python
   commands:
   - name: ews-get-attachment
