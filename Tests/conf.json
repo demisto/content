@@ -3,19 +3,12 @@
     "testInterval": 20,
     "tests": [
         {
-<<<<<<< HEAD
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
         {
             "playbookID": "Extract Indicators From File - test"
-=======
             "playbookID": "TestParseCSV"
->>>>>>> master
-        },
-        {
-            "integrations": "Shodan",
-            "playbookID": "ShodanTest"
         },
         {
             "playbookID": "Extract Indicators From File - test"
