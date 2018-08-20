@@ -313,6 +313,7 @@ script:
                 'HumanReadable': tblToMd('Result:' ,res),
             }
 
+
         # alarms commands
         def fetch_alarms(self, time_range, custom_start, custom_end, assigned_user):
             if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
@@ -338,6 +339,8 @@ script:
                 del alarm["id"]
 
             return res
+
+
         def update_alarms_status(self, alarm_ids):
             cmd = 'alarm%(action)sTriggeredAlarm' % (action, )
             query = json.dumps({'triggeredIds' : [{'value' : int(i)} for i in alarm_ids]})
@@ -348,14 +351,38 @@ script:
             self.cmdquery(cmd, query, no_validation=True)
             return 'Alarms has been %sd.' % (action, )
 
+
         def acknowledge_alarms(self, alarm_ids):
             return self.update_alarms_status('Acknowledge', alarm_ids)
+
 
         def unacknowledge_alarms(self, alarm_ids):
             return self.update_alarms_status('Unacknowledge', alarm_ids)
 
+
         def delete_alarms(self, alarm_ids):
             return self.update_alarms_status('Delete', alarm_ids)
+
+
+        def get_alarm_event_details(self, event_id):
+            cmd = ('%sipsGetAlertData' % ('v2/' if VERSION == '10.2' else '', ))
+            query = json.dumps({'id' : event_id})
+
+            self.login()
+            res = self.cmdquery(cmd, query)
+
+            return res
+
+
+        def list_alarm_events(self, alarm_id):
+            cmd = 'notifyGetTriggeredNotificationDetail'
+            query = json.dumps({'id' : alarm_id})
+
+            self.login()
+            res = self.cmdquery(cmd, query)
+
+            return res
+
 
         # case statuses commands
         def add_case_status(self, name, should_show_in_case_pane):
@@ -710,7 +737,7 @@ script:
             'EntryContext': context
        }
 
-    def events_to_entry(events):
+    def case_events_to_entry(events):
         if not events:
             return 'No events were found'
 
@@ -718,7 +745,7 @@ script:
         fixed_events = []
         for event in events:
             fixed_events.append({
-                'ID' : event['id']['value'].replace('|', '\|'),
+                'ID' : event['id']['value'],
                 'LastTime' : event['lastTime'],
                 'Message' : event['message'],
             })
@@ -732,6 +759,37 @@ script:
             'HumanReadable': tblToMd('Case Events:', fixed_events, headers),
             'EntryContext': context
        }
+
+
+    def alarm_events_to_entry(events):
+        headers = ['ID', 'SubType', 'Severity', 'Message', 'LastTime', 'SrcIP', 'DstIP', ]
+        fixed_events = []
+        for event in events:
+            # there are two type of event objects representation:
+            # 1) the result of esm-list-alarm-events
+            # 2) the result of esm-get-alarm-event-details
+            # therefore, first try to get the field of the first option and fallback to the second option.
+            fixed_events.append({
+                'ID' : event.get('eventId', '%s|%s' % (event.get('ipsId', ''), event.get('alertId', ''))),
+                'SubType' : event.get('eventSubType', event.get('subtype')),
+                'Severity' : event['severity'],
+                'Cases' : event.get('Cases'),
+                'Message' : event.get('ruleMessage', event.get('ruleName')),
+                'LastTime' : event['lastTime'],
+                'SrcIP' : event.get('sourceIp', event.get('srcIp')),
+                'DstIP' : event['destIp'],
+            })
+
+        context = {'EsmAlarmEvent(val.ID && val.ID == obj.ID)' : fixed_events}
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': fixed_events,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tblToMd('Alarm Events:', fixed_events, headers=headers),
+            'EntryContext': context
+       }
+
 
     def users_to_entry(users):
         # unreachable code - in order to send command, one must be logged in. therefore there is at least one user.
@@ -911,7 +969,7 @@ script:
         args = demisto.args()
         event_ids = demisto.get(args, 'ids').split(',')
         res = esm.get_case_event_list(event_ids)
-        final_result = events_to_entry(res)
+        final_result = case_events_to_entry(res)
 
     elif demisto.command() == 'esm-get-organization-list':
         res = esm.get_organizations(True)
@@ -945,6 +1003,16 @@ script:
         args = demisto.args()
         res = esm.delete_alarms(argToList(demisto.get(args, 'alarmIds')))
         final_result = res
+
+    elif demisto.command() == 'esm-get-alarm-event-details':
+        args = demisto.args()
+        res = esm.get_alarm_event_details(demisto.get(args, 'eventId'))
+        final_result = alarm_events_to_entry([res])
+
+    elif demisto.command() == 'esm-list-alarm-events':
+        args = demisto.args()
+        res = esm.list_alarm_events(demisto.get(args, 'alarmId'))
+        final_result = alarm_events_to_entry(res['events'])
 
 
     esm.logout()
@@ -1281,5 +1349,69 @@ script:
       description: list of triggered alarm ids to be deleted separated with commas
       isArray: true
     description: Delete triggered alarms
+  - name: esm-get-alarm-event-details
+    arguments:
+    - name: eventId
+      required: true
+      default: true
+      description: The event to get the details for. the ID can be taken from esm-get-alarm-event.
+    outputs:
+    - contextPath: EsmAlarmEvent.ID
+      description: Event ID
+      type: string
+    - contextPath: EsmAlarmEvent.SubType
+      description: Event Type
+      type: string
+    - contextPath: EsmAlarmEvent.Severity
+      description: Event Severity
+      type: number
+    - contextPath: EsmAlarmEvent.Message
+      description: Event Message
+      type: string
+    - contextPath: EsmAlarmEvent.LastTime
+      description: Event Time
+      type: date
+    - contextPath: EsmAlarmEvent.SrcIP
+      description: Source IP of the event
+      type: string
+    - contextPath: EsmAlarmEvent.DstIP
+      description: Destination IP of the event
+      type: string
+    - contextPath: EsmAlarmEvent.Cases
+      description: A list of related cases to the event
+    description: Gets the details for the triggered alarm
+  - name: esm-list-alarm-events
+    arguments:
+    - name: alarmId
+      required: true
+      default: true
+      description: The alarm to get the details for. the ID can be taken from the
+        esm-fetch-alarms
+    outputs:
+    - contextPath: EsmAlarmEvent.ID
+      description: Event ID
+      type: string
+    - contextPath: EsmAlarmEvent.SubType
+      description: Event Type
+      type: string
+    - contextPath: EsmAlarmEvent.Severity
+      description: Event Severity
+      type: number
+    - contextPath: EsmAlarmEvent.Message
+      description: Event Message
+      type: string
+    - contextPath: EsmAlarmEvent.LastTime
+      description: Event Time
+      type: date
+    - contextPath: EsmAlarmEvent.SrcIP
+      description: Source IP of the event
+      type: string
+    - contextPath: EsmAlarmEvent.DstIP
+      description: Destination IP of the event
+      type: string
+    - contextPath: EsmAlarmEvent.Cases
+      description: A list of related cases to the event
+    description: Gets an event list related to the alarm
   isfetch: true
   runonce: false
+releaseNotes: added commands for fetching event details of alarms.
