@@ -1272,9 +1272,10 @@ script:
         if debug_log:
             error_message += "\nFull debug log:\n" + debug_log
 
-        if not IS_TEST_MODULE:
-            raise Exception(error_message)
-        demisto.results(error_message_simple)
+        if IS_TEST_MODULE:
+            demisto.results(error_message_simple)
+        else:
+            demisto.results({ "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
 
   type: python
