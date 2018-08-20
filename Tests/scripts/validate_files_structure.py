@@ -43,15 +43,17 @@ TEST_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(TEST_PLAYBOOKS_DIR)
 SCRIPT_REGEX = "{}.*script-.*.yml".format(SCRIPTS_DIR)
 WIDGETS_REGEX = "{}.*widget-.*.json".format(WIDGETS_DIR)
 DASHBOARD_REGEX = "{}.*dashboard-.*.json".format(DASHBOARDS_DIR)
-CONNECTIONS_REGEX = "{}.*canvas-context-connections-.*.json".format(CONNECTIONS_DIR)
+CONNECTIONS_REGEX = "{}.*canvas-context-connections.*.json".format(CONNECTIONS_DIR)
 CLASSIFIER_REGEX = "{}.*classifier-.*.json".format(CLASSIFIERS_DIR)
 LAYOUT_REGEX = "{}.*layout-.*.json".format(LAYOUTS_DIR)
-INCIDENT_FIELDS_REGEX = "{}.*incidentfields-.*.json".format(INCIDENT_FIELDS_DIR)
+INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
 REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX,
-                 CLASSIFIER_REGEX, LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, MISC_REGEX, REPORT_REGEX, TEST_PLAYBOOK_REGEX]
+                 CLASSIFIER_REGEX, LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, MISC_REGEX, REPORT_REGEX]
+
+SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
 ACTIONABLE_FILE_STATUSES = ['A', 'M', 'R100', 'R094', 'R093', 'R098', 'R078']
 
@@ -111,9 +113,12 @@ def validate_schema(file_path, matching_regex=None):
         for regex in CHECKED_TYPES_REGEXES:
             if re.match(regex, file_path, re.IGNORECASE):
                 matching_regex = regex
-
-    if matching_regex is not None:
-        c = Core(source_file=file_path, schema_files=[SCHEMAS_PATH + REGEXES_TO_SCHEMA_DIC[matching_regex] + '.yml'])
+    
+    if matching_regex in SKIPPED_SCHEMAS:
+        return True
+    
+    if matching_regex is not None and REGEXES_TO_SCHEMA_DIC.get(matching_regex):
+        c = Core(source_file=file_path, schema_files=[SCHEMAS_PATH + REGEXES_TO_SCHEMA_DIC.get(matching_regex) + '.yml'])
         try:
             c.validate(raise_exception=True)
             return True
@@ -158,11 +163,11 @@ def validate_all_files():
                 if file_name.startswith('.'):
                     continue
                 print "Validating " + file_name
-                if not file_name.endswith(suffix):
+                if not file_name.lower().endswith(suffix):
                      print "file " + os.path.join(root, file_name) + " should end with " + suffix
                      found_wrong_name = True
-                if not file_name.startswith(prefix):
-                     print "file " + os.path.join(root, file_name) + " should end with " + prefix
+                if not file_name.lower().startswith(prefix):
+                     print "file " + os.path.join(root, file_name) + " should start with " + prefix
                      found_wrong_name = True
                 if not validate_schema(os.path.join(root, file_name), regex):
                     print "file " + os.path.join(root, file_name) + " schema is wrong."
