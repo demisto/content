@@ -261,10 +261,10 @@ script:
         case 'fetch-incidents':
             var lastRun = getLastRun();
 
-            // Using startTime is deprecated, and is being supported here for backward compability - it should be removed once everyone use this code at least once
-            var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-
+            // Using startTime is deprecated, and is being supported here for backward compability
+            // it should be removed once everyone use this code at least once
             var offenseId = lastRun && lastRun.id ? lastRun.id : 0;
+            var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
             var fetchQuery = (startTime ? 'start_time>' + startTime : offenseId ? 'id>' + offenseId) + (query ? (' AND (' + query +')') : '');
             /*
                 qradar returns offenses sorted desc on id and there's no way to change sorting.
