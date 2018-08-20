@@ -92,6 +92,8 @@ script:
         Returns:
             Credentials, the obtained credential.
         """
+        if delegated_user == 'me':
+            delegated_user = ADMIN_EMAIL
         scopes = SCOPES
         if additional_scopes is not None:
             scopes += additional_scopes
@@ -138,7 +140,7 @@ script:
 
         context = {
             'Type' : 'Gmail',
-            'Mailbox' : mailbox,
+            'Mailbox' : ADMIN_EMAIL if mailbox == 'me' else mailbox,
             'ID' : email_data['id'],
             'ThreadId' : email_data['threadId'],
             'Labels' : ', '.join(email_data['labelIds']),
@@ -454,12 +456,13 @@ script:
     def get_user_role_command():
         args = demisto.args()
         user_key = args['user-id']
+        user_key = ADMIN_EMAIL if user_key == 'me' else user_key
 
         if GAPPS_ID is None:
             raise ValueError('Must provide Immutable GoogleApps Id')
 
         roles = get_user_role(user_key, GAPPS_ID)
-        return roles_to_entry('User Roles of %s:' % (user_key, ), result)
+        return roles_to_entry('User Roles of %s:' % (user_key, ), roles)
 
 
     def get_user_role(user_key, customer):
@@ -505,6 +508,7 @@ script:
     def get_user_tokens_command():
         args = demisto.args()
         user_id = args.get('user-id')
+        user_id = ADMIN_EMAIL if user_id == 'me' else user_id
 
         tokens = get_user_tokens(user_id)
 
@@ -541,6 +545,7 @@ script:
         args = demisto.args()
 
         user_id = args.get('user-id') if mailbox is None else mailbox
+        mailbox = ADMIN_EMAIL if user_id == 'me' else user_id
         subject = args.get('subject', '')
         _from = args.get('from', '')
         to = args.get('to', '')
@@ -563,7 +568,7 @@ script:
 
         mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query, fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
 
-        return emails_to_entry('Search in %s:\nquery: "%s"' % (user_id, q, ), mails, 'full', user_id)
+        return emails_to_entry('Search in %s:\nquery: "%s"' % (mailbox, q, ), mails, 'full', mailbox)
 
 
     def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
@@ -691,10 +696,10 @@ script:
         message_id = args.get('message-id')
         dst_user_id = args.get('dst-user-id')
 
-        new_mail_id = move_mail_to_mailbox(src_user_id, message_id. dst_user_id)
+        new_mail_id = move_mail_to_mailbox(src_user_id, message_id, dst_user_id)
 
-        mail = get_mail(dst_mailbox, new_mail_id, 'full')
-        return emails_to_entry('Email:', [mail], 'full', dst_mailbox)
+        mail = get_mail(dst_user_id, new_mail_id, 'full')
+        return emails_to_entry('Email:', [mail], 'full', dst_user_id)
 
 
     def move_mail_to_mailbox(src_mailbox, message_id, dst_mailbox):
@@ -713,7 +718,7 @@ script:
         result = service.users().messages().import_(**command_args).execute()
 
         # delete the original mail
-        delete_mail(src_user_id, message_id, True)
+        delete_mail(src_mailbox, message_id, True)
 
         return result['id']
 
@@ -771,6 +776,7 @@ script:
     def fetch_incidents():
         params = demisto.params()
         user_key = params['queryUserKey']
+        user_key = user_key if user_key != '' else ADMIN_EMAIL
         query = '' if params['query'] is None else params['query']
         last_run = demisto.getLastRun()
         last_fetch = last_run.get('time')
@@ -869,16 +875,14 @@ script:
     - name: user-id
       required: true
       default: true
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     description: Delete a User
   - name: gmail-get-tokens-for-user
     arguments:
     - name: user-id
       required: true
       default: true
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     description: Returns the set of tokens specified user has issued to 3rd party
       applications.
   - name: gmail-get-user
@@ -886,8 +890,7 @@ script:
     - name: user-id
       required: true
       default: true
-      description: ' Identifies the user in the API request. The value can be the
-        user''s primary email address, alias email address, or unique user ID.'
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     - name: projection
       auto: PREDEFINED
       predefined:
@@ -938,8 +941,7 @@ script:
     - name: user-id
       required: true
       default: true
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     outputs:
     - contextPath: GoogleApps.Role.RoleAssignmentId
       description: unique id of role assignment
@@ -967,16 +969,14 @@ script:
       description: The ID of the message to retrieve
     - name: user-id
       required: true
-      description: ' Identifies the user in the API request. The value can be the
-        user''s primary email address, alias email address, or unique user ID.'
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     description: Gets the all attachments of an Gmail.
   - name: gmail-get-mail
     arguments:
     - name: user-id
       required: true
       default: true
-      description: ' Identifies the user in the API request. The value can be the
-        user''s primary email address, alias email address, or unique user ID.'
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     - name: message-id
       required: true
       description: The ID of the message to retrieve
@@ -1041,8 +1041,7 @@ script:
     - name: user-id
       required: true
       default: true
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     - name: query
       description: 'Only return messages matching the specified query. Supports the
         same query format as the Gmail search box. For example, "from:someuser@example.com
@@ -1064,7 +1063,7 @@ script:
       predefined:
       - "False"
       - "True"
-      description: ' Include messages from SPAM and TRASH in the results. (Default:
+      description: 'Include messages from SPAM and TRASH in the results. (Default:
         false)'
       defaultValue: "False"
     - name: from
@@ -1090,7 +1089,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: 'Search for messages sent with attachments. '
+      description: Search for messages sent with attachments.
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
@@ -1155,7 +1154,7 @@ script:
       predefined:
       - "False"
       - "True"
-      description: ' Include messages from SPAM and TRASH in the results. (Default:
+      description: 'Include messages from SPAM and TRASH in the results. (Default:
         false)'
       defaultValue: "False"
     - name: from
@@ -1316,8 +1315,7 @@ script:
   - name: gmail-revoke-user-role
     arguments:
     - name: user-id
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     - name: role-assignment-id
       required: true
       description: Immutable ID of the role assignment.
@@ -1365,8 +1363,7 @@ script:
     - name: user-id
       required: true
       default: true
-      description: ' Identifies the user in the API request. The value can be the
-        user''s primary email address, alias email address, or unique user ID.'
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     - name: message-id
       required: true
       description: The ID of the message to delete
@@ -1382,8 +1379,7 @@ script:
     - name: user-id
       required: true
       default: true
-      description: ' Identifies the user in the API request. The value can be the
-        user''s primary email address, alias email address, or unique user ID.'
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     - name: thread-id
       required: true
       description: The ID of the thread to retrieve
@@ -1448,8 +1444,7 @@ script:
     - name: user-id
       required: true
       default: true
-      description: ' Identifies the user in the API request. The value can be the
-        user''s primary email address, alias email address, or unique user ID.'
+      description: The user's email address. The special value me can be used to indicate the authenticated user.
     - name: message-id
       required: true
       description: The ID of the message to retrieve
@@ -1505,15 +1500,13 @@ script:
     - name: src-user-id
       required: true
       default: true
-      description: Identifies the source user in the API request. The value can be
-        the user's primary email address, alias email address, or unique user ID.
+      description: The source user's email address. The special value me can be used to indicate the authenticated user.
     - name: message-id
       required: true
       description: The ID of the message to retrieve
     - name: dst-user-id
       required: true
-      description: Identifies the destination user in the API request. The value can
-        be the user's primary email address, alias email address, or unique user ID.
+      description: The destination user's email address. The special value me can be used to indicate the authenticated user.
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
