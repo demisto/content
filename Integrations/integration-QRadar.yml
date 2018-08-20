@@ -265,7 +265,7 @@ script:
             var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
 
             var offenseId = lastRun && lastRun.id ? lastRun.id : 0;
-            var fetchQuery = (offenseId ? 'id>' + offenseId : 'start_time>' + startTime) + (query ? (' AND (' + query +')') : '');
+            var fetchQuery = (startTime ? 'start_time>' + startTime : offenseId ? 'id>' + offenseId) + (query ? (' AND (' + query +')') : '');
             /*
                 qradar returns offenses sorted desc on id and there's no way to change sorting.
                 if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
@@ -286,7 +286,7 @@ script:
                 offenseId = Math.max(offenseId, offense.id);
                 incidents.push(createIncidentFromOffense(res[i]));
             }
-            setLastRun({startTime: startTime, id: offenseId});
+            setLastRun({id: offenseId});
             return JSON.stringify(incidents);
 
         case 'qr-offenses':
