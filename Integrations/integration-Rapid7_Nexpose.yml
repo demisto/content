@@ -1153,7 +1153,6 @@ script:
             'name': name,
             'hosts': hosts
         }
-
         return send_request(path, 'post', body=body)
 
     try:
@@ -1187,9 +1186,7 @@ script:
         if demisto.command() == 'nexpose-create-site':
             demisto.results(create_site_command())
     except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        raise
+        return_error(e.message)
   type: python
   commands:
   - name: nexpose-get-asset
@@ -1512,8 +1509,8 @@ script:
         in site scans
       isArray: true
     - name: scanTemplateId
-      description: <string> The identifier of a scan template. Default scan template
-        is selected when not specified.
+      description: '<string> The identifier of a scan template. Use nexpose-get-report-templates
+        to get all templates,  default scan template is selected when not specified. '
     - name: importance
       auto: PREDEFINED
       predefined:
@@ -1523,6 +1520,9 @@ script:
       - high
       - very_high
       description: <string> The site importance. Defaults to "normal" if not specified.
+    outputs:
+    - contextPath: Nexpose.Site.Id
+      description: The created site Id
     description: Creates a new site with the specified configuration.
   - name: nexpose-get-sites
     arguments:
@@ -1553,7 +1553,7 @@ script:
     arguments: []
     outputs:
     - contextPath: Nexpose.Template.Id
-      description: The identifier of the report template;
+      description: The identifier of the report template.
     - contextPath: Nexpose.Template.Name
       description: The name of the report template.
     - contextPath: Nexpose.Template.Description
