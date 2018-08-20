@@ -204,5 +204,4 @@ outputs:
   description: The number of severe vulnerabilities.
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
-releaseNotes: "-"
 fromversion: 4.0.0
