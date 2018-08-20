@@ -108,7 +108,7 @@ tasks:
     scriptarguments:
       custom-field-mask: {}
       projection: {}
-      user-key:
+      user-id:
         complex:
           root: Account
           filters:
@@ -221,7 +221,7 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      user-key:
+      user-id:
         complex:
           root: Account
           filters:
@@ -335,7 +335,7 @@ tasks:
       query: {}
       subject: {}
       to: {}
-      user-key:
+      user-id:
         simple: admin@demistodev.com
     separatecontext: false
     view: |-
@@ -375,7 +375,7 @@ tasks:
               field:
                 value:
                   simple: ID
-      user-key:
+      user-id:
         simple: admin@demistodev.com
     separatecontext: false
     view: |-
@@ -399,7 +399,7 @@ tasks:
       iscommand: true
       brand: Gmail
     scriptarguments:
-      user-key:
+      user-id:
         simple: admin@demistodev.com
     separatecontext: false
     view: |-
@@ -443,7 +443,7 @@ tasks:
                 value:
                   simple: ID
           - operator: GetFirstObject
-      user-key:
+      user-id:
         simple: admin@demistodev.com
     separatecontext: false
     view: |-
@@ -530,7 +530,7 @@ tasks:
                 value:
                   simple: ThreadId
           - operator: uniq
-      user-key:
+      user-id:
         simple: test@demistodev.com
     separatecontext: false
     view: |-
@@ -573,7 +573,7 @@ tasks:
       query: {}
       subject: {}
       to: {}
-      user-key:
+      user-id:
         simple: shai@demistodev.com
     separatecontext: false
     view: |-
@@ -622,7 +622,7 @@ tasks:
                   simple: ID
       remove-labels:
         simple: INBOX
-      user-key:
+      user-id:
         simple: shai@demistodev.com
     separatecontext: false
     view: |-
@@ -668,7 +668,7 @@ tasks:
                   simple: ID
       remove-labels:
         simple: CATEGORY_SOCIAL
-      user-key:
+      user-id:
         simple: shai@demistodev.com
     separatecontext: false
     view: |-
