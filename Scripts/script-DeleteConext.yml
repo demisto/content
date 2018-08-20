@@ -3,6 +3,14 @@ commonfields:
   version: -1
 name: DeleteContext
 script: |
+  function errorEntry(text) {
+      return  {
+          ContentsFormat: formats.text,
+          Type: entryTypes.error,
+          Contents: text
+      };
+  }
+
   var fieldsToDelete;
   var shouldDeleteAll = (args.all === 'yes');
   var isSubPlaybookKey = (args.subplaybook === 'yes');
@@ -21,7 +29,7 @@ script: |
           if (keysToKeep.indexOf(fieldsToDelete[i]) == -1) {
               var result = executeCommand('delContext', { key: fieldsToDelete[i], id: args.id });
               if(!result || result.type === entryTypes.error) {
-                  errorsStr = "errorsStr" + "\n" + result.Contents;
+                  errorsStr = errorsStr + "\n" + result.Contents;
               }
           }
       }
@@ -30,6 +38,39 @@ script: |
       } else {
           return "Context cleared";
       }
+  } else if (args.index) {
+      // delete key in a specific index
+      var index = parseInt(args.index);
+      if (isNaN(index)) {
+          return errorEntry("Invalid index " + args.index)
+      }
+      var contextVal = invContext[args.key];
+      if (!contextVal) {
+          return "Key [" + args.key + "] was not found.";
+      }
+      if (!Array.isArray(contextVal)) {
+          contextVal = [contextVal];
+      }
+
+      if (index < 0 || index >= contextVal.length) {
+          return errorEntry("Index out of range " + args.index)
+      }
+
+      // splice is not supported currently
+      var newArr = [];
+      for (var i = 0; i < contextVal.length; i++) {
+          if (i !== index) {
+              newArr.push(contextVal[i])
+          }
+      }
+
+      if (newArr.length === 0) {
+          executeCommand('delContext', { key: args.key });
+      } else {
+          setContext(args.key, newArr);
+      }
+
+      return "Successfully deleted index " + index + " from key " + args.key;
   } else {
       var key = args.key;
       if (isSubPlaybookKey) {
@@ -59,7 +100,10 @@ args:
   - "no"
   description: Choose yes if the context key is inside a sub-playbook
 - name: keysToKeep
-  description: Context keys (top-level keys) to keep when deleting all context. Use comma to specify multiple values 
+  description: Context keys (top-level keys) to keep when deleting all context. Use
+    comma to specify multiple values
+- name: index
+  description: index to delete in case 'key' argument was specified
 scripttarget: 0
 runonce: false
-releaseNotes: "-"
+releaseNotes: Added the ability to delete speficif index in a key (_index_ argument).
