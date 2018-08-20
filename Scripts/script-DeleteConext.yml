@@ -1,7 +1,7 @@
 commonfields:
-  id: DeleteContext1
+  id: DeleteContext
   version: -1
-name: DeleteContext1
+name: DeleteContext
 script: |
   var fieldsToDelete;
   var shouldDeleteAll = (args.all === 'yes');
