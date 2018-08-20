@@ -65,7 +65,11 @@ script: |
       }
 
       if (newArr.length === 0) {
-          executeCommand('delContext', { key: args.key });
+          var key = args.key;
+          if (isSubPlaybookKey) {
+            key = 'subplaybook-${currentPlaybookID}.' + key;
+          }
+          executeCommand('delContext', { key: key });
       } else {
           setContext(args.key, newArr);
       }
