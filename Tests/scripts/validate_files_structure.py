@@ -66,11 +66,24 @@ SCHEMAS_PATH = "Tests/schemas/"
 DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, 
         LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
 
+class LOG_COLORS:
+    NATIVE = '\033[m'
+    RED = '\033[01;31m'
+    GREEN = '\033[01;32m'
+
+# print srt in the given color
+def print_color(str, color):
+    print(color + str + LOG_COLORS.NATIVE)
+
+
+def print_error(error_str):
+    print_color(error_str, LOG_COLORS.RED)
+
 def run_git_command(command):
     p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
     p.wait()
     if p.returncode != 0:
-        print "Failed to run git command " + command
+        print_error("Failed to run git command " + command)
         sys.exit(1)
     return p.stdout.read()
 
@@ -86,7 +99,7 @@ def get_modified_files(files_string):
         if file_status.lower() == 'm' and not file_path.startswith('.'):
             modified_files_list.append(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
-            print file_path + " file status is an unknown known one, please check. File status was: " + file_status
+            print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
     return modified_files_list
 
 
@@ -101,11 +114,11 @@ def validate_file_release_notes(file_path):
             try:
                 data_dictionary = yaml.safe_load(f)
             except Exception as e:
-                print file_path + " has yml structure issue. Error was: " + str(e)
+                print_error(file_path + " has yml structure issue. Error was: " + str(e))
                 return False
 
     if data_dictionary and data_dictionary.get('releaseNotes') is None:
-        print "File " + file_path + " is missing releaseNotes, please add."
+        print_error("File " + file_path + " is missing releaseNotes, please add.")
         return False
     
     return True
@@ -126,8 +139,8 @@ def validate_schema(file_path, matching_regex=None):
             c.validate(raise_exception=True)
             return True
         except Exception as err:
-            print 'Failed: %s failed' % (file_path,)
-            print err
+            print_error('Failed: %s failed' % (file_path,))
+            print_error(err)
             return False
 
     print file_path + " doesn't match any of the known supported file prefix/suffix, please make sure that its naming is correct."
@@ -158,20 +171,20 @@ def validate_all_files():
         prefix = splitted_regex[1]
         suffix = splitted_regex[2]
         for root, dirs, files in os.walk(directory):
-            print "Validating {} directory:".format(directory)
+            print_color("Validating {} directory:".format(directory), LOG_COLORS.GREEN)
             for file_name in files:
                 # skipping hidden files
                 if file_name.startswith('.'):
                     continue
                 print "Validating " + file_name
                 if not file_name.lower().endswith(suffix):
-                     print "file " + os.path.join(root, file_name) + " should end with " + suffix
+                     print_error("file " + os.path.join(root, file_name) + " should end with " + suffix)
                      found_wrong_name = True
                 if not file_name.lower().startswith(prefix):
-                     print "file " + os.path.join(root, file_name) + " should start with " + prefix
+                     print_error("file " + os.path.join(root, file_name) + " should start with " + prefix)
                      found_wrong_name = True
                 if not validate_schema(os.path.join(root, file_name), regex):
-                    print "file " + os.path.join(root, file_name) + " schema is wrong."
+                    print_error("file " + os.path.join(root, file_name) + " schema is wrong.")
                     wrong_schema = True
  
     if wrong_schema or found_wrong_name:
@@ -188,7 +201,7 @@ def main(argv):
     if len(argv) > 0:
         only_committed_files = argv[0] and (argv[0] == True or argv[0].lower() == 'true')
 
-    print "Starting validating files structure"
+    print_color("Starting validating files structure", LOG_COLORS.GREEN)
     if only_committed_files:
         import logging
         logging.basicConfig(level=logging.CRITICAL)
@@ -198,7 +211,7 @@ def main(argv):
     else:
         # validates all of Content repo directories according to their schemas
         validate_all_files()
-    print "Finished validating files structure"
+    print_color("Finished validating files structure", LOG_COLORS.GREEN)
     sys.exit(0)
 
 
