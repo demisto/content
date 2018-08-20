@@ -70,9 +70,14 @@ tasks:
       brand: Shodan
     nexttasks:
       '#none#':
+<<<<<<< HEAD
       - "4"
       - "3"
       - "5"
+=======
+      - "3"
+      - "4"
+>>>>>>> master
     scriptarguments:
       ip:
         simple: 1.1.1.1
@@ -151,6 +156,7 @@ tasks:
           "y": 545
         }
       }
+<<<<<<< HEAD
   "5":
     id: "5"
     taskid: 4ee20456-5491-468c-8564-7d6f35d389be
@@ -184,13 +190,19 @@ tasks:
           "y": 545
         }
       }
+=======
+>>>>>>> master
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 590,
+<<<<<<< HEAD
         "width": 1245,
+=======
+        "width": 809,
+>>>>>>> master
         "x": 51,
         "y": 50
       }
