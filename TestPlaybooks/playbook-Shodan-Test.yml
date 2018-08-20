@@ -70,8 +70,9 @@ tasks:
       brand: Shodan
     nexttasks:
       '#none#':
-      - "3"
       - "4"
+      - "3"
+      - "5"
     scriptarguments:
       ip:
         simple: 1.1.1.1
@@ -150,13 +151,46 @@ tasks:
           "y": 545
         }
       }
+  "5":
+    id: "5"
+    taskid: 4ee20456-5491-468c-8564-7d6f35d389be
+    type: regular
+    task:
+      id: 4ee20456-5491-468c-8564-7d6f35d389be
+      version: -1
+      name: VerifyContext Address
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Address
+      path:
+        simple: IP.Hostname
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 916,
+          "y": 545
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 590,
-        "width": 809,
+        "width": 1245,
         "x": 51,
         "y": 50
       }
