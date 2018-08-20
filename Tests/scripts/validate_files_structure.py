@@ -152,6 +152,7 @@ def validate_committed_files():
     missing_release_notes = False
     wrong_schema = False
     for file_path in modified_files:
+        print "Validating {}".format(file_path)
         if not validate_file_release_notes(file_path):
             missing_release_notes = True
 
