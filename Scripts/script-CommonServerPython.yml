@@ -13,6 +13,7 @@ script: |-
   import optparse
   import sys
   import os
+  import re
   from collections import OrderedDict
 
   import xml.etree.cElementTree as ET
@@ -433,7 +434,7 @@ script: |-
       if type(data) in STRING_TYPES:
           return data
       elif isinstance(data, dict):
-          return l_format.join([k + ': ' + flattenCell(data[k], is_pretty) for k in data])
+          return '\n'.join(['%s: %s' % (k, flattenCell(v, is_pretty)) for k, v in data.items()])
       else:
           return flattenCell(data, is_pretty)
 
@@ -1063,6 +1064,54 @@ script: |-
     'cve': 'CVE(val.ID && val.ID == obj.ID)',
     'email': 'Account.Email(val.Address && val.Address == obj.Address)'
   }
+
+  ############################### REGEX FORMATTING ###############################
+  regexFlags = re.M #Multi line matching
+  #for the global(/g) flag use re.findall({regex_format},str)
+  #else, use re.match({regex_format},str)
+
+  ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
+  emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
+  hashRegex = r'\b[0-9a-fA-F]+\b'
+
+  md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
+  sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
+  sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+
+  ############################### REGEX FORMATTING end ###############################
+
+  def string_to_table_header(string):
+      """
+        Checks if string, change underscores to spaces, capitalize every word.
+        Example: "one_two" to "One Two"
+
+        :type string: ``str``
+        :param string: The string to be converted (required)
+
+        :return: The converted string
+        :rtype: ``str``
+      """
+      if type(string) in STRING_TYPES:
+          return " ".join(word.capitalize() for word in string.replace("_"," ").split())
+      else:
+          raise Exception('The key is not a string: {}'.format(string))
+
+  def string_to_context_key(string):
+      """
+       Checks if string, removes underscores, capitalize every word.
+       Example: "one_two" to "OneTwo"
+
+       :type string: ``str``
+       :param string: The string to be converted (required)
+
+       :return: The converted string
+       :rtype: ``str``
+      """
+      if type(string) in STRING_TYPES:
+          return "".join(word.capitalize() for word in string.split('_'))
+      else:
+          raise Exception('The key is not a string: {}'.format(string))
+
 type: python
 tags:
 - infra
@@ -1072,4 +1121,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added scoreToReputation function"
+releaseNotes: added regex formatting
