@@ -172,9 +172,9 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Address
+        simple: Hostname
       path:
-        simple: IP.Hostname
+        simple: IP
     reputationcalc: 0
     separatecontext: false
     view: |-
