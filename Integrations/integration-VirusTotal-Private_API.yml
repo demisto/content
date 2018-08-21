@@ -1392,4 +1392,3 @@ script:
       This call can be used in conjuction with the file searching call in order to
       download samples that match a given set of criteria.
   runonce: false
-releaseNotes: "Integration with Virus Total's private API"
