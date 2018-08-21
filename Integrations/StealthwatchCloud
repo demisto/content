@@ -1,0 +1,164 @@
+var apiKey = params.ApiKey;
+var url = params.url;
+if (url[url.length - 1] !== '/') { url += '/'; }
+var TIME_FIELDS = ['startedAt', 'occurredAt', 'endedAt', 'observedAt'];
+
+var createIncidentFromEvent = function(event) {
+    var keys = ['id', 'type', 'description', 'time'];
+    var labels = [];
+
+    for (var i = 0; i<keys.length; i++) {
+        val = event[keys[i]];
+        labels.push({'type': keys[i], 'value': String(val)});
+    }
+    return {
+        "name": event.type,
+        "labels": labels,
+        "rawJSON": JSON.stringify(event)
+    }
+}
+
+var listAlerts = function() {
+    var result = http(
+        url + "alerts/alert",
+        {
+            Method: "GET",
+            Headers: {
+                'Content-Type': ['application/json'],
+                'Accept': ['application/json'],
+                'Authorization': [apiKey],
+            }
+        },
+        false
+    );
+    if (result.StatusCode < 200 || result.StatusCode > 299) {
+        throw 'Failed to perform request, request status code: ' + result.StatusCode + ', body: ' + result.Body;
+    }
+    if (result.Body === '') {
+        throw 'No content received.';
+        //throw result;
+    }
+    var obj;
+    try {
+        obj = JSON.parse(result.Body);
+    } catch (ex) {
+        throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+    }
+    return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+};
+
+var readAlert = function(id) {
+    var result = http(
+        url + "alerts/alert/"+id+"/",
+        {
+            Method: "GET",
+            Headers: {
+                'Content-Type': ['application/json'],
+                'Accept': ['application/json'],
+                'Authorization': [apiKey],
+            }
+        },
+        false
+    );
+    if (result.StatusCode < 200 || result.StatusCode > 299) {
+        throw 'Failed to perform request, request status code: ' + result.StatusCode + ', body: ' + result.Body;
+    }
+    if (result.Body === '') {
+        throw 'No content received.';
+        //throw result;
+    }
+    var obj;
+    try {
+        obj = JSON.parse(result.Body);
+    } catch (ex) {
+        throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+    }
+    return {body: result.Body, obj: obj, statusCode: result.StatusCode};
+};
+
+// The command input arg holds the command sent from the user.
+switch (command) {
+    // This is the call made when pressing the integration test button.
+    case 'test-module':
+        return true;
+    case 'list-alerts':
+        var res = listAlerts()
+        md = "ran listAlerts with result: " + JSON.stringify(res.obj);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md,
+            EntryContext: {listAlerts_result: res.obj}};
+    case 'read-alert':
+        var res = readAlert(args.id)
+        md = "ran readAlert for id "+ args.id +" with result: " + JSON.stringify(res.obj);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md,
+            EntryContext: {readAlert_result: res.obj}};
+    case 'list-notifications':
+        var res = listNotifications(args.time__lt, args.time__lte, args.time, 
+        args.time__gte, args.time__gt, args.search, args.ordering, args.limit,
+        args.offset)
+        md = "ran list-notifications with result: " + JSON.stringify(res.obj);
+        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md,
+            EntryContext: {readAlert_result: res.obj}};
+    case 'fetch-incidents':
+        var lastRun = getLastRun();
+        var id = lastRun && lastRun.id ? lastRun.id : 0;
+        logDebug('11111 Last run id %d', id)
+        var data = listAlerts();
+        try {
+            var res = JSON.parse(data.body).objects;
+        } catch (ex) {
+            throw 'Error parsing event fetch - ' + data + ' - ' + ex;
+        }
+        var incidents = [];
+        var maxId = 0;
+        for (var i = 0; i < res.length; i++) {
+            var alert = res[i];
+            logDebug('22222 alertid seen is: %d', alert.id);
+            if(alert.id <= id) {
+                continue;
+            }
+            maxId = Math.max(maxId, alert.id)
+            incidents.push(createIncidentFromEvent(res[i]));
+            if(i == res.length -1) {
+                id = maxId;
+            }
+        }
+        logDebug('33333 id: %d', id);
+        var lastRunId = id !== 0 ? id : 0;
+        logDebug('44444 setting Last run id %d', lastRunId)
+        setLastRun({'id': lastRunId});
+        return JSON.stringify(incidents);
+    default:
+        // You can use args[argName] or args.argName to get a specific arg. args are strings.
+        // You can use params[paramName] or params.paramName to get a specific params.
+        // Params are of the type given in the integration page creation.
+}
+
+/*
+ * Sample function for http GET request with query string
+ */
+var sendRequest = function(url, param) {
+
+    // handle '/' at the end of the url
+    if (url[url.length - 1] === '/') {
+        url = url.substring(0, url.length - 1);
+    }
+
+    // prepare the request url (make sure to encode the query parameter value)
+    var requestUrl = url + '?sample_param=' + encodeURIComponent(param);
+
+    var res = http(
+        requestUrl,
+        {
+            Method: 'GET', // Can be POST, PUT, DELETE, HEAD, OPTIONS or CONNECT
+            Headers: {
+                Accept: ['application/json']
+            }
+        }
+    );
+
+    if (res.StatusCode < 200 || res.StatusCode >= 300) {
+        throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+    }
+
+    return res;
+};
