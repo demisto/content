@@ -13,12 +13,13 @@ script: |
 
   var fieldsToDelete;
   var shouldDeleteAll = (args.all === 'yes');
-  if(!shouldDeleteAll && !args.key) {
+  var isSubPlaybookKey = (args.subplaybook === 'yes');
+  if (!shouldDeleteAll && !args.key) {
       return {Contents: 'You must specify key or all=yes',
                       ContentsFormat: formats.text,
                       Type: entryTypes.error};
   }
-  if(shouldDeleteAll) {
+  if (shouldDeleteAll) {
       var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',') : [];
       fieldsToDelete = Object.keys(invContext);
 
@@ -64,14 +65,22 @@ script: |
       }
 
       if (newArr.length === 0) {
-          executeCommand('delContext', { key: args.key });
+          var key = args.key;
+          if (isSubPlaybookKey) {
+            key = 'subplaybook-${currentPlaybookID}.' + key;
+          }
+          executeCommand('delContext', { key: key });
       } else {
           setContext(args.key, newArr);
       }
 
       return "Successfully deleted index " + index + " from key " + args.key;
   } else {
-      return executeCommand('delContext', { key: args.key });
+      var key = args.key;
+      if (isSubPlaybookKey) {
+        key = 'subplaybook-${currentPlaybookID}.' + key;
+      }
+      return executeCommand('delContext', { key: key });
   }
 type: javascript
 tags:
@@ -87,7 +96,13 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: if you choose yes - all context will be deleted
+  description: If you choose yes - all context will be deleted
+- name: subplaybook
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Choose yes if the context key is inside a sub-playbook
 - name: keysToKeep
   description: Context keys (top-level keys) to keep when deleting all context. Use
     comma to specify multiple values
