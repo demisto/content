@@ -26,6 +26,7 @@ script:
     import datetime
 
     ''' GLOBAL VARS '''
+    # The API works only with SSL commands.
     USE_SSL = True
 
     API_KEY = demisto.params()['APIKey']
@@ -82,7 +83,7 @@ script:
 
     def test_module():
         try:
-            get_users_on_call_now_command()
+            get_on_call_now_users_command()
         except Exception, e:
             raise Exception(e.message)
 
@@ -91,8 +92,10 @@ script:
     def extract_on_call_user_data(users):
         """Extact data about user from a given schedule."""
         outputs = []
+        contexts = []
         for i, user in enumerate(users):
             output = {}
+            context = {}
 
             output['ID'] = user.get('id')
             output['Name'] = user.get('name')
@@ -103,7 +106,14 @@ script:
             output['Time Zone'] = user.get('time_zone')
             output['Avatar Url'] = user.get('avatar_url')
 
+            context['ID'] = output['ID']
+            context['Role'] = output['Role']
+            context['Email'] = output['Email']
+            context['Usermame'] = output['Name']
+            context['DisplayName'] = output['Name']
+
             outputs.append(output)
+            contexts.append(context)
 
         return {
             'Type': entryTypes['note'],
@@ -112,15 +122,18 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS),
             'EntryContext': {
-                'PagerDutyUser': outputs
+                'PagerDutyUser(true)': contexts
             }
         }
 
     def extract_on_call_now_user_data(oncalls, table_name):
         """Extract the user data from the oncalls json."""
         outputs = []
+        contexts = []
         for i in xrange(len(oncalls)):
             output = {}
+            context = {}
+
             data = oncalls[i]
             user = data.get('user')
 
@@ -133,8 +146,15 @@ script:
             output['Time Zone'] = user.get('time_zone')
             output['Avatar Url'] = user.get('avatar_url')
 
+            context['ID'] = output['ID']
+            context['Role'] = output['Role']
+            context['Email'] = output['Email']
+            context['Usermame'] = output['Name']
+            context['DisplayName'] = output['Name']
+
             escal_level = data.get('escalation_level', 1)
             outputs.insert(escal_level - 1, output)
+            contexts.insert(escal_level - 1, context)
 
         return {
             'Type': entryTypes['note'],
@@ -143,7 +163,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(table_name, outputs, USERS_ON_CALL_NOW_HEADERS),
             'EntryContext': {
-                'PagerDutyUser': outputs
+                'PagerDutyUser(true)': contexts
             }
         }
 
@@ -196,15 +216,17 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, INCIDENTS_HEADERS),
             'EntryContext': {
-                'PagerDuty.Incidents': outputs
+                'PagerDuty.Incidents(val.id==obj.id)': incidents
             }
         }
 
     def extract_all_schedules_data(schedules):
         """Extract the data about all the schedules."""
         outputs = []
+        contexts = []
         for i in range(len(schedules)):
             output = {}
+            context = {}
             data = schedules[i]
 
             output['ID'] = data.get('id')
@@ -215,11 +237,21 @@ script:
             if len(escalation_policies) > 0:
                 output['Escalation Policy ID'] = escalation_policies[0].get('id')
                 output['Escalation Policy'] = escalation_policies[0].get('summary')
+
+                context['escalation_policies'] = [{}, ]
+                context['escalation_policies'][0]['name'] = output['Escalation Policy']
+                context['escalation_policies'][0]['id'] = output['Escalation Policy ID']
             else:
                 output['Escalation Policy'] = "-"
                 output['Escalation Policy ID'] = "-"
 
+            context['id'] = output['ID']
+            context['name'] = output['Name']
+            context['today'] = output['Today']
+            context['time_zone'] = output['Time Zone']
+
             outputs.append(output)
+            contexts.append(context)
 
         return {
             'Type': entryTypes['note'],
@@ -228,11 +260,11 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(SCHEDULES, outputs, SCHEDULES_HEADERS),
             'EntryContext': {
-                'PagerDuty.Schedules': outputs
+                'PagerDuty.Schedules': contexts
             }
         }
 
-    def create_new_incident(author, title, description=None):
+    def create_new_incident(author, title, description='No description'):
         """Create a new incident in the PagerDuty instance."""
         url = SERVER_URL + CREATE_INCIDENT_SUFFIX
         headers = DEFAULT_HEADERS.copy()
@@ -254,7 +286,7 @@ script:
                       }
                   }
 
-        res = requests.post(url, headers=headers, data=json.dumps(payload))
+        res = requests.post(url, headers=headers, data=json.dumps(payload), verify=USE_SSL)
         res.raise_for_status()
         return res.json()
 
