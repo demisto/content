@@ -135,7 +135,7 @@ tasks:
       interval:
         simple: "1"
       playbook:
-      simple: default
+        simple: default
       private: {}
       source: {}
       tags: {}
