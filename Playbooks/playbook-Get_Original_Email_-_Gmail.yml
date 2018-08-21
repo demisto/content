@@ -470,6 +470,7 @@ tasks:
             value:
               simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID"
                 && h.Value == val.InReplyTo).length > 0)}
+            iscontext: false
     view: |-
       {
         "position": {
