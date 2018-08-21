@@ -349,7 +349,7 @@ tasks:
       version: -1
       name: Delete old context
       description: Delete the forwarded Gmail email object from context.
-      scriptName: DeleteContext1
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
