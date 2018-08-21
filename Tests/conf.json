@@ -6,14 +6,18 @@
             "playbookID": "test_delete_context"
         },
         {
+            "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "TestParseCSV"
+        },
+        {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "playbookID": "TestParseCSV"
         },
         {
             "integrations": "Jask",
