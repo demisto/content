@@ -376,7 +376,7 @@ outputs:
   description: The actual score
   type: number
 - contextPath: Sample.State
-  description: The sample state.
+  description: The sample state
 - contextPath: Sample.ID
-  description: The sample ID.
+  description: The sample ID
 releaseNotes: "-"

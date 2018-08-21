@@ -94,7 +94,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "8"
     scriptarguments:
       Ids:
         complex:
@@ -146,13 +146,28 @@ tasks:
           root: inputs.ReportFileType
       webid:
         complex:
-          root: Joe.Analysis.WebID
+          root: JoeAnalysis
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JoeAnalysis.Status
+                iscontext: true
+              right:
+                value:
+                  simple: finished
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: WebID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -173,7 +188,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -234,7 +249,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               complex:
@@ -248,16 +263,16 @@ tasks:
                     right:
                       value:
                         simple: Joe Security
-                transformers:
-                - operator: getField
-                  args:
-                    field:
+                - - operator: isEqualString
+                    left:
                       value:
-                        simple: state
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
             iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -266,12 +281,73 @@ tasks:
         }
       }
     note: false
+  "8":
+    id: "8"
+    taskid: 4f2c07a5-cb21-4680-82d6-5cdacba2bd67
+    type: regular
+    task:
+      id: 4f2c07a5-cb21-4680-82d6-5cdacba2bd67
+      version: -1
+      name: JoeSecurity Get Info
+      script: Joe Security|||joe-analysis-info
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      webid:
+        complex:
+          root: Joe
+          accessor: Analysis.WebID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 7c9693b1-3b80-4e1e-842e-a9f0bd5f48c3
+    type: regular
+    task:
+      id: 7c9693b1-3b80-4e1e-842e-a9f0bd5f48c3
+      version: -1
+      name: Set Context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: JoeAnalysis
+      value:
+        complex:
+          root: Joe
+          accessor: Analysis
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1435,
         "width": 605,
         "x": 50,
         "y": 50
@@ -324,46 +400,75 @@ inputs:
     cookbook, bins (dropped files), unpackpe (unpacked PE files), unpack, ida, pcap,
     pcapslim, memdumps, yara'
 outputs:
-- contextPath: File.Name
-  description: Filename (only in case of report type=json)
+- contextPath: DBotScore.Vendor
+  description: 'The name of the vendor: JoeSecurity'
   type: string
-- contextPath: File.EntryID
-  description: The Entry ID of the sample
+- contextPath: Joe.Analysis.WebID
+  description: Web ID
   type: string
-- contextPath: File.Size
-  description: File size (only in case of report type=json)
-  type: number
-- contextPath: File.MD5
-  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: Joe.Analysis.Status
+  description: Analysis Status
   type: string
-- contextPath: File.SHA1
-  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: Joe.Analysis.Comments
+  description: Analysis Comments
   type: string
-- contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: Joe.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: Joe.Analysis.Runs
+  description: Sub-Analysis Information
+- contextPath: Joe.Analysis.Result
+  description: Analysis Results
   type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file (only in case of report type=json)
+- contextPath: Joe.Analysis.Errors
+  description: Raised errors during sampling
+- contextPath: Joe.Analysis.Systems
+  description: Analysis OS
+- contextPath: Joe.Analysis.MD5
+  description: MD5 of analysis sample
   type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+- contextPath: Joe.Analysis.SHA1
+  description: SHA1 of analysis sample
   type: string
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: Joe.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested (only in case of report type=json)
-  type: string
+  description: The name of the sample file or URL
 - contextPath: DBotScore.Type
-  description: The type of the indicator (only in case of report type=json)
-  type: string
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score (only in case of report type=json)
-  type: string
-- contextPath: IP.Address
-  description: IP's relevant to the sample
+  description: '''url'' for url samples, otherwise ''file'''
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score (only in case of report type=json)
+  description: The actual score
   type: number
+- contextPath: DBotScore.Malicious.Vendor
+  description: 'The name of the vendor: JoeSecurity'
+  type: string
+- contextPath: DBotScore.Malicious.Detections
+  description: The sub analysis detection statuses
+  type: string
+- contextPath: DBotScore.Malicious.SHA1
+  description: The SHA1 of the file
+  type: string
+- contextPath: InfoFile.Name
+  description: FileName
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the sample
+  type: string
+- contextPath: InfoFile.Size
+  description: File Size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: File.Extension
+  description: File Extension
+  type: string
 releaseNotes: "-"

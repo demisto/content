@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -64,7 +64,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 545
         }
       }
@@ -132,7 +132,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 895
         }
       }
@@ -157,17 +157,16 @@ tasks:
       jobId: {}
       taskId:
         complex:
-          root: ATD
+          root: ATDTask
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: ATD.Task.status
+                  simple: ATDTask.status
                 iscontext: true
               right:
                 value:
                   simple: Completed
-          accessor: Task
           transformers:
           - operator: getField
             args:
@@ -181,8 +180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 162.5,
+          "y": 1420
         }
       }
     note: false
@@ -215,7 +214,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 162.5,
           "y": 370
         }
       }
@@ -236,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1420
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -287,7 +286,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 720
         }
       }
@@ -341,7 +340,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -361,7 +360,7 @@ tasks:
       brand: McAfee Advanced Threat Defense
     nexttasks:
       '#none#':
-      - "3"
+      - "11"
     scriptarguments:
       jobId: {}
       taskId:
@@ -372,18 +371,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1070
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 230fe216-0869-44e5-885a-8f7f32e4a7fa
+    type: regular
+    task:
+      id: 230fe216-0869-44e5-885a-8f7f32e4a7fa
+      version: -1
+      name: Set Context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ATDTask
+      value:
+        complex:
+          root: ATD
+          accessor: Task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
         }
       }
     note: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "8_2_yes": 0.57
+    },
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 717.5,
+        "height": 1610,
+        "width": 605,
         "x": 50,
         "y": 50
       }

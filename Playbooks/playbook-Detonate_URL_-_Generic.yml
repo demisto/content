@@ -247,11 +247,20 @@ inputs:
   required: false
   description: URL object of url to be detonated.
 outputs:
-- contextPath: DBotScore
-  description: The Indicator's object
+- contextPath: File
+  description: The File's object
   type: unknown
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 of the file
   type: string
 - contextPath: File.SHA1
   description: SHA1 of the file
@@ -262,12 +271,12 @@ outputs:
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
-- contextPath: File
-  description: The File's object
-  type: unknown
-- contextPath: File.SHA256
-  description: SHA256 of the file
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
   type: string
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
 - contextPath: DBotScore.Type
   description: The type of the indicator
   type: string
@@ -280,16 +289,64 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+- contextPath: Joe.Analysis.WebID
+  description: Web ID
+  type: string
+- contextPath: Joe.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: Joe.Analysis.Comments
+  description: Analysis Comments
+  type: string
+- contextPath: Joe.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: Joe.Analysis.Runs
+  description: Sub-Analysis Information
+  type: unknown
+- contextPath: Joe.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: Joe.Analysis.Errors
+  description: Raised errors during sampling
+  type: unknown
+- contextPath: Joe.Analysis.Systems
+  description: Analysis OS
+  type: unknown
+- contextPath: Joe.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: InfoFile.Name
+  description: FileName
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the sample
+  type: string
+- contextPath: InfoFile.Size
+  description: File Size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: Sample.State
+  description: The sample state
+  type: string
+- contextPath: Sample.ID
+  description: The sample ID
+  type: string
 - contextPath: IP.Address
   description: IP's relevant to the sample
-  type: string
-- contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
-  type: string
-- contextPath: File.Size
-  description: File size (only in case of report type=json)
-  type: number
-- contextPath: File.Name
-  description: Filename (only in case of report type=json)
   type: string
 releaseNotes: "New generic detonation playbook for URL"

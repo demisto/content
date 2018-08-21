@@ -91,7 +91,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "8"
     scriptarguments:
       Ids:
         complex:
@@ -143,13 +143,23 @@ tasks:
           root: inputs.ReportFileType
       webid:
         complex:
-          root: Joe.Analysis.WebID
+          root: JoeAnalysis
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JoeAnalysis.Status
+                iscontext: true
+              right:
+                value:
+                  simple: finished
+          accessor: WebID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -170,7 +180,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -230,7 +240,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               complex:
@@ -244,16 +254,16 @@ tasks:
                     right:
                       value:
                         simple: Joe Security
-                transformers:
-                - operator: getField
-                  args:
-                    field:
+                - - operator: isEqualString
+                    left:
                       value:
-                        simple: state
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
             iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -262,12 +272,74 @@ tasks:
         }
       }
     note: false
+  "8":
+    id: "8"
+    taskid: 3f645918-1a91-4ba5-8a95-5d60fb441e43
+    type: regular
+    task:
+      id: 3f645918-1a91-4ba5-8a95-5d60fb441e43
+      version: -1
+      name: JoeSecurity Get Info
+      script: Joe Security|||joe-analysis-info
+      type: regular
+      iscommand: true
+      brand: Joe Security
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      webid:
+        complex:
+          root: Joe
+          accessor: Analysis.WebID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 9c83e0a7-8cce-4a67-8320-90f35a40d2ef
+    type: regular
+    task:
+      id: 9c83e0a7-8cce-4a67-8320-90f35a40d2ef
+      version: -1
+      name: Set Context
+      description: reduce context level for future filters
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: JoeAnalysis
+      value:
+        complex:
+          root: Joe
+          accessor: Analysis
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1435,
         "width": 605,
         "x": 50,
         "y": 50
@@ -364,8 +436,8 @@ outputs:
   description: '''url'' for url samples, otherwise ''file'''
   type: string
 - contextPath: DBotScore.Score
-  description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-  type: string
+  description: The actual score
+  type: number
 - contextPath: DBotScore.Malicious.Vendor
   description: 'The name of the vendor: JoeSecurity'
   type: string

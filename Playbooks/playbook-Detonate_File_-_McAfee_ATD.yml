@@ -159,17 +159,16 @@ tasks:
       jobId: {}
       taskId:
         complex:
-          root: ATD
+          root: ATDTask
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: ATD.Task.status
+                  simple: ATDTask.status
                 iscontext: true
               right:
                 value:
                   simple: Completed
-          accessor: Task
           transformers:
           - operator: getField
             args:
@@ -184,7 +183,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -205,7 +204,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -287,24 +286,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              complex:
-                root: ATD
-                filters:
-                - - operator: isNotEqualNumber
-                    left:
-                      value:
-                        simple: ATD.Task.taskId
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "-1"
-                accessor: Task
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: taskId
+              simple: ATD.Task.taskId(val != -1)
             iscontext: true
     view: |-
       {
@@ -329,7 +311,7 @@ tasks:
       brand: McAfee Advanced Threat Defense
     nexttasks:
       '#none#':
-      - "3"
+      - "13"
     scriptarguments:
       jobId: {}
       taskId:
@@ -470,8 +452,40 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 216,
-          "y": 391
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 7bd95c47-0c05-49e3-80ba-43d2f0e4e2b9
+    type: regular
+    task:
+      id: 7bd95c47-0c05-49e3-80ba-43d2f0e4e2b9
+      version: -1
+      name: Set Context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ATDTask
+      value:
+        complex:
+          root: ATD
+          accessor: Task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1595
         }
       }
     note: false
@@ -480,7 +494,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 1960,
         "width": 830,
         "x": 50,
         "y": 50
