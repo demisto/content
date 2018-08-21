@@ -228,7 +228,7 @@ script:
             mdObj['description'] = dq(element, 'fields.description');
             mdObj['duedate'] = dq(element, 'fields.duedate');
             mdObj['ticket_link'] = dq(element, 'self');
-            mdObj['creted'] = dq(element, 'fields.created');
+            mdObj['created'] = dq(element, 'fields.created');
             var attachments = dq(element, 'fields.attachment');
             if(Array.isArray(attachments) && attachments.length > 0) {
                 var attachmentNames = [];
