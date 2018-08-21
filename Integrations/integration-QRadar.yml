@@ -265,7 +265,7 @@ script:
             // it should be removed once everyone use this code at least once
             var offenseId = lastRun && lastRun.id ? lastRun.id : 0;
             var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-            var fetchQuery = (startTime ? 'start_time>' + startTime : offenseId ? 'id>' + offenseId) + (query ? (' AND (' + query +')') : '');
+            var fetchQuery = (startTime ? 'start_time>' + startTime : 'id>' + offenseId) + (query ? (' AND (' + query +')') : '');
             /*
                 qradar returns offenses sorted desc on id and there's no way to change sorting.
                 if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
