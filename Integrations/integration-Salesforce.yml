@@ -206,7 +206,7 @@ script:
             }
         }
         return createEntry(raw_info, {
-            contextPath: 'SalesForce.Lead(val.ID && val.ID == obj.ID',
+            contextPath: 'SalesForce.Lead(val.ID && val.ID == obj.ID)',
             title: title,
             data: [
                 {to: 'ID', from: 'Id', humanReadable: false},
@@ -600,7 +600,6 @@ script:
                 lastRun.last_case_time = dateToString(new_time, "%Y-%m-%dT%H:%M:%S.%fZ");
 
                 setLastRun(lastRun);
-                logInfo(lastRun.last_case_time);
                 var userMapping = getUserNames();
                 incidents = casesToIncidents(cases, userMapping);
             }
@@ -639,6 +638,7 @@ script:
                         var messageSegments = data.body.messageSegments;
                         for (var j = 0; j < messageSegments.length; j++)
                         if (messageSegments[j].type === 'Text') {
+                            // Found the relavent comment (there's only one), so we return it
                             return JSON.stringify([{
                                 name: parentText,
                                 details: messageSegments[j].text
