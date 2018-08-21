@@ -61,6 +61,7 @@ script:
         'intsights-ask-the-analyst': 'alerts/ask-the-analyst/%AlertID%',
         'intsights-send-mail': 'alerts/mail-to-others/%AlertID%',
         'intsights-remediate': 'alerts/resolve-request/%AlertID%',
+        'intsights-close': 'alerts/set-alert-closed-status/%AlertID%',
         'intsights-whitelist': 'alerts/report-white-list/%AlertID%',
         'intsights-assign': 'alerts/assign/%AlertID%',
         'intsights-unassign': 'alerts/unassign/%AlertID%',
@@ -95,6 +96,7 @@ script:
         'intsights-ask-the-analyst': 'POST',
         'intsights-send-mail': 'POST',
         'intsights-remediate': 'PATCH',
+        'intsights-close': 'PATCH',
         'intsights-whitelist': 'PATCH',
         'intsights-assign': 'PATCH',
         'intsights-unassign': 'PATCH',
@@ -211,6 +213,7 @@ script:
         'intsights-ask-the-analyst',
         'intsights-send-mail',
         'intsights-remediate',
+        'intsights-close',
         'intsights-whitelist',
         'intsights-assign',
         'intsights-unassign',
@@ -482,6 +485,12 @@ script:
 
         case 'intsights-archive':
             args.IsArchived = JSON.parse(args.IsArchived);
+
+        case 'intsights-close':
+            args.Closed = {};
+            args.Closed.FreeText = args.Comment;
+            args.Closed.IsClosed = true;
+            args.Closed.Reason = args.Reason;
 
         default:
             res = sendRequest(
@@ -825,5 +834,34 @@ script:
     - contextPath: IntSights.IOCs
       description: IOCs details
     description: Get all the IOCs
+  - name: intsights-close
+    arguments:
+    - name: Comment
+      description: Comment text
+    - name: Reason
+      auto: PREDEFINED
+      predefined:
+      - ProblemSolved
+      - InformationalOnly
+      - ProblemWeAreAlreadyAwareOf
+      - CompanyOwnedDomain
+      - NotRelatedToMyCompany
+      - FalsePositive
+      - Other
+      description: The resolution type
+    - name: Rate
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      description: Rating of the alert (1 is bad, 5 is good)
+    - name: AlertID
+      required: true
+      default: true
+      description: Alert's unique ID
+    description: Close the alert
   isfetch: true
 hidden: false
