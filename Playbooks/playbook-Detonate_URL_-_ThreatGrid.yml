@@ -5,13 +5,14 @@ fromversion: 4.0.0
 description: Detonate one or more URLs using the Threat Grid integration. This playbook
   returns relevant reports to the War Room and URL reputations to the context data.
 starttaskid: "0"
+fromversion: "4.0.0"
 tasks:
   "0":
     id: "0"
-    taskid: dfaa16ba-1c11-46e1-8e41-00b9b8bda66f
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
     type: start
     task:
-      id: dfaa16ba-1c11-46e1-8e41-00b9b8bda66f
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +32,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 87509cb0-f8f9-4a19-8e14-008e29834b15
+    taskid: cacefc85-644c-48de-8ff3-545308a282eb
     type: condition
     task:
-      id: 87509cb0-f8f9-4a19-8e14-008e29834b15
+      id: cacefc85-644c-48de-8ff3-545308a282eb
       version: -1
       name: Is ThreatGrid enabled?
       description: |
@@ -87,16 +88,16 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 37f6ee1f-fa5e-4979-864f-86d12f3df0f7
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
     type: title
     task:
-      id: 37f6ee1f-fa5e-4979-864f-86d12f3df0f7
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "Done"
     separatecontext: false
     view: |-
       {
@@ -108,10 +109,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: edb9cf66-9056-48dd-8487-7e1c7ab3ffa4
+    taskid: 1c8055d2-4a2e-46cb-8022-90113cbf80c1
     type: regular
     task:
-      id: edb9cf66-9056-48dd-8487-7e1c7ab3ffa4
+      id: 1c8055d2-4a2e-46cb-8022-90113cbf80c1
       version: -1
       name: ThreatGrid Get Samples State
       description: Download the pdf report to the War Room.
@@ -138,10 +139,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 49d088a9-ebc3-43fa-8227-238a30a0d745
+    taskid: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
     type: playbook
     task:
-      id: 49d088a9-ebc3-43fa-8227-238a30a0d745
+      id: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
       version: -1
       name: GenericPolling
       description: |-
@@ -191,10 +192,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: d4f9ce61-2198-4129-83e4-e7ef6a677b45
+    taskid: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
     type: regular
     task:
-      id: d4f9ce61-2198-4129-83e4-e7ef6a677b45
+      id: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
       version: -1
       name: ThreatGrid Upload File
       description: Uplads a sample to threat grid
@@ -213,12 +214,9 @@ tasks:
       filename:
         complex:
           root: inputs.FileName
-      os:
+      playbook:
         complex:
-          root: inputs.OS
-      osver:
-        complex:
-          root: inputs.OSVersion
+          root: inputs.Playbook
       private:
         complex:
           root: inputs.Private
@@ -242,10 +240,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: 95a3678c-f16f-4d9a-8e63-42a536bb380c
+    taskid: 41ac2f94-eae1-4116-8773-8912d1f99d37
     type: regular
     task:
-      id: 95a3678c-f16f-4d9a-8e63-42a536bb380c
+      id: 41ac2f94-eae1-4116-8773-8912d1f99d37
       version: -1
       name: URL to File
       description: Create a file from url
@@ -297,18 +295,15 @@ inputs:
     simple: file-detonated-via-demisto
   required: false
   description: Name of the file to detonate.
-- key: OS
-  value: {}
-  required: false
-  description: Source OS (string)
-- key: OSVersion
-  value: {}
-  required: false
-  description: OS version (string)
 - key: VM
   value: {}
   required: false
   description: The VM to use (string)
+- key: Playbook
+  value:
+    simple: default
+  required: false
+  description: Name of the Threat Grid playbook to apply to this sample run
 - key: Private
   value: {}
   required: false

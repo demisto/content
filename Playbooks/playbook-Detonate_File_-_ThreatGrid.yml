@@ -12,15 +12,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c4e9aab2-699c-4769-8cd3-d16837b79a52
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
     type: start
     task:
-      id: c4e9aab2-699c-4769-8cd3-d16837b79a52
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: "Start"
     nexttasks:
       '#none#':
       - "5"
@@ -35,10 +35,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 460ef9dc-0f88-4cf5-81fa-c22478883891
+    taskid: 1378d2a9-9fcc-47d0-817f-9d9145740752
     type: condition
     task:
-      id: 460ef9dc-0f88-4cf5-81fa-c22478883891
+      id: 1378d2a9-9fcc-47d0-817f-9d9145740752
       version: -1
       name: Is ThreatGrid enabled?
       description: Verify that there is a valid instance of ThreatGrid is enabled
@@ -90,16 +90,16 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 8a774711-833b-445b-8ae9-231b0459de1f
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
     type: title
     task:
-      id: 8a774711-833b-445b-8ae9-231b0459de1f
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: "Done"
     separatecontext: false
     view: |-
       {
@@ -111,10 +111,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 38f5cfcb-f7a4-4861-853b-ce101b37f3d4
+    taskid: 2ef569c7-fa31-45cc-80a0-e03b12b49815
     type: regular
     task:
-      id: 38f5cfcb-f7a4-4861-853b-ce101b37f3d4
+      id: 2ef569c7-fa31-45cc-80a0-e03b12b49815
       version: -1
       name: ThreatGrid Get Samples State
       description: Get the sample state.
@@ -141,10 +141,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 32bc3054-f7dd-40d1-8043-ec8987c64a5f
+    taskid: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
     type: regular
     task:
-      id: 32bc3054-f7dd-40d1-8043-ec8987c64a5f
+      id: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
       version: -1
       name: Set file to context
       description: Set the file object into context.
@@ -173,10 +173,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: 7b8ac3cc-20f1-4693-84b1-c0f812fb33a0
+    taskid: 0245c2ab-485d-4994-8da0-63d10d247a77
     type: regular
     task:
-      id: 7b8ac3cc-20f1-4693-84b1-c0f812fb33a0
+      id: 0245c2ab-485d-4994-8da0-63d10d247a77
       version: -1
       name: ThreatGrid Upload File
       description: Uploads a file to Threat Grid
@@ -195,12 +195,9 @@ tasks:
       filename:
         complex:
           root: inputs.FileName
-      os:
+      playbook:
         complex:
-          root: inputs.OS
-      osver:
-        complex:
-          root: inputs.OSVersion
+          root: inputs.Playbook
       private:
         complex:
           root: inputs.Private
@@ -224,10 +221,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: e3f25144-f9da-45d0-87d0-f37f260b7895
+    taskid: c1d5b196-d934-4ef2-8e01-3487eae58533
     type: condition
     task:
-      id: e3f25144-f9da-45d0-87d0-f37f260b7895
+      id: c1d5b196-d934-4ef2-8e01-3487eae58533
       version: -1
       name: Is the file type supported?
       description: Will fail if file type is not supported.
@@ -276,10 +273,10 @@ tasks:
     note: false
   "15":
     id: "15"
-    taskid: 315d999b-85d7-4e9c-8495-830c8b788d32
+    taskid: 97fcf073-c63a-42d4-8e65-ba6d4814d859
     type: playbook
     task:
-      id: 315d999b-85d7-4e9c-8495-830c8b788d32
+      id: 97fcf073-c63a-42d4-8e65-ba6d4814d859
       version: -1
       name: GenericPolling
       description: |-
@@ -329,10 +326,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: 3146567b-2f8a-4c14-880c-21d6ba502224
+    taskid: 93e193f6-a438-4349-861c-f0f99b4b3997
     type: condition
     task:
-      id: 3146567b-2f8a-4c14-880c-21d6ba502224
+      id: 93e193f6-a438-4349-861c-f0f99b4b3997
       version: -1
       name: Is there a file to detonate?
       description: Checks whether there's a file to detonate - if not then the detonation
@@ -389,18 +386,15 @@ inputs:
     simple: file-detonated-via-demisto
   required: false
   description: Name of the file to detonate.
-- key: OS
-  value: {}
-  required: false
-  description: Source OS (string)
-- key: OSVersion
-  value: {}
-  required: false
-  description: OS version (string)
 - key: VM
   value: {}
   required: false
   description: The VM to use (string)
+- key: playbook
+  value:
+    simple: default
+  required: false
+  description: Name of the Threat Grid playbook to apply to this sample run
 - key: Private
   value: {}
   required: false

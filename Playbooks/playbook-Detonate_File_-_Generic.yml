@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e32a1f9a-07bd-4930-858f-8379a4912b0f
+    taskid: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
     type: start
     task:
-      id: e32a1f9a-07bd-4930-858f-8379a4912b0f
+      id: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
       version: -1
       name: ""
       description: Playbook start point
@@ -120,6 +120,11 @@ tasks:
           root: inputs.File
       interval:
         simple: "1"
+      playbook:
+        simple: default
+      private: {}
+      source: {}
+      tags: {}
       timeout:
         simple: "15"
     separatecontext: true
@@ -159,8 +164,8 @@ tasks:
         simple: file-detonated-via-demisto
       interval:
         simple: "1"
-      os: {}
-      osver: {}
+      playbook:
+        simple: default
       private: {}
       source: {}
       tags: {}

@@ -23,12 +23,14 @@ ZIP_TEST = 'content_test'
 
 def is_ge_version(ver1, ver2):
     # fix the version to arrays of numbers
-    if isinstance(ver1, str): ver1 = [int(i) for i in ver1.split('.')]
-    if isinstance(ver2, str): ver2 = [int(i) for i in ver2.split('.')]
+    ver1 = [int(i) for i in str(ver1).split('.')]
+    ver2 = [int(i) for i in str(ver2).split('.')]
 
     for v1, v2 in zip(ver1, ver2):
         if v1 > v2:
             return False
+        elif v2 > v1:
+            return True
 
     # most significant values are equal
     return len(ver1) <= len(ver2)
