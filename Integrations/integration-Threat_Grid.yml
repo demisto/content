@@ -730,9 +730,12 @@ script:
     - contextPath: Sample.State
       description: The sample state.
       type: string
+    - contextPath: Sample.Status
+      description: A detailed status of the sample.
+      type: string
     - contextPath: Sample.ID
       description: The sample ID.
-      type: unknown
+      type: string
     description: Get threat grid samples state
   - name: threat-grid-upload-sample
     arguments:
