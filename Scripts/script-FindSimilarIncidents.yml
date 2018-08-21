@@ -206,8 +206,13 @@ script: |-
       return count >= number_of_keys_to_consider_equals
 
   def did_not_found_duplicates():
-      demisto.setContext('isSimilarIncidentFound', False)
-      demisto.results('No duplicate incidents has been found.')
+      context = {
+          'isSimilarIncidentFound': False
+      }
+      demisto.results({'ContentsFormat': formats['markdown'],
+                       'Type': entryTypes['note'],
+                       'Contents': 'No duplicate incidents has been found.',
+                       'EntryContext': context})
       exit(0)
 
   SIMILAR_INCIDENT_KEYS = map(lambda x: remove_prefix('incident.', x), SIMILAR_INCIDENT_KEYS)
@@ -262,9 +267,9 @@ script: |-
       duplicate_incidents_rows = sorted(duplicate_incidents_rows, key=lambda x: x['time'])
       context = {
           'similarIncidentList': duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST],
-          'similarIncident': duplicate_incidents_rows[0]
+          'similarIncident': duplicate_incidents_rows[0],
+          'isSimilarIncidentFound': True
       }
-      demisto.setContext('isSimilarIncidentFound', True)
       duplicate_incidents_rows = duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST]
       hr_result = map(lambda row: dict((camel_case_to_space(k), v) for k, v in row.items()), duplicate_incidents_rows)
       markdown_result = tableToMarkdown("Duplicate incidents",
@@ -343,3 +348,4 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
+releaseNotes: "Fix script output params."
