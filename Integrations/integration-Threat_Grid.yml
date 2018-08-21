@@ -90,8 +90,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
                 {to: 'StartedAt', from: 'started_at'},
                 {to: 'CompletedAt', from: 'completed_at'},
@@ -104,8 +102,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
             ],
         'threat-grid-get-samples': [
@@ -116,8 +112,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
                 {to: 'StartedAt', from: 'started_at'},
                 {to: 'CompletedAt', from: 'completed_at'},
@@ -757,12 +751,16 @@ script:
     - name: filename
       required: true
       description: The real file name
-    - name: os
-      description: a string identifying the source OS
-    - name: osver
-      description: a string defining the OS version.
     - name: vm
+      auto: PREDEFINED
+      predefined:
+      - win7-x64
+      - win7-x64-2
+      - win7-x64-jp
+      - win7-x64-kr
+      - win10
       description: a string identifying a specific VM to use
+      defaultValue: win7-x64
     - name: private
       description: if present, and set to any value but “false” the sample will be
         marked private
@@ -770,6 +768,21 @@ script:
       description: a string identifying the source (user defined)
     - name: tags
       description: A comma-separated list of tags applied to this sample.
+    - name: playbook
+      auto: PREDEFINED
+      predefined:
+      - none
+      - default
+      - alt_tab_programs
+      - open_word_embedded_object
+      - press_enter
+      - visit_site
+      - close_file
+      - run_dialog_box_ie
+      - open_attachment_msg
+      - run_dialog_box_dde
+      description: Name of a Threat Grid playbook to apply to this sample run
+      defaultValue: default
     outputs:
     - contextPath: ThreatGrid.Sample.ID
       description: The sample id
@@ -1086,3 +1099,4 @@ script:
       type: int
     description: Convert a URL into a file for Threat Grid file detonation.
   runonce: false
+releaseNotes: "Added 'playbook' parameter."
