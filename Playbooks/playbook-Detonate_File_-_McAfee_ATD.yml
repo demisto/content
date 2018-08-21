@@ -1,6 +1,6 @@
-id: detonate_file_-_mcafee_atd
+id: atd_-_detonate_file
 version: -1
-name: Detonate File - McAfee ATD
+name: ATD - Detonate File
 fromversion: 4.0.0
 description: |-
   Detonates a File using the McAfee Advanced Threat Defense sandbox.

@@ -1,7 +1,7 @@
 id: ATD - Detonate File
 version: -1
 name: ATD - Detonate File
-fromversion: ""
+toversion: 3.6.0
 description: Detonate a file through McAfee ATD
 starttaskid: "0"
 tasks:
@@ -230,3 +230,4 @@ outputs:
 - contextPath: IP.Address
   description: IP's relevant to the sample
   type: string
+releaseNotes: "-"
