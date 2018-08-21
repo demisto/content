@@ -134,8 +134,8 @@ tasks:
         simple: file-detonated-via-demisto
       interval:
         simple: "1"
-      os: {}
-      osver: {}
+      playbook:
+      simple: default
       private: {}
       source: {}
       tags: {}
@@ -311,3 +311,4 @@ outputs:
 - contextPath: File.Name
   description: Filename (only in case of report type=json)
   type: string
+releaseNotes: "-"

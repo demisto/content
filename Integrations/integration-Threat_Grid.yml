@@ -753,13 +753,6 @@ script:
       - win10
       description: a string identifying a specific VM to use
       defaultValue: win7-x64
-    - name: private
-      description: if present, and set to any value but “false” the sample will be
-        marked private
-    - name: source
-      description: a string identifying the source (user defined)
-    - name: tags
-      description: A comma-separated list of tags applied to this sample.
     - name: playbook
       auto: PREDEFINED
       predefined:
@@ -775,6 +768,13 @@ script:
       - run_dialog_box_dde
       description: Name of a Threat Grid playbook to apply to this sample run
       defaultValue: default
+    - name: private
+      description: if present, and set to any value but “false” the sample will be
+        marked private
+    - name: source
+      description: a string identifying the source (user defined)
+    - name: tags
+      description: A comma-separated list of tags applied to this sample.
     outputs:
     - contextPath: ThreatGrid.Sample.ID
       description: The sample id
