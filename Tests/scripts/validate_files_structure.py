@@ -9,14 +9,18 @@ It can be run to check only commited changes (if the first argument is 'true') o
 Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh` for that task.
 """
 import pip
-
+import sys
 try:
     import yaml
 except ImportError:
-    pip.main(['install', 'pyyaml'])
-    import yaml
+    print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
+    sys.exit(1)
+try:
+    import pykwalify
+except ImportError:
+    print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
+    sys.exit(1)
 import json
-import sys
 import re
 import os
 from subprocess import Popen, PIPE
@@ -74,7 +78,6 @@ class LOG_COLORS:
 # print srt in the given color
 def print_color(str, color):
     print(color + str + LOG_COLORS.NATIVE)
-
 
 def print_error(error_str):
     print_color(error_str, LOG_COLORS.RED)
