@@ -3,7 +3,22 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Gmail",
+            "playbookID": "get_original_email_-_gmail_-_test"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
             "playbookID": "test_delete_context"
+        },
+        {
+            "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "TestParseCSV"
         },
         {
             "integrations": "Shodan",
@@ -11,9 +26,6 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "playbookID": "TestParseCSV"
         },
         {
             "integrations": "Jask",
