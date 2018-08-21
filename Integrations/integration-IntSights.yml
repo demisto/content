@@ -491,6 +491,7 @@ script:
             args.Closed.FreeText = args.Comment;
             args.Closed.IsClosed = true;
             args.Closed.Reason = args.Reason;
+            args.Rate = parseInt(args.Rate);
 
         default:
             res = sendRequest(
