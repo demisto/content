@@ -17,16 +17,6 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Fetch incidents
-  name: isFetch
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
 script:
   script: |
     ''' IMPORTS '''
@@ -101,7 +91,6 @@ script:
     def extract_on_call_user_data(users):
         """Extact data about user from a given schedule."""
         outputs = []
-        context = []
         for i, user in enumerate(users):
             output = {}
 
@@ -115,7 +104,6 @@ script:
             output['Avatar Url'] = user.get('avatar_url')
 
             outputs.append(output)
-            context.append(output)
 
         return {
             'Type': entryTypes['note'],
@@ -124,14 +112,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS),
             'EntryContext': {
-                'PagerDutyUser': context
+                'PagerDutyUser': outputs
             }
         }
 
     def extract_on_call_now_user_data(oncalls, table_name):
         """Extract the user data from the oncalls json."""
         outputs = []
-        context = []
         for i in xrange(len(oncalls)):
             output = {}
             data = oncalls[i]
@@ -148,7 +135,6 @@ script:
 
             escal_level = data.get('escalation_level', 1)
             outputs.insert(escal_level - 1, output)
-            context.insert(escal_level - 1, output)
 
         return {
             'Type': entryTypes['note'],
@@ -157,14 +143,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(table_name, outputs, USERS_ON_CALL_NOW_HEADERS),
             'EntryContext': {
-                'PagerDutyUser': context
+                'PagerDutyUser': outputs
             }
         }
 
     def extract_incidents_data(incidents):
         """Extact data about incidents."""
         outputs = []
-        context = []
         for i, incident in enumerate(incidents):
             output = {}
 
@@ -203,7 +188,6 @@ script:
             output['Summary'] = incident.get('summary')
 
             outputs.append(output)
-            context.append(output)
 
         return {
             'Type': entryTypes['note'],
@@ -212,14 +196,13 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, INCIDENTS_HEADERS),
             'EntryContext': {
-                'PagerDuty.Incidents': context
+                'PagerDuty.Incidents': outputs
             }
         }
 
     def extract_all_schedules_data(schedules):
         """Extract the data about all the schedules."""
         outputs = []
-        context = []
         for i in range(len(schedules)):
             output = {}
             data = schedules[i]
@@ -237,7 +220,6 @@ script:
                 output['Escalation Policy ID'] = "-"
 
             outputs.append(output)
-            context.append(output)
 
         return {
             'Type': entryTypes['note'],
@@ -246,7 +228,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(SCHEDULES, outputs, SCHEDULES_HEADERS),
             'EntryContext': {
-                'PagerDuty.Schedules': context
+                'PagerDuty.Schedules': outputs
             }
         }
 
@@ -468,8 +450,6 @@ script:
     - contextPath: PagerDuty.Event
       description: Event data
     description: Creates a new event/incident in PagerDuty
-  isfetch: true
   runonce: false
 hidden: false
-fromversion: 3.5.0
 releaseNotes: "Upgraded PagerDuty API to version 2."
