@@ -9,7 +9,8 @@
             "playbookID": "detonate_file_-_generic_test",
             "timeout": 2000,
             "integrations": [
-                "VxStream"
+                "VxStream",
+                "McAfee Advanced Threat Defense"
             ]
         },
         {
