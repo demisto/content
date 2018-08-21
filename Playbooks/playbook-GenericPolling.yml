@@ -1,7 +1,14 @@
 id: GenericPolling
 version: -1
 name: GenericPolling
-description: Generic Polling Playbook
+description: |-
+  Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+  This playbook implements polling by continually running the command in Step #2 until the operation completes.
+  The remote action should have the following structure:
+
+  1. Initiate the operation.
+  2. Poll to check if the operation completed.
+  3. (optional) Get the results of the operation.
 fromversion: 4.0.0
 starttaskid: "0"
 tasks:
@@ -57,6 +64,7 @@ tasks:
         simple: ${inputs.PollingCommandName}
       pollingCommandArgName:
         simple: ${inputs.PollingCommandArgName}
+      tag: {}
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
@@ -71,17 +79,22 @@ tasks:
   "2":
     id: "2"
     taskid: 156abdbe-586e-4241-8ae6-364fe3d9d76a
-    type: regular
+    type: condition
     task:
       id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
       version: -1
-      name: Wait For Polling Task To Finish
+      name: Check if the polling task finished successfully
       description: Wait For Polling Task To Finish
       tags:
       - polling
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "YES":
+      - "5"
     separatecontext: false
     view: |-
       {
@@ -123,14 +136,62 @@ tasks:
         }
       }
     note: false
+  "5":
+    id: "5"
+    taskid: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+    type: title
+    task:
+      id: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 740
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 62b13486-ae6a-49c1-8988-16765f35f1cc
+    type: regular
+    task:
+      id: 62b13486-ae6a-49c1-8988-16765f35f1cc
+      version: -1
+      name: Scheduled Task Failed
+      description: Scheduled Task Failed
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: GenericPollingScheduledTask encountered an error.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 725
+        }
+      }
+    note: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "2_5_YES": 0.48
+    },
     "paper": {
       "dimensions": {
-        "height": 590,
-        "width": 380,
-        "x": 50,
+        "height": 770,
+        "width": 830,
+        "x": -170,
         "y": 50
       }
     }

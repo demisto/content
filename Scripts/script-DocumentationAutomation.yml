@@ -75,7 +75,10 @@ script: |-
 
   j=2
   for i in range(len(dataMap['configuration'])):
-      doc += '  * __' + dataMap['configuration'][i]['display'] +'__\n'
+      if (dataMap['configuration'][i]['display']):
+          doc += '  * __' + dataMap['configuration'][i]['display'] +'__\n'
+      else:
+          doc += '  * __' + dataMap['configuration'][i]['name'] +'__\n'
       j += 1
   doc += '4. Click __Test__ to validate the URLs, token, and connection.' +'\n'
 
@@ -195,4 +198,3 @@ args:
   description: Known limitations. Number the steps by 'x.' (i.e. '1.')
 scripttarget: 0
 runonce: false
-releaseNotes: "New formats, better error handling"

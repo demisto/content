@@ -2,7 +2,7 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
-releaseNotes: "Auto-extract indicator from email inline"
+releaseNotes: "-"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -328,7 +328,7 @@ tasks:
       emailsubject:
         complex:
           root: Email
-          accessor: To
+          accessor: Subject
           transformers:
           - operator: general.uniq
           - operator: general.Stringify
