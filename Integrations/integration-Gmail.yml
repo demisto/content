@@ -811,7 +811,7 @@ script:
             if temp_date > current_fetch:
                 incidents.append(incident)
 
-        demisto.setLastRun({'time' : last_fetch.isoformat() + 'Z'})
+        demisto.setLastRun({'time' : last_fetch.isoformat().split('.')[0] + 'Z'})
         return incidents
 
 
