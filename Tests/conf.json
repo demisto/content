@@ -3,10 +3,15 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
+        },
+        {
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
         },
-       {    "integrations": "Gmail",
+        {   "integrations": "Gmail",
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
@@ -416,11 +421,6 @@
         {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
-        },
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook",
-            "nightly": true
         },
         {
             "integrations": "Joe Security",
