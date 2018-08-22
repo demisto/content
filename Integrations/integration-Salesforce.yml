@@ -1500,4 +1500,3 @@ script:
       salesforce-push-comment
   isfetch: true
   runonce: false
-releaseNotes: "Added comments fetch to use with SalesforceAskUser script and added command salesforce-push-comment-threads"

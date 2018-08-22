@@ -440,4 +440,3 @@ outputs:
   description: The sample state.
 - contextPath: Sample.ID
   description: The sample ID.
-releaseNotes: "-"
