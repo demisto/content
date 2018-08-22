@@ -196,10 +196,8 @@ tasks:
         simple: ${File.EntryID}
       filename:
         simple: ${inputs.FileName}
-      os:
-        simple: ${inputs.os}
-      osver:
-        simple: ${inputs.osver}
+      playbook:
+        simple: ${inputs.playbook}
       private:
         simple: ${inputs.private}
       source:
@@ -271,18 +269,15 @@ inputs:
     simple: file-detonated-via-demisto
   required: false
   description: Name of the file to detonate.
-- key: os
-  value: {}
-  required: false
-  description: Source OS (string)
-- key: osver
-  value: {}
-  required: false
-  description: OS version (string)
 - key: vm
   value: {}
   required: false
   description: The VM to use (string)
+- key: playbook
+  value:
+    simple: default
+  required: false
+  description: Name of the Threat Grid playbook to apply to this sample run
 - key: private
   value: {}
   required: false
