@@ -13,6 +13,7 @@ script: |-
   import optparse
   import sys
   import os
+  import re
   from collections import OrderedDict
 
   import xml.etree.cElementTree as ET
@@ -367,6 +368,24 @@ script: |-
       return strRegistryPath
 
 
+  def scoreToReputation(score):
+      """
+         Converts score (in number format) to human readable reputation format
+
+         :type score: ``int``
+         :param score: The score to be formatted (required)
+
+         :return: The formatted score
+         :rtype: ``str``
+      """
+      to_str = {
+          3 : 'Bad',
+          2 : 'Suspicious',
+          1 : 'Good',
+      }
+      return to_str.get(score, 'None')
+
+
   class IntegrationLogger(object):
       """
         a logger for python integrations:
@@ -415,9 +434,10 @@ script: |-
       if type(data) in STRING_TYPES:
           return data
       elif isinstance(data, dict):
-          return l_format.join([k + ': ' + flattenCell(data[k], is_pretty) for k in data])
+          return '\n'.join(['%s: %s' % (k, flattenCell(v, is_pretty)) for k, v in data.items()])
       else:
           return flattenCell(data, is_pretty)
+
 
   def flattenCell(data, is_pretty=True):
       """
@@ -440,6 +460,7 @@ script: |-
       else:
           return json.dumps(data, indent=indent)
 
+
   def FormatIso8601(t):
       """
          Convert a time expressed in seconds to ISO 8601 time format string
@@ -451,6 +472,7 @@ script: |-
          :rtype: ``str``
       """
       return t.strftime("%Y-%m-%dT%H:%M:%S")
+
 
   def argToList(arg):
       """
@@ -676,7 +698,7 @@ script: |-
       return mdResult
 
 
-  def fileResult(filename, data):
+  def fileResult(filename, data, file_type=None):
       """
          Creates a file from the given data
 
@@ -686,13 +708,18 @@ script: |-
          :type data: ``str``
          :param data: The file data (required)
 
+         :type file_type: ``str``
+         :param file_type: one of the entryTypes file or entryInfoFile (optional)
+
          :return: A Demisto war room entry
          :rtype: ``dict``
       """
+      if file_type is None:
+          file_type = entryTypes['file']
       temp = demisto.uniqueFile()
       with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
           f.write(data)
-      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': filename, 'FileID': temp}
+      return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
   def file_result_existing_file(filename, saveFilename = None):
@@ -1011,6 +1038,23 @@ script: |-
               return False
       return True
 
+  def return_error(message):
+      """
+         Returns error entry with given message and exits the script
+
+         :type message: ``str``
+         :param message: The message to return in the entry (required)
+
+         :return: Error entry object
+         :rtype: ``dict``
+      """
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContentsFormat': formats['text'],
+          'Contents': message
+      })
+      sys.exit(0)
+
   # Constants for common merge paths
   outputPaths = {
     'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
@@ -1020,6 +1064,54 @@ script: |-
     'cve': 'CVE(val.ID && val.ID == obj.ID)',
     'email': 'Account.Email(val.Address && val.Address == obj.Address)'
   }
+
+  ############################### REGEX FORMATTING ###############################
+  regexFlags = re.M #Multi line matching
+  #for the global(/g) flag use re.findall({regex_format},str)
+  #else, use re.match({regex_format},str)
+
+  ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
+  emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
+  hashRegex = r'\b[0-9a-fA-F]+\b'
+
+  md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
+  sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
+  sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+
+  ############################### REGEX FORMATTING end ###############################
+
+  def string_to_table_header(string):
+      """
+        Checks if string, change underscores to spaces, capitalize every word.
+        Example: "one_two" to "One Two"
+
+        :type string: ``str``
+        :param string: The string to be converted (required)
+
+        :return: The converted string
+        :rtype: ``str``
+      """
+      if type(string) in STRING_TYPES:
+          return " ".join(word.capitalize() for word in string.replace("_"," ").split())
+      else:
+          raise Exception('The key is not a string: {}'.format(string))
+
+  def string_to_context_key(string):
+      """
+       Checks if string, removes underscores, capitalize every word.
+       Example: "one_two" to "OneTwo"
+
+       :type string: ``str``
+       :param string: The string to be converted (required)
+
+       :return: The converted string
+       :rtype: ``str``
+      """
+      if type(string) in STRING_TYPES:
+          return "".join(word.capitalize() for word in string.split('_'))
+      else:
+          raise Exception('The key is not a string: {}'.format(string))
+
 type: python
 tags:
 - infra

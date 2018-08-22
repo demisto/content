@@ -32,12 +32,12 @@ configuration:
   required: true
 - display: Server Version (2007,2010,2010_SP2,2013,2016)
   name: defaultServerVersion
-  defaultvalue: "2013"
+  defaultvalue: "2016"
   type: 0
   required: true
 - display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
   name: authType
-  defaultvalue: NTLM
+  defaultvalue: Basic
   type: 0
   required: true
 - display: Has impersonation rights.
@@ -94,8 +94,8 @@ script:
     log_stream = StringIO()
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
-    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-        ErrorFolderNotFound, ErrorToFolderNotFound
+    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -143,6 +143,7 @@ script:
     LAST_RUN_TIME = "lastRunTime"
     LAST_RUN_IDS = "ids"
     LAST_RUN_FOLDER = "folderName"
+    ERROR_COUNTER = "errorCounter"
 
     ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
                              'toRecipients', ]
@@ -184,6 +185,11 @@ script:
         if isinstance(d, dict):
             return dict((k, v) for k, v in d.items() if v is not None)
         return d
+
+    def get_attachment_name(attachment_name):
+        if attachment_name is None or attachment_name == "":
+            return 'demisto_untitled_attachment'
+        return attachment_name
 
 
     def get_entry_for_object(title, context_key, obj, headers=None):
@@ -640,7 +646,7 @@ script:
                             label_attachment_id_type = 'attachmentId'
 
                             # save the attachment
-                            file_name = attachment.name if attachment.name else 'demisto_untitled_attachment'
+                            file_name = get_attachment_name(attachment.name)
                             file_result = fileResult(file_name, attachment.content)
 
                             # check for error
@@ -651,7 +657,7 @@ script:
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': attachment.name
+                                'name': get_attachment_name(attachment.name)
                             })
                     except TypeError, e:
                         if e.message != "must be string or buffer, not None":
@@ -664,7 +670,7 @@ script:
 
                     # save the attachment
                     if attachment.item.mime_content:
-                        file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
+                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content)
 
                     if file_result:
                         # check for error
@@ -675,11 +681,11 @@ script:
                         # save attachment to incident
                         incident['attachment'].append({
                             'path': file_result['FileID'],
-                            'name': attachment.name + ".eml"
+                            'name': get_attachment_name(attachment.name) + ".eml"
                         })
 
 
-                labels.append({'type': label_attachment_type, 'value': attachment.name})
+                labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
                 labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
 
@@ -710,28 +716,42 @@ script:
     def fetch_emails_as_incidents(account, folder_name):
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
-        last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = []
-        incidents = []
-        for item in last_emails:
-            if item.message_id:
-                ids.append(item.message_id)
-                incident = parse_incident_from_item(item)
-                incidents.append(incident)
+        try:
+            last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        new_last_run = {
-            LAST_RUN_TIME: start_time.ewsformat(),
-            LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: ids
-        }
+            ids = []
+            incidents = []
+            for item in last_emails:
+                if item.message_id:
+                    ids.append(item.message_id)
+                    incident = parse_incident_from_item(item)
+                    incidents.append(incident)
 
-        demisto.setLastRun(new_last_run)
-        return incidents
+            new_last_run = {
+                LAST_RUN_TIME: start_time.ewsformat(),
+                LAST_RUN_FOLDER: folder_name,
+                LAST_RUN_IDS: ids,
+                ERROR_COUNTER: 0
+            }
+
+            demisto.setLastRun(new_last_run)
+            return incidents
+
+        except RateLimitError:
+            if LAST_RUN_TIME in last_run:
+                last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
+            if ERROR_COUNTER not in last_run:
+                last_run[ERROR_COUNTER] = 0
+            last_run[ERROR_COUNTER] += 1
+            demisto.setLastRun(last_run)
+            if last_run[ERROR_COUNTER] > 2:
+                raise
+            return []
 
 
     def get_entry_for_file_attachment(item_id, attachment):
-        entry = fileResult(attachment.name, attachment.content)
+        entry = fileResult(get_attachment_name(attachment.name), attachment.content)
         ec = {
             CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
                                                                                                               attachment)
@@ -746,7 +766,7 @@ script:
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': attachment.name,
+                'attachmentName': get_attachment_name(attachment.name),
                 'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
                 'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
@@ -762,7 +782,7 @@ script:
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': attachment.name,
+                'attachmentName': get_attachment_name(attachment.name),
                 'attachmentSHA256': None,
                 'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
@@ -778,7 +798,7 @@ script:
         item = attachment.item
         dict_result = parse_attachment_as_dict(item_id, attachment)
         dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
-        title = 'EWS get attachment got item for "%s", "%s"' % (target_email, attachment.name)
+        title = 'EWS get attachment got item for "%s", "%s"' % (target_email, get_attachment_name(attachment.name))
 
         return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                     dict_result)
@@ -851,7 +871,7 @@ script:
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
                 if attachment.item.mime_content:
-                    entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
+                    entries.append(fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content))
 
         return entries
 
@@ -1213,28 +1233,49 @@ script:
 
         time.sleep(2)
         debug_log = log_stream.getvalue()
+        error_message_simple = ""
         error_message = ""
+
+        # Office365 regular maintenance case
+        if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) and 'outlook.office365.com' in EWS_SERVER:
+            log_message = "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
+            if demisto.command() == 'fetch-incidents':
+                demisto.info(log_message)
+                demisto.incidents([])
+                exit(0)
+            if IS_TEST_MODULE:
+                demisto.results(log_message + " Please retry the instance configuration test.")
+                exit(0)
+            error_message_simple = log_message + " Please retry your request."
+
+        # Other exception handling
         if "Status code: 401" in debug_log:
-            error_message = "Got unauthorized from the server. " \
+            error_message_simple = "Got unauthorized from the server. " \
                             "Check credentials are correct and authentication method are supported. "
 
-            error_message += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+            error_message_simple += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
-            error_message = "Got timeout from the server. " \
+            error_message_simple = "Got timeout from the server. " \
                             "Probably the server is not reachable with the current settings. " \
                             "Check proxy parameter. If you are using server URL - change to server IP address. "
-        error_message = error_message + "\n" + e.message
+
+        if not error_message_simple:
+            error_message = error_message_simple = e.message
+        else:
+            error_message = error_message_simple + "\n" + e.message
+
         stacktrace = traceback.format_exc()
         if stacktrace:
             error_message += "\nFull stacktrace:\n" + stacktrace
 
         if debug_log:
-            if IS_TEST_MODULE:
-                error_message += "\nFull debug log:\n" + debug_log
-            else:
-                demisto.info(error_message + "\nFull debug log:\n" + debug_log)
+            error_message += "\nFull debug log:\n" + debug_log
 
-        raise Exception(error_message)
+        if not IS_TEST_MODULE:
+            raise Exception(error_message)
+        demisto.results(error_message_simple)
+        demisto.error("%s: %s" % (e.__class__.__name__, error_message))
+
   type: python
   commands:
   - name: ews-get-attachment

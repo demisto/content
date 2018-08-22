@@ -90,8 +90,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
                 {to: 'StartedAt', from: 'started_at'},
                 {to: 'CompletedAt', from: 'completed_at'},
@@ -104,8 +102,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
             ],
         'threat-grid-get-samples': [
@@ -116,8 +112,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
                 {to: 'StartedAt', from: 'started_at'},
                 {to: 'CompletedAt', from: 'completed_at'},
@@ -133,6 +127,11 @@ script:
                 {to: 'Count', from: 'count'},
                 {to: 'ID', from: 'sample'},
             ],
+        'threat-grid-get-samples-state': [
+                {to: 'ID', from: 'sample'},
+                {to: 'State', from: 'state'},
+                {to: 'Status', from: 'status'}
+            ]
     }
 
     var titleDictionary = {
@@ -140,7 +139,8 @@ script:
         'threat-grid-get-sample-state-by-id': 'Threat grid sample state',
         'threat-grid-get-sample-by-id': 'Threat grid get sample',
         'threat-grid-get-samples': 'Threat grid get samples',
-        'threat-grid-get-threat-summary-by-id': 'Threat grid get threat summary'
+        'threat-grid-get-threat-summary-by-id': 'Threat grid get threat summary',
+        'threat-grid-get-samples-state': 'Threat grid get sample state'
     }
 
     var createHR = function(command, object) {
@@ -174,6 +174,10 @@ script:
             ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
             ContentPath: 'data',
         },
+        "threat-grid-get-samples-state": {
+            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
+            ContentPath: 'data',
+        }
     }
 
     var fileCommands = {
@@ -193,7 +197,7 @@ script:
         'threat-grid-get-samples': 'GET',
         'threat-grid-get-sample-by-id': 'GET',
         'threat-grid-get-sample-state-by-id': 'GET',
-        'threat-grid-get-samples-state': 'POST',
+        'threat-grid-get-samples-state': 'GET',
         'threat-grid-search-samples': 'GET',
         'threat-grid-upload-sample': 'POST',
         'threat-grid-search-submissions': 'GET',
@@ -268,6 +272,62 @@ script:
         'threat-grid-get-specific-feed': 'feeds/%feed-name%-%feed-period%.%output-type%',
     };
 
+    var SHORTCUT_DATA = "[InternetShortcut]\nURL=";
+
+    function calcScore(tg_score) {
+        if (tg_score >= 95) {
+            return 3;
+        }
+        if (tg_score >= 75) {
+            return 2;
+        }
+        if (tg_score > 0) {
+            return 1;
+        }
+        return 0;
+    }
+
+    function get_threat_summary(id) {
+        rawResponse = sendRequest(
+            'GET',
+            'samples/' + id + '/summary',
+            args,
+            null
+        );
+        var contextData = {
+            ContextPath: 'ThreatGrid.Sample',
+            ContentPath: 'data',
+        };
+        var ec = {};
+        var returnObject = mapObjFunction([
+                {to: 'MaxConfidence', from: 'max-confidence'},
+                {to: 'MaxSeverity', from: 'max-severity'},
+                {to: 'Score', from: 'score'},
+                {to: 'Count', from: 'count'},
+                {to: 'ID', from: 'sample'},
+            ])(dq(rawResponse, contextData.ContentPath));
+        ec[contextData.ContextPath] = returnObject;
+        returnObject.ID = id;
+        dbotScore = calcScore(returnObject.Score);
+        ec['DBotScore'] = {
+            'Indicator': returnObject.ID,
+            'Score': dbotScore,
+            'Type': 'Sample ID',
+            'Vendor': 'ThreatGrid'
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.table,
+            Contents: [
+                {'key': 'Sample ID', 'value': returnObject.ID},
+                {'key': 'Threat Grid Score', 'value': returnObject.Score},
+                {'key': 'DBot Score', 'value': dbotScore}
+            ],
+            EntryContext: ec
+        }
+    }
+
+
     var rawResponse;
     var id = args.id;
     switch (command) {
@@ -275,6 +335,18 @@ script:
         args.limit = 1;
         sendRequest(methodDictionary['test-module'], urlDict['test-module'], args);
         return 'ok';
+
+      case 'threat-grid-url-to-file':
+        var urls = argToList(args.urls);
+        var files = [];
+        for (i = 0; i < urls.length; i++) {
+            var url = urls[i];
+            var fileName = "url_" + (i+1);
+            var fileEntry = { Type: 3, FileID: saveFile(SHORTCUT_DATA + url.replace(/\s/g,'')), File: fileName, Contents: fileName };
+            files.push(fileEntry);
+        }
+        return files;
+
       case 'threat-grid-upload-sample':
         args['api_key'] = params.token;
         var fileId = args['file-id'];
@@ -298,8 +370,7 @@ script:
         rawResponse = JSON.parse(res.Body);
         break;
       case 'threat-grid-get-samples-state':
-        args.ids = JSON.stringify(args.ids.split(','));
-        break;
+          args.ids = JSON.stringify(args.ids.split(','));
       default:
         // Get file name if such exists
         var filename = command in fileCommands && replaceInTemplates(fileCommands[command], args);
@@ -312,7 +383,7 @@ script:
 
         if (command === 'threat-grid-get-html-report-by-id') {
             var fileId = rawResponse.FileID;
-            return ({Type: 3, FileID: fileId, File: 'ThreatGreadReport.html', Contents: 'ThreatGreadReport.html'});
+            return ({Type: 9, FileID: fileId, File: 'ThreatGreadReport.html', Contents: 'ThreatGreadReport.html'});
         }
 
         if (filename){
@@ -330,12 +401,30 @@ script:
     if (returnObject && !returnObject.ID) {
         returnObject.ID = id;
     }
-    if (command === 'threat-grid-get-threat-summary-by-id' && returnObject.Score >= TERSHOLD) {
-        var md5 = dq(invContext, "ThreatGrid.Sample(val=val.ID=='" + returnObject.ID + "').MD5");
-        addMalicious(ec, outputPaths.file, {
-            MD5: Array.isArray(md5) ? md5[0] : md5,
-            Malicious: {Vendor: 'ThreatGrid', Description: 'Sample has score of ' + returnObject.Score + ' which is higher than treshold (80)'}
-        });
+    if (command === 'threat-grid-get-threat-summary-by-id') {
+        if ( returnObject.Score >= TERSHOLD) {
+            var md5 = dq(invContext, "ThreatGrid.Sample(val=val.ID=='" + returnObject.ID + "').MD5");
+            addMalicious(ec, outputPaths.file, {
+                MD5: Array.isArray(md5) ? md5[0] : md5,
+                Malicious: {Vendor: 'ThreatGrid', Description: 'Sample has score of ' + returnObject.Score + ' which is higher than treshold (80)'}
+            });
+        }
+        ec['DBotScore'] = {
+            'Indicator': returnObject.ID,
+            'Score': calcScore(returnObject.Score),
+            'Type': 'Sample ID',
+            'Vendor': 'ThreatGrid'
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.table,
+            Contents: [
+                {'key': 'Sample ID', 'value': rawResponse.data.sample},
+                {'key': 'Threat Grid Score', 'value': returnObject.Score},
+                {'key': 'DBot Score', 'value': calcScore(returnObject.Score)}
+            ],
+            EntryContext: ec
+        }
     }
 
     return {
@@ -584,10 +673,6 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
-      description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     - contextPath: ThreatGrid.Sample.StartedAt
@@ -616,10 +701,6 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
-      description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     - contextPath: ThreatGrid.Sample.StartedAt
@@ -645,6 +726,13 @@ script:
       required: true
       default: true
       description: IDs to get state of, comma separated
+    outputs:
+    - contextPath: Sample.State
+      description: The sample state.
+      type: string
+    - contextPath: Sample.ID
+      description: The sample ID.
+      type: unknown
     description: Get threat grid samples state
   - name: threat-grid-upload-sample
     arguments:
@@ -655,12 +743,31 @@ script:
     - name: filename
       required: true
       description: The real file name
-    - name: os
-      description: a string identifying the source OS
-    - name: osver
-      description: a string defining the OS version.
     - name: vm
+      auto: PREDEFINED
+      predefined:
+      - win7-x64
+      - win7-x64-2
+      - win7-x64-jp
+      - win7-x64-kr
+      - win10
       description: a string identifying a specific VM to use
+      defaultValue: win7-x64
+    - name: playbook
+      auto: PREDEFINED
+      predefined:
+      - none
+      - default
+      - alt_tab_programs
+      - open_word_embedded_object
+      - press_enter
+      - visit_site
+      - close_file
+      - run_dialog_box_ie
+      - open_attachment_msg
+      - run_dialog_box_dde
+      description: Name of a Threat Grid playbook to apply to this sample run
+      defaultValue: default
     - name: private
       description: if present, and set to any value but “false” the sample will be
         marked private
@@ -683,10 +790,6 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
-      description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     description: Submits a sample to threat grid for analysis
@@ -785,18 +888,31 @@ script:
     outputs:
     - contextPath: ThreatGrid.Sample.ID
       description: The sample id
+      type: string
     - contextPath: ThreatGrid.Sample.MaxSeverity
       description: The sample max severity
+      type: number
     - contextPath: ThreatGrid.Sample.Score
       description: The sample score
+      type: number
     - contextPath: ThreatGrid.Sample.Count
       description: The sample count
+      type: number
     - contextPath: ThreatGrid.Sample.MaxConfidence
       description: The sample max confidence
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator's type
+      type: string
     description: Returns a summary of the threats detected during analysis
   - name: threat-grid-get-html-report-by-id
     arguments:
@@ -931,3 +1047,43 @@ script:
       description: The output type
       defaultValue: json
     description: Gets a specific threat feed
+  - name: threat-grid-url-to-file
+    arguments:
+    - name: urls
+      required: true
+      default: true
+      description: The URLs to convert.
+      isArray: true
+    outputs:
+    - contextPath: File.EntryID
+      description: EntryID of the file upload message in the war room
+      type: string
+    - contextPath: File.Name
+      description: File Name
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
+    - contextPath: File.Type
+      description: File Type
+      type: string
+    - contextPath: File.Info
+      description: File Info
+      type: string
+    - contextPath: File.MD5
+      description: MD5 checksum
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 checksum
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 checksum
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep checksum
+      type: string
+    - contextPath: File.Size
+      description: File Size in bytes
+      type: int
+    description: Convert a URL into a file for Threat Grid file detonation.
+  runonce: false
