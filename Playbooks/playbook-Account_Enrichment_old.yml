@@ -1,6 +1,7 @@
 id: Account Enrichment
 version: -1
 name: Account Enrichment
+fromversion: 2.5.0
 toversion: 3.1.0
 description: Enrich the accounts under the Account context key with details from relevant
   integrations such as AD.
