@@ -384,6 +384,7 @@ tasks:
       id: 230fe216-0869-44e5-885a-8f7f32e4a7fa
       version: -1
       name: Set Context
+      description: "-"
       scriptName: Set
       type: regular
       iscommand: false

@@ -290,6 +290,7 @@ tasks:
       version: -1
       name: JoeSecurity Get Info
       script: Joe Security|||joe-analysis-info
+      description: "-"
       type: regular
       iscommand: true
       brand: Joe Security
@@ -318,6 +319,7 @@ tasks:
       id: 7c9693b1-3b80-4e1e-842e-a9f0bd5f48c3
       version: -1
       name: Set Context
+      description: "-"
       scriptName: Set
       type: regular
       iscommand: false

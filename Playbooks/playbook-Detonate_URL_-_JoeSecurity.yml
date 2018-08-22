@@ -280,6 +280,7 @@ tasks:
       id: 3f645918-1a91-4ba5-8a95-5d60fb441e43
       version: -1
       name: JoeSecurity Get Info
+      description: "Get Info"
       script: Joe Security|||joe-analysis-info
       type: regular
       iscommand: true
