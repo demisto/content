@@ -11,7 +11,7 @@
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
         },
-        {    "integrations": "Gmail",
+        {   "integrations": "Gmail",
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
