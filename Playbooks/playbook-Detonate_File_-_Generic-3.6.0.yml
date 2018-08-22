@@ -182,4 +182,3 @@ outputs:
 - contextPath: File.Name
   description: Filename (only in case of report type=json)
   type: string
-releaseNotes: "-"
