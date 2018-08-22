@@ -1818,3 +1818,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
+releaseNotes: "-"
