@@ -1,7 +1,7 @@
 id: Account Enrichment
 version: -1
 name: Account Enrichment
-fromversion: 3.5.0
+toversion: 3.1.0
 description: Enrich the accounts under the Account context key with details from relevant
   integrations such as AD.
 starttaskid: "0"
@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -54,20 +54,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 195
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: c7455a4b-be90-45c3-83be-a290e2660432
+    taskid: c205b05d-8d32-47e8-8f88-a5a2ce0e86fa
     type: regular
     task:
-      id: c7455a4b-be90-45c3-83be-a290e2660432
+      id: c205b05d-8d32-47e8-8f88-a5a2ce0e86fa
       version: -1
       name: Query AD to get user details
-      description: Query “Active Directory” for the email address info
       scriptName: ADGetUser
       type: regular
       iscommand: false
@@ -82,19 +81,15 @@ tasks:
       customFieldType:
         simple: mail
       dn: {}
-      email: {}
       headers: {}
-      limit: {}
       name: {}
       nestedSearch: {}
-      userAccountControlOut: {}
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -114,46 +109,17 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 720
+          "y": 545
         }
       }
     note: false
-  "4":
-    id: "4"
-    taskid: 7e9ec3ab-29e0-458a-8a61-7ca559f4b428
-    type: condition
-    task:
-      id: 7e9ec3ab-29e0-458a-8a61-7ca559f4b428
-      version: -1
-      name: Check if there is an Email address
-      description: Check if there is an Email address.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "1"
-    scriptarguments:
-      value:
-        simple: ${Account.Email.Address}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
-        }
-      }
-    note: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 560,
         "width": 492.5,
         "x": 50,
         "y": 50
@@ -162,4 +128,4 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "added task to check if there is an email in the context from version 3.5.0"
+releaseNotes: added toversion 3.1.0
