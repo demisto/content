@@ -110,4 +110,3 @@ args:
   description: index to delete in case 'key' argument was specified
 scripttarget: 0
 runonce: false
-releaseNotes: Added the ability to delete speficif index in a key (_index_ argument).
