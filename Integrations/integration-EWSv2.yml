@@ -123,6 +123,7 @@ script:
     ACTION = "action"
     MAILBOX = "mailbox"
     MAILBOX_ID = "mailboxId"
+    FOLDER_ID = "id"
 
     MOVED_TO_MAILBOX = "movedToMailbox"
     MOVED_TO_FOLDER = "movedToFolder"
@@ -139,6 +140,7 @@ script:
     CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID)
     CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
     CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
+    CONTEXT_UPDATE_FOLDER = "EWS.Folder(val.{0} == obj.{0})".format(FOLDER_ID)
 
     LAST_RUN_TIME = "lastRunTime"
     LAST_RUN_IDS = "ids"
@@ -1162,6 +1164,12 @@ script:
             }
         }
 
+    def get_folder(folder_path, target_mailbox=None):
+        account = get_account(target_mailbox or ACCOUNT_EMAIL)
+        folder = get_folder_by_path(account, folder_path)
+        folderDict = parse_item_as_dict(folder, target_mailbox)
+
+        return get_entry_for_object("Folder %s" % (folder_path,), CONTEXT_UPDATE_FOLDER, folderDict)
 
     def test_module():
         try:
@@ -1226,6 +1234,8 @@ script:
             encode_and_submit_results(get_items_from_folder(**args))
         elif demisto.command() == 'ews-get-items':
             encode_and_submit_results(get_items(**args))
+        elif demisto.command() == 'ews-get-folder':
+            encode_and_submit_results(get_folder(**args))
 
 
     except Exception, e:
@@ -1369,7 +1379,7 @@ script:
       type: string
     - contextPath: EWS.Items.ItemAttachments.attachmentId
       description: The id of the deleted attachment in case of other attachment (like
-        "email").
+                     "email").
       type: string
     - contextPath: EWS.Items.FileAttachments.action
       description: 'The deletion action in case of file attachment, constant value:
@@ -1803,8 +1813,7 @@ script:
       required: true
       description: The mailbox to move the item to.
     - name: source-mailbox
-      description: The mailbox to move the item from (conventionally called "target-mailbox"
-        - the target mailbox to apply the command on).
+      description: The mailbox to move the item from (conventionally called "target-mailbox" - the target mailbox to apply the command on).
     outputs:
     - contextPath: EWS.Items.movedToMailbox
       description: The mailbox that the item was moved to.
@@ -1816,5 +1825,35 @@ script:
       description: The action, value will be 'moved'.
       type: string
     description: Move an item from one mailbox to another.
+  - name: ews-get-folder
+    arguments:
+    - name: target-mailbox
+      description: The mailbox to apply the search on.
+    - name: folder-path
+      default: true
+      description: The folder path to get. If empty - will get the folder 'AllItems'.
+      defaultValue: AllItems
+    outputs:
+    - contextPath: EWS.Folder.id
+      description: Folder id.
+      type: string
+    - contextPath: EWS.Folder.name
+      description: Folder name.
+      type: string
+    - contextPath: EWS.Folder.changekey
+      description: Folder change key
+      type: string
+    - contextPath: EWS.Folder.total_count
+      description: Total count of emails in the folder.
+      type: number
+    - contextPath: EWS.Folder.parent_folder_id.id
+      description: Parent folders' id.
+    - contextPath: EWS.Folder.parent_folder_id.changekey
+      description: Parent folders' changekey.
+    - contextPath: EWS.Folder.unread_count
+      description: Unread emails in the folder.
+    description: Get a single specific folder.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
+  runonce: false
+releaseNotes: "Added command ews-get-folder, which returns a single specific folder"
