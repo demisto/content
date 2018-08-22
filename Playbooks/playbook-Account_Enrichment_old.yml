@@ -135,4 +135,4 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Added toversion in order to deprecate this playbook"
+releaseNotes: "-"
