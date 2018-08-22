@@ -34,6 +34,7 @@ tasks:
     type: condition
     task:
       id: be4d8a4d-14b5-4541-8d40-1df25ef145c6
+      description: ""
       version: -1
       name: Is AD configured?
       description: Check if a given value exists in the context. Will return 'no'
@@ -106,6 +107,7 @@ tasks:
       id: 561f7e3c-e8cf-4f68-8bbe-64c7cb608995
       version: -1
       name: User Enrichment Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
