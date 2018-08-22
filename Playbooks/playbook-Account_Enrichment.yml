@@ -1,7 +1,7 @@
 id: Account Enrichment
 version: -1
 name: Account Enrichment
-fromversion: 3.5.0
+fromversion: 3.6.0
 description: Enrich the accounts under the Account context key with details from relevant
   integrations such as AD.
 starttaskid: "0"
@@ -14,6 +14,7 @@ tasks:
       id: 065b25dc-7aad-4356-8bee-261b189251b3
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -34,7 +35,6 @@ tasks:
     type: condition
     task:
       id: be4d8a4d-14b5-4541-8d40-1df25ef145c6
-      description: ""
       version: -1
       name: Is AD configured?
       description: Check if a given value exists in the context. Will return 'no'

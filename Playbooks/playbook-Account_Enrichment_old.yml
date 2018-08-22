@@ -1,8 +1,9 @@
 id: Account Enrichment
 version: -1
 name: Account Enrichment
+system: true
 fromversion: 2.5.0
-toversion: 3.1.0
+toversion: 3.5.0
 description: Enrich the accounts under the Account context key with details from relevant
   integrations such as AD.
 starttaskid: "0"
@@ -13,13 +14,14 @@ tasks:
     type: start
     task:
       id: 065b25dc-7aad-4356-8bee-261b189251b3
+      description: ""
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
@@ -55,19 +57,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 195
+          "x": 50,
+          "y": 370
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: c205b05d-8d32-47e8-8f88-a5a2ce0e86fa
+    taskid: c7455a4b-be90-45c3-83be-a290e2660432
     type: regular
     task:
-      id: c205b05d-8d32-47e8-8f88-a5a2ce0e86fa
+      id: c7455a4b-be90-45c3-83be-a290e2660432
       version: -1
       name: Query AD to get user details
+      description: Query “Active Directory” for the email address info
       scriptName: ADGetUser
       type: regular
       iscommand: false
@@ -82,15 +85,19 @@ tasks:
       customFieldType:
         simple: mail
       dn: {}
+      email: {}
       headers: {}
+      limit: {}
       name: {}
       nestedSearch: {}
+      userAccountControlOut: {}
+      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -102,6 +109,7 @@ tasks:
       id: 561f7e3c-e8cf-4f68-8bbe-64c7cb608995
       version: -1
       name: User Enrichment Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -110,17 +118,46 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 545
+          "y": 720
         }
       }
     note: false
-system: true
+  "4":
+    id: "4"
+    taskid: 7e9ec3ab-29e0-458a-8a61-7ca559f4b428
+    type: condition
+    task:
+      id: 7e9ec3ab-29e0-458a-8a61-7ca559f4b428
+      version: -1
+      name: Check if there is an Email address
+      description: Check if there is an Email address.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    scriptarguments:
+      value:
+        simple: ${Account.Email.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
+        "height": 735,
         "width": 492.5,
         "x": 50,
         "y": 50
@@ -129,4 +166,4 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: added toversion 3.1.0
+releaseNotes: "add toversion to deprecate this playbook"
