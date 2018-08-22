@@ -419,4 +419,3 @@ script:
   runonce: false
 hidden: false
 fromversion: 3.5.0
-releaseNotes: "Updating Moloch Integration."

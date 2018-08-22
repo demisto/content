@@ -2,7 +2,6 @@ id: File Enrichment - Generic
 version: -1
 name: File Enrichment - Generic
 fromversion: 3.6.0
-releaseNotes: "Add support to VirusTotal Private API and Palo Alto AppFramework"
 description: |-
   Enrich a file using one or more integrations.
 
