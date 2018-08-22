@@ -325,8 +325,8 @@ tasks:
     task:
       id: 6db1c6dc-0b1d-465b-86ab-eb5757a1de1f
       version: -1
-      name: Detonate File - McAfee ATD
-      playbookName: Detonate File - McAfee ATD
+      name: ATD - Detonate File
+      playbookName: ATD - Detonate File
       type: playbook
       iscommand: false
       brand: ""
