@@ -306,9 +306,20 @@ script:
         md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
         md += 'Country: **' + o.country + '**\n';
         md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
-        var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
-            {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
-            {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions, t: 'Resolutions'}];
+
+        var detectedUrls = o.detected_urls || []
+        var detectedDownloadedSamples = o.detected_downloaded_samples || []
+        var undetectedDownloadedSamples = o.undetected_downloaded_samples || []
+        var detectedCommunicatingSamples = o.detected_communicating_samples || []
+        var undetectedCommunicatingSamples = o.undetected_communicating_samples || []
+        var detectedReferrerSamples = o.detected_referrer_samples || []
+        var undetectedReferrerSamples = o.undetected_referrer_samples || []
+        var resolutions = o.resolutions || []
+
+        var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
+            {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
+            {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
+            {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
         for (var i=0; i<arrTitle.length; i++) {
             if (arrTitle[i].a) {
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
@@ -317,26 +328,26 @@ script:
         ip_ec = {
             'Address': ip,
             "VirusTotal": {
-                'DownloadedHashes': o.detected_downloaded_samples.slice(0,maxLen),
-                'UnAVDetectedDownloadedHashes': o.undetected_downloaded_samples.slice(0,maxLen),
-                "DetectedURLs": o.detected_urls.slice(0,maxLen),
-                'CommunicatingHashes': o.detected_communicating_samples.slice(0,maxLen),
-                'UnAVDetectedCommunicatingHashes': o.undetected_communicating_samples.slice(0,maxLen),
-                'Resolutions': o.resolutions.slice(0,maxLen),
-                'ReferrerHashes': o.detected_referrer_samples.slice(0,maxLen),
-                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples.slice(0,maxLen)
+                'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
+                'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
+                "DetectedURLs": detectedUrls.slice(0,maxLen),
+                'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
+                'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
+                'Resolutions': resolutions.slice(0,maxLen),
+                'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
+                'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
             }
         };
         if (ec[outputPaths.ip]){
             ec[outputPaths.IP][0]['VirusTotal'] = {
-                'DownloadedHashes': o.detected_downloaded_samples.slice(0,maxLen),
-                'UnAVDetectedDownloadedHashes': o.undetected_downloaded_samples.slice(0,maxLen),
-                "DetectedURLs": o.detected_urls.slice(0,maxLen),
-                'CommunicatingHashes': o.detected_communicating_samples.slice(0,maxLen),
-                'UnAVDetectedCommunicatingHashes': o.undetected_communicating_samples.slice(0,maxLen),
-                'Resolutions': o.resolutions.slice(0,maxLen),
-                'ReferrerHashes': o.detected_referrer_samples.slice(0,maxLen),
-                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples.slice(0,maxLen)
+                'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
+                'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
+                "DetectedURLs": detectedUrls.slice(0,maxLen),
+                'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
+                'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
+                'Resolutions': resolutions.slice(0,maxLen),
+                'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
+                'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
             };
         } else {
             ec[outputPaths.ip] = ip_ec;
@@ -470,9 +481,20 @@ script:
         md += '#### Domain categories: *' + o.categories + "*\n";
         md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
 
-        var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
-            {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
-            {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions.slice(0,maxLen), t: 'Resolutions'}];
+        var detectedUrls = o.detected_urls || []
+        var detectedDownloadedSamples = o.detected_downloaded_samples || []
+        var undetectedDownloadedSamples = o.undetected_downloaded_samples || []
+        var detectedCommunicatingSamples = o.detected_communicating_samples || []
+        var undetectedCommunicatingSamples = o.undetected_communicating_samples || []
+        var detectedReferrerSamples = o.detected_referrer_samples || []
+        var undetectedReferrerSamples = o.undetected_referrer_samples || []
+        var resolutions = o.resolutions || []
+
+        var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
+            {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
+            {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
+            {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
+
         for (var i=0; i<arrTitle.length; i++) {
             if (arrTitle[i].a) {
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
@@ -1047,3 +1069,4 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
+releaseNotes: "-"
