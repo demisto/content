@@ -6,18 +6,29 @@
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
         },
+       {    "integrations": "Gmail",
+            "playbookID": "get_original_email_-_gmail_-_test"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
+            "playbookID": "test_delete_context"
+        },
+        {
+            "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "TestParseCSV"
+        },
         {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
-            "nightly": true
         },
         {
             "integrations": "Jask",
@@ -82,10 +93,6 @@
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
-        },
-        {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "playbookID": "Test filters & transformers scripts"
@@ -403,14 +410,24 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        }
+    ],
+    "skipped": [
+        {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true
-        }
-    ],
-    "skipped": [
+        },
+        {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500,
+            "nightly": true
+        },
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
@@ -462,9 +479,6 @@
             "playbookID": "SymantecMSSTest"
         },
         {
-            "playbookID": "TestParseCSV"
-        },
-        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
@@ -506,6 +520,9 @@
             "nightly": true
         },
         {
+            "integrations": [
+                "VirusTotal"
+            ],
             "playbookID": "File Enrichment - Generic Test"
         },
         {
