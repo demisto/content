@@ -3,7 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Gmail",
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
+        },
+       {    "integrations": "Gmail",
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
@@ -428,10 +431,6 @@
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
         },
         {
             "integrations":"Cylance Protect",
