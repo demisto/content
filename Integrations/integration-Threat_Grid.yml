@@ -730,9 +730,12 @@ script:
     - contextPath: Sample.State
       description: The sample state.
       type: string
+    - contextPath: Sample.Status
+      description: A detailed status of the sample.
+      type: string
     - contextPath: Sample.ID
       description: The sample ID.
-      type: unknown
+      type: string
     description: Get threat grid samples state
   - name: threat-grid-upload-sample
     arguments:
@@ -1087,3 +1090,4 @@ script:
       type: int
     description: Convert a URL into a file for Threat Grid file detonation.
   runonce: false
+releaseNotes: "Added 'playbook' parameter."
