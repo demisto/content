@@ -101,7 +101,7 @@ script:
             'Type': entryTypes['note'],
             'Contents': table,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(header, table, headers) if table else 'No result were found',
+            'HumanReadable': tableToMarkdown(header, table, headers) if table else '### '+ header + '\nNo results were found',
             'EntryContext': context
         }
 
@@ -174,7 +174,7 @@ script:
         parsed = parseToJson(handler, response)
         return parsed
 
-    def parameterTableBuilder(data):
+    def parameterTableBuilder(data, header):
         if not data.get('parameter_definition'):
             return 'No arguments needed for this package'
         param_data = json.loads(data['parameter_definition']).get('parameters', [])
@@ -188,19 +188,26 @@ script:
             parsed_param['Type'] = param['parameterType'].split('::')[-1] if param.get('parameterType') else 'Type not specified'
             parsed_params.append(parsed_param)
             parsed_param = {}
-        return tableToMarkdown('Package Arguments Details', parsed_params, ['Key','Name', 'Values', 'Description', 'Type'])
+        return tableToMarkdown(header, parsed_params, ['Key','Name', 'Values', 'Description', 'Type'])
 
     def getPackage(handler):
         response = getObject(handler, u'package')
         parsed = response.get('package_spec')
         final_result = create_entry('Tanium Package', parsed, {'Tanium.Packages' : parsed}, ['id', 'name', 'creation_time', 'command', 'last_modified_by'])
-        final_result['HumanReadable'] += parameterTableBuilder(parsed[0])
+        final_result['HumanReadable'] += parameterTableBuilder(parsed[0], 'Package Arguments Details')
         return final_result
 
     def getSavedQuestion(handler):
         response = getObject(handler, u'saved_question')
         parsed = response.get('saved_question')
         final_result = create_entry('Tanium Saved Question', parsed, {'Tanium.SavedQuestions' : parsed}, ['query_text', 'name', 'id'])
+        return final_result
+
+    def getSensor(handler):
+        response = getObject(handler, u'sensor')
+        parsed = response.get('sensor', None)
+        final_result = create_entry('Tanium Sensor - ' + demisto.args()['name'], parsed, {'Tanium.Sensors' : parsed}, ['id', 'name', 'category', 'description', 'max_age_seconds'])
+        final_result['HumanReadable'] += parameterTableBuilder(parsed[0], 'Sensor Parameters Details')
         return final_result
 
     def handle_cgs(handler, obj, kwargs):
@@ -425,6 +432,8 @@ script:
             final_result = askManualQuestion(handler, demisto.args())
         if demisto.command() == 'tn-parse-query':
             final_result = getParseQueryOptions(handler, demisto.args()['question'])
+        if demisto.command() == 'tn-get-sensor':
+            final_result = getSensor(handler)
     except Exception as ex:
         sys.stdout = sout
         raise
@@ -574,9 +583,8 @@ script:
       default: true
       description: The question text
     - name: index
-      required: false
-      defaultValue: "1"
       description: The index of the parsed question to be asked (as returned by tn-parse-query)
+      defaultValue: "1"
     outputs:
     - contextPath: Tanium.QuestionResults
       description: Results of requested question. May be a complex object
@@ -761,7 +769,8 @@ script:
   - name: tn-ask-manual-question
     arguments:
     - name: sensors
-      description: A semicolon separated list of sensors (columns) to include in question
+      description: A semicolon separated list of sensors (columns) to include in a
+        question. For detailed information please use !tn-get-sensor
     - name: question_filters
       description: A semicolon separated list of filters that apply to the whole question
     - name: question_options
@@ -797,4 +806,11 @@ script:
         question
       defaultValue: "99"
     description: Ask a manual question using human strings and get the results back
+  - name: tn-get-sensor
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: Name of sensor
+    description: Get detailed information about a given sensor.
   dockerimage: demisto/pytan
