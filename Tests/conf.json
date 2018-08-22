@@ -178,7 +178,7 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "crowdstrike_endpoint_enrichment_-_test"
+            "playbookID": "CrowdStrike Endpoint Enrichment - Test"
         },
         {
             "integrations": [
