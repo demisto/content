@@ -76,7 +76,7 @@ script:
         58: 'icmpv6'
     }
 
-    var jsonResponses = ['moloch_connections_json', 'moloch_files_json', 'moloch_sessions_json', 'moloch_spigraph_json', 'moloch_spiview_json', 'moloch_unique_json'];
+    var jsonResponses = ['moloch_connections_json', 'moloch_files_json', 'moloch_sessions_json', 'moloch_spigraph_json', 'moloch_spiview_json'];
     var csvResponses = ['moloch_connections_csv', 'moloch_sessions_csv'];
     var pcapResponses = ['moloch_sessions_pcap'];
 
