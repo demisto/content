@@ -8,6 +8,9 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAMAAACgee/qAAABBVB
 description: A comprehensive asset centric solution to accurately track resources
   while accommodating dynamic assets such as cloud, mobile devices, containers and
   web applications.
+detaileddescription: A comprehensive asset centric solution to accurately track resources
+  while accommodating dynamic assets such as cloud, mobile devices, containers and
+  web applications.
 configuration:
 - display: Access Key
   name: access-key
@@ -25,19 +28,23 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     import sys, os, requests, traceback
+    from time import sleep
     from requests.exceptions import HTTPError
 
+    # Output headers / context keys
     GET_SCANS_HEADERS = ('id', 'uuid', 'name', 'scan_type', 'owner', 'enabled', 'status', 'user_permissions', 'creation_date', 'last_modification_date', 'scan_start', 'scanner_name', 'policy', 'targets', 'folder_id')
     SCAN_REPORT_INFO_HEADERS = ('id', 'uuid', 'name', 'status', 'scan_start', 'scan_end', 'scanner_name', 'policy', 'targets', 'folder_id')
     SCAN_REPORT_VULNERABILITIES_HEADERS = ('id', 'description', 'first_seen', 'last_seen', 'solution', 'synopsis', 'count', 'severity', 'risk_info', 'risk_factor')
     SCAN_REPORT_HOSTS_HEADERS = ('host_id', 'hostname', 'score', 'severitycount', 'critiacl', 'high', 'medium', 'low')
     SCAN_REPORT_REMEDIATIONS_HEADERS = ('value', 'remediation', 'hosts', 'vulns')
 
+
     BASE_URL = 'https://cloud.tenable.com/'
     ACCESS_KEY = demisto.params()['access-key']
     SECRET_KEY = demisto.params()['secret-key']
+    AUTH_HEADERS = {'X-ApiKeys': 'accessKey={}; secretKey={}'.format(ACCESS_KEY, SECRET_KEY)}
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -83,12 +90,11 @@ script:
 
     # kwargs: url parameters
     def send_scan_request(scan_id="", endpoint="", method='GET', **kwargs):
-        auth_headers = {'X-ApiKeys': 'accessKey={}; secretKey={}'.format(ACCESS_KEY, SECRET_KEY)}
         if endpoint:
             endpoint = '/' + endpoint
         full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
         try:
-            res = requests.request(method, full_url, headers=auth_headers, params=kwargs)
+            res = requests.request(method, full_url, headers=AUTH_HEADERS, params=kwargs)
             res.raise_for_status()
         except HTTPError, e:
             err_msg = get_scan_error_message(res.status_code)
@@ -103,26 +109,44 @@ script:
             sys.exit(0)
         return res.json()
 
-
     def get_scan_info(scans_result_elem):
         response = send_scan_request(scans_result_elem['id'])
         response['info'].update(scans_result_elem)
         return response['info']
 
+    def send_vuln_info_request(plugin_id, date_range=None):
+        params = {}
+        if date_range:
+            try:
+                date_range = int(date_range)
+                params['date_range'] = date_range
+            except ValueError, e:
+                raise e  # We want the stack trace to end here.
+        full_url = "{}{}{}/{}".format(BASE_URL, "workbenches/vulnerabilities/", plugin_id, "info")
+        res = requests.get(full_url, headers=AUTH_HEADERS, params=params)
+        return res.json()
 
-    if demisto.command() == 'test-module':
+    def get_vuln_info(vulns):
+        vuln_infos = zip(map(lambda x: x['plugin_id'], vulns), map(lambda x: send_vuln_info_request(x['plugin_id']), vulns))
+        #errors = filter(lambda x: u'info' not in x[1], vuln_infos)
+        #errors = map(lambda x: x[0], vuln_infos)
+        #demisto.log(str(len(errors)) + " ---- " + str(errors))
+        vuln_infos = filter(lambda x: u'info' in x[1], vuln_infos)
+        vuln_infos = map(lambda x: x[1][u'info'], vuln_infos)
+        return get_entry_for_object('Vulnerabilities', 'Vulnerabilities', vuln_infos)
+
+
+    def test_module():
         send_scan_request()
-        demisto.results('ok')
+        return 'ok'
 
-    elif demisto.command() == 'tenable-get-scans':
-        response = send_scan_request(folder_id=demisto.getArg('folder-id'), last_modification_date=demisto.getArg('last-modification-date'))
+    def get_scans(folder_id, last_modification_date):
+        response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
         res = map(get_scan_info, response['scans'])
-        demisto.results(get_entry_for_object('Tenable.io - List of Scans', 'Tenable.Scan', res, GET_SCANS_HEADERS))
+        return get_entry_for_object('Tenable.io - List of Scans', 'Tenable.Scan', res, GET_SCANS_HEADERS)
 
-    elif demisto.command() == 'tenable-launch-scan':
-        scan_id = demisto.getArg('scanId')
+    def launch_scan(scan_id, targets):
         scan_info = send_scan_request(scan_id)['info']
-        targets = demisto.getArg('scanTartgets')
         if not targets:
             targets = scan_info.get('targets', '')
         res = send_scan_request(scan_id, 'launch', 'POST', alt_targets=targets)
@@ -130,19 +154,37 @@ script:
             'id': scan_id,
             'targets': targets
         })
-        demisto.results(get_entry_for_object('The requested scan was launched successfully', 'Tenable.Scan', res))
+        return get_entry_for_object('The requested scan was launched successfully', 'Tenable.Scan', res)
 
-    elif demisto.command() == 'tenable-get-scan-report':
-        scan_id = demisto.getArg('scanId')
+    def get_report(scan_id, info):
+        results = []
         scan_details = send_scan_request(scan_id)
-        if demisto.getArg('info') == 'yes':
+        if info == 'yes':
             scan_details['info']['id'] = scan_id
-            demisto.results(get_entry_for_object('Scan basic info', 'Tenable.Scan', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
-        demisto.results(get_entry_for_object('List of vulnerabilities', 'Vulnerabilities', scan_details['vulnerabilities'], SCAN_REPORT_VULNERABILITIES_HEADERS))
-        if demisto.getArg('detailed') == 'yes':
-            demisto.results(get_entry_for_object('List of Assets', 'Assets', scan_details['hosts'] + scan_details['comphosts'], SCAN_REPORT_HOSTS_HEADERS))
+            results.append(get_entry_for_object('Scan basic info', 'Tenable.Scan', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
+        results.append(get_entry_for_object('Vulnerabilities summary', 'Vulnerabilities', scan_details['vulnerabilities'], SCAN_REPORT_VULNERABILITIES_HEADERS))
+        results.append(get_vuln_info(scan_details['vulnerabilities']))
+        if detailed == 'yes':
+            results.append(get_entry_for_object('Assets', 'Assets', scan_details['hosts'] + scan_details['comphosts'], SCAN_REPORT_HOSTS_HEADERS))
             if len(scan_details['remediations']['remediations']) > 0:
-                demisto.results(get_entry_for_object('List of Remediations', 'Remediations', scan_details['remediations']['remediations'], SCAN_REPORT_REMEDIATIONS_HEADERS))
+                results.append(get_entry_for_object('Remediations', 'Remediations', scan_details['remediations']['remediations'], SCAN_REPORT_REMEDIATIONS_HEADERS))
+        return results
+
+    def get_vulnerability_details(plugin_id, days):
+        info = send_vuln_info_request(plugin_id, days)
+        return get_entry_for_object('Vulnerability details', 'Vulnerabilities', info['info'])
+
+
+    if demisto.command() == 'test-module':
+        demisto.results(test_module())
+    elif demisto.command() == 'tenable-get-scans':
+        demisto.results(get_scans(demisto.getArg('folder-id'), demisto.getArg('last-modification-date')))
+    elif demisto.command() == 'tenable-launch-scan':
+        demisto.results(launch_scan(demisto.getArg('scan-id'), demisto.getArg('scan-tartgets')))
+    elif demisto.command() == 'tenable-get-scan-report':
+        demisto.results(get_report(demisto.getArg('scan-id'), demisto.getArg('info'), demisto.getArg('detailed')))
+    elif demisto.command() == 'tenable-get-vulnerability-details':
+        demisto.results(get_vulnerability_details(demisto.getArg('vulnerability-id'), demisto.getArg('date-range')))
   type: python
   commands:
   - name: tenable-get-scans
@@ -203,11 +245,11 @@ script:
     description: Retrive scans from the Tenable platform.
   - name: tenable-launch-scan
     arguments:
-    - name: scanId
+    - name: scan-id
       required: true
       default: true
       description: The id of the scan to launch.
-    - name: scanTargets
+    - name: scan-targets
       description: If specified, these targets will be scanned instead of the default.
         Value can be an array where each index is a target, or an array with a single
         index of comma separated targets.
@@ -222,7 +264,7 @@ script:
       targets in the arguements of this command.)
   - name: tenable-get-scan-report
     arguments:
-    - name: scanId
+    - name: scan-id
       required: true
       default: true
       description: The uuid of the scan to retrieve. While scan uuid is preferred,
@@ -554,3 +596,5 @@ script:
       description: The owner of the scan.
       type: string
     description: Create a scan on the Tenable platform.
+  runonce: false
+releaseNotes: "-"
