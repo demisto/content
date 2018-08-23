@@ -806,6 +806,11 @@ script:
         question
       defaultValue: "99"
     description: Ask a manual question using human strings and get the results back
+    outputs:
+    - contextPath: Tanium.QuestionResults
+      description: Results of requested question. May be a complex object
+    description: Ask the server to parse the question text and choose the first parsed
+      result as the question to run
   - name: tn-get-sensor
     arguments:
     - name: name
