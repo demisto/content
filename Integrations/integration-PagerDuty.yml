@@ -44,15 +44,35 @@ script:
     CREATE_INCIDENT_SUFFIX = "incidents"
     ON_CALL_BY_SCHEDULE_SUFFIX = "schedules/{0}/users"
     ON_CALLS_USERS_SUFFIX = "oncalls?include%5B%5D=users"
+    USERS_NOTIFICATION_RULE = "users/{0}/notification_rules"
     GET_INCIDENTS_SUFFIX = "incidents?include%5B%5D=assignees"
+    USERS_CONTACT_METHODS_SUFFIX = "users/{0}/contact_methods"
+
+    '''CONTACT_METHOD_TYPES'''
+    SMS_CONTACT_TYPE = "sms_contact_method"
+    EMAIL_CONTACT_TYPE = "email_contact_method"
+    PHONE_CONTACT_TYPE = "phone_contact_method"
+    PUSH_CONTACT_TYPE = "push_notification_contact_method"
+
+    CONTACT_METHODS_TO_HUMAN_READABLE = {
+        '': 'Unknown',
+        SMS_CONTACT_TYPE: 'SMS',
+        PUSH_CONTACT_TYPE: 'Push',
+        EMAIL_CONTACT_TYPE: 'Email',
+        PHONE_CONTACT_TYPE: 'Phone'
+    }
 
     '''TABLE NAMES'''
     SCHEDULES = "All Schedules"
     TRIGGER_EVENT = 'Trigger Event'
     USERS_ON_CALL = 'Users On Call'
+    CONTACT_METHODS = "Contact Methods"
     USERS_ON_CALL_NOW = 'Users On Call Now'
+    NOTIFICATION_RULES = "User notification rules"
 
     '''TABLE HEADERS'''
+    CONTACT_METHODS_HEADERS = ['ID', 'Type', 'Address']
+    NOTIFICATION_RULES_HEADERS = ["ID", "Type", "Urgency", "Notification timeout(minutes)"]
     SCHEDULES_HEADERS = ["ID", "Name", "Today", "Time Zone", "Escalation Policy", "Escalation Policy ID"]
     USERS_ON_CALL_NOW_HEADERS = ["ID", "Email", "Name", "Role", "Color", "User Url", "Avatar Url", "Time Zone"]
     INCIDENTS_HEADERS = ["ID", "Incident Number", "Created On", "Status", "Html Url", "Service ID", "Service Name", "Service Html Url", "Assigned To User",
@@ -260,7 +280,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(SCHEDULES, outputs, SCHEDULES_HEADERS),
             'EntryContext': {
-                'PagerDuty.Schedules': contexts
+                'PagerDuty.Schedules(val.id==obj.id)': contexts,
             }
         }
 
@@ -303,7 +323,61 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(TRIGGER_EVENT, output),
             'EntryContext': {
-                'PagerDuty.Event': output
+                'PagerDuty.Event(val.id==obj.id)': output
+            }
+        }
+
+    def extract_users_contact_methods(user_contact_methods):
+        """Extract all the contact methods of a given user."""
+        outputs = []
+        contexts = []
+        contact_methods = user_contact_methods.get('contact_methods')
+        for contact_method in contact_methods:
+            output = {}
+
+            output['ID'] = contact_method.get('id')
+            output['Type'] = CONTACT_METHODS_TO_HUMAN_READABLE[contact_method.get('type', '')]
+
+            country_code = str(contact_method.get("country_code" ,""))
+            address = contact_method.get('address', "")
+            output['Address'] = country_code + address
+
+            outputs.append(output)
+            contexts.append(contact_method)
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': outputs,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(CONTACT_METHODS, outputs, CONTACT_METHODS_HEADERS),
+            'EntryContext': {
+                'PagerDuty.Contact_methods(val.id==obj.id)': contexts,
+            }
+        }
+
+    def extract_users_notification_role(user_notication_role):
+        """Extract the notification role of a given user."""
+        outputs = []
+        notification_rules = user_notication_role.get('notification_rules')
+        for notification_rule in notification_rules:
+            output = {}
+
+            output['ID'] = notification_rule.get('id')
+            output['Type'] = notification_rule.get('type', '')
+            output['Urgency'] = notification_rule.get('urgency')
+            output['Notification timeout(minutes)'] = notification_rule.get('start_delay_in_minutes')
+
+            outputs.append(output)
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': outputs,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(NOTIFICATION_RULES, outputs, NOTIFICATION_RULES_HEADERS),
+            'EntryContext': {
+                'PagerDuty.Notification_rules(val.id==obj.id)': notification_rules,
             }
         }
 
@@ -356,6 +430,15 @@ script:
         oncalls = users_on_call_now.get('oncalls', {})
         return extract_on_call_now_user_data(oncalls, USERS_ON_CALL_NOW)
 
+    def get_users_contact_methods_command(UserID):
+        "Get the contact methods of a given user."
+        user_contact_methods = http_request('GET', USERS_CONTACT_METHODS_SUFFIX.format(UserID), {})
+        return extract_users_contact_methods(user_contact_methods)
+
+    def get_users_notification_command(UserID):
+        "Get the notification rule of a given user"
+        user_notication_role = http_request('GET', USERS_NOTIFICATION_RULE.format(UserID), {})
+        return extract_users_notification_role(user_notication_role)
 
     ''' EXECUTION CODE '''
 
@@ -374,6 +457,11 @@ script:
             demisto.results(get_all_schedules_command(**demisto.args()))
         elif demisto.command() == 'PagerDutyGetUsersOnCallNow':
             demisto.results(get_on_call_now_users_command(**demisto.args()))
+        elif demisto.command() == 'PagerDutyGetUsersOnCallNow':
+            demisto.results(get_on_call_now_users_command(**demisto.args()))
+        elif demisto.command() == 'PagerDutyGetUsersNotification':
+            demisto.results(get_users_notification_command(**demisto.args()))
+
 
     except Exception, e:
         LOG(e.message)
@@ -467,7 +555,7 @@ script:
     - contextPath: PagerDuty.Incidents
       description: All incidents
     description: Shows incidents in PagerDuty
-  - name: pagerDutySubmitEvent
+  - name: PagerDutySubmitEvent
     arguments:
     - name: author
       required: true
@@ -482,6 +570,38 @@ script:
     - contextPath: PagerDuty.Event
       description: Event data
     description: Creates a new event/incident in PagerDuty
+  - name: PagerDutyGetContactMethods
+    arguments:
+    - name: UserID
+      required: true
+      description: 'ID of the wanted user '
+    outputs:
+    - contextPath: PagerDuty.Contact_methods.address
+      description: The address of the user
+      type: string
+    - contextPath: PagerDuty.Contact_methods.id
+      description: ID of the contact method
+      type: string
+    - contextPath: PagerDuty.Contact_methods.type
+      description: The type of the current contact method
+      type: string
+    description: Get the contact methods of a given user
+  - name: PagerDutyGetUsersNotification
+    arguments:
+    - name: UserID
+      required: true
+      description: ID of the wanted user
+    outputs:
+    - contextPath: PagerDuty.Notification_rules.PagerDuty.Notification_rules.start_delay_in_minutes
+      description: The delay time for notifying the user
+      type: string
+    - contextPath: PagerDuty.Notification_rules.PagerDuty.Notification_rules.urgency
+      description: The urgency of the notification
+      type: string
+    - contextPath: PagerDuty.Notification_rules.id
+      description: The id of the notification rule
+      type: string
+    description: Get the users notification rules
   runonce: false
 hidden: false
 releaseNotes: "Upgraded PagerDuty API to version 2."
