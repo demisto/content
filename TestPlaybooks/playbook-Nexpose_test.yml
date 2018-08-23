@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -50,8 +50,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 201
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -79,8 +79,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 381
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -116,8 +116,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 565
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -144,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 903
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -180,7 +180,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 1070
         }
       }
@@ -212,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1580
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -243,8 +243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1238
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -279,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1409
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -316,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 738
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -349,8 +349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1760
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -372,6 +372,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
       expectedValue:
         simple: '["pdf","xml"]'
@@ -382,8 +385,66 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1987
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 0b21d1e7-ee8f-45ca-8ef4-92f185737153
+    type: regular
+    task:
+      id: 0b21d1e7-ee8f-45ca-8ef4-92f185737153
+      version: -1
+      name: nexpose-create-site
+      description: Creates a new site with the specified configuration.
+      script: Rapid7 Nexpose|||nexpose-create-site
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      assets:
+        simple: ${Endpoint.IP}
+      description: {}
+      importance: {}
+      name:
+        simple: test_playbook_site
+      scanTemplateId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: bc8aa772-137e-43de-8534-7acda0ab56f6
+    type: regular
+    task:
+      id: bc8aa772-137e-43de-8534-7acda0ab56f6
+      version: -1
+      name: nexpose-delete-site
+      description: Delete a site
+      script: Rapid7 Nexpose|||nexpose-delete-site
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Site.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -392,9 +453,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2032,
+        "height": 2340,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }

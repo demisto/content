@@ -595,7 +595,7 @@ script:
         if queries is not None:
             assets = search_by_filter(queries.split(';'))
         elif risk_score is not None:
-            assets = search_by_filter(['risk-score is-greater-than ' + risk_score])
+            assets = search_by_filter(['risk-score is-greater-than ' + str(risk_score)])
         elif vulnerability_title is not None:
             assets = search_by_filter(['vulnerability-title contains ' + vulnerability_title])
         elif siteIds is not None:
@@ -914,6 +914,28 @@ script:
 
         return send_request(path, 'post', body=site_body)
 
+    def delete_site_command():
+        site_id = demisto.args()['id']
+
+        res = delete_site(site_id)
+
+        hr = "Site " + str(site_id) + " deleted"
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
+        }
+
+        return entry
+
+    def delete_site(site_id):
+        path = 'sites/' + str(site_id)
+
+        return send_request(path, 'delete')
+
     def get_sites_command():
         sites = get_sites(limit=demisto.args().get('limit'),sort=demisto.args().get('sort'))
 
@@ -1185,7 +1207,11 @@ script:
             demisto.results(start_assets_scan_command())
         if demisto.command() == 'nexpose-create-site':
             demisto.results(create_site_command())
+        if demisto.command() == 'nexpose-delete-site':
+            demisto.results(delete_site_command())
     except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
         return_error(e.message)
   type: python
   commands:
@@ -1624,6 +1650,12 @@ script:
       description: The created site Id
       type: number
     description: Creates a new site with the specified configuration.
+  - name: nexpose-delete-site
+    arguments:
+    - name: id
+      required: true
+      description: Id of the site to delete
+    description: Deletes a site.
   - name: nexpose-get-sites
     arguments:
     - name: limit
