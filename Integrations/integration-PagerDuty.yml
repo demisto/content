@@ -122,7 +122,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS),
             'EntryContext': {
-                'PagerDutyUser(true)': contexts
+                'PagerDutyUser(val.ID==obj.ID)': contexts
             }
         }
 
@@ -163,7 +163,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(table_name, outputs, USERS_ON_CALL_NOW_HEADERS),
             'EntryContext': {
-                'PagerDutyUser(true)': contexts
+                'PagerDutyUser(val.ID==obj.ID)': contexts
             }
         }
 
