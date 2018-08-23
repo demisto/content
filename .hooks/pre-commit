@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# validating that each modified file has a valid schema, release notes, proper prefix & suffix
+python Tests/scripts/validate_files_structure.py 'true'
+if [[ $? -ne 0 ]] 
+then
+    echo "\nPlease fix the aforementioned errors and then commit again"
+    exit 1
+fi
+
+# prevent push to master
+if [ -z "$1"  ]; then
+    protected_branch='master'
+    current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+    if [ $protected_branch = $current_branch ]; then
+        echo "pushing to master is not allowed"
+        exit 1
+    fi
+fi

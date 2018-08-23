@@ -3,7 +3,27 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
+        },
+       {    "integrations": "Gmail",
+            "playbookID": "get_original_email_-_gmail_-_test"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
             "playbookID": "test_delete_context"
+        },
+        {
+            "playbookID": "GmailTest",
+            "integrations": "Gmail"
         },
         {
             "playbookID": "TestParseCSV"
@@ -403,11 +423,6 @@
             "playbookID": "rsa_packets_and_logs_test"
         },
         {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook",
-            "nightly": true
-        },
-        {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
             "timeout": 500,
@@ -416,10 +431,6 @@
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
         },
         {
             "integrations":"Cylance Protect",
