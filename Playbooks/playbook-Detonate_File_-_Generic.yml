@@ -1,10 +1,8 @@
 id: Detonate File - Generic
 version: -1
 name: Detonate File - Generic
-description: Detonate one or more files using all supported sandbox integrations.
-  This playbook returns relevant reports to the War Room and file reputations to the
-  context data.
-fromversion: 3.5.0
+fromversion: "4.0.0"
+description: Detonate file through active integrations that support file detonation
 starttaskid: "0"
 tasks:
   "0":
@@ -15,22 +13,24 @@ tasks:
       id: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
       version: -1
       name: ""
-      description: ""
+      description: Playbook start point
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
+      - "4"
       - "5"
       - "6"
-    reputationcalc: 0
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 50
         }
       }
+    note: false
   "3":
     id: "3"
     taskid: 9db19651-009c-468f-80b3-c58efea96ed2
@@ -39,29 +39,47 @@ tasks:
       id: 9db19651-009c-468f-80b3-c58efea96ed2
       version: -1
       name: Done
-      description: ""
+      description: Done
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 370
         }
       }
-  "5":
-    id: "5"
-    taskid: 3169d7e2-94ab-4fc9-8a9a-6aa2d4508e1b
+    note: false
+  "4":
+    id: "4"
+    taskid: 6542dcbb-c4c2-4431-8fb2-f66d3035c702
     type: playbook
     task:
-      id: 3169d7e2-94ab-4fc9-8a9a-6aa2d4508e1b
+      id: 6542dcbb-c4c2-4431-8fb2-f66d3035c702
       version: -1
-      name: WildFire - Detonate file
-      description: ""
-      playbookName: WildFire - Detonate file
+      name: McAfee ATD Detonate File
+      description: |-
+        Detonates a File using the McAfee Advanced Threat Defense sandbox.
+        Advanced Threat Defense supports the following File Types:
+        32-bit Portable Executables (PE)files; 64-bit PE+files
+        exe, sys, dll, com, scr, cpl, ocx, cgi
+        Microsoft Office Suite documents
+        doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
+        Just Systems Ichitaro documents
+        jtd, jtdc
+        Adobe
+        pdf, swf
+        Compressed files
+        gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
+        Android application package
+        apk, Java, JAR, CLASS, Java Script, Java bin files
+        Image files
+        jpeg, png, gif
+        Other file types
+        cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+      playbookName: McAfee ATD Detonate File
       type: playbook
       iscommand: false
       brand: ""
@@ -70,9 +88,11 @@ tasks:
       - "3"
     scriptarguments:
       File:
-        complex:
-          root: inputs.File
-    reputationcalc: 0
+        simple: ${inputs.File}
+      interval:
+        simple: "1"
+      timeout:
+        simple: "15"
     separatecontext: true
     loop:
       iscommand: false
@@ -85,16 +105,22 @@ tasks:
           "y": 195
         }
       }
-  "6":
-    id: "6"
-    taskid: 0b4dd2f4-0cad-40b7-8abe-45fd745fcb6e
+    note: false
+  "5":
+    id: "5"
+    taskid: 5af3e97d-0edd-4fce-87b7-4a48d792f016
     type: playbook
     task:
-      id: 0b4dd2f4-0cad-40b7-8abe-45fd745fcb6e
+      id: 5af3e97d-0edd-4fce-87b7-4a48d792f016
       version: -1
-      name: CrowdStrike Falcon Sandbox - Detonate file
-      description: ""
-      playbookName: CrowdStrike Falcon Sandbox - Detonate file
+      name: ThreatGrid - Detonate File
+      description: Detonate one or more files using the ThreatGrid integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data. The detonation supports the following file types - EXE,
+        DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ,
+        GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX,
+        BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+      playbookName: ThreatGrid - Detonate File
       type: playbook
       iscommand: false
       brand: ""
@@ -103,9 +129,19 @@ tasks:
       - "3"
     scriptarguments:
       File:
-        complex:
-          root: inputs.File
-    reputationcalc: 0
+        simple: ${inputs.File}
+      FileName:
+        simple: file-detonated-via-demisto
+      interval:
+        simple: "1"
+      playbook:
+        simple: default
+      private: {}
+      source: {}
+      tags: {}
+      timeout:
+        simple: "15"
+      vm: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -118,32 +154,124 @@ tasks:
           "y": 195
         }
       }
+    note: false
+  "6":
+    id: "6"
+    taskid: d41e0984-d1f4-471b-85bb-4b037ca5fc7c
+    type: playbook
+    task:
+      id: d41e0984-d1f4-471b-85bb-4b037ca5fc7c
+      version: -1
+      name: JoeSecurity - Detonate File
+      description: |-
+        Detonates one or more files using the Joe Security - Joe Sandbox integration.
+        Returns relevant reports to the War Room and file reputations to the context data.
+        All file types are supported.
+      playbookName: JoeSecurity - Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EntryID:
+        simple: ${inputs.EntryID}
+      comments: {}
+      internet-access:
+        simple: "True"
+      interval:
+        simple: "1"
+      report-file-type: {}
+      systems: {}
+      timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 83d75f08-6b99-4576-8242-f5e2fdc594d5
+    type: playbook
+    task:
+      id: 83d75f08-6b99-4576-8242-f5e2fdc594d5
+      version: -1
+      name: CrowdStrike - Detonate file
+      description: Detonate one or more files using the CrowdStrike integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data. The detonation supports the following file types - EXE,
+        DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ,
+        GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX,
+        BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+      playbookName: CrowdStrike - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        simple: ${inputs.File}
+      environmentID:
+        simple: "100"
+      interval:
+        simple: "5"
+      timeout:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 810,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: false
+  description: Entry ID of file to be detonated
 - key: File
   value:
-    complex:
-      root: File
+    simple: ${File}
   required: false
-  description: 'File object of the file to detonate. '
+  description: File object of file to be detonated
 outputs:
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
-- contextPath: File
-  description: The File's object
-  type: unknown
 - contextPath: File.SHA1
   description: SHA1 of the file
   type: string
@@ -153,17 +281,17 @@ outputs:
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
+- contextPath: File
+  description: The File's object
+  type: unknown
 - contextPath: File.SHA256
   description: SHA256 of the file
   type: string
-- contextPath: DBotScore
-  description: The Indicator's object
-  type: unknown
-- contextPath: DBotScore.Indicator
-  description: The indicator we tested
-  type: string
 - contextPath: DBotScore.Type
   description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
   type: string
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score
@@ -171,3 +299,16 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+releaseNotes: "-"

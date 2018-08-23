@@ -39,42 +39,83 @@ configuration:
   defaultvalue: "66"
   type: 0
   required: true
+- display: Cloud based
+  name: cloud
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |
     var sendRequest = function(url,param, fileId) {
+        if (params.url[params.url.length - 1] !== '/') {
+            params.url += '/';
+        }
         var requestUrl = params.url + url + param;
         var res;
-
-        if (fileId) {
-            var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
-            res = httpMultipart(
-                requestUrl,
-                fileId,
-                {
-                    Method: 'POST',
-                    Headers: {
-                        Accept: ['application/json'],
-                        filename: fileName
+        if (params.cloud) {
+            if (fileId) {
+                var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
+                res = httpMultipart(
+                    requestUrl,
+                    fileId,
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            Accept: ['application/json'],
+                            filename: fileName,
+                            apikey: [params.api]
+                        }
+                    },
+                    {},
+                    params.insecure,
+                    params.proxy,
+                    undefined,
+                    'file',
+                    fileName);
+            } else {
+                res = http(
+                    requestUrl,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            Accept: ['application/json'],
+                            apikey: [params.api]
+                        }
                     }
-                },
-                {},
-                params.insecure,
-                params.proxy,
-                undefined,
-                'file',
-                fileName);
+                    );
+                return res;
+            }
         } else {
-            res = http(
-                requestUrl,
-                {
-                    Method: 'GET',
-                    Headers: {
-                        Accept: ['application/json']
+            if (fileId) {
+                var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
+                res = httpMultipart(
+                    requestUrl,
+                    fileId,
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            Accept: ['application/json'],
+                            filename: fileName
+                        }
+                    },
+                    {},
+                    params.insecure,
+                    params.proxy,
+                    undefined,
+                    'file',
+                    fileName);
+            } else {
+                res = http(
+                    requestUrl,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            Accept: ['application/json']
+                        }
                     }
-                }
-                );
+                    );
+            }
         }
-
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
@@ -87,7 +128,7 @@ script:
     var searchHash = function() {
         var res;
         try {
-            res = JSON.parse(sendRequest('/hash/', args.hash).Body);
+            res = JSON.parse(sendRequest('hash/', args.hash).Body);
         } catch (err) {
             throw 'Error in JSON parsing\n';
         }
@@ -241,7 +282,10 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            var res = sendRequest('/hash/', 'BED12FDA073BB386B54700138FB47EEA');
+            var res = sendRequest('hash/', '66DA1A91E1ED5D59BECFAD85F53C05F9');
+            if (res.StatusCode !== 200) {
+                return res
+            }
             return 'ok';
         case 'opswat-hash':
             return searchHash();
@@ -280,3 +324,4 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
+  runonce: false

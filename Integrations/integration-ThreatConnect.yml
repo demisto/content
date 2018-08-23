@@ -297,6 +297,15 @@ script:
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
         filter1.add_indicator(demisto.args()['indicator'])
+        owners_arr = []
+        if "owner" in demisto.args():
+            owners_arr.append(demisto.args()['owner'])
+        else:
+            owners = tc.owners()
+            owners.retrieve()
+            for owner in owners:
+                owners_arr.append(owner.name)
+        filter1.add_owner(owners_arr)
         indicators.retrieve()
 
         for indicator in indicators:
@@ -556,6 +565,8 @@ script:
       default: true
       description: Indicator to tag, this is the value of indicator like ip, file
         hash, url
+    - name: owner
+      description: filter by owner
     description: Tag an exiting indicator
   - name: tc-get-indicator
     arguments:
@@ -640,7 +651,7 @@ script:
       description: value of indicator (hash,ip, url...)
     - name: owner
       description: filter by owner
-    description: associate an indicator to an existing incident
+    description: "associate an indicator to an existing incident, please note indicator MUST exist prior to using this command, look at tc-add-indicator for that"
   - name: domain
     arguments:
     - name: domain
