@@ -5,6 +5,10 @@
         {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
+        }
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
         },
         {
             "integrations": "Preempt",
@@ -417,11 +421,6 @@
         }
     ],
     "skipped": [
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook",
-            "nightly": true
-        },
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",

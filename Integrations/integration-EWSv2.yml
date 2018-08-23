@@ -1271,11 +1271,13 @@ script:
         if debug_log:
             error_message += "\nFull debug log:\n" + debug_log
 
-        if not IS_TEST_MODULE:
-            raise Exception(error_message)
-        demisto.results(error_message_simple)
+        if demisto.command() == 'fetch-incidents':
+            raise
+        if IS_TEST_MODULE:
+            demisto.results(error_message_simple)
+        else:
+            demisto.results({ "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple })
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
-
   type: python
   commands:
   - name: ews-get-attachment
@@ -1816,3 +1818,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
+releaseNotes: "-"
