@@ -59,3 +59,4 @@ outputs:
   description: List of items not in the list
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
