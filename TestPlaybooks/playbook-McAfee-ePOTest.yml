@@ -1,0 +1,261 @@
+id: Test Playbook Mcafee ePO
+version: -1
+name: Test Playbook Mcafee ePO
+description: Test the McAfee ePO integration by running basic commands
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40f85a6a-dfe6-4c31-86d1-a5523fbc766f
+    type: start
+    task:
+      id: 40f85a6a-dfe6-4c31-86d1-a5523fbc766f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: a129b3d1-c74a-40bc-8739-a632efc7cc46
+    type: regular
+    task:
+      id: a129b3d1-c74a-40bc-8739-a632efc7cc46
+      version: -1
+      name: epo-help
+      description: print help on ePO commands
+      script: epo|||epo-help
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      command: {}
+      search:
+        simple: agent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: c71a3914-30c2-4e9b-8c33-912e2a537098
+    type: regular
+    task:
+      id: c71a3914-30c2-4e9b-8c33-912e2a537098
+      version: -1
+      name: epo-get-current-dat
+      description: Check the existing DAT file version in ePO
+      script: epo|||epo-get-current-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 5cc56e31-15d6-4f0c-8243-56d4f5619553
+    type: regular
+    task:
+      id: 5cc56e31-15d6-4f0c-8243-56d4f5619553
+      version: -1
+      name: epo-get-latest-dat
+      description: Check the latest DAT file in McAfee repository
+      script: epo|||epo-get-latest-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 22f4aa97-b05c-4212-893f-4dbb63bb766f
+    type: regular
+    task:
+      id: 22f4aa97-b05c-4212-893f-4dbb63bb766f
+      version: -1
+      name: epo-get-system-tree-group
+      description: Get System Tree groups
+      script: epo|||epo-get-system-tree-group
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      search: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 96b59411-9dd3-4bb0-8d48-7c5f7fe600c5
+    type: title
+    task:
+      id: 96b59411-9dd3-4bb0-8d48-7c5f7fe600c5
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: f697c963-87d8-449b-84b3-35796f8f1510
+    type: regular
+    task:
+      id: f697c963-87d8-449b-84b3-35796f8f1510
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: bb49e1b4-49c0-44ed-8a80-c855470df598
+    type: regular
+    task:
+      id: bb49e1b4-49c0-44ed-8a80-c855470df598
+      version: -1
+      name: epo-update-client-dat
+      description: Run client task to update the DAT file
+      script: epo|||epo-update-client-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      abortAfterMinutes: {}
+      randomizationInterval: {}
+      retryAttempts: {}
+      retryIntervalInSeconds: {}
+      stopAfterMinutes: {}
+      systems:
+        simple: ADMIN-PC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 2bdc6df7-5381-40b7-8961-096c3729a3f8
+    type: regular
+    task:
+      id: 2bdc6df7-5381-40b7-8961-096c3729a3f8
+      version: -1
+      name: epo-update-repository
+      description: Trigger a Server Task in specific ePO servers to pull latest signatures
+        from update server
+      script: epo|||epo-update-repository
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
