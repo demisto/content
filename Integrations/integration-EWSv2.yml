@@ -140,7 +140,7 @@ script:
     CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID)
     CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
     CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
-    CONTEXT_UPDATE_FOLDER = "EWS.Folder(val.{0} == obj.{0})".format(FOLDER_ID)
+    CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
 
     LAST_RUN_TIME = "lastRunTime"
     LAST_RUN_IDS = "ids"
@@ -264,8 +264,10 @@ script:
             if path in folders_map:
                 return account.root._folders_map[path]
 
+        # Path inoput might be a unicode, but the command expects string
+        path = str(path)
         folder_result = account.inbox.parent
-        if str(path) == 'AllItems':
+        if path == 'AllItems':
             folder_result = folder_result.parent
         path = path.replace("/", "\\")
         path = path.split('\\')
@@ -1107,14 +1109,7 @@ script:
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         folders = []
         for f in account.root.walk():
-            folder = {
-                'name': f.name,
-                'totalCount': f.total_count,
-                'unreadCount': f.unread_count,
-                'id': f.folder_id,
-                'childrenFolderCount': f.child_folder_count,
-                'changeKey': f.changekey
-            }
+            folder = folder_to_json(f)
             folders.append(folder)
         folders_tree = account.root.tree()
 
@@ -1168,10 +1163,19 @@ script:
 
     def get_folder(folder_path, target_mailbox=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
-        folder = get_folder_by_path(account, folder_path)
-        folderDict = parse_item_as_dict(folder, target_mailbox)
+        folder = folder_to_json(get_folder_by_path(account, folder_path))
 
-        return get_entry_for_object("Folder %s" % (folder_path,), CONTEXT_UPDATE_FOLDER, folderDict)
+        return get_entry_for_object("Folder %s" % (folder_path,), CONTEXT_UPDATE_FOLDER, folder)
+
+    def folder_to_json(f):
+        return {
+            'name': f.name,
+            'totalCount': f.total_count,
+            'unreadCount': f.unread_count,
+            'id': f.folder_id,
+            'childrenFolderCount': f.child_folder_count,
+            'changeKey': f.changekey
+        }
 
     def test_module():
         try:
@@ -1837,23 +1841,23 @@ script:
       description: The folder path to get. If empty - will get the folder 'AllItems'.
       defaultValue: AllItems
     outputs:
-    - contextPath: EWS.Folder.id
+    - contextPath: EWS.Folders.id
       description: Folder id.
       type: string
-    - contextPath: EWS.Folder.name
+    - contextPath: EWS.Folders.name
       description: Folder name.
       type: string
-    - contextPath: EWS.Folder.changekey
+    - contextPath: EWS.Folders.changeKey
       description: Folder change key
       type: string
-    - contextPath: EWS.Folder.total_count
+    - contextPath: EWS.Folders.totalCount
       description: Total count of emails in the folder.
       type: number
-    - contextPath: EWS.Folder.parent_folder_id.id
-      description: Parent folders' id.
-    - contextPath: EWS.Folder.parent_folder_id.changekey
-      description: Parent folders' changekey.
-    - contextPath: EWS.Folder.unread_count
+    - contextPath: EWS.Folders.childrenFolderCount
+      type: number
+      description: Number of sub-folders.
+    - contextPath: EWS.Folders.unreadCount
+      type: number
       description: Unread emails in the folder.
     description: Get a single specific folder.
   dockerimage: demisto/py-ews:2.0
