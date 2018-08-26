@@ -1813,7 +1813,8 @@ script:
       required: true
       description: The mailbox to move the item to.
     - name: source-mailbox
-      description: The mailbox to move the item from (conventionally called "target-mailbox" - the target mailbox to apply the command on).
+      description: The mailbox to move the item from (conventionally called "target-mailbox"
+        the target mailbox to apply the command on).
     outputs:
     - contextPath: EWS.Items.movedToMailbox
       description: The mailbox that the item was moved to.

@@ -90,6 +90,12 @@ def run_git_command(command):
         sys.exit(1)
     return p.stdout.read()
 
+def checked_type(file_path):
+    for regex in CHECKED_TYPES_REGEXES:
+        if re.match(regex, file_path, re.IGNORECASE):
+            return True
+    return False
+
 def get_modified_files(files_string):
     all_files = files_string.split('\n')
     modified_files_list = []
@@ -99,7 +105,7 @@ def get_modified_files(files_string):
             continue
         file_status = file_data[0]
         file_path = file_data[1]
-        if file_status.lower() == 'm' and not file_path.startswith('.'):
+        if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.append(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
