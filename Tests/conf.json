@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true
@@ -11,7 +15,7 @@
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
         },
-       {    "integrations": "Gmail",
+        {   "integrations": "Gmail",
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
@@ -427,10 +431,6 @@
             "playbookID": "JoeSecurityTestPlaybook",
             "timeout": 500,
             "nightly": true
-        },
-        {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations":"Cylance Protect",
