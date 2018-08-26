@@ -264,9 +264,11 @@ script:
             if path in folders_map:
                 return account.root._folders_map[path]
 
+        folder_result = account.inbox.parent
+        if str(path) == 'AllItems':
+            folder_result = folder_result.parent
         path = path.replace("/", "\\")
         path = path.split('\\')
-        folder_result = account.inbox.parent
         for sub_folder_name in path:
             folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
             if len(folder_filter_by_name) == 0:
@@ -1379,7 +1381,7 @@ script:
       type: string
     - contextPath: EWS.Items.ItemAttachments.attachmentId
       description: The id of the deleted attachment in case of other attachment (like
-                     "email").
+        "email").
       type: string
     - contextPath: EWS.Items.FileAttachments.action
       description: 'The deletion action in case of file attachment, constant value:
@@ -1813,7 +1815,8 @@ script:
       required: true
       description: The mailbox to move the item to.
     - name: source-mailbox
-      description: The mailbox to move the item from (conventionally called "target-mailbox" - the target mailbox to apply the command on).
+      description: The mailbox to move the item from (conventionally called "target-mailbox"
+        - the target mailbox to apply the command on).
     outputs:
     - contextPath: EWS.Items.movedToMailbox
       description: The mailbox that the item was moved to.
