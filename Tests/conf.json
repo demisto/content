@@ -346,11 +346,6 @@
             "integrations": "SafeBreach"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test",
-            "nightly": true
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
         },
@@ -422,6 +417,11 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test",
+            "nightly": true
+        },
         {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
