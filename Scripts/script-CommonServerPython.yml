@@ -404,9 +404,10 @@ script: |-
       def __call__(self, message):
           self.messages.append('%s' % (message, ))
 
-      def print_log(self, ):
+      def print_log(self, verbose=False):
           text = 'Full Integration Log:\n' + '\n'.join(self.messages)
-          demisto.log(text)
+          if verbose:
+            demisto.log(text)
           demisto.info(text)
 
   """
@@ -1122,4 +1123,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "-"
+releaseNotes: "Added verbose option to LOG.print_log"
