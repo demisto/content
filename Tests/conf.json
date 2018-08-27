@@ -3,6 +3,33 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
+        },
+        {   "integrations": "Gmail",
+            "playbookID": "get_original_email_-_gmail_-_test"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
+            "playbookID": "test_delete_context"
+        },
+        {
+            "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
             "playbookID": "TestParseCSV"
         },
         {
@@ -148,13 +175,6 @@
                 "byoi": false
             },
             "playbookID": "account_enrichment_-_generic_test"
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
         },
         {
             "integrations": "FalconHost",
@@ -319,11 +339,6 @@
             "integrations": "SafeBreach"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test",
-            "nightly": true
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
         },
@@ -396,27 +411,26 @@
     ],
     "skipped": [
         {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
         },
         {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook",
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test",
             "nightly": true
+        },
+        {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
             "timeout": 500,
             "nightly": true
-        },
-        {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
         },
         {
             "integrations":"Cylance Protect",

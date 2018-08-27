@@ -9,7 +9,7 @@ script: |
 
   var header = 'Scheduled entries for current incident:';
   if (incidentId) {
-      return 'Scheduled entries for incident #' + incidentId + ':';
+      header = 'Scheduled entries for incident #' + incidentId + ':';
   }
 
   var warRoomUrl = demistoUrls().warRoom;
@@ -96,3 +96,4 @@ outputs:
 scripttarget: 0
 runonce: false
 sensitive: true
+releaseNotes: Fixed issue when providing incident ID

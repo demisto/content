@@ -12,9 +12,9 @@ tasks:
       id: 391dde59-b247-4641-8ef2-24a5c11b6d39
       version: -1
       name: ""
+      description: start
       iscommand: false
       brand: ""
-      description: "start"
     nexttasks:
       '#none#':
       - "9"
@@ -70,10 +70,10 @@ tasks:
       id: 25518fb4-9985-4885-8d24-e3886014b9e3
       version: -1
       name: Done
+      description: Final task
       type: title
       iscommand: false
       brand: ""
-      description: "Final task"
     separatecontext: false
     view: |-
       {
@@ -162,10 +162,10 @@ tasks:
       id: 6d61b22a-1fbe-4ffe-866a-81b522256c65
       version: -1
       name: Is Nexpose enabled?
+      description: Checks wheter nexpose is enabled
       type: condition
       iscommand: false
       brand: ""
-      description: Checks wheter nexpose is enabled
     nexttasks:
       '#default#':
       - "5"
@@ -215,10 +215,10 @@ tasks:
       id: 0f6c2fdc-f87f-4397-87a7-bcc7f8a54b50
       version: -1
       name: Is there an ip or host to scan?
+      description: Checks whether there's an ip or an host to scan.
       type: condition
       iscommand: false
       brand: ""
-      description: Checks whether there's an ip or an host to scan.
     nexttasks:
       '#default#':
       - "5"
@@ -248,16 +248,16 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: db034839-f7e3-4f93-8cdc-b9541313ac97
+    taskid: 3b3f273c-1886-489d-83d7-48e1073c9880
     type: condition
     task:
-      id: db034839-f7e3-4f93-8cdc-b9541313ac97
+      id: 3b3f273c-1886-489d-83d7-48e1073c9880
       version: -1
       name: Did scan find assets?
+      description: Checks whether assets were found
       type: condition
       iscommand: false
       brand: ""
-      description: Checks whether the assets were found
     nexttasks:
       '#default#':
       - "5"
@@ -270,7 +270,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ${Nexpose.Scan.Id}
+              simple: Nexpose.Scan.Id
             iscontext: true
     view: |-
       {
@@ -300,7 +300,7 @@ inputs:
   description: Asset IPs to scan
 - key: HostNames
   value:
-    simple: ${Nexpose.HostNames}
+    simple: ${Nexpose.Asset.HostName}
   required: false
   description: Hostnames of the assets to scan
 - key: Name
@@ -332,3 +332,4 @@ outputs:
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
 fromversion: 4.0.0
+releaseNotes: "Fixed inputs"
