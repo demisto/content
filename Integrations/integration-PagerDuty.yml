@@ -129,7 +129,7 @@ script:
             context['ID'] = output['ID']
             context['Role'] = output['Role']
             context['Email'] = output['Email']
-            context['Usermame'] = output['Name']
+            context['Username'] = output['Name']
             context['DisplayName'] = output['Name']
 
             outputs.append(output)
@@ -169,7 +169,7 @@ script:
             context['ID'] = output['ID']
             context['Role'] = output['Role']
             context['Email'] = output['Email']
-            context['Usermame'] = output['Name']
+            context['Username'] = output['Name']
             context['DisplayName'] = output['Name']
 
             escal_level = data.get('escalation_level', 1)
@@ -500,8 +500,8 @@ script:
     - contextPath: PagerDutyUser.Emails
       description: Email of user
       type: string
-    - contextPath: PagerDutyUser.Usermame
-      description: Usermame of person
+    - contextPath: PagerDutyUser.Username
+      description: Username of person
       type: string
     - contextPath: PagerDutyUser.DisplayName
       description: Display name of person
@@ -522,8 +522,8 @@ script:
     - contextPath: PagerDutyUser.Email
       description: Email of user
       type: string
-    - contextPath: PagerDutyUser.Usermame
-      description: Usermame of person
+    - contextPath: PagerDutyUser.Username
+      description: Username of person
       type: string
     - contextPath: PagerDutyUser.DisplayName
       description: Display name of person
