@@ -692,8 +692,11 @@ script:
 
         # handle headers
         if item.headers:
+            headers = []
             for header in item.headers:
                 labels.append({'type': 'Email/Header/' + header.name, 'value': header.value})
+                headers.append(header.name + ": " + header.value)
+            labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
         # handle item id
         if item.message_id:
@@ -1271,11 +1274,13 @@ script:
         if debug_log:
             error_message += "\nFull debug log:\n" + debug_log
 
-        if not IS_TEST_MODULE:
-            raise Exception(error_message)
-        demisto.results(error_message_simple)
+        if demisto.command() == 'fetch-incidents':
+            raise
+        if IS_TEST_MODULE:
+            demisto.results(error_message_simple)
+        else:
+            demisto.results({ "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple })
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
-
   type: python
   commands:
   - name: ews-get-attachment
@@ -1802,7 +1807,7 @@ script:
       description: The mailbox to move the item to.
     - name: source-mailbox
       description: The mailbox to move the item from (conventionally called "target-mailbox"
-        - the target mailbox to apply the command on).
+        the target mailbox to apply the command on).
     outputs:
     - contextPath: EWS.Items.movedToMailbox
       description: The mailbox that the item was moved to.

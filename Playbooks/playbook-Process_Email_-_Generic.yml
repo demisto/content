@@ -2,7 +2,6 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 4.0
-releaseNotes: "Add support for retrieving the original email from both EWS and Gmail mail serveices"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
