@@ -42,8 +42,8 @@ INSTALL_COMMAND_Y="cd ~/installer_files \
     && chmod +x installer.sh \
     && sudo mkdir /usr/local/demisto \
     && sudo cp demisto.lic /usr/local/demisto/ \
-    && sudo cp demisto.conf /etc/demisto.conf \
-    && sudo ./installer.sh -- -y -do-not-start-server"
+    && sudo ./installer.sh -- -y -do-not-start-server \
+    && sudo cp demisto.conf /etc/demisto.conf"
 
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
 
