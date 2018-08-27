@@ -1293,7 +1293,7 @@ Maximum: 100'
       default: true
       description: The data center's ID.
     description: Use this operation to delete a site's data center.
-  - name: incap-site-datacenter-list
+  - name: incap-list-site-datacenters
     arguments:
     - name: site_id
       required: true
