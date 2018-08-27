@@ -1,7 +1,7 @@
 {
   "ImageId": "ami-025a39ddfb7fc5e1c",
   "InstanceType": "c5.xlarge",
-  "KeyName": "circleci-pref",
+  "KeyName": "oregon-ci",
   "BlockDeviceMappings": [
     {
       "DeviceName": "/dev/sda1",
