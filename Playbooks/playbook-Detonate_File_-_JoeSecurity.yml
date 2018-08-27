@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 76c6569c-c3d0-4cda-850e-fc3a01e0687d
+    taskid: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
     type: start
     task:
-      id: 76c6569c-c3d0-4cda-850e-fc3a01e0687d
+      id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
       version: -1
       name: ""
       description: ""
@@ -33,10 +33,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: bff25a13-501c-4c20-8093-c6e418f2a33d
+    taskid: 96f24672-03e9-4b5f-8976-44cb1a1d273e
     type: regular
     task:
-      id: bff25a13-501c-4c20-8093-c6e418f2a33d
+      id: 96f24672-03e9-4b5f-8976-44cb1a1d273e
       version: -1
       name: JoeSecurity Upload File
       description: ""
@@ -126,10 +126,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 6cd4cfff-ee99-48e3-80c9-0b38c3868fbd
+    taskid: 5bcb48a2-b804-4fa2-8f07-4b36c8708668
     type: regular
     task:
-      id: 6cd4cfff-ee99-48e3-80c9-0b38c3868fbd
+      id: 5bcb48a2-b804-4fa2-8f07-4b36c8708668
       version: -1
       name: JoeSecurity Get Report
       description: ""
@@ -173,10 +173,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 3bd24148-1521-4f03-837a-283fa219d05c
+    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
     type: title
     task:
-      id: 3bd24148-1521-4f03-837a-283fa219d05c
+      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
       version: -1
       name: Done
       description: ""
@@ -194,10 +194,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: bc2f0b86-c915-44f5-879c-1b7abf11b9c6
+    taskid: f40cdb2c-ed11-4489-8977-4f6a105304d4
     type: condition
     task:
-      id: bc2f0b86-c915-44f5-879c-1b7abf11b9c6
+      id: f40cdb2c-ed11-4489-8977-4f6a105304d4
       version: -1
       name: Is there a File to detonate?
       description: Look for files to detonate
@@ -230,10 +230,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 518130ef-ab60-4494-8e89-dba21526789c
+    taskid: ce04663d-aaca-47c5-8c3a-392987e23dfa
     type: condition
     task:
-      id: 518130ef-ab60-4494-8e89-dba21526789c
+      id: ce04663d-aaca-47c5-8c3a-392987e23dfa
       version: -1
       name: Is JoeSecurity sandbox enabled?
       description: Check if integration instance is enabled
