@@ -1,7 +1,7 @@
 id: CrowdStrike_DetonateUrl
 version: -1
 name: CrowdStrike - Detonate URL
-description: Detonate one or more files using the Wildfire integration. This playbook
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
 fromversion: "4.0.0"
 starttaskid: "0"

@@ -382,7 +382,7 @@ tasks:
         simple: "true"
       fields: {}
       path:
-        simple: Jask.Signal=>val.length == 10
+        simple: Jask.Signal=>val.length >= 10
     separatecontext: false
     view: |-
       {

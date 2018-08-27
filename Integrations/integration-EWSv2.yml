@@ -32,7 +32,7 @@ configuration:
   required: true
 - display: Server Version (2007,2010,2010_SP2,2013,2016)
   name: defaultServerVersion
-  defaultvalue: "2013"
+  defaultvalue: "2016"
   type: 0
   required: true
 - display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
@@ -94,8 +94,8 @@ script:
     log_stream = StringIO()
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
-    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-        ErrorFolderNotFound, ErrorToFolderNotFound
+    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -143,6 +143,7 @@ script:
     LAST_RUN_TIME = "lastRunTime"
     LAST_RUN_IDS = "ids"
     LAST_RUN_FOLDER = "folderName"
+    ERROR_COUNTER = "errorCounter"
 
     ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
                              'toRecipients', ]
@@ -715,24 +716,38 @@ script:
     def fetch_emails_as_incidents(account, folder_name):
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
-        last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = []
-        incidents = []
-        for item in last_emails:
-            if item.message_id:
-                ids.append(item.message_id)
-                incident = parse_incident_from_item(item)
-                incidents.append(incident)
+        try:
+            last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        new_last_run = {
-            LAST_RUN_TIME: start_time.ewsformat(),
-            LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: ids
-        }
+            ids = []
+            incidents = []
+            for item in last_emails:
+                if item.message_id:
+                    ids.append(item.message_id)
+                    incident = parse_incident_from_item(item)
+                    incidents.append(incident)
 
-        demisto.setLastRun(new_last_run)
-        return incidents
+            new_last_run = {
+                LAST_RUN_TIME: start_time.ewsformat(),
+                LAST_RUN_FOLDER: folder_name,
+                LAST_RUN_IDS: ids,
+                ERROR_COUNTER: 0
+            }
+
+            demisto.setLastRun(new_last_run)
+            return incidents
+
+        except RateLimitError:
+            if LAST_RUN_TIME in last_run:
+                last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
+            if ERROR_COUNTER not in last_run:
+                last_run[ERROR_COUNTER] = 0
+            last_run[ERROR_COUNTER] += 1
+            demisto.setLastRun(last_run)
+            if last_run[ERROR_COUNTER] > 2:
+                raise
+            return []
 
 
     def get_entry_for_file_attachment(item_id, attachment):
@@ -1220,6 +1235,20 @@ script:
         debug_log = log_stream.getvalue()
         error_message_simple = ""
         error_message = ""
+
+        # Office365 regular maintenance case
+        if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) and 'outlook.office365.com' in EWS_SERVER:
+            log_message = "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
+            if demisto.command() == 'fetch-incidents':
+                demisto.info(log_message)
+                demisto.incidents([])
+                exit(0)
+            if IS_TEST_MODULE:
+                demisto.results(log_message + " Please retry the instance configuration test.")
+                exit(0)
+            error_message_simple = log_message + " Please retry your request."
+
+        # Other exception handling
         if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. " \
                             "Check credentials are correct and authentication method are supported. "
@@ -1242,11 +1271,13 @@ script:
         if debug_log:
             error_message += "\nFull debug log:\n" + debug_log
 
-        if not IS_TEST_MODULE:
-            raise Exception(error_message)
-        demisto.results(error_message_simple)
+        if demisto.command() == 'fetch-incidents':
+            raise
+        if IS_TEST_MODULE:
+            demisto.results(error_message_simple)
+        else:
+            demisto.results({ "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple })
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
-
   type: python
   commands:
   - name: ews-get-attachment
@@ -1773,7 +1804,7 @@ script:
       description: The mailbox to move the item to.
     - name: source-mailbox
       description: The mailbox to move the item from (conventionally called "target-mailbox"
-        - the target mailbox to apply the command on).
+        the target mailbox to apply the command on).
     outputs:
     - contextPath: EWS.Items.movedToMailbox
       description: The mailbox that the item was moved to.
@@ -1787,3 +1818,4 @@ script:
     description: Move an item from one mailbox to another.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
+releaseNotes: "-"
