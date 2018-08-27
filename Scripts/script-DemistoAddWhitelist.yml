@@ -1,0 +1,41 @@
+commonfields:
+  id: DemistoAddWhitelist
+  version: -1
+name: DemistoAddWhitelist
+script: |-
+  var body = {
+      value: args.value
+  };
+  if (args.useRegex === 'yes') {
+      body.type = "regex";
+  }
+  if (args.reason && args.reason.length > 0) {
+      body.reason = args.reason;
+  }
+
+  var res = executeCommand('demisto-api-post', {uri:'/indicators/whitelist/update', body: body});
+
+  return res;
+type: javascript
+tags:
+- DemistoAPI
+comment: Adds whitelisted indicator
+enabled: true
+args:
+- name: value
+  required: true
+  description: Value of indicator to whitelist. Supports CIDR and RegEx
+- name: useRegex
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Use Regular Expression in indicator value
+  defaultValue: "no"
+- name: reason
+  description: Whitelisting reason
+scripttarget: 0
+runonce: false
+dependson:
+  must:
+  - demisto-api-post
