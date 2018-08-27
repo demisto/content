@@ -1240,6 +1240,9 @@ Maximum: 100'
       required: true
       default: true
       description: Numeric identifier of the site to operate on
+    - name: name
+      required: true
+      description: The new data center's name.
     - name: server_address
       required: true
       description: "The server's address. Possible values: IP, CNAME"
