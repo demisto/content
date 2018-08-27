@@ -1210,16 +1210,6 @@ Maximum: 100'
     - name: page_num
       description: The page to return starting from 0. Default is 0.
     description: Use this operation to list rules (Delivery Rules and IncapRules) for a given site.
-  - name: incap-delete-site-rule
-    arguments:
-    - name: rule_id
-      required: true
-      default: true
-      description: Rule ID.
-    - name: name
-      description: Rule name.
-      description: 	When true, the rule will be enabled. Set to false to disable.
-    description: Use this operation to delete a rule (Delivery Rules or IncapRules).
   - name: incap-list-site-rules
     arguments:
     - name: site_id
