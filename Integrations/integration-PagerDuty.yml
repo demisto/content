@@ -449,7 +449,7 @@ script:
             test_module()
         elif demisto.command() == 'PagerDutyIncidents':
             demisto.results(get_incidents_command(**demisto.args()))
-        elif demisto.command() == 'pagerDutySubmitEvent':
+        elif demisto.command() == 'PagerDutySubmitEvent':
             demisto.results(submit_event_command(**demisto.args()))
         elif demisto.command() == 'PagerDutyGetUsersOnCall':
             demisto.results(get_on_call_users_command(**demisto.args()))
@@ -457,8 +457,8 @@ script:
             demisto.results(get_all_schedules_command(**demisto.args()))
         elif demisto.command() == 'PagerDutyGetUsersOnCallNow':
             demisto.results(get_on_call_now_users_command(**demisto.args()))
-        elif demisto.command() == 'PagerDutyGetUsersOnCallNow':
-            demisto.results(get_on_call_now_users_command(**demisto.args()))
+        elif demisto.command() == 'PagerDutyGetContactMethods':
+            demisto.results(get_users_contact_methods_command(**demisto.args()))
         elif demisto.command() == 'PagerDutyGetUsersNotification':
             demisto.results(get_users_notification_command(**demisto.args()))
 
