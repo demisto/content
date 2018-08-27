@@ -1321,10 +1321,10 @@ Maximum: 100'
     description: Use this operation to add a server to a data center.
   - name: incap-edit-site-datacenter-server
     arguments:
-    - name: dc_id
+    - name: server_id
       required: true
       default: true
-      description: The data center's ID.
+      description: Server ID.
     - name: server_address
       required: true
       description: "The server's address. Possible values: IP, CNAME"
