@@ -6,10 +6,18 @@ echo "Start create_instance script"
 #configure aws
 aws configure set region us-west-2
 
+CONFFILE=$1
+
 #create instance
 REQUEST_ID=$(aws ec2 request-spot-instances \
-    --launch-specification file://instance.json \
+    --launch-specification file://${CONFFILE} \
     --query 'SpotInstanceRequests[0].SpotInstanceRequestId' | tr -d '"')
+
+if [ -z "$REQUEST_ID" ]
+then
+    echo "Failed setting up request for spot-instance."
+    exit 1
+fi
 
 MACHINE_STATE=""
 while [ "$MACHINE_STATE" != "fulfilled" ] ; do

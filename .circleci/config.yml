@@ -51,7 +51,7 @@ jobs:
       - run:
           name: Create Instance
           command: |
-              ./Tests/scripts/create_instance.sh
+              ./Tests/scripts/create_instance.sh Tests/scripts/instance.json
       - run:
           name: Download Configuration
           command: |
