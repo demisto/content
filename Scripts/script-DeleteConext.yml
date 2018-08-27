@@ -110,3 +110,4 @@ args:
   description: index to delete in case 'key' argument was specified
 scripttarget: 0
 runonce: false
+releaseNotes: "-"

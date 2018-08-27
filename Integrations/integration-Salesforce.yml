@@ -1500,3 +1500,4 @@ script:
       salesforce-push-comment
   isfetch: true
   runonce: false
+releaseNotes: "-"

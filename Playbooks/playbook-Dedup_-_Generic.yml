@@ -353,3 +353,4 @@ outputs:
 - contextPath: similarIncident
   description: Similar incident.
   type: unknown
+releaseNotes: "-"
