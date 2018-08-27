@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 50
         }
       }
@@ -54,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 1452.5,
+          "y": 690
         }
       }
     note: false
@@ -92,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 1452.5,
+          "y": 340
         }
       }
     note: false
@@ -134,8 +134,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 1452.5,
+          "y": 865
         }
       }
     note: false
@@ -169,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1770
+          "x": 1452.5,
+          "y": 1740
         }
       }
     note: false
@@ -204,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 1452.5,
+          "y": 1390
         }
       }
     note: false
@@ -238,8 +238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 1452.5,
+          "y": 1565
         }
       }
     note: false
@@ -268,8 +268,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1945
+          "x": 1452.5,
+          "y": 1915
         }
       }
     note: false
@@ -295,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2470
+          "x": 1452.5,
+          "y": 2440
         }
       }
     note: false
@@ -324,8 +324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2120
+          "x": 1452.5,
+          "y": 2090
         }
       }
     note: false
@@ -355,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2295
+          "x": 1452.5,
+          "y": 2265
         }
       }
     note: false
@@ -382,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2645
+          "x": 1452.5,
+          "y": 2615
         }
       }
     note: false
@@ -407,8 +407,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2820
+          "x": 1452.5,
+          "y": 2805
         }
       }
     note: false
@@ -424,11 +424,14 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1882.5,
           "y": 2965
         }
       }
@@ -445,11 +448,14 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1452.5,
           "y": 2965
         }
       }
@@ -466,11 +472,14 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1022.5,
           "y": 2965
         }
       }
@@ -510,8 +519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 1452.5,
+          "y": 1215
         }
       }
     note: false
@@ -527,6 +536,9 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "37"
     scriptarguments:
       customEnd: {}
       customStart: {}
@@ -543,8 +555,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 660,
+          "y": 2470
         }
       }
     note: false
@@ -571,8 +583,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 1452.5,
+          "y": 1040
         }
       }
     note: false
@@ -603,8 +615,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 1452.5,
+          "y": 515
         }
       }
     note: false
@@ -633,8 +645,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 370
+          "x": 50,
+          "y": 2265
         }
       }
     note: false
@@ -656,8 +668,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 210
+          "x": 1452.5,
+          "y": 195
         }
       }
     note: false
@@ -679,8 +691,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 210
+          "x": 50,
+          "y": 2105
         }
       }
     note: false
@@ -716,8 +728,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 545
+          "x": 50,
+          "y": 2440
         }
       }
     note: false
@@ -747,23 +759,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 720
+          "x": 162.5,
+          "y": 2615
         }
       }
     note: false
   "36":
     id: "36"
-    taskid: 4587137b-af97-4f88-80ff-72892226d478
+    taskid: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
     type: regular
     task:
-      id: 4587137b-af97-4f88-80ff-72892226d478
+      id: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
       version: -1
-      name: Untitled Task
+      name: Get specific event details
       script: McAfee ESM-v10|||esm-get-alarm-event-details
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "38"
     scriptarguments:
       eventId:
         complex:
@@ -773,8 +788,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 895
+          "x": 162.5,
+          "y": 2790
         }
       }
     note: false
@@ -793,8 +808,37 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 735
+          "x": 807.5,
+          "y": 3140
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: ee474fc6-a791-447b-8dcf-2eff1c323ae4
+    type: regular
+    task:
+      id: ee474fc6-a791-447b-8dcf-2eff1c323ae4
+      version: -1
+      name: Validate event details context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: EsmAlarmEvent.SrcMac
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2965
         }
       }
     note: false
@@ -803,8 +847,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3010,
-        "width": 1670,
+        "height": 3155,
+        "width": 2212.5,
         "x": 50,
         "y": 50
       }
