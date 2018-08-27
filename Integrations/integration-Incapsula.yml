@@ -1210,7 +1210,7 @@ Maximum: 100'
     - name: page_num
       description: The page to return starting from 0. Default is 0.
     description: Use this operation to list rules (Delivery Rules and IncapRules) for a given site.
-  - name: incap-list-site-rules
+  - name: incap-revert-site-rule
     arguments:
     - name: site_id
       required: true
@@ -1610,7 +1610,6 @@ Maximum: 100'
   - name: incap-get-app-info
     arguments: []
     description: Use this operation to retrieve a list of all the client applications
-  - name: incap-add-login-protect
   # Infrastructure Protection Test Alerts
 
 system: true
