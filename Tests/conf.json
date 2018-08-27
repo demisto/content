@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true
@@ -11,7 +15,7 @@
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
         },
-       {    "integrations": "Gmail",
+        {   "integrations": "Gmail",
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
@@ -171,13 +175,6 @@
                 "byoi": false
             },
             "playbookID": "account_enrichment_-_generic_test"
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
         },
         {
             "integrations": "FalconHost",
@@ -342,11 +339,6 @@
             "integrations": "SafeBreach"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test",
-            "nightly": true
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
         },
@@ -419,6 +411,18 @@
     ],
     "skipped": [
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test",
+            "nightly": true
+        },
+        {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
         },
@@ -427,10 +431,6 @@
             "playbookID": "JoeSecurityTestPlaybook",
             "timeout": 500,
             "nightly": true
-        },
-        {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations":"Cylance Protect",
