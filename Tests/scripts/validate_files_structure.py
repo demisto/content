@@ -76,8 +76,8 @@ class LOG_COLORS:
     GREEN = '\033[01;32m'
 
 # print srt in the given color
-def print_color(str, color):
-    print(color + str + LOG_COLORS.NATIVE)
+def print_color(msg, color):
+    print(str(color) +str(msg) + LOG_COLORS.NATIVE)
 
 def print_error(error_str):
     print_color(error_str, LOG_COLORS.RED)
