@@ -1234,7 +1234,7 @@ Maximum: 100'
       description: New priority for the selected rule.
     description: Use this operation to change a Delivery Rule's priority.
   # Site Management - Data Centers
-  - name: incap-site-datacenter-add
+  - name: incap-add-site-datacenter
     arguments:
     - name: site_id
       required: true
@@ -1256,7 +1256,7 @@ Maximum: 100'
       - "false"
       description: 	The data center will be available for specific resources (Forward Delivery Rules).
     description: Use this operation to add a data center to a site.
-  - name: incap-site-datacenter-edit
+  - name: incap-edit-site-datacenter
     arguments:
     - name: dc_id
       required: true
@@ -1283,7 +1283,7 @@ Maximum: 100'
       - "false"
       description: 	The data center will be available for specific resources (Forward Delivery Rules).
     description: Use this operation to edit a site's data center.
-  - name: incap-site-datacenter-delete
+  - name: incap-delete-site-datacenter
     arguments:
     - name: dc_id
       required: true
@@ -1297,7 +1297,7 @@ Maximum: 100'
       default: true
       description: Numeric identifier of the site to operate on.
     description: Use this operation to list a site's data centers including the data centers' servers.
-  - name: incap-site-datacenter-server-add
+  - name: incap-add-site-datacenter-server
     arguments:
     - name: dc_id
       required: true
@@ -1315,7 +1315,7 @@ Maximum: 100'
       - "false"
       description: 	Set the server as Active (P0) or Standby (P1) (Boolean).
     description: Use this operation to add a server to a data center.
-  - name: incap-site-datacenter-server-edit
+  - name: incap-edit-site-datacenter-server
     arguments:
     - name: dc_id
       required: true
@@ -1339,7 +1339,7 @@ Maximum: 100'
       - "false"
       description: 	Set the server as Active (P0) or Standby (P1) (Boolean).
     description: Use this operation to add a server to a data center.
-  - name: incap-site-datacenter-server-delete
+  - name: incap-delete-site-datacenter-server
     arguments:
     - name: server_id
       required: true
