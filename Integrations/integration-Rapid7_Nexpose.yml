@@ -595,7 +595,7 @@ script:
         if queries is not None:
             assets = search_by_filter(queries.split(';'))
         elif risk_score is not None:
-            assets = search_by_filter(['risk-score is-greater-than ' + risk_score])
+            assets = search_by_filter(['risk-score is-greater-than ' + str(risk_score)])
         elif vulnerability_title is not None:
             assets = search_by_filter(['vulnerability-title contains ' + vulnerability_title])
         elif siteIds is not None:
@@ -862,6 +862,80 @@ script:
         path = 'scans/' + str(scan_id)
         return send_request(path)
 
+    def create_site_command():
+        assets = argToList(demisto.args()['assets'])
+        site = create_site(demisto.args()['name'], assets,
+        demisto.args().get('description'), demisto.args().get('importance'), demisto.args().get('scanTemplateId'))
+
+        if not site or 'id' not in site:
+            raise Exception('Site creation failed, could not get the new site')
+
+        output = {
+            'Id': site['id']
+        }
+
+        md = tableToMarkdown('New site created', output)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': site,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                  'Nexpose.Site(val.Id==obj.Id)': output,
+            }
+        }
+
+        return entry
+
+
+    def create_site(name, assets, description=None, importance=None, template_id=None):
+        site_body = {
+            'name': name
+        }
+
+        if assets:
+            site_body['scan'] = {
+                'assets': {
+                    'includedTargets': {
+                        'addresses': assets
+                    }
+                }
+            }
+        if description:
+            site_body['description'] = description
+        if importance:
+            site_body['importance'] = importance
+        if template_id:
+            site_body['scanTemplateId'] = template_id
+
+        path = 'sites'
+
+        return send_request(path, 'post', body=site_body)
+
+    def delete_site_command():
+        site_id = demisto.args()['id']
+
+        res = delete_site(site_id)
+
+        hr = "Site " + str(site_id) + " deleted"
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
+        }
+
+        return entry
+
+    def delete_site(site_id):
+        path = 'sites/' + str(site_id)
+
+        return send_request(path, 'delete')
+
     def get_sites_command():
         sites = get_sites(limit=demisto.args().get('limit'),sort=demisto.args().get('sort'))
 
@@ -1038,7 +1112,7 @@ script:
         path = 'reports/' + str(report_id) + '/history/' + str(instance['id']) + '/output'
         report = send_request(path, headers=headers, is_file=True)
 
-        return fileResult(name + '.' + reportFormat, report)
+        return fileResult(name + '.' + reportFormat, report, entryTypes['entryInfoFile'])
 
     def start_assets_scan_command():
         ips = demisto.args().get('IPs')
@@ -1101,7 +1175,6 @@ script:
             'name': name,
             'hosts': hosts
         }
-
         return send_request(path, 'post', body=body)
 
     try:
@@ -1132,10 +1205,14 @@ script:
             demisto.results(start_site_scan_command())
         if demisto.command() == 'nexpose-start-assets-scan':
             demisto.results(start_assets_scan_command())
+        if demisto.command() == 'nexpose-create-site':
+            demisto.results(create_site_command())
+        if demisto.command() == 'nexpose-delete-site':
+            demisto.results(delete_site_command())
     except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        raise
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
   type: python
   commands:
   - name: nexpose-get-asset
@@ -1146,83 +1223,118 @@ script:
     outputs:
     - contextPath: Nexpose.Asset.Addresses
       description: All addresses discovered on the asset.
+      type: unknown
     - contextPath: Nexpose.Asset.AssetId
       description: Id of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Hardware
       description: The primary Media Access Control (MAC) address of the asset. The
         format is six groups of two hexadecimal digits separated by colons.
+      type: string
     - contextPath: Nexpose.Asset.Aliases
       description: All host names or aliases discovered on the asset.
+      type: unknown
     - contextPath: Nexpose.Asset.HostType
       description: The type of asset, Valid values are unknown, guest, hypervisor,
         physical, mobile
+      type: string
     - contextPath: Nexpose.Asset.Site
       description: Asset site name.
+      type: string
     - contextPath: Nexpose.Asset.OperatingSystem
       description: Operating system of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerabilities
       description: The total number of vulnerabilities on the asset.
+      type: number
     - contextPath: Nexpose.Asset.CPE
       description: The Common Platform Enumeration (CPE) of the operating system.
+      type: string
     - contextPath: Nexpose.Asset.LastScanDate
       description: Last scan date of the asset.
+      type: date
     - contextPath: Nexpose.Asset.LastScanId
       description: Id of the asset's last scan.
+      type: number
     - contextPath: Nexpose.Asset.RiskScore
       description: The risk score (with criticality adjustments) of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Software.Software
       description: The description of the software.
+      type: string
     - contextPath: Nexpose.Asset.Software.Version
       description: The version of the software.
+      type: string
     - contextPath: Nexpose.Asset.Services.Name
       description: The name of the service.
+      type: string
     - contextPath: Nexpose.Asset.Services.Port
       description: The port of the service.
+      type: number
     - contextPath: Nexpose.Asset.Services.Product
       description: The product running the service.
+      type: string
     - contextPath: Nexpose.Asset.Services.protocol
       description: The protocol of the service, valid values are ip, icmp, igmp, ggp,
         tcp, pup, udp, idp, esp, nd, raw
+      type: string
     - contextPath: Nexpose.Asset.Users.FullName
       description: The full name of the user account.
+      type: string
     - contextPath: Nexpose.Asset.Users.Name
       description: The name of the user account.
+      type: string
     - contextPath: Nexpose.Asset.Users.UserId
       description: The identifier of the user account.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Id
       description: The identifier of the vulnerability.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Instances
       description: The number of vulnerable occurrences of the vulnerability. This
         does not include invulnerable instances.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Title
       description: The title (summary) of the vulnerability.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Malware
       description: The malware kits that are known to be used to exploit the vulnerability.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Exploit
       description: The exploits that can be used to exploit a vulnerability.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSS
       description: The CVSS exploit score.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Risk
       description: The risk score of the vulnerability, rounded to a maximum of to
         digits of precision. If using the default Rapid7 Real Risk™ model, this value
         ranges from 0-1000.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.PublishedOn
       description: The date the vulnerability was first published or announced. The
         format is an ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.ModifiedOn
       description: The last date the vulnerability was modified. The format is an
         ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.Severity
       description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
         "Critical".'
+      type: string
     - contextPath: Endpoint.IP
       description: Endpoint IP address.
+      type: string
     - contextPath: Endpoint.HostName
       description: Endpoint host name.
+      type: string
     - contextPath: Endpoint.OS
       description: Endpoint operating system.
+      type: string
     - contextPath: CVE.ID
       description: Common Vulnerabilities and Exposures ids
+      type: string
     description: Returns the specified asset.
   - name: nexpose-get-assets
     arguments:
@@ -1236,37 +1348,52 @@ script:
     outputs:
     - contextPath: Nexpose.Asset.AssetId
       description: The identifier of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Address
       description: The primary IPv4 or IPv6 address of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Name
       description: The primary host name (local or FQDN) of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Site
       description: Asset site name.
+      type: string
     - contextPath: Nexpose.Asset.Exploits
       description: The number of distinct exploits that can exploit any of the vulnerabilities
         on the asset.
+      type: number
     - contextPath: Nexpose.Asset.Malware
       description: The number of distinct malware kits that vulnerabilities on the
         asset are susceptible to.
+      type: number
     - contextPath: Nexpose.Asset.OperatingSystem
       description: Operating system of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerabilities
       description: The total number of vulnerabilities.
+      type: number
     - contextPath: Nexpose.Asset.RiskScore
       description: The risk score (with criticality adjustments) of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Assessed
       description: Whether the asset has been assessed for vulnerabilities at least
         once.
+      type: boolean
     - contextPath: Nexpose.Asset.LastScanDate
       description: Last scan date of the asset.
+      type: date
     - contextPath: Nexpose.Asset.LastScanId
       description: Id of the asset's last scan.
+      type: number
     - contextPath: Endpoint.IP
       description: Endpoint IP address.
+      type: string
     - contextPath: Endpoint.HostName
       description: Endpoint host name.
+      type: string
     - contextPath: Endpoint.OS
       description: Endpoint operating system.
+      type: string
     description: Returns all assets for which you have access.
   - name: nexpose-search-assets
     arguments:
@@ -1304,37 +1431,52 @@ script:
     outputs:
     - contextPath: Nexpose.Asset.AssetId
       description: The identifier of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Address
       description: The primary IPv4 or IPv6 address of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Name
       description: The primary host name (local or FQDN) of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Site
       description: Asset site name.
+      type: string
     - contextPath: Nexpose.Asset.Exploits
       description: The number of distinct exploits that can exploit any of the vulnerabilities
         on the asset.
+      type: number
     - contextPath: Nexpose.Asset.Malware
       description: The number of distinct malware kits that vulnerabilities on the
         asset are susceptible to.
+      type: number
     - contextPath: Nexpose.Asset.OperatingSystem
       description: Operating system of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerabilities
       description: The total number of vulnerabilities.
+      type: number
     - contextPath: Nexpose.Asset.RiskScore
       description: The risk score (with criticality adjustments) of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Assessed
       description: Whether the asset has been assessed for vulnerabilities at least
         once.
+      type: boolean
     - contextPath: Nexpose.Asset.LastScanDate
       description: Last scan date of the asset.
+      type: date
     - contextPath: Nexpose.Asset.LastScanId
       description: Id of the asset's last scan.
+      type: number
     - contextPath: Endpoint.IP
       description: Endpoint IP address.
+      type: string
     - contextPath: Endpoint.HostName
       description: Endpoint host name.
+      type: string
     - contextPath: Endpoint.OS
       description: Endpoint operating system.
+      type: string
     description: Returns all assets for which you have access that match the given
       search criteria.
   - name: nexpose-get-scan
@@ -1346,29 +1488,38 @@ script:
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
+      type: number
     - contextPath: Nexpose.Scan.ScanType
       description: The scan type (automated, manual, scheduled).
+      type: string
     - contextPath: Nexpose.Scan.StartedBy
       description: The name of the user that started the scan.
+      type: string
     - contextPath: Nexpose.Scan.Assets
       description: The number of assets found in the scan
+      type: number
     - contextPath: Nexpose.Scan.TotalTime
       description: The duration of the scan in minutes.
-    - contextPath: Nexpose.Scan.Completed
-      description: The end time of the scan in ISO8601 format.
+      type: string
     - contextPath: Nexpose.Scan.Status
       description: The scan status. Valid values are aborted, unknown, running, finished,
         stopped, error, paused, dispatched, integrating
+      type: string
     - contextPath: Nexpose.Scan.Completed
       description: The end time of the scan in ISO8601 format.
+      type: date
     - contextPath: Nexpose.Scan.Vulnerabilities.Critical
       description: The number of critical vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
       description: The number of moderate vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Severe
       description: The number of severe vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Total
       description: The total number of vulnerabilities.
+      type: number
     description: Returns the specified scan.
   - name: nexpose-get-asset-vulnerability
     arguments:
@@ -1381,70 +1532,130 @@ script:
     outputs:
     - contextPath: Nexpose.Asset.AssetId
       description: Identifier of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Id
       description: The identifier of the vulnerability.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Title
       description: The title (summary) of the vulnerability.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Severity
       description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
         "Critical".'
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.RiskScore
       description: The risk score of the vulnerability, rounded to a maximum of to
         digits of precision. If using the default Rapid7 Real Risk™ model, this value
         ranges from 0-1000.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSS
       description: The CVSS vector(s) for the vulnerability.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.CVSSV3
       description: The CVSS v3 vector.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Published
       description: The date the vulnerability was first published or announced. The
         format is an ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.Added
       description: The date the vulnerability coverage was added. The format is an
         ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.Modified
       description: The last date the vulnerability was modified. The format is an
         ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.CVSSScore
       description: The CVSS score, which ranges from 0-10.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSSV3Score
       description: The CVSS3 score, which ranges from 0-10.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Categories
       description: All vulnerability categories assigned to this vulnerability.
+      type: unknown
     - contextPath: Nexpose.Asset.Vulnerability.CVES
       description: All CVEs assigned to this vulnerability.
+      type: unknown
     - contextPath: Nexpose.Asset.Vulnerability.Check.Port
       description: The port of the service the result was discovered on.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Check.Protocol
       description: The protocol of the service the result was discovered on, valid
         values ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Check.Since
       description: The date and time the result was first recorded, in the ISO8601
         format. If the result changes status this value is the date and time of the
         status change.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.Check.Proof
       description: The proof explaining why the result was found vulnerable.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Check.Status
       description: The status of the vulnerability check result. Valid values are,
         unknown, not-vulnerable, vulnerable, vulnerable-version, vulnerable-potential,
         vulnerable-with-exception-applied, vulnerable-version-with-exception-applied,
         vulnerable-potential-with-exception-applied
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Type
       description: 'The type of the solution. One of: "Configuration", "Rollup patch",
         "Patch".'
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Summary
       description: The summary of the solution.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Steps
       description: The steps required to remediate the vulnerability.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Estimate
       description: The estimated duration to apply the solution, in minutes.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.AdditionalInformation
       description: Additional information or resources that can assist in applying
         the remediation
+      type: string
     - contextPath: CVE.ID
       description: Common Vulnerabilities and Exposures ids
+      type: string
     description: Returns the details and possible remediations for an asset's given
       vulnerability.
+  - name: nexpose-create-site
+    arguments:
+    - name: name
+      required: true
+      description: <string> The site name. Name must be unique.
+    - name: description
+      description: <string> The site's description.
+    - name: assets
+      required: true
+      description: Multiple criteria of <string> Specify asset addresses to be included
+        in site scans
+      isArray: true
+    - name: scanTemplateId
+      description: '<string> The identifier of a scan template. Use nexpose-get-report-templates
+        to get all templates,  default scan template is selected when not specified. '
+    - name: importance
+      auto: PREDEFINED
+      predefined:
+      - very_low
+      - low
+      - normal
+      - high
+      - very_high
+      description: <string> The site importance. Defaults to "normal" if not specified.
+    outputs:
+    - contextPath: Nexpose.Site.Id
+      description: The created site Id
+      type: number
+    description: Creates a new site with the specified configuration.
+  - name: nexpose-delete-site
+    arguments:
+    - name: id
+      required: true
+      description: Id of the site to delete
+    description: Deletes a site.
   - name: nexpose-get-sites
     arguments:
     - name: limit
@@ -1457,33 +1668,44 @@ script:
     outputs:
     - contextPath: Nexpose.Site.Id
       description: The identifier of the site.
+      type: number
     - contextPath: Nexpose.Site.Name
       description: The site name.
+      type: string
     - contextPath: Nexpose.Site.Assets
       description: The number of assets that belong to the site.
+      type: number
     - contextPath: Nexpose.Site.Type
       description: The type of the site. Valid values are agent, dynamic, static
+      type: string
     - contextPath: Nexpose.Site.Vulnerabilities
       description: The total number of vulnerabilities.
+      type: number
     - contextPath: Nexpose.Site.Risk
       description: The risk score (with criticality adjustments) of the site.
+      type: number
     - contextPath: Nexpose.Site.LastScan
       description: The date and time of the site's last scan.
+      type: date
     description: Retrieves accessible sites.
   - name: nexpose-get-report-templates
     arguments: []
     outputs:
     - contextPath: Nexpose.Template.Id
-      description: The identifier of the report template;
+      description: The identifier of the report template.
+      type: number
     - contextPath: Nexpose.Template.Name
       description: The name of the report template.
+      type: string
     - contextPath: Nexpose.Template.Description
       description: The description of the report template.
+      type: string
     - contextPath: Nexpose.Template.Type
       description: The type of the report template. document is a templatized, typically
         printable, report that has various sections of content. export is data-oriented
         output, typically CSV. file is a printable report template using a report
         template file.
+      type: string
     description: Returns all available report templates.
   - name: nexpose-create-assets-report
     arguments:
@@ -1505,6 +1727,25 @@ script:
       - html
       - text
       description: <string> The report format, default is PDF
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
     description: Generates a new report on given assets according to a template and
       arguments.
   - name: nexpose-create-sites-report
@@ -1527,6 +1768,25 @@ script:
       - html
       - text
       description: <string> The report format, default is PDF
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
     description: Generates a new report on given sites according to a template and
       arguments.
   - name: nexpose-create-scan-report
@@ -1548,6 +1808,25 @@ script:
       - html
       - text
       description: <string> The report format, default is PDF
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
     description: Generates a new report for a specified scan.
   - name: nexpose-start-site-scan
     arguments:
@@ -1563,29 +1842,38 @@ script:
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
+      type: number
     - contextPath: Nexpose.Scan.ScanType
       description: The scan type (automated, manual, scheduled).
+      type: string
     - contextPath: Nexpose.Scan.StartedBy
       description: The name of the user that started the scan.
+      type: date
     - contextPath: Nexpose.Scan.Assets
       description: The number of assets found in the scan
+      type: number
     - contextPath: Nexpose.Scan.TotalTime
       description: The duration of the scan in minutes.
+      type: string
     - contextPath: Nexpose.Scan.Completed
       description: The end time of the scan in ISO8601 format.
+      type: date
     - contextPath: Nexpose.Scan.Status
       description: The scan status. Valid values are aborted, unknown, running, finished,
         stopped, error, paused, dispatched, integrating
-    - contextPath: Nexpose.Scan.Completed
-      description: The end time of the scan in ISO8601 format.
+      type: string
     - contextPath: Nexpose.Scan.Vulnerabilities.Critical
       description: The number of critical vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
       description: The number of moderate vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Severe
       description: The number of severe vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Total
       description: The total number of vulnerabilities.
+      type: number
     description: Starts a scan for the specified site.
   - name: nexpose-start-assets-scan
     arguments:
@@ -1598,29 +1886,39 @@ script:
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
+      type: number
     - contextPath: Nexpose.Scan.ScanType
       description: The scan type (automated, manual, scheduled).
+      type: string
     - contextPath: Nexpose.Scan.StartedBy
       description: The name of the user that started the scan.
+      type: date
     - contextPath: Nexpose.Scan.Assets
       description: The number of assets found in the scan
+      type: number
     - contextPath: Nexpose.Scan.TotalTime
       description: The duration of the scan in minutes.
+      type: string
     - contextPath: Nexpose.Scan.Completed
       description: The end time of the scan in ISO8601 format.
+      type: date
     - contextPath: Nexpose.Scan.Status
       description: The scan status. Valid values are aborted, unknown, running, finished,
         stopped, error, paused, dispatched, integrating
-    - contextPath: Nexpose.Scan.Completed
-      description: The end time of the scan in ISO8601 format.
+      type: string
     - contextPath: Nexpose.Scan.Vulnerabilities.Critical
       description: The number of critical vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
       description: The number of moderate vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Severe
       description: The number of severe vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Total
       description: The total number of vulnerabilities.
+      type: number
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
-fromversion: 4.0.0
+fromversion: 3.6.0
+releaseNotes: "Added ability to create a site"

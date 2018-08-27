@@ -940,4 +940,3 @@ script:
       type: string
     description: Returns a list of all categories
   runonce: false
-releaseNotes: "Added zscaler-get-categories command and improved custom categories support"
