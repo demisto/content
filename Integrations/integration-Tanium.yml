@@ -320,12 +320,16 @@ script:
                 formatted_args = formatted_args + '$'+str(i+1)+'='+package_args[i]+','
             formatted_args = formatted_args[:-1]
 
-        if demisto.args().get('sensor_variables'):
-            sensor_vars = demisto.args().get('sensor_variables', '').split(";")
-            replaceStr = getSensorVariable(getObject(handler, u'package', package).get('package_spec'))
-            if replaceStr == '':
-                raise Exception("Package \"" + package + "\" does not have a sensor variable.")
+        replaceStr = getSensorVariable(getObject(handler, u'package', package).get('package_spec'))
+        sensor_var = demisto.args().get('sensor_variables')
 
+        if replaceStr is None and sensor_var:
+            return create_error_entry("Package \"" + package + "\" does not have a sensor variable.")
+        if replaceStr and sensor_var is None:
+            return create_error_entry("Package \"" + package + "\" requires a sensor variable.")
+
+        if sensor_var:
+            sensor_vars = demisto.args().get('sensor_variables', '').split(";")
             package_with_args = []
             if formatted_args != '':
                 formatted_args+=','
