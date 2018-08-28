@@ -37,6 +37,24 @@
             "playbookID": "TestParseCSV"
         },
         {
+            "playbookID": "detonate_file_-_generic_test",
+            "timeout": 2000,
+            "nightly": true,
+            "integrations": [
+                "VxStream",
+                "McAfee Advanced Threat Defense"
+            ]
+        },
+        {
+            "playbookID": "detonate_url_-_generic_test",
+            "timeout": 2000,
+            "nightly": true,
+            "integrations": [
+                "McAfee Advanced Threat Defense",
+                "VxStream"
+            ]
+        },
+        {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },

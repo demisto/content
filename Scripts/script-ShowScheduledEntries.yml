@@ -96,4 +96,4 @@ outputs:
 scripttarget: 0
 runonce: false
 sensitive: true
-releaseNotes: Fixed issue when providing incident ID
+releaseNotes: "-"
