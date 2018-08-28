@@ -123,6 +123,7 @@ script:
     ACTION = "action"
     MAILBOX = "mailbox"
     MAILBOX_ID = "mailboxId"
+    FOLDER_ID = "id"
 
     MOVED_TO_MAILBOX = "movedToMailbox"
     MOVED_TO_FOLDER = "movedToFolder"
@@ -139,6 +140,7 @@ script:
     CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID)
     CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
     CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
+    CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
 
     LAST_RUN_TIME = "lastRunTime"
     LAST_RUN_IDS = "ids"
@@ -262,9 +264,13 @@ script:
             if path in folders_map:
                 return account.root._folders_map[path]
 
+        # Path inoput might be a unicode, but the command expects string
+        path = str(path)
+        folder_result = account.inbox.parent
+        if path == 'AllItems':
+            folder_result = folder_result.parent
         path = path.replace("/", "\\")
         path = path.split('\\')
-        folder_result = account.inbox.parent
         for sub_folder_name in path:
             folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
             if len(folder_filter_by_name) == 0:
@@ -692,8 +698,11 @@ script:
 
         # handle headers
         if item.headers:
+            headers = []
             for header in item.headers:
                 labels.append({'type': 'Email/Header/' + header.name, 'value': header.value})
+                headers.append(header.name + ": " + header.value)
+            labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
         # handle item id
         if item.message_id:
@@ -1103,14 +1112,7 @@ script:
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         folders = []
         for f in account.root.walk():
-            folder = {
-                'name': f.name,
-                'totalCount': f.total_count,
-                'unreadCount': f.unread_count,
-                'id': f.folder_id,
-                'childrenFolderCount': f.child_folder_count,
-                'changeKey': f.changekey
-            }
+            folder = folder_to_context_entry(f)
             folders.append(folder)
         folders_tree = account.root.tree()
 
@@ -1162,6 +1164,21 @@ script:
             }
         }
 
+    def get_folder(folder_path, target_mailbox=None):
+        account = get_account(target_mailbox or ACCOUNT_EMAIL)
+        folder = folder_to_context_entry(get_folder_by_path(account, folder_path))
+
+        return get_entry_for_object("Folder %s" % (folder_path,), CONTEXT_UPDATE_FOLDER, folder)
+
+    def folder_to_context_entry(f):
+        return {
+            'name': f.name,
+            'totalCount': f.total_count,
+            'unreadCount': f.unread_count,
+            'id': f.folder_id,
+            'childrenFolderCount': f.child_folder_count,
+            'changeKey': f.changekey
+        }
 
     def test_module():
         try:
@@ -1226,6 +1243,8 @@ script:
             encode_and_submit_results(get_items_from_folder(**args))
         elif demisto.command() == 'ews-get-items':
             encode_and_submit_results(get_items(**args))
+        elif demisto.command() == 'ews-get-folder':
+            encode_and_submit_results(get_folder(**args))
 
 
     except Exception, e:
@@ -1271,11 +1290,13 @@ script:
         if debug_log:
             error_message += "\nFull debug log:\n" + debug_log
 
-        if not IS_TEST_MODULE:
-            raise Exception(error_message)
-        demisto.results(error_message_simple)
+        if demisto.command() == 'fetch-incidents':
+            raise
+        if IS_TEST_MODULE:
+            demisto.results(error_message_simple)
+        else:
+            demisto.results({ "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple })
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
-
   type: python
   commands:
   - name: ews-get-attachment
@@ -1814,6 +1835,35 @@ script:
       description: The action, value will be 'moved'.
       type: string
     description: Move an item from one mailbox to another.
+  - name: ews-get-folder
+    arguments:
+    - name: target-mailbox
+      description: The mailbox to apply the search on.
+    - name: folder-path
+      default: true
+      description: The folder path to get. If empty - will get the folder 'AllItems'.
+      defaultValue: AllItems
+    outputs:
+    - contextPath: EWS.Folders.id
+      description: Folder id.
+      type: string
+    - contextPath: EWS.Folders.name
+      description: Folder name.
+      type: string
+    - contextPath: EWS.Folders.changeKey
+      description: Folder change key
+      type: string
+    - contextPath: EWS.Folders.totalCount
+      description: Total count of emails in the folder.
+      type: number
+    - contextPath: EWS.Folders.childrenFolderCount
+      type: number
+      description: Number of sub-folders.
+    - contextPath: EWS.Folders.unreadCount
+      type: number
+      description: Unread emails in the folder.
+    description: Get a single specific folder.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-releaseNotes: "-"
+  runonce: false
+releaseNotes: "Added command ews-get-folder, which returns a single specific folder"

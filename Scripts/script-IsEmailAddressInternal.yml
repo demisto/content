@@ -18,15 +18,15 @@ script: |-
       else:
           network_type = "External"
 
+      email_dict = {
+          "Address" : email,
+          "Domain" : parts[1],
+          "Username": parts[0],
+          "NetworkType" : network_type
+      }
+
       email_obj = {
-          "Account(val.Email && val.Email.Address && val.Email.Address === obj.Email.Address)": {
-              "Email": {
-                  "Address": email,
-                  "Domain" : parts[1],
-                  "Username": parts[0],
-                  "NetworkType" : network_type
-              }
-          }
+          "Account.Email(val.Address && val.Address == obj.Address)": email_dict
       }
       demisto.results({
           "Type" : entryTypes["note"],
@@ -43,7 +43,7 @@ type: python
 tags:
 - email
 comment: Checks if the email address in part of the internal domains
-system: true
+enabled: true
 args:
 - name: email
   required: true
@@ -66,3 +66,4 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
+releaseNotes: Handled context to prevent duplicates

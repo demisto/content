@@ -118,7 +118,7 @@ script:
                 'Vendor' : 'JoeSecurity',
                 'Indicator' : analysis_info['SampleName'],
                 'Type' : 'url' if 'md5' is None else 'file',
-                'Score' : scoreToReputation(dbot_score),
+                'Score' : dbot_score,
                 'Malicious' : malicious,
             })
             context.append(analysis_context)
@@ -465,8 +465,8 @@ script:
       description: '''url'' for url samples, otherwise ''file'''
       type: string
     - contextPath: DBotScore.Score
-      description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-      type: string
+      description: The actual score
+      type: number
     - contextPath: DBotScore.Malicious.Vendor
       description: 'The name of the vendor: JoeSecurity'
       type: string
@@ -542,8 +542,8 @@ script:
       description: '''url'' for url samples, otherwise ''file'''
       type: string
     - contextPath: DBotScore.Score
-      description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-      type: string
+      description: The actual score
+      type: number
     - contextPath: DBotScore.Malicious.Vendor
       description: 'The name of the vendor: JoeSecurity'
       type: string
@@ -604,8 +604,8 @@ script:
       description: '''url'' for url samples, otherwise ''file'''
       type: string
     - contextPath: DBotScore.Score
-      description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-      type: string
+      description: The actual score
+      type: number
     - contextPath: DBotScore.Malicious.Vendor
       description: 'The name of the vendor: JoeSecurity'
       type: string
@@ -661,8 +661,8 @@ script:
       description: '''url'' for url samples, otherwise ''file'''
       type: string
     - contextPath: DBotScore.Score
-      description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-      type: string
+      description: The actual score
+      type: number
     - contextPath: DBotScore.Malicious.Vendor
       description: 'The name of the vendor: JoeSecurity'
       type: string
@@ -745,8 +745,8 @@ script:
       description: '''url'' for url samples, otherwise ''file'''
       type: string
     - contextPath: DBotScore.Score
-      description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-      type: string
+      description: The actual score
+      type: number
     - contextPath: DBotScore.Malicious.Vendor
       description: 'The name of the vendor: JoeSecurity'
       type: string
@@ -778,7 +778,7 @@ script:
       description: FileName
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the sample
+      description: The EntryID of the report
       type: string
     - contextPath: InfoFile.Size
       description: File Size
@@ -859,8 +859,8 @@ script:
       description: '''url'' for url samples, otherwise ''file'''
       type: string
     - contextPath: DBotScore.Score
-      description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-      type: string
+      description: The actual score
+      type: number
     - contextPath: DBotScore.Malicious.Vendor
       description: 'The name of the vendor: JoeSecurity'
       type: string
@@ -921,8 +921,8 @@ script:
       description: '''url'' for url samples, otherwise ''file'''
       type: string
     - contextPath: DBotScore.Score
-      description: 'Demisto Dbot Score, one of: Bad, Suspicious, Good.'
-      type: string
+      description: The actual score
+      type: number
     - contextPath: DBotScore.Malicious.Vendor
       description: 'The name of the vendor: JoeSecurity'
       type: string
@@ -973,3 +973,4 @@ script:
     description: Download the sample file of an analysis. for security reasons, the
       extension will be "dontrun"
   runonce: false
+releaseNotes: "-"

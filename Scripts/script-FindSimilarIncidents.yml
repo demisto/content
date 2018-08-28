@@ -348,4 +348,4 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
-releaseNotes: "Fix script output params."
+releaseNotes: "-"

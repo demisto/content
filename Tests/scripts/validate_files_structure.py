@@ -9,14 +9,18 @@ It can be run to check only commited changes (if the first argument is 'true') o
 Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh` for that task.
 """
 import pip
-
+import sys
 try:
     import yaml
 except ImportError:
-    pip.main(['install', 'pyyaml'])
-    import yaml
+    print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
+    sys.exit(1)
+try:
+    import pykwalify
+except ImportError:
+    print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
+    sys.exit(1)
 import json
-import sys
 import re
 import os
 from subprocess import Popen, PIPE
@@ -72,9 +76,8 @@ class LOG_COLORS:
     GREEN = '\033[01;32m'
 
 # print srt in the given color
-def print_color(str, color):
-    print(color + str + LOG_COLORS.NATIVE)
-
+def print_color(msg, color):
+    print(str(color) +str(msg) + LOG_COLORS.NATIVE)
 
 def print_error(error_str):
     print_color(error_str, LOG_COLORS.RED)
@@ -87,6 +90,12 @@ def run_git_command(command):
         sys.exit(1)
     return p.stdout.read()
 
+def checked_type(file_path):
+    for regex in CHECKED_TYPES_REGEXES:
+        if re.match(regex, file_path, re.IGNORECASE):
+            return True
+    return False
+
 def get_modified_files(files_string):
     all_files = files_string.split('\n')
     modified_files_list = []
@@ -96,7 +105,7 @@ def get_modified_files(files_string):
             continue
         file_status = file_data[0]
         file_path = file_data[1]
-        if file_status.lower() == 'm' and not file_path.startswith('.'):
+        if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.append(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
