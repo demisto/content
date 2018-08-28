@@ -33,7 +33,8 @@ script: |
 
   demisto.results(demisto.executeCommand('tn-ask-manual-question', {'sensors':sensors, 'question_filters': question_filters}))
 type: python
-tags: []
+tags:
+- tanium
 comment: "Get the requested sensors from all machines where the Index Query File Details
   match the given filter.\nE.g. !TaniumFilterQuestionByIndexQueryFileDetails sensors=\"Computer
   Name\" filter_type=contains filter_value=Demisto limit=5 \nwill be translated the

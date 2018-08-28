@@ -108,6 +108,15 @@ script:
             'EntryContext': context
         }
 
+    def filter_list(lst, keys):
+        res = []
+        for i in range(len(lst)):
+            tmp = {}
+            for key in keys:
+                tmp[key] = lst[i].get(key)
+            res.append(tmp)
+        return res
+
     def getHandler():
         handler_args = {}
 
@@ -195,33 +204,45 @@ script:
                     idx2 = command.find("||", idx1+2)
                     if idx2 > -1:
                         return command[idx1:idx2+2]
-        return ''
+        return None
 
     def getPackage(handler):
         response = getObject(handler, u'package', demisto.args().get('name'), demisto.args().get('id'))
         parsed = response.get('package_spec')
         sensor_var = getSensorVariable(parsed)
         parsed[0]['sensor_variable'] = sensor_var
-        final_result = create_entry('Tanium Package', parsed, {'Tanium.Packages(val.id && val.id == obj.id)' : parsed}, ['id', 'name', 'creation_time', 'command', 'last_modified_by'])
-        final_result['HumanReadable'] += parameterTableBuilder(parsed[0], 'Package Arguments Details', 'package')
-        if sensor_var != '':
+        parameters = parameterTableBuilder(parsed[0], 'Package Arguments Details', 'package')
+        final_result = create_entry(
+            'Tanium Package',
+            parsed,
+            {'Tanium.Packages(val.id && val.id == obj.id)' : filter_list(parsed, ['name','id','display_name','command','command_timeout','deleted_flag','files', 'parameters', 'sensor_variable'])},
+            ['id', 'name', 'creation_time', 'command', 'last_modified_by']
+        )
+        final_result['HumanReadable'] += parameters
+        if sensor_var is not None:
             final_result['HumanReadable'] += '\n### Sensor Variables Type\n' + sensor_var
         return final_result
 
     def getSavedQuestion(handler):
         response = getObject(handler, u'saved_question', demisto.args().get('name'), demisto.args().get('id'))
         parsed = response.get('saved_question')
-        return create_entry('Tanium Saved Question', parsed, {'Tanium.SavedQuestions(val.id && val.id == obj.id)' : parsed}, ['query_text', 'name', 'id'])
+        return create_entry(
+            'Tanium Saved Question',
+            parsed,
+            {'Tanium.SavedQuestions(val.id && val.id == obj.id)' : filter_list(parsed, ['query_text','mod_time','user','name','expire_seconds','id','issue_seconds'])},
+            ['query_text', 'name', 'id']
+        )
 
     def getSensor(handler):
         response = getObject(handler, u'sensor', demisto.args().get('name'), demisto.args().get('id'))
         parsed = response.get('sensor', None)
+        parameters = parameterTableBuilder(parsed[0], 'Sensor Parameters Details', 'sensor')
         final_result = create_entry(
             'Tanium Sensor - ' + demisto.args()['name'],
             parsed,
-            {'Tanium.Sensors(val.id && val.id == obj.id)' : parsed},
-            ['id', 'name', 'category', 'description', 'max_age_seconds'])
-        final_result['HumanReadable'] += parameterTableBuilder(parsed[0], 'Sensor Parameters Details', 'sensor')
+            {'Tanium.Sensors(val.id && val.id == obj.id)' : filter_list(parsed, ['id','name','max_age_seconds','description','parameters'])},
+            ['id', 'name', 'category', 'description'])
+        final_result['HumanReadable'] += '\n' +parameters
         return final_result
 
     def getAction(handler):
@@ -234,7 +255,7 @@ script:
         return create_entry(
             'Tanium Action - ' + parsed[0]['name'],
             parsed,
-            {'Tanium.Actions(val.id && val.id == obj.id)' : parsed[0]},
+            {'Tanium.Actions(val.id && val.id == obj.id)' : filter_list(parsed, ['name','id','status','start_time','approver','creation_time','package_spec'])},
             ['id', 'name', 'status', 'saved_action_id', 'stopped_flag'])
 
     def handle_cgs(handler, obj, kwargs):
@@ -328,7 +349,7 @@ script:
                 'Id':res['saved_action_object'].id
             })
             parsed = parseDeployActionRawResp(handler, res)
-            ec['Tanium.Actions(val.id && val.id == obj.id)'].append(parsed['action_object'])
+            ec['Tanium.Actions(val.id && val.id == obj.id)'] += filter_list([parsed['action_object']], ['name','id','status','start_time','approver','creation_time','package_spec'])
             contents.append(parsed)
             tbl.append({
                 'Action ID': parsed['action_object']['id'],
@@ -589,9 +610,6 @@ script:
     - name: id
       description: Tanium id of package (to be used instead of name)
     outputs:
-    - contextPath: Tanium.Packages.verify_expire_seconds
-      description: Timeout for verify action expiry in seconds
-      type: number
     - contextPath: Tanium.Packages.display_name
       description: Display name of package
       type: string
@@ -601,30 +619,15 @@ script:
     - contextPath: Tanium.Packages.command
       description: Command to execute
       type: string
-    - contextPath: Tanium.Packages.creation_time
-      description: Pacakge creation time
-      type: date
     - contextPath: Tanium.Packages.command_timeout
       description: Timeout for command execution in seconds
       type: number
-    - contextPath: Tanium.Packages.modification_time
-      description: Package modification time
-      type: date
-    - contextPath: Tanium.Packages.last_modified_by
-      description: User who last modified packge
-      type: string
-    - contextPath: Tanium.Packages.last_update
-      description: Time when package was last updated
-      type: date
     - contextPath: Tanium.Packages.deleted_flag
       description: Is the package deleted
       type: boolean
     - contextPath: Tanium.Packages.id
       description: Tanium unique package id
       type: string
-    - contextPath: Tanium.Packages.expire_seconds
-      description: Timeout for action expiry in seconds
-      type: number
     - contextPath: Tanium.Packages.files
       description: Packge files
     - contextPath: Tanium.Packages.parameters.Description
@@ -1169,9 +1172,6 @@ script:
     - contextPath: Tanium.Actions.start_time
       description: Time when the action started running
       type: date
-    - contextPath: Tanium.Actions.saved_action_id
-      description: ID of the saved action that corresponds to the action
-      type: string
     - contextPath: Tanium.Actions.approver.name
       description: Name of Tanium user who approved the action
       type: string
