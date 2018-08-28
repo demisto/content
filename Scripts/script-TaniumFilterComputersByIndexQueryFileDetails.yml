@@ -1,7 +1,7 @@
 commonfields:
   id: 6be4aae7-46e2-4e03-8c8b-d651e91fed9e
   version: -1
-name: TaniumFilterQuestionByIndexQueryFileDetails
+name: TaniumFilterComputersByIndexQueryFileDetails
 script: |
   dArgs = demisto.args()
   question_filters="Index Query File Details"
@@ -57,7 +57,6 @@ args:
 - name: limit
   description: Maximum number of rows to return
 - name: filter_type
-  description: Type of filter to apply to the question results
   required: true
   auto: PREDEFINED
   predefined:
@@ -75,6 +74,7 @@ args:
   - doesnotendwith
   - regex
   - notregex
+  description: Type of filter to apply to the question results
 - name: filter_value
   required: true
   description: Value to filter results by
@@ -82,5 +82,11 @@ args:
   description: Semicolon separated list of columns to return. E.g. "Computer Name;IP
     Address"
   defaultValue: Computer Name
+outputs:
+- contextPath: Tanium.QuestionResults.Computer Name
+  description: Computer Name that contains the index query file details as specified
+    by the filters
+- contextPath: Tanium.QuestionResults.Count
+  description: Number or results per computer name that match the filter
 scripttarget: 0
 runonce: false
