@@ -1336,7 +1336,7 @@ script:
         for entry in whois:
             if 'whois' in entry:
                 whois_context = entry.get('context').get(outputPaths['domain']).get('Umbrella').get('Whois')
-                whois_table = entry.get('table')
+
         first_queried = whois_context.get('Created')
 
         # domain categorization data
@@ -1347,17 +1347,18 @@ script:
         domain_categorization = execute_domain_categorization(domain)
         domain_categorization_context = domain_categorization[0].get('context')
         domain_categorization_table = domain_categorization[0].get('table')
+
         content_categories = domain_categorization_context.get(outputPaths['domain']).get('ContentCategories')
         malware_categories = domain_categorization_context.get(outputPaths['domain']).get('SecurityCategories')
         risk_score = domain_categorization_table.get('Status')
 
         # domain categorization data
         domain_details = []
-        domain_details_table = []
         domain_details_context = {}
 
         domain_details = execute_domain_details(domain)
         domain_details_context = domain_details[0].get('context')
+
         DBotScore = domain_details_context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)']
         popularity = domain_details_context.get(outputPaths['domain']).get('Umbrella').get('Details').get('Popularity')
         secure_rank = domain_details_context.get(outputPaths['domain']).get('Umbrella').get('Details').get('Securerank')
@@ -1385,6 +1386,7 @@ script:
                 'MalwareCategories': malware_categories
             }
         }
+        # Add malicious if needed
         if risk_score == -1:
             context[outputPaths['domain']]['Malicious'] = {
                 'Vendor': 'Cisco Umbrella',
@@ -1398,11 +1400,12 @@ script:
             'table': table,
             'context': context
         })
-        entries.append({
-            'title': 'WHOIS Record Data:',
-            'table': whois_table,
-            'context': {}
-        })
+        for entry in whois:
+            entries.append({
+                'title': entry.get('title'),
+                'table': entry.get('table'),
+                'context': {}
+            })
         entries.append({
             'title': 'Domain Categorization:',
             'table': domain_categorization_table,
@@ -1414,7 +1417,7 @@ script:
     ''' COMMANDS HUB / FUNCTIONS PRE-PROCESSING '''
 
     ''' LEGACY '''
-    def fetch_domain_categorization_args():
+    def fetch_domain_categorization():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1422,7 +1425,7 @@ script:
         # Send table/context output to war-room
         return create_table_and_context_entry(entries)
 
-    def fetch_domain_search_args():
+    def fetch_domain_search():
         # Get vars
         regex = demisto.args()['regex']
         start = demisto.args().get('start','')
@@ -1431,7 +1434,7 @@ script:
         # Send table/context output to war-room
         return create_table_and_context_entry(entries)
 
-    def fetch_domain_co_occurrences_args():
+    def fetch_domain_co_occurrences():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1439,7 +1442,7 @@ script:
         # Send table/context output to war-room
         return create_table_and_context_entry(entries)
 
-    def fetch_domain_related_args():
+    def fetch_domain_related():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1447,7 +1450,7 @@ script:
         # Send table/context output to war-room
         return create_table_and_context_entry(entries)
 
-    def fetch_domain_security_args():
+    def fetch_domain_security():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1455,7 +1458,7 @@ script:
         # Send table/context output to war-room
         return create_table_and_context_entry(entries)
 
-    def fetch_domain_dns_history_args():
+    def fetch_domain_dns_history():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1463,7 +1466,7 @@ script:
         # Send table/context output to war-room
         return create_table_and_context_entry(entries)
 
-    def fetch_ip_dns_history_args():
+    def fetch_ip_dns_history():
         # Get vars
         ip = demisto.args()['ip']
         # Fetch data
@@ -1471,7 +1474,7 @@ script:
         # Send table/context output to war-room
         return create_table_and_context_entry(entries)
 
-    def fetch_ip_malicious_domains_args():
+    def fetch_ip_malicious_domains():
         # Get vars
         ip = demisto.args()['ip']
         # Fetch data
@@ -1479,7 +1482,7 @@ script:
         # Send table/context output to war-room
         return create_table_and_context_entry(entries)
 
-    def fetch_domain_args():
+    def fetch_domain():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1488,7 +1491,7 @@ script:
         return create_table_and_context_entry(entries)
 
     ''' NEW '''
-    def fetch_related_domains_args():
+    def fetch_related_domains():
         # Get vars
         is_co_occurences = bool(strtobool(demisto.args().get('coOccurences', False)))
         domain = extract_domain_name(demisto.args()['domain'])
@@ -1498,7 +1501,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_domain_classifiers_args():
+    def fetch_domain_classifiers():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1507,7 +1510,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_domain_query_volume_args():
+    def fetch_domain_query_volume():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         start_date_string = demisto.args()['start']
@@ -1524,7 +1527,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_domain_details_args():
+    def fetch_domain_details():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1533,7 +1536,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_whois_for_email_args():
+    def fetch_whois_for_email():
         #Get vars
         emails = argToList(demisto.args()['emails'])
         offset = demisto.args().get('offset', '')
@@ -1554,7 +1557,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_whois_for_nameserver_args():
+    def fetch_whois_for_nameserver():
         #Get vars
         nameservers = argToList(demisto.args()['nameservers'])
         offset = demisto.args().get('offset', '')
@@ -1575,7 +1578,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_whois_for_domain_args():
+    def fetch_whois_for_domain():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         # Fetch data
@@ -1584,7 +1587,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_malicious_domains_for_ip_args():
+    def fetch_malicious_domains_for_ip():
         # Get vars
         ip = demisto.args()['ip']
         # Fetch data
@@ -1593,7 +1596,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_domain_using_regex_args():
+    def fetch_domain_using_regex():
         # Get vars
         regex = demisto.args()['expression']
         start = date_to_ts(demisto.args()['start'])
@@ -1607,7 +1610,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_domain_timeline_args():
+    def fetch_domain_timeline():
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         if re.match('[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})*', domain) == None:
@@ -1618,7 +1621,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_ip_timeline_args():
+    def fetch_ip_timeline():
         # Get vars
         ip = demisto.args()['ip']
         is_valid = is_ip_valid(ip)
@@ -1630,7 +1633,7 @@ script:
         return create_table_and_context_entry(entries)
 
 
-    def fetch_url_timeline_args():
+    def fetch_url_timeline():
         # Get vars
         url = demisto.args()['url']
         parsed_url = urlparse(url)
@@ -1652,48 +1655,48 @@ script:
             demisto.results('ok')
             sys.exit(0)
         elif demisto.command() == 'investigate-umbrella-domain-categorization' or demisto.command() ==  'umbrella-domain-categorization':
-            demisto.results(fetch_domain_categorization_args())
+            demisto.results(fetch_domain_categorization())
         elif demisto.command() == 'investigate-umbrella-domain-search' or demisto.command() ==  'umbrella-domain-search':
-            demisto.results(fetch_domain_search_args())
+            demisto.results(fetch_domain_search())
         elif demisto.command() == 'investigate-umbrella-domain-co-occurrences' or demisto.command() == 'umbrella-domain-co-occurrences':
-            demisto.results(fetch_domain_co_occurrences_args())
+            demisto.results(fetch_domain_co_occurrences())
         elif demisto.command() == 'investigate-umbrella-domain-related' or demisto.command() == 'umbrella-domain-related':
-            demisto.results(fetch_domain_related_args())
+            demisto.results(fetch_domain_related())
         elif demisto.command() == 'investigate-umbrella-domain-security' or demisto.command() == 'umbrella-domain-security':
-            demisto.results(fetch_domain_security_args())
+            demisto.results(fetch_domain_security())
         elif demisto.command() == 'investigate-umbrella-domain-dns-history' or demisto.command() == 'umbrella-domain-dns-history':
-            demisto.results(fetch_domain_dns_history_args())
+            demisto.results(fetch_domain_dns_history())
         elif demisto.command() == 'investigate-umbrella-ip-dns-history' or demisto.command() == 'umbrella-ip-dns-history':
-            demisto.results(fetch_ip_dns_history_args())
+            demisto.results(fetch_ip_dns_history())
         elif demisto.command() == 'investigate-umbrella-ip-malicious-domains' or demisto.command() == 'umbrella-ip-malicious-domains':
-            demisto.results(fetch_ip_malicious_domains_args())
+            demisto.results(fetch_ip_malicious_domains())
         #new-commands:
         elif demisto.command() == 'domain':
-            demisto.results(fetch_domain_args())
+            demisto.results(fetch_domain())
         elif demisto.command() == 'umbrella-get-related-domains':
-            demisto.results(fetch_related_domains_args())
+            demisto.results(fetch_related_domains())
         elif demisto.command() == 'umbrella-get-domain-classifiers':
-            demisto.results(fetch_domain_classifiers_args())
+            demisto.results(fetch_domain_classifiers())
         elif demisto.command() == 'umbrella-get-domain-queryvolume':
-            demisto.results(fetch_domain_query_volume_args())
+            demisto.results(fetch_domain_query_volume())
         elif demisto.command() == 'umbrella-get-domain-details':
-            demisto.results(fetch_domain_details_args())
+            demisto.results(fetch_domain_details())
         elif demisto.command() == 'umbrella-get-whois-for-email-registrar':
-            demisto.results(fetch_whois_for_email_args())
+            demisto.results(fetch_whois_for_email())
         elif demisto.command() == 'umbrella-get-whois-for-nameserver':
-            demisto.results(fetch_whois_for_nameserver_args())
+            demisto.results(fetch_whois_for_nameserver())
         elif demisto.command() == 'umbrella-get-whois-for-domain':
-            demisto.results(fetch_whois_for_domain_args())
+            demisto.results(fetch_whois_for_domain())
         elif demisto.command() == 'umbrella-get-malicious-domains-for-ip':
-            demisto.results(fetch_malicious_domains_for_ip_args())
+            demisto.results(fetch_malicious_domains_for_ip())
         elif demisto.command() == 'umbrella-get-domains-using-regex':
-            demisto.results(fetch_domain_using_regex_args())
+            demisto.results(fetch_domain_using_regex())
         elif demisto.command() == 'umbrella-get-domain-timeline':
-            demisto.results(fetch_domain_timeline_args())
+            demisto.results(fetch_domain_timeline())
         elif demisto.command() == 'umbrella-get-ip-timeline':
-            demisto.results(fetch_ip_timeline_args())
+            demisto.results(fetch_ip_timeline())
         elif demisto.command() == 'umbrella-get-url-timeline':
-            demisto.results(fetch_url_timeline_args())
+            demisto.results(fetch_url_timeline())
 
     except Exception, e:
         LOG(e.message)
