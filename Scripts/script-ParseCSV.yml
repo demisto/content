@@ -25,17 +25,6 @@ script: |
           return False
       return True
 
-  def get_entry_by_id(entry_id):
-      entry = demisto.executeCommand('getEntry', {'id': entry_id})
-      if not entry:
-          raise ValueError('Entry {} not found'.format(entry_id))
-      # validate the entry holds a csv file
-      file_name = demisto.get(entry[0], 'File')
-      is_csv = file_name.lower().endswith('.csv')
-      if not is_csv:
-          raise ValueError('The entry does not hold a csv file. Ensure the filename has ".csv" extension.')
-      return entry[0]
-
   def get_entry_by_file_name(file):
       entries = demisto.executeCommand('getEntries', {})
       for entry in entries:
@@ -43,11 +32,10 @@ script: |
 
           is_text = type(fn) in [unicode, str]
           is_correct_file = file.lower() == fn.lower() or file.lower() == fn.split('.')[0].lower()
-          is_csv = fn.lower().endswith('.csv')
 
-          if is_text and is_correct_file and is_csv:
+          if is_text and is_correct_file:
               return entry
-      raise ValueError('No csv file found in the war room. Ensure the file was uploaded and the filename has ".csv" extension.')
+      raise ValueError('Was unable to find "{}" in the war room. Please ensure the file was uploaded.'.format(file))
 
   csvEntry = None
 
@@ -70,26 +58,28 @@ script: |
 
   if parseip == -1 and parsedomain == -1 and parsehash == -1 and not parseAll:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Select a field to extract.' } )
-      exit()
-
-  # get the csv file entry
-  try:
-      if entryID:
-          csvEntry = get_entry_by_id(entryID)
-      elif file:
-          csvEntry = get_entry_by_file_name(file)
-      else:
-          raise ValueError("Please specify entryID")
-  except ValueError as e:
-      demisto.results({
-          "Type" : entryTypes["error"],
-          "ContentsFormat" : formats["text"],
-          "Contents" : e.message
-      })
       exit(0)
 
-  res = demisto.executeCommand('getFilePath', {'id': csvEntry['ID']})
+  if file is None and entryID is None:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Please provide entryID.' } )
+      exit(0)
+
+  if entryID is None:
+      # search entry by file name
+      try:
+          entry = get_entry_by_file_name(file)
+          entryID = entry['ID']
+      except ValueError as e:
+          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : e.message } )
+          exit(0)
+
+  res = demisto.executeCommand('getFilePath', {'id': entryID})
   filePath = res[0]['Contents']['path']
+  fileName = res[0]['Contents']['name']
+  if not fileName.lower().endswith('.csv'):
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extention'.format(fileName) } )
+      exit(0)
+
   if parseAll:
       all_csv = []
       with open(filePath, mode='r') as f:
@@ -186,7 +176,7 @@ enabled: true
 args:
 - name: entryID
   default: true
-  description: ' The war room entryID of the file.'
+  description: 'The war room entryID of the file.'
 - name: file
   deprecated: true
   description: The name of the file. The file must be uploaded to the War Room.
