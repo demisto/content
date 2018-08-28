@@ -404,4 +404,7 @@ outputs:
 - contextPath: File.Extension
   description: File Extension
   type: string
+- contextPath: InfoFile
+  description: The report file's object
+  type: unknown
 releaseNotes: "-"
