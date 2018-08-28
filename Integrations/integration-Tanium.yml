@@ -221,12 +221,15 @@ script:
     def getAction(handler):
         response = getObject(handler, u'action', demisto.args().get('name'), demisto.args().get('id'))
         parsed = response.get('action', None)
-        parsed[0]['save_action_id'] = parsed[0]['saved_action']['id']
+        if 'saved_action' in parsed[0]:
+            parsed[0]['saved_action_id'] = parsed[0]['saved_action']['id']
+            del parsed[0]['saved_action']
+
         return create_entry(
             'Tanium Action - ' + parsed[0]['name'],
             parsed,
             {'Tanium.Actions(val.id && val.id == obj.id)' : parsed[0]},
-            ['id', 'name', 'status', 'save_action_id', 'stopped_flag'])
+            ['id', 'name', 'status', 'saved_action_id', 'stopped_flag'])
 
     def handle_cgs(handler, obj, kwargs):
         """Example PreAddAction callback that modifies the target_group of an Action if computer group names are supplied.
@@ -352,7 +355,7 @@ script:
         final_result = create_entry('Action Approval', [parsed], {'Tanium.ActionApproval' : parsed})
         return final_result
 
-    def askQuestion(kwargs):
+    def askQuestion(handler, kwargs):
         response = handler.ask(**kwargs)
 
         if isinstance(response, str):
@@ -446,7 +449,7 @@ script:
         kwargs["sensors"] = args.get('sensors', '').split(';') if args.get('sensors', '') != '' else None
         kwargs["polling_secs"] = int(args.get('polling_secs', '5'))
         kwargs["complete_pct"] = int(args.get('complete_pct', '99'))
-        return askQuestion(kwargs)
+        return askQuestion(handler, kwargs)
 
     def askParsedQuestion(handler , question, index):
         kwargs = {
@@ -455,7 +458,7 @@ script:
             'qtype': u'parsed',
             'get_results' : True
         }
-        return askQuestion(kwargs)
+        return askQuestion(handler, kwargs)
 
     def createPackage(handler):
         kwargs = {}
@@ -1071,4 +1074,32 @@ script:
     arguments:
     - name: id
       description: ID of action of retrieve
+    outputs:
+    - contextPath: Tanium.Actions.name
+      description: Name of the action
+      type: string
+    - contextPath: Tanium.Actions.id
+      description: ID of the action
+      type: number
+    - contextPath: Tanium.Actions.status
+      description: Status of the action - Closed, Pending, etc.
+      type: string
+    - contextPath: Tanium.Actions.start_time
+      description: Time when the action started running
+      type: date
+    - contextPath: Tanium.Actions.saved_action_id
+      description: ID of the saved action that corresponds to the action
+      type: string
+    - contextPath: Tanium.Actions.approver.name
+      description: Name of Tanium user who approved the action
+      type: string
+    - contextPath: Tanium.Actions.creation_time
+      description: Time when the action was created
+      type: date
+    - contextPath: Tanium.Actions.package_spec.command
+      description: The command that is issued by the action
+      type: string
+    - contextPath: Tanium.Actions.package_spec.name
+      description: Name of the package that was deployed
+      type: string
   dockerimage: demisto/pytan
