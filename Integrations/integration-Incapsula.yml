@@ -1617,9 +1617,9 @@ Maximum: 100'
   # Infrastructure Protection Test Alerts
 
 system: true
-releaseNotes: Fixed 'in-cap-upload-public-key' entry, it was missing in the JS URL Dictionary
+releaseNotes: "Fixed 'in-cap-upload-public-key' entry, it was missing in the JS URL Dictionary
               Reorganized the urlDict and commands to match and correspond to the Incapsula API Documentation layout
               Added Account Management API Calls
               Added Site Management - Rules API Calls
               Added Site Management - Data Centers API Calls
-              Added Infrastructure Protection Test Alert API Calls
+              Added Infrastructure Protection Test Alert API Calls"
