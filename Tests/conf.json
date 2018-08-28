@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
+        },
+        {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
         },
@@ -443,10 +447,6 @@
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
             "nightly": true
-        },
-        {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "integrations": "Joe Security",
