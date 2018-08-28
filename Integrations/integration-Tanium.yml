@@ -1135,6 +1135,7 @@ script:
       default: true
       description: Name of computer to connect to
     - name: remote
+      description: True if remote connection
       auto: PREDEFINED
       predefined:
       - "true"
