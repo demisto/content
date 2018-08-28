@@ -2,6 +2,7 @@ commonfields:
   id: 6be4aae7-46e2-4e03-8c8b-d651e91fed9e
   version: -1
 name: TaniumFilterComputersByIndexQueryFileDetails
+releaseNotes: "-"
 script: |
   dArgs = demisto.args()
   question_filters="Index Query File Details"
