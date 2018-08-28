@@ -26,6 +26,9 @@ jobs:
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
               chmod +x ./Tests/scripts/*
+      - add_ssh_keys:
+          fingerprints:
+              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
       - run:
           name: Validate Files and Yaml
           command: |
@@ -51,7 +54,7 @@ jobs:
       - run:
           name: Create Instance
           command: |
-              ./Tests/scripts/create_instance.sh
+              ./Tests/scripts/create_instance.sh Tests/scripts/instance.json
       - run:
           name: Download Configuration
           command: |
