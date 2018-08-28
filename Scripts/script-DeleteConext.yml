@@ -110,3 +110,5 @@ args:
   description: index to delete in case 'key' argument was specified
 scripttarget: 0
 runonce: false
+sensitive: true
+releaseNotes: "change user from limited user to DBot"
