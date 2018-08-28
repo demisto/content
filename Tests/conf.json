@@ -23,6 +23,10 @@
             "playbookID": "get_original_email_-_ews-_test"
         },
         {
+            "integrations": "PagerDuty",
+            "playbookID": "PagerDuty Test"
+        },
+        {
             "playbookID": "test_delete_context"
         },
         {
@@ -175,13 +179,6 @@
                 "byoi": false
             },
             "playbookID": "account_enrichment_-_generic_test"
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
         },
         {
             "integrations": "FalconHost",
@@ -417,6 +414,13 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",

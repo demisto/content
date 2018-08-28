@@ -6,18 +6,36 @@ echo "Start create_instance script"
 #configure aws
 aws configure set region us-west-2
 
-IMAGE_ID="ami-d2c924b2" # centos
+CONFFILE=$1
 
 #create instance
-INSTANCE_ID=$(aws ec2 run-instances \
-    --image-id ${IMAGE_ID} \
-    --security-group-ids sg-714f3816 \
-    --instance-type t2.large \
-    --key-name ci-key \
-    --instance-initiated-shutdown-behavior terminate \
-    --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{ "DeleteOnTermination": true, "VolumeSize": 20}}]' \
-    --user-data file://Tests/scripts/shutdown_instance.sh \
-    --query 'Instances[0].InstanceId' | tr -d '"')
+REQUEST_ID=$(aws ec2 request-spot-instances \
+    --launch-specification file://${CONFFILE} \
+    --query 'SpotInstanceRequests[0].SpotInstanceRequestId' | tr -d '"')
+
+if [ -z "$REQUEST_ID" ]
+then
+    echo "Failed setting up request for spot-instance."
+    exit 1
+fi
+
+MACHINE_STATE=""
+while [ "$MACHINE_STATE" != "fulfilled" ] ; do
+    echo "Waiting for machine to be ready ($REQUEST_ID)."
+    MACHINE_STATE=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids "$REQUEST_ID" \
+        --query 'SpotInstanceRequests[0].Status.Code' | tr -d '"')
+    sleep 10
+done
+
+INSTANCE_ID=""
+if [ "$MACHINE_STATE" == "fulfilled" ]
+then
+    INSTANCE_ID=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids "$REQUEST_ID" \
+        --query 'SpotInstanceRequests[0].InstanceId' | tr -d '"')
+    echo "setup $INSTANCE_ID, changing name and stopping request."
+    aws ec2 cancel-spot-instance-requests --spot-instance-request-ids "$REQUEST_ID"
+    aws ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=ContentBuildN${CIRCLE_BUILD_NUM}"
+fi
 
 if [ -z ${INSTANCE_ID} ]
 then
