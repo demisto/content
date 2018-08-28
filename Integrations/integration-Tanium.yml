@@ -1109,6 +1109,7 @@ script:
     description: Get detailed information about a given sensor.
   - name: tn-trace-get-live-connections
     arguments: []
+    description: Get status from all live connections
   - name: tn-trace-connect
     arguments:
     - name: computer_name
@@ -1121,12 +1122,14 @@ script:
       - "true"
       - "false"
       defaultValue: "true"
+    description: Connect a computer to trace
   - name: tn-trace-capture-snapshot
     arguments:
     - name: computer_name
       required: true
       default: true
       description: Name of computer to take the snapshot of. Computer must be connected
+    description: Capture a snapshot of a live endpoint. Endpoint must be connected.
   - name: tn-get-action
     arguments:
     - name: id
@@ -1159,4 +1162,5 @@ script:
     - contextPath: Tanium.Actions.package_spec.name
       description: Name of the package that was deployed
       type: string
+    description: Get detailed information about a given action.
   dockerimage: demisto/pytan
