@@ -242,7 +242,7 @@ tasks:
       id: 0d82ecf0-a314-4781-8cee-ee1cabe96f1d
       version: -1
       name: PagerDutyAssignOnCallUser
-      scriptName: PagerDutyAssignOnCallUser_copy
+      scriptName: PagerDutyAssignOnCallUser
       type: regular
       iscommand: false
       brand: ""
