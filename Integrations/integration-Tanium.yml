@@ -516,6 +516,14 @@ script:
         )
 
     def traceConnect(session):
+        # Delete existing connection status
+        kwargs = {}
+        kwargs['timeout'] = 36000
+        kwargs['headers'] = {'session': session.session_id}
+        url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + "/plugin/products/trace/conns/"+demisto.args()['computer_name']
+        res = session.REQUESTS_SESSION.delete(url, **kwargs)
+
+        # Connect
         kwargs = {}
         kwargs['data'] = '{"remote":%s,"dst":"%s","connTimeout":300000}' % (demisto.args()['remote'], demisto.args()['computer_name'])
         kwargs['timeout'] = 36000
@@ -528,7 +536,7 @@ script:
         kwargs['data'] = '{}'
         kwargs['timeout'] = 36000
         kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        url = "/plugin/products/trace/conns/%s/snapshots" % demisto.args()['dst']
+        url = "/plugin/products/trace/conns/%s/snapshots" % demisto.args()['computer_name']
         url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + url
         res = session.REQUESTS_SESSION.post(url, **kwargs)
         return "Snapshot request was sent out successfuly" if res.ok else "Request failed. " + str(res)
