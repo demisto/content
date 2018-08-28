@@ -1,0 +1,1444 @@
+commonfields:
+  id: ServiceNow_python
+  version: -1
+name: ServiceNow_python
+display: ServiceNow_python
+category: Case Management
+image: data:image/png;base64,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
+description: IT service management
+configuration:
+- display: ServiceNow URL, in the format https://company.service-now.com/
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "True"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Default ticket type of commands. Can be incident, sc_request, problem or
+    change_reuquest. Commands also take ticket_type argument
+  name: ticket_type
+  defaultvalue: incident
+  type: 0
+  required: false
+- display: ServiceNow API Version (e.g. 'v1')
+  name: api_version
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: The query to use when fetching ServiceNow incidents
+  name: sysparm_query
+  defaultvalue: stateNOT IN6,7
+  type: 0
+  required: false
+- display: How many ServiceNow incidents to fetch each time
+  name: fetch_limit
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |-
+    import re
+    import requests
+    import json
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARIABLESS '''
+
+    def get_server_url():
+        url = demisto.params()['url']
+        url = re.sub('/[\/]+$/', '', url)
+        url = re.sub('\/$', '', url)
+        return url
+
+    def load_proxy():
+        proxy = {}
+        if "proxy" in demisto.params():
+            proxy["http"] = os.environ["http_proxy"]
+            proxy["https"] = os.environ["https_proxy"]
+        return proxy
+
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    VERIFY_SSL = not demisto.params().get('insecure', False)
+    API = '/api/now/'
+    VERSION = demisto.params().get('api_version', None)
+    PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', None)
+    SYSPARM_QUERY = demisto.params().get('sysparm_query', None)
+
+    if VERSION:
+        API += VERSION + '/';
+
+    SERVER_URL = get_server_url() + API
+    PROXY = load_proxy()
+
+    DEFAULTS = {
+        'limit':10,
+        'fetch_limit':10
+    }
+
+    hr_dict = {
+        'default': {
+            'number': 'Number',
+            'sys_id': 'System ID',
+            'state':  'State',
+            'impact': 'Impact',
+            'priority':'Priority',
+            'severity':'Severity',
+            'urgency':'Urgency',
+            'sys_created_on':'Created On',
+            'sys_created_by':'Created by',
+            'active':'Active',
+            'close_notes':'Close notes',
+            'description':'Description',
+            'opened_at':'Opened at',
+            'due_date':'Due date',
+            'closed_by':'Resolved by',
+            'closed_at':'Resolved at',
+            'sla_due':'SLA due',
+            'short_description':'Short description',
+        },
+        'servicenow-create': {
+            'number':'Number',
+            'sys_id':'Sys ID',
+            'state':  'State',
+            'impact': 'Impact',
+            'priority':'Priority',
+            'severity':'Severity',
+            'urgency':'Urgency',
+            'sys_created_on':'Created On',
+            'sys_created_by':'Created by',
+            'short_description':'Short description'
+        },
+        'servicenow-upload-file': {
+            'file_name': 'Filename',
+            'download_link': 'Download link',
+            'sys_id': 'System ID'
+        },
+        'servicenow-incident-create': {
+            'number':'Number',
+            'sys_id':'Sys ID',
+            'state':  'State',
+            'impact': 'Impact',
+            'priority':'Priority',
+            'severity':'Severity',
+            'urgency':'Urgency',
+            'sys_created_on':'Created On',
+            'sys_created_by':'Created by',
+            'short_description':'Short description'
+        },
+        'servicenow-incident-upload-file': {
+            'file_name': 'Filename',
+            'download_link': 'Download link',
+            'sys_id': 'System ID'
+        }
+    }
+
+    SNOW_ARGS = ["active", "activity_due", "short_description", "additional_assignee_list", "approval_history", "approval_set", "assigned_to", "assignment_group",
+         "business_duration", "business_service", "business_stc", "calendar_duration", "calendar_stc", "caller_id", "caused_by", "close_code", "close_notes",
+         "closed_at", "closed_by", "cmdb_ci", "comments", "comments_and_work_notes", "company", "contact_type", "correlation_display", "correlation_id",
+         "delivery_plan", "delivery_task", "description", "due_date", "expected_start", "follow_up", "group_list", "hold_reason", "impact", "incident_state",
+         "knowledge", "location", "made_sla", "notify", "order", "parent", "parent_incident", "priority", "problem_id", "resolved_at", "resolved_by", "rfc",
+         "severity", "sla_due", "state", "subcategory", "sys_tags", "time_worked", "urgency", "user_input", "watch_list", "work_end", "work_notes", "work_notes_list",
+         "work_start", "impact", "incident_state", "title", "type", "category", "state"]
+
+    ''' HELPER FUNCTIONS '''
+
+    def send_request(path, method = 'get', body = {}, params = {}, headers=None, is_file=False):
+        url = '%s%s' % (SERVER_URL, path)
+        if not headers:
+            headers = {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+            }
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
+        verify=VERIFY_SSL, proxies=PROXY)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+        return res.json()
+
+    def get_table_name(ticket_type = None):
+        if ticket_type:
+            return ticket_type
+        else:
+            if PARAMS_TICKET_TYPE:
+                return PARAMS_TICKET_TYPE
+            else:
+                return 'incident'
+
+    def create_context(data):
+        return {
+                'ID': data["sys_id"],
+                'Creator': data["opened_by"]["value"] if "value" in data["opened_by"] else '',
+                'Assignee': data["assigned_to"] if "value" in data["assigned_to"] else '',
+                'State': data["state"],
+                'Summary': data["short_description"],
+                'Number': data["number"]
+        }
+
+    def get_ticket_context(data):
+        if not isinstance(data, list):
+            return create_context(data)
+
+        tickets = []
+        for d in data:
+            tickets.append(create_context(d))
+        return tickets
+
+    def get_human_readable(data):
+        data_dict = hr_dict[demisto.command()] if demisto.command() in hr_dict else hr_dict['default']
+
+        if not isinstance(data, list):
+            data = [data]
+
+        result = []
+        for d in data:
+            hr = {}
+            for k,v in data_dict.iteritems():
+                hr[v] = d[k]
+            result.append(hr)
+
+        return result
+
+    def get_body(template_name, custom_fields):
+        body = {}
+        template = template_name
+
+        if template:
+            template = get_template(temp_res)
+
+        for arg in SNOW_ARGS:
+            input_arg = demisto.args().get(arg, None)
+            if input_arg:
+                body[arg] = input_arg
+            elif template_name and arg in template:
+                body[arg] = template[arg]
+
+        if custom_fields:
+            for field in custom_fields:
+                body['u_' + field] = custom_fields[field]
+
+        return body
+
+
+    def split_custom_fields(fields):
+        dic_fields = {};
+        arr_fields = fields.split(';');
+
+        for f in arr_fields:
+            field = f.split('=')
+            if len(field) > 1:
+                dic_fields[field[0]] = field[1]
+
+        return dic_fields
+
+    ''' FUNCTIONS '''
+
+    def get_template(name):
+        query_params={}
+        query_params['sysparm_limit'] = 1
+        query_params['sysparm_query'] = 'name='+name
+
+        ticket_type = 'sys_template'
+        path = 'table/' + ticket_type
+        res = send_request('GET',path,params=query_params)
+
+        if len(res['result']) == 0:
+            raise ValueError("Incorrect template name")
+
+        template = res['result'][0]['template'].split('^')
+        dic_template = {}
+
+        for i in range(len(template) - 1):
+            template_value = template[i].split('=')
+            if (len(template_value) > 1):
+                dic_template[template_value[0]] = tempalte_value[1]
+
+        return dic_template
+
+    def get_inicident_command():
+        ticket_type = get_table_name(demisto.args().get('ticket_type', None))
+        ticket_id = demisto.args().get('id', None)
+        number = demisto.args().get('number', None)
+
+        res = get_incident(ticket_id, number, ticket_type)
+        if not res or 'result' not in res:
+            return 'Cannot find incident'
+
+        if isinstance(res['result'], list):
+            incident = res['result'][0]
+        else:
+            incident = res['result']
+        hr = get_human_readable(incident)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Service now incident', hr),
+            'EntryContext': {
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(incident),
+            }
+        }
+
+        return entry
+
+
+    def get_incident(ticket_id, number, ticket_type):
+        path = None
+        query_params = {}
+        if ticket_id:
+            path = 'table/' + ticket_type + '/' + ticket_id
+        elif number:
+            path = 'table/' + ticket_type
+            query_params = {
+                'number': number
+            }
+        else:
+            raise ValueError('incident-get requires either incident ID (sys_id) or incident number')
+
+        return send_request(path, 'get', params = query_params)
+
+
+    def update_command():
+        custom_fields = demisto.args().get('custom_fields', None)
+        template = demisto.args().get('template', None)
+        ticket_type = get_table_name()
+
+        res = update(ticket_type, custom_fields)
+
+        hr = get_human_readable(res['result'])
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow incident updated\nTicket type: ' + ticket_type + '\n', hr)
+        }
+
+        return entry
+
+
+    def update(ticket_type, custom_fields, template):
+        if custom_fields:
+            custom_fields = split_custom_fields(custom_fields)
+
+        body = get_body(template, custom_fields)
+        path = 'table/' + ticket_type + '/' + demisto.args()['id']
+
+        return send_request(path, 'patch', body = body)
+
+    def create_command():
+        custom_fields = demisto.args().get('custom_fields', None)
+        template = demisto.args().get('template', None)
+        ticket_type = get_table_name()
+
+        res = create(ticket_type, custom_fields, template)
+
+        hr = get_human_readable(res['result'])
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow incident created\nTicket type: ' + ticket_type + '\n', hr)
+        }
+
+        return entry
+
+    def create(ticket_type, custom_fields, template):
+        if custom_fields:
+            custom_fields = split_custom_fields(custom_fields)
+
+        body = get_body(demisto.args().get('template', None), custom_fields)
+        path = 'table/' + ticket_type
+
+        return send_request(path, 'post', body = body)
+
+    def add_link_command():
+        ticket_id = demisto.args()['id']
+        key = 'comments' if demisto.args().get('post-as-comment', 'false') == 'true' else 'work_notes'
+        text = demisto.args().get('text', demisto.args()['link'])
+        link = '[code]<a class="web" target="_blank" href="' + demisto.args()['link'] + '" >'+text+'</a>[/code]'
+        ticket_type = get_table_name()
+
+        res = add_link(ticket_id, ticket_type, key, link)
+
+        hr = get_human_readable(res['result'])
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Link added to ServiceNow incident\n', hr)
+        }
+
+        return entry
+
+
+    def add_link(ticket_id, ticket_type, key, link):
+        body = {}
+        body[key] = link
+        path = 'table/' + ticket_type + '/' + ticket_id
+
+        return send_request(path, 'patch', body=body)
+
+    def add_comment_command():
+        ticket_id = demisto.args()['id']
+        key = 'comments' if demisto.args().get('post-as-comment', 'false') == 'true' else 'work_notes'
+        text = demisto.args()['comment']
+        ticket_type = get_table_name()
+
+        res = add_comment(ticket_id, ticket_type, key, text)
+
+        hr = get_human_readable(res['result'])
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Comment added to ServiceNow incident\n', hr)
+        }
+
+        return entry
+
+    def add_comment(ticket_id, ticket_type, key, text):
+        body = {}
+        body[key] = text
+        path = 'table/' + ticket_type + '/' + ticket_id
+
+        return send_request(path, 'patch', body=body)
+
+    def query_command():
+        sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
+        sysparm_query = demisto.args().get('sysparm_query', None)
+        ticket_type = get_table_name()
+
+        res = query(ticket_type, sysparm_limit, sysparm_query)
+
+        if not res or 'result' not in res:
+            return 'Cannot find incident'
+
+        hr = get_human_readable(res['result'])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Service now incident', hr),
+            'EntryContext': {
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
+            }
+        }
+
+        return entry
+
+
+    def query(ticket_type, sysparm_limit, sysparm_query):
+        query_params = {}
+        query_params['sysparm_limit'] = sysparm_limit
+        if sysparm_query:
+            query_params['sysparm_query'] = sysparm_query
+
+        path = 'table/' + ticket_type
+
+        return send_request(path, 'get', params = query_params)
+
+    try:
+        if demisto.command() == 'test-module':
+            path = "table/incident?sysparm_limit=1";
+            res = send_request(path, 'GET');
+            if 'result' not in res:
+                return_error('ServiceNow error: ' + str(res))
+            demisto.results('ok')
+        if demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update':
+            demisto.results(get_inicident_command())
+        if demisto.command() == 'servicenow-update' or demisto.command() == 'servicenow-incident-update':
+            demisto.results(update_command())
+        if demisto.command() == 'servicenow-create' or demisto.command() == 'servicenow-incident-create':
+            demisto.results(create_command())
+        if demisto.command() == 'servicenow-add-link' or demisto.command() == 'servicenow-incident-add-link':
+            demisto.results(add_link_command())
+        if demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
+            demisto.results(add_comment_command())
+        if demisto.command() == 'servicenow-query' or demisto.command() == 'servicenow-incidents-query':
+            demisto.results(query_command())
+    except Exception as e:
+        raise
+        #return_error(e.message)
+  type: python
+  commands:
+  - name: servicenow-get
+    arguments:
+    - name: id
+      default: true
+      description: Incident ID to retrieve
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: number
+      description: Incident number to retrieve
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow incident ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Retrieve ticket information by specific ticket ID
+  - name: servicenow-incident-get
+    deprecated: true
+    arguments:
+    - name: id
+      default: true
+      description: Incident ID to retrieve
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: number
+      description: Incident number to retrieve
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow incident ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Retrieve ticket information by specific ticket ID
+  - name: servicenow-create
+    arguments:
+    - name: short_description
+      description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: urgency
+      description: Ticket urgency
+    - name: severity
+      description: Ticket severity
+    - name: impact
+      description: Ticket impact
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set incident as Active
+    - name: activity_due
+      description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+    - name: additional_assignee_list
+      description: List of assigned users to the ticket
+    - name: approval_history
+      description: Ticket history approval
+    - name: approval_set
+      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - name: assigned_to
+      description: To whom the ticket is assigned
+    - name: business_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: business_service
+      description: Business service
+    - name: business_stc
+      description: Business source
+    - name: calendar_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: caller_id
+      description: UID Format
+    - name: category
+      description: Category of ticket
+    - name: caused_by
+      description: UID Format
+    - name: close_code
+      description: Ticket's close code
+    - name: close_notes
+      description: Close notes of the ticket
+    - name: closed_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: closed_by
+      description: User who closed the ticket
+    - name: cmdb_ci
+      description: UID Format
+    - name: comments
+      description: Format type journal input
+    - name: comments_and_work_notes
+      description: Format type journal input
+    - name: company
+      description: UID Format
+    - name: contact_type
+      description: Contact type
+    - name: correlation_display
+      description: Correlation display
+    - name: correlation_id
+      description: Correlation id
+    - name: delivery_plan
+      description: UID Format
+    - name: display
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If you want to display comments, work_notes...
+    - name: description
+      description: Ticket description
+    - name: due_date
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: escalation
+      description: Escalation
+    - name: expected_start
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: follow_up
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: group_list
+      description: UID format list
+    - name: knowledge
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
+    - name: location
+      description: Location of the ticket
+    - name: made_sla
+      description: SLA of the ticket
+    - name: notify
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Notify about this incident
+    - name: order
+      description: Order number
+    - name: parent
+      description: UID Format
+    - name: parent_incident
+      description: UID Format
+    - name: problem_id
+      description: UID Format
+    - name: reassignment_count
+      description: How many users included in this ticket before
+    - name: reopen_count
+      description: How many time the ticket has been reopened
+    - name: resolved_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: resolved_by
+      description: UID Format
+    - name: rfc
+      description: UID
+    - name: sla_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: subcategory
+      description: Subcategory
+    - name: sys_updated_by
+      description: Last updated by
+    - name: sys_updated_on
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: user_input
+      description: Input from the end user
+    - name: watch_list
+      description: A list of watched tickets
+    - name: work_end
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: work_notes
+      description: Format journal list
+    - name: work_notes_list
+      description: List with UIDs
+    - name: work_start
+      description: Date when started to work on the ticket
+    - name: assignment_group
+      description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
+    - name: incident_state
+      description: integer
+    - name: number
+      description: Ticket number
+    - name: priority
+      description: Priority of the ticket (number)
+    - name: template
+      description: Template name to use as a base to create new incidents.
+    - name: custom_fields
+      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - normal
+      - standard
+      - emergency
+      description: Type of Change Request ticket
+      defaultValue: normal
+    - name: state
+      description: State of the incident (an integer)
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow ticket ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Create new ServiceNow ticket
+  - name: servicenow-incident-create
+    deprecated: true
+    arguments:
+    - name: short_description
+      description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: urgency
+      description: Ticket urgency
+    - name: severity
+      description: Ticket severity
+    - name: impact
+      description: Ticket impact
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set incident as Active
+    - name: activity_due
+      description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+    - name: additional_assignee_list
+      description: List of assigned users to the ticket
+    - name: approval_history
+      description: Ticket history approval
+    - name: approval_set
+      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - name: assigned_to
+      description: To whom the ticket is assigned
+    - name: business_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: business_service
+      description: Business service
+    - name: business_stc
+      description: Business source
+    - name: calendar_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: caller_id
+      description: UID Format
+    - name: category
+      description: Category name
+    - name: caused_by
+      description: UID Format
+    - name: close_code
+      description: Ticket's close code
+    - name: close_notes
+      description: Close notes of the ticket
+    - name: closed_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: closed_by
+      description: User who closed the ticket
+    - name: cmdb_ci
+      description: UID Format
+    - name: comments
+      description: Format type journal input
+    - name: comments_and_work_notes
+      description: Format type journal input
+    - name: company
+      description: UID Format
+    - name: contact_type
+      description: Contact type
+    - name: correlation_display
+      description: Correlation display
+    - name: correlation_id
+      description: Correlation id
+    - name: delivery_plan
+      description: UID Format
+    - name: display
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If you want to display comments, work_notes...
+    - name: description
+      description: Ticket description
+    - name: due_date
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: escalation
+      description: Escalation
+    - name: expected_start
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: follow_up
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: group_list
+      description: UID format list
+    - name: knowledge
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
+    - name: location
+      description: Location of the ticket
+    - name: made_sla
+      description: SLA of the ticket
+    - name: notify
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Notify about this incident
+    - name: order
+      description: Order number
+    - name: parent
+      description: UID Format
+    - name: parent_incident
+      description: UID Format
+    - name: problem_id
+      description: UID Format
+    - name: reassignment_count
+      description: How many users included in this ticket before
+    - name: reopen_count
+      description: How many time the ticket has been reopened
+    - name: resolved_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: resolved_by
+      description: UID Format
+    - name: rfc
+      description: UID
+    - name: sla_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: subcategory
+      description: Subcategory
+    - name: sys_updated_by
+      description: Last updated by
+    - name: sys_updated_on
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: user_input
+      description: Input from the end user
+    - name: watch_list
+      description: A list of watched tickets
+    - name: work_end
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: work_notes
+      description: Format journal list
+    - name: work_notes_list
+      description: List with UIDs
+    - name: work_start
+      description: Date when started to work on the ticket
+    - name: assignment_group
+      description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
+    - name: incident_state
+      description: integer
+    - name: number
+      description: Ticket number
+    - name: priority
+      description: Priority of the ticket (number)
+    - name: template
+      description: Template name to use as a base to create new incidents.
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow ticket ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Create new ServiceNow ticket
+  - name: servicenow-update
+    arguments:
+    - name: short_description
+      description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: urgency
+      description: Ticket urgency
+    - name: severity
+      description: Ticket severity
+    - name: impact
+      description: Ticket impact
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Does the ticket active(true/false)
+    - name: activity_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: additional_assignee_list
+      description: List of assigned users to the ticket
+    - name: approval_history
+      description: Ticket history approval
+    - name: approval_set
+      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - name: assigned_to
+      description: To whom the ticket is assigned
+    - name: business_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: business_service
+      description: Business service
+    - name: business_stc
+      description: Business source
+    - name: calendar_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: caller_id
+      description: UID Format
+    - name: category
+      description: Category name
+    - name: caused_by
+      description: UID Format
+    - name: close_code
+      description: Ticket's close code
+    - name: close_notes
+      description: Close notes of the ticket
+    - name: closed_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: closed_by
+      description: User who closed the ticket
+    - name: cmdb_ci
+      description: UID Format
+    - name: comments
+      description: Format type journal input
+    - name: comments_and_work_notes
+      description: Format type journal input
+    - name: company
+      description: UID Format
+    - name: contact_type
+      description: Contact type
+    - name: correlation_display
+      description: Correlation display
+    - name: correlation_id
+      description: Correlation id
+    - name: delivery_plan
+      description: UID Format
+    - name: display
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If you want to display comments, work_notes...
+    - name: description
+      description: Ticket description
+    - name: due_date
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: escalation
+      description: Escalation
+    - name: expected_start
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: follow_up
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: group_list
+      description: UID format list
+    - name: knowledge
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
+    - name: location
+      description: Location of the ticket
+    - name: made_sla
+      description: SLA of the ticket
+    - name: notify
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Notify about this incident
+    - name: order
+      description: Order number
+    - name: parent
+      description: UID Format
+    - name: parent_incident
+      description: UID Format
+    - name: problem_id
+      description: UID Format
+    - name: reassignment_count
+      description: How many users included in this ticket before
+    - name: reopen_count
+      description: How many time the ticket has been reopened
+    - name: resolved_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: resolved_by
+      description: UID Format
+    - name: rfc
+      description: UID
+    - name: sla_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: subcategory
+      description: Subcategory
+    - name: sys_updated_by
+      description: Last updated by
+    - name: sys_updated_on
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: user_input
+      description: Input from the end user
+    - name: watch_list
+      description: A list of watched tickets
+    - name: work_end
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: work_notes
+      description: Format journal list
+    - name: work_notes_list
+      description: List with UIDs
+    - name: work_start
+      description: Date when started to work on the ticket
+    - name: assignment_group
+      description: UID
+    - name: incident_state
+      description: integer
+    - name: number
+      description: Ticket number
+    - name: priority
+      description: Priority of the ticket (number)
+    - name: id
+      required: true
+      description: Id(UID) of the ticket to update
+    - name: custom_fields
+      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - normal
+      - standard
+      - emergency
+      description: Type of Change Request ticket
+      defaultValue: normal
+    - name: state
+      description: State of the incident (an integer)
+    description: Update specific ticket by providing ticket id
+  - name: servicenow-incident-update
+    deprecated: true
+    arguments:
+    - name: short_description
+      description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: urgency
+      description: Ticket urgency
+    - name: severity
+      description: Ticket severity
+    - name: impact
+      description: Ticket impact
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Does the ticket active(true/false)
+    - name: activity_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: additional_assignee_list
+      description: List of assigned users to the ticket
+    - name: approval_history
+      description: Ticket history approval
+    - name: approval_set
+      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - name: assigned_to
+      description: To whom the ticket is assigned
+    - name: business_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: business_service
+      description: Business service
+    - name: business_stc
+      description: Business source
+    - name: calendar_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: caller_id
+      description: UID Format
+    - name: category
+      description: Category name
+    - name: caused_by
+      description: UID Format
+    - name: close_code
+      description: Ticket's close code
+    - name: close_notes
+      description: Close notes of the ticket
+    - name: closed_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: closed_by
+      description: User who closed the ticket
+    - name: cmdb_ci
+      description: UID Format
+    - name: comments
+      description: Format type journal input
+    - name: comments_and_work_notes
+      description: Format type journal input
+    - name: company
+      description: UID Format
+    - name: contact_type
+      description: Contact type
+    - name: correlation_display
+      description: Correlation display
+    - name: correlation_id
+      description: Correlation id
+    - name: delivery_plan
+      description: UID Format
+    - name: display
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If you want to display comments, work_notes...
+    - name: description
+      description: Ticket description
+    - name: due_date
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: escalation
+      description: Escalation
+    - name: expected_start
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: follow_up
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: group_list
+      description: UID format list
+    - name: knowledge
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
+    - name: location
+      description: Location of the ticket
+    - name: made_sla
+      description: SLA of the ticket
+    - name: notify
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Notify about this incident
+    - name: order
+      description: Order number
+    - name: parent
+      description: UID Format
+    - name: parent_incident
+      description: UID Format
+    - name: problem_id
+      description: UID Format
+    - name: reassignment_count
+      description: How many users included in this ticket before
+    - name: reopen_count
+      description: How many time the ticket has been reopened
+    - name: resolved_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: resolved_by
+      description: UID Format
+    - name: rfc
+      description: UID
+    - name: sla_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: subcategory
+      description: Subcategory
+    - name: sys_updated_by
+      description: Last updated by
+    - name: sys_updated_on
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: user_input
+      description: Input from the end user
+    - name: watch_list
+      description: A list of watched tickets
+    - name: work_end
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: work_notes
+      description: Format journal list
+    - name: work_notes_list
+      description: List with UIDs
+    - name: work_start
+      description: Date when started to work on the ticket
+    - name: assignment_group
+      description: UID
+    - name: incident_state
+      description: integer
+    - name: number
+      description: Ticket number
+    - name: priority
+      description: Priority of the ticket (number)
+    - name: id
+      required: true
+      description: Id(UID) of the ticket to update
+    description: Update specific ticket by providing ticket id
+  - name: servicenow-add-link
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: link
+      required: true
+      description: The actual link to publish in ServiceNow incident, valid url format,
+        like http://www.demisto.com
+    - name: post-as-comment
+      description: Publish the link as comment on the incident, if false will publish
+        the link as WorkNote, format bool
+    - name: text
+      description: The text to represent the link
+    description: Add link to specific ticket by providing ticket id
+  - name: servicenow-incident-add-link
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: link
+      required: true
+      description: The actual link to publish in ServiceNow incident, valid url format,
+        like http://www.demisto.com
+    - name: post-as-comment
+      description: Publish the link as comment on the incident, by default true, if
+        false will publish the link as WorkNote, format bool
+    - name: text
+      description: The text to represent the link
+    description: Add link to specific ticket by providing ticket id
+  - name: servicenow-add-comment
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: comment
+      required: true
+      description: Comment to add
+    - name: post-as-comment
+      description: Publish the link as comment on the incident, if false will publish
+        the link as WorkNote, format bool
+    description: Add comment to specific ticket by providing ticket id
+  - name: servicenow-incident-add-comment
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: comment
+      required: true
+      description: Comment to add
+    - name: post-as-comment
+      description: Publish the link as comment on the incident, if false will publish
+        the link as WorkNote, format bool
+    description: Add comment to specific ticket by providing ticket id
+  - name: servicenow-query
+    arguments:
+    - name: limit
+      description: Limit for how many tickets to retrieve
+      defaultValue: "10"
+    - name: sysparm_query
+      description: Query
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      description: Ticket type to create
+      defaultValue: incident
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow ticket ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Retrieve info with query
+  - name: servicenow-incidents-query
+    deprecated: true
+    arguments:
+    - name: limit
+      description: Limit for how many tickets to retrieve
+      defaultValue: "10"
+    - name: sysparm_query
+      description: Query
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    outputs:
+    - contextPath: Ticket.Id
+      description: ServiceNow ticket ID
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+    description: Retrieve info with query
+  - name: servicenow-upload-file
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: file_id
+      required: true
+      description: War-room entry ID that includes the file
+    - name: file_name
+      description: Filename of uploaded file to override the existing file name in
+        entry
+    description: Upload new file
+  - name: servicenow-incident-upload-file
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID , also known in the api as sys_id - format is uuid
+        like 46b87022a9fe198101a78787e40d7547
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      description: Ticket type to create
+      defaultValue: incident
+    - name: file_id
+      required: true
+      description: War-room entry ID that includes the file
+    - name: file_name
+      description: Filename of uploaded file to override the existing file name in
+        entry
+    description: Upload new file
+  - name: servicenow-get-groups
+    arguments:
+    - name: name
+      required: true
+      description: Servicenow group name
+    description: Return information about specific servicenow group
+  - name: servicenow-get-computer
+    arguments:
+    - name: computerName
+      required: true
+      description: machine name
+    outputs:
+    - contextPath: ServiceNowComputer.sys_id
+      description: Id
+    - contextPath: ServiceNowComputer.u_code
+      description: Code
+    - contextPath: ServiceNowComputer.support_group
+      description: Support group
+    - contextPath: ServiceNowComputer.os
+      description: Operation System
+    - contextPath: ServiceNowComputer.comments
+      description: Comments
+    description: query the cmdb_ci_computer table with a computer code
+  isfetch: true
+  runonce: false
+releaseNotes: "-"
