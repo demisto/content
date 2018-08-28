@@ -212,9 +212,8 @@ script:
         Logs Integration SKU. Numeric identifier of the account that purchased the
         logs integration SKU and which collects the logs. If not specified, operation
         will be performed on the account identified by the authentication parameters
-    description: 'Use this operation to add a new account that should be managed by the account of the API client (the parent account). The new account will be configured according to the preferences set for the parent account by Incapsula.
-
-Depending on these preferences, an activation e-mail will be sent to the specified e-mail address. The user responds to the activation e-mail, selects a password, and can then log directly into the Incapsula console. The same e-mail address can also be used to send system notifications to the account. The new account is identified by a numeric value as provided by Incapsula in the response in the field account_id.'
+    description: |Use this operation to add a new account that should be managed by the account of the API client (the parent account). The new account will be configured according to the preferences set for the parent account by Incapsula.
+        Depending on these preferences, an activation e-mail will be sent to the specified e-mail address. The user responds to the activation e-mail, selects a password, and can then log directly into the Incapsula console. The same e-mail address can also be used to send system notifications to the account. The new account is identified by a numeric value as provided by Incapsula in the response in the field account_id.
   - name: incap-list-managed-accounts
     arguments:
     - name: account_id
@@ -223,9 +222,9 @@ Depending on these preferences, an activation e-mail will be sent to the specifi
     - name: page_size
       description: 'The number of objects to return in the response.
 
-Default: 50
+        Default: 50
 
-Maximum: 100'
+        Maximum: 100'
     - name: page_num
       description: "The page to return starting from 0. Default: 0"
     description: Use this operation to get the list of accounts that are managed by account of the API client (the parent account).
@@ -259,9 +258,9 @@ Maximum: 100'
     - name: page_size
       description: 'The number of objects to return in the response.
 
-Default: 50
+        Default: 50
 
-Maximum: 100'
+        Maximum: 100'
     - name: page_num
       description: "The page to return starting from 0. Default: 0"
     description: Use this operation to get a list of sub accounts that are managed by the account of the API client (the parent account).
@@ -287,20 +286,20 @@ Maximum: 100'
       - "support_all_tls_versions"
       description: 'Name of the configuration parameter to set.
 
-Possible values: name | email | plan_id | error_page_template | support_all_tls_versions'
+        Possible values: name | email | plan_id | error_page_template | support_all_tls_versions'
     - name: value
       required: true
       description: 'According to the configuration paramater used.
 
-For name - the updated name, for e-mail - the updated e-mail address.
+        For name - the updated name, for e-mail - the updated e-mail address.
 
-For plan_id - a plan id.
+        For plan_id - a plan id.
 
-For error_page_template - a Base64 encoded template for an error page.
+        For error_page_template - a Base64 encoded template for an error page.
 
-For log_level - Available only for Enterprise Plan customers that purchased the Logs Integration SKU. Sets the log reporting level for the site. Possible values: full, security, none, default
+        For log_level - Available only for Enterprise Plan customers that purchased the Logs Integration SKU. Sets the log reporting level for the site. Possible values: full, security, none, default
 
-For support_all_tls_versions - Use this operation to allow sites in the account to support all TLS versions for connectivity between clients (visitors) and the Incapsula service. When this option is set, you can then enable the option per site to support all TLS versions. Possible values: true, false. Note: To remain PCI-compliant, do not enable this option.'
+        For support_all_tls_versions - Use this operation to allow sites in the account to support all TLS versions for connectivity between clients (visitors) and the Incapsula service. When this option is set, you can then enable the option per site to support all TLS versions. Possible values: true, false. Note: To remain PCI-compliant, do not enable this option.'
     description: Use this operation to change the configuration of the account of the API client or one of its managed accounts.
   - name: incap-set-account-log-level
     arguments:
@@ -318,9 +317,9 @@ For support_all_tls_versions - Use this operation to allow sites in the account 
       - "support_all_tls_versions"
       description: 'Sets the log reporting level for the site.
 
-Possible values: full, security, none, default
+        Possible values: full, security, none, default
 
-Available only for Enterprise Plan customers that purchased the Log Integration SKU.'
+        Available only for Enterprise Plan customers that purchased the Log Integration SKU.'
     description: Use this operation to change the account log configuration.
   - name: incap-test-account-s3-connection
     arguments:
@@ -418,7 +417,7 @@ Available only for Enterprise Plan customers that purchased the Log Integration 
       description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
     description: 'Tokens are used instead of user/password based authentication to log in to the Incapsula management console.  Use this operation to generate a token for an account. The token is valid for 15 minutes.
 
-In order to use the token, the user must use the following link:  https://my.incapsula.com/?token={generated_token}'
+        In order to use the token, the user must use the following link:  https://my.incapsula.com/?token={generated_token}'
   - name: incap-delete-managed-account
     arguments:
     - name: account_id
@@ -448,9 +447,9 @@ In order to use the token, the user must use the following link:  https://my.inc
     - name: page_size
       description: 'The number of objects to return in the response.
 
-Default: 50.
+        Default: 50.
 
-Maximum: 100'
+        Maximum: 100'
     - name: page_num
       description: 'The page to return starting from 0. Default: 0.'
     description: Use this operation to get audit events for an account.
@@ -587,7 +586,7 @@ Maximum: 100'
         if site is under a DDoS attack), auto (security measures will be activated
         automatically when the system suspects site is under a DDoS attack), on (security
         measures are enabled even if site is not under a DDoS attack). The syntax
-        is as follows: api.threats.ddos.activation_mode.( e.g. for ''off'', use ''api.threats.ddos.activation_mode.off''
+        is as follows: api.threats.ddos.activation_mode.( e.g. for "off", use "api.threats.ddos.activation_mode.off"
         )'
     - name: security_rule_action
       description: 'The action that should be taken when a threat is detected, for
@@ -849,7 +848,7 @@ Maximum: 100'
       description: Numeric identifier of the site to operate on.
     description: 'Check site’s associated SANs for CAA compliance. If a given SAN is compliant, its SSL domain validation status is updated accordingly.
 
-This operation returns an updated list of the site’s associated SANs that are not compliant. An empty list indicates that all SANs are compliant.'
+        This operation returns an updated list of the site’s associated SANs that are not compliant. An empty list indicates that all SANs are compliant.'
   - name: incap-set-site-data-storage-region
     arguments:
     - name: site_id
@@ -921,9 +920,9 @@ This operation returns an updated list of the site’s associated SANs that are 
         Static_Only'
     - name: dynamic_cache_duration
       description: 'Profile dynamic pages and cache duration, pass number followed
-        by ''_'' and one of: hr | min | sec | days | weeks: default: 5_min'
+        by "_" and one of: hr | min | sec | days | weeks: default: 5_min'
     - name: aggressive_cache_duration
-      description: 'Cache resource duration, pass number followed by ''_'' and one
+      description: 'Cache resource duration, pass number followed by "_" and one
         of: hr | min | sec | days | weeks: default: 1_hr'
     description: Use this operation to edit basic site caching settings
   - name: incap-purge-resources
@@ -954,7 +953,7 @@ This operation returns an updated list of the site’s associated SANs that are 
         | not_suffix'
     - name: always_cache_resource_duration
       description: 'Duration that resources will be in cache, pass number followed
-        by ''_'' and one of: hr | min | sec | days | weeks. Either provide a comma
+        by "_" and one of: hr | min | sec | days | weeks. Either provide a comma
         seperated list of duration expressions, matching the number of always cache
         rules, or a single duration expression to be used for all always cache rules'
     - name: never_cache_resource_url
@@ -1040,7 +1039,7 @@ This operation returns an updated list of the site’s associated SANs that are 
     - name: filter
       description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
 
-The filter may contain up to 400 characters.'
+        The filter may contain up to 400 characters.'
     - name: response_code
       auto: PREDEFINED
       predefined:
@@ -1057,19 +1056,19 @@ The filter may contain up to 400 characters.'
     - name: from
       description: 'The pattern to rewrite.
 
-RULE_ACTION_REWRITE_URL - The URL to rewrite.
+        RULE_ACTION_REWRITE_URL - The URL to rewrite.
 
-RULE_ACTION_REWRITE_HEADER - The header value to rewrite.
+        RULE_ACTION_REWRITE_HEADER - The header value to rewrite.
 
-RULE_ACTION_REWRITE_COOKIE - The cookie value to rewrite.'
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to rewrite.'
     - name: to
       description: 'The pattern to change to.
 
-RULE_ACTION_REWRITE_URL - The URL to change to.
+        RULE_ACTION_REWRITE_URL - The URL to change to.
 
-RULE_ACTION_REWRITE_HEADER - The header value to change to.
+        RULE_ACTION_REWRITE_HEADER - The header value to change to.
 
-RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.'
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.'
     - name: rewrite_name
       description: 'Name of cookie or header to rewrite. Applies only for RULE_ACTION_REWRITE_COOKIE and RULE_ACTION_REWRITE_HEADER.'
     - name: dc_id
@@ -1114,7 +1113,7 @@ RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.'
     - name: filter
       description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
 
-The filter may contain up to 400 characters.'
+        The filter may contain up to 400 characters.'
     - name: response_code
       auto: PREDEFINED
       predefined:
@@ -1131,19 +1130,19 @@ The filter may contain up to 400 characters.'
     - name: from
       description: 'The pattern to rewrite.
 
-RULE_ACTION_REWRITE_URL - The URL to rewrite.
+        RULE_ACTION_REWRITE_URL - The URL to rewrite.
 
-RULE_ACTION_REWRITE_HEADER - The header value to rewrite.
+        RULE_ACTION_REWRITE_HEADER - The header value to rewrite.
 
-RULE_ACTION_REWRITE_COOKIE - The cookie value to rewrite.'
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to rewrite.'
     - name: to
       description: 'The pattern to change to.
 
-RULE_ACTION_REWRITE_URL - The URL to change to.
+        RULE_ACTION_REWRITE_URL - The URL to change to.
 
-RULE_ACTION_REWRITE_HEADER - The header value to change to.
+        RULE_ACTION_REWRITE_HEADER - The header value to change to.
 
-RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.'
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.'
     - name: rewrite_name
       description: 'Name of cookie or header to rewrite. Applies only for RULE_ACTION_REWRITE_COOKIE and RULE_ACTION_REWRITE_HEADER.'
     - name: dc_id
@@ -1205,9 +1204,9 @@ RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.'
     - name: page_size
       description: 'The number of objects to return in the response.
 
-Default is 50.
+        Default is 50.
 
-Maximum: 100'
+        Maximum: 100'
     - name: page_num
       description: The page to return starting from 0. Default is 0.
     description: Use this operation to list rules (Delivery Rules and IncapRules) for a given site.
@@ -1474,9 +1473,9 @@ Maximum: 100'
     - name: page_size
       description: 	'The number of objects to return in the response.
 
-Default: 50
+        Default: 50
 
-Maximum: 100'
+        Maximum: 100'
     - name: page_num
       description: 'The page to return starting from 0. Default: 0'
     - name: start
@@ -1617,4 +1616,9 @@ Maximum: 100'
   # Infrastructure Protection Test Alerts
 
 system: true
-releaseNotes: "Fixed 'in-cap-upload-public-key' entry, it was missing in the JS URL Dictionary. Reorganized the urlDict and commands to match and correspond to the Incapsula API Documentation layout. Added Account Management API Calls. Added Site Management - Rules API Calls. Added Site Management - Data Centers API Calls. Added Infrastructure Protection Test Alert API Calls"
+releaseNotes: "Fixed 'in-cap-upload-public-key' entry, it was missing in the JS URL Dictionary.
+    Reorganized the urlDict and commands to match and correspond to the Incapsula API Documentation layout.
+    Added Account Management API Calls.
+    Added Site Management - Rules API Calls.
+    Added Site Management - Data Centers API Calls.
+    Added Infrastructure Protection Test Alert API Calls"
