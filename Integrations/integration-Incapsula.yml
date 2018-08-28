@@ -212,7 +212,7 @@ script:
         Logs Integration SKU. Numeric identifier of the account that purchased the
         logs integration SKU and which collects the logs. If not specified, operation
         will be performed on the account identified by the authentication parameters
-    description: |Use this operation to add a new account that should be managed by the account of the API client (the parent account). The new account will be configured according to the preferences set for the parent account by Incapsula.
+    description: Use this operation to add a new account that should be managed by the account of the API client (the parent account). The new account will be configured according to the preferences set for the parent account by Incapsula.
         Depending on these preferences, an activation e-mail will be sent to the specified e-mail address. The user responds to the activation e-mail, selects a password, and can then log directly into the Incapsula console. The same e-mail address can also be used to send system notifications to the account. The new account is identified by a numeric value as provided by Incapsula in the response in the field account_id.
   - name: incap-list-managed-accounts
     arguments:
