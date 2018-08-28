@@ -1,6 +1,14 @@
 id: virusTotal-test-playbook
 version: -1
 name: virusTotal-test-playbook
+description: |
+  Test playbook for vt.
+
+  vt has a quota of requests per minute that we exceed in the test playbook.
+
+  Sleep for 60 seconds.
+
+  https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "18"
     scriptarguments:
       all:
         simple: "yes"
@@ -84,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -120,7 +128,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -150,7 +158,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -186,7 +194,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -216,7 +224,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -249,7 +257,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -281,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -317,7 +325,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -347,7 +355,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -381,7 +389,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -417,7 +425,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
@@ -444,16 +452,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
   "17":
     id: "17"
-    taskid: 61fa4f1d-17f6-4d74-8461-6cda91b0796e
+    taskid: 01b0c002-fbe7-446e-8317-5203d92922bc
     type: regular
     task:
-      id: 61fa4f1d-17f6-4d74-8461-6cda91b0796e
+      id: 01b0c002-fbe7-446e-8317-5203d92922bc
       version: -1
       name: Sleep
       description: |
@@ -477,7 +485,40 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 0ae6c202-4864-42f4-861e-f260c0654879
+    type: regular
+    task:
+      id: 0ae6c202-4864-42f4-861e-f260c0654879
+      version: -1
+      name: Sleep
+      description: |
+        vt has a quota of requests per minute that we exceed in the test playbook.
+
+        Sleep for 60 seconds.
+
+        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -486,7 +527,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2515,
+        "height": 2690,
         "width": 380,
         "x": 50,
         "y": 50
