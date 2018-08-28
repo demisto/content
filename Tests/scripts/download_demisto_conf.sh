@@ -46,7 +46,7 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
     echo "Downloading server conf file..."
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf?ref=$CIRCLE_BRANCH" -o "$DEMISTO_SEVERCONF_PATH"
-    
+
     echo "Downloading instance conf file..."
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
