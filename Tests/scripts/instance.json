@@ -1,0 +1,18 @@
+{
+  "ImageId": "ami-025a39ddfb7fc5e1c",
+  "InstanceType": "c5.xlarge",
+  "KeyName": "oregon-ci",
+  "BlockDeviceMappings": [
+    {
+      "DeviceName": "/dev/sda1",
+      "Ebs": {
+        "DeleteOnTermination": true,
+        "VolumeType": "gp2",
+        "VolumeSize": 100,
+        "SnapshotId": "snap-0bc9018122add8925"
+      }
+    }
+  ],
+  "UserData": "ZmlsZTovL1Rlc3RzL3NjcmlwdHMvc2h1dGRvd25faW5zdGFuY2Uuc2g=",
+  "SecurityGroupIds": ["sg-ad9b98d1"]
+}
