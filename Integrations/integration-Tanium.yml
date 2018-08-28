@@ -483,7 +483,12 @@ script:
             m['info']['name'] = m['info']['dst']
             del m['info']['dst']
             ans.append(m['info'])
-        return create_entry("Tanium Live Connections", ans, context = {}, headers = ['name', 'dstType', 'state', 'initTime'])
+        return create_entry(
+            "Tanium Live Connections",
+            ans,
+            context = {'Tanium.TraceLiveConnections(val.name && val.name == obj.name)':ans},
+            headers = ['name', 'dstType', 'state', 'initTime']
+        )
 
     def traceConnect(session):
         kwargs = {}
@@ -1110,6 +1115,19 @@ script:
   - name: tn-trace-get-live-connections
     arguments: []
     description: Get status from all live connections
+    outputs:
+    - contextPath: Tanium.TraceLiveConnections.dstType
+      description: Type of destination identification (ip address or computer name)
+      type: string
+    - contextPath: Tanium.TraceLiveConnections.initTime
+      description: Connection initiation time
+      type: date
+    - contextPath: Tanium.TraceLiveConnections.name
+      description: Name or ip address of computer
+      type: string
+    - contextPath: Tanium.TraceLiveConnections.state
+      description: Connection state
+      type: string
   - name: tn-trace-connect
     arguments:
     - name: computer_name
