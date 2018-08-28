@@ -764,6 +764,27 @@ script:
     - contextPath: Tanium.SavedActions.Name
       description: Saved action name
       type: string
+    - contextPath: Tanium.Actions.id
+      description: ID of deployed action
+      type: string
+    - contextPath: Tanium.Actions.name
+      description: Name of deployed action
+      type: string
+    - contextPath: Tanium.Actions.creation_time
+      description: Time when action was created
+      type: date
+    - contextPath: Tanium.Actions.status
+      description: Action status (Close, Pending, etc.)
+      type: string
+    - contextPath: Tanium.Actions.package_spec.command
+      description: The command that will run once action is approved
+      type: string
+    - contextPath: Tanium.Actions.package_spec.name
+      description: The name of the package associated with the action
+      type: string
+    - contextPath: Tanium.Actions.user.name
+      description: Name of user that created the action
+      type: string
     description: Deploy a package and get the results back
   - name: tn-ask-question
     arguments:
