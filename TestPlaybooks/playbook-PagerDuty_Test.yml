@@ -16,11 +16,12 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 50
         }
       }
@@ -46,7 +47,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 340
         }
       }
@@ -72,7 +73,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 515
         }
       }
@@ -99,7 +100,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 340
         }
       }
@@ -125,7 +126,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 515
         }
       }
@@ -210,13 +211,113 @@ tasks:
         }
       }
     note: false
+  "8":
+    id: "8"
+    taskid: b54720ee-724d-4e4f-8ccd-f4e3f0e4e055
+    type: title
+    task:
+      id: b54720ee-724d-4e4f-8ccd-f4e3f0e4e055
+      version: -1
+      name: Scripts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 0d82ecf0-a314-4781-8cee-ee1cabe96f1d
+    type: regular
+    task:
+      id: 0d82ecf0-a314-4781-8cee-ee1cabe96f1d
+      version: -1
+      name: PagerDutyAssignOnCallUser
+      scriptName: PagerDutyAssignOnCallUser_copy
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 496f28d3-ad11-47ce-8a09-d7cdf19afec2
+    type: condition
+    task:
+      id: 496f28d3-ad11-47ce-8a09-d7cdf19afec2
+      version: -1
+      name: Validate owner user
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      left:
+        simple: ${incident.owner}
+      right:
+        simple: meir
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 515
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: c68e3806-3b8f-454d-8ec3-4a6c0468966a
+    type: title
+    task:
+      id: c68e3806-3b8f-454d-8ec3-4a6c0468966a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 690
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 1240,
+        "height": 705,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
