@@ -1,0 +1,226 @@
+id: PagerDuty Test
+version: -1
+name: PagerDuty Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73dd87a5-8f99-4e67-8715-4d063cb59496
+    type: start
+    task:
+      id: 73dd87a5-8f99-4e67-8715-4d063cb59496
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 17bdd88c-b6ef-401b-8e13-7b5fd0a6ec76
+    type: regular
+    task:
+      id: 17bdd88c-b6ef-401b-8e13-7b5fd0a6ec76
+      version: -1
+      name: Get on call users
+      script: '|||PagerDutyGetUsersOnCallNow'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: da501822-f46a-4e6f-8a8e-c9a46e34b4f0
+    type: regular
+    task:
+      id: da501822-f46a-4e6f-8a8e-c9a46e34b4f0
+      version: -1
+      name: Verify context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: PagerDutyUser.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: fb9acaf6-e92d-4cc5-892d-6a460a572c10
+    type: regular
+    task:
+      id: fb9acaf6-e92d-4cc5-892d-6a460a572c10
+      version: -1
+      name: Get schedules
+      script: '|||PagerDutyGetAllSchedules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query: {}
+      requesterID: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 27632f44-ee8f-4a36-8f7e-f6ab5c0a8f6b
+    type: regular
+    task:
+      id: 27632f44-ee8f-4a36-8f7e-f6ab5c0a8f6b
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: PagerDuty.Schedules
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 530b5c9c-731e-4818-89bd-c48ce52c28e1
+    type: regular
+    task:
+      id: 530b5c9c-731e-4818-89bd-c48ce52c28e1
+      version: -1
+      name: 'Get Incidents '
+      script: '|||PagerDutyIncidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      since: {}
+      sortBy: {}
+      status: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 264477b8-5c63-4d53-8874-276b316e2b6d
+    type: regular
+    task:
+      id: 264477b8-5c63-4d53-8874-276b316e2b6d
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: PagerDuty.Incidents
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: ef319398-78f9-4c70-8e3a-d846929cb16d
+    type: title
+    task:
+      id: ef319398-78f9-4c70-8e3a-d846929cb16d
+      version: -1
+      name: PagerDuty Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "1"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -34,12 +34,16 @@ scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
 DEMISTO_LIC_PATH=$(cat demisto_lic_path)
 scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
 
+DEMISTO_SEVERCONF_PATH=$(cat demisto_conf_path)
+scp ${DEMISTO_SEVERCONF_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.conf
+
 echo "get installer and run installation script"
 INSTALL_COMMAND_Y="cd ~/installer_files \
     && chmod +x installer.sh \
     && sudo mkdir /usr/local/demisto \
     && sudo cp demisto.lic /usr/local/demisto/ \
-    && sudo ./installer.sh -- -y -do-not-start-server"
+    && sudo ./installer.sh -- -y -do-not-start-server \
+    && sudo cp demisto.conf /etc/demisto.conf"
 
 ssh -t ${USER}@${PUBLIC_IP} ${INSTALL_COMMAND_Y}
 
