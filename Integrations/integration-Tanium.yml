@@ -925,7 +925,7 @@ script:
       default: true
       description: Action ID to be approved
     - name: action_id
-      description: (deprecated ) Id of saved action to approve
+      description: (deprecated) Id of saved action to approve
     outputs:
     - contextPath: Tanium.ActionApproval.ApprovedFlag
       description: Approval status
