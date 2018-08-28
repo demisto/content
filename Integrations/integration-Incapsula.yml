@@ -610,7 +610,7 @@ Maximum: 100'
     - name: rule_id
       required: true
       description: "The id of the acl, e.g api.acl.blacklisted_ips. One of: api.acl.blacklisted_countries,
-        api.acl.blacklisted_urls\t, api.acl.blacklisted_ips, api.acl.whitelisted_ips"
+        api.acl.blacklisted_urls, api.acl.blacklisted_ips, api.acl.whitelisted_ips"
     - name: urls
       description: A comma separated list of resource paths. For example, /home and
         /admin/index.html are resource paths, however http://www.example.com/home
@@ -622,9 +622,9 @@ Maximum: 100'
         | prefix | suffix | not_equals | not_contain | not_prefix | not_suffix. The
         patterns should be in accordance with the matching urls sent by the urls parameter'
     - name: countries
-      description: "A comma seperated list of country codes\t"
+      description: "A comma seperated list of country codes"
     - name: continents
-      description: "A comma seperated list of continent codes\t"
+      description: "A comma seperated list of continent codes"
     - name: ips
       description: 'A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1,
         192.168.1.1-192.168.1.100 or 192.168.1.1/24'
@@ -947,7 +947,7 @@ This operation returns an updated list of the site’s associated SANs that are 
       default: true
       description: Numeric identifier of the site to operate on
     - name: always_cache_resource_url
-      description: "Comma seperated list of always cache resources url\t"
+      description: "Comma seperated list of always cache resources url"
     - name: always_cache_resource_pattern
       description: 'Comma seperated list of always cache resources pattern, one of:
         contains | equals | prefix | suffix | not_equals | not_contains | not_prefix
@@ -1400,9 +1400,9 @@ Maximum: 100'
         specifications. Multiple values are supported, e.g.: "api.threats.action.block_ip,
         api.threats.sql_injection"'
     - name: country
-      description: "Filter the sessions coming from the specified country\t"
+      description: "Filter the sessions coming from the specified country"
     - name: ip
-      description: "Filter the sessions coming from the specified IP\t"
+      description: "Filter the sessions coming from the specified IP"
     - name: visit_id
       description: Comma separated list of visit IDs to load
     - name: list_live_visits
@@ -1424,7 +1424,7 @@ Maximum: 100'
     - name: public_key
       required: true
       description: "The public key file(2048bit) in base64 format (without password
-        protection)\t"
+        protection)"
     description: Organizations that purchased the Security Logs Integration SKU can
       download security events created for their account and archive or push those
       events into their SIEM solution
@@ -1523,7 +1523,7 @@ Maximum: 100'
     - name: is_phone_verified
       description: Whether or not to skip phone address verificaion
     - name: should_send_activation_email
-      description: "Whether or not to send activation E-Mail to user\t"
+      description: "Whether or not to send activation E-Mail to user"
     description: Use this operation to edit Login Protect user's settings
   - name: incap-get-login-protect
     arguments:
