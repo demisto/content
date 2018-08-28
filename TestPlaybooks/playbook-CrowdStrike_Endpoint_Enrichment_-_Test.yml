@@ -37,10 +37,10 @@ tasks:
       name: cs-device-search
       description: Search for devices in your environment by platform, host name,
         IP, or a number of other parameters
-      script: FalconHost_2fix|||cs-device-search
+      script: FalconHost|||cs-device-search
       type: regular
       iscommand: true
-      brand: FalconHost_2fix
+      brand: FalconHost
     nexttasks:
       '#none#':
       - "9"
@@ -94,8 +94,8 @@ tasks:
     task:
       id: be3de74a-1573-41ad-89f9-2c99ad19f088
       version: -1
-      name: CrowdStrike Endpoint Enrichment_copy
-      playbookName: CrowdStrike Endpoint Enrichment_copy
+      name: CrowdStrike Endpoint Enrichment
+      playbookName: CrowdStrike Endpoint Enrichment
       type: playbook
       iscommand: false
       brand: ""
