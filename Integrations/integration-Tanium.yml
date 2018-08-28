@@ -1154,7 +1154,7 @@ script:
       description: ID of action of retrieve
     outputs:
     - contextPath: Tanium.Actions.name
-      description: Name of the action
+      description: Name of the actions
       type: string
     - contextPath: Tanium.Actions.id
       description: ID of the action
