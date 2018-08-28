@@ -179,6 +179,8 @@ script:
             parsed_param['Type'] = param['parameterType'].split('::')[-1] if param.get('parameterType') else 'Type not specified'
             parsed_params.append(parsed_param)
             parsed_param = {}
+        data['parameters'] = parsed_params
+        del data['parameter_definition']
         return tableToMarkdown(header, parsed_params, ['Key','Name', 'Values', 'Description', 'Type'])
 
     def getSensorVariable(parsed):
@@ -195,9 +197,10 @@ script:
     def getPackage(handler):
         response = getObject(handler, u'package', demisto.args().get('name'), demisto.args().get('id'))
         parsed = response.get('package_spec')
+        sensor_var = getSensorVariable(parsed)
+        parsed[0]['sensor_variable'] = sensor_var
         final_result = create_entry('Tanium Package', parsed, {'Tanium.Packages(val.id && val.id == obj.id)' : parsed}, ['id', 'name', 'creation_time', 'command', 'last_modified_by'])
         final_result['HumanReadable'] += parameterTableBuilder(parsed[0], 'Package Arguments Details', 'package')
-        sensor_var = getSensorVariable(parsed)
         if sensor_var != '':
             final_result['HumanReadable'] += '\n### Sensor Variables Type\n' + sensor_var
         return final_result
@@ -616,6 +619,24 @@ script:
       type: number
     - contextPath: Tanium.Packages.files
       description: Packge files
+    - contextPath: Tanium.Packages.parameters.Description
+      description: Description of the package parameter
+      type: string
+    - contextPath: Tanium.Packages.parameters.Key
+      description: Key of the package parameter as it appears in the command
+      type: string
+    - contextPath: Tanium.Packages.parameters.Name
+      description: Name of the package parameter
+      type: string
+    - contextPath: Tanium.Packages.parameters.Type
+      description: Type of package parameter
+      type: string
+    - contextPath: Tanium.Packages.parameters.Values
+      description: Possible values of the package parameter
+      type: string
+    - contextPath: Tanium.Packages.sensor_variable
+      description: The type of sensor that this package requires as a variable
+      type: string
     description: Get a package object based on name or ID.
   - name: tn-get-all-packages
     arguments: []
@@ -1048,6 +1069,21 @@ script:
       type: string
     - contextPath: Tanium.Sensors.id
       description: Id of the sensor
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Description
+      description: Description of the sensor parameter
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Key
+      description: Key of the sensor parameter as it appears in the command string
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Name
+      description: Name of the sensor parameter
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Type
+      description: Type of the sensor parameter
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Values
+      description: Possible values of the sensor parameter
       type: string
     description: Get detailed information about a given sensor.
   - name: tn-trace-get-live-connections
