@@ -1,0 +1,1943 @@
+id: a405766c-8dc4-4ea5-8c41-81c42528cb85
+version: 41
+name: Cisco Umbrella Investigate
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd8c54bf-5ab5-43b0-8230-7a544fdc8dbd
+    type: start
+    task:
+      id: fd8c54bf-5ab5-43b0-8230-7a544fdc8dbd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 4148a32a-46f7-4c60-8ac5-ae8237559056
+    type: regular
+    task:
+      id: 4148a32a-46f7-4c60-8ac5-ae8237559056
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 189
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 0d907f37-cc5d-4340-85a4-98e4900149e7
+    type: regular
+    task:
+      id: 0d907f37-cc5d-4340-85a4-98e4900149e7
+      version: -1
+      name: investigate-umbrella-domain-categorization
+      script: Cisco Umbrella Investigate - Python|||investigate-umbrella-domain-categorization
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 376
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 71b92581-2991-4362-8c9a-e463ba144830
+    type: regular
+    task:
+      id: 71b92581-2991-4362-8c9a-e463ba144830
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue:
+        simple: News/Media
+      fields: {}
+      path:
+        simple: Domain.ContentCategories
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 557
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 404cc9a9-8323-44d9-8524-dc907542275c
+    type: regular
+    task:
+      id: 404cc9a9-8323-44d9-8524-dc907542275c
+      version: -1
+      name: investigate-umbrella-domain-co-occurrences
+      script: Cisco Umbrella Investigate - Python|||investigate-umbrella-domain-co-occurrences
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: walla.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 949
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 1285418e-6c7e-4ab5-81cb-2cc4d8bfaa97
+    type: regular
+    task:
+      id: 1285418e-6c7e-4ab5-81cb-2cc4d8bfaa97
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Score
+      path:
+        simple: Domain.CoOccurrences
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1142
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: b56c9055-4702-44af-8a6c-ee9285069f13
+    type: regular
+    task:
+      id: b56c9055-4702-44af-8a6c-ee9285069f13
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 6ed5a35d-df2d-47b9-87e6-4abc43a8f740
+    type: regular
+    task:
+      id: 6ed5a35d-df2d-47b9-87e6-4abc43a8f740
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1330
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 46d9a279-28d7-450f-8b11-9a1244fc7bea
+    type: regular
+    task:
+      id: 46d9a279-28d7-450f-8b11-9a1244fc7bea
+      version: -1
+      name: investigate-umbrella-domain-relatedUntitled Task
+      script: Cisco Umbrella Investigate - Python|||investigate-umbrella-domain-related
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      domain:
+        simple: walla.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 448,
+          "y": 1526
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 69fc40f2-f058-489e-8be0-a884540ea5b1
+    type: regular
+    task:
+      id: 69fc40f2-f058-489e-8be0-a884540ea5b1
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Score
+      path:
+        simple: Domain.Related
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1711
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: bc77a0c6-e21d-42d2-8b03-ca077bd36f0d
+    type: regular
+    task:
+      id: bc77a0c6-e21d-42d2-8b03-ca077bd36f0d
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1893
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 3224f2e5-de77-45fc-84cb-96886ca950de
+    type: regular
+    task:
+      id: 3224f2e5-de77-45fc-84cb-96886ca950de
+      version: -1
+      name: investigate-umbrella-domain-security
+      script: Cisco Umbrella Investigate - Python|||investigate-umbrella-domain-security
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 452,
+          "y": 2060
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 0dda0d8e-b4f4-4471-8c99-c0cd030ccff4
+    type: regular
+    task:
+      id: 0dda0d8e-b4f4-4471-8c99-c0cd030ccff4
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Securerank
+      path:
+        simple: Domain.Security
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2252
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 0f54c31a-42ed-4b0c-8654-9bfdb8602d9d
+    type: regular
+    task:
+      id: 0f54c31a-42ed-4b0c-8654-9bfdb8602d9d
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2428
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 6eff5e88-bb5b-47cb-8de6-da997ac5ef8a
+    type: regular
+    task:
+      id: 6eff5e88-bb5b-47cb-8de6-da997ac5ef8a
+      version: -1
+      name: investigate-umbrella-domain-dns-history
+      script: Cisco Umbrella Investigate - Python|||investigate-umbrella-domain-dns-history
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 452,
+          "y": 2607
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 03b1f3d5-1f33-4d0e-8d92-ea716f14b4a4
+    type: regular
+    task:
+      id: 03b1f3d5-1f33-4d0e-8d92-ea716f14b4a4
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: BaseDomain
+      path:
+        simple: Domain.DNSHistory
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2788
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 75b7b4cc-912c-4cfb-8ad2-541cc685f0b3
+    type: regular
+    task:
+      id: 75b7b4cc-912c-4cfb-8ad2-541cc685f0b3
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2979
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 5e4f8fd0-6110-4308-87af-4d97cea306c5
+    type: regular
+    task:
+      id: 5e4f8fd0-6110-4308-87af-4d97cea306c5
+      version: -1
+      name: investigate-umbrella-ip-dns-historyUntitled Task
+      script: Cisco Umbrella Investigate - Python|||investigate-umbrella-ip-dns-history
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ip:
+        simple: 1.2.3.99
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 3150
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: dc55be99-630e-4a5c-8085-060d33572595
+    type: regular
+    task:
+      id: dc55be99-630e-4a5c-8085-060d33572595
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: RR
+      path:
+        simple: IP.DNSHistory.RRS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3327
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 81d3ed47-d27c-4a94-81d5-a85c55e062a7
+    type: regular
+    task:
+      id: 81d3ed47-d27c-4a94-81d5-a85c55e062a7
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3502
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 5c3f992f-b41b-4ab2-89de-6500d3c50db0
+    type: regular
+    task:
+      id: 5c3f992f-b41b-4ab2-89de-6500d3c50db0
+      version: -1
+      name: investigate-umbrella-ip-malicious-domains
+      script: Cisco Umbrella Investigate - Python|||investigate-umbrella-ip-malicious-domains
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ip:
+        simple: 1.2.3.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3679
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: aadae8fc-c264-4033-8108-e9f5a4b645bc
+    type: regular
+    task:
+      id: aadae8fc-c264-4033-8108-e9f5a4b645bc
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name
+      path:
+        simple: Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3847
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 431c6084-14c3-4a5b-8aa1-b043370e8438
+    type: regular
+    task:
+      id: 431c6084-14c3-4a5b-8aa1-b043370e8438
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4010
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: 549f7f94-bc35-40a5-8797-64179ec74c22
+    type: regular
+    task:
+      id: 549f7f94-bc35-40a5-8797-64179ec74c22
+      version: -1
+      name: investigate-umbrella-domain-search
+      script: Cisco Umbrella Investigate - Python|||investigate-umbrella-domain-search
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      regex:
+        simple: googlem.*.com
+      start:
+        simple: -30days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4174
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: d83e57f3-a27b-4066-8f6c-3cbc0dd95477
+    type: regular
+    task:
+      id: d83e57f3-a27b-4066-8f6c-3cbc0dd95477
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4527
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: fb292a54-5494-4c7e-8362-f670c5fb0b51
+    type: regular
+    task:
+      id: fb292a54-5494-4c7e-8362-f670c5fb0b51
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: FirstSeen
+      path:
+        simple: Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4345
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 220bdf1b-715d-406c-8980-f382a5c12963
+    type: regular
+    task:
+      id: 220bdf1b-715d-406c-8980-f382a5c12963
+      version: -1
+      name: domain
+      script: Cisco Umbrella Investigate - Python|||domain
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 448,
+          "y": 4699
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 7be98335-4a6b-410b-8521-9c605f4fd39b
+    type: regular
+    task:
+      id: 7be98335-4a6b-410b-8521-9c605f4fd39b
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5026
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: 39847331-b833-4a50-8809-c28b908af920
+    type: regular
+    task:
+      id: 39847331-b833-4a50-8809-c28b908af920
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      expectedValue:
+        simple: "1"
+      fields: {}
+      path:
+        simple: Domain.Umbrella.RiskScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4860
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: 23dd1657-5815-4efc-8a77-d1ae18dc4c7a
+    type: regular
+    task:
+      id: 23dd1657-5815-4efc-8a77-d1ae18dc4c7a
+      version: -1
+      name: umbrella-get-related-domains
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-related-domains
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      coOccurences:
+        simple: "true"
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5190
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: d791fc61-81cc-4e0c-8401-755329c65246
+    type: regular
+    task:
+      id: d791fc61-81cc-4e0c-8401-755329c65246
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name
+      path:
+        simple: Domain.Umbrella.RelatedDomains
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5359
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: 03d015e7-58e0-41d3-88e6-c896f6a416b1
+    type: regular
+    task:
+      id: 03d015e7-58e0-41d3-88e6-c896f6a416b1
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5525
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: 93691ab5-6fde-4968-87ac-db6a9d3f5679
+    type: regular
+    task:
+      id: 93691ab5-6fde-4968-87ac-db6a9d3f5679
+      version: -1
+      name: umbrella-get-domain-classifiers
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-domain-classifiers
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      domain:
+        simple: cosmos.furnipict.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 5681
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: b15db295-6779-4b2d-8a1d-c7b4c4d01728
+    type: regular
+    task:
+      id: b15db295-6779-4b2d-8a1d-c7b4c4d01728
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Attacks
+      path:
+        simple: Domain.Umbrella
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5845
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: b95e2cf8-3b06-4c96-88e6-11894dbbc55f
+    type: regular
+    task:
+      id: b95e2cf8-3b06-4c96-88e6-11894dbbc55f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6013
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 6c22c782-f89d-4aad-8d3c-1204789ea9a0
+    type: regular
+    task:
+      id: 6c22c782-f89d-4aad-8d3c-1204789ea9a0
+      version: -1
+      name: umbrella-get-domain-queryvolume
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-domain-queryvolume
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+      match:
+        simple: all
+      start:
+        simple: -1days
+      stop:
+        simple: now
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6182
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: 718c1c2c-c1d9-4ae5-8dca-73e8a8be6352
+    type: regular
+    task:
+      id: 718c1c2c-c1d9-4ae5-8dca-73e8a8be6352
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: QueryHour
+      path:
+        simple: Domain.Umbrella.QueryVolume
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6341
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: 4af3f7c3-5493-47b5-834f-f9ce4264f4a8
+    type: regular
+    task:
+      id: 4af3f7c3-5493-47b5-834f-f9ce4264f4a8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6508
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: 667755d1-b5d7-4148-8a20-da9b6d913916
+    type: regular
+    task:
+      id: 667755d1-b5d7-4148-8a20-da9b6d913916
+      version: -1
+      name: umbrella-get-domain-details
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-domain-details
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 6688
+        }
+      }
+    note: false
+  "39":
+    id: "39"
+    taskid: 6489cc32-503f-4389-8147-48d11f4377ff
+    type: regular
+    task:
+      id: 6489cc32-503f-4389-8147-48d11f4377ff
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: KolmogorovSmirnovTest
+      path:
+        simple: Domain.Umbrella.Details
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6863
+        }
+      }
+    note: false
+  "40":
+    id: "40"
+    taskid: 57d7eb90-9461-4362-89b9-e6d59c378ccd
+    type: regular
+    task:
+      id: 57d7eb90-9461-4362-89b9-e6d59c378ccd
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7040
+        }
+      }
+    note: false
+  "41":
+    id: "41"
+    taskid: 06ea40bc-62ec-42d3-893a-03f45d5b2988
+    type: regular
+    task:
+      id: 06ea40bc-62ec-42d3-893a-03f45d5b2988
+      version: -1
+      name: umbrella-get-whois-for-email-registrar
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-whois-for-email-registrar
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      emails:
+        simple: admin@google.com
+      limit:
+        simple: "5"
+      offset: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 448,
+          "y": 7209
+        }
+      }
+    note: false
+  "42":
+    id: "42"
+    taskid: 3b1d1bea-b3a7-41ff-83ab-a00b39c4440a
+    type: regular
+    task:
+      id: 3b1d1bea-b3a7-41ff-83ab-a00b39c4440a
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name
+      path:
+        simple: Account.Email.Umbrella.Whois.Domains
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7378
+        }
+      }
+    note: false
+  "43":
+    id: "43"
+    taskid: ac233778-14a7-48fb-89ed-7b8b648d39a5
+    type: regular
+    task:
+      id: ac233778-14a7-48fb-89ed-7b8b648d39a5
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7546
+        }
+      }
+    note: false
+  "44":
+    id: "44"
+    taskid: 8d50c49c-f2b3-4f03-8736-e33f963cad68
+    type: regular
+    task:
+      id: 8d50c49c-f2b3-4f03-8736-e33f963cad68
+      version: -1
+      name: umbrella-get-whois-for-nameserver
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-whois-for-nameserver
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      limit:
+        simple: "5"
+      nameservers:
+        simple: ns1.google.com
+      offset: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7731
+        }
+      }
+    note: false
+  "45":
+    id: "45"
+    taskid: 16f44c51-169b-4a30-8dbb-922d1c3c1db6
+    type: regular
+    task:
+      id: 16f44c51-169b-4a30-8dbb-922d1c3c1db6
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name
+      path:
+        simple: Nameserver.Umbrella.Whois.Domains
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7902
+        }
+      }
+    note: false
+  "46":
+    id: "46"
+    taskid: 2c48fe47-5138-4a2c-81a0-e747c1007681
+    type: regular
+    task:
+      id: 2c48fe47-5138-4a2c-81a0-e747c1007681
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8071
+        }
+      }
+    note: false
+  "47":
+    id: "47"
+    taskid: 2cacc135-16b0-42e1-8862-8d3c3ef0bc94
+    type: regular
+    task:
+      id: 2cacc135-16b0-42e1-8862-8d3c3ef0bc94
+      version: -1
+      name: umbrella-get-whois-for-domain
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-whois-for-domain
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 8252
+        }
+      }
+    note: false
+  "48":
+    id: "48"
+    taskid: 8cc93d32-eb33-4e0e-8231-610385980c5c
+    type: regular
+    task:
+      id: 8cc93d32-eb33-4e0e-8231-610385980c5c
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: RegistrarName
+      path:
+        simple: Domain.Umbrella.Whois
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8431
+        }
+      }
+    note: false
+  "49":
+    id: "49"
+    taskid: 57632827-692b-499a-8ab3-ab89c276458f
+    type: regular
+    task:
+      id: 57632827-692b-499a-8ab3-ab89c276458f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8605
+        }
+      }
+    note: false
+  "50":
+    id: "50"
+    taskid: 6ef39133-391c-478a-8431-04f8db554753
+    type: regular
+    task:
+      id: 6ef39133-391c-478a-8431-04f8db554753
+      version: -1
+      name: umbrella-get-malicious-domains-for-ip
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-malicious-domains-for-ip
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      ip:
+        simple: 1.2.3.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 8781
+        }
+      }
+    note: false
+  "51":
+    id: "51"
+    taskid: 38c7bb5c-6458-4bca-87be-2b4fc1e297fd
+    type: regular
+    task:
+      id: 38c7bb5c-6458-4bca-87be-2b4fc1e297fd
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name
+      path:
+        simple: IP.Umbrella.MaliciousDomains
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8962
+        }
+      }
+    note: false
+  "52":
+    id: "52"
+    taskid: 4fb784c7-ab7d-4c93-87a2-25167c5cf30f
+    type: regular
+    task:
+      id: 4fb784c7-ab7d-4c93-87a2-25167c5cf30f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 9141
+        }
+      }
+    note: false
+  "53":
+    id: "53"
+    taskid: abe76551-4729-44ef-812f-c53500f3b75c
+    type: regular
+    task:
+      id: abe76551-4729-44ef-812f-c53500f3b75c
+      version: -1
+      name: umbrella-get-domains-using-regex
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-domains-using-regex
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      expression:
+        simple: googlemail.*.com
+      includeCategory: {}
+      limit: {}
+      start:
+        simple: -1days
+      stop:
+        simple: now
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 448,
+          "y": 9322
+        }
+      }
+    note: false
+  "54":
+    id: "54"
+    taskid: 65c9a5bb-6305-4d0f-8038-153667a27cc9
+    type: regular
+    task:
+      id: 65c9a5bb-6305-4d0f-8038-153667a27cc9
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: FirstSeen
+      path:
+        simple: Umbrella.DomainSearch.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 9505
+        }
+      }
+    note: false
+  "55":
+    id: "55"
+    taskid: 2b62d013-2481-4ac5-8808-c3c875c7afc5
+    type: regular
+    task:
+      id: 2b62d013-2481-4ac5-8808-c3c875c7afc5
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 9686
+        }
+      }
+    note: false
+  "56":
+    id: "56"
+    taskid: f70f0e51-59dc-4f36-8890-4ecd581c6c27
+    type: regular
+    task:
+      id: f70f0e51-59dc-4f36-8890-4ecd581c6c27
+      version: -1
+      name: umbrella-get-domain-timeline
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-domain-timeline
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      domain:
+        simple: cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 9862
+        }
+      }
+    note: false
+  "57":
+    id: "57"
+    taskid: 7f8021f3-c70a-49e2-8474-4c22b0d788d4
+    type: regular
+    task:
+      id: 7f8021f3-c70a-49e2-8474-4c22b0d788d4
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Attacks
+      path:
+        simple: Domain.Umbrella
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10033
+        }
+      }
+    note: false
+  "58":
+    id: "58"
+    taskid: 3ed0a076-8905-4bd6-8fbb-7feaaece46c0
+    type: regular
+    task:
+      id: 3ed0a076-8905-4bd6-8fbb-7feaaece46c0
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 448,
+          "y": 10211
+        }
+      }
+    note: false
+  "59":
+    id: "59"
+    taskid: 3d66e9d8-70f8-4cd1-81ae-63083b0d7fd0
+    type: regular
+    task:
+      id: 3d66e9d8-70f8-4cd1-81ae-63083b0d7fd0
+      version: -1
+      name: umbrella-get-ip-timeline
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-ip-timeline
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10377
+        }
+      }
+    note: false
+  "60":
+    id: "60"
+    taskid: 20fc71d9-3134-443f-86b4-76a350f448bd
+    type: regular
+    task:
+      id: 20fc71d9-3134-443f-86b4-76a350f448bd
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Attacks
+      path:
+        simple: IP.Umbrella
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10553
+        }
+      }
+    note: false
+  "61":
+    id: "61"
+    taskid: 25aab4ba-2f03-41f5-8361-b7bc495492b2
+    type: regular
+    task:
+      id: 25aab4ba-2f03-41f5-8361-b7bc495492b2
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10711
+        }
+      }
+    note: false
+  "62":
+    id: "62"
+    taskid: b61efcfd-3684-4be7-8861-a30be46f7002
+    type: regular
+    task:
+      id: b61efcfd-3684-4be7-8861-a30be46f7002
+      version: -1
+      name: umbrella-get-url-timeline
+      script: Cisco Umbrella Investigate - Python|||umbrella-get-url-timeline
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate - Python
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      url:
+        simple: http://gauttam.com/wp-includes/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10909
+        }
+      }
+    note: false
+  "63":
+    id: "63"
+    taskid: 0bacc891-9323-484b-8cb0-4db244d7c2f3
+    type: regular
+    task:
+      id: 0bacc891-9323-484b-8cb0-4db244d7c2f3
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 448,
+          "y": 11282
+        }
+      }
+    note: false
+  "64":
+    id: "64"
+    taskid: 8d163e2c-f156-4d4b-8672-d4bcf1dcf588
+    type: regular
+    task:
+      id: 8d163e2c-f156-4d4b-8672-d4bcf1dcf588
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Attacks
+      path:
+        simple: URL.Umbrella
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 11085
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 11327,
+        "width": 384,
+        "x": 448,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "Test legacy and new commands for cisco umbrella python"
