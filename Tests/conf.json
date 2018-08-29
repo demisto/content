@@ -3,8 +3,8 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
+            "integrations": "Cisco Umbrella Investigate - Python",
+            "playbookID": "Cisco Umbrella Investigate"
         },
         {
             "integrations": "RSA NetWitness Packets and Logs",
