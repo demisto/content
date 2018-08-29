@@ -216,7 +216,11 @@ script:
             )
         #successful request
         if response.status_code == 200:
-            return response.json()
+            try:
+                return response.json()
+            except Exception as e:
+                LOG(e.message)
+                return None
         #bad request - NetWitness returns a common json structure for errors; a list of error objects
         error_lst = response.json().get('errors')
         raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
@@ -447,14 +451,14 @@ script:
             assignee = args.get('assignee')
             )
 
-        md_content = create_incident_md_table(incident, "NetWitness Update Incident")
+        md_content = create_incident_md_table(incident)
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': incident,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md_content,
+            'HumanReadable':  "## NetWitness Update Incident\n" + md_content,
             'EntryContext': {
                 "NetWitness.Incidents(obj.id==val.id)": incident
             }
