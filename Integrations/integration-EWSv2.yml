@@ -264,10 +264,8 @@ script:
             if path in folders_map:
                 return account.root._folders_map[path]
 
-        # Path inoput might be a unicode, but the command expects string
-        path = str(path)
         folder_result = account.inbox.parent
-        if path == 'AllItems':
+        if path == u'AllItems':
             folder_result = folder_result.parent
         path = path.replace("/", "\\")
         path = path.split('\\')
@@ -1866,4 +1864,4 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added command ews-get-folder, which returns a single specific folder"
+releaseNotes: "-"
