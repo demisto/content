@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "Cisco Umbrella Investigate - Python",
-            "playbookID": "Cisco Umbrella Investigate"
+            "playbookID": "Cisco Umbrella Investigate",
+            "nightly": true
         },
         {
             "integrations": "RSA NetWitness Packets and Logs",

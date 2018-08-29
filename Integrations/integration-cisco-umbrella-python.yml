@@ -59,6 +59,7 @@ script:
         'Authorization': 'Bearer {}'.format(API_TOKEN),
         'Accept': 'application/json'
     }
+    NO_RESULT = [{ 'title': 'Cisco Umbrella Investigate:', 'table': {}, 'context': {} }]
 
     ''' MAPS '''
 
@@ -237,7 +238,7 @@ script:
         # Assign and validate response
         co_occurences = res_co_occurences.get('pfs2', [])
         if not res_co_occurences['found'] or not co_occurences:
-            return_error('No information found about this domain')
+            return NO_RESULT
         table_co_occurences = []
 
         for co_occurence in co_occurences:
@@ -254,7 +255,7 @@ script:
         res = http_request(endpoint_url,None,'POST',domains)
         # Validate response
         if not res:
-            return_error('No response returned from server')
+            return NO_RESULT
         return res
 
     ''' BUSINESS LOGIC / COMMANDS '''
@@ -266,10 +267,9 @@ script:
         res = http_request(endpoint_url)
 
         # Validate and assign response
-        if res.get(domain):
-            categorization = res[domain]
-        else:
-            return_error('No data was found for that domain')
+        categorization = res.get(domain, [])
+        if not categorization:
+            return NO_RESULT
 
         # Process response - build context and markdown table
         domain_context = {
@@ -324,10 +324,9 @@ script:
         res = http_request(endpoint_url, params)
 
         # Validate and assign response
-        if res.get('matches'):
-            matches = res['matches']
+        matches = res.get('matches')
         if not matches or not isinstance(matches, list):
-            return_error('No information found about this domain')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = matches[:]
@@ -375,7 +374,7 @@ script:
         # Validate and assign response
         occurrences = res.get('pfs2')
         if not isinstance(occurrences, list) or not occurrences:
-            return_error('No information found about this domain')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -408,10 +407,10 @@ script:
         res = http_request(endpoint_url)
 
         # Validate and assign response
-        if res.get('tb1', []):
-            related_list = res['tb1']
+
+        related_list = res.get('tb1', [])
         if not isinstance(related_list, list) or not related_list:
-            return_error('No information found about this domain')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -444,8 +443,8 @@ script:
         res = http_request(endpoint_url)
 
         # Validate and assign response
-        if not res:
-            return_error('No information found about this domain')
+        if not res or res.get('errorMessage'):
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -494,8 +493,9 @@ script:
 
         # Validate and assign response
         features = res.get('features', [])
-        if not features:
-            return_error('No information found about this domain')
+        #raise Exception(res)
+        if not features or not features.viewkeys() > {"base_domain", "is_subdomain"}:
+            return NO_RESULT
 
         # Process response - build context and markdown table
         # this is the actual path for ip address
@@ -508,7 +508,7 @@ script:
         for feature in features:
             table_key = string_to_table_header(feature)
             context_key = string_to_context_key(feature)
-            value = features[feature]
+            value = features.get(feature, '')
             dns_history_context[context_key] = value
             if feature in ('locations'):
                 table[table_key] = []
@@ -518,7 +518,7 @@ script:
             else:
                 if isinstance(value, list):
                     table[table_key] = ','.join(str(item) for item in value)
-                else:
+                elif value:
                     table[table_key] = value
 
         context = {}
@@ -546,7 +546,7 @@ script:
         features = res.get('features', [])
         response = res.get('rrs', [])
         if not features or not response:
-            return_error('No information found about this IP')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         response_table = []
@@ -598,7 +598,7 @@ script:
 
         # Validate and assign response
         if not res:
-            return_error('No information found about this IP')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -634,8 +634,8 @@ script:
 
         # Assign and validate response
         related_domains = res_related_domains.get('tb1', [])
-        if not res_related_domains.get('found') or not related_domains:
-            return_error('No information found about this domain')
+        if not related_domains:
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table_related_domains = []
@@ -690,7 +690,7 @@ script:
 
         # Assign and validate response
         if not res['securityCategories'] and not res['attacks'] and not res['threatTypes']:
-            return_error('No information found about this domain')
+            return NO_RESULT
 
         security_categories = res.get('securityCategories', [])
         attacks = res.get('attacks', [])
@@ -739,7 +739,7 @@ script:
         dates = res.get('dates',[])
         queries = res.get('queries',[])
         if not dates or not queries:
-            return_error('No information given about the domain with the given parameters')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -785,8 +785,8 @@ script:
         res = http_request(endpoint_url)
 
         # Assign and validate response
-        if not res or not res.get('found', False):
-            return_error('No information found about this domain')
+        if not res:
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -874,7 +874,7 @@ script:
             email_res = res[email]
             domains = email_res.get('domains', [])
             if not email_res or not domains:
-                return_error('No information found about this email: ' + email)
+                continue
 
             # going over all the domains associated with this email, making POST request to get each categorization
             for domain in domains:
@@ -928,6 +928,8 @@ script:
         })
 
         # Send Entry
+        if not emails_context:
+            return NO_RESULT
         return entries
 
 
@@ -968,7 +970,7 @@ script:
             nameserver_res = res[nameserver]
             domains = nameserver_res.get('domains', [])
             if not nameserver_res or not domains:
-                return_error('No information found about this nameserver: ' + nameserver)
+                continue
 
             # going over the domains associated with this nameserver, making POST request to get each categorization
             for domain in domains:
@@ -1020,6 +1022,8 @@ script:
         })
 
         # Send entries
+        if not nameservers_context:
+            return NO_RESULT
         return entries
 
     def execute_whois_for_domain(domain):
@@ -1028,8 +1032,8 @@ script:
         res = http_request(endpoint_url)
 
         # Assign and validate response
-        if not res or res.get('errorMessage', False):
-            return_error('No information found about this domain')
+        if not res or res.get('errorMessage'):
+            return NO_RESULT
 
         # Process response - build context and markdown table
         nameservers = res.get('nameServers', [])
@@ -1097,7 +1101,7 @@ script:
         res = http_request(endpoint_url)
         # Assign and validate response
         if not res:
-            return_error('No data was received for this ip.')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         domains = []
@@ -1154,7 +1158,7 @@ script:
         # Assign and validate response
         matches = res.get('matches', [])
         if not matches:
-            return_error('No matches found for this expression')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -1205,7 +1209,7 @@ script:
 
         # Assign and validate response
         if not timeline:
-            return_error('No information returned for this domain')
+            NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -1247,7 +1251,7 @@ script:
 
         # Assign and validate response
         if not timeline:
-            return_error('No information returned for this IP')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
@@ -1291,7 +1295,7 @@ script:
 
         # Assign and validate response
         if not timeline:
-            return_error('No information returned for this URL')
+            return NO_RESULT
 
         # Process response - build context and markdown table
         table = []
