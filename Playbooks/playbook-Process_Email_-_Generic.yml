@@ -1,7 +1,8 @@
 id: process_email_-_generic
 version: -1
 name: Process Email - Generic
-fromversion: 3.6.0
+fromversion: 4.0
+releaseNotes: "-"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -20,15 +21,15 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
@@ -45,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "2"
+      - "16"
       "yes":
       - "3"
     scriptarguments:
@@ -54,15 +55,15 @@ tasks:
           v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
           0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
           0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 0dd910be-f198-4b5d-8dbb-8d7170049463
@@ -92,10 +93,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 51,
-          "y": 370
+          "x": 50,
+          "y": 895
         }
       }
+    note: false
   "3":
     id: "3"
     taskid: 4ac2b332-b76d-463e-824e-717895c5b644
@@ -118,17 +120,17 @@ tasks:
           v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
           0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
           0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
-    reputationcalc: 0
     results:
     - AttachmentName
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 592.5,
+          "y": 720
         }
       }
+    note: false
   "4":
     id: "4"
     taskid: be6f6daf-0497-423e-8a48-d669ccad567f
@@ -146,12 +148,11 @@ tasks:
       - "6"
       "yes":
       - "5"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
@@ -161,10 +162,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 865
+          "x": 377.5,
+          "y": 1215
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 2373f9de-c13d-42ca-84be-8735743156e6
@@ -189,15 +191,15 @@ tasks:
           accessor: HTML
       type: {}
       width: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1040
+          "x": 490,
+          "y": 1390
         }
       }
+    note: false
   "6":
     id: "6"
     taskid: dd0d5106-965e-4a81-8e67-79392ea47d7f
@@ -210,15 +212,15 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1565
+          "x": 377.5,
+          "y": 1915
         }
       }
+    note: false
   "11":
     id: "11"
     taskid: 104966c4-8595-4a5a-8c75-c84f55e51c84
@@ -234,21 +236,21 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 377.5,
+          "y": 1070
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 42e12a9b-7195-44bc-8606-fce3495e3b04
+    taskid: 5396db88-5a6a-4e25-8a9f-40c5c27aaedf
     type: regular
     task:
-      id: 42e12a9b-7195-44bc-8606-fce3495e3b04
+      id: 5396db88-5a6a-4e25-8a9f-40c5c27aaedf
       version: -1
       name: Set incident with the Email object data
       description: ""
@@ -286,36 +288,36 @@ tasks:
           root: Email
           accessor: BCC
           transformers:
-          - operator: general.uniq
-          - operator: general.Stringify
+          - operator: uniq
+          - operator: Stringify
       emailbody:
         complex:
           root: Email
           accessor: Text
           transformers:
-          - operator: general.Stringify
+          - operator: Stringify
       emailbodyformat: {}
       emailbodyhtml:
         complex:
           root: Email
           accessor: HTML
           transformers:
-          - operator: general.Stringify
+          - operator: Stringify
       emailcc:
         complex:
           root: Email
           accessor: CC
           transformers:
-          - operator: general.uniq
-          - operator: general.Stringify
+          - operator: uniq
+          - operator: Stringify
       emailclientname: {}
       emailfrom:
         complex:
           root: Email
           accessor: From
           transformers:
-          - operator: general.uniq
-          - operator: general.Stringify
+          - operator: uniq
+          - operator: Stringify
       emailkeywords: {}
       emailmessageid: {}
       emailreceived: {}
@@ -327,17 +329,17 @@ tasks:
       emailsubject:
         complex:
           root: Email
-          accessor: To
+          accessor: Subject
           transformers:
-          - operator: general.uniq
-          - operator: general.Stringify
+          - operator: uniq
+          - operator: Stringify
       emailto:
         complex:
           root: Email
           accessor: To
           transformers:
-          - operator: general.uniq
-          - operator: general.Stringify
+          - operator: uniq
+          - operator: Stringify
       emailtocount: {}
       emailurlclicked: {}
       eventid: {}
@@ -347,6 +349,8 @@ tasks:
       filehash: {}
       filename: {}
       filepath: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
       id: {}
       important: {}
       importantfield: {}
@@ -391,10 +395,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 592.5,
+          "y": 895
         }
       }
+    note: false
   "14":
     id: "14"
     taskid: 89a7a856-46ff-46f6-8f1c-b2f772c12881
@@ -461,6 +466,9 @@ tasks:
       filename: {}
       filepath: {}
       htmlimage:
+        simple: |
+          ![HTML render](data:image/png;base64,${Base64.encoded})
+      htmlrenderedimage:
         simple: '![HTML render](data:image/png;base64,${Base64.encoded})'
       id: {}
       important: {}
@@ -501,15 +509,15 @@ tasks:
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1390
+          "x": 377.5,
+          "y": 1740
         }
       }
+    note: false
   "15":
     id: "15"
     taskid: 50661f40-4640-4b90-8f01-8143cec44c79
@@ -527,12 +535,11 @@ tasks:
       - "6"
       "yes":
       - "14"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: Base64.encoded
@@ -540,18 +547,116 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1215
+          "x": 490,
+          "y": 1565
         }
       }
+    note: false
+  "16":
+    id: "16"
+    taskid: bc0dd5a2-6073-4f44-8abc-9bc48e3e08c1
+    type: condition
+    task:
+      id: bc0dd5a2-6073-4f44-8abc-9bc48e3e08c1
+      version: -1
+      name: Should retrieve the original email?
+      description: If True, retrieve the original email in the thread
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetOriginalEmail
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 263,
+          "y": 370
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: e6915e5d-bdca-4d59-8636-2e65b2e680e1
+    type: playbook
+    task:
+      id: e6915e5d-bdca-4d59-8636-2e65b2e680e1
+      version: -1
+      name: Get Original Message - Generic
+      description: ""
+      playbookName: Get Original Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 9a505e0b-27c1-424a-880a-253135d80683
+    type: condition
+    task:
+      id: 9a505e0b-27c1-424a-880a-253135d80683
+      version: -1
+      name: Was the original email retrieved?
+      description: Is there an email object in the context?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 698
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1580,
-        "width": 819,
-        "x": 51,
+        "height": 1930,
+        "width": 922.5,
+        "x": 50,
         "y": 50
       }
     }
@@ -619,13 +724,24 @@ inputs:
       accessor: labels.Email/format
   required: false
   description: The email’s format
+- key: GetOriginalEmail
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Retrieve the original email in the thread. Default is "False".
+
+    You must have the necessary permissions in your email service to execute global search.
+
+    - EWS: eDiscovery
+    - Gmail: Google Apps Domain-Wide Delegation of Authority
 outputs:
+- contextPath: Email.HTML
+  description: Email 'html' body if exists
+  type: string
 - contextPath: Email
   description: Email object
   type: unknown
-- contextPath: Email.To
-  description: Email 'to' addresses
-  type: string
 - contextPath: Email.CC
   description: Email 'cc' addresses
   type: string
@@ -635,8 +751,8 @@ outputs:
 - contextPath: Email.Subject
   description: Email subject
   type: string
-- contextPath: Email.HTML
-  description: Email 'html' body if exists
+- contextPath: Email.To
+  description: Email 'to' addresses
   type: string
 - contextPath: Email.Text
   description: Email 'text' body if exists
@@ -650,3 +766,6 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
   type: string
+- contextPath: File
+  description: The File object
+  type: unknown

@@ -1,0 +1,355 @@
+id: detonate_url_-_generic
+version: -1
+name: Detonate URL - Generic
+fromversion: 4.0.0
+description: Detonate URL through active integrations that support URL detonation
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 32fe7da3-a280-49c6-83d4-6cb1fb474458
+    type: start
+    task:
+      id: 32fe7da3-a280-49c6-83d4-6cb1fb474458
+      version: -1
+      name: ""
+      description: Playbook start point
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "13"
+      - "12"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 40c6a1c6-dce9-4a0b-87b8-fec50f7933ae
+    type: title
+    task:
+      id: 40c6a1c6-dce9-4a0b-87b8-fec50f7933ae
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 7902e341-c29c-4037-8e6a-6c2289d3806e
+    type: playbook
+    task:
+      id: 7902e341-c29c-4037-8e6a-6c2289d3806e
+      version: -1
+      name: Detonate URL - ThreatGrid
+      description: Detonate one or more URLs using the Threat Grid integration. This
+        playbook returns relevant reports to the War Room and URL reputations to the
+        context data.
+      playbookName: Detonate URL - ThreatGrid
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      FileName:
+        simple: file-detonated-via-demisto
+      Interval:
+        simple: "1"
+      OS: {}
+      OSVersion: {}
+      Private: {}
+      Source: {}
+      Tags: {}
+      Timeout:
+        simple: "15"
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+      VM: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 195
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 7119396c-ac89-473c-82fa-c634c25788d6
+    type: playbook
+    task:
+      id: 7119396c-ac89-473c-82fa-c634c25788d6
+      version: -1
+      name: Detonate URL - McAfee ATD
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+        integration.
+      playbookName: Detonate URL - McAfee ATD
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+      interval:
+        simple: "1"
+      timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 195
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 7a53b305-64ef-47c4-85f7-8ff702cb4209
+    type: playbook
+    task:
+      id: 7a53b305-64ef-47c4-85f7-8ff702cb4209
+      version: -1
+      name: Detonate URL - JoeSecurity
+      description: |-
+        Detonates one or more URLs using the Joe Security sandbox integration.
+        Returns relevant reports to the War Room and url reputations to the context data.
+      playbookName: Detonate URL - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+      comments: {}
+      internet-access:
+        simple: "True"
+      interval:
+        simple: "1"
+      report-file-type:
+        simple: html
+      systems: {}
+      timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 2555400f-2fd3-4bdc-82e4-3e5be8948952
+    type: playbook
+    task:
+      id: 2555400f-2fd3-4bdc-82e4-3e5be8948952
+      version: -1
+      name: Detonate URL - CrowdStrike
+      description: Detonate one or more files using the Wildfire integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data.
+      playbookName: Detonate URL - CrowdStrike
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      Interval:
+        simple: "5"
+      Timeout:
+        simple: "30"
+      URL:
+        complex:
+          root: inputs.URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 1660,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+  required: false
+  description: URL object of url to be detonated.
+outputs:
+- contextPath: File
+  description: The File's object
+  type: unknown
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 of the file
+  type: string
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: Joe.Analysis.WebID
+  description: Web ID
+  type: string
+- contextPath: Joe.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: Joe.Analysis.Comments
+  description: Analysis Comments
+  type: string
+- contextPath: Joe.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: Joe.Analysis.Runs
+  description: Sub-Analysis Information
+  type: unknown
+- contextPath: Joe.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: Joe.Analysis.Errors
+  description: Raised errors during sampling
+  type: unknown
+- contextPath: Joe.Analysis.Systems
+  description: Analysis OS
+  type: unknown
+- contextPath: Joe.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: InfoFile.Name
+  description: FileName
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the sample
+  type: string
+- contextPath: InfoFile.Size
+  description: File Size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: Sample.State
+  description: The sample state
+  type: string
+- contextPath: Sample.ID
+  description: The sample ID
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: InfoFile
+  description: The report file's object
+  type: unknown
+releaseNotes: "New generic detonation playbook for URL"
