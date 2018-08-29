@@ -423,33 +423,44 @@ script:
         return create_entry('Tanium Questions', res, {}, ['index', 'question'])
 
     def getAskManualHelp():
-        desc = '# Tanium Ask Manual Question - Help\n'+ \
-        'tn-ask-manual corresponds directly with the Tanium Question Builder\n'+ \
-        'Each command argument can be mapped to a field in the Tanium Question Builder\n'+ \
-        '## Sensors\n'+\
-        'The sensors argument correlates with the \"Get all ____ from...\" part of a the Tanium Question\n'+ \
-        'Example (simple sensor list): **Computer Name;IP Address**\n'+ \
-        'All sensor types share the same filters and sensor options, but each sensor has it\'s own parameters\n'+ \
-        '### Sensor filters\n'+ \
-        'Only one is applicable per sensor, and should be passed in following format:\n'+ \
-        '<sensor1>,that <filter type>:<filter value>;<sensor2>,that <filter type>:<filter value>\n'+ \
-        'Example (2 sensors, 2 filters): **Computer Name,that starts with:D;IP Address,that does not contain:192**\n'+ \
-        'Example (2 sensors, 1 filter): **Computer Name,that starts with:D;IP Address**\n'+ \
-        '### Sensor parameters\n'+ \
-        'Each sensor has it\'s own unique parameters. To get a complete list of sensor parameters please use !tn-get-sensor command\n'+ \
-        'Parametrs are passed in curly brackets, after the sensor name and before the filter\n'+ \
-        'Example (1 sensor, 1 filter, 1 parameter): **Index Query File Exists{fileMD5Hash=d41d8cd98f00b204e9800998ecf8427e},that contains:yes**\n'+ \
-        '### Sensor options\n'+ \
-        'All sensors have the same options: ignore_case, match_case, match_any_value, match_all_values, max_data_age, value_type\n'+ \
-        'Options are passed right after filters like so:\n'+ \
-        'Example (1 sensor, 1 filter, 1 parameter): **Index Query File Exists{fileMD5Hash=d41d8cd98f00b204e9800998ecf8427e},that contains:yes,opt:match_all_values, opt:ignore_case, opt:max_data_age:3600**\n'+ \
-        '## Question Filters\n'+ \
-        'The question_filters argument correlates with the \"... from all computers with ___\" part of a the Tanium Question\n'+ \
-        'It is a semicolon separated list of sensors, with filters and parameters\n'+ \
-        'Example (2 question filters): **Index Query File Exists{fileMD5Hash=d41d8cd98f00b204e9800998ecf8427e},that contains:yes;Index Query File Exists{fileMD5Hash=d41d8cd98f00b204e9800998ecf8427e},that contains:yes**\n'+ \
-        'Question filters can have an \"and\" or an \"or\" relation which is set by using the question_options argument\n'+ \
-        '## Question Options\n'+ \
-        'Semicolon separated list of options the apply to the entire question. Mostly used to define the relation of the different filter statements.'
+        desc = '# Tanium Ask Manual Question - Help\n' + \
+        'The _tn-ask-manual-question_ command corresponds directly with the Tanium Question Builder.\n' + \
+        'Each command argument can be mapped to a field in the Tanium Question Builder.\n' + \
+        '## Sensors\n---\n' + \
+        'The _sensors_ argument correlates with the **"Get all ____ from..."** part of a the Tanium Question.\n' + \
+        'All sensor types share the same filters and sensor options, but each sensor has its own parameters.\n' + \
+        '\n' + \
+        '**Example** (simple sensor list):\n' + \
+        '`!tn-ask-manual-question sensors="Computer Name;IP Address"`\n' + \
+        '### Sensor filters\n' + \
+        'You can only apply a single filter to a sensor, and should be passed using this format:\n' + \
+        '_<sensor1>,that <filter type>:<filter value>;<sensor2>,that <filter type>:<filter value>_\n' + \
+        '\n' + \
+        '**Example #1** (2 sensors, 2 filters):\n' + \
+        '`!tn-ask-manual-question sensors="Computer Name,that starts with:D;IP Address,that does not contain:192"`\n' + \
+        '**Example #2** (2 sensors, 1 filter):\n' + \
+        '`!tn-ask-manual-question sensors="Computer Name,that starts with:D;IP Address"`\n' + \
+        '### Sensor parameters\n' + \
+        'Each sensor has its own unique parameters. To get a complete list of sensor parameters, run the _!tn-get-sensor_ command.\n' + \
+        'Parameters are passed in curly brackets, after the sensor name, and before the filter.\n' + \
+        '**Example** (1 sensor, 1 filter, 1 parameter):\n' + \
+        '`!tn-ask-manual-question sensors="Index Query File Exists{fileMD5Hash=4F83C01E8F7507D23C67AB085BF79E97},that contains:yes"`\n' + \
+        '### Sensor options\n' + \
+        'All sensors have the same options: _ignore_case_, _match_case_, _match_any_value_, _match_all_values_, _max_data_age_, _value_type_\n' + \
+        'Options are passed directly after filters.\n' + \
+        '\n' + \
+        '**Example** (1 sensor, 1 filter, 1 parameter):\n' + \
+        '`!tn-ask-manual-question sensors="Index Query File Exists{fileMD5Hash=4F83C01E8F7507D23C67AB085BF79E97},that contains:yes,opt:match_all_values, opt:ignore_case, opt:max_data_age:3600"`\n' + \
+        '## Question Filters\n---\n' + \
+        'The _question_filters_ argument is a semicolon-separated list of sensors, with filters and parameters, that correlates to the **"... from all computers with ___"** part of a the Tanium Question.\n' + \
+        'Question filters can have an ***and*** or an ***or*** relation. You set the relation by using the _question_options_ argument.\n' + \
+        '\n' + \
+        '**Example** (2 question filters):\n`!tn-ask-manual-question sensors="Computer Name" question_filters="Index Query File Exists{fileMD5Hash=4F83C01E8F7507D23C67AB085BF79E97},that contains:yes;Index Query File Exists{fileMD5Hash=4F83C01E8F7507D23C67AB085BF79E98},that contains:yes"`\n' + \
+        '\n' + \
+        '## Question Options\n---\n' + \
+        'Question options are a semicolon-separated list of options that apply to the entire question. They are generally used to define the relation of the different filter statements.\n' + \
+            '**Example** (1 question option):\n`!tn-ask-manual-question sensors="Computer Name" question_options="or" question_filters="Index Query File Exists{fileMD5Hash=4F83C01E8F7507D23C67AB085BF79E97},that contains:yes"`\n'
+
         return {
             'ContentsFormat': formats['markdown'],
             'Type': entryTypes['note'],
@@ -1092,6 +1103,11 @@ script:
       description: Percentage of mr_tested out of estimated_total to consider the
         question
       defaultValue: "99"
+    - name: help
+      description: Print an extended command usage description to the War Room. Default is False.
+      predefined:
+      - "True"
+      - "False"
     outputs:
     - contextPath: Tanium.QuestionResults
       description: Results of requested question. May be a complex object
@@ -1154,11 +1170,11 @@ script:
       default: true
       description: Name of computer to connect to
     - name: remote
-      description: True if remote connection
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
+      description: True if remote connection
       defaultValue: "true"
     description: Connect a computer to trace
   - name: tn-trace-capture-snapshot
