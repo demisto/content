@@ -22,6 +22,8 @@ fi
 MACHINE_STATE=""
 TRY_COUNT=1
 MAX_TRIES=10
+MACHINE_STATE=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids "$REQUEST_ID" \
+    --query 'SpotInstanceRequests[0].Status.Code' | tr -d '"')
 while [ "$MACHINE_STATE" != "fulfilled" ] && [[ $TRY_COUNT -le $MAX_TRIES ]]; do
     echo "Waiting for machine to be ready ($REQUEST_ID). try # $TRY_COUNT"
     sleep 10
