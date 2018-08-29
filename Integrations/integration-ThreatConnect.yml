@@ -690,4 +690,3 @@ script:
       description: filter by owner too
     description: Get incidents that are related to a specific indicator
   dockerimage: demisto/threatconnect-sdk
-  runonce: false
