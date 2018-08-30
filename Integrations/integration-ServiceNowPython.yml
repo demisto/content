@@ -65,6 +65,7 @@ script:
     import json
     import datetime
     import time
+    import shutil
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -170,18 +171,31 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def send_request(path, method = 'get', body = {}, params = {}, headers=None, is_file=False):
+    def send_request(path, method = 'get', body = {}, params = {}, headers=None, file = None):
         url = '%s%s' % (SERVER_URL, path)
         if not headers:
             headers = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
             }
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-        verify=VERIFY_SSL, proxies=PROXY)
+        if file:
+            try:
+                file_entry = file['id']
+                file_name = file['name']
+                shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
+                with open(file_name, 'rb') as f:
+                    files = {'file': f}
+                    res = requests.request(method, url, headers=headers, params=params, data=body,files=files, auth=(USERNAME, PASSWORD),
+                    verify=VERIFY_SSL, proxies=PROXY)
+                shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+            except Exception as e:
+                raise Exception('Failed to upload file - ' + e.message)
+        else:
+            res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
+            verify=VERIFY_SSL, proxies=PROXY)
 
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + str(res.content) + ' with headers ' + str(res.headers))
 
         try:
             obj = res.json()
@@ -466,7 +480,7 @@ script:
     def query_command():
         sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
         sysparm_query = demisto.args().get('sysparm_query', None)
-        ticket_type = get_table_name()
+        ticket_type = get_table_name(demisto.args().get('ticket_type', None))
 
         res = query(ticket_type, sysparm_limit, sysparm_query)
 
@@ -499,13 +513,51 @@ script:
 
         return send_request(path, 'get', params = query_params)
 
+
+    def upload_file_command():
+        ticket_type = get_table_name(demisto.args().get('ticket_type', None))
+        ticket_id = demisto.args()['id']
+        file_id = demisto.args()['file_id']
+        file_name = demisto.args().get('file_name',
+                                    demisto.dt(demisto.context(), "File(val.EntryID=='"+file_id+"').Name"))
+        file_name = file_name[0] if isinstance(file_name, list) else file_name
+
+        res = upload_file(ticket_id, file_id, file_name, ticket_type)
+
+        hr = get_human_readable(res['result'])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('File Uploaded', hr)
+        }
+
+        return entry
+
+
+    def upload_file(ticket_id, file_id, file_name, ticket_type):
+        headers = {
+            'Accept': 'application/json'
+        }
+
+        body = {
+            'table_name': ticket_type,
+            'table_sys_id': ticket_id,
+            'file_name': file_name
+        }
+
+        path = 'attachment/upload'
+
+        return send_request(path, 'post', headers = headers, body = body, file = {'id': file_id, 'name': file_name})
+
     def fetch_incidents():
         query_params = {}
         incidents = []
         sysparm_query = demisto.params().get('sysparm_query', None)
         sysparm_limit = demisto.params().get('fetch_limit', DEFAULTS['limit'])
         ticket_type = demisto.params()['ticket_type']
-
 
         last_run = demisto.getLastRun()
         if 'time' not in last_run:
@@ -573,6 +625,8 @@ script:
             demisto.results(add_comment_command())
         elif demisto.command() == 'servicenow-query' or demisto.command() == 'servicenow-incidents-query':
             demisto.results(query_command())
+        elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
+            demisto.results(upload_file_command())
     except Exception as e:
         LOG(e)
         LOG.print_log()
