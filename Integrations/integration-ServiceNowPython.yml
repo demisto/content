@@ -90,7 +90,7 @@ script:
     VERIFY_SSL = not demisto.params().get('insecure', False)
     API = '/api/now/'
     VERSION = demisto.params().get('api_version', None)
-    PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', None)
+    PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', 'incident')
     SYSPARM_QUERY = demisto.params().get('sysparm_query', None)
 
     if VERSION:
@@ -217,14 +217,22 @@ script:
                 return 'incident'
 
     def create_context(data):
-        return {
-                'ID': data["sys_id"],
-                'Creator': data["opened_by"]["value"] if "value" in data["opened_by"] else '',
-                'Assignee': data["assigned_to"] if "value" in data["assigned_to"] else '',
-                'State': data["state"],
-                'Summary': data["short_description"],
-                'Number': data["number"]
+        context =  {
+            'ID': data["sys_id"],
         }
+
+        if 'opened_by' in data:
+            context['Creator'] = data["opened_by"]['value'] if "value" in data["opened_by"] else ''
+        if 'assigned_to' in data:
+            context['Assignee'] = data["assigned_to"]['value'] if "value" in data["assigned_to"] else ''
+        if 'state' in data:
+            context['State'] = data["state"]
+        if 'short_description' in data:
+            context['Summary'] = data["short_description"]
+        if 'number' in data:
+            context['Number'] = data["number"]
+
+        return context
 
     def get_ticket_context(data):
         if not isinstance(data, list):
@@ -340,7 +348,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Service now incident', hr),
+            'HumanReadable': tableToMarkdown('ServiceNow incident', hr),
             'EntryContext': {
                   'Ticket(val.ID==obj.ID)': get_ticket_context(incident),
             }
@@ -378,7 +386,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow incident updated\nTicket type: ' + ticket_type + '\n', hr)
+            'HumanReadable': tableToMarkdown('ServiceNow ticket updated\nTicket type: ' + ticket_type + '\n', hr)
         }
 
         return entry
@@ -406,7 +414,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow incident created\nTicket type: ' + ticket_type + '\n', hr),
+            'HumanReadable': tableToMarkdown('ServiceNow ticket created\nTicket type: ' + ticket_type + '\n', hr),
             'EntryContext': {
                   'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
             }
@@ -438,7 +446,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Link added to ServiceNow incident\n', hr)
+            'HumanReadable': tableToMarkdown('Link added to ServiceNow ticket\n', hr)
         }
 
         return entry
@@ -465,7 +473,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Comment added to ServiceNow incident\n', hr)
+            'HumanReadable': tableToMarkdown('Comment added to ServiceNow ticket\n', hr)
         }
 
         return entry
@@ -494,7 +502,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Service now incident', hr),
+            'HumanReadable': tableToMarkdown('ServiceNow ticket', hr),
             'EntryContext': {
                   'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
             }
@@ -551,6 +559,108 @@ script:
         path = 'attachment/upload'
 
         return send_request(path, 'post', headers = headers, body = body, file = {'id': file_id, 'name': file_name})
+
+
+    def get_computer_command():
+        ticket_type = 'cmdb_ci_computer'
+        computer_name = demisto.args()['computerName']
+
+        res = get_computer(ticket_type, computer_name)
+
+        if not res or 'result' not in res:
+            return 'Cannot find computer'
+        elif isinstance(res['result'], list):
+            if len(res['result']) == 0:
+                return 'Cannot find computer'
+            computer = res['result'][0]
+        else:
+            computer = res['result']
+
+        if computer['u_code'] != computer_name:
+            return 'Computer not found'
+
+
+        hr = {
+            'Id': computer['sys_id'],
+            'u_code (computer name)': computer['u_code'],
+            'Support group': computer['support_group'],
+            'Operating System': computer['os'],
+            'Comments': computer['comments']
+        }
+
+        ec = computer
+        ec['support_group'] = computer['support_group']['value'] if 'support_group' in computer else ''
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': computer,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Computer', hr),
+            'EntryContext': {
+                  'ServiceNowComputer(val.sys_id==obj.sys_id)': ec,
+            }
+        }
+
+        return entry
+
+
+    def get_computer(ticket_type, computer_name):
+        path = 'table/' + ticket_type
+
+        query_params = {
+            'sysparm_query': 'u_code=' + computer_name
+        }
+
+        return send_request(path, 'get', params=query_params)
+
+    def get_groups_command():
+        ticket_type = 'sys_user_group'
+        group_name = demisto.args()['name']
+        res = get_groups(ticket_type, group_name)
+
+        if not res or 'result' not in res:
+            return 'Cannot find groups'
+
+        hr_groups = []
+        context_groups = []
+
+        for group in res['result']:
+            if group['name'] == group_name:
+                hr_groups.append({
+                    'Id': group['sys_id'],
+                    'Name': group['name'],
+                    'Description': group['description'],
+                    'Email': group['email'],
+                    'Active': group['active'],
+                    'Manager': ['manager']
+                })
+                context_groups.append({
+                    'GroupId': group['sys_id'],
+                    'GroupName': group['name']
+                })
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Group', hr_groups),
+            'EntryContext': {
+                  'ServiceNowGroups(val.GroupId==obj.GroupId)': context_groups,
+            }
+        }
+
+        return entry
+
+    def get_groups(ticket_type, group_name):
+        path = 'table/' + ticket_type
+
+        query_params = {
+            'sysparm_query': 'name=' + group_name
+        }
+
+        return send_request(path, 'get', params=query_params)
 
     def fetch_incidents():
         query_params = {}
@@ -627,6 +737,10 @@ script:
             demisto.results(query_command())
         elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
             demisto.results(upload_file_command())
+        elif demisto.command() == 'servicenow-get-computer':
+            demisto.results(get_computer_command())
+        elif demisto.command() == 'servicenow-get-groups':
+            demisto.results(get_groups_command())
     except Exception as e:
         LOG(e)
         LOG.print_log()
