@@ -510,6 +510,7 @@ script:
       type: string
     description: Upload file to WildFire for analysis.
   - name: detonate-file
+    deprecated: true
     arguments:
     - name: upload
       required: true
@@ -551,6 +552,7 @@ script:
       description: The actual score
     description: Detonate file through WildFire
   - name: detonate-file-remote
+    deprecated: true
     arguments:
     - name: upload
       required: true
