@@ -10,13 +10,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4b9fc3ac-2315-41a3-8318-a83ecd5eb7df
+    taskid: ff6c3afb-1f37-491b-8569-f2f9d6a79ff3
     type: start
     task:
-      id: 4b9fc3ac-2315-41a3-8318-a83ecd5eb7df
+      id: ff6c3afb-1f37-491b-8569-f2f9d6a79ff3
       version: -1
       name: ""
-      description: "-"
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -33,13 +33,13 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 75926f15-ece4-473e-8761-6d041cea24f5
+    taskid: 7e3e8be7-ce5c-4ed9-804d-d5d485c20910
     type: regular
     task:
-      id: 75926f15-ece4-473e-8761-6d041cea24f5
+      id: 7e3e8be7-ce5c-4ed9-804d-d5d485c20910
       version: -1
       name: WildFire Upload File
-      description: "-"
+      description: ""
       script: WildFire|||wildfire-upload
       type: regular
       iscommand: true
@@ -61,10 +61,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: e9bc9a13-3164-4d46-87b6-620d05ea64b2
+    taskid: 51c8934a-5edc-4c16-80b2-4da58214137c
     type: playbook
     task:
-      id: e9bc9a13-3164-4d46-87b6-620d05ea64b2
+      id: 51c8934a-5edc-4c16-80b2-4da58214137c
       version: -1
       name: GenericPolling
       description: |-
@@ -114,13 +114,13 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 8f22da91-0f33-44e9-8073-9047ce5a6744
+    taskid: c03519c0-543a-4ef2-86cc-d70356545c44
     type: regular
     task:
-      id: 8f22da91-0f33-44e9-8073-9047ce5a6744
+      id: c03519c0-543a-4ef2-86cc-d70356545c44
       version: -1
       name: WildFire Get Report
-      description: "-"
+      description: Retrieve results for a file hash using WildFire
       script: WildFire|||wildfire-report
       type: regular
       iscommand: true
@@ -147,13 +147,13 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: d003f6c4-ef63-48b0-8d7a-6c82ad592b55
+    taskid: 7cb53d1d-e613-47cd-847e-c1908e384d53
     type: title
     task:
-      id: d003f6c4-ef63-48b0-8d7a-6c82ad592b55
+      id: 7cb53d1d-e613-47cd-847e-c1908e384d53
       version: -1
       name: Done
-      description: "-"
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -168,10 +168,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: c29a19a8-63bc-400b-8283-d9b9fb27e279
+    taskid: 5944d365-4547-4e91-8f62-fa295fa32b38
     type: condition
     task:
-      id: c29a19a8-63bc-400b-8283-d9b9fb27e279
+      id: 5944d365-4547-4e91-8f62-fa295fa32b38
       version: -1
       name: Is there a File to detonate?
       description: Look for files to detonate
@@ -204,10 +204,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 0355a648-7321-4123-84a7-443f2c04d77c
+    taskid: 1cee486c-4dbe-44ec-8b62-195a75ebed2e
     type: condition
     task:
-      id: 0355a648-7321-4123-84a7-443f2c04d77c
+      id: 1cee486c-4dbe-44ec-8b62-195a75ebed2e
       version: -1
       name: Is WildFire sandbox enabled?
       description: Check if integration instance is enabled
@@ -257,13 +257,13 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: e54babf8-b530-45e8-8f53-9103764e2c03
+    taskid: 7343553c-b2f6-4bdd-83a0-cc6dc120d074
     type: condition
     task:
-      id: e54babf8-b530-45e8-8f53-9103764e2c03
+      id: 7343553c-b2f6-4bdd-83a0-cc6dc120d074
       version: -1
       name: Is the file type supported?
-      description: "Check if file type is supported."
+      description: Check if file type is supported
       type: condition
       iscommand: false
       brand: ""
@@ -424,4 +424,4 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
-releaseNotes: Detonate File playbook using the new GenericPolling playbook, allows multiple detonations.
+releaseNotes: Detonate File playbook using the new GenericPolling playbook, allows multiple detonations

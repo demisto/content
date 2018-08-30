@@ -2,20 +2,21 @@ id: WildFire - Detonate File From URL
 version: -1
 name: WildFire - Detonate File From URL
 description: |-
-  Detonates one or more remote files using the WildFire sandbox integration.
-  Returns relevant reports to the War Room and file reputations to the context data.
+  Detonate one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types -
+  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
 fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b0d19219-9074-4049-83a9-c065ad43df9a
+    taskid: 219dcb92-ee7d-420e-816e-3f70b24bd953
     type: start
     task:
-      id: b0d19219-9074-4049-83a9-c065ad43df9a
+      id: 219dcb92-ee7d-420e-816e-3f70b24bd953
       version: -1
       name: ""
-      description: "-"
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -32,13 +33,13 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 7340bca5-6bb4-41c8-8a14-9cbf035c755c
+    taskid: 0f6db3a2-537d-45db-8abc-20accf11ec59
     type: regular
     task:
-      id: 7340bca5-6bb4-41c8-8a14-9cbf035c755c
+      id: 0f6db3a2-537d-45db-8abc-20accf11ec59
       version: -1
       name: WildFire Upload File Remote
-      description: "-"
+      description: ""
       script: WildFire|||wildfire-upload-file-remote
       type: regular
       iscommand: true
@@ -48,7 +49,8 @@ tasks:
       - "2"
     scriptarguments:
       upload:
-        simple: ${inputs.FileURL}
+        complex:
+          root: inputs.FileURL
     separatecontext: false
     view: |-
       {
@@ -60,10 +62,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 86c6acc2-95fa-4fbd-8d91-14562140c021
+    taskid: 4f0aa551-1874-4223-875d-9701c6192be6
     type: playbook
     task:
-      id: 86c6acc2-95fa-4fbd-8d91-14562140c021
+      id: 4f0aa551-1874-4223-875d-9701c6192be6
       version: -1
       name: GenericPolling
       description: |-
@@ -83,7 +85,9 @@ tasks:
       - "8"
     scriptarguments:
       Ids:
-        simple: ${WildFire.Report.SHA256}
+        complex:
+          root: WildFire
+          accessor: Report.SHA256
       Interval:
         complex:
           root: inputs.Interval
@@ -111,13 +115,13 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 08dceb2e-4895-4930-8c21-dc2925cc423d
+    taskid: 11650265-0035-421f-8e92-143af887b7a7
     type: title
     task:
-      id: 08dceb2e-4895-4930-8c21-dc2925cc423d
+      id: 11650265-0035-421f-8e92-143af887b7a7
       version: -1
       name: Done
-      description: "-"
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -132,10 +136,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 5f8eb7ef-2b8d-4c1b-85f9-7622b60f3042
+    taskid: 4a6315f7-7947-4cfc-8554-4e6b3edb4478
     type: condition
     task:
-      id: 5f8eb7ef-2b8d-4c1b-85f9-7622b60f3042
+      id: 4a6315f7-7947-4cfc-8554-4e6b3edb4478
       version: -1
       name: Is there a File to detonate?
       description: Look for file URLs to detonate
@@ -166,10 +170,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 137e563a-88a3-4ec9-8518-ae4124fca837
+    taskid: 2a98f575-de73-4805-874d-87f4af43d99b
     type: condition
     task:
-      id: 137e563a-88a3-4ec9-8518-ae4124fca837
+      id: 2a98f575-de73-4805-874d-87f4af43d99b
       version: -1
       name: Is WildFire sandbox enabled?
       description: Check if integration instance is enabled
@@ -219,10 +223,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 180e27d9-3b62-44bd-8fd7-0f6ff1e9f346
+    taskid: f8f9d5c4-2e83-42c6-827d-8a49b94e1013
     type: regular
     task:
-      id: 180e27d9-3b62-44bd-8fd7-0f6ff1e9f346
+      id: f8f9d5c4-2e83-42c6-827d-8a49b94e1013
       version: -1
       name: WildFire Get Report
       description: Retrieve results for a file hash using WildFire
@@ -279,86 +283,51 @@ inputs:
   required: false
   description: The duration after which to stop pooling and to resume the playbook
     (in minutes)
+- key: ReportFileType
+  value: {}
+  required: false
+  description: The resource type to download. Default is pdf. xml is also possible.
 outputs:
-- contextPath: File.SHA1
-  description: SHA1 hash of the file
-  type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file
-  type: string
-- contextPath: WildFire.Report.SHA256
-  description: SHA256 of the submission
-  type: string
-- contextPath: WildFire.Report.FileType
-  description: The type of the submission
-  type: string
-- contextPath: WildFire.Report.Size
-  description: The size of the submission
-  type: number
-- contextPath: WildFire.Report.MD5
-  description: MD5 of the submission
-  type: string
-- contextPath: WildFire.Report.Status
-  description: The status of the submission
-  type: string
-- contextPath: WildFire.Report
-  description: WildFire report object
-  type: unknown
-- contextPath: File
-  description: The File object
-  type: unknown
-- contextPath: File.Name
-  description: Filename
-  type: string
-- contextPath: File.Type
-  description: File type e.g. "PE"
-  type: string
-- contextPath: File.Size
-  description: File size
-  type: number
-- contextPath: File.MD5
-  description: MD5 hash of the file
-  type: string
-- contextPath: File.Malicious
-  description: The Malicious Object
-  type: unknown
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
-- contextPath: DBotScore
-  description: The DBotScore object
-  type: unknown
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator we tested (only in case of report type=json)
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The type of the indicator (only in case of report type=json)
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score (only in case of report type=json)
   type: number
-- contextPath: InfoFile
-  description: The Report File object
-  type: unknown
-- contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
-  type: string
-- contextPath: InfoFile.Extension
-  description: The extension of the report file
-  type: string
-- contextPath: InfoFile.Name
-  description: The name of the report file
-  type: string
-- contextPath: InfoFile.Info
-  description: The info of the report file
-  type: string
-- contextPath: InfoFile.Size
-  description: The size of the report file
-  type: number
-- contextPath: InfoFile.Type
-  description: The type of the report file
-  type: string
-releaseNotes: Detonate File from URL playbook using the new GenericPolling playbook, allows multiple detonations.
+releaseNotes: Detonate File from URL playbook using the new GenericPolling playbook, allows multiple detonations
