@@ -1,0 +1,38 @@
+commonfields:
+  id: DemistoDeleteIncidents
+  version: -1
+name: DemistoDeleteIncidents
+script: |-
+  var body = {
+      ids: args.ids.toString().split(","),
+      all: false,
+      filter: {}
+  };
+
+  var res = executeCommand('demisto-api-post', {uri: '/incident/batchDelete', body: body});
+  if (isError(res[0])) {
+      throw res[0].Contents;
+  }
+
+  var response = res[0].Contents.response;
+  var md = tableToMarkdown('Demisto delete incidents', response);
+
+  return {
+      ContentsFormat: formats.json,
+      Type: entryTypes.note,
+      Contents: response,
+      HumanReadable: md
+  };
+type: javascript
+tags:
+- DemistoAPI
+comment: Delete incidents from Demisto (note action is irreversible)
+enabled: true
+args:
+- name: ids
+  required: true
+  default: true
+  description: Incident IDs to delete
+scripttarget: 0
+runonce: false
+releaseNotes: "Added a feature to delete multiple incidents with one command."
