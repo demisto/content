@@ -21,3 +21,4 @@ args:
   description: ID of the scheduled to stop
 scripttarget: 0
 timeout: 0s
+releaseNotes: "-"
