@@ -270,7 +270,7 @@ tasks:
     scriptarguments:
       File:
         complex:
-          root: File
+          root: inputs.File
       Interval:
         simple: "1"
       Timeout:

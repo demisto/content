@@ -147,11 +147,10 @@ script:
         };
     }
 
-    function GetReportArgsHandler(md5, hash, file){
-        if(file){
+    function GetReportArgsHandler(md5, hash, file) {
+        if(file) {
             return [file];
-        }
-        else{
+        } else {
             inputs = md5? argToList(md5) : argToList(hash);
             for (i = 0; i < inputs.length; i++) {
                 if ((inputs[i] && !/^[A-Fa-f0-9]{64}$/.test(inputs[i])) && !/^[A-Fa-f0-9]{32}$/.test(inputs[i])) {
@@ -251,7 +250,7 @@ script:
             }
         }
         if(format === 'pdf'){
-            var bodyPDF = 'apikey='+TOKEN+'&format=pdf&hash='+hash;
+            var bodyPDF = 'apikey=' + TOKEN + '&format=pdf&hash=' + hash;
             var resPDF = sendRequest(reportUrl, bodyPDF, DEFAULT_HEADERS).Bytes;
             var currentTime = new Date();
             var fileName = command + '_at_' + currentTime.getTime();
@@ -300,7 +299,7 @@ script:
                 testUrl,
                 {
                     Method: 'POST',
-                    Body: 'apikey='+TOKEN+'&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
+                    Body: 'apikey=' + TOKEN + '&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
                     Headers: DEFAULT_HEADERS
                 },
                 params.insecure,
@@ -476,6 +475,7 @@ script:
       type: string
     - contextPath: InfoFile.Name
       description: The name of the report file
+      type: string
     - contextPath: InfoFile.Info
       description: The info of the report file
       type: string
