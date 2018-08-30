@@ -4,6 +4,7 @@ name: WildFire - Detonate File From URL
 description: |-
   Detonates one or more remote files using the WildFire sandbox integration.
   Returns relevant reports to the War Room and file reputations to the context data.
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +15,7 @@ tasks:
       id: b0d19219-9074-4049-83a9-c065ad43df9a
       version: -1
       name: ""
+      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
@@ -36,6 +38,7 @@ tasks:
       id: 7340bca5-6bb4-41c8-8a14-9cbf035c755c
       version: -1
       name: WildFire Upload File Remote
+      description: "-"
       script: WildFire|||wildfire-upload-file-remote
       type: regular
       iscommand: true
@@ -114,6 +117,7 @@ tasks:
       id: 08dceb2e-4895-4930-8c21-dc2925cc423d
       version: -1
       name: Done
+      description: "-"
       type: title
       iscommand: false
       brand: ""

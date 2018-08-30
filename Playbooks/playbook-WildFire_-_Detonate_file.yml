@@ -16,6 +16,7 @@ tasks:
       id: 4b9fc3ac-2315-41a3-8318-a83ecd5eb7df
       version: -1
       name: ""
+      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
@@ -38,6 +39,7 @@ tasks:
       id: 75926f15-ece4-473e-8761-6d041cea24f5
       version: -1
       name: WildFire Upload File
+      description: "-"
       script: WildFire|||wildfire-upload
       type: regular
       iscommand: true
@@ -118,6 +120,7 @@ tasks:
       id: 8f22da91-0f33-44e9-8073-9047ce5a6744
       version: -1
       name: WildFire Get Report
+      description: "-"
       script: WildFire|||wildfire-report
       type: regular
       iscommand: true
@@ -150,6 +153,7 @@ tasks:
       id: d003f6c4-ef63-48b0-8d7a-6c82ad592b55
       version: -1
       name: Done
+      description: "-"
       type: title
       iscommand: false
       brand: ""
@@ -258,7 +262,8 @@ tasks:
     task:
       id: e54babf8-b530-45e8-8f53-9103764e2c03
       version: -1
-      name: Is  the file type supported?
+      name: Is the file type supported?
+      description: "Check if file type is supported."
       type: condition
       iscommand: false
       brand: ""
