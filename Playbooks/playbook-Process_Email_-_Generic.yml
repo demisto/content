@@ -106,7 +106,7 @@ tasks:
       version: -1
       name: Add original email attachments to context
       description: ""
-      scriptName: ParseEmailFiles_copy
+      scriptName: ParseEmailFiles
       type: regular
       iscommand: false
       brand: ""
