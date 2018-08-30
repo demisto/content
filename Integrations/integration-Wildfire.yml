@@ -119,7 +119,7 @@ script:
     }
 
     function createUploadEntry(body, title, result) {
-        var md = tableToMarkdown(title, body, Object.keys(body));
+        var md = tableToMarkdown(title, body);
         return {Type: entryTypes.note,
                 Contents: result,
                 ContentsFormat: formats.json,
