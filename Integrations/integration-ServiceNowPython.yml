@@ -231,7 +231,8 @@ script:
         for d in data:
             hr = {}
             for k,v in data_dict.iteritems():
-                hr[v] = d[k]
+                if k in d:
+                    hr[v] = d[k]
             result.append(hr)
 
         return result
@@ -353,9 +354,9 @@ script:
     def update_command():
         custom_fields = demisto.args().get('custom_fields', None)
         template = demisto.args().get('template', None)
-        ticket_type = get_table_name()
+        ticket_type = get_table_name(demisto.args().get('ticket_type', None))
 
-        res = update(ticket_type, custom_fields)
+        res = update(ticket_type, custom_fields, template)
 
         hr = get_human_readable(res['result'])
         entry = {
@@ -381,7 +382,7 @@ script:
     def create_command():
         custom_fields = demisto.args().get('custom_fields', None)
         template = demisto.args().get('template', None)
-        ticket_type = get_table_name()
+        ticket_type = get_table_name(demisto.args().get('ticket_type', None))
 
         res = create(ticket_type, custom_fields, template)
 
@@ -413,7 +414,7 @@ script:
         key = 'comments' if demisto.args().get('post-as-comment', 'false') == 'true' else 'work_notes'
         text = demisto.args().get('text', demisto.args()['link'])
         link = '[code]<a class="web" target="_blank" href="' + demisto.args()['link'] + '" >'+text+'</a>[/code]'
-        ticket_type = get_table_name()
+        ticket_type = get_table_name(demisto.args().get('ticket_type', None))
 
         res = add_link(ticket_id, ticket_type, key, link)
 
@@ -440,7 +441,7 @@ script:
         ticket_id = demisto.args()['id']
         key = 'comments' if demisto.args().get('post-as-comment', 'false') == 'true' else 'work_notes'
         text = demisto.args()['comment']
-        ticket_type = get_table_name()
+        ticket_type = get_table_name(demisto.args().get('ticket_type', None))
 
         res = add_comment(ticket_id, ticket_type, key, text)
 
@@ -574,7 +575,7 @@ script:
             demisto.results(query_command())
     except Exception as e:
         LOG(e)
-        LOG.print_log(False)
+        LOG.print_log()
         return_error(e.message)
   type: python
   commands:
