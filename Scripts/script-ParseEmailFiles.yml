@@ -525,12 +525,13 @@ script: |-
           parser = HeaderParser()
           headers = parser.parsestr(fileData)
 
-          header_dict = {
-              "x-originating-ip": headers.get("x-originating-ip"),
-              "Return-Path": headers.get("Return-Path"),
-              "Message-ID": headers.get("Message-id"),
-              "In-Reply-To": headers.get("In-Reply-To")
-          }
+          header_list = []
+          for item in headers.items():
+              item_dict = {}
+              item_dict['name'] = item[0]
+              item_dict['value'] = item[1]
+
+              header_list.append(item_dict)
 
           eml = message_from_string(fileData)
           if not eml:
@@ -568,7 +569,7 @@ script: |-
               'Subject': subj,
               'HTML': html,
               'Text': text,
-              'Headers': str(header_dict.items()),
+              'Headers': header_list,
               'Attachments': '' if not attachments else ','.join(attachments),
               'Format': eml.get_content_type()
           }

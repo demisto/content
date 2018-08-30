@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": 50
         }
       }
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": 195
         }
       }
@@ -106,7 +106,7 @@ tasks:
       version: -1
       name: Add original email attachments to context
       description: ""
-      scriptName: ParseEmailFiles
+      scriptName: ParseEmailFiles_copy
       type: regular
       iscommand: false
       brand: ""
@@ -125,7 +125,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 695,
           "y": 720
         }
       }
@@ -161,7 +161,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": 1215
         }
       }
@@ -194,7 +194,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 480,
           "y": 1390
         }
       }
@@ -215,7 +215,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": 1915
         }
       }
@@ -239,17 +239,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": 1070
         }
       }
     note: false
   "13":
     id: "13"
-    taskid: 4312b13b-fcbd-4dbe-8846-702110bc1ae6
+    taskid: b964cc31-f2a4-490e-8abc-4fb47aff81da
     type: regular
     task:
-      id: 4312b13b-fcbd-4dbe-8846-702110bc1ae6
+      id: b964cc31-f2a4-490e-8abc-4fb47aff81da
       version: -1
       name: Set incident with the Email object data
       description: ""
@@ -331,108 +331,83 @@ tasks:
       emailmessageid:
         complex:
           root: Email
-          filters:
-          - - operator: match
-              left:
-                value:
-                  simple: Email.Headers
-                iscontext: true
-              right:
-                value:
-                  simple: '''Message-ID'', ''<.+>'''
           accessor: Headers
           transformers:
-          - operator: replaceMatch
+          - operator: WhereFieldEquals
             args:
-              regex:
+              equalTo:
                 value:
-                  simple: '>''\)(.+)?'
-              replaceWith: {}
-          - operator: replaceMatch
+                  simple: Message-ID
+              field:
+                value:
+                  simple: name
+              getField:
+                value:
+                  simple: value
+          - operator: StripChars
             args:
-              regex:
+              chars:
                 value:
-                  simple: .+\('Message-ID', '<
-              replaceWith: {}
+                  simple: <>
       emailreceived: {}
       emailreplyto:
         complex:
           root: Email
-          filters:
-          - - operator: match
-              left:
-                value:
-                  simple: Email.Headers
-                iscontext: true
-              right:
-                value:
-                  simple: '''In-Reply-To'', ''<.+>'''
           accessor: Headers
           transformers:
-          - operator: replaceMatch
+          - operator: WhereFieldEquals
             args:
-              regex:
+              equalTo:
                 value:
-                  simple: .+\('In-Reply-To', '<
-              replaceWith: {}
-          - operator: replaceMatch
+                  simple: In-Reply-To
+              field:
+                value:
+                  simple: name
+              getField:
+                value:
+                  simple: value
+          - operator: StripChars
             args:
-              regex:
+              chars:
                 value:
-                  simple: '>''\)(.+)?'
-              replaceWith: {}
+                  simple: <>
       emailreturnpath:
         complex:
           root: Email
-          filters:
-          - - operator: match
-              left:
-                value:
-                  simple: Email.Headers
-                iscontext: true
-              right:
-                value:
-                  simple: '''Return-Path'', ''.+'''
           accessor: Headers
           transformers:
-          - operator: replaceMatch
+          - operator: WhereFieldEquals
             args:
-              regex:
+              equalTo:
                 value:
-                  simple: .+\('Return-Path', '
-              replaceWith: {}
-          - operator: replaceMatch
-            args:
-              regex:
+                  simple: Return-Path
+              field:
                 value:
-                  simple: '''\)(.+)?'
-              replaceWith: {}
+                  simple: name
+              getField:
+                value:
+                  simple: value
       emailsenderip:
         complex:
           root: Email
-          filters:
-          - - operator: match
-              left:
-                value:
-                  simple: Email.Headers
-                iscontext: true
-              right:
-                value:
-                  simple: '''x-originating-ip'', ''\[.+\]'''
           accessor: Headers
           transformers:
-          - operator: replaceMatch
+          - operator: WhereFieldEquals
             args:
-              regex:
+              equalTo:
                 value:
-                  simple: \]'\)(.+)?
-              replaceWith: {}
-          - operator: replaceMatch
+                  simple: x-originating-ip
+              field:
+                value:
+                  simple: name
+              getField:
+                value:
+                  simple: value
+          - operator: StripChars
             args:
-              regex:
+              chars:
                 value:
-                  simple: .+\('x-originating-ip', '\[
-              replaceWith: {}
+                  simple: '[]'
       emailsize:
         complex:
           root: Email
@@ -509,7 +484,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 695,
           "y": 895
         }
       }
@@ -627,7 +602,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 592.5,
           "y": 1740
         }
       }
@@ -661,7 +636,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 480,
           "y": 1565
         }
       }
@@ -699,7 +674,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
+          "x": 152.5,
           "y": 370
         }
       }
@@ -724,7 +699,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -758,8 +733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 698
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -769,7 +744,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1930,
-        "width": 922.5,
+        "width": 1025,
         "x": 50,
         "y": 50
       }
