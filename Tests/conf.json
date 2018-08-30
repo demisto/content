@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "WildFire",
+            "playbookID": "Wildfire Test"
+        },
+        {
             "integrations": "GRR",
             "playbookID": "grr_test",
             "nightly": true
