@@ -116,9 +116,9 @@ tasks:
     scriptarguments:
       entryid:
         simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
-          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
-          0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
-          0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
+          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
+          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     results:
     - AttachmentName
     separatecontext: false
@@ -246,10 +246,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: b964cc31-f2a4-490e-8abc-4fb47aff81da
+    taskid: 290c46f5-b31b-412e-860a-5758b94081ad
     type: regular
     task:
-      id: b964cc31-f2a4-490e-8abc-4fb47aff81da
+      id: 290c46f5-b31b-412e-860a-5758b94081ad
       version: -1
       name: Set incident with the Email object data
       description: ""
@@ -331,6 +331,15 @@ tasks:
       emailmessageid:
         complex:
           root: Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Email.Headers.name
+                iscontext: true
+              right:
+                value:
+                  simple: Message-ID
           accessor: Headers
           transformers:
           - operator: WhereFieldEquals
@@ -353,6 +362,15 @@ tasks:
       emailreplyto:
         complex:
           root: Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Email.Headers.name
+                iscontext: true
+              right:
+                value:
+                  simple: In-Reply-To
           accessor: Headers
           transformers:
           - operator: WhereFieldEquals
@@ -374,6 +392,15 @@ tasks:
       emailreturnpath:
         complex:
           root: Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Email.Headers.name
+                iscontext: true
+              right:
+                value:
+                  simple: Return-Path
           accessor: Headers
           transformers:
           - operator: WhereFieldEquals
@@ -387,9 +414,23 @@ tasks:
               getField:
                 value:
                   simple: value
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: <>
       emailsenderip:
         complex:
           root: Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Email.Headers.name
+                iscontext: true
+              right:
+                value:
+                  simple: x-originating-ip
           accessor: Headers
           transformers:
           - operator: WhereFieldEquals
