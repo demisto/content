@@ -20,7 +20,7 @@ script: |
                       Type: entryTypes.error};
   }
   if (shouldDeleteAll) {
-      var keysToKeep = (args.keysToKeep) ? args.keysToKeep.trim(' ').split(',') : [];
+      var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(function(item) { return item.trim(); }) : [];
       var keysToKeepObj = {};
       var value;
       for (var i = 0; i < keysToKeep.length; i++) {
