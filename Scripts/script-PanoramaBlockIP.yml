@@ -74,12 +74,16 @@ outputs:
   description: List of Panorama rules
 - contextPath: PanoramaRule.Name
   description: Name of the Panorama rule
+  type: string
 - contextPath: PanoramaRule.Direction
   description: Direction of the Panorama rule, could be 'to','from', 'both'
+  type: string
 - contextPath: PanoramaRule.IP
   description: The IP the Panorama rule blocks
+  type: string
 scripttarget: 0
 dependson:
   must:
   - panorama
 timeout: 0s
+releaseNotes: Fixing output types for the script
