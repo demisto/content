@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "WildFire",
+            "playbookID": "Wildfire Test"
+        },
+        {
             "integrations": "GRR",
             "playbookID": "grr_test",
             "nightly": true
@@ -51,7 +55,8 @@
             "nightly": true,
             "integrations": [
                 "VxStream",
-                "McAfee Advanced Threat Defense"
+                "McAfee Advanced Threat Defense",
+                "WildFire"
             ]
         },
         {
