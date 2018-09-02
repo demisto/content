@@ -69,13 +69,16 @@ script:
     var createIncidentFromOffense = function(incident) {
         var keys = Object.keys(incident);
         var labels = [];
+        var occured = (new Date(incident.start_time)).toISOString();
         for (var i = 0; i<keys.length; i++) {
             labels.push({'type': keys[i], 'value': String(incident[keys[i]])});
         }
+
         return {
             "name": incident.id + ' ' + incident.description,
             "labels": labels,
-            "rawJSON": JSON.stringify(incident)
+            "rawJSON": JSON.stringify(incident),
+            "occurred": occured
         }
     }
 
@@ -534,3 +537,4 @@ script:
     description: Retrieve a note for an offense
   isfetch: true
   runonce: false
+releaseNotes: "-"

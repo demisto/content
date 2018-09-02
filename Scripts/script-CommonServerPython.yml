@@ -404,9 +404,10 @@ script: |-
       def __call__(self, message):
           self.messages.append('%s' % (message, ))
 
-      def print_log(self, ):
+      def print_log(self, verbose=False):
           text = 'Full Integration Log:\n' + '\n'.join(self.messages)
-          demisto.log(text)
+          if verbose:
+            demisto.log(text)
           demisto.info(text)
 
   """
@@ -434,7 +435,7 @@ script: |-
       if type(data) in STRING_TYPES:
           return data
       elif isinstance(data, dict):
-          return l_format.join([k + ': ' + flattenCell(data[k], is_pretty) for k in data])
+          return '\n'.join(['%s: %s' % (k, flattenCell(v, is_pretty)) for k, v in data.items()])
       else:
           return flattenCell(data, is_pretty)
 
@@ -1062,7 +1063,8 @@ script: |-
     'url': 'URL(val.Data && val.Data == obj.Data)',
     'domain': 'Domain(val.Name && val.Name == obj.Name)',
     'cve': 'CVE(val.ID && val.ID == obj.ID)',
-    'email': 'Account.Email(val.Address && val.Address == obj.Address)'
+    'email': 'Account.Email(val.Address && val.Address == obj.Address)',
+    'dbotscore': 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
   }
 
   ############################### REGEX FORMATTING ###############################
@@ -1079,6 +1081,39 @@ script: |-
   sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
   ############################### REGEX FORMATTING end ###############################
+
+  def string_to_table_header(string):
+      """
+        Checks if string, change underscores to spaces, capitalize every word.
+        Example: "one_two" to "One Two"
+
+        :type string: ``str``
+        :param string: The string to be converted (required)
+
+        :return: The converted string
+        :rtype: ``str``
+      """
+      if type(string) in STRING_TYPES:
+          return " ".join(word.capitalize() for word in string.replace("_"," ").split())
+      else:
+          raise Exception('The key is not a string: {}'.format(string))
+
+  def string_to_context_key(string):
+      """
+       Checks if string, removes underscores, capitalize every word.
+       Example: "one_two" to "OneTwo"
+
+       :type string: ``str``
+       :param string: The string to be converted (required)
+
+       :return: The converted string
+       :rtype: ``str``
+      """
+      if type(string) in STRING_TYPES:
+          return "".join(word.capitalize() for word in string.split('_'))
+      else:
+          raise Exception('The key is not a string: {}'.format(string))
+
 type: python
 tags:
 - infra
@@ -1088,4 +1123,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: added regex formatting
+releaseNotes: "Added verbose option to LOG.print_log"

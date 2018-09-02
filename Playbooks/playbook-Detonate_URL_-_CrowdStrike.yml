@@ -1,12 +1,10 @@
-id: CrowdStrike_DetonateFile
+id: detonate_url_-_crowdstrike
 version: -1
-name: CrowdStrike - Detonate file
-description: Detonate one or more files using the CrowdStrike integration. This playbook
+name: Detonate URL - CrowdStrike
+fromversion: 4.0.0
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types -
-  EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
 starttaskid: "0"
-fromversion: "4.0.0"
 tasks:
   "0":
     id: "0"
@@ -18,7 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: "Start"
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -98,13 +96,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: "When this task is reached, then the playbook is complete"
+      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1480
+          "x": 460,
+          "y": 1140
         }
       }
     note: false
@@ -126,124 +124,62 @@ tasks:
       - "6"
     scriptarguments:
       file:
-        simple: ${File.SHA256}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1245
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
-    type: regular
-    task:
-      id: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
-      version: -1
-      name: Set file to context
-      description: Set the file object into context.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      append: {}
-      key:
-        simple: File
-      value:
         complex:
-          root: inputs.File
+          root: File
+          accessor: SHA256
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 545
+          "y": 925
         }
       }
     note: false
   "13":
     id: "13"
-    taskid: ab929de2-d71d-487e-8200-68a9178aca32
+    taskid: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
     type: regular
     task:
-      id: ab929de2-d71d-487e-8200-68a9178aca32
+      id: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
       version: -1
       name: CrowdStrike Upload Sample
-      script: VxStream|||crowdstrike-submit-sample
+      description: Upload samle to crowdstrike.
+      script: VxStream|||crowdstrike-submit-url
       type: regular
       iscommand: true
       brand: VxStream
-      description: "Submits a sample to CrowdStrike"
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
-      entryId:
-        simple: ${File.EntryID}
       environmentID:
-        simple: ${inputs.environmentID}
+        complex:
+          root: inputs.EnvironmentID
+      url:
+        complex:
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 905
+          "y": 550
         }
       }
     note: false
   "14":
     id: "14"
-    taskid: a15cdef0-f6bd-48e3-8198-3f7c20e668fe
+    taskid: 6ffba508-37e1-4647-88ea-265cd5475d61
     type: condition
     task:
-      id: a15cdef0-f6bd-48e3-8198-3f7c20e668fe
+      id: 6ffba508-37e1-4647-88ea-265cd5475d61
       version: -1
-      name: Is there a file to detonate?
+      name: Is there a URL to detonate?
+      description: Checks whether there's a file to detonate.
       type: condition
       iscommand: false
       brand: ""
-      description: "Asserts there's a file to detonate"
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.File
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-  "15":
-    id: "15"
-    taskid: 5c983564-e96c-4357-86f3-e69161b8b37b
-    type: condition
-    task:
-      id: 5c983564-e96c-4357-86f3-e69161b8b37b
-      version: -1
-      name: Is the file type supported?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: "Asserts the file type is supported"
     nexttasks:
       '#default#':
       - "6"
@@ -256,61 +192,54 @@ tasks:
       - - operator: isExists
           left:
             value:
-              complex:
-                root: File
-                filters:
-                - - operator: match
-                    left:
-                      value:
-                        simple: File.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
-                  - operator: match
-                    left:
-                      value:
-                        simple: File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              simple: inputs.URL
             iscontext: true
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 710
+          "y": 370
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: c6e5c638-5c9e-470c-8f57-7931c2689dba
+    taskid: e34dd0a0-2806-4f3e-8c17-f4a05504222d
     type: playbook
     task:
-      id: c6e5c638-5c9e-470c-8f57-7931c2689dba
+      id: e34dd0a0-2806-4f3e-8c17-f4a05504222d
       version: -1
       name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: "Initiated the generic polling playbook that will do the polling command"
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
       Ids:
-        simple: ${File.SHA256}
+        complex:
+          root: File
+          accessor: SHA256
       Interval:
-        simple: ${inputs.interval}
+        complex:
+          root: inputs.Interval
       PollingCommandArgName:
         simple: file
       PollingCommandName:
         simple: crowdstrike-scan
       Timeout:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.Timeout
       dt:
         simple: File(val.state === 'NO_CONTENT').hash
     separatecontext: true
@@ -322,42 +251,42 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 740
         }
       }
     note: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "15_6_#default#": 0.38
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1495,
-        "width": 687.5,
+        "height": 1155,
+        "width": 677.5,
         "x": 162.5,
         "y": 50
       }
     }
   }
 inputs:
-- key: File
+- key: URL
   value:
     complex:
-      root: File
+      root: URL
+      accessor: Data
   required: false
-  description: File object of the file to detonate.
-- key: environmentID
+  description: URL to detonate.
+- key: EnvironmentID
   value:
     simple: "100"
   required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command.
-- key: interval
+  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
+    command.
+- key: Interval
   value:
     simple: "5"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-- key: timeout
+- key: Timeout
   value:
     simple: "30"
   required: false
@@ -405,3 +334,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+releaseNotes: "-"

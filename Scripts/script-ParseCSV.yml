@@ -7,6 +7,11 @@ script: |
   import csv
   import socket
 
+  def unicode_dict_reader(utf8_data, **kwargs):
+      csv_reader = csv.DictReader(utf8_data, **kwargs)
+      for row in csv_reader:
+          yield {unicode(key, 'utf-8'):unicode(value, 'utf-8') for key, value in row.iteritems()}
+
   def is_valid_ipv4_address(address):
       try:
           socket.inet_pton(socket.AF_INET, address)
@@ -68,7 +73,7 @@ script: |
   if parseAll:
       all_csv = []
       with open(filePath, mode='r') as f:
-          records = csv.DictReader(f)
+          records = unicode_dict_reader(f)
           for row in records:
               all_csv.append(row)
 
@@ -192,3 +197,4 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
 scripttarget: 0
+releaseNotes: "-"

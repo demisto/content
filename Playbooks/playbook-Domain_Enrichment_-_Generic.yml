@@ -2,7 +2,7 @@ id: domain_enrichment_generic
 version: -1
 name: Domain Enrichment - Generic
 fromversion: 3.6.0
-releaseNotes: "Add support for VirusTotal Private API"
+releaseNotes: "-"
 description: |-
   Enrich Domain using one or more integrations.
 

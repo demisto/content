@@ -20,7 +20,5 @@ args:
   default: true
   description: ID of the scheduled to stop
 scripttarget: 0
-dependson:
-  must:
-  - scheduleEntry
 timeout: 0s
+releaseNotes: "-"

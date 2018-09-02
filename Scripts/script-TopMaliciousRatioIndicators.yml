@@ -16,6 +16,16 @@ script: |
       display_indicator['Last Seen'] = indicator['lastSeen']
       return display_indicator
 
+  def dedup_by_value(indicators_list):
+     exist_values = set()
+     result = []
+     for e in indicators_list:
+         value = e['value']
+         if value not in exist_values:
+             exist_values.add(value)
+             result.append(e)
+     return result
+
   MAX_INDICATORS = int(demisto.args()['maxNumberOfIndicators'])
   MIN_NUMBER_OF_INVS = int(demisto.args()['minimumNumberOfInvs'])
   MAX_RESULTS = int(demisto.args()['maximumNumberOfResults'])
@@ -36,6 +46,7 @@ script: |
 
   sorted_indicators = sorted(indicators_map.values(), key=lambda x: x['maliciousRatio'], reverse=True)
   sorted_indicators = [x for x in sorted_indicators if x['maliciousRatio'] > 0]
+  sorted_indicators = dedup_by_value(sorted_indicators)
   sorted_indicators = sorted_indicators[:MAX_RESULTS]
   sorted_indicators = map(select_indicator_columns, sorted_indicators)
   demisto.results(json.dumps({"total": len(sorted_indicators), "data": sorted_indicators}))
@@ -58,3 +69,4 @@ args:
   defaultValue: "100"
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
