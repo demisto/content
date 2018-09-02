@@ -1,0 +1,72 @@
+commonfields:
+  id: EtherScan
+  version: -1
+name: EtherScan
+display: EtherScan
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: EtherScan is a Block Explorer, Search, API and Analytics Platform for
+  Ethereum, a decentralized smart contracts platform.
+configuration:
+- display: API URL
+  name: url
+  defaultvalue: https://api.etherscan.io/api
+  type: 0
+  required: true
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |
+    import requests
+
+    url = demisto.getParam('url')
+    key = demisto.getParam('key')
+
+    WEI = 1000000000000000000
+
+    session = requests.Session()
+
+    if demisto.command() == 'test-module':
+        r = session.get(url, params={'module': 'account', 'action': 'balance', 'address': '0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae'})
+        r.raise_for_status()
+
+        demisto.results('ok')
+
+    elif demisto.command() == 'wallet-balance':
+        r = session.get(url, params={'module': 'account', 'action': 'balance', 'address': demisto.getArg('address'), 'apiKey': key})
+        r.raise_for_status()
+
+        demisto.results(int(r.json()['result']) / WEI)
+
+    elif demisto.command() == 'wallet-txlist':
+        r = session.get(url, params={'module': 'account', 'action': 'txlist', 'address': demisto.getArg('address'), 'apiKey': key,
+                                     'startblock': demisto.getArg('startblock'), 'endblock': demisto.getArg('endblock')})
+        r.raise_for_status()
+
+        demisto.results({'txlist': r.json()['result']})
+  type: python
+  commands:
+  - name: wallet-balance
+    arguments:
+    - name: address
+      required: true
+      description: Wallet address
+    description: Get balance for an ethereum wallet
+  - name: wallet-txlist
+    arguments:
+    - name: address
+      required: true
+      description: Wallet address      
+    - name: startblock
+      description: Starting blockNo to retrieve results
+      defaultValue: "0"
+    - name: endblock
+      default: true
+      description: Ending blockNo to retrieve results
+      defaultValue: "99999999"
+    description: Get list of transaction list for wallet
+  runonce: false
+releaseNotes: "Added EtherScan integration"
