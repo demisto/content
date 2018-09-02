@@ -3,13 +3,77 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "Extract Indicators From File - test"
+            "integrations": "WildFire",
+            "playbookID": "Wildfire Test"
         },
         {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
+            "integrations": "GRR",
+            "playbookID": "grr_test",
             "nightly": true
+        },
+        {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
+        },
+        {   "integrations": "Gmail",
+            "playbookID": "get_original_email_-_gmail_-_test"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
+            "integrations": "PagerDuty",
+            "playbookID": "PagerDuty Test"
+        },
+        {
+            "playbookID": "test_delete_context"
+        },
+        {
+            "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "TestParseCSV"
+        },
+        {
+            "playbookID": "detonate_file_-_generic_test",
+            "timeout": 2000,
+            "nightly": true,
+            "integrations": [
+                "VxStream",
+                "McAfee Advanced Threat Defense",
+                "WildFire"
+            ]
+        },
+        {
+            "playbookID": "detonate_url_-_generic_test",
+            "timeout": 2000,
+            "nightly": true,
+            "integrations": [
+                "McAfee Advanced Threat Defense",
+                "VxStream"
+            ]
+        },
+        {
+            "integrations": "Shodan",
+            "playbookID": "ShodanTest"
+        },
+        {
+            "playbookID": "Extract Indicators From File - test"
         },
         {
             "integrations": "Jask",
@@ -74,10 +138,6 @@
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
-        },
-        {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "playbookID": "Test filters & transformers scripts"
@@ -153,20 +213,13 @@
             "playbookID": "account_enrichment_-_generic_test"
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
-        },
-        {
             "integrations": "FalconHost",
             "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test",
             "timeout": 500
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "crowdstrike_endpoint_enrichment_-_test"
+            "playbookID": "CrowdStrike Endpoint Enrichment - Test"
         },
         {
             "integrations": [
@@ -322,19 +375,6 @@
             "integrations": "SafeBreach"
         },
         {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test",
-            "nightly": true
-        },
-        {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test"
         },
@@ -416,6 +456,24 @@
     ],
     "skipped": [
         {
+            "integrations": {
+                "name": "carbonblack",
+                "byoi": false
+            },
+            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test",
+            "nightly": true
+        },
+        {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations":"Cylance Protect",
             "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
             "timeout": 240
@@ -462,14 +520,6 @@
             "playbookID": "SymantecMSSTest"
         },
         {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
-        },
-        {
-            "playbookID": "TestParseCSV"
-        },
-        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
@@ -511,6 +561,9 @@
             "nightly": true
         },
         {
+            "integrations": [
+                "VirusTotal"
+            ],
             "playbookID": "File Enrichment - Generic Test"
         },
         {

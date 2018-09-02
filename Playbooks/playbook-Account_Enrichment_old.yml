@@ -1,0 +1,138 @@
+id: Account Enrichment
+version: -1
+name: Account Enrichment
+fromversion: 2.5.0
+toversion: 3.1.0
+description: Enrich the accounts under the Account context key with details from relevant
+  integrations such as AD.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aa064ddb-b65a-487d-8387-557b0fb30ec5
+    type: start
+    task:
+      id: aa064ddb-b65a-487d-8387-557b0fb30ec5
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 1c26ffa7-817a-4920-81c5-26fec3449813
+    type: condition
+    task:
+      id: 1c26ffa7-817a-4920-81c5-26fec3449813
+      version: -1
+      name: Is AD configured?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      value:
+        simple: ${modules.brand(val === 'activedir')}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 9ac69b2e-488a-49a9-854d-321617cdf073
+    type: regular
+    task:
+      id: 9ac69b2e-488a-49a9-854d-321617cdf073
+      version: -1
+      name: Query AD to get user details
+      description: Query “Active Directory” for the email address info
+      scriptName: ADGetUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes: {}
+      customFieldData:
+        simple: ${Account.Email.Address}
+      customFieldType:
+        simple: mail
+      dn: {}
+      email: {}
+      headers: {}
+      limit: {}
+      name: {}
+      nestedSearch: {}
+      userAccountControlOut: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 7a484b04-e4d2-4e77-873e-3ab20ea9de4b
+    type: title
+    task:
+      id: 7a484b04-e4d2-4e77-873e-3ab20ea9de4b
+      version: -1
+      name: User Enrichment Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"
