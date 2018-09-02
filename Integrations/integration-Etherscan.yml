@@ -59,6 +59,7 @@ script:
     arguments:
     - name: address
       required: true
+      description: Wallet address      
     - name: startblock
       description: Starting blockNo to retrieve results
       defaultValue: "0"
