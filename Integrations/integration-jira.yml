@@ -385,9 +385,6 @@ script:
         if (!issue.fields) {
             issue.fields= {};
         }
-        if (!issue.fields.project) {
-            issue.fields.project= {};
-        }
         if (!issue.fields.issuetype && command == "jira-create-issue"){
             issue.fields.issuetype = {};
         }
@@ -395,13 +392,22 @@ script:
             issue.fields.summary = args.summary;
         }
         if (args.projectKey && args.projectKey.length > 0 ){
+            if (!issue.fields.project) {
+                issue.fields.project= {};
+            }
             issue.fields.project.key = args.projectKey;
         }
 
         if (args.projectName && args.projectName.length > 0 ){
+            if (!issue.fields.project) {
+                issue.fields.project= {};
+            }
             issue.fields.project.name = args.projectName;
         }
         if (command == "jira-create-issue"){
+            if (!issue.fields.project) {
+                issue.fields.project= {};
+            }
             issue.fields.project.id = getProjectID(issue.fields.project.key, issue.fields.project.name);
         }
 
@@ -823,4 +829,4 @@ script:
     description: Gets the comments added to a ticket
   isfetch: true
   runonce: false
-releaseNotes: "-"
+releaseNotes: Fixed jira-edit-issue
