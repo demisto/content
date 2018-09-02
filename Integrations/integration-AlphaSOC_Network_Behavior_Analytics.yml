@@ -290,3 +290,4 @@ script:
   type: javascript
   isfetch: true
   runonce: false
+releaseNotes: "-"

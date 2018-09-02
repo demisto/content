@@ -413,6 +413,15 @@ script:
         return getObject(path);
     }
 
+    function deleteObject(path) {
+        response = sendRequestInSession('DELETE', 'sobjects/' + path);
+        if (response.StatusCode != 204) {
+            throw 'object ' + path + ' delete failed with status code: ' + response.StatusCode;
+        }
+
+        return 'object ' + path + 'was successfully deleted.';
+    }
+
     function getCase(oid, caseNumber) {
         if (caseNumber !== undefined) {
             var condition = "CaseNumber='" + caseNumber + "'";
@@ -482,6 +491,25 @@ script:
 
     function closeCase(oid, caseNumber) {
         return updateCase(oid, caseNumber, undefined, undefined, 'Closed');
+    }
+
+    function deleteCase(oid, caseNumber) {
+        if ((oid === undefined) && (caseNumber === undefined)) {
+            return {
+                Type : entryTypes.error,
+                Contents : 'You must specify object ID or a Case Number',
+                // ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown
+            };
+        }
+
+        if (oid === undefined) {
+            var condition = "CaseNumber='" + caseNumber + "'";
+            cases = queryObjects(['ID'], 'Case', condition).records;
+            oid = (cases.length === 1) ? cases[0].Id : undefined;
+        }
+
+        return deleteObject('Case/' + oid);
     }
 
     function pushComment(oid, text, linkUrl) {
@@ -679,6 +707,8 @@ script:
             return getCases();
         case 'salesforce-close-case':
             return closeCase(args.oid, args.caseNumber);
+        case 'salesforce-delete-case':
+            return deleteCase(args.oid, args.caseNumber);
         case 'salesforce-push-comment':
             return pushComment(args.oid, args.text, args.link);
         case 'salesforce-push-comment-threads':
@@ -1498,5 +1528,13 @@ script:
       type: string
     description: Add the comment to the chatter thread. Use this command only after
       salesforce-push-comment
+  - name: salesforce-delete-case
+    arguments:
+    - name: oid
+      description: Case Object ID
+    - name: caseNumber
+      description: Case Number
+    description: Delete a case
   isfetch: true
   runonce: false
+releaseNotes: "added command for delete case"

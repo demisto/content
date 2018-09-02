@@ -209,5 +209,5 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
 scripttarget: 0
-runonce: false
 releaseNotes: "add 'entryID' argument to get the file entry by ID. 'file' argument deprecated."
+
