@@ -1,11 +1,12 @@
 id: WildFire - Detonate file
 version: -1
 name: WildFire - Detonate file
-description: Detonate one or more files using the Wildfire integration. This playbook
+fromversion: 4.0.0
+description: |-
+  Detonate one or more files using the Wildfire integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
   APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
-fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -33,10 +34,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 7e3e8be7-ce5c-4ed9-804d-d5d485c20910
+    taskid: 24797d30-9a36-4241-8093-4d65c89156a4
     type: regular
     task:
-      id: 7e3e8be7-ce5c-4ed9-804d-d5d485c20910
+      id: 24797d30-9a36-4241-8093-4d65c89156a4
       version: -1
       name: WildFire Upload File
       description: ""
@@ -49,22 +50,23 @@ tasks:
       - "2"
     scriptarguments:
       upload:
-        simple: ${inputs.File}
+        complex:
+          root: inputs.File
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 387.5,
-          "y": 720
+          "y": 895
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: 51c8934a-5edc-4c16-80b2-4da58214137c
+    taskid: 15b7c096-8b60-403c-857b-703dc230d659
     type: playbook
     task:
-      id: 51c8934a-5edc-4c16-80b2-4da58214137c
+      id: 15b7c096-8b60-403c-857b-703dc230d659
       version: -1
       name: GenericPolling
       description: |-
@@ -108,16 +110,16 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: c03519c0-543a-4ef2-86cc-d70356545c44
+    taskid: 4f9d282f-30e2-42da-8a51-fa1d549337b8
     type: regular
     task:
-      id: c03519c0-543a-4ef2-86cc-d70356545c44
+      id: 4f9d282f-30e2-42da-8a51-fa1d549337b8
       version: -1
       name: WildFire Get Report
       description: Retrieve results for a file hash using WildFire
@@ -129,7 +131,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      format: {}
+      format:
+        complex:
+          root: inputs.ReportFileType
       hash:
         complex:
           root: WildFire
@@ -141,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -162,7 +166,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -182,7 +186,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "10"
+      - "11"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -257,10 +261,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: 7343553c-b2f6-4bdd-83a0-cc6dc120d074
+    taskid: 09aec71d-10ce-419d-836b-88f9d41a52eb
     type: condition
     task:
-      id: 7343553c-b2f6-4bdd-83a0-cc6dc120d074
+      id: 09aec71d-10ce-419d-836b-88f9d41a52eb
       version: -1
       name: Is the file type supported?
       description: Check if file type is supported
@@ -307,18 +311,48 @@ tasks:
       {
         "position": {
           "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 16c9088e-43fa-494a-80f2-646461c74a66
+    type: regular
+    task:
+      id: 16c9088e-43fa-494a-80f2-646461c74a66
+      version: -1
+      name: Set Context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
           "y": 545
         }
       }
     note: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "6_10_yes": 0.86
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1435,
         "width": 717.5,
         "x": 50,
         "y": 50
@@ -343,12 +377,16 @@ inputs:
   required: false
   description: The duration after which to stop pooling and to resume the playbook
     (in minutes)
+- key: ReportFileType
+  value: {}
+  required: false
+  description: The resource type to download. Default is pdf. xml is also possible.
 outputs:
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
-  type: string
 - contextPath: DBotScore.Score
   description: The actual score
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
   type: string
 - contextPath: File.Type
   description: File type e.g. "PE"
@@ -376,14 +414,15 @@ outputs:
   type: unknown
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
+  type: string
 - contextPath: DBotScore
   description: The DBot object
   type: unknown
 - contextPath: DBotScore.Indicator
   description: The indicator we tested
   type: string
-- contextPath: DBotScore.Type
-  description: The type of the indicator
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
   type: string
 - contextPath: WildFire.Report
   description: The submission object
@@ -424,4 +463,4 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
-releaseNotes: Detonate File playbook using the new GenericPolling playbook, allows multiple detonations
+releaseNotes: WildFire File detonataion playbook, using the generic pooling script.

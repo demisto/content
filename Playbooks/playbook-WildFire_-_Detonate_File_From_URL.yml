@@ -1,6 +1,6 @@
-id: WildFire - Detonate File From URL
+id: detonate_file_from_url_-_wildfire
 version: -1
-name: WildFire - Detonate File From URL
+name: Detonate File From URL - WildFire
 description: |-
   Detonate one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
@@ -223,10 +223,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: f8f9d5c4-2e83-42c6-827d-8a49b94e1013
+    taskid: be96c4b1-ebec-4d67-82d0-3f694477fcb7
     type: regular
     task:
-      id: f8f9d5c4-2e83-42c6-827d-8a49b94e1013
+      id: be96c4b1-ebec-4d67-82d0-3f694477fcb7
       version: -1
       name: WildFire Get Report
       description: Retrieve results for a file hash using WildFire
@@ -238,7 +238,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      format: {}
+      format:
+        complex:
+          root: inputs.ReportFileType
       hash:
         complex:
           root: WildFire
@@ -269,7 +271,8 @@ view: |-
 inputs:
 - key: FileURL
   value:
-    simple: ${FileURL}
+    complex:
+      root: FileURL
   required: false
   description: URL of the web file to detonate. The FileUrl is taken from the context.
 - key: Interval
@@ -288,46 +291,94 @@ inputs:
   required: false
   description: The resource type to download. Default is pdf. xml is also possible.
 outputs:
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision
   type: string
 - contextPath: File.Name
-  description: Filename (only in case of report type=json)
-  type: string
-- contextPath: File.Size
-  description: File size (only in case of report type=json)
-  type: number
-- contextPath: File.MD5
-  description: MD5 hash of the file (only in case of report type=json)
-  type: string
-- contextPath: File.SHA1
-  description: SHA1 hash of the file (only in case of report type=json)
-  type: string
-- contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
-  type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file (only in case of report type=json)
-  type: string
-- contextPath: File.EntryID
-  description: The Entry ID of the sample
+  description: Filename
   type: string
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested (only in case of report type=json)
+  description: The indicator we tested
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator (only in case of report type=json)
+  description: The type of the indicator
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score (only in case of report type=json)
+  description: Vendor used to calculate the score
   type: string
 - contextPath: IP.Address
   description: IP's relevant to the sample
   type: string
-- contextPath: DBotScore.Score
-  description: The actual score (only in case of report type=json)
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: InfoFile
+  description: The report file object
+  type: unknown
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file
   type: number
-releaseNotes: Detonate File from URL playbook using the new GenericPolling playbook, allows multiple detonations
+- contextPath: InfoFile.Type
+  description: The type of the report file
+  type: string
+- contextPath: File.Malicious
+  description: The malicious object
+  type: unknown
+- contextPath: WildFire.Report
+  description: The submission object
+  type: unknown
+- contextPath: WildFire.Report.MD5
+  description: MD5 of the submission
+  type: string
+- contextPath: WildFire.Report.SHA256
+  description: SHA256 of the submission
+  type: string
+- contextPath: WildFire.Report.FileType
+  description: The type of the submission
+  type: string
+- contextPath: WildFire.Report.Status
+  description: The status of the submission
+  type: string
+- contextPath: WildFire.Report.Size
+  description: The size of the submission
+  type: number
+releaseNotes: WildFire File from URL detonataion playbook, using the generic pooling script.

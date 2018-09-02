@@ -1,8 +1,8 @@
 id: Detonate File - Generic
 version: -1
 name: Detonate File - Generic
-description: Detonate file through active integrations that support file detonation
 fromversion: 4.0.0
+description: Detonate file through active integrations that support file detonation
 starttaskid: "0"
 tasks:
   "0":
@@ -256,11 +256,11 @@ tasks:
       id: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
       version: -1
       name: WildFire - Detonate file
-      playbookName: WildFire - Detonate file
-      description: Detonate one or more files using the Wildfire integration. This playbook
-        returns relevant reports to the War Room and file reputations to the context data.
+      description: |-
+        Detonate one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
         The detonation supports the following file types -
         APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
+      playbookName: WildFire - Detonate file
       type: playbook
       iscommand: false
       brand: ""
@@ -315,11 +315,11 @@ inputs:
   required: false
   description: File object of file to be detonated
 outputs:
-- contextPath: Joe.Analysis.SampleName
-  description: Sample Data, could be a file name or URL
-  type: string
 - contextPath: Joe.Analysis.Status
   description: Analysis Status
+  type: string
+- contextPath: Joe.Analysis.WebID
+  description: Web ID
   type: string
 - contextPath: File.Name
   description: Filename (only in case of report type=json)
@@ -382,8 +382,8 @@ outputs:
 - contextPath: File.MD5
   description: MD5 of the file
   type: string
-- contextPath: Joe.Analysis.WebID
-  description: Web ID
+- contextPath: Joe.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
   type: string
 - contextPath: Joe.Analysis.Comments
   description: Analysis Comments
@@ -451,4 +451,7 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
-releaseNotes: Added Wildfire new Detonate Playbook
+- contextPath: Joe.Analysis
+  description: Thee Analysis object
+  type: unknown
+releaseNotes: Add WildFire detonate File playbook
