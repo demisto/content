@@ -327,6 +327,36 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
+      emailinreplyto:
+        complex:
+          root: Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Email.Headers.name
+                iscontext: true
+              right:
+                value:
+                  simple: In-Reply-To
+          accessor: Headers
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: In-Reply-To
+              field:
+                value:
+                  simple: name
+              getField:
+                value:
+                  simple: value
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: <>
       emailkeywords: {}
       emailmessageid:
         complex:
@@ -370,14 +400,14 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: In-Reply-To
+                  simple: Reply-To
           accessor: Headers
           transformers:
           - operator: WhereFieldEquals
             args:
               equalTo:
                 value:
-                  simple: In-Reply-To
+                  simple: Reply-To
               field:
                 value:
                   simple: name
