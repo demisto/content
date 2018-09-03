@@ -744,14 +744,19 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow incident ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
     description: Retrieve ticket information by specific ticket ID
   - name: servicenow-incident-get
     deprecated: true
@@ -772,14 +777,19 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow incident ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
     description: Retrieve ticket information by specific ticket ID
   - name: servicenow-create
     arguments:
@@ -951,14 +961,19 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
     description: Create new ServiceNow ticket
   - name: servicenow-incident-create
     deprecated: true
@@ -1118,14 +1133,19 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
     description: Create new ServiceNow ticket
   - name: servicenow-update
     arguments:
@@ -1566,14 +1586,19 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
     description: Retrieve ticket info with query
   - name: servicenow-incidents-query
     deprecated: true
@@ -1594,14 +1619,19 @@ script:
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
     description: Retrieve ticket info with query
   - name: servicenow-upload-file
     arguments:
@@ -1655,8 +1685,10 @@ script:
     outputs:
     - contextPath: ServiceNowGroups.GroupId
       description: Group Id
+      type: string
     - contextPath: ServiceNowGroups.GroupName
       description: Group name
+      type: string
     description: Return information about specific servicenow group
   - name: servicenow-get-computer
     arguments:
@@ -1665,15 +1697,20 @@ script:
       description: machine name
     outputs:
     - contextPath: ServiceNowComputer.sys_id
-      description: Id
+      description: 'Id '
+      type: string
     - contextPath: ServiceNowComputer.u_code
       description: Code
+      type: string
     - contextPath: ServiceNowComputer.support_group
       description: Support group
+      type: string
     - contextPath: ServiceNowComputer.os
-      description: Operation System
+      description: Operating System
+      type: string
     - contextPath: ServiceNowComputer.comments
       description: Comments
+      type: string
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
   runonce: false
