@@ -104,63 +104,6 @@ script:
         'fetch_limit':10
     }
 
-    HR_DICT = {
-        'default': {
-            'number': 'Number',
-            'sys_id': 'System ID',
-            'state':  'State',
-            'impact': 'Impact',
-            'priority':'Priority',
-            'severity':'Severity',
-            'urgency':'Urgency',
-            'sys_created_on':'Created On',
-            'sys_created_by':'Created by',
-            'active':'Active',
-            'close_notes':'Close notes',
-            'description':'Description',
-            'opened_at':'Opened at',
-            'due_date':'Due date',
-            'closed_by':'Resolved by',
-            'closed_at':'Resolved at',
-            'sla_due':'SLA due',
-            'short_description':'Short description',
-        },
-        'servicenow-create': {
-            'number':'Number',
-            'sys_id':'Sys ID',
-            'state':  'State',
-            'impact': 'Impact',
-            'priority':'Priority',
-            'severity':'Severity',
-            'urgency':'Urgency',
-            'sys_created_on':'Created On',
-            'sys_created_by':'Created by',
-            'short_description':'Short description'
-        },
-        'servicenow-upload-file': {
-            'file_name': 'Filename',
-            'download_link': 'Download link',
-            'sys_id': 'System ID'
-        },
-        'servicenow-incident-create': {
-            'number':'Number',
-            'sys_id':'Sys ID',
-            'state':  'State',
-            'impact': 'Impact',
-            'priority':'Priority',
-            'severity':'Severity',
-            'urgency':'Urgency',
-            'sys_created_on':'Created On',
-            'sys_created_by':'Created by',
-            'short_description':'Short description'
-        },
-        'servicenow-incident-upload-file': {
-            'file_name': 'Filename',
-            'download_link': 'Download link',
-            'sys_id': 'System ID'
-        }
-    }
-
     SNOW_ARGS = ["active", "activity_due", "short_description", "additional_assignee_list", "approval_history", "approval_set", "assigned_to", "assignment_group",
          "business_duration", "business_service", "business_stc", "calendar_duration", "calendar_stc", "caller_id", "caused_by", "close_code", "close_notes",
          "closed_at", "closed_by", "cmdb_ci", "comments", "comments_and_work_notes", "company", "contact_type", "correlation_display", "correlation_id",
@@ -216,7 +159,7 @@ script:
             else:
                 return 'incident'
 
-    def create_context(data):
+    def create_ticket_context(data):
         context =  {
             'ID': data["sys_id"],
         }
@@ -236,12 +179,42 @@ script:
 
     def get_ticket_context(data):
         if not isinstance(data, list):
-            return create_context(data)
+            return create_ticket_context(data)
 
         tickets = []
         for d in data:
-            tickets.append(create_context(d))
+            tickets.append(create_ticket_context(d))
         return tickets
+
+    def get_ticket_human_readable(tickets):
+        if not isinstance(tickets, list):
+            tickets = [tickets]
+
+        result = []
+        for ticket in tickets:
+            hr = {
+                'Number': ticket['number'],
+                'System ID': ticket['sys_id'],
+                'State': ticket['state'],
+                'Impact': ticket['impact'] if 'impact' in ticket else '',
+                'Priority': ticket['priority'] if 'priority' in ticket else '',
+                'Severity': ticket['severity'] if 'severity' in ticket else '',
+                'Urgency': ticket['urgency'] if 'urgency' in ticket else '',
+                'Created On': ticket['sys_created_on'] if 'sys_created_on' in ticket else '',
+                'Created By': ticket['sys_created_by'] if 'sys_created_by' in ticket else '',
+                'Active': ticket['active'] if 'active' in ticket else '',
+                'Close notes': ticket['close_notes'] if 'close_notes' in ticket else '',
+                'Description': ticket['description'] if 'description' in ticket else '',
+                'Opened at': ticket['opened_at'] if 'opened_at' in ticket else '',
+                'Due date': ticket['due_date'] if 'due_date' in ticket else '',
+                'Resolved by': ticket['closed_by'] if 'closed_by' in ticket else '',
+                'Resolved at': ticket['resolved_at'] if 'resolved_by' in ticket else '',
+                'SLA due': ticket['sla_due'] if 'sla_due' in ticket else '',
+                'Short description': ticket['short_description'] if 'short_description' in ticket else ''
+            }
+            result.append(hr)
+
+        return result
 
     def get_human_readable(data):
         data_dict = HR_DICT[demisto.command()] if demisto.command() in HR_DICT else HR_DICT['default']
@@ -264,7 +237,7 @@ script:
         template = template_name
 
         if template:
-            template = get_template(temp_res)
+            template = get_template(template_name)
 
         for arg in SNOW_ARGS:
             input_arg = demisto.args().get(arg, None)
@@ -338,19 +311,19 @@ script:
         if isinstance(res['result'], list):
             if len(res['result']) == 0:
                 return 'Cannot find incident'
-            incident = res['result'][0]
+            ticket = res['result'][0]
         else:
-            incident = res['result']
-        hr = get_human_readable(incident)
+            ticket = res['result']
+        hr = get_ticket_human_readable(ticket)
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow incident', hr),
+            'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, removeNull=True),
             'EntryContext': {
-                  'Ticket(val.ID==obj.ID)': get_ticket_context(incident),
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(ticket)
             }
         }
 
@@ -380,13 +353,14 @@ script:
 
         res = update(ticket_type, custom_fields, template)
 
-        hr = get_human_readable(res['result'])
+        hr = get_ticket_human_readable(res['result'])
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow ticket updated\nTicket type: ' + ticket_type + '\n', hr)
+            'HumanReadable': tableToMarkdown('ServiceNow ticket updated\nTicket type: ' + ticket_type + '\n', hr, removeNull=True)
         }
 
         return entry
@@ -408,13 +382,14 @@ script:
 
         res = create(ticket_type, custom_fields, template)
 
-        hr = get_human_readable(res['result'])
+        hr = get_ticket_human_readable(res['result'])
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow ticket created\nTicket type: ' + ticket_type + '\n', hr),
+            'HumanReadable': tableToMarkdown('ServiceNow ticket created\nTicket type: ' + ticket_type + '\n', hr, removeNull=True),
             'EntryContext': {
                   'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
             }
@@ -440,13 +415,13 @@ script:
 
         res = add_link(ticket_id, ticket_type, key, link)
 
-        hr = get_human_readable(res['result'])
+        hr = get_ticket_human_readable(res['result'])
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Link added to ServiceNow ticket\n', hr)
+            'HumanReadable': tableToMarkdown('Link added to ServiceNow ticket\n', hr, removeNull = True)
         }
 
         return entry
@@ -467,13 +442,13 @@ script:
 
         res = add_comment(ticket_id, ticket_type, key, text)
 
-        hr = get_human_readable(res['result'])
+        hr = get_ticket_human_readable(res['result'])
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Comment added to ServiceNow ticket\n', hr)
+            'HumanReadable': tableToMarkdown('Comment added to ServiceNow ticket\n', hr, removeNull = True)
         }
 
         return entry
@@ -495,14 +470,14 @@ script:
         if not res or 'result' not in res:
             return 'Cannot find incident'
 
-        hr = get_human_readable(res['result'])
+        hr = get_ticket_human_readable(res['result'])
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow ticket', hr),
+            'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, removeNull = True),
             'EntryContext': {
                   'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
             }
@@ -532,7 +507,11 @@ script:
 
         res = upload_file(ticket_id, file_id, file_name, ticket_type)
 
-        hr = get_human_readable(res['result'])
+        hr = {
+            'Filename': res['result']['file_name'],
+            'Download link': res['result']['download_link'],
+            'System ID': res['result']['sys_id']
+        }
 
         entry = {
             'Type': entryTypes['note'],
@@ -579,7 +558,6 @@ script:
         if computer['u_code'] != computer_name:
             return 'Computer not found'
 
-
         hr = {
             'Id': computer['sys_id'],
             'u_code (computer name)': computer['u_code'],
@@ -588,7 +566,7 @@ script:
             'Comments': computer['comments']
         }
 
-        ec = computer
+        ec = createContext(computer, removeNull = True)
         ec['support_group'] = computer['support_group']['value'] if 'support_group' in computer else ''
 
         entry = {
@@ -1596,7 +1574,7 @@ script:
       description: ServiceNow ticket state
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
-    description: Retrieve info with query
+    description: Retrieve ticket info with query
   - name: servicenow-incidents-query
     deprecated: true
     arguments:
@@ -1624,7 +1602,7 @@ script:
       description: ServiceNow ticket state
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
-    description: Retrieve info with query
+    description: Retrieve ticket info with query
   - name: servicenow-upload-file
     arguments:
     - name: id
@@ -1674,6 +1652,11 @@ script:
     - name: name
       required: true
       description: Servicenow group name
+    outputs:
+    - contextPath: ServiceNowGroups.GroupId
+      description: Group Id
+    - contextPath: ServiceNowGroups.GroupName
+      description: Group name
     description: Return information about specific servicenow group
   - name: servicenow-get-computer
     arguments:
@@ -1694,4 +1677,4 @@ script:
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
   runonce: false
-releaseNotes: "-"
+releaseNotes: "ServiceNow integration in Python"
