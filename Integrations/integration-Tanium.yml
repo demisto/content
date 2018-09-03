@@ -352,7 +352,15 @@ script:
         if demisto.command() == 'tn-approve-pending-action':
             final_result = approveSavedAction(handler)
     except Exception as ex:
-        final_result = { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(ex)}
+        if 'error' in ex.message: # There is an error - extracting the error message
+            error_index = ex.message.index('error')
+            error_message = ex.message[error_index:]
+            split_message = error_message.split(':')
+            relevant_message_index = split_message[3].index('.')
+            ex_content = split_message[3][:relevant_message_index]
+        else: # Result object is empty
+            ex_content = str(ex)
+        final_result = { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : ex_content}
 
     restoreSoutAndExit(final_result)
   type: python
@@ -674,3 +682,4 @@ script:
     arguments: []
     description: Gets all sensors
   dockerimage: demisto/pytan
+releaseNotes: "Made error messages to return more clearly, without unnecessary data"
