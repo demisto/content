@@ -212,4 +212,4 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
 scripttarget: 0
-releaseNotes: "get most recent file uploaded to the war room (when retrieving file by name)"
+releaseNotes: "add 'entryID' argument to get the file entry by ID. 'file' argument deprecated."
