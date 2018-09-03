@@ -6,6 +6,7 @@ description: Detonate one or more files using the Wildfire integration. This pla
   The detonation supports the following file types -
   APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
 fromversion: 3.6.0
+toversion: 3.6.0
 starttaskid: "0"
 tasks:
   "0":
@@ -421,3 +422,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+releaseNotes: Added toversion

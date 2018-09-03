@@ -156,7 +156,7 @@ script:
         return returnPlainResponse ? res : JSON.parse(res.Body);
     };
 
-    var parseACcountsFromErroMessage = function(message) {
+    var parseAccountsFromErrorMessage = function(message) {
         var credentials = [];
         // format: Too many password objects matching query [Folder=...;Safe=...] were found: (Safe=...;Folder=...;Object=... and Safe=...;Folder=...;Object=...) (Diagnostic Info: 41)
         var accounts = message.split("were found: (")[1];
@@ -213,7 +213,6 @@ script:
         }
 
         var credentials = [];
-
         for (var i = 0; i < credsToFetch.length; i++) {
             args.Object = credsToFetch[i].trim();
 
@@ -234,6 +233,48 @@ script:
         }
 
         return asList ? credentials : JSON.stringify(credentials);
+    }
+
+    var queryCredentials = function() {
+        args.AppID = appid;
+        if (!args.folder) {
+            args.Folder = params.folder;
+        } else {
+            args.Folder = args.folder;
+        }
+        if (!args.safe) {
+            args.Safe = params.safe;
+        } else {
+            args.Safe = args.safe;
+        }
+        var argsKeys = Object.keys(args);
+        cleanArgs = {};
+        argsKeys.forEach(function(key) {
+            var upperKey = key.charAt(0).toUpperCase() + key.substr(1);
+            cleanArgs[upperKey] = args[key];
+            delete args[key];
+        });
+        var result = sendRequest('GET', accountsUrl, cleanArgs);
+        var res = result;
+        var humanReadable = null;
+        // If we recieved too many (limited by CyberArk) then return a warning.
+        if (result && result.ErrorMsg && result.ErrorMsg.indexOf("Too many") > -1) {
+            var accounts = parseAccountsFromErrorMessage(result.ErrorMsg);
+            res = "Found " + accounts.length + " results or more, while can only get one. Please try to narrow down the search by adding more filters.";
+            humanReadable = res;
+        } else if (result && result.ErrorMsg) {
+            res = "Error: " + result.ErrorMsg;
+            humanReadable = res;
+        } else {
+           humanReadable = tableToMarkdown('Credentials Results', result);
+        }
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: res,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: humanReadable
+        };
     }
 
     var listCredentials = function() {
@@ -283,6 +324,8 @@ script:
             return testModuleAndCredentials();
         case 'fetch-credentials':
             return getCredentials();
+        case 'cyber-ark-aim-query':
+            return queryCredentials();
         case 'reset-credentials':
             return resetCredentials(args);
         case 'account-details':
@@ -294,7 +337,7 @@ script:
         case 'list-credentials':
             return listCredentials();
         default:
-            throw 'Command "' + command + '" is not supported';
+            throw 'Command "' + command + '" is not supported.';
     }
   type: javascript
   commands:
@@ -310,6 +353,21 @@ script:
       description: Folder to query
     - name: object
       description: Object to query
+    - name: query
+      description: Defines a free query using account properties, including Safe,
+        folder, and object. When this method is specified, all other search criteria
+        are ignored
+    - name: queryFormat
+      auto: PREDEFINED
+      predefined:
+      - Exact
+      - Regexp
+      description: Defines the query format, which can optionally use regular expressions
+    - name: reason
+      description: The reason for retrieving the password. This reason will be audited
+        in the Credential Provider audit log.
+    - name: database
+      description: Defines search criteria according to the Database account property
     outputs:
     - contextPath: CyberArk.AIM.Folder
       description: Account folder
@@ -333,7 +391,8 @@ script:
       description: Account username
     - contextPath: CyberArk.AIM.DeviceType
       description: Account device type
-    description: Query CyberArk AIM
+    description: Search credentials in cyberark using arguments to narrow the search.
+      Cannot return more than one result.
   - name: list-credentials
     arguments:
     - name: identifier
@@ -365,3 +424,5 @@ script:
       description: Specify a safe rather then using instance specific.
     description: This method returns information about an account. If more than one
       account meets the search criteria, only the first account will be returned.
+  runonce: false
+releaseNotes: "Added cyber-ark-aim-query support and arguments."
