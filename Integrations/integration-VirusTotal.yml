@@ -964,6 +964,8 @@ script:
       description: Scan detection for this URL (True/False)
     - contextPath: URL.VirusTotal.Scans.Result
       description: Scan result for this URL - signature, etc.
+    - contextPath: URL.VirusTotal.ScanID
+      description: Scan ID for this URL
     description: Check URL Reputation
   - name: domain
     arguments:
