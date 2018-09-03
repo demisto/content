@@ -407,11 +407,6 @@
             "playbookID": "test-domain-indicator"
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
-        },
-        {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "nightly": true
@@ -455,6 +450,11 @@
         }
     ],
     "skipped": [
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
         {
             "integrations": {
                 "name": "carbonblack",
