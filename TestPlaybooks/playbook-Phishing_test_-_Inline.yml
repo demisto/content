@@ -1,0 +1,336 @@
+id: Phishing test - Inline
+version: -1
+name: Phishing test - Inline
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fc2ec0f9-a350-46e6-82c6-66920f1418ec
+    type: start
+    task:
+      id: fc2ec0f9-a350-46e6-82c6-66920f1418ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: b4c9009f-25fc-4be2-8979-9a9ebb70f9af
+    type: title
+    task:
+      id: b4c9009f-25fc-4be2-8979-9a9ebb70f9af
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: da0e5042-5f15-44da-8b57-db3fee4ccf67
+    type: regular
+    task:
+      id: da0e5042-5f15-44da-8b57-db3fee4ccf67
+      version: -1
+      name: PhishingIncident - Inline
+      scriptName: PhishingIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "7"
+    scriptarguments:
+      malicious_location:
+        simple: inline
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 656cd400-15fe-46f0-8993-33b3502df1ea
+    type: playbook
+    task:
+      id: 656cd400-15fe-46f0-8993-33b3502df1ea
+      version: -1
+      name: Phishing Investigation - Generic_copy
+      description: |-
+        Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
+
+        The final remediation tasks are always decided by a human analyst.
+      playbookName: Phishing Investigation - Generic_copy
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      Role:
+        simple: Administrator
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: fb159225-2183-45e8-8088-0c58b80f0ceb
+    type: regular
+    task:
+      id: fb159225-2183-45e8-8088-0c58b80f0ceb
+      version: -1
+      name: Close Manual review
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      command:
+        simple: '!CompleteManualTask id=${incident.id}'
+      cron:
+        simple: '*/1 * * * *'
+      endDate: {}
+      times:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: e59e5250-3002-4ad7-8edd-501f9792ba0f
+    type: regular
+    task:
+      id: e59e5250-3002-4ad7-8edd-501f9792ba0f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 2287a34d-cd87-4afe-8285-a8dd5b2d3fa3
+    type: title
+    task:
+      id: 2287a34d-cd87-4afe-8285-a8dd5b2d3fa3
+      version: -1
+      name: Attachment Malicious
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 9bc5325d-a4ce-4354-813c-6466dd3219db
+    type: regular
+    task:
+      id: 9bc5325d-a4ce-4354-813c-6466dd3219db
+      version: -1
+      name: PhishingIncident - Attachment
+      scriptName: PhishingIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+    scriptarguments:
+      malicious_location:
+        simple: attachment
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 04bef4a8-43f1-4c69-8ea2-997b99c98433
+    type: playbook
+    task:
+      id: 04bef4a8-43f1-4c69-8ea2-997b99c98433
+      version: -1
+      name: Phishing Investigation - Generic_copy
+      description: |-
+        Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
+
+        The final remediation tasks are always decided by a human analyst.
+      playbookName: Phishing Investigation - Generic_copy
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Role:
+        simple: Administrator
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 7b42f99f-f88a-453e-8554-4dfbdf302ba3
+    type: regular
+    task:
+      id: 7b42f99f-f88a-453e-8554-4dfbdf302ba3
+      version: -1
+      name: Close Manual review
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      command:
+        simple: '!CompleteManualTask id=${incident.id}'
+      cron:
+        simple: '*/1 * * * *'
+      endDate: {}
+      times:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 56e1e113-22d3-4943-8de5-8bf8d1b6eb70
+    type: regular
+    task:
+      id: 56e1e113-22d3-4943-8de5-8bf8d1b6eb70
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
