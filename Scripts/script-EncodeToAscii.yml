@@ -1,7 +1,7 @@
 commonfields:
-  id: AsciiEncode
-  version: 21
-name: AsciiEncode
+  id: EncodeToAscii
+  version: -1
+name: EncodeToAscii
 script: |-
   """
   AsciiEncode - Demisto Automation
