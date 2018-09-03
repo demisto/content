@@ -57,6 +57,9 @@ script:
 
       };
 
+    var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+    var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
+
     function sendRequest(url, body, headers) {
         url.replace(/[\/]+$/, '');
         var res = http(
@@ -151,7 +154,7 @@ script:
       var hash = md5 || argHash || file;
       if(!hash)
         throw 'Missing md5/hash/file argument.';
-      if ( md5Regex.test(hash) || sha256Regex.test(hash) ) {
+      if ( MD5_REGEX.test(hash) || SHA256_REGEX.test(hash) ) {
         var bodyXML = 'apikey='+TOKEN+'&format=xml&hash='+hash;
         var resXML = sendRequest(reportUrl, bodyXML, DEFAULT_HEADERS);
         if(!resXML){
