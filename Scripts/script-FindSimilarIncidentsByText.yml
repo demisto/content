@@ -193,3 +193,4 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
+releaseNotes: "-"

@@ -25,6 +25,18 @@ script: |
           return False
       return True
 
+  def get_entry_by_file_name(file):
+      entries = demisto.executeCommand('getEntries', {})
+      for entry in entries:
+          fn = demisto.get(entry, 'File')
+
+          is_text = type(fn) in [unicode, str]
+          is_correct_file = file.lower() == fn.lower() or file.lower() == fn.split('.')[0].lower()
+
+          if is_text and is_correct_file:
+              return entry
+      raise ValueError('Was unable to find "{}" in the war room. Please ensure the file was uploaded.'.format(file))
+
   csvEntry = None
 
   iplist = []
@@ -37,7 +49,8 @@ script: |
 
   dArgs = demisto.args()
 
-  file = dArgs['file'] if 'file' in dArgs else None
+  entryID = dArgs['entryID'] if 'entryID' in dArgs else None
+  file = dArgs['file'] if 'file' in dArgs else None # file arg deprecated
   parseip = int(dArgs['ips']) if 'ips' in dArgs else -1
   parsedomain = int(dArgs['domains']) if 'domains' in dArgs else -1
   parsehash = int(dArgs['hashes']) if 'hashes' in dArgs else -1
@@ -45,31 +58,28 @@ script: |
 
   if parseip == -1 and parsedomain == -1 and parsehash == -1 and not parseAll:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Select a field to extract.' } )
-      exit()
-
-  # find the csv file entry by name
-  entries = demisto.executeCommand('getEntries', {})
-  for entry in entries:
-      fn = demisto.get(entry, 'File')
-
-      is_text = type(fn) in [unicode, str]
-      is_correct_file = file.lower() == fn.lower()
-      is_csv = fn.lower().endswith('.csv')
-
-      if is_text and is_correct_file and is_csv:
-          csvEntry = entry
-          break
-
-  if not csvEntry:
-      demisto.results({
-          "Type" : entryTypes["error"],
-          "ContentsFormat" : formats["text"],
-          "Contents" : 'No csv file found in the war room. Ensure the file was uploaded and the filename has ".csv" extension.'
-      })
       exit(0)
 
-  res = demisto.executeCommand('getFilePath', {'id': entry['ID']})
+  if file is None and entryID is None:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Please provide entryID.' } )
+      exit(0)
+
+  if entryID is None:
+      # search entry by file name
+      try:
+          entry = get_entry_by_file_name(file)
+          entryID = entry['ID']
+      except ValueError as e:
+          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : e.message } )
+          exit(0)
+
+  res = demisto.executeCommand('getFilePath', {'id': entryID})
   filePath = res[0]['Contents']['path']
+  fileName = res[0]['Contents']['name']
+  if not fileName.lower().endswith('.csv'):
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extention'.format(fileName) } )
+      exit(0)
+
   if parseAll:
       all_csv = []
       with open(filePath, mode='r') as f:
@@ -164,9 +174,11 @@ comment: This script will parse a CSV file and place the unique IPs, Domains and
   into the context.
 enabled: true
 args:
-- name: file
-  required: true
+- name: entryID
   default: true
+  description: 'The war room entryID of the file.'
+- name: file
+  deprecated: true
   description: The name of the file. The file must be uploaded to the War Room.
 - name: ips
   description: The column number that contains IP Addresses. (First column is column
@@ -197,3 +209,5 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
 scripttarget: 0
+releaseNotes: "add 'entryID' argument to get the file entry by ID. 'file' argument deprecated."
+

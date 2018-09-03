@@ -100,6 +100,7 @@ script:
             md = md + ' | '.join(r.replace('|', '\\|') for r in row['values']) + '\n'
 
         return md
+
     def search_results_to_context(res):
         columns = res['columns']
         rows = res['rows']
@@ -119,6 +120,7 @@ script:
         context = {'SearchResults(val.ID && val.ID == obj.ID)' : fixed_searches}
         return context
 
+
     def severity_to_level(severity):
         if severity > 65:
             return 3
@@ -127,8 +129,8 @@ script:
         else:
             return 1
 
-    class NitroESM(object):
 
+    class NitroESM(object):
         def __init__(self, esmhost, user, passwd):
             """ Init instance attributes """
             self.esmhost = esmhost
@@ -138,6 +140,8 @@ script:
             self._encode_login()
             self._build_params()
             self.is_logged_in = False
+            self._case_statuses = None
+
 
         def _build_login_urls(self):
             """ Concatenate URLs """
@@ -145,9 +149,11 @@ script:
             self.int_url = 'https://{}/ess'.format(self.esmhost)
             self.login_url = '{}{}'.format(self.url, 'login')
 
+
         def _encode_login(self):
             self.b64_user = base64.b64encode(self.user.encode('utf-8')).decode()
             self.b64_passwd = base64.b64encode(self.passwd.encode('utf-8')).decode()
+
 
         def _build_params(self):
                 self.params = {"username": self.b64_user,
@@ -159,6 +165,7 @@ script:
                     self.params_json = json.dumps(self.params)
                 except TypeError as e:
                     throw_error("Invalid parameters: {}".format(self.params))
+
 
         def login(self):
             try:
@@ -182,6 +189,7 @@ script:
             except KeyError as e:
                 throw_error("Failed login\n error: {}".format(e))
 
+
         def logout(self):
             if self.is_logged_in:
                 try:
@@ -195,6 +203,7 @@ script:
                     self.is_logged_in = False
                 except Exception as e:
                     demisto.error('McAfee ESM logout failed with the following error: %s' % (str(e), ))
+
 
         def cmdquery(self, cmd, query=None, no_answer=False, no_validation=False):
             """ Send query to ESM, return JSON result """
@@ -313,6 +322,7 @@ script:
                 'HumanReadable': tblToMd('Result:' ,res),
             }
 
+
         # alarms commands
         def fetch_alarms(self, time_range, custom_start, custom_end, assigned_user):
             if (time_range == 'CUSTOM' and (not custom_start or not custom_end)):
@@ -338,6 +348,8 @@ script:
                 del alarm["id"]
 
             return res
+
+
         def update_alarms_status(self, alarm_ids):
             cmd = 'alarm%(action)sTriggeredAlarm' % (action, )
             query = json.dumps({'triggeredIds' : [{'value' : int(i)} for i in alarm_ids]})
@@ -348,14 +360,38 @@ script:
             self.cmdquery(cmd, query, no_validation=True)
             return 'Alarms has been %sd.' % (action, )
 
+
         def acknowledge_alarms(self, alarm_ids):
             return self.update_alarms_status('Acknowledge', alarm_ids)
+
 
         def unacknowledge_alarms(self, alarm_ids):
             return self.update_alarms_status('Unacknowledge', alarm_ids)
 
+
         def delete_alarms(self, alarm_ids):
             return self.update_alarms_status('Delete', alarm_ids)
+
+
+        def get_alarm_event_details(self, event_id):
+            cmd = ('%sipsGetAlertData' % ('v2/' if VERSION == '10.2' else '', ))
+            query = json.dumps({'id' : event_id})
+
+            self.login()
+            res = self.cmdquery(cmd, query)
+
+            return res
+
+
+        def list_alarm_events(self, alarm_id):
+            cmd = 'notifyGetTriggeredNotificationDetail'
+            query = json.dumps({'id' : alarm_id})
+
+            self.login()
+            res = self.cmdquery(cmd, query)
+
+            return res
+
 
         # case statuses commands
         def add_case_status(self, name, should_show_in_case_pane):
@@ -403,41 +439,54 @@ script:
 
             return 'Deleted case status with ID: %d' % (status_id['value'], )
 
-        def get_case_statuses(self, should_login = False):
+        def get_case_statuses(self, should_login=False):
             '''get all case statuses'''
             if should_login:
                 self.login()
 
             cmd = 'caseGetCaseStatusList'
             query = json.dumps({"authPW": {"value": self.passwd}})
+
             return self.cmdquery(cmd, query)
 
-        def case_status_id_to_name(self, status_id):
+
+        def case_status_id_to_name(self, status_id, use_cache=True):
             '''convert case status id to name'''
-            res = self.get_case_statuses()
-            matches = [status['name'] for status in res if status['id'] == status_id]
+            if self._case_statuses is None or not use_cache or not any([s['id'] == status_id for s in self._case_statuses]):
+                self._case_statuses = self.get_case_statuses()
+
+            matches = [status['name'] for status in self._case_statuses if status['id'] == status_id]
+
             return matches[0] if matches else 'Unknown - %d' % (status_id, )
 
-        def case_status_name_to_id(self, status_name):
+
+        def case_status_name_to_id(self, status_name, use_cache=True):
             '''convert case status name to id'''
-            res = self.get_case_statuses()
-            matches = [status['id'] for status in res if status['name'].lower() == status_name.lower()]
+            if self._case_statuses is None or not use_cache or not any([s['name'].lower() == status_name.lower() for s in self._case_statuses]):
+                self._case_statuses = self.get_case_statuses()
+
+            matches = [status['id'] for status in self._case_statuses if status['name'].lower() == status_name.lower()]
+
             return matches[0] if matches else 0 # 0 is not a valid value
 
+
         # user commands
-        def get_users(self, should_login = False):
+        def get_users(self, should_login=False):
             '''get all user's names'''
             if should_login:
                 self.login()
 
             cmd = 'userGetUserList'
             query = json.dumps({"authPW": {"value": self.passwd}})
+
             return self.cmdquery(cmd, query)
+
 
         def get_user_obj(self, user_name):
             '''get user object'''
             if user_name.lower() == 'me':
                 user_name = self.user
+
             res = self.get_users()
             matches = [user for user in res if user['username'] == user_name]
             self_matches = [user['id']['value'] for user in res if user['username'] == self.user]
@@ -710,7 +759,7 @@ script:
             'EntryContext': context
        }
 
-    def events_to_entry(events):
+    def case_events_to_entry(events):
         if not events:
             return 'No events were found'
 
@@ -718,7 +767,7 @@ script:
         fixed_events = []
         for event in events:
             fixed_events.append({
-                'ID' : event['id']['value'].replace('|', '\|'),
+                'ID' : event['id']['value'],
                 'LastTime' : event['lastTime'],
                 'Message' : event['message'],
             })
@@ -732,6 +781,55 @@ script:
             'HumanReadable': tblToMd('Case Events:', fixed_events, headers),
             'EntryContext': context
        }
+
+
+    def alarm_events_to_entry(events):
+        headers = ['ID', 'SubType', 'Severity', 'Message', 'LastTime', 'SrcIP', 'SrcPort', 'DstIP', 'DstPort', ]
+        fixed_events = []
+        for raw_event in events:
+            # there are two type of event objects representation:
+            # 1) the result of esm-list-alarm-events
+            # 2) the result of esm-get-alarm-event-details
+            # therefore, first try to get the field of the first option and fallback to the second option.
+            cases = [{
+                'ID' : case['id'],
+                'OpenTime' : case['openTime'],
+                'Severity' : case['severity'],
+                'Summary' : case['summary'],
+                'Status' : esm.case_status_id_to_name(case['statusId']['value'])
+            } for case in raw_event.get('cases', [])]
+            event = {
+                'ID' : raw_event.get('eventId', '%s|%s' % (raw_event.get('ipsId', ''), raw_event.get('alertId', ''))),
+                'SubType' : raw_event.get('eventSubType', raw_event.get('subtype')),
+                'Severity' : raw_event['severity'],
+                'Cases' : cases,
+                'Message' : raw_event.get('ruleMessage', raw_event.get('ruleName')),
+                'NormalizedDescription' : raw_event.get('normDesc'),
+                'FirstTime' : raw_event.get('firstTime'),
+                'LastTime' : raw_event['lastTime'],
+
+                'SrcMac' : raw_event.get('srcMac'),
+                'SrcIP' : raw_event.get('sourceIp', raw_event.get('srcIp')),
+                'SrcPort' : raw_event.get('srcPort'),
+                'DstMac' : raw_event.get('destMac'),
+                'DstIP' : raw_event['destIp'],
+                'DstPort' : raw_event.get('destPort'),
+
+                # 'Raw' : raw_event, # temporary for vik
+            }
+
+            fixed_events.append(event)
+
+        context = {'EsmAlarmEvent(val.ID && val.ID == obj.ID)' : createContext(fixed_events, removeNull=True)}
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': fixed_events,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tblToMd('Alarm Events:', fixed_events, headers=headers),
+            'EntryContext': context
+       }
+
 
     def users_to_entry(users):
         # unreachable code - in order to send command, one must be logged in. therefore there is at least one user.
@@ -911,7 +1009,7 @@ script:
         args = demisto.args()
         event_ids = demisto.get(args, 'ids').split(',')
         res = esm.get_case_event_list(event_ids)
-        final_result = events_to_entry(res)
+        final_result = case_events_to_entry(res)
 
     elif demisto.command() == 'esm-get-organization-list':
         res = esm.get_organizations(True)
@@ -945,6 +1043,16 @@ script:
         args = demisto.args()
         res = esm.delete_alarms(argToList(demisto.get(args, 'alarmIds')))
         final_result = res
+
+    elif demisto.command() == 'esm-get-alarm-event-details':
+        args = demisto.args()
+        res = esm.get_alarm_event_details(demisto.get(args, 'eventId'))
+        final_result = alarm_events_to_entry([res])
+
+    elif demisto.command() == 'esm-list-alarm-events':
+        args = demisto.args()
+        res = esm.list_alarm_events(demisto.get(args, 'alarmId'))
+        final_result = alarm_events_to_entry(res['events'])
 
 
     esm.logout()
@@ -1281,5 +1389,117 @@ script:
       description: list of triggered alarm ids to be deleted separated with commas
       isArray: true
     description: Delete triggered alarms
+  - name: esm-get-alarm-event-details
+    arguments:
+    - name: eventId
+      required: true
+      default: true
+      description: The event to get the details for. the ID can be taken from esm-get-alarm-event.
+    outputs:
+    - contextPath: EsmAlarmEvent.ID
+      description: Event ID
+      type: string
+    - contextPath: EsmAlarmEvent.SubType
+      description: Event Type
+      type: string
+    - contextPath: EsmAlarmEvent.Severity
+      description: Event Severity
+      type: number
+    - contextPath: EsmAlarmEvent.Message
+      description: Event Message
+      type: string
+    - contextPath: EsmAlarmEvent.LastTime
+      description: Event Time
+      type: date
+    - contextPath: EsmAlarmEvent.SrcIP
+      description: Source IP of the event
+      type: string
+    - contextPath: EsmAlarmEvent.DstIP
+      description: Destination IP of the event
+      type: string
+    - contextPath: EsmAlarmEvent.Cases
+      description: A list of related cases to the event
+    - contextPath: EsmAlarmEvent.Cases.ID
+      description: Case ID
+      type: string
+    - contextPath: EsmAlarmEvent.Cases.OpenTime
+      description: Case creation time
+      type: date
+    - contextPath: EsmAlarmEvent.Cases.Severity
+      description: Case severity
+      type: number
+    - contextPath: EsmAlarmEvent.Cases.Status
+      description: Case status
+      type: string
+    - contextPath: EsmAlarmEvent.Cases.Summary
+      description: Case summary
+      type: string
+    - contextPath: EsmAlarmEvent.DstMac
+      description: Destination MAC of the event
+      type: string
+    - contextPath: EsmAlarmEvent.SrcMac
+      description: Source MAC of the event
+      type: string
+    - contextPath: EsmAlarmEvent.DstPort
+      description: Destination port of the event
+      type: string
+    - contextPath: EsmAlarmEvent.SrcPort
+      description: Source port of the event
+      type: string
+    - contextPath: EsmAlarmEvent.FirstTime
+      description: The first time for the event
+      type: date
+    - contextPath: EsmAlarmEvent.NormalizedDescription
+      description: Normalized description of the event
+      type: string
+    description: Gets the details for the triggered alarm
+  - name: esm-list-alarm-events
+    arguments:
+    - name: alarmId
+      required: true
+      default: true
+      description: The alarm to get the details for. the ID can be taken from the
+        esm-fetch-alarms
+    outputs:
+    - contextPath: EsmAlarmEvent.ID
+      description: Event ID
+      type: string
+    - contextPath: EsmAlarmEvent.SubType
+      description: Event Type
+      type: string
+    - contextPath: EsmAlarmEvent.Severity
+      description: Event Severity
+      type: number
+    - contextPath: EsmAlarmEvent.Message
+      description: Event Message
+      type: string
+    - contextPath: EsmAlarmEvent.LastTime
+      description: Event Time
+      type: date
+    - contextPath: EsmAlarmEvent.SrcIP
+      description: Source IP of the event
+      type: string
+    - contextPath: EsmAlarmEvent.DstIP
+      description: Destination IP of the event
+      type: string
+    - contextPath: EsmAlarmEvent.Cases
+      description: A list of related cases to the event
+    - contextPath: EsmAlarmEvent.Cases.ID
+      description: Case ID
+      type: string
+    - contextPath: EsmAlarmEvent.Cases.OpenTime
+      description: Case creation time
+      type: date
+    - contextPath: EsmAlarmEvent.Cases.Severity
+      description: Case severity
+      type: number
+    - contextPath: EsmAlarmEvent.Cases.Status
+      description: Case status
+      type: string
+    - contextPath: EsmAlarmEvent.Cases.Summary
+      description: Case summary
+      type: string
+    description: Gets an event list related to the alarm
   isfetch: true
   runonce: false
+releaseNotes: added commands for fetching event details of alarms.
