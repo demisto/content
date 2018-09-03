@@ -51,7 +51,7 @@ tasks:
     scriptarguments:
       upload:
         complex:
-          root: inputs.File
+          root: inputs.File.EntryID
     separatecontext: false
     view: |-
       {
