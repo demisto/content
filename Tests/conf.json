@@ -443,6 +443,15 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true
         }
     ],
     "skipped": [
