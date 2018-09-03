@@ -369,6 +369,12 @@ script:
     };
 
     var doURL = function(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
+        //lowercase the URL protocol
+        var protocol = url.substr(0, 5).toLowerCase();
+        if (protocol === 'https' || protocol === 'http:') {
+            url = protocol + url.substr(5);
+        }
+
         if (!submitWait) {
             submitWait = 0;
         }
