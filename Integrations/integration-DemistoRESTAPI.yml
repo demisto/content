@@ -119,6 +119,34 @@ script:
         }
     };
 
+    var deleteIncident = function(ids_to_delete) {
+        var body = {
+            ids: ids_to_delete,
+            all: false,
+            filter: {}
+        };
+
+        var args = {
+            uri: '/incident/batchDelete',
+            body: body
+        };
+
+        var res = sendRequest('POST',args.uri, JSON.stringify(args.body));
+        if (isError(res[0])) {
+            throw res[0].Contents;
+        }
+
+        var response = res['response']
+        var md = tableToMarkdown('Demisto delete incidents', response, ['data', 'total', "notUpdated"]);
+
+        return {
+            ContentsFormat: formats.json,
+            Type: entryTypes.note,
+            Contents: res,
+            HumanReadable: md
+        };
+    };
+
     switch (command) {
         case 'test-module':
             sendRequest('GET','user');
@@ -148,6 +176,12 @@ script:
             }
             var desc = args.description || '';
             return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
+        case 'demisto-delete-incident':
+            var ids = [args.id];
+            return deleteIncident(ids);
+        case 'demisto-delete-incidents':
+            var ids = args.ids.toString().split(",");
+            return deleteIncident(ids);
         default:
             throw 'Demisto REST APIs - unknown command';
     }
@@ -209,4 +243,19 @@ script:
     - name: body
       description: Request body
     description: Send HTTP Multipart request to upload files to Demisto server
+  - name: demisto-delete-incident
+    arguments:
+    - name: id
+      required: true
+      description: Incident ID to delete
+    description: Delete a Demisto incident
+    execution: true
+  - name: demisto-delete-incidents
+    arguments:
+    - name: ids
+      required: true
+      description: IDs of the incidents to delete
+    description: Delete Demisto incidents
+    execution: true
   runonce: false
+releaseNotes: "Added delete incident command"
