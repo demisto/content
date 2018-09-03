@@ -175,7 +175,7 @@ script:
         };
         return returnObj;
       } else {
-      throw 'Invalid hash. Only SHA256 and MD5 are supported.';
+        throw 'Invalid hash. Only SHA256 and MD5 are supported.';
       }
     }
 
