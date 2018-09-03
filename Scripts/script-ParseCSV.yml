@@ -80,7 +80,7 @@ script: |
   filePath = res[0]['Contents']['path']
   fileName = res[0]['Contents']['name']
   if not fileName.lower().endswith('.csv'):
-      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : '{} is not in csv format. Please ensure the file is in correct format and has a ".csv" extention'.format(fileName) } )
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extention'.format(fileName) } )
       exit(0)
 
   if parseAll:
