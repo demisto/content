@@ -568,7 +568,7 @@ script: |-
       if removeNull:
           headers_aux = headers[:]
           for header in headers_aux:
-              if all(obj.get(header) in ['', None, [], {}] for obj in t):
+              if all(obj.get(header) in ('', None, [], {}) for obj in t):
                   headers.remove(header)
 
       if t and len(headers) > 0:
@@ -639,7 +639,7 @@ script: |-
           keyTransform = lambda s: s
       keys = obj.keys()
       for key in keys:
-          if removeNull and obj[key] is None:
+          if removeNull and obj[key] in ('', None, [], {}):
               continue
           values = key.split('.')
           current = res
