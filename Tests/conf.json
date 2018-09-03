@@ -6,6 +6,12 @@
             "playbookID": "TextFromHTML_test_playbook"
         },
         {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "WildFire",
             "playbookID": "Wildfire Test"
         },
@@ -410,11 +416,6 @@
             "playbookID": "test-domain-indicator"
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
-        },
-        {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "nightly": true
@@ -459,6 +460,11 @@
     ],
     "skipped": [
         {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
+        {
             "integrations": {
                 "name": "carbonblack",
                 "byoi": false
@@ -468,12 +474,6 @@
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
-            "nightly": true
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
             "nightly": true
         },
         {
