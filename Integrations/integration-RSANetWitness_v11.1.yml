@@ -45,6 +45,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: on 'Fetch incidents' import all alerts related to the incident
+  name: importAlerts
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |2+
 
@@ -83,25 +88,7 @@ script:
 
     """
 
-    GLOBAL VARS
-
-    """
-    SERVER_URL = demisto.params()['server']
-    BASE_PATH = '{}/rest/api'.format(SERVER_URL)
-    USERNAME = demisto.params()['credentials']['identifier']
-    PASSWORD = demisto.params()['credentials']['password']
-    USE_SSL = not demisto.params()['insecure']
-    VERSION = demisto.params()['version']
-    PROXIES = set_proxies()
-    DEFAULT_HEADERS = {
-        'Content-Type' : 'application/json;charset=UTF-8',
-        'Accept': 'application/json; charset=UTF-8',
-        'NetWitness-Version': VERSION
-    }
-
-    """
-
-    COMMAND HANDLERS
+    AUTHENTICATION
 
     """
 
@@ -149,17 +136,96 @@ script:
             - unexpected response from the server
 
         """
+        LOG('Attempting to get token')
         response_body = get_token_request(
             USERNAME,
             PASSWORD
         )
+        LOG('Token recieved')
         token = response_body.get('accessToken')
         if not token:
             raise ValueError('Failed to access get_token token (Unexpected response)')
         return token
 
+    """
 
-    def get_incident_request(token, incident_id):
+    GLOBAL VARS
+
+    """
+    SERVER_URL = demisto.params()['server']
+    BASE_PATH = '{}/rest/api'.format(SERVER_URL)
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    USE_SSL = not demisto.params()['insecure']
+    VERSION = demisto.params()['version']
+    PROXIES = set_proxies()
+    TOKEN = get_token()
+    DEFAULT_HEADERS = {
+        'Content-Type' : 'application/json;charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8',
+        'NetWitness-Version': VERSION
+    }
+
+    """
+
+    COMMAND HANDLERS
+
+    """
+
+    def http_request(method, url, body=None, headers={}, url_params=None):
+        '''
+        returns the http response body
+
+        uses TOKEN global var to send requests to RSA end (this enables using a token for multiple requests and avoiding unnecessary creation of a new token)
+        catches and handles token expiration: in case of 'request timeout' the  token will be renewed and the request will be resent once more.
+
+        '''
+
+        global TOKEN
+
+        # add token to headers
+        headers['NetWitness-Token'] = TOKEN
+
+        request_kwargs = {
+            'headers': headers,
+            'verify': USE_SSL,
+            'proxies': PROXIES
+        }
+
+        #add optional arguments if specified
+        if body is not None:
+            request_kwargs['data'] = body
+        if url_params is not None:
+            request_kwargs['params'] = url_params
+
+        LOG('Attempting {} request to {}\nWith params:{}\nWith body:\n{}'.format(method, url,json.dumps(url_params, indent=4), json.dumps(body, indent=4)))
+        response = requests.request(
+            method,
+            url,
+            **request_kwargs
+        )
+        # handle timeout (token expired): renew token and try again
+        if response.status_code == 408:
+            LOG('Timeout detected -  renwing token')
+            TOKEN = get_token()
+            headers['NetWitness-Token'] = TOKEN
+            response = requests.request(
+                method,
+                url,
+                **request_kwargs
+            )
+        #successful request
+        if response.status_code == 200:
+            try:
+                return response.json()
+            except Exception as e:
+                LOG(e.message)
+                return None
+        #bad request - NetWitness returns a common json structure for errors; a list of error objects
+        error_lst = response.json().get('errors')
+        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+
+    def get_incident_request(incident_id):
         """
 
         returns the response body
@@ -172,20 +238,15 @@ script:
 
         """
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
-        headers = add_token_header(DEFAULT_HEADERS, token)
 
-        response = requests.get(url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES
+        response = http_request(
+            'GET',
+            url,
+            headers = DEFAULT_HEADERS
         )
+        return response
 
-        #successful request
-        if response.status_code == 200:
-            return response.json()
-        #bad request - NetWitness returns a common json structure for errors; a list of error objects
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+
 
     def get_incident():
         """
@@ -197,12 +258,11 @@ script:
         """
         args = demisto.args()
         incident_id = args.get('incidentId')
-
+        LOG('Requesting information on incident ' + incident_id)
         #call get_incident_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
         incident = get_incident_request(
-            get_token(),
             incident_id
         )
 
@@ -221,13 +281,12 @@ script:
         }
         demisto.results(entry)
 
-    def get_incidents_request(token, since=None, until=None, page_number=None, page_size=10):
+    def get_incidents_request(since=None, until=None, page_number=None, page_size=10):
         """
 
         returns the response body
 
         arguments:
-            - token for request auth
             - keywords: url params
 
         raises an exception on:
@@ -245,24 +304,17 @@ script:
             'pageSize': page_size
         }
         url = '{}/incidents'.format(BASE_PATH)
-        headers = add_token_header(DEFAULT_HEADERS, token)
 
-        response = requests.get(
+        response = http_request(
+            'GET',
             url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES,
-            params = url_params
+            headers = DEFAULT_HEADERS,
+            url_params = url_params
         )
 
-        #successful request
-        if response.status_code == 200:
-            return response.json()
-        #bad request - NetWitness returns a common json structure for errors
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+        return response
 
-    def get_all_incidents(token, since=None, until=None, limit=None):
+    def get_all_incidents(since=None, until=None, limit=None):
         """
 
         returns all/up to limit incidents in a time window
@@ -275,12 +327,13 @@ script:
         has_next = True
         page_number = 0
         incidents = []
+        LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s = since or 'not specified', u = until or 'not specified'))
         while has_next and limit > len(incidents):
         #call get_incidents_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
+            LOG('Requesting for page {}'.format(page_number))
             response_body = get_incidents_request(
-                token,
                 since = since,
                 until = until,
                 page_number = page_number
@@ -298,7 +351,7 @@ script:
     def get_incidents():
         """
 
-        returns list of incidents in a specific time window to the war room (main attriibutes only)
+        returns list of incidents in a specific time window to the war room (main attributes only)
 
         raises an exception on:
             - missing arguments
@@ -323,7 +376,6 @@ script:
             limit = int(limit)
 
         incidents = get_all_incidents(
-            get_token(),
             since = args.get('since'),
             until = args.get('until'),
             limit = limit
@@ -345,13 +397,12 @@ script:
         demisto.results(entry)
 
 
-    def update_incident_request(token, incident_id, assignee=None, status=None):
+    def update_incident_request(incident_id, assignee=None, status=None):
 
         """
         returns the response body
 
         arguments:
-            - token for request auth
             - keywords: url params
 
         raises an exception on:
@@ -361,25 +412,20 @@ script:
             - response body does not contain valid json (ValueError)
 
         """
+        LOG('Requestig to update incident ' + incident_id)
+
         body = {
             'assignee': assignee,
             'status': status
         }
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
-        headers = add_token_header(DEFAULT_HEADERS, token)
-        response = requests.patch(
+        response = http_request(
+            'PATCH',
             url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES,
-            json = body
+            headers = DEFAULT_HEADERS,
+            body = body
         )
-        #successful request
-        if response.status_code == 200:
-            return response.json()
-        #bad request - NetWitness returns a common json structure for errors; a list of error objects
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+        return response
 
     def update_incident():
         """
@@ -400,33 +446,30 @@ script:
         #returns the response body on success
         #raises an exception on failed request
         incident = update_incident_request(
-            #use get_token to retrieve a token
-            get_token(),
             args.get('incidentId'),
             status = args.get('status'),
             assignee = args.get('assignee')
             )
 
-        md_content = create_incident_md_table(incident, "NetWitness Update Incident")
+        md_content = create_incident_md_table(incident)
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': incident,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md_content,
+            'HumanReadable':  "## NetWitness Update Incident\n" + md_content,
             'EntryContext': {
                 "NetWitness.Incidents(obj.id==val.id)": incident
             }
         }
         demisto.results(entry)
 
-    def delete_incident_request(token, incident_id):
+    def delete_incident_request(incident_id):
         """
         returns the response body
 
         arguments:
-            - token for request auth
             - incident_id: the id of the incident to delete
 
         raises an exception on:
@@ -435,21 +478,14 @@ script:
             - response status code diff from 204
 
         """
-
+        LOG('Requesting to delete incident ' + incident_id)
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
-        headers = add_token_header(DEFAULT_HEADERS, token)
-
-        response = requests.delete(
+        response = http_request(
+            'DELETE',
             url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES)
-        #successful request, no content is  returned from NetWitness
-        if response.status_code == 204:
-            return
-        #bad request - NetWitness returns a common json structure for errors; a list of error objects
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+            headers = DEFAULT_HEADERS
+        )
+        return response
 
     def delete_incident():
         """
@@ -465,7 +501,6 @@ script:
         #no return value on successful request
         #raises an exception on failed request
         delete_incident_request(
-            get_token(),
             incident_id
         )
 
@@ -476,12 +511,11 @@ script:
         }
         demisto.results(entry)
 
-    def get_alerts_request(token, incident_id, page_number=None, page_size=None):
+    def get_alerts_request(incident_id, page_number=None, page_size=None):
         """
         returns the response body
 
         arguments:
-            - token for request auth
             - incident_id: the id of the incident
 
         raises an exception on:
@@ -496,22 +530,16 @@ script:
             'pageNumber' : page_number,
             'pageSize' : page_size
         }
-        headers = add_token_header(DEFAULT_HEADERS, token)
-        response = requests.get(
-            url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES,
-            params = url_params
-        )
-        #successful request
-        if response.status_code == 200:
-            return response.json()
-        #bad request - NetWitness returns a common json structure for errors; a list of error objects
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
 
-    def get_all_alerts(token ,incident_id):
+        response = http_request(
+            'GET',
+            url,
+            headers = DEFAULT_HEADERS,
+            url_params = url_params
+        )
+        return response
+
+    def get_all_alerts(incident_id):
         """
         returns the alerts that are associated with an incident
 
@@ -520,12 +548,13 @@ script:
         page_number = 0
         alerts = []
 
+        LOG('Requesting for data on alerts related to incident ' + incident_id)
         while has_next:
         #call get_alerts_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
+            LOG('Requesting for page {}'.format(page_number))
             response_body = get_alerts_request(
-                token,
                 incident_id,
                 page_number = page_number
             )
@@ -543,7 +572,6 @@ script:
         args = demisto.args()
         incident_id = args.get('incidentId')
         alerts = get_all_alerts(
-            get_token(),
             incident_id
         )
 
@@ -585,10 +613,8 @@ script:
             #convert to ISO 8601 format and add Z suffix
             timestamp = day_ago.isoformat() + 'Z'
 
-        token = get_token()
-
+        LOG('Fetching incidents since ' + timestamp)
         netwitness_incidents = get_all_incidents(
-            token,
             since = timestamp,
             limit = 100
         )
@@ -598,6 +624,9 @@ script:
 
         last_incident_datetime = datetime.strptime(timestamp, iso_format)
         last_incident_timestamp = timestamp
+
+        # set boolean flag for fetching alerts per incident
+        import_alerts = demisto.params().get('importAlerts')
 
         for incident in netwitness_incidents:
 
@@ -613,7 +642,11 @@ script:
                 last_incident_timestamp = incident_timestamp
 
             # add to incident object an array of all related alerts
-            incident['alerts'] = get_all_alerts(token, incident.get('id'))
+            if import_alerts:
+                try:
+                    incident['alerts'] = get_all_alerts(incident.get('id'))
+                except ValueError as e:
+                    LOG('Failed to fetch alerts related to incident ' + incident.get('id'))
             demisto_incidents.append(parse_incident(incident))
 
         demisto.incidents(demisto_incidents)
@@ -635,9 +668,10 @@ script:
             'categories'
         ]
         incident_labels = [{'type': field, 'value': json.dumps(netwitness_incident.get(field))} for field in incident_fields ]
-        alerts = netwitness_incident.get('alerts', [])
-        alerts_ids = [alert.get('id') for alert in alerts]
-        incident_labels.append({ 'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
+        alerts = netwitness_incident.get('alerts')
+        if alerts:
+            alerts_ids = [alert.get('id') for alert in alerts]
+            incident_labels.append({ 'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
         incident = {
             'name': netwitness_incident.get('title'),
             'occurred': netwitness_incident.get('created'),
@@ -654,14 +688,6 @@ script:
 
     """
 
-    def add_token_header(headers, token):
-        """
-
-        add the token field to a given headers object
-
-        """
-        headers['NetWitness-Token'] = token
-        return headers
 
     def dict_list_to_str(dict_list):
         """
@@ -674,7 +700,7 @@ script:
         string_list = []
         for dict in dict_list:
             key_values = ["{}: {}".format(k,v) for k,v in dict.items()]
-            string_list.append(', '.join(string_representation))
+            string_list.append(', '.join(key_values))
         return '\n'.join(string_list)
 
     def create_incident_md_table(incident):
@@ -942,8 +968,7 @@ script:
     command = demisto.command()
     try:
         if command == 'test-module':
-            #call get_token() to test user credentials, will raise ValueError exception when unsuccessful
-            get_token()
+            # global variable TOKEN initialization tests user credentials (will raise ValueError exception when unsuccessful).
             demisto.results('ok')
         elif command == 'fetch-incidents':
             fetch_incidents()
@@ -960,6 +985,8 @@ script:
             get_alerts()
         sys.exit(0)
     except ValueError as e:
+        LOG(e.message)
+        LOG.print_log()
         return_error_entry(e.message)
         sys.exit(1)
 
@@ -1334,3 +1361,4 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
+releaseNotes: "Checkbox added to enable selection of alerts importation when fetching incidents"

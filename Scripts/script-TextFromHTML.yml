@@ -4,9 +4,9 @@ commonfields:
 name: TextFromHTML
 script: |-
   import re
-  body = re.search(r'<body.*/body>', demisto.args()['html'], re.M + re.S + re.I)
+  body = re.search(ur'<body.*/body>', demisto.args()['html'], re.M + re.S + re.I + re.U)
   if body and body.group(0):
-      data = re.sub(r'<.*?>', '', body.group(0))
+      data = re.sub(ur'<.*?>', '', body.group(0))
       entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ', 'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
       for e in entities:
           data = data.replace('&' + e + ';', entities[e])
@@ -26,3 +26,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "-"

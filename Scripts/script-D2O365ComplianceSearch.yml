@@ -13,7 +13,7 @@ script: |
   command.push("-version 2.0");
   command.push("-NonInteractive");
   command.push("-NoLogo");
-  command.push(which("office365compliancesearch.ps1"));
+  command.push("'" + which("office365compliancesearch.ps1") + "'");
   if (typeof (args.password) !== "undefined") {
       command.push("-password");
       command.push("'" + args.password + "'");
@@ -59,3 +59,4 @@ args:
 scripttarget: 1
 dependson: {}
 timeout: 7.2µs
+releaseNotes: "fix file argument not found"
