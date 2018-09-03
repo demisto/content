@@ -189,6 +189,7 @@ script:
         'threat-grid-download-sample-by-id': '%id%-sample.zip',
         'threat-grid-download-artifact': '%aid%-artifact',
         'threat-grid-get-specific-feed': '%feed-name%-%feed-period%.%output-type%',
+        'threat-grid-get-samples-state': 'threatgrid-samples-state-report.json',
     };
 
     var methodDictionary = {
