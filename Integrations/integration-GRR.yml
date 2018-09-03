@@ -17,7 +17,7 @@ configuration:
   defaultvalue: "8000"
   type: 0
   required: false
-- display: Credentials
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
@@ -597,3 +597,4 @@ script:
       description: Hunt arguments
     description: Handles hunt creation request
 system: true
+releaseNotes: "Changed property identifier to username"

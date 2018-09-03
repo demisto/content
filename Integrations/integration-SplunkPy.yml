@@ -359,7 +359,9 @@ script:
             demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],'Contents':"Found no Splunk index: "+demisto.args()['index']})
             sys.exit(0)
         else:
-            r = index.submit(demisto.args()['data'], sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
+            data = demisto.args()['data']
+            data_formatted = data.encode('utf8')
+            r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
             demisto.results('Event was created in Splunk index: '+r.name)
         sys.exit(0)
     if demisto.command() == 'splunk-notable-event-edit':
@@ -497,3 +499,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: 'fix encoding issue for Splunk submit event'
