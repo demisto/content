@@ -568,7 +568,7 @@ script: |-
       if removeNull:
           headers_aux = headers[:]
           for header in headers_aux:
-              if all(obj.get(header) is None for obj in t):
+              if all(obj.get(header) in ['', None, [], {}] for obj in t):
                   headers.remove(header)
 
       if t and len(headers) > 0:
@@ -1123,4 +1123,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Added verbose option to LOG.print_log"
+releaseNotes: "Added verbose option to LOG.print_log, removeNull checks for more cases"
