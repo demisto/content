@@ -398,7 +398,7 @@ script:
         '    <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' +
         '      <userName>' + userName + '</userName>' +
         '      <instanceName>' + instanceName + '</instanceName>' +
-        '      <password>' + password + '</password>' +
+        '      <password>' + escapeXMLChars(password) + '</password>' +
         '    </CreateUserSessionFromInstance>' +
         '  </soap:Body>' +
         '</soap:Envelope>'
