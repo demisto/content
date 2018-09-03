@@ -52,7 +52,7 @@
         {
             "playbookID": "detonate_file_-_generic_test",
             "timeout": 2000,
-            "nightly": true,
+            "nightly": false,
             "integrations": [
                 "VxStream",
                 "McAfee Advanced Threat Defense",
