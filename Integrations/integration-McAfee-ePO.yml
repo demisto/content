@@ -61,6 +61,7 @@ script:
             params.insecure,
             params.proxy
         );
+
         if (isResponseOK(result)) {
             trimmedRes = result.Body.substring(okStr.length);
             trimmedRes = trimmedRes.replace('\n',' ');
@@ -200,14 +201,14 @@ script:
         var datVersion = epoGetLatestDatRaw();
         var md='McAfee Latest DAT file version is **' + datVersion + '**\n';
         ec = {};
-        ec.ePO = {"latestDAT": datVersion};
+        ec.mcafee = {"latestDAT": datVersion};
         return {
             Type: entryTypes.note,
             Contents: datVersion,
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: {
-                    "ePO(val.latestDAT === obj.latestDAT)": ec.ePO
+                    "mcafee(val.latestDAT === obj.latestDAT)": ec.ePO
             }
         };
     }
@@ -219,7 +220,7 @@ script:
             result = result[0];
             var epoDAT = result.productDetectionProductVersion.split('.')[0];
             ec = {};
-            ec.ePO = {"epoDAT": epoDAT};
+            ec.mcafee = {"epoDAT": epoDAT};
             var md = "McAfee ePO Current DAT file version in repository: **" + epoDAT + '**\n';
             return {
                 Type: entryTypes.note,
@@ -227,7 +228,7 @@ script:
                 ContentsFormat: formats.json,
                 HumanReadable: md,
                 EntryContext: {
-                    "ePO(val.epoDAT === obj.epoDAT)": ec.ePO
+                    "mcafee(val.epoDAT === obj.epoDAT)": ec.ePO
                 }
             };
         } else {
@@ -307,9 +308,6 @@ script:
 
     function epoGetSystemGroupPath(groupId) {
         var result = epoGetSystemTreeGroups();
-        log(Object.keys(result)); /////////////////////////////////
-        log(String(Object.keys(result.Contents)));
-        log(result.Contents[0]);
         result = result.Contents;
         for (var i=0;i<result.length;i++) {
             if (groupId == result[i].groupId) {
@@ -345,10 +343,6 @@ script:
         case 'test-module':
             epoHelp();
             return 'ok';
-        case 'epo-agent':
-            return agent();
-        case 'epo-core-help':
-            return coreHelp();
         case 'epo-help':
             return epoHelp();
         case 'epo-get-latest-dat':
@@ -411,13 +405,13 @@ script:
     arguments: []
     outputs:
     - contentPath: mcAfeeLatestDatVersion
-      contextPath: ePO.latestDAT
+      contextPath: mcafee.latestDAT
       description: Latest McAfee DAT file version
     description: Check the latest DAT file in McAfee repository
   - name: epo-get-current-dat
     arguments: []
     outputs:
-    - contextPath: ePO.epoDAT
+    - contextPath: mcafee.epoDAT
       description: Current McAfee DAT file in ePO repository
     description: check the existing DAT file version in ePO
   - name: epo-update-client-dat
@@ -469,4 +463,5 @@ script:
       commands. You can also specify 'headers' argument  to filter tables headers.
       e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
   runonce: false
-releaseNotes: Added output for commands and fixed error handling
+releaseNotes: |-
+  Adeed outputs and error messages, improve code visability and readability
