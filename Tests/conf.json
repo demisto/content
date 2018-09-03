@@ -3,6 +3,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "WildFire",
             "playbookID": "Wildfire Test"
         },
@@ -465,12 +471,6 @@
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
-            "nightly": true
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
             "nightly": true
         },
         {
