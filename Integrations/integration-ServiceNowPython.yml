@@ -122,6 +122,8 @@ script:
                     'Content-Type': 'application/json'
             }
         if file:
+            # Not supported in v2
+            url = url.replace('v2', 'v1')
             try:
                 file_entry = file['id']
                 file_name = file['name']
@@ -216,22 +218,6 @@ script:
 
         return result
 
-    def get_human_readable(data):
-        data_dict = HR_DICT[demisto.command()] if demisto.command() in HR_DICT else HR_DICT['default']
-
-        if not isinstance(data, list):
-            data = [data]
-
-        result = []
-        for d in data:
-            hr = {}
-            for k,v in data_dict.iteritems():
-                if k in d:
-                    hr[v] = d[k]
-            result.append(hr)
-
-        return result
-
     def get_body(template_name, custom_fields):
         body = {}
         template = template_name
@@ -276,7 +262,6 @@ script:
         return snow_time.strftime('%Y-%m-%d %H:%M:%S')
 
     ''' FUNCTIONS '''
-
     def get_template(name):
         query_params={}
         query_params['sysparm_limit'] = 1
