@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: EWS v2
 display: EWS v2
-releaseNotes: "-"
 category: Messaging
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAAyCAYAAAATIfj2AAAACXBIWXMAAAsTAAALEwEAmpwYAAA7oGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMTEgNzkuMTU4MzI1LCAyMDE1LzA5LzEwLTAxOjEwOjIwICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIgogICAgICAgICAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgICAgICAgICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoTWFjaW50b3NoKTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8eG1wOkNyZWF0ZURhdGU+MjAxNi0wMi0xNlQyMDozOTo1NCswMjowMDwveG1wOkNyZWF0ZURhdGU+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE2LTAzLTA4VDE0OjI1OjQxKzAyOjAwPC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpNZXRhZGF0YURhdGU+MjAxNi0wMy0wOFQxNDoyNTo0MSswMjowMDwveG1wOk1ldGFkYXRhRGF0ZT4KICAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9wbmc8L2RjOmZvcm1hdD4KICAgICAgICAgPHBob3Rvc2hvcDpDb2xvck1vZGU+MzwvcGhvdG9zaG9wOkNvbG9yTW9kZT4KICAgICAgICAgPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDpmZDgyZDE4NC03OWNiLTQ5MDAtOGViNC00YzYyNWIxZjM3MGU8L3htcE1NOkluc3RhbmNlSUQ+CiAgICAgICAgIDx4bXBNTTpEb2N1bWVudElEPnhtcC5kaWQ6ZTBhOGJjMDAtZTZlZS00NGRiLTg4NTYtYzliZWViMjcyYTgxPC94bXBNTTpEb2N1bWVudElEPgogICAgICAgICA8eG1wTU06T3JpZ2luYWxEb2N1bWVudElEPnhtcC5kaWQ6ZTBhOGJjMDAtZTZlZS00NGRiLTg4NTYtYzliZWViMjcyYTgxPC94bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpIaXN0b3J5PgogICAgICAgICAgICA8cmRmOlNlcT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+Y3JlYXRlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOmUwYThiYzAwLWU2ZWUtNDRkYi04ODU2LWM5YmVlYjI3MmE4MTwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMi0xNlQyMDozOTo1NCswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICAgICA8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmFjdGlvbj5zYXZlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOjIwNWQ5NmJmLTY5MmUtNDRiMS1hNTMwLWFjN2VjOGRhYjY3MDwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMi0xOFQxMjo1MzoyNiswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDpjaGFuZ2VkPi88L3N0RXZ0OmNoYW5nZWQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICAgICA8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmFjdGlvbj5zYXZlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOmZkODJkMTg0LTc5Y2ItNDkwMC04ZWI0LTRjNjI1YjFmMzcwZTwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAxNi0wMy0wOFQxNDoyNTo0MSswMjowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCk8L3N0RXZ0OnNvZnR3YXJlQWdlbnQ+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDpjaGFuZ2VkPi88L3N0RXZ0OmNoYW5nZWQ+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICA8L3JkZjpTZXE+CiAgICAgICAgIDwveG1wTU06SGlzdG9yeT4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+NzIwMDAwLzEwMDAwPC90aWZmOlhSZXNvbHV0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjAwMDAvMTAwMDA8L3RpZmY6WVJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+NjU1MzU8L2V4aWY6Q29sb3JTcGFjZT4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjUyPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAg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
 description: Exchange Web Services and Office 365 (mail)
@@ -33,12 +32,12 @@ configuration:
   required: true
 - display: Server Version (2007,2010,2010_SP2,2013,2016)
   name: defaultServerVersion
-  defaultvalue: "2013"
+  defaultvalue: "2016"
   type: 0
   required: true
 - display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
   name: authType
-  defaultvalue: NTLM
+  defaultvalue: Basic
   type: 0
   required: true
 - display: Has impersonation rights.
@@ -95,8 +94,8 @@ script:
     log_stream = StringIO()
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
-    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, \
-        ErrorFolderNotFound, ErrorToFolderNotFound
+    from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -124,6 +123,7 @@ script:
     ACTION = "action"
     MAILBOX = "mailbox"
     MAILBOX_ID = "mailboxId"
+    FOLDER_ID = "id"
 
     MOVED_TO_MAILBOX = "movedToMailbox"
     MOVED_TO_FOLDER = "movedToFolder"
@@ -140,10 +140,12 @@ script:
     CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID)
     CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
     CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
+    CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
 
     LAST_RUN_TIME = "lastRunTime"
     LAST_RUN_IDS = "ids"
     LAST_RUN_FOLDER = "folderName"
+    ERROR_COUNTER = "errorCounter"
 
     ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
                              'toRecipients', ]
@@ -185,6 +187,11 @@ script:
         if isinstance(d, dict):
             return dict((k, v) for k, v in d.items() if v is not None)
         return d
+
+    def get_attachment_name(attachment_name):
+        if attachment_name is None or attachment_name == "":
+            return 'demisto_untitled_attachment'
+        return attachment_name
 
 
     def get_entry_for_object(title, context_key, obj, headers=None):
@@ -257,9 +264,11 @@ script:
             if path in folders_map:
                 return account.root._folders_map[path]
 
+        folder_result = account.inbox.parent
+        if path == u'AllItems':
+            folder_result = folder_result.parent
         path = path.replace("/", "\\")
         path = path.split('\\')
-        folder_result = account.inbox.parent
         for sub_folder_name in path:
             folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
             if len(folder_filter_by_name) == 0:
@@ -631,54 +640,67 @@ script:
             incident['attachment'] = [];
             for attachment in item.attachments:
                 file_result = None
+                label_attachment_type = None
+                label_attachment_id_type = None
                 if isinstance(attachment, FileAttachment):
-                    # file attachment
-                    label_attachment_type = 'attachments'
-                    label_attachment_id_type = 'attachmentId'
+                    try:
+                        if attachment.content:
+                            # file attachment
+                            label_attachment_type = 'attachments'
+                            label_attachment_id_type = 'attachmentId'
 
-                    # save the attachment
-                    file_result = fileResult(attachment.name, attachment.content)
+                            # save the attachment
+                            file_name = get_attachment_name(attachment.name)
+                            file_result = fileResult(file_name, attachment.content)
 
-                    # check for error
-                    if file_result['Type'] == entryTypes['error']:
-                        demisto.error(file_result['Contents'])
-                        raise Exception(file_result['Contents'])
+                            # check for error
+                            if file_result['Type'] == entryTypes['error']:
+                                demisto.error(file_result['Contents'])
+                                raise Exception(file_result['Contents'])
 
-                    # save attachment to incident
-                    incident['attachment'].append({
-                        'path': file_result['FileID'],
-                        'name': attachment.name
-                    })
-
+                            # save attachment to incident
+                            incident['attachment'].append({
+                                'path': file_result['FileID'],
+                                'name': get_attachment_name(attachment.name)
+                            })
+                    except TypeError, e:
+                        if e.message != "must be string or buffer, not None":
+                            raise
+                        continue
                 else:
                     # other item attachment
                     label_attachment_type = 'attachmentItems'
                     label_attachment_id_type = 'attachmentItemsId'
 
                     # save the attachment
-                    file_result = fileResult(attachment.name + ".eml", attachment.item.mime_content)
+                    if attachment.item.mime_content:
+                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content)
 
-                    # check for error
-                    if file_result['Type'] == entryTypes['error']:
-                        demisto.error(file_result['Contents'])
-                        raise Exception(file_result['Contents'])
+                    if file_result:
+                        # check for error
+                        if file_result['Type'] == entryTypes['error']:
+                            demisto.error(file_result['Contents'])
+                            raise Exception(file_result['Contents'])
 
-                    # save attachment to incident
-                    incident['attachment'].append({
-                        'path': file_result['FileID'],
-                        'name': attachment.name + ".eml"
-                    })
+                        # save attachment to incident
+                        incident['attachment'].append({
+                            'path': file_result['FileID'],
+                            'name': get_attachment_name(attachment.name) + ".eml"
+                        })
 
 
-                labels.append({'type': label_attachment_type, 'value': attachment.name})
+                labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
                 labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
 
 
         # handle headers
         if item.headers:
+            headers = []
             for header in item.headers:
                 labels.append({'type': 'Email/Header/' + header.name, 'value': header.value})
+                headers.append(header.name + ": " + header.value)
+            labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
         # handle item id
         if item.message_id:
@@ -701,28 +723,42 @@ script:
     def fetch_emails_as_incidents(account, folder_name):
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
-        last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = []
-        incidents = []
-        for item in last_emails:
-            if item.message_id:
-                ids.append(item.message_id)
-                incident = parse_incident_from_item(item)
-                incidents.append(incident)
+        try:
+            last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        new_last_run = {
-            LAST_RUN_TIME: start_time.ewsformat(),
-            LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: ids
-        }
+            ids = []
+            incidents = []
+            for item in last_emails:
+                if item.message_id:
+                    ids.append(item.message_id)
+                    incident = parse_incident_from_item(item)
+                    incidents.append(incident)
 
-        demisto.setLastRun(new_last_run)
-        return incidents
+            new_last_run = {
+                LAST_RUN_TIME: start_time.ewsformat(),
+                LAST_RUN_FOLDER: folder_name,
+                LAST_RUN_IDS: ids,
+                ERROR_COUNTER: 0
+            }
+
+            demisto.setLastRun(new_last_run)
+            return incidents
+
+        except RateLimitError:
+            if LAST_RUN_TIME in last_run:
+                last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
+            if ERROR_COUNTER not in last_run:
+                last_run[ERROR_COUNTER] = 0
+            last_run[ERROR_COUNTER] += 1
+            demisto.setLastRun(last_run)
+            if last_run[ERROR_COUNTER] > 2:
+                raise
+            return []
 
 
     def get_entry_for_file_attachment(item_id, attachment):
-        entry = fileResult(attachment.name, attachment.content)
+        entry = fileResult(get_attachment_name(attachment.name), attachment.content)
         ec = {
             CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
                                                                                                               attachment)
@@ -732,26 +768,44 @@ script:
 
 
     def parse_attachment_as_dict(item_id, attachment):
-        return {
-            ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
-            ATTACHMENT_ID: attachment.attachment_id.id,
-            'attachmentName': attachment.name,
-            'attachmentSHA256': hashlib.sha256(attachment.content if isinstance(attachment, FileAttachment) else attachment.item.mime_content).hexdigest(),
-            'attachmentContentType': attachment.content_type,
-            'attachmentContentId': attachment.content_id,
-            'attachmentContentLocation': attachment.content_location,
-            'attachmentSize': attachment.size,
-            'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
-            'attachmentIsInline': attachment.is_inline,
-            ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
-        }
+        try:
+            attachment_content = attachment.content if isinstance(attachment, FileAttachment) else attachment.item.mime_content
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': get_attachment_name(attachment.name),
+                'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
+                'attachmentContentType': attachment.content_type,
+                'attachmentContentId': attachment.content_id,
+                'attachmentContentLocation': attachment.content_location,
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
+            }
+        except TypeError, e:
+            if e.message != "must be string or buffer, not None":
+                raise
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': get_attachment_name(attachment.name),
+                'attachmentSHA256': None,
+                'attachmentContentType': attachment.content_type,
+                'attachmentContentId': attachment.content_id,
+                'attachmentContentLocation': attachment.content_location,
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
+            }
 
 
     def get_entry_for_item_attachment(item_id, attachment, target_email):
         item = attachment.item
         dict_result = parse_attachment_as_dict(item_id, attachment)
         dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
-        title = 'EWS get attachment got item for "%s", "%s"' % (target_email, attachment.name)
+        title = 'EWS get attachment got item for "%s", "%s"' % (target_email, get_attachment_name(attachment.name))
 
         return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                     dict_result)
@@ -815,10 +869,16 @@ script:
         entries = []
         for attachment in attachments:
             if isinstance(attachment, FileAttachment):
-                entries.append(get_entry_for_file_attachment(item_id, attachment))
+                try:
+                    if attachment.content:
+                        entries.append(get_entry_for_file_attachment(item_id, attachment))
+                except TypeError, e:
+                    if e.message != "must be string or buffer, not None":
+                        raise
             else:
                 entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
-                entries.append(fileResult(attachment.name + ".eml", attachment.item.mime_content))
+                if attachment.item.mime_content:
+                    entries.append(fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content))
 
         return entries
 
@@ -828,10 +888,11 @@ script:
         destination_folder = get_folder_by_path(destination_account, destination_folder_path)
         item = get_item_from_mailbox(source_account, item_id)
         try:
-          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+            source_account.bulk_move(ids=[item], to_folder=destination_folder)
         except ErrorToFolderNotFound:
-          source_account = get_account(source_mailbox or ACCOUNT_EMAIL, access_type=DELEGATE)
-          source_account.bulk_move(ids=[item], to_folder=destination_folder)
+            exported_items = source_account.export([item])
+            destination_account.upload([(destination_folder, exported_items[0])])
+            source_account.bulk_delete([item])
 
         move_result = {
             MOVED_TO_MAILBOX: destination_mailbox,
@@ -839,12 +900,12 @@ script:
         }
 
         return {
-          'Type': entryTypes['note'],
-          'Contents': "Item was moved successfully.",
-          'ContentsFormat': formats['text'],
-          ENTRY_CONTEXT: {
-             "EWS.Items(val.itemId === '%s')" % (item_id,): move_result
-          }
+            'Type': entryTypes['note'],
+            'Contents': "Item was moved successfully.",
+            'ContentsFormat': formats['text'],
+            ENTRY_CONTEXT: {
+               "EWS.Items(val.itemId === '%s')" % (item_id,): move_result
+            }
         }
 
     def move_item(item_id, target_folder_path, target_mailbox=None):
@@ -1049,14 +1110,7 @@ script:
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         folders = []
         for f in account.root.walk():
-            folder = {
-                'name': f.name,
-                'totalCount': f.total_count,
-                'unreadCount': f.unread_count,
-                'id': f.folder_id,
-                'childrenFolderCount': f.child_folder_count,
-                'changeKey': f.changekey
-            }
+            folder = folder_to_context_entry(f)
             folders.append(folder)
         folders_tree = account.root.tree()
 
@@ -1108,6 +1162,21 @@ script:
             }
         }
 
+    def get_folder(folder_path, target_mailbox=None):
+        account = get_account(target_mailbox or ACCOUNT_EMAIL)
+        folder = folder_to_context_entry(get_folder_by_path(account, folder_path))
+
+        return get_entry_for_object("Folder %s" % (folder_path,), CONTEXT_UPDATE_FOLDER, folder)
+
+    def folder_to_context_entry(f):
+        return {
+            'name': f.name,
+            'totalCount': f.total_count,
+            'unreadCount': f.unread_count,
+            'id': f.folder_id,
+            'childrenFolderCount': f.child_folder_count,
+            'changeKey': f.changekey
+        }
 
     def test_module():
         try:
@@ -1172,6 +1241,8 @@ script:
             encode_and_submit_results(get_items_from_folder(**args))
         elif demisto.command() == 'ews-get-items':
             encode_and_submit_results(get_items(**args))
+        elif demisto.command() == 'ews-get-folder':
+            encode_and_submit_results(get_folder(**args))
 
 
     except Exception, e:
@@ -1179,28 +1250,51 @@ script:
 
         time.sleep(2)
         debug_log = log_stream.getvalue()
+        error_message_simple = ""
         error_message = ""
+
+        # Office365 regular maintenance case
+        if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) and 'outlook.office365.com' in EWS_SERVER:
+            log_message = "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
+            if demisto.command() == 'fetch-incidents':
+                demisto.info(log_message)
+                demisto.incidents([])
+                exit(0)
+            if IS_TEST_MODULE:
+                demisto.results(log_message + " Please retry the instance configuration test.")
+                exit(0)
+            error_message_simple = log_message + " Please retry your request."
+
+        # Other exception handling
         if "Status code: 401" in debug_log:
-            error_message = "Got unauthorized from the server. " \
+            error_message_simple = "Got unauthorized from the server. " \
                             "Check credentials are correct and authentication method are supported. "
 
-            error_message += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+            error_message_simple += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
-            error_message = "Got timeout from the server. " \
+            error_message_simple = "Got timeout from the server. " \
                             "Probably the server is not reachable with the current settings. " \
                             "Check proxy parameter. If you are using server URL - change to server IP address. "
-        error_message = error_message + "\n" + e.message
+
+        if not error_message_simple:
+            error_message = error_message_simple = e.message
+        else:
+            error_message = error_message_simple + "\n" + e.message
+
         stacktrace = traceback.format_exc()
         if stacktrace:
             error_message += "\nFull stacktrace:\n" + stacktrace
 
         if debug_log:
-            if IS_TEST_MODULE:
-                error_message += "\nFull debug log:\n" + debug_log
-            else:
-                demisto.info(error_message + "\nFull debug log:\n" + debug_log)
+            error_message += "\nFull debug log:\n" + debug_log
 
-        raise Exception(error_message)
+        if demisto.command() == 'fetch-incidents':
+            raise
+        if IS_TEST_MODULE:
+            demisto.results(error_message_simple)
+        else:
+            demisto.results({ "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple })
+        demisto.error("%s: %s" % (e.__class__.__name__, error_message))
   type: python
   commands:
   - name: ews-get-attachment
@@ -1739,6 +1833,35 @@ script:
       description: The action, value will be 'moved'.
       type: string
     description: Move an item from one mailbox to another.
+  - name: ews-get-folder
+    arguments:
+    - name: target-mailbox
+      description: The mailbox to apply the search on.
+    - name: folder-path
+      default: true
+      description: The folder path to get. If empty - will get the folder 'AllItems'.
+      defaultValue: AllItems
+    outputs:
+    - contextPath: EWS.Folders.id
+      description: Folder id.
+      type: string
+    - contextPath: EWS.Folders.name
+      description: Folder name.
+      type: string
+    - contextPath: EWS.Folders.changeKey
+      description: Folder change key
+      type: string
+    - contextPath: EWS.Folders.totalCount
+      description: Total count of emails in the folder.
+      type: number
+    - contextPath: EWS.Folders.childrenFolderCount
+      type: number
+      description: Number of sub-folders.
+    - contextPath: EWS.Folders.unreadCount
+      type: number
+      description: Unread emails in the folder.
+    description: Get a single specific folder.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-releaseNotes: "Fixed issue when searching all mailboxes - skipped mailboxes without mailboxId."
+  runonce: false
+releaseNotes: "-"

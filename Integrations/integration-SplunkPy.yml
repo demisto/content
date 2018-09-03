@@ -92,7 +92,16 @@ script:
               val = val.strip("\"")
               val = val.strip("\\")
               key = single_key_val[0].strip()
-              result[key] = val
+
+              alreadyThere = False
+              for dictkey, dictvalue in result.items():
+                if dictkey == key:
+                  alreadyThere = True
+                  result[dictkey] = dictvalue + "," + val
+
+              if alreadyThere == False:
+                result[key] = val
+
         return result
 
     def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):
@@ -213,12 +222,7 @@ script:
             'body': StringIO(response.read())
         }
 
-    service = client.connect(
-            host=demisto.params()['host'],
-            port=demisto.params()['port'],
-            username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'])
-
+    service = None
     proxy = demisto.params()['proxy']
     if proxy:
         try:
@@ -233,6 +237,12 @@ script:
                 pass
             else:
                 raise
+    else:
+        service = client.connect(
+            host=demisto.params()['host'],
+            port=demisto.params()['port'],
+            username=demisto.params()['authentication']['identifier'],
+            password=demisto.params()['authentication']['password'])
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -349,7 +359,9 @@ script:
             demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],'Contents':"Found no Splunk index: "+demisto.args()['index']})
             sys.exit(0)
         else:
-            r = index.submit(demisto.args()['data'], sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
+            data = demisto.args()['data']
+            data_formatted = data.encode('utf8')
+            r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
             demisto.results('Event was created in Splunk index: '+r.name)
         sys.exit(0)
     if demisto.command() == 'splunk-notable-event-edit':
@@ -394,14 +406,14 @@ script:
       required: true
       default: true
       description: search id
-    description: 'fetch splunk search results '
+    description: fetch splunk search results, can be used in conjunction with splunk-job-create
   - name: splunk-search
     arguments:
     - name: query
       required: true
       default: true
-      description: The splunk search language string to execute, example :"* | head
-        3"
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
     - name: earliest_time
       description: 'Specifies the earliest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
@@ -468,11 +480,11 @@ script:
     arguments:
     - name: query
       required: true
-      description: The splunk search language string to execute, example :"* | head
-        3"
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
     outputs:
     - contextPath: Splunk.Job
-      description: The created jon SID
+      description: The created job SID
     description: 'Create new search job in Splunk '
   - name: splunk-parse-raw
     arguments:
@@ -487,4 +499,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: 'Fix issue where splunk-notable-event-edit taking proxy settings when not needed'
+releaseNotes: 'fix encoding issue for Splunk submit event'

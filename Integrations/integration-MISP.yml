@@ -270,7 +270,7 @@ script:
                 Body: JSON.stringify(body)
             },
             params.insecure,
-            params.useproxy
+            params.proxy
         );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
@@ -807,3 +807,4 @@ script:
       required: true
       description: Value of the attribute
     description: Add attribute to existing MISP event
+releaseNotes: "fix proxy parm"

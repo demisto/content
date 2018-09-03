@@ -2,7 +2,6 @@ commonfields:
   id: BuildEWSQuery
   version: -1
 name: BuildEWSQuery
-releaseNotes: "Add parameter for stripping the subject from prefixes"
 script: |-
   import re
 

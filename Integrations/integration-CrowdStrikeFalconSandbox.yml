@@ -129,7 +129,7 @@ script:
         }
 
     }
-    function scanToEntry(res) {
+    function scanToEntry(res, hash) {
         if (version === 'v1' && res.response_code !== 0) {
             return entryError(res.response_code, res.response.error);
         }
@@ -175,7 +175,10 @@ script:
             interesting: 'isinteresting',
             vx_family: 'vxfamily'
         };
-        context[outputPaths.file] = response.map(mapObject(contextMapper));
+        var filePath = "File(val.hash===obj.hash)";
+        fileContext = response.map(mapObject(contextMapper));
+        fileContext[0].hash = hash;
+        context[filePath] = fileContext;
         response.forEach(function(res) {
            if(res.threatlevel && res.threatlevel > 1) {
                addMalicious(context, outputPaths.file, {
@@ -210,7 +213,12 @@ script:
     }
 
     function tableFromEnvironments(response) {
-        var environments = response.backend.global_environment;
+        var environments;
+        if ('environment' in response) { // Single-server setup
+            environments = response.environment;
+        } else { // Multi-server setup
+            environments = response.backend.global_environment;
+        }
         var environmentsKeys = Object.keys(environments);
         var table=[];
         var envContext = [];
@@ -556,7 +564,12 @@ script:
         if (args.environmentID) {
             environmentId = args.environmentID;
         } else {
-            var environments = (version === 'v1') ? getEnvironments().backend.global_environment : getEnvironments().backend.global_environment;
+            var environments = getEnvironments();
+            if ('environment' in environments) { // Single-server setup
+                environments = environments.environment;
+            } else { // Multi-server setup
+                environments = environments.backend.global_environment;
+            }
             for (var i=0; i<environments.length; i++) {
                 if (environments[i]['ID'] === 100) {
                     environmentId = 100;
@@ -581,7 +594,7 @@ script:
         while (waitTime<timeOut) {
             var res = scan(hash);
             if ((version === 'v1' && res.response.length > 0 && res.response[0]) || (version === 'v2' && res.length > 0)) {
-                return scanToEntry(res);
+                return scanToEntry(res, hash);
             } else {
                 waitTime = waitTime + delayTime;
                 wait(delayTime);
@@ -596,8 +609,9 @@ script:
         }
         var response = submitUrl(url, environmentID);
         var context = {
-            'File(val.SHA256 && val.SHA256 === obj.SHA256)': {
-                'SHA256': response['sha256']
+            'File(val.hash && val.hash === obj.hash)': {
+                'SHA256': response['sha256'],
+                'hash': response['sha256']
             },
             'CrowdStrike(val.JobID && val.JobID === obj.JobID)': {
                 'EnvironmentID': response['environment_id'],
@@ -660,7 +674,12 @@ script:
         if (args.environmentID) {
             environmentId = args.environmentID;
         } else {
-            var environments = getEnvironments().backend.global_environment;
+            var environments = getEnvironments();
+            if ('environment' in environments) { // Single-server setup
+                environments = environments.environment;
+            } else { // Multi-server setup
+                environments = environments.backend.global_environment;
+            }
             for (var i=0; i<environments.length; i++) {
                 if (environments[i]['ID'] === 100) {
                     environmentId = 100;
@@ -730,9 +749,21 @@ script:
         case 'crowdstrike-scan':
             var res = scan(args.file);
             if (res.length > 0){
-                return scanToEntry(res);
+                return scanToEntry(res, args.file);
             } else {
-                return 'No results found.'
+                return {
+                    Type: entryTypes.note,
+                    ContentsFormat: formats.json,
+                    Contents: {},
+                    ReadableContentsFormat: formats.markdown,
+                    HumanReadable: 'No results found.',
+                    EntryContext: {
+                        "File(val.hash==obj.hash)": {
+                        "state": "NO_CONTENT",
+                        "hash": args.file
+                        }
+                    }
+                };
             }
         case 'vx-get-environments': // Deprecated
         case 'crowdstrike-get-environments':
@@ -890,6 +921,12 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: File.hash
+      description: The hash used to query the file
+      type: string
+    - contextPath: File.state
+      description: The state of the file test
+      type: string
     description: Get summary information for a given MD5, SHA1 or SHA256 and all the
       reports generated for any environment ID
   - name: vx-get-environments
@@ -1386,5 +1423,4 @@ script:
       description: Job ID of file analysation
       type: string
     description: Submit a file by URL for analysis (Supported only in v2).
-releaseNotes: "Added submit-file-by-url command, DBot Score support and fixed bug of empty results returned from scan command"
-
+  runonce: false

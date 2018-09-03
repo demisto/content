@@ -137,7 +137,7 @@ script:
             var resStats = searchResults(res.results[0]._id).stats;
             md += addMD(resStats);
 
-            if (resStats.malicious !== 0){
+            if (resStats.malicious && resStats.malicious > 0){
                 dbotScore = 3;
                 ec.URL = {};
                 addMalicious(ec, "URL", {
@@ -189,7 +189,7 @@ script:
 
             md += addMD(resStats);
 
-            if (resStats.malicious !== 0){
+            if (resStats.malicious && resStats.malicious > 0){
                 dbotScore = 3;
                 ec.IP = {};
                 addMalicious(ec, "IP", {
@@ -229,7 +229,7 @@ script:
 
             md += addMD(resStats);
 
-            if (resStats.malicious !== 0) {
+            if (resStats.malicious && resStats.malicious > 0) {
                 dbotScore = 3;
                 ec.File = {};
                 addMalicious(ec, "File", {
@@ -330,7 +330,7 @@ script:
 
             md += addMD(resStats);
 
-            if (resStats.malicious !== 0){
+            if (resStats.malicious && resStats.malicious > 0){
                 dbotScore = 3;
                 ec.URL = {};
                 addMalicious(ec, "URL", {

@@ -1,0 +1,31 @@
+commonfields:
+  id: DemistoUploadFile
+  version: -1
+name: DemistoUploadFile
+script: |
+  var res = executeCommand("demisto-api-multipart", {"uri":'entry/upload/' + args.incidentID,"entryID":args.entryID});
+  if (isError(res[0])) {
+      return res;
+  }
+  var entryId = dq(res,'Contents.response.entries.id');
+
+  var md = 'File uploaded successfully. Entry ID is ' + entryId;
+  return { ContentsFormat: formats.json, Type: entryTypes.note, Contents: res, HumanReadable: md } ;
+type: javascript
+tags:
+- DemistoAPI
+comment: Upload file from incident war room to another incident's war room
+enabled: true
+args:
+- name: entryID
+  required: true
+  description: File entry ID
+- name: incidentID
+  required: true
+  description: Incident ID to upload the file to
+scripttarget: 0
+runonce: false
+
+dependson:
+  must:
+  - demisto-api-multipart
