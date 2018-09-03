@@ -149,11 +149,15 @@ script:
 
     function GetReportArgsHandler(md5, hash, file) {
         if(file) {
-            return [file];
+            if( md5Regex.test(file) || sha256Regex.test(file)){
+                return [file];
+            } else {
+                throw 'Invalid hash. Only SHA256 and MD5 are supported.';
+            }
         } else {
             inputs = md5? argToList(md5) : argToList(hash);
             for (i = 0; i < inputs.length; i++) {
-                if ((inputs[i] && !/^[A-Fa-f0-9]{64}$/.test(inputs[i])) && !/^[A-Fa-f0-9]{32}$/.test(inputs[i])) {
+                if (inputs[i] && ( !md5Regex.test(inputs[i]) && !sha256Regex.test(inputs[i]) ) ) {
                     throw 'Invalid hash. Only SHA256 and MD5 are supported.';
                 }
             }
