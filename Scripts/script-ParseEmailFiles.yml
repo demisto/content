@@ -27,12 +27,13 @@ script: |-
   import os
   import sys
   import glob
+  import string
+  import random
   import traceback
-  from email.parser import Parser as EmailParser
   import email.utils
   import olefile as OleFile
-  import random
-  import string
+  from email.parser import HeaderParser
+  from email.parser import Parser as EmailParser
 
   reload(sys)
   sys.setdefaultencoding('utf8')
@@ -520,7 +521,18 @@ script: |-
           fileData = emlFile.read()
           if b64:
               fileData = b64decode(fileData)
-          headers = fileData.split('\r\n\r\n')[0]
+
+          parser = HeaderParser()
+          headers = parser.parsestr(fileData)
+
+          header_list = []
+          for item in headers.items():
+              item_dict = {}
+              item_dict['name'] = item[0]
+              item_dict['value'] = item[1]
+
+              header_list.append(item_dict)
+
           eml = message_from_string(fileData)
           if not eml:
               r += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Could not parse eml file!"}]
@@ -557,7 +569,7 @@ script: |-
               'Subject': subj,
               'HTML': html,
               'Text': text,
-              'Headers': headers,
+              'Headers': header_list,
               'Attachments': '' if not attachments else ','.join(attachments),
               'Format': eml.get_content_type()
           }
@@ -642,3 +654,5 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
+runonce: false
+releaseNotes: "Fixed header parsing."

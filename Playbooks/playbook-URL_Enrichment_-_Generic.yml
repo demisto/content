@@ -1,6 +1,7 @@
 id: url_enrichment_-_generic
 version: -1
 name: URL Enrichment - Generic
+releaseNotes: "Add support for VirusTotal Private API"
 fromversion: 3.6.0
 description: |-
   Enrich URL using one or more integrations.

@@ -69,3 +69,4 @@ args:
   defaultValue: "100"
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
