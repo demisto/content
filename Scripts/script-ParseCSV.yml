@@ -73,12 +73,12 @@ script: |
           demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : e.message } )
           exit(0)
 
-  res = demisto.executeCommand('getFilePath', {'id': entryID})
+  res = demisto.getFilePath(entryID)
   if not res:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Entry {} not found".format(entryID)} )
       exit(0)
-  filePath = res[0]['Contents']['path']
-  fileName = res[0]['Contents']['name']
+  filePath = res['path']
+  fileName = res['name']
   if not fileName.lower().endswith('.csv'):
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extention'.format(fileName) } )
       exit(0)
@@ -97,8 +97,9 @@ script: |
               "ReadableContentsFormat" : formats["markdown"],
               "Contents" : all_csv,
               "EntryContext": ec,
-              "HumanReadable": tableToMarkdown(file, all_csv)
+              "HumanReadable": tableToMarkdown(fileName, all_csv)
           })
+      exit()
 
   if parseip == -1 and parsedomain == -1 and parsehash == -1:
       # stop the script if no need to parse ips,domains or hashes
