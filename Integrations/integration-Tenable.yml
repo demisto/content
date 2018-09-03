@@ -77,27 +77,70 @@ script:
             }
         }
 
-    def get_scan_error_message(code):
-        message = "Got response status code: {}".format(code)
+    def date_range_to_param(date_range):
+        params = {}
+        if date_range:
+            try:
+                date_range = int(date_range)
+                params['date_range'] = date_range
+            except ValueError, e:
+                raise e  # We want the stack trace to end here.
+        return params
+
+    def get_scan_error_message(response, scan_id):
+        code = response.status_code
+        message = "Error processing request"
+        if scan_id:
+            message += " for scan with id {}".format(scan_id)
+        message += ". Got response status code: {}".format(code)
         if code == 401:
             message += " - Scan is disabled."
+        elif code == 403:
+            message += " - {}".format(response.json()['error'])
         elif code == 404:
             message += " - Scan does not exist."
         elif code == 409:
             message += " - Scan cannot be launched in its current status."
-
         return message
 
-    # kwargs: url parameters
+    def prep_create_scan_params(uuid, name, enabled, text_targets, start_time, timezone, scan_rule_frequency, scan_rule_time_interval, scan_rule_days_to_run, email_accounts, description, scanner_id):
+        settings = {
+            'name': name,
+            'enabled': enabled,
+            'text_targets': text_targets
+        }
+        if start_time:
+            settings['starttime'] = start_time
+        if timezone:
+            settings['timezone'] = timezone,
+        if email_accounts:
+            settings['emails'] = email_accounts,
+        if description:
+            settings['description'] = description,
+        if scanner_id:
+            settings['scanner_id'] = scanner_id
+        rrules = (scan_rule_frequency, scan_rule_time_interval, scan_rule_days_to_run)
+        if any(rrules):
+            if not all(rrules):
+                raise ValueError("When giving a scan-rule argument, all scan-rule arguments must be given.")
+            settings['rrules'] = "FREQ={};INTERVAL={};BYDAY={}".format(*rrules)
+
+        return {
+            'uuid': uuid,
+            'settings': settings
+        }
+
+    # Request/Response methods
+    # kwargs: request parameters
     def send_scan_request(scan_id="", endpoint="", method='GET', **kwargs):
         if endpoint:
             endpoint = '/' + endpoint
         full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
         try:
-            res = requests.request(method, full_url, headers=AUTH_HEADERS, params=kwargs)
+            res = requests.request(method, full_url, headers=AUTH_HEADERS)#, params=kwargs)
             res.raise_for_status()
         except HTTPError, e:
-            err_msg = get_scan_error_message(res.status_code)
+            err_msg = get_scan_error_message(res, scan_id)
             if demisto.command() != 'test-module':
                 err_msg = {
                 "Type": entryTypes["error"],
@@ -114,17 +157,31 @@ script:
         response['info'].update(scans_result_elem)
         return response['info']
 
-    def send_vuln_info_request(plugin_id, date_range=None):
-        params = {}
-        if date_range:
-            try:
-                date_range = int(date_range)
-                params['date_range'] = date_range
-            except ValueError, e:
-                raise e  # We want the stack trace to end here.
+    def send_vuln_info_request(plugin_id, date_range):
         full_url = "{}{}{}/{}".format(BASE_URL, "workbenches/vulnerabilities/", plugin_id, "info")
-        res = requests.get(full_url, headers=AUTH_HEADERS, params=params)
+        res = requests.get(full_url, headers=AUTH_HEADERS, params=date_range_to_param(date_range))
+        res.raise_for_status()
         return res.json()
+
+    def send_asset_vuln_request(asset_id, date_range):
+        full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
+        res = requests.get(full_url, headers=AUTH_HEADERS, params=date_range_to_param(date_range))
+        res.raise_for_status()
+        return res.json()
+
+    def send_templates_request():
+        full_url = "{}editor/scan/templates".format(BASE_URL)
+        res = requests.get(full_url, headers=AUTH_HEADERS)
+        res.raise_for_status()
+        return res.json()
+
+    def send_create_scan_request(**kwargs):
+        full_url = "{}scans".format(BASE_URL)
+        params = prep_create_scan_params(**kwargs)
+        res = requests.post(full_url, headers=AUTH_HEADERS, params=params)
+        res.raise_for_status()
+        return res.json()
+
 
     def get_vuln_info(vulns):
         vuln_infos = zip(map(lambda x: x['plugin_id'], vulns), map(lambda x: send_vuln_info_request(x['plugin_id']), vulns))
@@ -136,6 +193,7 @@ script:
         return get_entry_for_object('Vulnerabilities', 'Vulnerabilities', vuln_infos)
 
 
+    # Command methods
     def test_module():
         send_scan_request()
         return 'ok'
@@ -170,11 +228,28 @@ script:
                 results.append(get_entry_for_object('Remediations', 'Remediations', scan_details['remediations']['remediations'], SCAN_REPORT_REMEDIATIONS_HEADERS))
         return results
 
-    def get_vulnerability_details(plugin_id, days):
-        info = send_vuln_info_request(plugin_id, days)
-        return get_entry_for_object('Vulnerability details', 'Vulnerabilities', info['info'])
+    def get_vulnerability_details(plugin_id, date_range):
+        info = send_vuln_info_request(plugin_id, date_range)
+        return get_entry_for_object('Vulnerability details - {}'.format(plugin_id), 'Vulnerabilities', info['info'])
+
+    def get_vulnerabilities_by_asset(asset_id, date_range):
+        info = send_asset_vuln_request(asset_id, date_range)
+        return get_entry_for_object('Vulnerabilities for asset {}'.format(asset_id), 'Vulnerabilities', info['vulnerabilities'])
+
+    def request_scan_status(scan_id):
+        scan_details = send_scan_request(scan_id)
+        return get_entry_for_object('Scan status for {}'.format(scan_id), 'Scan', scan_details['info']['status'])
+
+    def get_templates():
+        info = send_templates_request()
+        return get_entry_for_object('Scan editor templates', 'Tenable.ScanEditorTemplates', info['templates'])
+
+    def create_scan(**kwargs):
+        info = send_create_scan_request(**kwargs)
+        return get_entry_for_object('', '', info[''])
 
 
+    # Command selector
     if demisto.command() == 'test-module':
         demisto.results(test_module())
     elif demisto.command() == 'tenable-get-scans':
@@ -185,6 +260,15 @@ script:
         demisto.results(get_report(demisto.getArg('scan-id'), demisto.getArg('info'), demisto.getArg('detailed')))
     elif demisto.command() == 'tenable-get-vulnerability-details':
         demisto.results(get_vulnerability_details(demisto.getArg('vulnerability-id'), demisto.getArg('date-range')))
+    elif demisto.command() == 'tenable-get-vulnerabilities-by-asset':
+        demisto.results(get_vulnerabilities_by_asset(demisto.getArg('asset-id'), demisto.getArg('date-range')))
+    elif demisto.command() == 'tenable-request-scan-status':
+        demisto.results(request_scan_status(demisto.getArg('scan-id')))
+    elif demisto.command() == 'tenable-get-scan-editor-templates':
+        demisto.results(get_templates())
+    elif demisto.command() == 'tenable-create-scan':
+        demisto.results(create_scan(demisto.getArg('uuid'), demisto.getArg('name'), demisto.getArg('enabled'), demisto.getArg('text_targets'), demisto.getArg('start_time'), demisto.getArg('timezone'), demisto.getArg('scan_rule_frequency'), demisto.getArg('scan_rule_time_interval'), demisto.getArg('scan_rule_days_to_run'), demisto.getArg('email_accounts'), demisto.getArg('description'), demisto.getArg('scanner_id')
+        ))
   type: python
   commands:
   - name: tenable-get-scans
@@ -391,6 +475,7 @@ script:
     - name: date-range
       description: The number of days of data prior to and including today that should
         be returned.
+    description: "Retrieve details for the given vulnerability."
     outputs:
     - contextPath: Vulnerabilities.Description
       description: The description of the vulnerability.
@@ -414,9 +499,10 @@ script:
       description: The severity level of the vulnerability.
       type: number
     - contextPath: Vulnerabilities.Family
+      description: Object containing plugin information such as family, type, and publication and modification dates.
       type: string
     - contextPath: Vulnerabilities.ModificationDate
-      description: ""
+      description: The last modification date for the vulnerability in Unix time.
       type: date
     - contextPath: Vulnerabilities.Name
       description: The name of the vulnerability.
@@ -552,6 +638,13 @@ script:
     - name: timezone
       description: The timezone for the scan schedule.
     - name: scan-rule-frequency
+      auto: PREDEFINED
+      predefined:
+      - ONETIME
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - YEARLY
       description: The frequency (scanRuleFrequency=onetime or daily or weekly or
         monthly or yearly) Expects a string comprised of three values. If you specify
         scanRuleFrequency you need to specify scanRuleTimeInterval and scanRuleDaysToRun
