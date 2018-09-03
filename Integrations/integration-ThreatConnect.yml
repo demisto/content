@@ -193,7 +193,7 @@ script:
             demisto.results({"Type": 1, "ContentsFormat": "json", "HumanReadable": tableToMarkdown("ThreatConnect IP Reputation for: "+ip, indicatorsArr, ""),"Contents": json.dumps(indicatorsArr),"EntryContext": ec})
         sys.exit(0)
     if demisto.command() == 'url':
-        url = demisto.args()['url']
+        url = demisto.args()['url'].lower()
         parsed_url = urlparse(url)
         if not parsed_url.scheme:
             return_error('Please provide a valid URL including a protocol (http/https)')
