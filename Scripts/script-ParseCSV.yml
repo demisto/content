@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: ParseCSV
 script: |
-  import re
   import csv
   import socket
 
@@ -27,13 +26,13 @@ script: |
 
   def get_entry_by_file_name(file):
       entries = demisto.executeCommand('getEntries', {})
-      for entry in entries:
+      for entry in reversed(entries):
           fn = demisto.get(entry, 'File')
 
-          is_text = type(fn) in [unicode, str]
-          is_correct_file = file.lower() == fn.lower() or file.lower() == fn.split('.')[0].lower()
+          if type(fn) not in [unicode, str]:
+              continue
 
-          if is_text and is_correct_file:
+          if file.lower() == fn.lower():
               return entry
       raise ValueError('Was unable to find "{}" in the war room. Please ensure the file was uploaded.'.format(file))
 
@@ -58,11 +57,11 @@ script: |
 
   if parseip == -1 and parsedomain == -1 and parsehash == -1 and not parseAll:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Select a field to extract.' } )
-      exit(0)
+      sys.exit(0)
 
   if file is None and entryID is None:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Please provide entryID.' } )
-      exit(0)
+      sys.exit(0)
 
   if entryID is None:
       # search entry by file name
@@ -71,14 +70,17 @@ script: |
           entryID = entry['ID']
       except ValueError as e:
           demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : e.message } )
-          exit(0)
+          sys.exit(0)
 
-  res = demisto.executeCommand('getFilePath', {'id': entryID})
-  filePath = res[0]['Contents']['path']
-  fileName = res[0]['Contents']['name']
+  res = demisto.getFilePath(entryID)
+  if not res:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Entry {} not found".format(entryID)} )
+      sys.exit(0)
+  filePath = res['path']
+  fileName = res['name']
   if not fileName.lower().endswith('.csv'):
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extention'.format(fileName) } )
-      exit(0)
+      sys.exit(0)
 
   if parseAll:
       all_csv = []
@@ -87,19 +89,20 @@ script: |
           for row in records:
               all_csv.append(row)
 
-          ec = { 'ParseCSV.ParsedCSV': all_csv }
-          demisto.results({
-              "Type" : entryTypes["note"],
-              "ContentsFormat" : formats["json"],
-              "ReadableContentsFormat" : formats["markdown"],
-              "Contents" : all_csv,
-              "EntryContext": ec,
-              "HumanReadable": tableToMarkdown(file, all_csv)
-          })
+      ec = { 'ParseCSV.ParsedCSV': all_csv }
+      demisto.results({
+          "Type" : entryTypes["note"],
+          "ContentsFormat" : formats["json"],
+          "ReadableContentsFormat" : formats["markdown"],
+          "Contents" : all_csv,
+          "EntryContext": ec,
+          "HumanReadable": tableToMarkdown(fileName, all_csv)
+      })
+      sys.exit(0)
 
   if parseip == -1 and parsedomain == -1 and parsehash == -1:
       # stop the script if no need to parse ips,domains or hashes
-      exit(0)
+      sys.exit(0)
 
   with open(filePath, 'rU') as f:
       has_header = csv.Sniffer().has_header(f.read(1024))
