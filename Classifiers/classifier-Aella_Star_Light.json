@@ -1,0 +1,35 @@
+{
+	"id": "e81241e0-0fd9-4193-83e5-d7dd4e4f8565",
+	"version": 4,
+	"modified": "2018-07-27T12:24:20.67871839-07:00",
+	"defaultIncidentType": "Aella Star Light event",
+	"mapping": {
+		"Aella Star Light event": {
+			"internalMapping": {
+				"aella_eid": {
+					"simple": "aella_eid",
+					"complex": null
+				},
+				"aella_event": {
+					"simple": "aella_event",
+					"complex": null
+				},
+				"severity": {
+					"simple": "evnet_severity",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"custom": true,
+	"transformer": {
+		"simple": "label",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"Starlight event": "Aella Star Light event"
+	},
+	"brandName": "Aella Star Light",
+	"releaseNotes": "-"
+}
