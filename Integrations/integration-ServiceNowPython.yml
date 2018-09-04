@@ -498,12 +498,23 @@ script:
             'System ID': res['result']['sys_id']
         }
 
+        context = {
+            'ID': ticket_id,
+            'File': {}
+        }
+        context['File']['Filename'] = res['result']['file_name']
+        context['File']['Link'] = res['result']['download_link']
+        context['File']['SystemID'] = res['result']['sys_id']
+
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('File Uploaded', hr)
+            'HumanReadable': tableToMarkdown('File Uploaded', hr),
+            'EntryContext': {
+                'Ticket(val.ID==obj.ID)' : context
+            }
         }
 
         return entry
@@ -1639,6 +1650,16 @@ script:
     - name: file_name
       description: Filename of uploaded file to override the existing file name in
         entry
+    outputs:
+    - contextPath: Ticket.File.file_name
+      description: Name of the file
+      type: string
+    - contextPath: Ticket.File.download_link
+      description: Download link for the file
+      type: string
+    - contextPath: Ticket.File.sys_id
+      description: System ID of the file
+      type: string
     description: Upload new file
   - name: servicenow-incident-upload-file
     deprecated: true
