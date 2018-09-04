@@ -1,12 +1,14 @@
-id: ThreatGrid_Detonate_File
+id: detonate_file_-_threatgrid
 version: -1
-name: ThreatGrid - Detonate File
+name: Detonate File - ThreatGrid
+fromversion: 4.0.0
 description: Detonate one or more files using the ThreatGrid integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types -
-  EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+  The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC,
+  DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK,
+  URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE,
+  CHM
 starttaskid: "0"
-fromversion: "4.0.0"
 tasks:
   "0":
     id: "0"
@@ -115,17 +117,19 @@ tasks:
       id: 2ef569c7-fa31-45cc-80a0-e03b12b49815
       version: -1
       name: ThreatGrid Get Samples State
+      description: Get the sample state.
       script: Threat Grid|||threat-grid-get-samples-state
       type: regular
       iscommand: true
       brand: Threat Grid
-      description: Get the sample state.
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
       ids:
-        simple: ${ThreatGrid.Sample.ID}
+        complex:
+          root: ThreatGrid
+          accessor: Sample.ID
     separatecontext: false
     view: |-
       {
@@ -175,31 +179,37 @@ tasks:
       id: 0245c2ab-485d-4994-8da0-63d10d247a77
       version: -1
       name: ThreatGrid Upload File
+      description: Uploads a file to Threat Grid
       script: Threat Grid|||threat-grid-upload-sample
       type: regular
       iscommand: true
       brand: Threat Grid
-      description: "Uploads a file to Threat Grid"
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
       file-id:
-        simple: ${File.EntryID}
+        complex:
+          root: File
+          accessor: EntryID
       filename:
-        simple: ${inputs.FileName}
-      os:
-        simple: ${inputs.os}
-      osver:
-        simple: ${inputs.osver}
+        complex:
+          root: inputs.FileName
+      playbook:
+        complex:
+          root: inputs.Playbook
       private:
-        simple: ${inputs.private}
+        complex:
+          root: inputs.Private
       source:
-        simple: ${inputs.source}
+        complex:
+          root: inputs.Source
       tags:
-        simple: ${inputs.tags}
+        complex:
+          root: inputs.Tags
       vm:
-        simple: ${inputs.vm}
+        complex:
+          root: inputs.VM
     separatecontext: false
     view: |-
       {
@@ -269,25 +279,36 @@ tasks:
       id: 97fcf073-c63a-42d4-8e65-ba6d4814d859
       version: -1
       name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: "Calls the generic polling sub-playbook"
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
       Ids:
-        simple: ${ThreatGrid.Sample.ID}
+        complex:
+          root: ThreatGrid
+          accessor: Sample.ID
       Interval:
-        simple: ${inputs.interval}
+        complex:
+          root: inputs.Interval
       PollingCommandArgName:
         simple: ids
       PollingCommandName:
         simple: threat-grid-get-samples-state
       Timeout:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.Timeout
       dt:
         simple: ThreatGrid.Sample(val.State!=='succ' && val.State!=='fail').ID
     separatecontext: true
@@ -311,10 +332,11 @@ tasks:
       id: 93e193f6-a438-4349-861c-f0f99b4b3997
       version: -1
       name: Is there a file to detonate?
+      description: Checks whether there's a file to detonate - if not then the detonation
+        is skipped
       type: condition
       iscommand: false
       brand: ""
-      description: "Checks whether there's a file to detonate - if not then the detonation is skipped"
     nexttasks:
       '#default#':
       - "6"
@@ -364,36 +386,34 @@ inputs:
     simple: file-detonated-via-demisto
   required: false
   description: Name of the file to detonate.
-- key: os
-  value: {}
-  required: false
-  description: Source OS (string)
-- key: osver
-  value: {}
-  required: false
-  description: OS version (string)
-- key: vm
+- key: VM
   value: {}
   required: false
   description: The VM to use (string)
-- key: private
+- key: playbook
+  value:
+    simple: default
+  required: false
+  description: Name of the Threat Grid playbook to apply to this sample run
+- key: Private
   value: {}
   required: false
-  description: The sample is marked private if this is present, and set to any value other than false.
-- key: source
+  description: The sample is marked private if this is present, and set to any value
+    other than false.
+- key: Source
   value: {}
   required: false
   description: a string used for identifying the source of the detonation (user defined)
-- key: tags
+- key: Tags
   value: {}
   required: false
   description: A comma-separated list of tags applied to this sample.
-- key: interval
+- key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-- key: timeout
+- key: Timeout
   value:
     simple: "15"
   required: false
@@ -445,3 +465,4 @@ outputs:
   description: The sample state.
 - contextPath: Sample.ID
   description: The sample ID.
+releaseNotes: "-"

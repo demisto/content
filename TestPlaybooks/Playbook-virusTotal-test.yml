@@ -1,14 +1,22 @@
 id: virusTotal-test-playbook
 version: -1
 name: virusTotal-test-playbook
+description: |
+  Test playbook for vt.
+
+  vt has a quota of requests per minute that we exceed in the test playbook.
+
+  Sleep for 60 seconds.
+
+  https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d3dfd1d2-103a-4dc0-8d3a-a6c7b99f1662
+    taskid: 7e558c1d-5c02-4029-8854-08c651e49c2b
     type: start
     task:
-      id: d3dfd1d2-103a-4dc0-8d3a-a6c7b99f1662
+      id: 7e558c1d-5c02-4029-8854-08c651e49c2b
       version: -1
       name: ""
       iscommand: false
@@ -20,17 +28,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 5b3b0e14-9410-4c39-88fe-9dc0396d4ef8
+    taskid: be108b6a-cb53-4b69-83b3-18afce7cf548
     type: regular
     task:
-      id: 5b3b0e14-9410-4c39-88fe-9dc0396d4ef8
+      id: be108b6a-cb53-4b69-83b3-18afce7cf548
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -40,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "18"
     scriptarguments:
       all:
         simple: "yes"
@@ -50,17 +58,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: 128d92d9-6c2f-4e7a-84c6-cabf2869208c
+    taskid: b08a5f0c-8215-4248-8902-260c3fa8cea1
     type: regular
     task:
-      id: 128d92d9-6c2f-4e7a-84c6-cabf2869208c
+      id: b08a5f0c-8215-4248-8902-260c3fa8cea1
       version: -1
       name: ip
       description: Check IP Reputation
@@ -83,17 +91,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 50,
+          "y": 545
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: d7362a0b-8ef1-4196-8949-0d8ce7a560e5
+    taskid: 50e13b2c-626d-45b0-88d4-162ead3fc2a1
     type: regular
     task:
-      id: d7362a0b-8ef1-4196-8949-0d8ce7a560e5
+      id: 50e13b2c-626d-45b0-88d4-162ead3fc2a1
       version: -1
       name: VerifyContext
       description: |-
@@ -119,17 +127,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 590
+          "x": 50,
+          "y": 720
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: e60479cb-9cbd-4730-84b1-94b89a8c9119
+    taskid: d9daba3e-38c1-4174-8614-9615331e9fbb
     type: regular
     task:
-      id: e60479cb-9cbd-4730-84b1-94b89a8c9119
+      id: d9daba3e-38c1-4174-8614-9615331e9fbb
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -149,17 +157,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 780
+          "x": 50,
+          "y": 895
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 60b01773-fa85-490e-8890-bd847b02af76
+    taskid: 1e4cd112-9345-4d2c-8e9a-cc412b982b2f
     type: regular
     task:
-      id: 60b01773-fa85-490e-8890-bd847b02af76
+      id: 1e4cd112-9345-4d2c-8e9a-cc412b982b2f
       version: -1
       name: VerifyContext
       description: |-
@@ -185,17 +193,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1110
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: 7f2ab5ca-1fe5-4ab9-867f-598fa45e1606
+    taskid: ee10d5c4-d7df-4420-840f-eec9d6a96277
     type: regular
     task:
-      id: 7f2ab5ca-1fe5-4ab9-867f-598fa45e1606
+      id: ee10d5c4-d7df-4420-840f-eec9d6a96277
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -215,17 +223,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1270
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
   "7":
     id: "7"
-    taskid: 2533b166-5d46-42de-828d-820f10908092
+    taskid: edd084c0-aa6d-42b4-8338-3573cca7bf4e
     type: regular
     task:
-      id: 2533b166-5d46-42de-828d-820f10908092
+      id: edd084c0-aa6d-42b4-8338-3573cca7bf4e
       version: -1
       name: domain
       description: Check domain reputation
@@ -248,17 +256,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 945
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: 2d958b35-c76f-41df-8736-726cd4804ac9
+    taskid: 77d04f63-2ef8-42be-8193-17eec4ecf9eb
     type: regular
     task:
-      id: 2d958b35-c76f-41df-8736-726cd4804ac9
+      id: 77d04f63-2ef8-42be-8193-17eec4ecf9eb
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -280,17 +288,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1440
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
   "9":
     id: "9"
-    taskid: 5d528406-2bc0-4f3a-8dbc-616ef79ea122
+    taskid: 53bccee8-47ec-4fa7-8477-97c52d6486d7
     type: regular
     task:
-      id: 5d528406-2bc0-4f3a-8dbc-616ef79ea122
+      id: 53bccee8-47ec-4fa7-8477-97c52d6486d7
       version: -1
       name: VerifyContext
       description: |-
@@ -316,17 +324,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1610
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
   "10":
     id: "10"
-    taskid: af49d726-07fe-408b-810e-ebc14c9486e0
+    taskid: 706496e1-bf82-41c9-8775-16211999cfb2
     type: regular
     task:
-      id: af49d726-07fe-408b-810e-ebc14c9486e0
+      id: 706496e1-bf82-41c9-8775-16211999cfb2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -336,7 +344,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "17"
     scriptarguments:
       all:
         simple: "yes"
@@ -346,17 +354,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1770
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
   "14":
     id: "14"
-    taskid: b8771649-d206-4338-80b9-9cb5c5db43fc
+    taskid: 24ebde47-e355-406f-8d92-2f1b1bc8cc68
     type: regular
     task:
-      id: b8771649-d206-4338-80b9-9cb5c5db43fc
+      id: 24ebde47-e355-406f-8d92-2f1b1bc8cc68
       version: -1
       name: url
       description: Check URL Reputation
@@ -380,17 +388,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1960
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
   "15":
     id: "15"
-    taskid: b172c31a-6905-48ae-80c9-c135561985d6
+    taskid: 6fbf842e-6867-4440-8637-ec941e63e956
     type: regular
     task:
-      id: b172c31a-6905-48ae-80c9-c135561985d6
+      id: 6fbf842e-6867-4440-8637-ec941e63e956
       version: -1
       name: VerifyContext
       description: |-
@@ -416,17 +424,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2120
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 9ea3d366-e768-4e18-8e2c-4dedad45353a
+    taskid: 80c25b9d-d0bf-46d9-864a-91ee2ac5ccb1
     type: regular
     task:
-      id: 9ea3d366-e768-4e18-8e2c-4dedad45353a
+      id: 80c25b9d-d0bf-46d9-864a-91ee2ac5ccb1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -443,8 +451,74 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2280
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 01b0c002-fbe7-446e-8317-5203d92922bc
+    type: regular
+    task:
+      id: 01b0c002-fbe7-446e-8317-5203d92922bc
+      version: -1
+      name: Sleep
+      description: |
+        vt has a quota of requests per minute that we exceed in the test playbook.
+
+        Sleep for 60 seconds.
+
+        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 0ae6c202-4864-42f4-861e-f260c0654879
+    type: regular
+    task:
+      id: 0ae6c202-4864-42f4-861e-f260c0654879
+      version: -1
+      name: Sleep
+      description: |
+        vt has a quota of requests per minute that we exceed in the test playbook.
+
+        Sleep for 60 seconds.
+
+        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -453,9 +527,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2325,
+        "height": 2690,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
