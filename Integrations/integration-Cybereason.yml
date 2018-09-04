@@ -694,18 +694,26 @@ script:
         if response['status'] != 'SUCCESS':
             return_error('Failed to update malop {0} status to {1}. Message: {2}'.format(malop_guid, status, response['message']))
 
+    def malop_to_incident(malop):
+        incident = {}
+        incident['rawJSON'] = json.dumps(malop)
+        incident['name'] = 'Cybereason Malop ' + malop['guidString']
+        incident['labels'] = [{'type':'GUID', 'value': malop['guidString']}]
+        return incident
+
     def fetch_incidents():
 
         last_run = demisto.getLastRun()
-        endtime_time = time.time()
-        endtime_datetime = datetime.fromtimestamp(endtime_time)
 
-        if last_run and last_run['time']:
-            starttime_time = last_run['time']
+        if last_run and last_run['creation_time']:
+            last_creation_time = last_run['creation_time']
         else:
-            starttime_datetime = endtime_datetime - timedelta(days=3) # Last 3 days
-            starttime_time = time.mktime(starttime_datetime.timetuple()) + starttime_datetime.microsecond / 1E6 # Converting datetime to time
-            starttime_time = starttime_time * 1000
+            now_time = time.time()
+            now_datetime = datetime.fromtimestamp(now_time)
+            creation_datetime = now_datetime - timedelta(days=3) # Last 3 days
+            last_creation_time = time.mktime(creation_datetime.timetuple()) + creation_datetime.microsecond / 1E6 # Converting datetime to time
+
+        max_creation_time = last_creation_time
 
         filters = None # fetch all unread malops without time query
 
@@ -715,19 +723,26 @@ script:
         incidents = []
 
         for malop in malops:
-            management_status = malops[malop]['simpleValues']['managementStatus']['values'][0]
 
-            if management_status.lower() == 'unread' or management_status.lower() == 'reopen' : # Fetching only incidents with the following status management: UNREAD and REOPEN
-                incident = {}
-                incident['rawJSON'] = json.dumps(malops[malop])
-                incident['name'] = 'Cybereason Malop ' + malop
+            management_status = malops[malop]['simpleValues']['managementStatus']['values'][0]
+            malop_creation_time = malops[malop]['simpleValues']['creationTime']['values'][0]
+
+            if management_status.lower() == 'unread' or management_status.lower() == 'reopen': # Fetching only incidents with the following status management: UNREAD and REOPEN
+                incident = malop_to_incident(malop)
                 incidents.append(incident)
 
                 malopGUID = malops[malop]['guidString']
                 update_malop_status(malopGUID, 'Open')
 
+            elif malop_creation_time >= last_creation_time:
+                incident = malop_to_incident(malops[malop])
+                incidents.append(incident)
+
+                if malop_creation_time > max_creation_time:
+                    max_creation_time = malop_creation_time
+
         demisto.setLastRun({
-            'time': endtime_time
+            'creation_time': max_creation_time
         })
 
         demisto.incidents(incidents)
