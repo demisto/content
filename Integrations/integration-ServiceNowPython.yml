@@ -725,7 +725,7 @@ script:
     arguments:
     - name: id
       default: true
-      description: Incident ID to retrieve
+      description: Ticket System ID to retrieve
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -736,10 +736,10 @@ script:
       description: Ticket type to create
       defaultValue: incident
     - name: number
-      description: Incident number to retrieve
+      description: Ticket number to retrieve
     outputs:
     - contextPath: Ticket.Id
-      description: ServiceNow incident ID
+      description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -759,7 +759,7 @@ script:
     arguments:
     - name: id
       default: true
-      description: Incident ID to retrieve
+      description: Ticket System ID to retrieve
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -769,10 +769,10 @@ script:
       description: Ticket type to create
       defaultValue: incident
     - name: number
-      description: Incident number to retrieve
+      description: Ticket number to retrieve
     outputs:
     - contextPath: Ticket.Id
-      description: ServiceNow incident ID
+      description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -811,15 +811,15 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Set incident as Active
+      description: Set ticket as Active
     - name: activity_due
-      description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time
     - name: additional_assignee_list
       description: List of assigned users to the ticket
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -893,7 +893,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: Notify about this incident
+      description: Notify about this ticket
     - name: order
       description: Order number
     - name: parent
@@ -941,7 +941,7 @@ script:
     - name: priority
       description: Priority of the ticket (number)
     - name: template
-      description: Template name to use as a base to create new incidents.
+      description: Template name to use as a base to create new tickets.
     - name: custom_fields
       description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     - name: type
@@ -953,10 +953,10 @@ script:
       description: Type of Change Request ticket
       defaultValue: normal
     - name: state
-      description: State of the incident (an integer)
+      description: State of the ticket (an integer)
     outputs:
     - contextPath: Ticket.Id
-      description: ServiceNow ticket ID
+      description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -995,15 +995,15 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Set incident as Active
+      description: Set ticket as Active
     - name: activity_due
-      description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time
     - name: additional_assignee_list
       description: List of assigned users to the ticket
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -1077,7 +1077,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: Notify about this incident
+      description: Notify about this ticket
     - name: order
       description: Order number
     - name: parent
@@ -1125,10 +1125,10 @@ script:
     - name: priority
       description: Priority of the ticket (number)
     - name: template
-      description: Template name to use as a base to create new incidents.
+      description: Template name to use as a base to create new tickets.
     outputs:
     - contextPath: Ticket.Id
-      description: ServiceNow ticket ID
+      description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -1175,7 +1175,7 @@ script:
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -1249,7 +1249,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: Notify about this incident
+      description: Notify about this ticket
     - name: order
       description: Order number
     - name: parent
@@ -1298,7 +1298,7 @@ script:
       description: Priority of the ticket (number)
     - name: id
       required: true
-      description: Id(UID) of the ticket to update
+      description: System ID of the ticket to update
     - name: custom_fields
       description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     - name: type
@@ -1310,7 +1310,7 @@ script:
       description: Type of Change Request ticket
       defaultValue: normal
     - name: state
-      description: State of the incident (an integer)
+      description: State of the ticket (an integer)
     description: Update specific ticket by providing ticket id
   - name: servicenow-incident-update
     deprecated: true
@@ -1344,7 +1344,7 @@ script:
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -1418,7 +1418,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: Notify about this incident
+      description: Notify about this ticket
     - name: order
       description: Order number
     - name: parent
@@ -1467,14 +1467,13 @@ script:
       description: Priority of the ticket (number)
     - name: id
       required: true
-      description: Id(UID) of the ticket to update
+      description: System ID of the ticket to update
     description: Update specific ticket by providing ticket id
   - name: servicenow-add-link
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1486,10 +1485,10 @@ script:
       defaultValue: incident
     - name: link
       required: true
-      description: The actual link to publish in ServiceNow incident, valid url format,
+      description: The actual link to publish in ServiceNow ticket, valid url format,
         like http://www.demisto.com
     - name: post-as-comment
-      description: Publish the link as comment on the incident, if false will publish
+      description: Publish the link as comment on the ticket, if false will publish
         the link as WorkNote, format bool
     - name: text
       description: The text to represent the link
@@ -1499,8 +1498,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1511,10 +1509,10 @@ script:
       defaultValue: incident
     - name: link
       required: true
-      description: The actual link to publish in ServiceNow incident, valid url format,
+      description: The actual link to publish in ServiceNow ticket, valid url format,
         like http://www.demisto.com
     - name: post-as-comment
-      description: Publish the link as comment on the incident, by default true, if
+      description: Publish the link as comment on the ticket, by default true, if
         false will publish the link as WorkNote, format bool
     - name: text
       description: The text to represent the link
@@ -1523,8 +1521,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1538,7 +1535,7 @@ script:
       required: true
       description: Comment to add
     - name: post-as-comment
-      description: Publish the link as comment on the incident, if false will publish
+      description: Publish the link as comment on the ticket, if false will publish
         the link as WorkNote, format bool
     description: Add comment to specific ticket by providing ticket id
   - name: servicenow-incident-add-comment
@@ -1546,8 +1543,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1560,7 +1556,7 @@ script:
       required: true
       description: Comment to add
     - name: post-as-comment
-      description: Publish the link as comment on the incident, if false will publish
+      description: Publish the link as comment on the ticket, if false will publish
         the link as WorkNote, format bool
     description: Add comment to specific ticket by providing ticket id
   - name: servicenow-query
@@ -1581,7 +1577,7 @@ script:
       defaultValue: incident
     outputs:
     - contextPath: Ticket.Id
-      description: ServiceNow ticket ID
+      description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -1614,7 +1610,7 @@ script:
       defaultValue: incident
     outputs:
     - contextPath: Ticket.Id
-      description: ServiceNow ticket ID
+      description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
@@ -1633,8 +1629,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1651,13 +1646,13 @@ script:
       description: Filename of uploaded file to override the existing file name in
         entry
     outputs:
-    - contextPath: Ticket.File.file_name
+    - contextPath: Ticket.File.Filename
       description: Name of the file
       type: string
-    - contextPath: Ticket.File.download_link
+    - contextPath: Ticket.File.Link
       description: Download link for the file
       type: string
-    - contextPath: Ticket.File.sys_id
+    - contextPath: Ticket.File.SystemID
       description: System ID of the file
       type: string
     description: Upload new file
@@ -1666,8 +1661,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1682,6 +1676,16 @@ script:
     - name: file_name
       description: Filename of uploaded file to override the existing file name in
         entry
+    outputs:
+    - contextPath: Ticket.File.Filename
+      description: Name of the file
+      type: string
+    - contextPath: Ticket.File.Link
+      description: Download link for the file
+      type: string
+    - contextPath: Ticket.File.SystemID
+      description: System ID of the file
+      type: string
     description: Upload new file
   - name: servicenow-get-groups
     arguments:
