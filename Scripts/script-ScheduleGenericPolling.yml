@@ -37,7 +37,7 @@ script: |-
           'ContensFormat': formats['text'],
           'Contents': "Interval and timeout must be positive numbers"
       })
-      exit(2)
+      sys.exit(2)
 
   # Verify correct dt path (does not verify condition!)
   if not demisto.dt(demisto.context(), dt):
@@ -53,7 +53,7 @@ script: |-
   })
   if isError(res[0]):
       demisto.results(res)
-      exit(1)
+      sys.exit(1)
 type: python
 tags: []
 comment: Called by the GenericPolling playbook, schedules the polling task.
@@ -91,3 +91,4 @@ args:
   defaultValue: polling
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
