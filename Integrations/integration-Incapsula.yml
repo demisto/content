@@ -1035,7 +1035,7 @@ script:
       - "RULE_ACTION_RETRY"
       - "RULE_ACTION_INTRUSIVE_HTML"
       - "RULE_ACTION_CAPTCHA"
-      description: 	Rule action.
+      description: Rule action.
     - name: filter
       description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
 
@@ -1050,7 +1050,7 @@ script:
       - 308
       description: 	Redirect rule's response code.
     - name: protocol
-      description:
+      description: Protocol
     - name: add_missing
       description: Add cookie or header if it doesn't exist (Rewrite cookie rule only)
     - name: from
@@ -1082,7 +1082,7 @@ script:
       - "LB_LEAST_OPEN_CONNECTIONS"
       - "LB_SOURCE_IP_HASH"
       - "RANDOM"
-      description: 	Data center load balancing algorithm
+      description: Data center load balancing algorithm
     description: Use this operation to add a rule (Delivery Rules or IncapRules).
   - name: incap-edit-site-rule
     arguments:
@@ -1109,7 +1109,7 @@ script:
       - "RULE_ACTION_RETRY"
       - "RULE_ACTION_INTRUSIVE_HTML"
       - "RULE_ACTION_CAPTCHA"
-      description: 	Rule action.
+      description: Rule action.
     - name: filter
       description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
 
@@ -1124,7 +1124,7 @@ script:
       - 308
       description: 	Redirect rule's response code.
     - name: protocol
-      description:
+      description: Protocol
     - name: add_missing
       description: Add cookie or header if it doesn't exist (Rewrite cookie rule only)
     - name: from
@@ -1156,7 +1156,7 @@ script:
       - "LB_LEAST_OPEN_CONNECTIONS"
       - "LB_SOURCE_IP_HASH"
       - "RANDOM"
-      description: 	Data center load balancing algorithm
+      description: Data center load balancing algorithm
     description: Use this operation to edit an existing rule (Delivery Rules or IncapRules).
   - name: incap-enable-site-rule
     arguments:
@@ -1171,7 +1171,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 	When true, the rule will be enabled. Set to false to disable.
+      description: When true, the rule will be enabled. Set to false to disable.
     description: Use this operation to enable or disable a rule (Delivery Rules or IncapRules).
   - name: incap-delete-site-rule
     arguments:
@@ -1181,7 +1181,7 @@ script:
       description: Rule ID.
     - name: name
       description: Rule name.
-      description: 	When true, the rule will be enabled. Set to false to disable.
+      description: When true, the rule will be enabled. Set to false to disable.
     description: Use this operation to delete a rule (Delivery Rules or IncapRules).
   - name: incap-list-site-rules
     arguments:
@@ -1200,7 +1200,7 @@ script:
       predefined:
       - "Yes"
       - "No"
-      description: 	Whether or not security rules be included. Defaults to "Yes".
+      description: Whether or not security rules be included. Defaults to "Yes".
     - name: page_size
       description: 'The number of objects to return in the response.
 
@@ -1257,7 +1257,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 	The data center will be available for specific resources (Forward Delivery Rules).
+      description: The data center will be available for specific resources (Forward Delivery Rules).
     description: Use this operation to add a data center to a site.
   - name: incap-edit-site-datacenter
     arguments:
@@ -1272,19 +1272,19 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 	Enables the data center
+      description: Enables the data center
     - name: is_standby
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: 	Defines the data center as standby for failover.
+      description: Defines the data center as standby for failover.
     - name: is_content
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: 	The data center will be available for specific resources (Forward Delivery Rules).
+      description: The data center will be available for specific resources (Forward Delivery Rules).
     description: Use this operation to edit a site's data center.
   - name: incap-delete-site-datacenter
     arguments:
@@ -1316,7 +1316,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 	Set the server as Active (P0) or Standby (P1) (Boolean).
+      description: Set the server as Active (P0) or Standby (P1) (Boolean).
     description: Use this operation to add a server to a data center.
   - name: incap-edit-site-datacenter-server
     arguments:
@@ -1334,13 +1334,13 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 	Enable or disable the server (Boolean).
+      description: Enable or disable the server (Boolean).
     - name: is_standby
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: 	Set the server as Active (P0) or Standby (P1) (Boolean).
+      description: Set the server as Active (P0) or Standby (P1) (Boolean).
     description: Use this operation to add a server to a data center.
   - name: incap-delete-site-datacenter-server
     arguments:
@@ -1454,9 +1454,9 @@ script:
       - "Blocked"
       description: 'Specific traffic. One of: Total, Passed, Blocked.'
     - name: traffic_type
-      description: 	'A comma separated list of specific traffic types. Any of: UDP, TCP, DNS, DNS_RESPONSE, ICMP, SYN, FRAG, LARGE_SYN, NTP, NETFLOW, SSDP, GENERAL. Cannot be used together with the pop parameter.'
+      description: 'A comma separated list of specific traffic types. Any of: UDP, TCP, DNS, DNS_RESPONSE, ICMP, SYN, FRAG, LARGE_SYN, NTP, NETFLOW, SSDP, GENERAL. Cannot be used together with the pop parameter.'
     - name: pop
-      description: 	'A comma separated list of specific PoP names. For example: iad, tko. Cannot be used together with the traffic_type parameter. For the list of PoP codes and locations, see https://docs.incapsula.com/Content/read-more/pops.htm'
+      description: 'A comma separated list of specific PoP names. For example: iad, tko. Cannot be used together with the traffic_type parameter. For the list of PoP codes and locations, see https://docs.incapsula.com/Content/read-more/pops.htm'
     - name: start
       description: The start date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
     - name: end
