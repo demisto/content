@@ -17,6 +17,11 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
@@ -28,6 +33,7 @@ script:
     var insecure = params.insecure;
     // handle '/' at the end of the url
     var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/sdkapi/';
+    var proxy = params.proxy;
 
     function sendRequest(method, url_suffix, headers, body) {
         // add default headers
@@ -48,7 +54,8 @@ script:
                 Headers: headers,
                 Body: body,
             },
-            insecure
+            insecure,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -639,3 +646,4 @@ script:
       description: Attack Category
     description: Get all available attack definitions in NSM
   runonce: false
+releaseNotes: "Added support for proxy"

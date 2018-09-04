@@ -1,7 +1,7 @@
 id: dedup_-_generic
 version: -1
 name: Dedup - Generic
-fromversion: "3.5.0"
+fromversion: "4.0.0"
 description: Generic playbook to find duplicate incidents with one of the methods
   we have.
 starttaskid: "0"
@@ -353,3 +353,4 @@ outputs:
 - contextPath: similarIncident
   description: Similar incident.
   type: unknown
+releaseNotes: "-"

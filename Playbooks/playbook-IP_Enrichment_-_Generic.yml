@@ -1,8 +1,17 @@
 id: ip_enrichment_generic
 version: -1
 name: IP Enrichment - Generic
-description: Use one or more integrations to enrich an IP address.
+releaseNotes: "Add support for VirusTotal Private API"
 fromversion: 3.6.0
+description: |-
+  Enrich IP using one or more integrations.
+
+  IP enrichment includes:
+  * Resolve IP to Hostname (DNS)
+  * Threat information
+  * Separate internal and external addresses
+  * IP reputation
+  * For internal addresses, get host information
 starttaskid: "0"
 tasks:
   "0":
@@ -92,13 +101,14 @@ tasks:
       }
   "19":
     id: "19"
-    taskid: 98bb2a4c-a10e-4451-8a9d-e1e2b682eb74
+    taskid: 74889e4f-d5ea-46d2-8cfb-aac15c10a52f
     type: regular
     task:
-      id: 98bb2a4c-a10e-4451-8a9d-e1e2b682eb74
+      id: 74889e4f-d5ea-46d2-8cfb-aac15c10a52f
       version: -1
       name: Check IP reputation
-      description: Invoke IP related engines to get their DBot Score.
+      description: Get the IP reputation from every integration that supports the
+        `!ip` command.
       scriptName: IPReputation
       type: regular
       iscommand: false
@@ -150,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -217.5,
-          "y": 1533
+          "x": -291,
+          "y": 1845
         }
       }
   "26":
@@ -193,6 +203,7 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
+      - "36"
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -455,14 +466,127 @@ tasks:
           "y": 690
         }
       }
+  "36":
+    id: "36"
+    taskid: 97b967b9-1fc6-425f-8204-c363fb8e974c
+    type: title
+    task:
+      id: 97b967b9-1fc6-425f-8204-c363fb8e974c
+      version: -1
+      name: Enrich with Virus Total Private API
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032,
+          "y": 1375
+        }
+      }
+  "37":
+    id: "37"
+    taskid: 2d6d9c62-3d21-423f-80f7-51f57ff3c881
+    type: condition
+    task:
+      id: 2d6d9c62-3d21-423f-80f7-51f57ff3c881
+      version: -1
+      name: Is Virus Total Private API enabled?
+      description: Checks if there is an active instance of the Virus Total Private
+        API enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "38"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1032,
+          "y": 1503
+        }
+      }
+  "38":
+    id: "38"
+    taskid: fce8e0ad-c5f8-47f0-8668-c9bb83c25c4e
+    type: regular
+    task:
+      id: fce8e0ad-c5f8-47f0-8668-c9bb83c25c4e
+      version: -1
+      name: Get IP report form Virus Total Private API
+      description: |
+        Retrieves a report for a given IP.
+      script: VirusTotal - Private API|||vt-private-get-ip-report
+      type: regular
+      iscommand: true
+      brand: VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        complex:
+          root: IP
+          accessor: Address
+      threshold: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032,
+          "y": 1692
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1549,
-        "width": 1210,
-        "x": -217.5,
+        "height": 1861,
+        "width": 1703,
+        "x": -291,
         "y": 49
       }
     }
