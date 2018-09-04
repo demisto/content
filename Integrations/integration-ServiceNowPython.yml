@@ -139,8 +139,6 @@ script:
             res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
             verify=VERIFY_SSL, proxies=PROXY)
 
-        if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + str(res.content) + ' with headers ' + str(res.headers))
 
         try:
             obj = res.json()
@@ -149,6 +147,9 @@ script:
 
         if 'error' in obj:
             raise Exception('ServiceNow Error: ' + obj['error']['detail'])
+
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + str(res.content) + ' with headers ' + str(res.headers))
 
         return obj
 
