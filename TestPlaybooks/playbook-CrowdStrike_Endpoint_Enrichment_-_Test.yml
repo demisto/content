@@ -1,16 +1,16 @@
-id: crowdstrike_endpoint_enrichment_-_test
+id: CrowdStrike Endpoint Enrichment - Test
 version: -1
 name: CrowdStrike Endpoint Enrichment - Test
 description: ""
-fromversion: "3.5.0"
+fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8c9fe9bb-ecca-43c4-8626-713f02b35c62
+    taskid: 20f4e6ab-5adb-4f41-8b6a-ef9b4ccb56da
     type: start
     task:
-      id: 8c9fe9bb-ecca-43c4-8626-713f02b35c62
+      id: 20f4e6ab-5adb-4f41-8b6a-ef9b4ccb56da
       version: -1
       name: ""
       iscommand: false
@@ -26,68 +26,13 @@ tasks:
           "y": 50
         }
       }
-  "3":
-    id: "3"
-    taskid: f22b31e5-46e6-43b7-8266-8be52233f2c2
-    type: regular
-    task:
-      id: f22b31e5-46e6-43b7-8266-8be52233f2c2
-      version: -1
-      name: Verify context
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: FalconHostDevices
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 824
-        }
-      }
-  "6":
-    id: "6"
-    taskid: e5567210-6a22-42a2-8f40-5f0eff33d5e6
-    type: playbook
-    task:
-      id: e5567210-6a22-42a2-8f40-5f0eff33d5e6
-      version: -1
-      name: CrowdStrike Endpoint Enrichment
-      description: Enrich Endpoint with CrowdStrike
-      playbookName: CrowdStrike Endpoint Enrichment
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Hostname:
-        simple: ${FalconHostDevices}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 624
-        }
-      }
+    note: false
   "7":
     id: "7"
-    taskid: bbc95b84-16ee-4f9f-8aef-1394322b9877
+    taskid: 1cc3172e-272c-4dc7-8c67-528f35f06d29
     type: regular
     task:
-      id: bbc95b84-16ee-4f9f-8aef-1394322b9877
+      id: 1cc3172e-272c-4dc7-8c67-528f35f06d29
       version: -1
       name: cs-device-search
       description: Search for devices in your environment by platform, host name,
@@ -98,7 +43,7 @@ tasks:
       brand: FalconHost
     nexttasks:
       '#none#':
-      - "6"
+      - "9"
     scriptarguments:
       filter: {}
       limit: {}
@@ -109,15 +54,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 408
+          "y": 370
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 01de79be-3c07-4b1a-85c3-2192bb477642
+    taskid: b2abb242-53e3-4029-8c51-f6f74ce18f14
     type: regular
     task:
-      id: 01de79be-3c07-4b1a-85c3-2192bb477642
+      id: b2abb242-53e3-4029-8c51-f6f74ce18f14
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -137,15 +83,67 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 201
+          "y": 195
         }
       }
+    note: false
+  "9":
+    id: "9"
+    taskid: be3de74a-1573-41ad-89f9-2c99ad19f088
+    type: playbook
+    task:
+      id: be3de74a-1573-41ad-89f9-2c99ad19f088
+      version: -1
+      name: CrowdStrike Endpoint Enrichment
+      playbookName: CrowdStrike Endpoint Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 03223a48-5350-4558-87d2-1a79f700d052
+    type: regular
+    task:
+      id: 03223a48-5350-4558-87d2-1a79f700d052
+      version: -1
+      name: ContextContains
+      description: This script searches for a value in a context path.
+      scriptName: ContextContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      path:
+        simple: ${Endpoint.OS}
+      value:
+        simple: Windows
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 869,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50
@@ -154,3 +152,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "added context check for Endpoint"

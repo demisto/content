@@ -498,24 +498,24 @@ script:
     # EXECUTION
     if demisto.command() == "fetch-incidents":
         fetch_incidents()
-        exit(0)
+        sys.exit(0)
 
     if demisto.command() == "test-module":
         test()
-        exit(0)
+        sys.exit(0)
 
     if demisto.command() == "symantec-mss-update-incident":
         update_incident()
-        exit(0)
+        sys.exit(0)
 
     if demisto.command() == "symantec-mss-get-incident":
         query_incident_cmd()
-        exit(0)
+        sys.exit(0)
 
     if demisto.command() == "symantec-mss-incidents-list":
         time = demisto.args()["time"] if "time" in demisto.args() else isoformat(datetime.datetime.utcnow() - timedelta(hours=24))
         get_incidents_list(time)
-        exit(0)
+        sys.exit(0)
   type: python
   commands:
   - name: symantec-mss-update-incident
@@ -566,3 +566,4 @@ script:
     description: Get a list of incidents
   dockerimage: demisto/symantec_mss
   isfetch: true
+releaseNotes: "-"

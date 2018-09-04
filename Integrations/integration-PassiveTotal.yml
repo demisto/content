@@ -9,6 +9,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAiCAYAAACUcR1DAAAU/Ul
 description: Analyze and understand threat infrastructure from a variety of sources–passive
   DNS, active DNS, WHOIS, SSL certificates and more–without devoting resources to
   time-intensive manual threat research and analysis
+releaseNotes: "-"
 configuration:
 - display: Server URL
   name: ServerURL
@@ -146,15 +147,15 @@ script:
         case 'pt-get-subdomains':
             var md = '## Subdomains for ' + args.query + '\n';
             md += objToMd(jsonRes);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {subdomains: jsonRes.subdomains}};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {subdomains: jsonRes.subdomains}};
         case 'pt-account':
             var md = '## PassiveTotal Account\n';
             md += objToMd(jsonRes);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'passivetotal.username': jsonRes.username}};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'passivetotal.username': jsonRes.username}};
         case 'pt-monitors':
             var md = '## PassiveTotal Monitors\n';
             md += arrToMd(jsonRes);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-passive-dns':
             var md = '## PassiveTotal Passive DNS for ' + args.query + ' [' + jsonRes.queryType + '] - total: ' + jsonRes.totalRecords + '\n';
             if (jsonRes.pager) {
@@ -177,7 +178,7 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {Domain: contextDomain}};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {Domain: contextDomain}};
         case 'pt-passive-unique':
             var md = '## PassiveTotal Passive Unique DNS for ' + args.query + ' [' + jsonRes.queryType + '] - total: ' + jsonRes.total + '\n';
             if (jsonRes.pager) {
@@ -196,7 +197,7 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {Domain: contextDomain}};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {Domain: contextDomain}};
         case 'pt-dns-keyword':
             var md = '## PassiveTotal Passive DNS Keyword Query: ' + args.query + '\n';
             if (jsonRes.results && jsonRes.results.length > 0) {
@@ -204,7 +205,7 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-enrichment':
             var md = '## PassiveTotal Metadata Enrichment for: ' + args.query + '\n';
             md += objToMd(jsonRes);
@@ -249,7 +250,7 @@ script:
                     };
                 }
             }
-            var fullResult = [{Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
+            var fullResult = [{Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
             if (jsonRes.queryType === 'ip' && jsonRes.latitude && jsonRes.longitude) {
                 fullResult.push({Type: entryTypes.map, Contents: {lat: jsonRes.latitude, lng: jsonRes.longitude}, ContentsFormat: formats.json});
             }
@@ -323,7 +324,7 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
         case 'pt-osint':
             var md = '## PassiveTotal OSINT Report for: ' + args.query + '\n';
             if (jsonRes.results && jsonRes.results.length > 0) {
@@ -335,11 +336,11 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-whois':
             var md = '## PassiveTotal WHOIS Query for: ' + args.query + '\n';
             md += objToMd(jsonRes);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'passivetotal.whois.email': jsonRes.contactEmail}};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {'passivetotal.whois.email': jsonRes.contactEmail}};
         case 'pt-whois-keyword':
             var md = '## PassiveTotal WHOIS Query by Keyword for: ' + args.query + '\n';
             if (jsonRes.results && jsonRes.results.length > 0) {
@@ -351,7 +352,7 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-whois-search':
             var md = '## PassiveTotal WHOIS Query by Field Matching for: ' + args.field + '=' + args.query + '\n';
             if (jsonRes.results && jsonRes.results.length > 0) {
@@ -362,7 +363,7 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-get-components':
             var md = '## PassiveTotal Components for: ' + args.query + '\n';
             if (jsonRes.results && jsonRes.results.length > 0) {
@@ -375,7 +376,7 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-get-pairs':
             var md = '## PassiveTotal Pairs for: ' + args.query + '\n';
             if (jsonRes.results && jsonRes.results.length > 0) {
@@ -388,23 +389,23 @@ script:
             } else {
                 md += 'No results found!';
             }
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-ssl-cert':
             var md = '## PassiveTotal SSL Certificate for: ' + args.query + '\n';
             md += objToMd(jsonRes);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-ssl-cert-history':
             var md = '## PassiveTotal SSL Certificate History for: ' + args.query + '\n';
             md += arrToMd(jsonRes);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-ssl-cert-keyword':
             var md = '## PassiveTotal SSL Certificate by Keyword for: ' + args.query + '\n';
             md += arrToMd(jsonRes.results);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-ssl-cert-search':
             var md = '## PassiveTotal SSL Certificate Search for: ' + args.field + '=' + args.query + '\n';
             md += arrToMd(jsonRes.results);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
+            return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         default:
             throw 'Unknown command'; // should never happen
     }
