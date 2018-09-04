@@ -48,6 +48,11 @@ script:
     from datetime import datetime, timedelta
     import time
     import re
+    import sys
+
+    # Define utf8 as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -69,9 +74,10 @@ script:
         'To Review': 'TODO',
         'Remediated': 'CLOSED',
         'Unread': 'UNREAD',
-        'Not Relevant': 'FP'
+        'Not Relevant': 'FP',
+        'Open': 'OPEN'
     }
-
+    # Field = the name as received from CR API, Header = The name which will be mapped to Demisto command, Type = Data that is received from CR API
     PROCESS_INFO = [
         {'field': 'elementDisplayName', 'header': 'Name', 'type': 'filterData'},
         {'field': 'imageFile.maliciousClassificationType', 'header': 'Malicious', 'type': 'simple'},
@@ -417,6 +423,7 @@ script:
             current_datetime = datetime.fromtimestamp(current_timestamp)
             within_last_days_datetime = current_datetime - timedelta(days=int(within_last_days))
             within_last_days_timestamp = time.mktime(within_last_days_datetime.timetuple()) + within_last_days_datetime.microsecond / 1E6 #Converting datetime to time
+            within_last_days_timestamp = within_last_days_timestamp * 1000
             filters = [
                 {
                     'facetName': 'malopLastUpdateTime',
@@ -425,7 +432,7 @@ script:
                 }
             ]
 
-        response = query_malops(total_result_limit, per_group_limit, template_context, filters)
+        response = query_malops(total_result_limit, per_group_limit, template_context, None)
         data = response['data']
         malops_map = data.get('resultIdToElementDataMap')
         if not data or not malops_map:
@@ -436,9 +443,15 @@ script:
         malops_markdown = ''
         for malop_id in malops_map:
             malop = malops_map[malop_id]
+            management_status = malop['simpleValues']['managementStatus']['values'][0]
+
+            if management_status.lower() == 'closed':
+                continue
+
             creation_time = translate_timestamp(malop['simpleValues']['creationTime']['values'][0])
             malop_last_update_time = translate_timestamp(malop['simpleValues']['malopLastUpdateTime']['values'][0])
             decision_failure = malop['simpleValues']['decisionFeature']['values'][0].replace('Process.', '')
+
             suspects = malop['elementValues']['suspects']['elementValues'][0]
             suspects_string = '{}: {}'.format(suspects['elementType'], suspects['name'])
             malop_output = {
@@ -447,7 +460,8 @@ script:
                 'CreationTime': creation_time,
                 'DecisionFailure': re.sub(r'\([^)]*\)', '', decision_failure),
                 'Suspects':suspects_string,
-                'LastUpdateTime': malop_last_update_time
+                'LastUpdateTime': malop_last_update_time,
+                'Status': management_status
             }
             outputs.append(malop_output)
         ec = {
@@ -459,15 +473,15 @@ script:
             'Contents': data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'LastUpdateTime', 'DecisionFailure', 'Suspects']),
+            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects']),
             'EntryContext': ec
         })
 
     def query_malops(total_result_limit=None, per_group_limit=None, template_context=None, filters=None):
 
-        json = {
-            'totalResultLimit': int(total_result_limit) if total_result_limit else 100,
-            'perGroupLimit': int(per_group_limit) if per_group_limit else 100,
+        body = {
+            'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
+            'perGroupLimit': int(per_group_limit) if per_group_limit else 10000,
             'perFeatureLimit': 100,
             'templateContext': template_context or 'MALOP',
             'queryPath': [
@@ -478,10 +492,13 @@ script:
                 }
             ]
         }
-
         cmd_url = '/rest/crimes/unified'
-        response = http_request('POST', cmd_url, json=json).json()
-        return response
+        response = http_request('POST', cmd_url, json=body)
+        try:
+            return response.json()
+        except Exception, e:
+            raise Exception('Failed to parse query malop response as JSON: {}'.format(response.text))
+
 
     def isolate_machine_command():
 
@@ -632,7 +649,7 @@ script:
         comment = demisto.args().get('comment')
         malop_guid = demisto.args().get('malopGuid')
         try:
-            add_comment(malop_guid, comment)
+            add_comment(malop_guid, comment.encode('utf-8'))
             demisto.results('Comment added successfully')
         except Exception, e:
             return_error('Failed to add new comment. Orignal Error: ' + e.message)
@@ -682,32 +699,32 @@ script:
         last_run = demisto.getLastRun()
         endtime_time = time.time()
         endtime_datetime = datetime.fromtimestamp(endtime_time)
+
         if last_run and last_run['time']:
             starttime_time = last_run['time']
         else:
             starttime_datetime = endtime_datetime - timedelta(days=3) # Last 3 days
             starttime_time = time.mktime(starttime_datetime.timetuple()) + starttime_datetime.microsecond / 1E6 # Converting datetime to time
+            starttime_time = starttime_time * 1000
 
-        filters = [
-            {
-                'facetName': 'malopLastUpdateTime', # it was creationTime, but we want to fetch also the malops which very reopened
-                'values': [starttime_time],
-                'filterType': 'GreaterThan'
-            }
-        ]
+        filters = None # fetch all unread malops without time query
 
-        data = query_malops(filters=filters)['data']
+        data = query_malops(total_result_limit=10000, per_group_limit=10000, filters=filters)['data']
         malops = data['resultIdToElementDataMap']
 
         incidents = []
 
         for malop in malops:
             management_status = malops[malop]['simpleValues']['managementStatus']['values'][0]
-            if management_status.lower() != 'closed': # Fetching only incidents with the following status management: TODO, UNREAD, TOREIVEW
+
+            if management_status.lower() == 'unread' or management_status.lower() == 'reopen' : # Fetching only incidents with the following status management: UNREAD and REOPEN
                 incident = {}
                 incident['rawJSON'] = json.dumps(malops[malop])
                 incident['name'] = 'Cybereason Malop ' + malop
                 incidents.append(incident)
+
+                malopGUID = malops[malop]['guidString']
+                update_malop_status(malopGUID, 'Open')
 
         demisto.setLastRun({
             'time': endtime_time
@@ -728,7 +745,8 @@ script:
         http_request('POST', cmd_url, data=data, headers=headers)
 
     def client_certificate():
-        cert = demisto.params()['credentials']['credentials']['sshkey']
+        cert = CERTIFICATE
+
         if 'Bag Attributes' not in cert:
             return_error('Could not find Bag Attributes')
         if '-----BEGIN CERTIFICATE-----' not in cert:
@@ -772,16 +790,16 @@ script:
 
     session = requests.session()
 
+
+    if CERTIFICATE:
+        client_certificate()
+        AUTH = 'CERT'
     if USERNAME and PASSWORD:
         login()
         AUTH = 'BASIC'
-
-    elif CERTIFICATE:
-        client_certificate()
-        AUTH = 'CERT'
-
     else:
         return_error('No credentials were provided')
+
 
     try:
         if demisto.command() == 'test-module':
@@ -998,7 +1016,6 @@ script:
       description: The total number of results to return for your Server. Ensure you
         make the limit a reasonable number to maximize Server performance and not
         to overload the system.
-      defaultValue: "100"
     - name: perGroupLimit
       description: The number of items to return per Malop group.
     - name: templateContext
@@ -1116,6 +1133,7 @@ script:
       - Unread
       - Remediated
       - Not Relevant
+      - Open
       description: Status to update
     outputs:
     - contextPath: Cybereason.Malops.GUID
