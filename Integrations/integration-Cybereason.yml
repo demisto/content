@@ -712,6 +712,7 @@ script:
             now_datetime = datetime.fromtimestamp(now_time)
             creation_datetime = now_datetime - timedelta(days=3) # Last 3 days
             last_creation_time = time.mktime(creation_datetime.timetuple()) + creation_datetime.microsecond / 1E6 # Converting datetime to time
+            last_creation_time *= 1000
 
         max_creation_time = last_creation_time
 
