@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "TextFromHTML_test_playbook"
+        },
+        {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
             "timeout": 500,
