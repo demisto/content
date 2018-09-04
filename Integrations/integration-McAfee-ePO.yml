@@ -459,12 +459,14 @@ script:
     - contentPath: mcAfeeLatestDatVersion
       contextPath: McAfee.ePO.latestDAT
       description: Latest McAfee DAT file version
+      type: number
     description: Check the latest DAT file in McAfee repository
   - name: epo-get-current-dat
     arguments: []
     outputs:
     - contextPath: McAfee.ePO.epoDAT
       description: Current McAfee DAT file in ePO repository
+      type: number
     description: check the existing DAT file version in ePO
   - name: epo-update-client-dat
     arguments:
