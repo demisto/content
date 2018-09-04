@@ -3,6 +3,7 @@ version: -1
 name: File Enrichment - Generic
 fromversion: 3.5.0
 toversion: 3.5.1
+releaseNotes: "-"
 description: Get file reputation using one or more integrations
 starttaskid: "0"
 tasks:
