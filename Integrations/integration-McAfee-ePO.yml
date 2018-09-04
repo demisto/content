@@ -213,7 +213,7 @@ script:
             HumanReadable: md,
             EntryContext: {
                     "mcafee(val.latestDAT === obj.latestDAT)": ec.mcafee, //backward compatability
-                    "McAfee.ePO.latestDAT": datVersion
+                    "McAfee.ePO(val.latestDAT == obj.epoDAT)": datVersion
             }
         };
     }
@@ -234,7 +234,7 @@ script:
                 HumanReadable: md,
                 EntryContext: {
                     "mcafee(val.epoDAT==obj.epoDAT)": ec.mcafee, //backward compatability
-                    "McAfee.ePO.epoDAT": epoDAT
+                    "McAfee.ePO(val.epoDAT == obj.epoDAT)": epoDAT
                 }
             };
         } else {
