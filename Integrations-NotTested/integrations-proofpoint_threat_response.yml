@@ -297,7 +297,7 @@ script:
       required: true
     - name: member
       required: true
-      description: 'Could be ip,url,domain,hash. Exmaple: "192.168.1.1,192.168.1.2"'
+      description: 'Could be ip,url,domain,hash. For example: "192.168.1.1,192.168.1.2"'
       isArray: true
     - name: comment
       description: Comment regarding the member
@@ -331,9 +331,9 @@ script:
       description: ID of the list
     - name: filter
       required: true
-      description: Filter for the search. for example, "1.1" will return [1.1.1.1,
-        22.22.1.1,1.1.22.22]
-    description: 'Return list of members '
+      description: 'Filter for the search. For example, "1.1" will return [1.1.1.1,
+        22.22.1.1,1.1.22.22]'
+    description: 'Return list of members'
   - name: proofpoint-tr-delete-member
     arguments:
     - name: list-id
@@ -341,7 +341,7 @@ script:
       description: ID of the list
     - name: member
       required: true
-      description: 'Could be ip,url,domain,hash. Exmaple: "demisto.com"'
+      description: 'Could be ip,url,domain,hash. For example: "demisto.com"'
     description: Delete member from list
   - name: proofpoint-tr-block-url
     arguments:
