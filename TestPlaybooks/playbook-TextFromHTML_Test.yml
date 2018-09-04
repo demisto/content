@@ -1,0 +1,99 @@
+id: TextFromHTML_test_playbook
+version: -1
+name: TextFromHTML Test
+description: Test the TextFromHTML script
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0bdda7da-b046-48c1-8efd-932842f29ad9
+    type: start
+    task:
+      id: 0bdda7da-b046-48c1-8efd-932842f29ad9
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 377c2aa9-7562-4b8d-84e4-3a4a1acf796e
+    type: regular
+    task:
+      id: 377c2aa9-7562-4b8d-84e4-3a4a1acf796e
+      version: -1
+      name: TextFromHTML
+      description: Extract regular text from the given HTML
+      scriptName: TextFromHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      html:
+        simple: |-
+          <!DOCTYPE html>
+          <html>
+          <body>
+          <h1>This is heading 1</h1>
+          </body>
+          </html>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: da5dc287-dcac-478a-8f25-26728a177cbe
+    type: title
+    task:
+      id: da5dc287-dcac-478a-8f25-26728a177cbe
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 403
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 418,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: Test playbook for the textfromhtml script
