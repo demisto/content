@@ -91,3 +91,4 @@ args:
   defaultValue: polling
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
