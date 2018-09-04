@@ -18,10 +18,18 @@
             "nightly": true
         },
         {
-            "playbookID": "Phishing test - attachment"
+            "playbookID": "Phishing test - attachment",
+            "integrations": [
+                "EWS Mail Sender",
+                "Have I Been Pwned?"
+            ]
         },
         {
-            "playbookID": "Phishing test - Inline"
+            "playbookID": "Phishing test - Inline",
+            "integrations": [
+                "EWS Mail Sender",
+                "Have I Been Pwned?"
+            ]
         },
         {
             "integrations": "RSA NetWitness Packets and Logs",
