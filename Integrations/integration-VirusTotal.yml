@@ -376,9 +376,12 @@ script:
 
     var doURL = function(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         //lowercase the URL protocol
-        var protocol = url.substr(0, 5).toLowerCase();
-        if (protocol === 'https' || protocol === 'http:') {
-            url = protocol + url.substr(5);
+        //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
+        var protocol = url.match(/\b^[^:]+(?=:\/\/)\b/);
+        if (protocol != null) { // if url doesn't start with a protocol, ignore
+          protocol = protocol[0].toLowerCase();
+          var not_protocol = url.replace(/(^\w+:|^)\/\//, '');
+          url = protocol + '://' + not_protocol;
         }
 
         if (!submitWait) {
