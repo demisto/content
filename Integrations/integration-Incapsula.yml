@@ -1043,12 +1043,12 @@ script:
     - name: response_code
       auto: PREDEFINED
       predefined:
-      - 301
-      - 302
-      - 303
-      - 307
-      - 308
-      description: 	Redirect rule's response code.
+      - "301"
+      - "302"
+      - "303"
+      - "307"
+      - "308"
+      description: Redirect rule's response code.
     - name: protocol
       description: Protocol
     - name: add_missing
@@ -1117,12 +1117,12 @@ script:
     - name: response_code
       auto: PREDEFINED
       predefined:
-      - 301
-      - 302
-      - 303
-      - 307
-      - 308
-      description: 	Redirect rule's response code.
+      - "301"
+      - "302"
+      - "303"
+      - "307"
+      - "308"
+      description: Redirect rule's response code.
     - name: protocol
       description: Protocol
     - name: add_missing
@@ -1194,7 +1194,7 @@ script:
       predefined:
       - "Yes"
       - "No"
-      description: 	Whether or not delivery rules should be included. Defaults to "Yes".
+      description: Whether or not delivery rules should be included. Defaults to "Yes".
     - name: include_incap_rules
       auto: PREDEFINED
       predefined:
@@ -1251,7 +1251,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 	Enables the data center
+      description: Enables the data center
     - name: is_content
       auto: PREDEFINED
       predefined:
@@ -1467,11 +1467,11 @@ script:
     - name: account_id
       description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
     - name: event_type
-      description: 	'A comma separated list of specific event types. Any of: GRE_TUNNEL_UP, GRE_TUNNEL_DOWN, ORIGIN_CONNECTION_GRE_UP, ORIGIN_CONNECTION_GRE_DOWN, ORIGIN_CONNECTION_ECX_UP, ORIGIN_CONNECTION_ECX_DOWN, ORIGIN_CONNECTION_CROSS_CONNECT_UP, ORIGIN_CONNECTION_CROSS_CONNECT_DOWN, DDOS_START_IP_RANGE, DDOS_STOP_IP_RANGE, DDOS_QUIET_TIME_IP_RANGE, EXPORTER_NO_DATA, EXPORTER_BAD_DATA, EXPORTER_GOOD_DATA, MONITORING_CRITICAL_ATTACK, PROTECTED_IP_STATUS_UP, PROTECTED_IP_STATUS_DOWN, PER_IP_DDOS_START_IP_RANGE.'
+      description: 'A comma separated list of specific event types. Any of: GRE_TUNNEL_UP, GRE_TUNNEL_DOWN, ORIGIN_CONNECTION_GRE_UP, ORIGIN_CONNECTION_GRE_DOWN, ORIGIN_CONNECTION_ECX_UP, ORIGIN_CONNECTION_ECX_DOWN, ORIGIN_CONNECTION_CROSS_CONNECT_UP, ORIGIN_CONNECTION_CROSS_CONNECT_DOWN, DDOS_START_IP_RANGE, DDOS_STOP_IP_RANGE, DDOS_QUIET_TIME_IP_RANGE, EXPORTER_NO_DATA, EXPORTER_BAD_DATA, EXPORTER_GOOD_DATA, MONITORING_CRITICAL_ATTACK, PROTECTED_IP_STATUS_UP, PROTECTED_IP_STATUS_DOWN, PER_IP_DDOS_START_IP_RANGE.'
     - name: ip_prefix
       description: Specific Protected IP or IP range. For example, 1.1.1.0/24.
     - name: page_size
-      description: 	'The number of objects to return in the response.
+      description: 'The number of objects to return in the response.
 
         Default: 50
 
