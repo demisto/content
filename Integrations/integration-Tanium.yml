@@ -6,8 +6,7 @@ display: Tanium
 category: Endpoint
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAiCAYAAACUcR1DAAAEMElEQVR4Ae3aQ5QkaReA4b/Ltusf27Zt27aNzdi2bds227Ztu++8i7u4556KmMyOPFP6Fk/jU0bFW878n4h0YIEbaDVBCByEwEEIHAIHIfDoNdZcAyfgHjyNW3Aw6t3aVhakG7YWN2EQxFmEP3E2cnRPKwvSiXsMJkBS0BWbhhvc+lKNeyEkTbOxW7jJrSuVuPtDltMUrBRudOv5t7ilGAlJ4B1/bkXDyhWoT0OxP8PN19k5t64w7jy3tsisqdKxXDNWiyx0Qa0Zz4s4L8uty9HxGtQbtXEdmK/yby+yEwUmTB7OgyS0bMwaa27iLvg9zEnDtW7/mW5+Ng6LuDmn+vMwAE0trD3brPlWxzY3Y+NQjUIMMeO7xoQZZdZtgGwMctczE7tFnLEGJrv107FG0sA74ldIBjzsLvonSBpuM3vLMRbiDEBBCzfoLAi875Dl1l4IUX/o2FYQNRs1GngiRO0ZEadaY4jaWAOPgzi/I6uFM16AOEuxVtLA12AGxJmAd9N0o7voi/CUehLvQdRCvKzjT6kDzN7rIWoCpkLUebrOf7SLWgYxbnFrL4Co33RsS4iaYQLbSHvEBJ4CURtp4DEQeIe7/ZtiCcRZlInAj2MZxPnQrU2Mi10HoqahKGJdM2ZC1DG4GKKGoyQm8J94H2Ic0YqB5+ELiOqKbLP/E/cZZ1wmAz8J+Y8CbwFR01Efse5eiBqKHFRhBkRdGhP4V1RjuIu2RisFXoJ93FlH6N4dIWqu/n9sJgPfiLkQpweOc3Zze/d083smDcxYkwm5DEebuSsgaiJqIgJ3M483H6L+1PFzljPw7jHfZE2OCqxWde9YfZCLzyHqLuRjWiYDH4BekBT86vZ2dfMvZyDwIxC1GI/iLvUUltobEhG4qxk/DWLcipPTCDw+hcAVusd/kzXGRc/FEIh6AwvMY1ajItOBy3EjJAVfu70/ufndkwTWr9ELISmah9XjAuvc8+4bsK4pBK5FDkZB1KtoRqVRi0vdN3brIccF3lQf5ygIvBt0vi6jgTVUM2YmDPwbshIGftN9E/Z9hBkQ9UwKgQtdVBUbuF7HP4N/p5pmzHLzU1CCwojAXfALxBiNsowHdrEuShB4CbbW8Sj+Z81FaDBzO0CMU2POuRBirIZTIapfC3vWxkyI00Pnt3ZfGhp1fDuNKim6VPeVmlCCzc217A8xzjZz9e6z2BqoxQ5YN+mTDU+mGfgPCM5L8bvo1fGeehkVZu5cvK9zzyAv5pxSvKhrP8Dx2N6cfU/Evv3xnnOHzq1hxl5x17YBHsYP+BPeL3gBe5s9BXjGnLmq/0lBx59Cnhkvx8s69zbqUYYDsWvSwF1wZ1xgszYLn+MsHQva0RP+2+EzLIIYv7nApeHmtu+X7KyNk3ErHsCpOhe078BBCByEwEEIHITAQQgctOvAQQgc/AOlTKJJMlW1twAAAABJRU5ErkJggg==
 description: Tanium endpoint security and systems management
-releaseNotes: "New commands: tn-ask-manual-question, tn-get-sensor, tn-get-action, tn-trace-get-live-connections,
-  tn-trace-connect, tn-trace-capture-snapshot\n
+releaseNotes: "New commands: tn-ask-manual-question, tn-get-sensor, tn-get-action\n
   Modified commands: tn-deploy-package -  added sensor variables as argument, added action details to the outputs, improved raw response.\n
   tn-get-package - added sensor variable to outputs"
 configuration:
@@ -515,47 +514,6 @@ script:
         final_result = create_entry('Tanium Package', [parsed], {'Tanium.Packages' : parsed}, ['id', 'name', 'creation_time', 'command'])
         return final_result
 
-    def traceGetLiveConnections(session):
-        response = session.http_get("plugin/products/trace/conns")
-        resp = json.loads(response) if response is not None else None
-        ans = []
-        for m in resp:
-            m['info']['name'] = m['info']['dst']
-            del m['info']['dst']
-            ans.append(m['info'])
-        return create_entry(
-            "Tanium Live Connections",
-            ans,
-            context = {'Tanium.TraceLiveConnections(val.name && val.name == obj.name)':ans},
-            headers = ['name', 'dstType', 'state', 'initTime']
-        )
-
-    def traceConnect(session):
-        # Delete existing connection status
-        kwargs = {}
-        kwargs['timeout'] = 36000
-        kwargs['headers'] = {'session': session.session_id}
-        url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + "/plugin/products/trace/conns/"+demisto.args()['computer_name']
-        res = session.REQUESTS_SESSION.delete(url, **kwargs)
-
-        # Connect
-        kwargs = {}
-        kwargs['data'] = '{"remote":%s,"dst":"%s","connTimeout":300000}' % (demisto.args()['remote'], demisto.args()['computer_name'])
-        kwargs['timeout'] = 36000
-        kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        res = session.REQUESTS_SESSION.post('https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + "/plugin/products/trace/conns", **kwargs)
-        return "Connection request was sent out successfuly" if res.ok else "Connection request failed. " + str(res)
-
-    def traceCaptureSnapshot(session):
-        kwargs = {}
-        kwargs['data'] = '{}'
-        kwargs['timeout'] = 36000
-        kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        url = "/plugin/products/trace/conns/%s/snapshots" % demisto.args()['computer_name']
-        url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + url
-        res = session.REQUESTS_SESSION.post(url, **kwargs)
-        return "Snapshot request was sent out successfuly" if res.ok else "Request failed. " + str(res)
-
     def restoreSoutAndExit(final_result):
         sys.stdout = sout
         demisto.results(final_result)
@@ -609,16 +567,6 @@ script:
             final_result = getSensor(handler)
         if demisto.command() == 'tn-get-action':
             final_result = getAction(handler)
-
-        ## Tanium modules - RESTful
-
-        ## Trace
-        if demisto.command() == 'tn-trace-get-live-connections':
-            final_result = traceGetLiveConnections(handler.session)
-        if demisto.command() == 'tn-trace-connect':
-            final_result = traceConnect(handler.session)
-        if demisto.command() == 'tn-trace-capture-snapshot':
-            final_result = traceCaptureSnapshot(handler.session)
 
     except Exception as ex:
         sys.stdout = sout
@@ -1147,43 +1095,6 @@ script:
       description: Possible values of the sensor parameter
       type: string
     description: Get detailed information about a given sensor.
-  - name: tn-trace-get-live-connections
-    arguments: []
-    description: Get status from all live connections
-    outputs:
-    - contextPath: Tanium.TraceLiveConnections.dstType
-      description: Type of destination identification (ip address or computer name)
-      type: string
-    - contextPath: Tanium.TraceLiveConnections.initTime
-      description: Connection initiation time
-      type: date
-    - contextPath: Tanium.TraceLiveConnections.name
-      description: Name or ip address of computer
-      type: string
-    - contextPath: Tanium.TraceLiveConnections.state
-      description: Connection state
-      type: string
-  - name: tn-trace-connect
-    arguments:
-    - name: computer_name
-      required: true
-      default: true
-      description: Name of computer to connect to
-    - name: remote
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: True if remote connection
-      defaultValue: "true"
-    description: Connect a computer to trace
-  - name: tn-trace-capture-snapshot
-    arguments:
-    - name: computer_name
-      required: true
-      default: true
-      description: Name of computer to take the snapshot of. Computer must be connected
-    description: Capture a snapshot of a live endpoint. Endpoint must be connected.
   - name: tn-get-action
     arguments:
     - name: id
