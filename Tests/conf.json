@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "epo",
+            "playbookID": "Test Playbook Mcafee ePO"
+        },
+        {
             "playbookID": "TextFromHTML_test_playbook"
         },
         {

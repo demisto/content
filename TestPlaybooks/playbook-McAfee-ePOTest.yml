@@ -71,7 +71,7 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "3"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -96,13 +96,13 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "4"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -121,7 +121,7 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
       search: {}
     separatecontext: false
@@ -129,7 +129,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -150,7 +150,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 2295
         }
       }
     note: false
@@ -215,7 +215,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 2120
         }
       }
     note: false
@@ -241,7 +241,194 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 9df45541-d0b9-428d-8697-653eb8118276
+    type: regular
+    task:
+      id: 9df45541-d0b9-428d-8697-653eb8118276
+      version: -1
+      name: epo-find-systems
+      description: Find systems in the System Tree - by group ID or by search
+      script: epo|||epo-find-systems
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      groupId:
+        simple: "5"
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 732cff6c-d8f0-490a-8e4b-ca979b15ecaa
+    type: condition
+    task:
+      id: 732cff6c-d8f0-490a-8e4b-ca979b15ecaa
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      left:
+        complex:
+          root: McAfee
+          accessor: ePO.epoDAT
+      right:
+        simple: "9005"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 6d7ddd79-6562-462d-88a1-b79e736c63bf
+    type: condition
+    task:
+      id: 6d7ddd79-6562-462d-88a1-b79e736c63bf
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        complex:
+          root: McAfee
+          accessor: ePO.latestDAT
+      right:
+        simple: "9005"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1070
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 58c799d0-5202-4a52-8d27-77c78536637a
+    type: condition
+    task:
+      id: 58c799d0-5202-4a52-8d27-77c78536637a
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      left:
+        complex:
+          root: McAfee
+          filters:
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: McAfee.ePO.SystemTreeGroups.groupId
+                iscontext: true
+              right:
+                value:
+                  simple: "5"
+          accessor: ePO.SystemTreeGroups.groupId
+      right:
+        simple: "5"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: ec0bb31c-ae25-4b39-8cc0-d3cc294b9590
+    type: condition
+    task:
+      id: ec0bb31c-ae25-4b39-8cc0-d3cc294b9590
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    scriptarguments:
+      left:
+        complex:
+          root: McAfee
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: McAfee.ePO.Endpoint.Hostname
+                iscontext: true
+              right:
+                value:
+                  simple: mar
+          accessor: ePO.Endpoint.IPAddress
+      right:
+        simple: 192.168.1.103
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1776
         }
       }
     note: false
@@ -250,7 +437,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 2310,
         "width": 380,
         "x": 50,
         "y": 50
@@ -259,3 +446,4 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: added new test playbook for McAfee ePO

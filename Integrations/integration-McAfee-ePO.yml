@@ -38,11 +38,15 @@ script:
     }
 
     var EPO_SYSTEM_ATTRIBUTE_MAP = {
-        'EPOComputerProperties.ComputerName':'Name',
-        'EPOComputerProperties.DomainName':'Domain name',
-        'EPOComputerProperties.IPHostName':'Hostname',
-        'EPOComputerProperties.IPAddress':'IP Address',
-        'EPOComputerProperties.OSType':'Operating System'
+        'EPOComputerProperties.ComputerName': 'Name',
+        'EPOComputerProperties.DomainName': 'Domain',
+        'EPOComputerProperties.IPHostName': 'Hostname',
+        'EPOComputerProperties.IPAddress': 'IPAddress',
+        'EPOComputerProperties.OSType': 'OS',
+        'EPOComputerProperties.OSVersion': 'OSVersion',
+        'EPOComputerProperties.CPUType': 'Processor',
+        'EPOComputerProperties.NumOfCPU': 'Processors',
+        'EPOComputerProperties.TotalPhysicalMemory': 'Memory',
     };
 
     //HELPER//
@@ -199,7 +203,7 @@ script:
 
     function epoGetLatestDat() {
         var datVersion = epoGetLatestDatRaw();
-        var md='McAfee Latest DAT file version is **' + datVersion + '**\n';
+        var md='McAfee Latest DAT file version is: **' + datVersion + '**\n';
         ec = {};
         ec.mcafee = {"latestDAT": datVersion};
         return {
@@ -208,7 +212,8 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: {
-                    "mcafee(val.latestDAT === obj.latestDAT)": ec.ePO
+                    "mcafee(val.latestDAT === obj.latestDAT)": ec.mcafee, //backward compatability
+                    "McAfee.ePO.latestDAT": datVersion
             }
         };
     }
@@ -221,14 +226,15 @@ script:
             var epoDAT = result.productDetectionProductVersion.split('.')[0];
             ec = {};
             ec.mcafee = {"epoDAT": epoDAT};
-            var md = "McAfee ePO Current DAT file version in repository: **" + epoDAT + '**\n';
+            var md = "McAfee ePO Current DAT file version in repository is: **" + epoDAT + '**\n';
             return {
                 Type: entryTypes.note,
                 Contents: result,
                 ContentsFormat: formats.json,
                 HumanReadable: md,
                 EntryContext: {
-                    "mcafee(val.epoDAT === obj.epoDAT)": ec.ePO
+                    "mcafee(val.epoDAT==obj.epoDAT)": ec.mcafee, //backward compatability
+                    "McAfee.ePO.epoDAT": epoDAT
                 }
             };
         } else {
@@ -242,11 +248,11 @@ script:
         if (result && Array.isArray(result)) {
             result = result[0];
         }
-        if ('objectId' in result) {
+        if (result) {
             return result.objectId;
         }
-        else{
-            throw 'The task was not found in McAfee ePO';
+        else{ //costumer probably doen't have the task 'VSEContentUpdateDemisto' configured at ePO
+            throw 'The task was not found in McAfee ePO. Please refer to the integration documentation.';
         }
     }
 
@@ -287,12 +293,27 @@ script:
         };
     }
 
+    function prettifySystemTree(SystemTree) {
+        var prettySystemTree = [];
+        for (i=0; i < SystemTree.length; i++) {
+            var system = SystemTree[i];
+            prettySystemTree[i] = {
+                'groupId': system.groupId,
+                'groupPath': system.groupPath
+            };
+        }
+        return prettySystemTree;
+    }
+
     function epoGetSystemTreeGroups() {
         var pArgs = {};
         if (args.search) {
             pArgs.searchText=args.search;
         }
         var result = callEpo('system.findGroups', pArgs);
+        if (result.length === 0) {
+            return 'System Tree Group was not found.'
+        };
         var md = "#### ePO System Tree groups\n";
         md += "Group ID | Group path\n-|-\n"
         for (var i=0;i<result.length;i++) {
@@ -302,7 +323,10 @@ script:
             Type: entryTypes.note,
             Contents: result,
             ContentsFormat: formats.json,
-            HumanReadable: md
+            HumanReadable: md,
+            EntryContext: {
+                "McAfee.ePO(val.groupId==obj.groupId)": {'SystemTreeGroups': prettifySystemTree(result)}
+            }
         };
     }
 
@@ -315,6 +339,25 @@ script:
             }
         }
         return null;
+    }
+
+    function prettifyFindSystem(FindSystem) {
+        var prettyFindSystem = [];
+        for (i=0; i < FindSystem.length; i++) {
+            var system = FindSystem[i];
+            prettyFindSystem[i] = {
+                'Name': system['EPOComputerProperties.ComputerName'],
+                'Domain': system['EPOComputerProperties.DomainName'],
+                'Hostname': system['EPOComputerProperties.IPHostName'],
+                'IPAddress': system['EPOComputerProperties.IPAddress'],
+                'OS': system['EPOComputerProperties.OSType'],
+                'OSVersion': system['EPOComputerProperties.OSVersion'],
+                'Processor': system['EPOComputerProperties.CPUType'],
+                'Processors': system['EPOComputerProperties.NumOfCPU'],
+                'Memory': system['EPOComputerProperties.TotalPhysicalMemory'],
+            };
+        }
+        return prettyFindSystem
     }
 
     function epoFindSystems() {
@@ -332,7 +375,16 @@ script:
             } else {
                 md += 'No systems found\n';
             }
-            return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md};
+            return {
+                Type: entryTypes.note,
+                Contents: result,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: {
+                    'Endpoint(val.IPAddress==obj.IPAddress)': prettifyFindSystem(result),
+                    'McAfee.ePO.Endpoint(val.IPAddress==obj.IPAddress)': prettifyFindSystem(result),
+                }
+            };
         } else {
             throw 'No systems found. Response: ' + JSON.stringify(result);
         }
@@ -405,13 +457,13 @@ script:
     arguments: []
     outputs:
     - contentPath: mcAfeeLatestDatVersion
-      contextPath: mcafee.latestDAT
+      contextPath: McAfee.ePO.latestDAT
       description: Latest McAfee DAT file version
     description: Check the latest DAT file in McAfee repository
   - name: epo-get-current-dat
     arguments: []
     outputs:
-    - contextPath: mcafee.epoDAT
+    - contextPath: McAfee.ePO.epoDAT
       description: Current McAfee DAT file in ePO repository
     description: check the existing DAT file version in ePO
   - name: epo-update-client-dat
@@ -443,6 +495,13 @@ script:
     arguments:
     - name: search
       description: Search string for system tree group
+    outputs:
+    - contextPath: McAfee.ePO.SystemTreeGroups.groupId
+      description: System Tree group ID
+      type: number
+    - contextPath: McAfee.ePO.SystemTreeGroups.groupPath
+      description: System Tree group path
+      type: string
     description: Get System Tree groups
   - name: epo-find-systems
     arguments:
@@ -455,6 +514,61 @@ script:
       - "true"
       - "false"
       description: Print all system data
+    outputs:
+    - contextPath: Endpoint.Name
+      description: Endpoint name
+      type: string
+    - contextPath: Endpoint.Domain
+      description: Endpoint domain
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Endpoint hostname
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: Endpoint IP address
+      type: string
+    - contextPath: Endpoint.OS
+      description: Endpoint operation system
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: Endpoint operation system version
+      type: string
+    - contextPath: Endpoint.Processor
+      description: 'Model of the processor '
+      type: string
+    - contextPath: Endpoint.Processors
+      description: Number of processors
+      type: number
+    - contextPath: Endpoint.Memory
+      description: 'Amount of memory on this endpoint '
+      type: number
+    - contextPath: McAfee.ePO.Endpoint.Name
+      description: Endpoint name
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.Domain
+      description: Endpoint domain
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.Hostname
+      description: Endpoint hostname
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.IPAddress
+      description: Endpoint IP address
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.OS
+      description: Endpoint operation system
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.OSVersion
+      description: Endpoint operation system version
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.Processor
+      description: Model of the processor
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.Processors
+      description: Number of processors
+      type: number
+    - contextPath: McAfee.ePO.Endpoint.Memory
+      description: 'Amount of memory on this endpoint '
+      type: number
     description: Find systems in the System Tree - by group ID or by search
   - name: epo-command
     arguments: []
@@ -463,5 +577,4 @@ script:
       commands. You can also specify 'headers' argument  to filter tables headers.
       e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
   runonce: false
-releaseNotes: |-
-  Adeed outputs and error messages, improve code visability and readability
+releaseNotes: Add output values, edit error messages and improve readability of code
