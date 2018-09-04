@@ -80,12 +80,12 @@ tasks:
     task:
       id: 04bef4a8-43f1-4c69-8ea2-997b99c98433
       version: -1
-      name: Phishing Investigation - Generic_copy
+      name: Phishing Investigation - Generic
       description: |-
         Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
         The final remediation tasks are always decided by a human analyst.
-      playbookName: Phishing Investigation - Generic_copy
+      playbookName: Phishing Investigation - Generic
       type: playbook
       iscommand: false
       brand: ""
