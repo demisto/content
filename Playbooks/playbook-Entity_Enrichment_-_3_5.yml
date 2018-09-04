@@ -1,7 +1,8 @@
 id: entity_enrichment_generic
 version: -1
 fromversion: 3.5.0
-toversion: 3.6.0
+toversion: 3.5.1
+releaseNotes: "-"
 name: Entity Enrichment - Generic
 description: Enrich entities using one or more integrations
 starttaskid: "0"
