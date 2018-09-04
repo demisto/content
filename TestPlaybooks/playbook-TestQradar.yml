@@ -87,10 +87,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: bbe7e9c1-c64a-4561-8ce1-3c431ccd4cae
+    taskid: f1ac4392-053d-4935-8c80-ea3d92b75675
     type: regular
     task:
-      id: bbe7e9c1-c64a-4561-8ce1-3c431ccd4cae
+      id: f1ac4392-053d-4935-8c80-ea3d92b75675
       version: -1
       name: qradar-offenses
       script: QRadar|||qradar-offenses
@@ -116,10 +116,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: f21022bf-2056-424c-8dda-3c62472bb635
+    taskid: 6933766a-cf72-4ef3-8843-f1addd9bb4e5
     type: regular
     task:
-      id: f21022bf-2056-424c-8dda-3c62472bb635
+      id: 6933766a-cf72-4ef3-8843-f1addd9bb4e5
       version: -1
       name: qradar-searches
       script: QRadar|||qradar-searches
@@ -144,10 +144,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 4629d30f-0405-4c2f-86a1-ed7d8c2c46b5
+    taskid: 29299271-c13b-4d28-8ef0-c7b1068cac8a
     type: regular
     task:
-      id: 4629d30f-0405-4c2f-86a1-ed7d8c2c46b5
+      id: 29299271-c13b-4d28-8ef0-c7b1068cac8a
       version: -1
       name: qradar-get-search-results
       script: QRadar|||qradar-get-search-results
@@ -161,7 +161,7 @@ tasks:
       headers: {}
       range: {}
       search_id:
-        simple: d8c94425-d257-4a32-9c05-3388af704232
+        simple: ${QRadar.Search.id}
     separatecontext: false
     view: |-
       {
@@ -204,10 +204,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 6a9f1004-0488-478e-8dad-4710b6960951
+    taskid: dffa9f07-4dd1-47ec-8d7a-3d97b21d4020
     type: regular
     task:
-      id: 6a9f1004-0488-478e-8dad-4710b6960951
+      id: dffa9f07-4dd1-47ec-8d7a-3d97b21d4020
       version: -1
       name: qradar-update-offense
       script: QRadar|||qradar-update-offense
@@ -224,7 +224,7 @@ tasks:
       follow_up: {}
       headers: {}
       offense_id:
-        simple: "70"
+        simple: ${QRadar.Offense.id}
       protected: {}
       status:
         simple: OPEN
@@ -239,10 +239,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 1ea55ba6-bd85-48f9-81a7-0848d7b651ab
+    taskid: 7be6a2e6-1633-476f-8202-9fdbaf2d2f75
     type: regular
     task:
-      id: 1ea55ba6-bd85-48f9-81a7-0848d7b651ab
+      id: 7be6a2e6-1633-476f-8202-9fdbaf2d2f75
       version: -1
       name: qradar-get-search
       script: QRadar|||qradar-get-search
@@ -255,7 +255,7 @@ tasks:
     scriptarguments:
       headers: {}
       search_id:
-        simple: d8c94425-d257-4a32-9c05-3388af704232
+        simple: ${QRadar.Search.id}
     separatecontext: false
     view: |-
       {
@@ -267,10 +267,10 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: 743d634d-2596-44c5-8e80-a7e8942ff3d4
+    taskid: 71786f29-b419-4782-8eb8-271a30c5766a
     type: regular
     task:
-      id: 743d634d-2596-44c5-8e80-a7e8942ff3d4
+      id: 71786f29-b419-4782-8eb8-271a30c5766a
       version: -1
       name: qradar-get-closing-reasons
       script: QRadar|||qradar-get-closing-reasons
