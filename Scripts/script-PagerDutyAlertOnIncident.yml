@@ -23,4 +23,3 @@ dependson:
   - pagerDutySubmitEvent
 runonce: false
 timeout: 0s
-releaseNotes: "Updated Script to match API V2 of PagerDuty"
