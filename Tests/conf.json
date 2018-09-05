@@ -22,6 +22,7 @@
         },
         {
             "playbookID": "Phishing test - attachment",
+            "timeout": 300,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned"
@@ -29,6 +30,7 @@
         },
         {
             "playbookID": "Phishing test - Inline",
+            "timeout": 300,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned"
