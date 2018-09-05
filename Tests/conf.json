@@ -21,14 +21,14 @@
             "playbookID": "Phishing test - attachment",
             "integrations": [
                 "EWS Mail Sender",
-                "Have I Been Pwned?"
+                "Pwned"
             ]
         },
         {
             "playbookID": "Phishing test - Inline",
             "integrations": [
                 "EWS Mail Sender",
-                "Have I Been Pwned?"
+                "Pwned"
             ]
         },
         {
