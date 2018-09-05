@@ -34,11 +34,13 @@ script:
     from requests.exceptions import HTTPError
 
     # Output headers / context keys
-    GET_SCANS_HEADERS = ('id', 'uuid', 'name', 'scan_type', 'owner', 'enabled', 'status', 'user_permissions', 'creation_date', 'last_modification_date', 'scan_start', 'scanner_name', 'policy', 'targets', 'folder_id')
-    SCAN_REPORT_INFO_HEADERS = ('id', 'uuid', 'name', 'status', 'scan_start', 'scan_end', 'scanner_name', 'policy', 'targets', 'folder_id')
-    SCAN_REPORT_VULNERABILITIES_HEADERS = ('id', 'description', 'first_seen', 'last_seen', 'solution', 'synopsis', 'count', 'severity', 'risk_info', 'risk_factor')
-    SCAN_REPORT_HOSTS_HEADERS = ('host_id', 'hostname', 'score', 'severitycount', 'critiacl', 'high', 'medium', 'low')
-    SCAN_REPORT_REMEDIATIONS_HEADERS = ('value', 'remediation', 'hosts', 'vulns')
+    FIELD_NAMES_MAP = {'ScanType': 'Type', 'ScanStart': 'StartTime', 'ScanEnd': 'EndTime', 'ScannerName': 'Scanner', 'SeenLast': 'LastSeen', 'SeenFirst': 'FirstSeen', 'PluginId': 'Id'}
+    REMEDIATIONS_NAMES_MAP = {'Value': 'Id', 'Vulns': 'AssociatedVulnerabilities', 'Hosts': 'AffectedHosts', 'Remediation': 'Description'}
+    GET_SCANS_HEADERS = ('Id', 'Uuid', 'Name', 'Type', 'Owner', 'Enabled', 'Status', 'UserPermissions', 'CreationDate', 'LastModificationDate', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId')
+    SCAN_REPORT_INFO_HEADERS = ('Id', 'Uuid', 'Name', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId')
+    SCAN_REPORT_VULNERABILITIES_HEADERS = ('Id', 'Name', 'Description', 'FirstSeen', 'LastSeen', 'Solution', 'Synopsis', 'Count', 'Severity', 'RiskFactor')
+    SCAN_REPORT_HOSTS_HEADERS = ('AssetId', 'Hostname', 'Score', 'Critical', 'High', 'Medium', 'Low')
+    SCAN_REPORT_REMEDIATIONS_HEADERS = ('Id', 'Description', 'AffectedHosts', 'AssociatedVulnerabilities')
 
 
     BASE_URL = 'https://cloud.tenable.com/'
@@ -51,6 +53,16 @@ script:
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
+
+
+    # Utility methods
+    def flatten(d):
+        r = {}
+        for k, v in d.iteritems():
+            if isinstance(v, dict):
+                r.update(flatten(v))
+        d.update(r)
+        return d
 
     def filter_dict_null(d):
         if isinstance(d, dict):
@@ -76,6 +88,27 @@ script:
                 context_key: obj
             }
         }
+
+    # change the keys of a dictionary according to a conversion map
+    # trans_map - { 'OldKey': 'NewKey', ...}
+    # camelize - change all keys from snake_case to CamelCase
+    def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
+        def snake_to_camel(snake_str):
+            components = snake_str.split('_')
+            return ''.join(map(lambda x: x.decode('utf-8').title(), components))
+
+        def replace(key, trans_map):
+            if key in trans_map:
+                return trans_map[key]
+            return key
+
+        if isinstance(src, list):
+            return map(lambda x: replace_keys(x, trans_map, camelize), src)
+        if camelize:
+            src = {snake_to_camel(k): v for k,v in src.iteritems()}
+        if trans_map:
+            src = {replace(k, trans_map): v for k,v in src.iteritems()}
+        return src
 
     def date_range_to_param(date_range):
         params = {}
@@ -132,14 +165,16 @@ script:
 
     # Request/Response methods
     # kwargs: request parameters
-    def send_scan_request(scan_id="", endpoint="", method='GET', **kwargs):
+    def send_scan_request(scan_id="", endpoint="", method='GET', debug=False, **kwargs):
         if endpoint:
             endpoint = '/' + endpoint
         full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
         try:
-            res = requests.request(method, full_url, headers=AUTH_HEADERS)#, params=kwargs)
+            res = requests.request(method, full_url, headers=AUTH_HEADERS, params=kwargs)
             res.raise_for_status()
         except HTTPError, e:
+            if debug and res.status_code == 403:
+                return
             err_msg = get_scan_error_message(res, scan_id)
             if demisto.command() != 'test-module':
                 err_msg = {
@@ -153,14 +188,14 @@ script:
         return res.json()
 
     def get_scan_info(scans_result_elem):
-        response = send_scan_request(scans_result_elem['id'])
-        response['info'].update(scans_result_elem)
-        return response['info']
+        response = send_scan_request(scans_result_elem['id'], debug=True) #TODO: handle 403
+        if response:
+            response['info'].update(scans_result_elem)
+            return response['info']
 
-    def send_vuln_info_request(plugin_id, date_range):
+    def send_vuln_details_request(plugin_id, date_range=None):
         full_url = "{}{}{}/{}".format(BASE_URL, "workbenches/vulnerabilities/", plugin_id, "info")
         res = requests.get(full_url, headers=AUTH_HEADERS, params=date_range_to_param(date_range))
-        res.raise_for_status()
         return res.json()
 
     def send_asset_vuln_request(asset_id, date_range):
@@ -184,14 +219,16 @@ script:
 
 
     def get_vuln_info(vulns):
-        vuln_infos = zip(map(lambda x: x['plugin_id'], vulns), map(lambda x: send_vuln_info_request(x['plugin_id']), vulns))
-        #errors = filter(lambda x: u'info' not in x[1], vuln_infos)
-        #errors = map(lambda x: x[0], vuln_infos)
-        #demisto.log(str(len(errors)) + " ---- " + str(errors))
-        vuln_infos = filter(lambda x: u'info' in x[1], vuln_infos)
-        vuln_infos = map(lambda x: x[1][u'info'], vuln_infos)
-        return get_entry_for_object('Vulnerabilities', 'Vulnerabilities', vuln_infos)
-
+        vulns_info = {v['plugin_id']: v for v in vulns}
+        errors = []
+        for v in vulns:
+            pid = v['plugin_id']
+            vuln_details = send_vuln_details_request(v['plugin_id'])
+            if u'error' in vuln_details:
+                errors.append(pid)
+            else:
+                vulns_info[pid].update(flatten(vuln_details['info']))
+        return list(vulns_info.itervalues()), errors
 
     # Command methods
     def test_module():
@@ -201,6 +238,8 @@ script:
     def get_scans(folder_id, last_modification_date):
         response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
         res = map(get_scan_info, response['scans'])
+        res = filter(lambda x: x is not None, res) # for 403 workaround
+        res = replace_keys(res)
         return get_entry_for_object('Tenable.io - List of Scans', 'Tenable.Scan', res, GET_SCANS_HEADERS)
 
     def launch_scan(scan_id, targets):
@@ -214,31 +253,41 @@ script:
         })
         return get_entry_for_object('The requested scan was launched successfully', 'Tenable.Scan', res)
 
-    def get_report(scan_id, info):
+    def get_report(scan_id, info, detailed):
         results = []
         scan_details = send_scan_request(scan_id)
+
         if info == 'yes':
             scan_details['info']['id'] = scan_id
+            scan_details['info'] = replace_keys(scan_details['info'])
             results.append(get_entry_for_object('Scan basic info', 'Tenable.Scan', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
-        results.append(get_entry_for_object('Vulnerabilities summary', 'Vulnerabilities', scan_details['vulnerabilities'], SCAN_REPORT_VULNERABILITIES_HEADERS))
-        results.append(get_vuln_info(scan_details['vulnerabilities']))
+
+        vuln_info, vulns_not_found = get_vuln_info(scan_details['vulnerabilities'])
+        vuln_info = replace_keys(vuln_info)
+        results.append(get_entry_for_object('Vulnerabilities', 'Vulnerabilities', vuln_info, SCAN_REPORT_VULNERABILITIES_HEADERS))
+        if len(vulns_not_found) > 0:
+            results.append('The following vulnerability IDs were not found in the Tenable workbench:\n' + ', '.join(vulns_not_found))
+
         if detailed == 'yes':
-            results.append(get_entry_for_object('Assets', 'Assets', scan_details['hosts'] + scan_details['comphosts'], SCAN_REPORT_HOSTS_HEADERS))
-            if len(scan_details['remediations']['remediations']) > 0:
-                results.append(get_entry_for_object('Remediations', 'Remediations', scan_details['remediations']['remediations'], SCAN_REPORT_REMEDIATIONS_HEADERS))
+            assets = replace_keys(scan_details['hosts'] + scan_details['comphosts'])
+            results.append(get_entry_for_object('Assets', 'Assets', assets, SCAN_REPORT_HOSTS_HEADERS))
+            remediations = scan_details['remediations']['remediations']
+            if len(remediations) > 0:
+                remediations = replace_keys(remediations, REMEDIATIONS_NAMES_MAP)
+                results.append(get_entry_for_object('Remediations', 'Remediations', remediations, SCAN_REPORT_REMEDIATIONS_HEADERS))
         return results
 
     def get_vulnerability_details(plugin_id, date_range):
-        info = send_vuln_info_request(plugin_id, date_range)
+        info = send_vuln_details_request(plugin_id, date_range)
         return get_entry_for_object('Vulnerability details - {}'.format(plugin_id), 'Vulnerabilities', info['info'])
 
     def get_vulnerabilities_by_asset(asset_id, date_range):
         info = send_asset_vuln_request(asset_id, date_range)
         return get_entry_for_object('Vulnerabilities for asset {}'.format(asset_id), 'Vulnerabilities', info['vulnerabilities'])
 
-    def request_scan_status(scan_id):
+    def get_scan_status(scan_id):
         scan_details = send_scan_request(scan_id)
-        return get_entry_for_object('Scan status for {}'.format(scan_id), 'Scan', scan_details['info']['status'])
+        return get_entry_for_object('Scan status for {}'.format(scan_id), 'Tenable.Scan', scan_details['info']['status'])
 
     def get_templates():
         info = send_templates_request()
@@ -246,7 +295,7 @@ script:
 
     def create_scan(**kwargs):
         info = send_create_scan_request(**kwargs)
-        return get_entry_for_object('', '', info[''])
+        return get_entry_for_object('The requested scan was created successfully', 'Tenable.Scan', info[''])
 
 
     # Command selector
@@ -262,8 +311,8 @@ script:
         demisto.results(get_vulnerability_details(demisto.getArg('vulnerability-id'), demisto.getArg('date-range')))
     elif demisto.command() == 'tenable-get-vulnerabilities-by-asset':
         demisto.results(get_vulnerabilities_by_asset(demisto.getArg('asset-id'), demisto.getArg('date-range')))
-    elif demisto.command() == 'tenable-request-scan-status':
-        demisto.results(request_scan_status(demisto.getArg('scan-id')))
+    elif demisto.command() == 'tenable-get-scan-status':
+        demisto.results(get_scan_status(demisto.getArg('scan-id')))
     elif demisto.command() == 'tenable-get-scan-editor-templates':
         demisto.results(get_templates())
     elif demisto.command() == 'tenable-create-scan':
@@ -404,6 +453,9 @@ script:
     - contextPath: Vulnerabilities.Id
       description: The unique ID of the vulnerability.
       type: string
+    - contextPath: Vulnerabilities.Name
+      description: The name of the vulnerability.
+      type: string
     - contextPath: Vulnerabilities.Description
       description: The description of the vulnerability.
       type: string
@@ -425,8 +477,8 @@ script:
     - contextPath: Vulnerabilities.Severity
       description: The severity level of the vulnerability.
       type: number
-    - contextPath: Vulnerabilities.RiskInfo.RiskFactor
-      description: String containing CVSS and risk factor information.
+    - contextPath: Vulnerabilities.RiskFactor
+      description: String containing risk factor information.
       type: string
     - contextPath: Assets.AssetId
       description: The unique id of the host.
@@ -437,32 +489,29 @@ script:
     - contextPath: Assets.Score
       description: The overall score for the host.
       type: number
-    - contextPath: Assets.Severitycount
-      description: The number of different findings organized by severity level.
-      type: number
-    - contextPath: Assets.CriticalLevelFindings
+    - contextPath: Assets.Critical
       description: The percentage of critical findings on the host.
       type: number
-    - contextPath: Assets.HighLevelFindings
+    - contextPath: Assets.High
       description: Retrieving data. Wait a few seconds and try to cut or copy again.
       type: number
-    - contextPath: Assets.MediumLevelFindings
+    - contextPath: Assets.Medium
       description: The percentage of medium findings on the host.
       type: number
-    - contextPath: Assets.LowLevelFindings
+    - contextPath: Assets.Low
       description: The percentage of low findings on the host.
       type: number
     - contextPath: Remediations.Id
       description: The unique id of the remediation.
       type: string
-    - contextPath: Remediations.RemediationDescription
+    - contextPath: Remediations.Description
       description: Specific information related to the vulnerability and steps to
         remedy.
       type: string
-    - contextPath: Remediations.NumOfHostsAffected
+    - contextPath: Remediations.AffectedHosts
       description: The number of hosts affected.
       type: number
-    - contextPath: Remediations.NumOfVulnerabilitiesAssociated
+    - contextPath: Remediations.AssociatedVulnerabilities
       description: The number of vulnerabilities associated with the remedy.
       type: number
     description: Retrive scan-report for the given scan.
@@ -565,7 +614,7 @@ script:
       type: number
     description: Get a list of up to 5000 of the vulnerabilities recorded for a given
       asset. By default, this list is sorted by vulnerability count, descending.
-  - name: tenable-request-scan-status
+  - name: tenable-get-scan-status
     arguments:
     - name: scan-id
       description: The unique ID of the Scan.
