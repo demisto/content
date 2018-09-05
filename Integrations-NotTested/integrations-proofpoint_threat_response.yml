@@ -51,7 +51,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: |
     ''' IMPORTS '''
     import requests
     import json
@@ -88,24 +88,24 @@ script:
         return res.json()
 
     def get_list_command():
-        ''' Retrieves all members of a the given list ID in Threat Response '''
+        ''' Retrieves all indicators of a the given list ID in Threat Response '''
         list_id = demisto.args().get('list-id')
         list_items = get_list(list_id)
 
         demisto.results({ 'list' : list_items })
 
 
-    def add_to_list(list_id, member, comment, expiration):
+    def add_to_list(list_id, indicator, comment, expiration):
         fullurl = BASE_URL + 'api/lists/{}/members.json'.format(list_id)
 
-        member = {
-            'member': member
+        indicator = {
+            'member': indicator
         }
         if comment:
-            member['description'] = comment
+            indicator['description'] = comment
 
         if expiration:
-            member['expiration'] = expiration
+            indicator['expiration'] = expiration
 
         res = requests.post(
             fullurl,
@@ -113,25 +113,25 @@ script:
                 'Authorization': API_KEY
             },
             verify=VERIFY_CERTIFICATE,
-            json=member
+            json=indicator
         )
 
         if res.status_code < 200 or res.status_code >= 300:
-            return_error('Add to list failed. URL: {}, Request Body: {}, StatusCode: {}, Response: {}'.format(fullurl, json.dumps(member), res.status_code, res.content))
+            return_error('Add to list failed. URL: {}, Request Body: {}, StatusCode: {}, Response: {}'.format(fullurl, json.dumps(indicator), res.status_code, res.content))
 
         return res.json()
 
     def add_to_list_command():
-        ''' Adds given members to the given list ID in Threat Response '''
+        ''' Adds given indicators to the given list ID in Threat Response '''
         list_id = demisto.args().get('list-id')
-        members = argToList(demisto.args().get('member'))
+        indicators = argToList(demisto.args().get('indicator'))
         comment = demisto.args().get('comment')
         expiration = demisto.args().get('expiration')
 
         message = ''
-        for member in members:
-            add_to_list(list_id, member, comment, expiration)
-            message += '{} added successfully to {}\n'.format(member, list_id)
+        for indicator in indicators:
+            add_to_list(list_id, indicator, comment, expiration)
+            message += '{} added successfully to {}\n'.format(indicator, list_id)
 
         demisto.results(message)
 
@@ -139,13 +139,13 @@ script:
     def block_ip_command():
         ''' Adds given IPs to the relevant blacklist in Threat Response '''
         list_id = demisto.params().get('blacklist_ip')
-        members = argToList(demisto.args().get('ip'))
+        ips = argToList(demisto.args().get('ip'))
         expiration = demisto.args().get('expiration')
 
         message = ''
-        for member in members:
-            add_to_list(list_id, member, None, expiration)
-            message += '{} added successfully to block_ip list\n'.format(member)
+        for ip in ips:
+            add_to_list(list_id, ip, None, expiration)
+            message += '{} added successfully to block_ip list\n'.format(ip)
 
         demisto.results(message)
 
@@ -153,13 +153,13 @@ script:
     def block_domain_command():
         ''' Adds given domains to the relevant blacklist in Threat Response '''
         list_id = demisto.params().get('blacklist_domain')
-        members = argToList(demisto.args().get('domain'))
+        domains = argToList(demisto.args().get('domain'))
         expiration = demisto.args().get('expiration')
 
         message = ''
-        for member in members:
-            add_to_list(list_id, member, None, expiration)
-            message += '{} added successfully to block_ip list\n'.format(member)
+        for domain in domains:
+            add_to_list(list_id, domain, None, expiration)
+            message += '{} added successfully to block_domain list\n'.format(domain)
 
         demisto.results(message)
 
@@ -167,13 +167,13 @@ script:
     def block_url_command():
         ''' Adds given URLs to the relevant blacklist in Threat Response '''
         list_id = demisto.params().get('blacklist_url')
-        members = argToList(demisto.args().get('url'))
+        urls = argToList(demisto.args().get('url'))
         expiration = demisto.args().get('expiration')
 
         message = ''
-        for member in members:
-            add_to_list(list_id, member, None, expiration)
-            message += '{} added successfully to block_url list\n'.format(member)
+        for url in urls:
+            add_to_list(list_id, url, None, expiration)
+            message += '{} added successfully to block_url list\n'.format(url)
 
         demisto.results(message)
 
@@ -181,43 +181,43 @@ script:
     def block_hash_command():
         ''' Adds given hashes to the relevant blacklist in Threat Response '''
         list_id = demisto.params().get('blacklist_hash')
-        members = argToList(demisto.args().get('hash'))
+        hashes = argToList(demisto.args().get('hash'))
         expiration = demisto.args().get('expiration')
 
         message = ''
-        for member in members:
-            add_to_list(list_id, member, None, expiration)
-            message += '{} added successfully to block_hash list\n'.format(member)
+        for h in hashes:
+            add_to_list(list_id, h, None, expiration)
+            message += '{} added successfully to block_hash list\n'.format(h)
 
         demisto.results(message)
 
 
-    def search_members(list_id, member_filter):
-        list_members = get_list(list_id)
+    def search_indicators(list_id, indicator_filter):
+        list_indicators = get_list(list_id)
         found_items = []
-        for item in list_members:
-            item_member = demisto.get(item, 'host.host')
-            if member_filter in item_member:
+        for item in list_indicators:
+            item_indicator = demisto.get(item, 'host.host')
+            if indicator_filter in item_indicator:
                 found_items.append(item)
 
         return found_items
 
-    def search_members_command():
-        ''' Retrieves members of a list, using a filter '''
+    def search_indicator_command():
+        ''' Retrieves indicators of a list, using a filter '''
         list_id = demisto.args().get('list-id')
-        member_filter = demisto.args().get('filter')
-        found = search_members(list_id, member_filter)
+        indicator_filter = demisto.args().get('filter')
+        found = search_indicators(list_id, indicator_filter)
 
-        demisto.results({ 'members': found })
+        demisto.results({ 'indicators': found })
 
 
-    def delete_member(list_id, member_filter):
-        member = search_members(list_id, member_filter)
-        if len(member) == 0:
-            return_error('{} not exists in {}'.format(member_filter, list_id))
+    def delete_indicator(list_id, indicator_filter):
+        indicator = search_indicators(list_id, indicator_filter)
+        if len(indicator) == 0:
+            return_error('{} not exists in {}'.format(indicator_filter, list_id))
 
-        member_id = member.get('id')
-        fullurl = BASE_URL + 'api/lists/{}/members/{}.json'.format(list_id, member_id)
+        indicator_id = indicator.get('id')
+        fullurl = BASE_URL + 'api/lists/{}/members/{}.json'.format(list_id, indicator_id)
         res = requests.delete(
             fullurl,
             headers = {
@@ -225,17 +225,16 @@ script:
             },
             verify=VERIFY_CERTIFICATE
             )
-
         if res.status_code < 200 or res.status_code >= 300:
-            return_error('Delete member failed. URL: {}, StatusCode: {}, Response: {}'.format(fullurl, res.status_code, res.text))
+            return_error('Delete indicator failed. URL: {}, StatusCode: {}, Response: {}'.format(fullurl, res.status_code, res.text))
 
-    def delete_member_command():
-        ''' Deletes a member from a list '''
+    def delete_indicator_command():
+        ''' Deletes an indicator from a list '''
         list_id = demisto.args().get('list-id')
-        member = demisto.args().get('member')
-        delete_member(list_id, member)
+        indicator = demisto.args().get('indicator')
+        delete_indicator(list_id, indicator)
 
-        demisto.results('{} deleted successfully from list {}'.format(list_id, member))
+        demisto.results('{} deleted successfully from list {}'.format(list_id, indicator))
 
 
     def test():
@@ -266,12 +265,11 @@ script:
     elif demisto.command() == 'proofpoint-tr-block-hash':
         block_hash_command()
 
-    elif demisto.command() == 'proofpoint-tr-delete-member':
-        delete_member_command()
+    elif demisto.command() == 'proofpoint-tr-delete-indicator':
+        delete_indicator_command()
 
-    elif demisto.command() == 'proofpoint-tr-search-members':
-        search_members_command()
-
+    elif demisto.command() == 'proofpoint-tr-search-indicator':
+        search_indicator_command()
   type: python
   commands:
   - name: proofpoint-tr-get-list
@@ -284,7 +282,7 @@ script:
     arguments:
     - name: list-id
       required: true
-    - name: member
+    - name: indicator
       required: true
       description: 'Could be ip,url,domain,hash. For example: "192.168.1.1,192.168.1.2"'
       isArray: true
@@ -313,25 +311,25 @@ script:
     - name: expiration
       description: Expiration of the Domain
     description: Block Domain
-  - name: proofpoint-tr-search-members
+  - name: proofpoint-tr-search-indicator
     arguments:
     - name: list-id
       required: true
       description: ID of the list
     - name: filter
       required: true
-      description: 'Filter for the search. For example, "1.1" will return [1.1.1.1,
-        22.22.1.1,1.1.22.22]'
-    description: 'Return list of members'
-  - name: proofpoint-tr-delete-member
+      description: Filter for the search. For example, "1.1" will return [1.1.1.1,
+        22.22.1.1,1.1.22.22]
+    description: 'Return a list of indicators '
+  - name: proofpoint-tr-delete-indicator
     arguments:
     - name: list-id
       required: true
       description: ID of the list
-    - name: member
+    - name: indicator
       required: true
       description: 'Could be ip,url,domain,hash. For example: "demisto.com"'
-    description: Delete member from list
+    description: Delete an indicator from a list
   - name: proofpoint-tr-block-url
     arguments:
     - name: url
