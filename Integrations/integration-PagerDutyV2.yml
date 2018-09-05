@@ -604,4 +604,3 @@ script:
     description: Get the users notification rules
   runonce: false
 hidden: false
-releaseNotes: "Upgraded PagerDuty API to version 2."
