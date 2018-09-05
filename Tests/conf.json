@@ -6,6 +6,11 @@
             "playbookID": "TextFromHTML_test_playbook"
         },
         {
+            "integrations": "ThreatExchange",
+            "playbookID": "extract_indicators_-_generic_-_test",
+            "timeout": 240
+        },
+        {
             "integrations": "Joe Security",
             "playbookID": "JoeSecurityTestPlaybook",
             "timeout": 500,
@@ -423,11 +428,6 @@
         {
             "integrations": "Cybereason",
             "playbookID": "Cybereason Test"
-        },
-        {
-            "integrations": "ThreatExchange",
-            "playbookID": "extract_indicators_-_generic_-_test",
-            "timeout": 240
         },
         {
             "integrations": "Tanium",
