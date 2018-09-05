@@ -10,9 +10,9 @@ detaileddescription: |-
   In order to create API Key
   Settings -> API Key -> Add api key
 configuration:
-- display: Server URL (e.g https://uxnysecthreat01.homebox.com)
+- display: Server URL (e.g. https://192.168.0.1)
   name: url
-  defaultvalue: https://uxnysecthreat01.homebox.com
+  defaultvalue: ""
   type: 0
   required: true
 - display: API Key
@@ -272,17 +272,6 @@ script:
     elif demisto.command() == 'proofpoint-tr-search-members':
         search_members_command()
 
-    except Exception, e:
-        LOG('%s: %s' % (type(e), e.message, ))
-        if demisto.command() != 'test-module':
-            LOG.print_log()
-
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'error has occured: %s' % (e.message, ),
-        })
-        raise
   type: python
   commands:
   - name: proofpoint-tr-get-list
