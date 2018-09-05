@@ -41,7 +41,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -59,8 +59,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
-      - "16"
+      - "19"
     scriptarguments:
       malicious_location:
         simple: attachment
@@ -70,41 +69,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 370
-        }
-      }
-    note: false
-  "15":
-    id: "15"
-    taskid: 04bef4a8-43f1-4c69-8ea2-997b99c98433
-    type: playbook
-    task:
-      id: 04bef4a8-43f1-4c69-8ea2-997b99c98433
-      version: -1
-      name: Phishing Investigation - Generic
-      description: |-
-        Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
-
-        The final remediation tasks are always decided by a human analyst.
-      playbookName: Phishing Investigation - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Role:
-        simple: Administrator
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
         }
       }
     note: false
@@ -135,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -171,12 +135,78 @@ tasks:
         }
       }
     note: false
+  "18":
+    id: "18"
+    taskid: 307ca51a-6f8a-42f4-810c-67046dcb81ea
+    type: playbook
+    task:
+      id: 307ca51a-6f8a-42f4-810c-67046dcb81ea
+      version: -1
+      name: Phishing Investigation - Generic
+      playbookName: Phishing Investigation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 2875cac5-0703-4a96-8250-743f6d8bcf16
+    type: regular
+    task:
+      id: 2875cac5-0703-4a96-8250-743f6d8bcf16
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "18"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: attachment.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/blob/master/TestData/attachment_malicious.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 910,
         "width": 810,
         "x": 50,
         "y": 50

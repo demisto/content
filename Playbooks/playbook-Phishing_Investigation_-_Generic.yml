@@ -23,15 +23,15 @@ tasks:
       '#none#':
       - "11"
       - "18"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 50
+          "y": 60
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 762b1bb7-43ba-455a-8b71-ccc7e58ab8f5
@@ -56,7 +56,6 @@ tasks:
         complex:
           root: inputs.Role
       username: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -65,6 +64,7 @@ tasks:
           "y": 1040
         }
       }
+    note: false
   "6":
     id: "6"
     taskid: 5882f2a4-7949-4121-8dc6-09a44bc78a48
@@ -81,7 +81,6 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -90,6 +89,7 @@ tasks:
           "y": 865
         }
       }
+    note: false
   "7":
     id: "7"
     taskid: 26ed9557-a1c3-433a-8614-94e6c671d9af
@@ -106,7 +106,6 @@ tasks:
     nexttasks:
       '#none#':
       - "33"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -115,6 +114,7 @@ tasks:
           "y": 1535
         }
       }
+    note: false
   "8":
     id: "8"
     taskid: ea1e91fd-530c-4f2e-859a-4a4bc3b321de
@@ -135,7 +135,6 @@ tasks:
       notes:
         simple: 'Default enrichment playbook '
       reason: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -144,6 +143,7 @@ tasks:
           "y": 2525
         }
       }
+    note: false
   "11":
     id: "11"
     taskid: 6b039cde-c519-4ad2-83b7-17dbefb01c7b
@@ -159,7 +159,6 @@ tasks:
     nexttasks:
       '#none#':
       - "26"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -168,12 +167,13 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "12":
     id: "12"
-    taskid: 36ce6034-d509-405b-8e8d-4bef662e0709
+    taskid: 98418cc6-ff46-417b-8945-0d0f8bfa7354
     type: regular
     task:
-      id: 36ce6034-d509-405b-8e8d-4bef662e0709
+      id: 98418cc6-ff46-417b-8945-0d0f8bfa7354
       version: -1
       name: Store the email address of the reporting user
       description: Store the email address of the user that reported the incident.
@@ -191,9 +191,7 @@ tasks:
         simple: Account.Email.Address
       value:
         complex:
-          root: incident
-          accessor: labels.Email/from
-    reputationcalc: 0
+          root: inputs.emailFrom
     separatecontext: false
     view: |-
       {
@@ -202,12 +200,13 @@ tasks:
           "y": 515
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
+    taskid: 79c9037c-7d37-49ef-8048-c6538973c4d6
     type: regular
     task:
-      id: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
+      id: 79c9037c-7d37-49ef-8048-c6538973c4d6
       version: -1
       name: Acknowledge incident was received
       description: |
@@ -223,10 +222,10 @@ tasks:
       attachIDs: {}
       bcc: {}
       body:
-        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']
-          ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've received
-          your email and are investigating.\nPlease do not touch the email until further
-          notice.\n\nCordially, \n  Your friendly neighborhood security team"
+        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === inputs.emailFrom
+          ? val.Account.DisplayName : inputs.emailFrom},\nWe've received your email
+          and are investigating.\nPlease do not touch the email until further notice.\n\nCordially,
+          \n  Your friendly neighborhood security team"
       cc: {}
       htmlBody: {}
       noteEntryID: {}
@@ -235,9 +234,7 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         complex:
-          root: incident
-          accessor: labels.Email/from
-    reputationcalc: 0
+          root: inputs.emailFrom
     separatecontext: false
     view: |-
       {
@@ -246,6 +243,7 @@ tasks:
           "y": 865
         }
       }
+    note: false
   "14":
     id: "14"
     taskid: 849b0463-ea4a-4860-86b5-825e5cda8a08
@@ -262,7 +260,6 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
-    reputationcalc: 0
     separatecontext: true
     view: |-
       {
@@ -271,6 +268,7 @@ tasks:
           "y": 690
         }
       }
+    note: false
   "15":
     id: "15"
     taskid: f3ddd9af-36b1-44fb-8eaf-1a71be6b34fb
@@ -288,12 +286,11 @@ tasks:
       - "31"
       'Malicious ':
       - "30"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: 'Malicious '
       condition:
-      - - operator: number.greaterThanOrEqual
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: incident.severity
@@ -308,12 +305,13 @@ tasks:
           "y": 1215
         }
       }
+    note: false
   "16":
     id: "16"
-    taskid: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
+    taskid: 0509adb7-0c89-4701-86eb-b686e7ced72e
     type: regular
     task:
-      id: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
+      id: 0509adb7-0c89-4701-86eb-b686e7ced72e
       version: -1
       name: Update  the user that the reported email is safe
       description: Send an email to the user explaining that the email they reported
@@ -330,7 +328,7 @@ tasks:
       bcc: {}
       body:
         simple: |-
-          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          Hi ${.=val.Account.DisplayName && val.Email.Address === inputs['Email/from'] ? val.Account.DisplayName : inputs['Email/from']},
           We've concluded that the email you forwarded to us is safe.
           Thank you for your alertness and your participation in keeping our organization secure.
 
@@ -343,22 +341,22 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: ${incident.labels.Email/from}
-    reputationcalc: 0
+        simple: ${inputs.Email/from}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 2350
         }
       }
+    note: false
   "17":
     id: "17"
-    taskid: c0fd6e60-203b-4039-89f9-d34f4024d349
+    taskid: f84f9971-dca9-4539-89f6-a75e0b8dc4fe
     type: regular
     task:
-      id: c0fd6e60-203b-4039-89f9-d34f4024d349
+      id: f84f9971-dca9-4539-89f6-a75e0b8dc4fe
       version: -1
       name: Update  the user that the reported email is malicious
       description: Send an email to the user explaining that the email they reported
@@ -375,7 +373,7 @@ tasks:
       bcc: {}
       body:
         simple: |-
-          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          Hi ${.=val.Account.DisplayName && val.Email.Address === inputs.emailFrom ? val.Account.DisplayName : inputs.emailFrom},
           We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
 
           All the best,
@@ -387,8 +385,7 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: ${incident.labels.Email/from}
-    reputationcalc: 0
+        simple: ${inputs.emailFrom}
     separatecontext: false
     view: |-
       {
@@ -397,6 +394,7 @@ tasks:
           "y": 2030
         }
       }
+    note: false
   "18":
     id: "18"
     taskid: 916bc6c8-6d46-4f04-8bd2-1152736b7984
@@ -412,7 +410,6 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -421,12 +418,13 @@ tasks:
           "y": 355
         }
       }
+    note: false
   "22":
     id: "22"
-    taskid: ca065734-ff0b-4d84-8bfe-a93298bd34ab
+    taskid: 8d8cb2d3-a8de-4e89-84ad-14f4dd389f91
     type: playbook
     task:
-      id: ca065734-ff0b-4d84-8bfe-a93298bd34ab
+      id: 8d8cb2d3-a8de-4e89-84ad-14f4dd389f91
       version: -1
       name: Detonate File - Generic
       description: ""
@@ -437,33 +435,16 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
-    reputationcalc: 0
+    scriptarguments:
+      EntryID:
+        simple: ${inputs.File.EntryID}
+      File:
+        simple: ${inputs.File}
     separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 690
-        }
-      }
-  "25":
-    id: "25"
-    taskid: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
-    type: playbook
-    task:
-      id: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
-      version: -1
-      name: Entity Enrichment - Generic
-      description: ""
-      playbookName: Entity Enrichment - Generic
-      type: playbook
+    loop:
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    reputationcalc: 0
-    separatecontext: true
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -471,25 +452,117 @@ tasks:
           "y": 690
         }
       }
-  "26":
-    id: "26"
-    taskid: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
+    note: false
+  "25":
+    id: "25"
+    taskid: 7b68fed6-4d06-407b-87e1-7d5fc4bf99c8
     type: playbook
     task:
-      id: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
+      id: 7b68fed6-4d06-407b-87e1-7d5fc4bf99c8
+      version: -1
+      name: Entity Enrichment - Generic
+      description: Enrich entities using one or more integrations
+      playbookName: Entity Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Domain:
+        simple: ${Domain.Name}
+      Email:
+        simple: ${Account.Email.Address}
+      Hostname:
+        simple: ${Endpoint.Hostname}
+      IP:
+        simple: ${IP.Address}
+      InternalRange: {}
+      MD5:
+        simple: ${inputs.File.MD5}
+      SHA1:
+        simple: ${inputs.File.SHA1}
+      SHA256:
+        simple: ${inputs.File.SHA256}
+      Username:
+        simple: ${Account.Username}
+      url:
+        simple: ${URL.Data}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: f5929a66-e29c-4c30-8d41-3b60064958b3
+    type: playbook
+    task:
+      id: f5929a66-e29c-4c30-8d41-3b60064958b3
       version: -1
       name: Process Email - Generic
-      description: ""
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
       playbookName: Process Email - Generic
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
       - "22"
-    reputationcalc: 0
+      - "35"
+    scriptarguments:
+      Email:
+        complex:
+          root: incident
+          accessor: labels.Email
+      Email/cc:
+        complex:
+          root: incident
+          accessor: labels.CC
+      Email/format:
+        complex:
+          root: incident
+          accessor: labels.Email/format
+      Email/from:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+      Email/headers:
+        complex:
+          root: incident
+          accessor: labels.Email/headers
+      Email/html:
+        complex:
+          root: incident
+          accessor: labels.Email/html
+      Email/subject:
+        complex:
+          root: incident
+          accessor: labels.Email/subject
+      Email/text:
+        complex:
+          root: incident
+          accessor: labels.Email/text
+      File:
+        complex:
+          root: inputs.File
+      GetOriginalEmail:
+        simple: "False"
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
@@ -497,6 +570,7 @@ tasks:
           "y": 340
         }
       }
+    note: false
   "27":
     id: "27"
     taskid: d73d68a4-dff2-4cae-8645-972f9c328444
@@ -513,7 +587,6 @@ tasks:
       '#none#':
       - "28"
       - "34"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -522,6 +595,7 @@ tasks:
           "y": 2205
         }
       }
+    note: false
   "28":
     id: "28"
     taskid: 6cc94de8-1f6c-4832-805b-43ec888fcf1b
@@ -538,7 +612,6 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
-    reputationcalc: 0
     separatecontext: true
     view: |-
       {
@@ -547,6 +620,7 @@ tasks:
           "y": 2350
         }
       }
+    note: false
   "29":
     id: "29"
     taskid: e9a74030-baa8-43f9-8c35-54f8ae2d6b7b
@@ -559,7 +633,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -568,6 +641,7 @@ tasks:
           "y": 2700
         }
       }
+    note: false
   "30":
     id: "30"
     taskid: 824c86e1-14a5-42cf-8516-e5f893558f09
@@ -583,7 +657,6 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -592,6 +665,7 @@ tasks:
           "y": 1885
         }
       }
+    note: false
   "31":
     id: "31"
     taskid: 717e858d-5696-441b-8ff2-30f798cea618
@@ -607,7 +681,6 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -616,6 +689,7 @@ tasks:
           "y": 1390
         }
       }
+    note: false
   "33":
     id: "33"
     taskid: 1787361d-c8b7-4c66-89ac-9f90d340358b
@@ -633,7 +707,6 @@ tasks:
       - "16"
       "yes":
       - "30"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -642,6 +715,7 @@ tasks:
           "y": 1710
         }
       }
+    note: false
   "34":
     id: "34"
     taskid: 4533b6d8-c08d-42c2-805a-e540762472fb
@@ -660,7 +734,6 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -669,12 +742,13 @@ tasks:
           "y": 2350
         }
       }
+    note: false
   "35":
     id: "35"
-    taskid: 524a2856-34ef-4752-862d-90daa98875ee
+    taskid: e87d043c-bd71-4ecf-87d4-97fd96e16890
     type: playbook
     task:
-      id: 524a2856-34ef-4752-862d-90daa98875ee
+      id: e87d043c-bd71-4ecf-87d4-97fd96e16890
       version: -1
       name: Extract Indicators From File - Generic
       description: ""
@@ -685,24 +759,32 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
-    reputationcalc: 0
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 515
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2715,
+        "height": 2705,
         "width": 1240,
         "x": 50,
-        "y": 50
+        "y": 60
       }
     }
   }
@@ -712,4 +794,21 @@ inputs:
     simple: Administrator
   required: true
   description: The default role to assign the incident to.
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: ""
+- key: emailFrom
+  value:
+    simple: ${incident.labels.Email/from}
+  required: false
+  description: ""
+- key: DBotScore
+  value:
+    simple: ${DBotScore}
+  required: false
+  description: ""
 outputs: []
+releaseNotes: "Updated Inputs for the Phishing Investigation Playbook."
