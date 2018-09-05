@@ -45,7 +45,7 @@
             "playbookID": "get_original_email_-_ews-_test"
         },
         {
-            "integrations": "PagerDuty",
+            "integrations": "PagerDuty v2",
             "playbookID": "PagerDuty Test"
         },
         {
