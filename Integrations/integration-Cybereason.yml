@@ -6,14 +6,8 @@ name: Cybereason
 display: Cybereason
 category: Endpoint
 image: data:image/png;base64,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
-description: Gets processes/connections using the Cybereason API.
-detaileddescription: |-
-  The Cybereason API enables:
-  * Check if a machine has an active Cybereason probe
-  * Query for processes
-  * Query for connections
-
-  Connect using credentials (username, password). A cookie is returned, which is used for future connections.
+description: Endpoint detection and response to manage and query malops, connections
+  and processes.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -24,524 +18,852 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
-  required: true
+  required: false
 - display: Trust any certificate (unsecure)
-  name: insecure
-  defaultvalue: ""
+  name: unsecure
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: true
+  defaultvalue: "false"
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
-  script: |
-    var username = params.credentials.identifier;
-    var password = params.credentials.password;
-    var server = params.server;
-    var proxy = params.proxy;
-    var insecure = params.insecure;
+  script: |+
+    ''' IMPORTS '''
+    import requests
+    import os
+    import json
+    from datetime import datetime, timedelta
+    import time
+    import re
+    import sys
 
-    if (server[server.length - 1] === '/') {
-        server = server.substring(0, server.length - 1);
+    # Define utf8 as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    USE_SSL = not demisto.params().get('unsecure', False)
+    CERTIFICATE = demisto.params().get('credentials').get('credentials').get('sshkey')
+
+    STATUS_MAP = {
+        'To Review': 'TODO',
+        'Remediated': 'CLOSED',
+        'Unread': 'UNREAD',
+        'Not Relevant': 'FP',
+        'Open': 'OPEN'
+    }
+    # Field = the name as received from CR API, Header = The name which will be mapped to Demisto command, Type = Data that is received from CR API
+    PROCESS_INFO = [
+        {'field': 'elementDisplayName', 'header': 'Name', 'type': 'filterData'},
+        {'field': 'imageFile.maliciousClassificationType', 'header': 'Malicious', 'type': 'simple'},
+        {'field': 'creationTime', 'header': 'Creation Time', 'type': 'time'},
+        {'field': 'endTime', 'header': 'End Time', 'type': 'time'},
+        {'field': 'commandLine', 'header': 'Command Line', 'type': 'simple'},
+        {'field': 'isImageFileSignedAndVerified', 'header': 'Signed and Verified', 'type': 'simple'},
+        {'field': 'productType', 'header': 'Product Type', 'type': 'simple'},
+        {'field': 'children', 'header': 'Children', 'type': 'simple'},
+        {'field': 'parentProcess', 'header': 'Parent', 'type': 'element'},
+        {'field': 'ownerMachine', 'header': 'Owner Machine', 'type': 'element'},
+        {'field': 'calculatedUser', 'header': 'User', 'type': 'element'},
+        {'field': 'imageFile', 'header': 'Image File', 'type': 'element'},
+        {'field': 'imageFile.sha1String', 'header': 'SHA1', 'type': 'simple'},
+        {'field': 'imageFile.md5String', 'header': 'MD5', 'type': 'simple'},
+        {'field': 'imageFile.companyName', 'header': 'Company Name', 'type': 'simple'},
+        {'field': 'imageFile.productName', 'header': 'Product Name', 'type': 'simple'}
+    ]
+
+    PROCESS_FIELDS = [element['field'] for element in PROCESS_INFO]
+
+    PROCESS_HEADERS = [element['header'] for element in PROCESS_INFO]
+
+    CONNECTION_INFO = [
+        {'field': 'elementDisplayName', 'header': 'Name', 'type': 'simple'},
+        {'field': 'direction', 'header': 'Direction', 'type': 'simple'},
+        {'field': 'serverAddress', 'header': 'Server Address', 'type': 'simple'},
+        {'field': 'serverPort', 'header': 'Server Port', 'type': 'simple'},
+        {'field': 'portType', 'header': 'Port Type', 'type': 'simple'},
+        {'field': 'aggregatedReceivedBytesCount', 'header': 'Received Bytes', 'type': 'simple'},
+        {'field': 'aggregatedTransmittedBytesCount', 'header': 'Transmitted Bytes', 'type': 'simple'},
+        {'field': 'remoteAddressCountryName', 'header': 'Remote Country', 'type': 'simple'},
+        {'field': 'ownerMachine', 'header': 'Owner Machine', 'type': 'element'},
+        {'field': 'ownerProcess', 'header': 'Owner Process', 'type': 'element'},
+        {'field': 'calculatedCreationTime', 'header': 'Creation Time', 'type': 'time'},
+        {'field': 'endTime', 'header': 'End Time', 'type': 'time'}
+    ]
+
+    CONNECTION_FIELDS = [element['field'] for element in CONNECTION_INFO]
+
+    CONNECTION_HEADERS = [element['header'] for element in CONNECTION_INFO]
+
+    HEADERS = {
+        'Content-Type':'application/json',
+        'Connection': 'close'
     }
 
-    var urlDict = {
-        'login': 'login.html',
-        'query': 'rest/visualsearch/query/simple',
-    }
+    ''' HELPER FUNCTIONS '''
 
-    var headersDict = {
-        'login': {'Content-Type': ['application/x-www-form-urlencoded']},
-        'query': {'Content-Type': ['application/json']},
-    };
+    def build_query(query_fields, path):
 
-    var processInfo = [
-        {field: 'elementDisplayName', header: 'Name', type: 'filterData'},
-        {field: 'imageFile.maliciousClassificationType', header: 'Malicious', type: 'simple'},
-        {field: 'creationTime', header: 'Creation Time', type: 'time'},
-        {field: 'endTime', header: 'End Time', type: 'time'},
-        {field: 'commandLine', header: 'Command Line', type: 'simple'},
-        {field: 'isImageFileSignedAndVerified', header: 'Signed and Verified', type: 'simple'},
-        {field: 'productType', header: 'Product Type', type: 'simple'},
-        {field: 'children', header: 'Children', type: 'simple'},
-        {field: 'parentProcess', header: 'Parent', type: 'element'},
-        {field: 'ownerMachine', header: 'Owner Machine', type: 'element'},
-        {field: 'calculatedUser', header: 'User', type: 'element'},
-        {field: 'imageFile', header: 'Image File', type: 'element'},
-        {field: 'imageFile.sha1String', header: 'SHA1', type: 'simple'},
-        {field: 'imageFile.md5String', header: 'MD5', type: 'simple'},
-        {field: 'imageFile.companyName', header: 'Company Name', type: 'simple'},
-        {field: 'imageFile.productName', header: 'Product Name', type: 'simple'}
-    ];
+        limit = demisto.args().get('limit')
+        results_limit = int(limit) if limit else 10000
 
-    var processFields = [];
-    processInfo.forEach(function(element) {
-        processFields.push(element.field);
-    });
-
-    var processHeaders = [];
-    processInfo.forEach(function(element) {
-        processHeaders.push(element.header);
-    });
-
-    var connectionInfo = [
-        {field: 'elementDisplayName', header: 'Name', type: 'simple'},
-        {field: 'direction', header: 'Direction', type: 'simple'},
-        {field: 'serverAddress', header: 'Server Address', type: 'simple'},
-        {field: 'serverPort', header: 'Server Port', type: 'simple'},
-        {field: 'portType', header: 'Port Type', type: 'simple'},
-        {field: 'aggregatedReceivedBytesCount', header: 'Received Bytes', type: 'simple'},
-        {field: 'aggregatedTransmittedBytesCount', header: 'Transmitted Bytes', type: 'simple'},
-        {field: 'remoteAddressCountryName', header: 'Remote Country', type: 'simple'},
-        {field: 'ownerMachine', header: 'Owner Machine', type: 'element'},
-        {field: 'ownerProcess', header: 'Owner Process', type: 'element'},
-        {field: 'calculatedCreationTime', header: 'Creation Time', type: 'time'},
-        {field: 'endTime', header: 'End Time', type: 'time'}
-    ];
-
-    var connectionFields = [];
-    connectionInfo.forEach(function(element) {
-        connectionFields.push(element.field);
-    });
-
-    var connectionHeaders = [];
-    connectionInfo.forEach(function(element) {
-        connectionHeaders.push(element.header);
-    });
-
-    var saveCookies = function(cookies) {
-        setIntegrationContext({'cookies': cookies});
-    }
-
-    var checkCookies = function() {
-        var contextData = getIntegrationContext();
-        var cookies = contextData ? contextData.cookies : {};
-        var shouldRequestCookies = true;
-        if (cookies && (cookies.length == 2)) {
-            var currentTime = new Date();
-            var cookiesTime = new Date(cookies[1].Expires);
-            var timeDifferenceInDays = Math.abs((currentTime.getTime() - cookiesTime.getTime()) / (1000 * 60 * 60 * 24));
-            if (timeDifferenceInDays < 2) {
-                shouldRequestCookies = false;
-            }
+        query = {
+            'customFields': query_fields,
+            'perFeatureLimit': 100,
+            'perGroupLimit': 100,
+            'queryPath': path,
+            'queryTimeout': 120000,
+            'templateContext': 'SPECIFIC',
+            'totalResultLimit': results_limit
         }
 
-        return {'shouldRequestCookies': shouldRequestCookies, 'cookies': cookies};
-    }
+        return query
 
-    var buildEmptyEntryContext = function() {
-        return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
-    }
+    def http_request(method, url_suffix, data=None, json=None, headers=HEADERS):
 
-    var updateContext = function(entry, outputs, contextPath) {
-        if (args.saveToContext == 'true') {
-            var contexts = [];
-            for (var i = 0; i < outputs.length; i++) {
-                contexts.push(convertKeysToPascalCase(outputs[i]));
-            }
-            entry.EntryContext[contextPath] = contexts;
-        }
-    }
+        LOG('running request with url=%s' % (SERVER + url_suffix))
+        try:
+            res = session.request(
+                method,
+                SERVER + url_suffix,
+                headers=headers,
+                data=data,
+                json=json,
+                verify=USE_SSL
+            )
+            if res.status_code not in {200, 204}:
+                raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
+        except Exception, e:
+            LOG(e)
+            raise
 
-    var updateOutput = function(output, simpleValues, elementValues, infoDict) {
-        for (var i = 0; i < infoDict.length; i++) {
-            switch (infoDict[i].type) {
-                case 'simple':
-                    if (simpleValues[infoDict[i].field]) {
-                        output[infoDict[i].header] = simpleValues[infoDict[i].field].values[0];
-                    }
-                    break;
+        return res
 
-                case 'element':
-                    if (elementValues[infoDict[i].field]) {
-                        output[infoDict[i].header] = elementValues[infoDict[i].field].elementValues[0].name;
-                    }
-                    break;
+    def translate_timestamp(timestamp):
+        return datetime.fromtimestamp(int(timestamp)/1000).isoformat()
 
-                case 'time':
-                    if (simpleValues[infoDict[i].field]) {
-                        output[infoDict[i].header] = convertTimestampToString(simpleValues[infoDict[i].field].values[0]);
-                    }
-                    break;
-            }
-        }
-    }
+    def update_output(output, simple_values, element_values, info_dict):
+        for i in range(len(info_dict)):
+            info_type = info_dict[i]['type']
+            if info_type == 'simple':
+                field = simple_values.get(info_dict[i]['field'])
+                if field:
+                    output[info_dict[i]['header']] = field['values'][0]
+            elif info_type == 'element':
+                field = element_values.get(info_dict[i]['field'])
+                if field:
+                    output[info_dict[i]['header']] = field['elementValues'][0]['name']
+            elif info_type == 'time':
+                field = simple_values.get(info_dict[i]['field'])
+                if field:
+                    output[info_dict[i]['header']] = translate_timestamp(field['values'][0])
+        return output
 
-    var login = function() {
-        var url = urlDict['login'];
-        var headers = headersDict['login'];
-        var body = 'username=' + username + '&password=' + password;
-        var completeUrl = server + '/' + url;
-        var res = http(
-            completeUrl,
-            {
-                Method: 'POST',
-                Body: body,
-                Headers: headers
-            },
-            insecure,
-            proxy,
-            true // no redirection
-        );
+    def get_pylum_id(machine):
 
-        if ((res.StatusCode < 200 || res.StatusCode >= 300) && (res.StatusCode != 302)) {
-            throw 'Failed to login, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        cmd_url='/rest/sensors/query'
+        json = {
+            'filters': [{
+                'fieldName': 'machineName',
+                'operator': 'Equals',
+                'values': [machine]
+            }]
         }
 
-        return res;
-    }
+        response = http_request('POST', cmd_url, json=json).json()
+        pylum_id = response['sensors'][0]['pylumId']
+        return pylum_id
 
-    var sendRequest = function(url, headers, body, cookies) {
-        var completeUrl = server + '/' + url;
-        var res = http(
-            completeUrl,
-            {
-                Method: 'POST',
-                Body: body,
-                Headers: headers,
-                Cookies: cookies
-            },
-            insecure,
-            proxy
-        );
+    ''' FUNCTIONS '''
 
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Action failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
+    def is_probe_connected_command():
 
-        if (res.Headers['Content-Type'][0] != 'application/json') {
-            throw 'Response Content-Type is not application/json.';
-        }
+        machine = demisto.args().get('machine')
+        is_connected = False
 
-        return JSON.parse(res.Body);
-    }
+        response = is_probe_connected(machine)
+        elements = response['data']['resultIdToElementDataMap']
 
-    var buildQuery = function(queryFields, path) {
-        var resultsLimit = args.limit ? parseInt(args.limit) : 10000;
+        for key, value in elements.iteritems():
+            machine_name = value['simpleValues']['elementDisplayName']['values'][0]
+            if machine_name.upper() == machine.upper():
+                is_connected = True
+                break
 
-        var query = {
-            customFields: queryFields,
-            perFeatureLimit: 100,
-            perGroupLimit: 100,
-            queryPath: path,
-            queryTimeout: 120000,
-            templateContext: 'SPECIFIC',
-            totalResultLimit: resultsLimit
-        };
-
-        return query;
-    }
-
-    var isProbeConnected = function(cookies) {
-        var queryFields = ['elementDisplayName'];
-        var path = [
-            {
-                requestedType: 'Machine',
-                filters: [
-                    {facetName: 'elementDisplayName', values: [args.machine]},
-                    {facetName: 'isActiveProbeConnected', values: [true]}
-                ],
-                isResult: true
-            }
-        ];
-
-        var body = buildQuery(queryFields, path);
-        res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
-
-        var isConnected = false;
-        var elements = res.data.resultIdToElementDataMap;
-        for (var key in elements) {
-            if (elements[key].simpleValues.elementDisplayName.values[0].toUpperCase() === args.machine.toUpperCase()) {
-                isConnected = true;
-            }
-        }
-        var ec = {
+        ec = {
             'Cybereason.Machine(val.Name && val.Name === obj.Name)': {
-                isConnected: isConnected,
-                Name: args.machine
+                'isConnected': is_connected,
+                'Name': machine
             }
         }
-        return {
-            ContentsFormat: formats.json,
-            Type: entryTypes.note,
-            Contents: isConnected,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: isConnected,
-            EntryContext: ec
-        }
-    }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': is_connected,
+            'EntryContext': ec
+        })
 
-    var queryProcesses = function(cookies) {
-        var machineFilters = [];
-        var processFilters = [];
-
-        if (args.machine) {
-            machineFilters.push({facetName: 'elementDisplayName', values: [args.machine]});
-        }
-
-        if (args.processName) {
-            processFilters.push({facetName: 'elementDisplayName', values: [args.processName]});
-        }
-
-        if (args.onlySuspicious && (args.onlySuspicious == 'true')) {
-            processFilters.push({facetName: 'hasSuspicions', values: [true]});
-        }
-
-        if (args.hasIncomingConnection == 'true') {
-            processFilters.push({facetName: 'hasIncomingConnection', values: [true]});
-        }
-
-        if (args.hasOutgoingConnection == 'true') {
-            processFilters.push({facetName: 'hasOutgoingConnection', values: [true]});
-        }
-
-        var path = [
+    def is_probe_connected(machine):
+        query_fields = ['elementDisplayName']
+        path = [
             {
-                requestedType: 'Machine',
-                filters: machineFilters,
-                connectionFeature: {elementInstanceType: 'Machine', featureName: 'processes'}
+                'requestedType': 'Machine',
+                'filters': [
+                    {'facetName': 'elementDisplayName', 'values': [machine]},
+                    {'facetName': 'isActiveProbeConnected', 'values': [True]}
+                ],
+                'isResult': True
+            }
+        ]
+        json = build_query(query_fields, path)
+        cmd_url = '/rest/visualsearch/query/simple'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
+
+    def query_processes_command():
+
+        machine = demisto.args().get('machine')
+        process_name = demisto.args().get('processName')
+        only_suspicious = demisto.args().get('onlySuspicious')
+        has_incoming_connection = demisto.args().get('hasIncomingConnection')
+        has_outgoing_connection = demisto.args().get('hasOutgoingConnection')
+
+        response = query_processes(machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection)
+        elements = response['data']['resultIdToElementDataMap']
+        outputs = []
+        for element in elements:
+
+            simple_values = elements[element]['simpleValues']
+            element_values = elements[element]['elementValues']
+
+            output = {}
+            for i in range(len(PROCESS_INFO)):
+                if PROCESS_INFO[i]['type'] == 'filterData':
+                    output[PROCESS_INFO[i]['header']] = elements[element]['filterData']['groupByValue']
+
+            output = update_output(output, simple_values, element_values, PROCESS_INFO)
+            outputs.append(output)
+
+        context = []
+        for output in outputs:
+            # Remove whitespaces from dictionary keys
+            context.append({k.translate(None, ' '): v for k, v in output.iteritems()})
+        ec = {
+            'Process': context
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason Processes', outputs, PROCESS_HEADERS),
+            'EntryContext': ec
+        })
+
+    def query_processes(machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection):
+
+        machine_filters = []
+        process_filters = []
+
+        if machine:
+            machine_filters.append({'facetName': 'elementDisplayName', 'values': [machine]})
+
+        if process_name:
+            process_filters.append({'facetName': 'elementDisplayName', 'values': [process_name]})
+
+        if only_suspicious and only_suspicious == 'true':
+            process_filters.append({'facetName': 'hasSuspicions', 'values': [True]})
+
+        if has_incoming_connection == 'true':
+            process_filters.append({'facetName': 'hasIncomingConnection', 'values': [True]})
+
+        if has_outgoing_connection == 'true':
+            process_filters.append({'facetName': 'hasOutgoingConnection', 'values': [True]})
+
+        path = [
+            {
+                'requestedType': 'Machine',
+                'filters': machine_filters,
+                'connectionFeature': {'elementInstanceType': 'Machine', 'featureName': 'processes'}
             },
             {
-                requestedType: 'Process',
-                filters: processFilters,
-                isResult: true
+                'requestedType': 'Process',
+                'filters': process_filters,
+                'isResult': True
             }
-        ];
+        ]
 
-        var body = buildQuery(processFields, path);
+        json = build_query(PROCESS_FIELDS, path);
+        cmd_url = '/rest/visualsearch/query/simple'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
 
-        res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
+    def query_connections_command():
 
-        var elements = res.data.resultIdToElementDataMap;
-        var outputs = [];
-        for (var key in elements) {
-            var simpleValues = elements[key].simpleValues;
-            var elementValues = elements[key].elementValues;
+        machine = demisto.args().get('machine')
+        ip = demisto.args().get('ip')
+        if ip and machine:
+            demisto.results('Too many arguments given.')
+            return
+        elif not ip and not machine:
+            demisto.results('Not enough arguments given.')
+            return
 
-            var output = {};
-            for (var i = 0; i < processInfo.length; i++) {
-                switch (processInfo[i].type) {
-                    case 'filterData':
-                        output[processInfo[i].header] = elements[key].filterData.groupByValue;
-                        break;
-                }
-            }
+        response = query_connections(machine, ip)
+        elements = response['data']['resultIdToElementDataMap']
+        outputs = []
 
-            updateOutput(output, simpleValues, elementValues, processInfo);
-            outputs.push(output);
+        for element in elements:
+
+            simple_values = elements[element]['simpleValues']
+            element_values = elements[element]['elementValues']
+
+            output = {}
+            output = update_output(output, simple_values, element_values, CONNECTION_INFO)
+            outputs.append(output)
+
+        context = []
+        for output in outputs:
+            # Remove whitespaces from dictionary keys
+            context.append({k.translate(None, ' '): v for k, v in output.iteritems()})
+        ec = {
+            'Connection': context
         }
 
-        var entry = buildEmptyEntryContext();
-        entry.HumanReadable = tableToMarkdown('Cybereason Processes', outputs, processHeaders);
-        updateContext(entry, outputs, 'Process');
-        entry.Contents = res;
-        entry.ContentsFormat = formats.json;
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason Connections', outputs, CONNECTION_HEADERS),
+            'EntryContext': ec
+        })
 
-        return entry;
-    }
+    def query_connections(machine, ip):
 
-    var queryConnections = function(cookies) {
-
-
-        if (args.machine && args.ip) {
-            return 'Too many arguments given.'
-        }
-        var path;
-        if (args.machine) {
+        if machine:
             path = [
                 {
-                    requestedType: 'Connection',
-                    filters: [],
-                    connectionFeature:
+                    'requestedType': 'Connection',
+                    'filters': [],
+                    'connectionFeature':
                     {
-                        elementInstanceType: 'Connection',
-                        featureName: 'ownerMachine'
+                        'elementInstanceType': 'Connection',
+                        'featureName': 'ownerMachine'
                     },
-                    isResult: true
+                    'isResult': True
                 },
                 {
-                    requestedType: 'Machine',
-                    filters:
+                    'requestedType': 'Machine',
+                    'filters':
                     [{
-                        facetName: 'elementDisplayName',
-                        values: [args.machine],
-                        filterType: 'Equals'
+                        'facetName': 'elementDisplayName',
+                        'values': [machine],
+                        'filterType': 'Equals'
                     }]
                 }
-            ];
-        } else if (args.ip) {
+            ]
+        elif ip:
             path = [
                 {
-                    requestedType: 'Connection',
-                    filters:
+                    'requestedType': 'Connection',
+                    'filters':
                     [{
-                        facetName: 'elementDisplayName',
-                        values: [args.ip]
+                        'facetName': 'elementDisplayName',
+                        'values': [ip]
                     }],
-                    isResult: true
+                    'isResult': True
                 }
-            ];
-        } else {
-            return 'Not enough arguments given.'
+            ]
+
+        json = build_query(CONNECTION_FIELDS, path);
+        cmd_url = '/rest/visualsearch/query/simple'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
+
+
+    def query_malops_command():
+
+        total_result_limit = demisto.args().get('totalResultLimit')
+        per_group_limit = demisto.args().get('perGroupLimit')
+        template_context = demisto.args().get('templateContext')
+        filters = demisto.args().get('filters')
+        within_last_days = demisto.args().get('withinLastDays')
+
+        if within_last_days:
+            current_timestamp = time.time()
+            current_datetime = datetime.fromtimestamp(current_timestamp)
+            within_last_days_datetime = current_datetime - timedelta(days=int(within_last_days))
+            within_last_days_timestamp = time.mktime(within_last_days_datetime.timetuple()) + within_last_days_datetime.microsecond / 1E6 #Converting datetime to time
+            within_last_days_timestamp = within_last_days_timestamp * 1000
+            filters = [
+                {
+                    'facetName': 'malopLastUpdateTime',
+                    'values': [within_last_days_timestamp],
+                    'filterType': 'GreaterThan'
+                }
+            ]
+
+        response = query_malops(total_result_limit, per_group_limit, template_context, None)
+        data = response['data']
+        malops_map = data.get('resultIdToElementDataMap')
+        if not data or not malops_map:
+            demisto.results('No malops found')
+            return
+
+        outputs = []
+        malops_markdown = ''
+        for malop_id in malops_map:
+            malop = malops_map[malop_id]
+            management_status = malop['simpleValues']['managementStatus']['values'][0]
+
+            if management_status.lower() == 'closed':
+                continue
+
+            creation_time = translate_timestamp(malop['simpleValues']['creationTime']['values'][0])
+            malop_last_update_time = translate_timestamp(malop['simpleValues']['malopLastUpdateTime']['values'][0])
+            decision_failure = malop['simpleValues']['decisionFeature']['values'][0].replace('Process.', '')
+
+            suspects = malop['elementValues']['suspects']['elementValues'][0]
+            suspects_string = '{}: {}'.format(suspects['elementType'], suspects['name'])
+            malop_output = {
+                'GUID': malop_id,
+                'Link': SERVER + '/#/malop/' + malop_id,
+                'CreationTime': creation_time,
+                'DecisionFailure': re.sub(r'\([^)]*\)', '', decision_failure),
+                'Suspects':suspects_string,
+                'LastUpdateTime': malop_last_update_time,
+                'Status': management_status
+            }
+            outputs.append(malop_output)
+        ec = {
+            'Cybereason.Malops(val.GUID && val.GUID === obj.GUID)': outputs
         }
 
-        var body = buildQuery(connectionFields, path);
-        res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
-        var elements = res.data.resultIdToElementDataMap;
-        var outputs = [];
-        for (var key in elements) {
-            var simpleValues = elements[key].simpleValues;
-            var elementValues = elements[key].elementValues;
-            var output = {};
-            updateOutput(output, simpleValues, elementValues, connectionInfo);
-            outputs.push(output);
-        }
-        var entry = buildEmptyEntryContext();
-        entry.HumanReadable = tableToMarkdown('Cybereason Connections', outputs, connectionHeaders);
-        updateContext(entry, outputs, 'Connection');
-        entry.Contents = res;
-        entry.ContentsFormat = formats.json;
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason Malops', outputs, ['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects']),
+            'EntryContext': ec
+        })
 
-        return entry;
-    }
+    def query_malops(total_result_limit=None, per_group_limit=None, template_context=None, filters=None):
 
-    var isolateMachine = function(cookies) {
-        pylumId = getpylumId(cookies, args.machine);
-        url = 'rest/monitor/global/commands/isolate';
         body = {
-            "pylumIds":[pylumId]
-        };
+            'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
+            'perGroupLimit': int(per_group_limit) if per_group_limit else 10000,
+            'perFeatureLimit': 100,
+            'templateContext': template_context or 'MALOP',
+            'queryPath': [
+                {
+                    'requestedType': 'MalopProcess',
+                    'result': True,
+                    'filters': filters or None
+                }
+            ]
+        }
+        cmd_url = '/rest/crimes/unified'
+        response = http_request('POST', cmd_url, json=body)
+        try:
+            return response.json()
+        except Exception, e:
+            raise Exception('Failed to parse query malop response as JSON: {}'.format(response.text))
 
-        res = sendRequest(url, headersDict['query'], JSON.stringify(body), cookies);
 
-        if (res[pylumId] === 'Failed') {
-            throw 'Failed to isolate machine.'
-        } else if (res[pylumId] === 'Succeeded') {
+    def isolate_machine_command():
+
+        machine = demisto.args().get('machine')
+        response, pylum_id = isolate_machine(machine)
+        result = response.get(pylum_id)
+        if result == 'Succeeded':
             ec = {
                 'Cybereason(val.Machine && val.Machine === obj.Machine)': {
-                    'Machine': args.machine,
-                    'IsIsolated': true
+                    'Machine': machine,
+                    'IsIsolated': True
                 },
                 'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
-                    'Hostname': args.machine
+                    'Hostname': machine
                 }
             }
-            return {
+            demisto.results({
                 'ContentsFormat': formats['json'],
                 'Type': entryTypes['note'],
-                'Contents': res,
+                'Contents': response,
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': 'Machine was isolated successfully.',
                 'EntryContext': ec
-            }
+            })
+        else:
+            return_error('Failed to isolate machine.')
+
+    def isolate_machine(machine):
+
+        pylum_id = get_pylum_id(machine)
+        cmd_url = '/rest/monitor/global/commands/isolate'
+        json = {
+            'pylumIds': [pylum_id]
+
         }
-    }
+        response = http_request('POST', cmd_url, json=json).json()
+        return response, pylum_id
 
-    var unisolateMachine = function(cookies) {
-        pylumId = getpylumId(cookies, args.machine);
-        url = 'rest/monitor/global/commands/un-isolate';
-        body = {
-            "pylumIds":[pylumId]
-        };
+    def unisolate_machine_command():
 
-        res = sendRequest(url, headersDict['query'], JSON.stringify(body), cookies);
-
-        if (res[pylumId] === 'Failed') {
-            throw 'Failed to unisolate machine.'
-        } else if (res[pylumId] === 'Succeeded') {
+        machine = demisto.args().get('machine')
+        response, pylum_id = unisolate_machine(machine)
+        result = response.get(pylum_id)
+        if result == 'Succeeded':
             ec = {
                 'Cybereason(val.Machine && val.Machine === obj.Machine)': {
-                    'Machine': args.machine,
-                    'IsIsolated': false
+                    'Machine': machine,
+                    'IsIsolated': False
                 },
                 'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
-                    'Hostname': args.machine
+                    'Hostname': machine
                 }
             }
-            return {
+            demisto.results({
                 'ContentsFormat': formats['json'],
                 'Type': entryTypes['note'],
-                'Contents': res,
+                'Contents': response,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': 'Machine was unisolated successfully.',
+                'HumanReadable': 'Machine was un-isolated successfully.',
                 'EntryContext': ec
-            }
-        }
-    }
+            })
+        else:
+            return_error('Failed to un-isolate machine.')
 
-    var getpylumId = function(cookies, machine) {
-        var queryFields = ['pylumId'];
-        var path = [
+    def unisolate_machine(machine):
+
+        pylum_id = get_pylum_id(machine)
+        cmd_url = '/rest/monitor/global/commands/un-isolate'
+        json = {
+            'pylumIds': [pylum_id]
+
+        }
+        response = http_request('POST', cmd_url, json=json).json()
+        return response, pylum_id
+
+    def malop_processes_command():
+
+        malop_guids = demisto.args().get('malopGuids')
+        if isinstance(malop_guids, unicode):
+            malop_guids = malop_guids.split(',')
+        elif not isinstance(malop_guids, list):
+            return_error('malopGuids must be array of strings')
+
+        # aggregate_processes = demisto.args().get('aggregateProcesses') - ASK ANAR
+        response = malop_processes(malop_guids)
+        elements = response['data']['resultIdToElementDataMap']
+        outputs = []
+        for element in elements:
+
+            simple_values = elements[element]['simpleValues']
+            element_values = elements[element]['elementValues']
+
+            output = {}
+            for i in range(len(PROCESS_INFO)):
+                if PROCESS_INFO[i]['type'] == 'filterData':
+                    output[PROCESS_INFO[i]['header']] = elements[element]['filterData']['groupByValue']
+
+            output = update_output(output, simple_values, element_values, PROCESS_INFO)
+            outputs.append(output)
+
+        context = []
+        for output in outputs:
+            # Remove whitespaces from dictionary keys
+            context.append({k.translate(None, ' '): v for k, v in output.iteritems()})
+        ec = {
+            'Process': context
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason Malop Processes', outputs, PROCESS_HEADERS, removeNull=True),
+            'EntryContext': ec
+        })
+
+    def malop_processes(malop_guids):
+
+        json = {
+          'queryPath': [
             {
-                requestedType: 'Machine',
-                filters: [
-                    {facetName: 'pylumId', values: [machine]}
-                ],
-                isResult: true
+              'requestedType': 'MalopProcess',
+              'filters': [],
+              'guidList': malop_guids,
+              'connectionFeature': {
+                'elementInstanceType': 'MalopProcess',
+                'featureName': 'suspects'
+              }
+            },
+            {
+              'requestedType': 'Process',
+              'filters': [],
+              'isResult': True
             }
-        ];
+          ],
+          'totalResultLimit': 1000,
+          'perGroupLimit': 1200,
+          'perFeatureLimit': 1200,
+          'templateContext': 'MALOP',
+          'queryTimeout': None
+        }
+        cmd_url = '/rest/visualsearch/query/simple'
+        response = http_request('POST', cmd_url, json=json).json()
+        return response
 
-        var body = buildQuery(queryFields, path);
-        res = sendRequest(urlDict['query'], headersDict['query'], JSON.stringify(body), cookies);
-        var elements = res.data.resultIdToElementDataMap;
-        for (var key in elements) {
-            if ('simpleValues' in elements[key]){
-                return elements[key].simpleValues.pylumId.values[0]
+    def add_comment_command():
+        comment = demisto.args().get('comment')
+        malop_guid = demisto.args().get('malopGuid')
+        try:
+            add_comment(malop_guid, comment.encode('utf-8'))
+            demisto.results('Comment added successfully')
+        except Exception, e:
+            return_error('Failed to add new comment. Orignal Error: ' + e.message)
+
+    def add_comment(malop_guid, comment):
+        cmd_url = '/rest/crimes/comment/' + malop_guid
+        response = http_request('POST', cmd_url, data=comment)
+
+    def update_malop_status_command():
+
+        status = demisto.args().get('status')
+        malop_guid = demisto.args().get('malopGuid')
+
+        if status not in STATUS_MAP:
+            return_error('Invalid status. Given status must be one of the following: To Review,Unread,Remediated or Not Relevant')
+
+        update_malop_status(malop_guid, status)
+
+        ec = {
+            'Cybereason.Malops(val.GUID && val.GUID == {})'.format(malop_guid): {
+                'GUID': malop_guid,
+                'Status': status
             }
         }
-    }
+        demisto.results(ec)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': 'Successfully updated malop {0} to status {1}'.format(malop_guid, status),
+            'ContentsFormat': formats['text'],
+            'EntryContext': ec
+        })
 
-    if (command != 'test-module') {
-        var cookiesInfo = checkCookies();
-        var shouldLogin = cookiesInfo.shouldRequestCookies;
+    def update_malop_status(malop_guid, status):
 
-        var cookies;
-        if (shouldLogin) {
-            var loginRes = login();
-            cookies = loginRes.Cookies;
-            saveCookies(cookies);
-        } else {
-            cookies = cookiesInfo.cookies;
+        api_status = STATUS_MAP[status]
+
+        json = {}
+        json[malop_guid] = api_status
+
+        cmd_url = '/rest/crimes/status'
+        response = http_request('POST', cmd_url, json=json).json()
+        if response['status'] != 'SUCCESS':
+            return_error('Failed to update malop {0} status to {1}. Message: {2}'.format(malop_guid, status, response['message']))
+
+    def malop_to_incident(malop):
+        incident = {}
+        incident['rawJSON'] = json.dumps(malop)
+        incident['name'] = 'Cybereason Malop ' + malop['guidString']
+        incident['labels'] = [{'type':'GUID', 'value': malop['guidString']}]
+        return incident
+
+    def fetch_incidents():
+
+        last_run = demisto.getLastRun()
+
+        if last_run and last_run['creation_time']:
+            last_creation_time = last_run['creation_time']
+        else:
+            now_time = time.time()
+            now_datetime = datetime.fromtimestamp(now_time)
+            creation_datetime = now_datetime - timedelta(days=3) # Last 3 days
+            last_creation_time = time.mktime(creation_datetime.timetuple()) + creation_datetime.microsecond / 1E6 # Converting datetime to time
+            last_creation_time *= 1000
+
+        max_creation_time = last_creation_time
+
+        filters = None # fetch all unread malops without time query
+
+        data = query_malops(total_result_limit=10000, per_group_limit=10000, filters=filters)['data']
+        malops = data['resultIdToElementDataMap']
+
+        incidents = []
+
+        for malop in malops:
+
+            management_status = malops[malop]['simpleValues']['managementStatus']['values'][0]
+            malop_creation_time = malops[malop]['simpleValues']['creationTime']['values'][0]
+
+            if management_status.lower() == 'unread' or management_status.lower() == 'reopen': # Fetching only incidents with the following status management: UNREAD and REOPEN
+                incident = malop_to_incident(malop)
+                incidents.append(incident)
+
+                malopGUID = malops[malop]['guidString']
+                update_malop_status(malopGUID, 'Open')
+
+            elif malop_creation_time >= last_creation_time:
+                incident = malop_to_incident(malops[malop])
+                incidents.append(incident)
+
+                if malop_creation_time > max_creation_time:
+                    max_creation_time = malop_creation_time
+
+        demisto.setLastRun({
+            'creation_time': max_creation_time
+        })
+
+        demisto.incidents(incidents)
+
+    def login():
+        cmd_url = '/login.html'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Connection': 'close'
         }
-    }
+        data = {
+            'username': USERNAME,
+            'password': PASSWORD
+        }
+        http_request('POST', cmd_url, data=data, headers=headers)
 
-    var res;
-    switch (command) {
-        case 'test-module':
-            res = login();
-            if (res.Cookies.length > 0) {
-                return 'ok';
-            }
-            break;
+    def client_certificate():
+        cert = CERTIFICATE
 
-        case 'cybereason-is-probe-connected':
-            res = isProbeConnected(cookies);
-            break;
+        if 'Bag Attributes' not in cert:
+            return_error('Could not find Bag Attributes')
+        if '-----BEGIN CERTIFICATE-----' not in cert:
+            return_error('Could not find certificate file')
+        if '-----BEGIN RSA PRIVATE KEY-----' in cert:
+            i = cert.index('-----BEGIN RSA PRIVATE KEY-----')
+        else:
+            return_error('Could not find certificate key')
+        client_cert = cert[:i]
+        client_key = cert[i:]
 
-        case 'cybereason-query-processes':
-            res = queryProcesses(cookies);
-            break;
+        f = open('client.cert', 'wb')
+        f.write(client_cert)
+        f.flush()
+        f.close()
+        f = open('client.pem', 'wb')
+        f.write(client_key)
+        f.close()
+        client_cert_file = os.path.abspath('client.cert')
+        client_key_file = os.path.abspath('client.pem')
 
-        case 'cybereason-query-connections':
-            res = queryConnections(cookies);
-            break;
+        session.cert = (client_cert_file, client_key_file)
 
-        case 'cybereason-isolate-machine':
-            res = isolateMachine(cookies);
-            break;
+        #Time to check if we are logged on
+        response = session.get(url = SERVER)
+        if response.status_code != 200 and response.status_code != 302:
+            return_error("Failed to connect to server")
 
-        case 'cybereason-unisolate-machine':
-            res = unisolateMachine(cookies);
-            break;
+        #First time we may get a redirect, but second time should be 200
+        response = session.get(url=SERVER)
+        if response.status_code != 200:
+            return_error("Failed to login with certificate. Expected response 200. Got: " + str(response.status_code))
 
-        default:
-            break;
-    }
+    def logout():
+        cmd_url = '/logout'
+        response = http_request('GET', cmd_url)
 
-    return res;
-  type: javascript
+    ''' EXECUTION CODE '''
+
+    LOG('command is %s' % (demisto.command(), ))
+
+    session = requests.session()
+
+
+    if CERTIFICATE:
+        client_certificate()
+        AUTH = 'CERT'
+    if USERNAME and PASSWORD:
+        login()
+        AUTH = 'BASIC'
+    else:
+        return_error('No credentials were provided')
+
+
+    try:
+        if demisto.command() == 'test-module':
+            # Tests connectivity and credentails on login
+            demisto.results('ok')
+
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+
+        elif demisto.command() == 'cybereason-is-probe-connected':
+            is_probe_connected_command()
+
+        elif demisto.command() == 'cybereason-query-processes':
+            query_processes_command()
+
+        elif demisto.command() == 'cybereason-query-malops':
+            query_malops_command()
+
+        elif demisto.command() == 'cybereason-query-connections':
+            query_connections_command()
+
+        elif demisto.command() == 'cybereason-isolate-machine':
+            isolate_machine_command()
+
+        elif demisto.command() == 'cybereason-unisolate-machine':
+            unisolate_machine_command()
+
+        elif demisto.command() == 'cybereason-malop-processes':
+            malop_processes_command()
+
+        elif demisto.command() == 'cybereason-add-comment':
+            add_comment_command()
+
+        elif demisto.command() == 'cybereason-update-malop-status':
+            update_malop_status_command()
+
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+    finally:
+        logout()
+        if AUTH == 'CERT':
+            os.remove(os.path.abspath('client.pem'))
+            os.remove(os.path.abspath('client.cert'))
+
+  type: python
   commands:
   - name: cybereason-query-processes
     arguments:
@@ -702,3 +1024,141 @@ script:
       type: string
     description: Stops isolation of a machine
     execution: true
+  - name: cybereason-query-malops
+    arguments:
+    - name: filters
+      description: Filter to filter response by, given in Cybereason API syntax.
+    - name: totalResultLimit
+      description: The total number of results to return for your Server. Ensure you
+        make the limit a reasonable number to maximize Server performance and not
+        to overload the system.
+    - name: perGroupLimit
+      description: The number of items to return per Malop group.
+    - name: templateContext
+      auto: PREDEFINED
+      predefined:
+      - MALOP
+      - SPECIFIC
+      - CUSTOM
+      - DETAILS
+      - OVERVIEW
+      description: 'The level of detail to provide in the response. Possible values
+        include:  SPECIFIC:  References value contain only the count in the ElementValues
+        class. The Suspicions map is calculated for each results, with the suspicion
+        name and the first time the suspicion appeared. The Evidence map is not calculated
+        for the results. CUSTOM:  Reference values contain the specific Elements,
+        up to the limit defined in the perFeatureLimit parameter. The Suspicions map
+        is not calculated for the results. The Evidence map is not calculated for
+        the results. DETAILS:  Reference values contain the specific Elements, up
+        to the limit defined in the perFeatureLimit parameter. The Suspicions map
+        is calculated for each result, containing the suspicion name and the first
+        time the suspicion appeared. The Evidence map is not calculated for the results.'
+      defaultValue: MALOP
+    - name: withinLastDays
+      description: Return all the malops within the last days
+    outputs:
+    - contextPath: Cybereason.Malops.GUID
+      description: The unique globally unique identifier (guid) for the Malop.
+      type: string
+    - contextPath: Cybereason.Malops.CreationTime
+      description: The time reported as when the malicious behavior began on the system.
+        This is not the time that the Malop was first detected by Cybereason.
+      type: string
+    - contextPath: Cybereason.Malops.DecisionFeature
+      description: The reason that Cybereason has raised the Malop.
+      type: string
+    - contextPath: Cybereason.Malops.Link
+      description: Link to the Malop on Cybereason.
+      type: string
+    - contextPath: Cybereason.Malops.Suspects
+      description: Malop suspect type and name
+      type: string
+    - contextPath: Cybereason.Malops.LastUpdatedTime
+      description: Last updated time of malop
+      type: string
+    description: Returns a list of all Malops and details on the Malops.
+  - name: cybereason-malop-processes
+    arguments:
+    - name: malopGuids
+      required: true
+      description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved
+        with the command cybereason-query-malops command)
+    outputs:
+    - contextPath: Process.Name
+      description: The process name
+      type: string
+    - contextPath: Process.Malicious
+      description: Malicious status of the process
+    - contextPath: Process.CreationTime
+      description: The process creation time
+      type: date
+    - contextPath: Process.EndTime
+      description: The process end time
+      type: date
+    - contextPath: Process.CommandLine
+      description: The command line of the process
+      type: string
+    - contextPath: Process.SignedAndVerified
+      description: Is the process signed and verified
+    - contextPath: Process.ProductType
+      description: The product type
+    - contextPath: Process.Children
+      description: Children of the process
+    - contextPath: Process.Parent
+      description: The parent process
+    - contextPath: Process.OwnerMachine
+      description: The machine's hostname
+    - contextPath: Process.User
+      description: The user who ran the process
+      type: string
+    - contextPath: Process.ImageFile
+      description: Image file of the process
+    - contextPath: Process.SHA1
+      description: SHA1 of the process file
+      type: string
+    - contextPath: Process.MD5
+      description: MD5 of the process file
+      type: string
+    - contextPath: Process.CompanyName
+      description: The company's name
+      type: string
+    - contextPath: Process.ProductName
+      description: The product's name
+      type: string
+    description: Returns a list of malops
+  - name: cybereason-add-comment
+    arguments:
+    - name: comment
+      required: true
+      description: Comment to add to the malop
+    - name: malopGuid
+      required: true
+      description: Malop GUID to add comment to. (Malop GUID can be retrieved with
+        the command cybereason-query-malops command)
+    description: Add new comment to malop
+  - name: cybereason-update-malop-status
+    arguments:
+    - name: malopGuid
+      required: true
+      description: Malop GUID to update its status
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - To Review
+      - Unread
+      - Remediated
+      - Not Relevant
+      - Open
+      description: Status to update
+    outputs:
+    - contextPath: Cybereason.Malops.GUID
+      description: Malop GUID
+      type: string
+    - contextPath: Cybereason.Malops.Status
+      description: 'Malop status: To Review,Unread,Remediated,Not Relevant'
+      type: string
+    description: Updates malop status
+  isfetch: true
+  runonce: false
+releaseNotes: "Added commands: cybereason-add-comment, cybereason-query-malops, cybereason-update-malop-status, cybereason-malop-processes. Added malops fetch. Added client-certificate authentication"

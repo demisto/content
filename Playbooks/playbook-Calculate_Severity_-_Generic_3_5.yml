@@ -2,7 +2,8 @@ id: Calculate Severity - Generic
 version: -1
 name: Calculate Severity - Generic
 fromversion: 3.5.0
-toversion: 3.6.0
+toversion: 3.5.1
+releaseNotes: "-"
 description: |-
   Calculate incident severity by indicators reputation and user/endpoint membership in critical groups.
 

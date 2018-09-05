@@ -20,7 +20,7 @@ script: |
   }
 
   var isInRange = ipranges.some(function(iprange) {
-      return isIPInSubnet(ip, iprange);
+      return isIPInSubnet(ip, iprange.replace(/[\s]/g, ''));
   });
 
   var ipObj = {};
@@ -41,6 +41,7 @@ tags:
 - ip
 - Condition
 comment: Returns yes if ip is in one of the ranges provided, returns no otherwise.
+enabled: true
 system: true
 args:
 - name: ip
@@ -60,3 +61,4 @@ outputs:
 - contextPath: IP.InRange
   description: Is the IP is in the input ranges? (could be 'yes' or 'no)
 scripttarget: 0
+releaseNotes: "Better handling of spaces and new lines in provided IP ranges string"

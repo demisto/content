@@ -1259,10 +1259,10 @@ script:
             if demisto.command() == 'fetch-incidents':
                 demisto.info(log_message)
                 demisto.incidents([])
-                exit(0)
+                sys.exit(0)
             if IS_TEST_MODULE:
                 demisto.results(log_message + " Please retry the instance configuration test.")
-                exit(0)
+                sys.exit(0)
             error_message_simple = log_message + " Please retry your request."
 
         # Other exception handling
