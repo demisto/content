@@ -1,9 +1,10 @@
 id: url_enrichment_-_generic
 version: -1
 name: URL Enrichment - Generic
+releaseNotes: "-"
 description: Enrich URL using one or more integrations
 fromversion: 3.5.0
-toversion: 3.6.0
+toversion: 3.5.1
 starttaskid: "0"
 tasks:
   "0":
