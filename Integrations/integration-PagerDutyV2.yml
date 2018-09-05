@@ -39,8 +39,13 @@ script:
                           'Accept': 'application/vnd.pagerduty+json;version=2'
                       }
 
+
+    '''PARAMS'''
+    STATUSES = "statuses%5B%5D"
+
+
     '''SUFFIX ENDPOINTS'''
-    GET_SCHEDULES_SUFFIX = "schedules/"
+    GET_SCHEDULES_SUFFIX = "schedules"
     CREATE_INCIDENT_SUFFIX = "incidents"
     ON_CALL_BY_SCHEDULE_SUFFIX = "schedules/{0}/users"
     ON_CALLS_USERS_SUFFIX = "oncalls?include%5B%5D=users"
@@ -63,6 +68,7 @@ script:
     }
 
     '''TABLE NAMES'''
+    INCIDETS = "Incidents"
     SCHEDULES = "All Schedules"
     TRIGGER_EVENT = 'Trigger Event'
     USERS_ON_CALL = 'Users On Call'
@@ -234,7 +240,7 @@ script:
             'Contents': outputs,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, INCIDENTS_HEADERS),
+            'HumanReadable': tableToMarkdown(INCIDETS, outputs, INCIDENTS_HEADERS),
             'EntryContext': {
                 'PagerDuty.Incidents(val.id==obj.id)': incidents
             }
@@ -391,7 +397,10 @@ script:
         if until is not None:
             param_dict["until"] = until
         if status is not None:
-            param_dict["status"] = status
+            statuses = status.split(',')
+            statuses_string = STATUSES + "="
+            statuses = STATUSES.join(statuses)
+            param_dict[STATUSES] = statuses
         if sortBy is not None:
             param_dict["sortBy"] = sortBy
 
@@ -406,9 +415,15 @@ script:
         res = create_new_incident(author, title, description)
         return extract_new_event_data(res)
 
-    def get_all_schedules_command():
+    def get_all_schedules_command(query=None, limit=None):
         """Get all the schedules."""
-        res = http_request('GET', GET_SCHEDULES_SUFFIX, {})
+        param_dict = {}
+        if query is not None:
+            param_dict["query"] = query
+        if limit is not None:
+            param_dict["limit"] = limit
+
+        res = http_request('GET', GET_SCHEDULES_SUFFIX, param_dict)
         schedules = res.get('schedules', [])
         return extract_all_schedules_data(schedules)
 
@@ -424,9 +439,13 @@ script:
         users_on_call = http_request('GET', url, param_dict)
         return extract_on_call_user_data(users_on_call.get('users', []))
 
-    def get_on_call_now_users_command():
+    def get_on_call_now_users_command(limit=None):
         """Get the list of users that are on call now."""
-        users_on_call_now = http_request('GET', ON_CALLS_USERS_SUFFIX, {})
+        param_dict = {}
+        if limit is not None:
+            param_dict["limit"] = limit
+
+        users_on_call_now = http_request('GET', ON_CALLS_USERS_SUFFIX, param_dict)
         oncalls = users_on_call_now.get('oncalls', {})
         return extract_on_call_now_user_data(oncalls, USERS_ON_CALL_NOW)
 
@@ -473,10 +492,9 @@ script:
     arguments:
     - name: query
       description: Show only the schedules whose name matches the query
-    - name: requesterID
-      description: The user id of the user making the request. This will be used to
-        generate the calendar private urls. This is only needed if you are using token
-        based authentication.
+    - name: limit
+      description: The limit for the amount of schedules to receive(Default is 25,
+        max value is 100)
     outputs:
     - contextPath: PagerDuty.Schedules
       description: schedules
@@ -513,8 +531,9 @@ script:
       or by specific schedule
   - name: PagerDutyGetUsersOnCallNow
     arguments:
-    - name: query
-      description: show only the names matching the query
+    - name: limit
+      description: The limit for the amount of users to receive(Default is 25, max
+        value is 100)
     outputs:
     - contextPath: PagerDutyUser.ID
       description: User's ID
@@ -546,8 +565,8 @@ script:
       description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents
         since=2011-05-06T17:00Z
     - name: sortBy
-      description: 'Used to specify both the field you wish to sort the results on,
-        as well as the direction (ascending/descending) of the results.See more https://developer.pagerduty.com/documentation/rest/incidents/list '
+      description: Used to specify both the field you wish to sort the results on,
+        as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents
     - name: until
       description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents
         until=2016-05-06T13:00Z
@@ -569,7 +588,8 @@ script:
     outputs:
     - contextPath: PagerDuty.Event
       description: Event data
-    description: Creates a new event/incident in PagerDuty
+    description: Creates a new event/incident in PagerDuty(In order to use this command
+      you have to enter the Service Key in the integration settings)
   - name: PagerDutyGetContactMethods
     arguments:
     - name: UserID
@@ -603,5 +623,4 @@ script:
       type: string
     description: Get the users notification rules
   runonce: false
-hidden: false
-releaseNotes: "Upgraded PagerDuty API to version 2."
+releaseNotes: "Fixed integration errors."
