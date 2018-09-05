@@ -218,13 +218,20 @@ script:
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
             if (longFormat === 'true' && r[i].scans) {
                 scansTable = createScansTable(r[i].scans);
-                md += tableToMarkdown('Scans', scansTable)
+                md += tableToMarkdown('Scans', scansTable);
                 if (ec[outputPaths.file]){
                     scans_ec = {
                         Scans: scansTable,
                         ScanID: r[i].scan_id
+                    };
+                    if (typeof ec[outputPaths.file][0] === 'object') {
+                        ec[outputPaths.file][0].VirusTotal = scans_ec;
+                    } else {
+                        ec[outputPaths.file][0] = {
+                            MD5: r[i].md5,
+                            VirusTotal: scans_ec
+                        };
                     }
-                    ec[outputPaths.file][0].VirusTotal = scans_ec;
                 } else {
                     scans_ec = {
                         MD5: r[i].md5,
@@ -234,13 +241,30 @@ script:
                             Scans: scansTable,
                             ScanID: r[i].scan_id
                         }
-                    }
+                    };
                     ec[outputPaths.file] = scans_ec;
                 }
             } else {
-                ec[outputPaths.file][0]['VirusTotal'] = {
-                    ScanID: r[i].scan_id,
-                    MD5: r[i].md5
+                if (ec[outputPaths.file]){
+                    scans_ec = {
+                        ScanID: r[i].scan_id
+                    };
+                    if (typeof ec[outputPaths.file][0] === 'object') {
+                        ec[outputPaths.file][0].VirusTotal = scans_ec;
+                    } else {
+                        ec[outputPaths.file][0] = {
+                            MD5: r[i].md5,
+                            VirusTotal: scans_ec
+                        };
+                    }
+                } else {
+                    scans_ec = {
+                        MD5: r[i].md5,
+                        VirusTotal: {
+                            ScanID: r[i].scan_id
+                        }
+                    };
+                    ec[outputPaths.file] = scans_ec;
                 }
             }
             md += '\n';
@@ -283,7 +307,7 @@ script:
         if (o.response_code === 0) {
             ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
+                HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg};
         }
         if (fullResponse === 'true'){
             maxLen = 1000;
@@ -345,7 +369,7 @@ script:
             }
         };
         if (ec[outputPaths.ip]){
-            ec[outputPaths.IP][0]['VirusTotal'] = {
+            ec[outputPaths.ip]['VirusTotal'] = {
                 'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
                 'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
                 "DetectedURLs": detectedUrls.slice(0,maxLen),
@@ -410,9 +434,9 @@ script:
         if (!o.scans) {
             md += 'URL submitted for scan. Please retry command later\n';
             ec[outputPaths.url] = {
+                Data: url,
                 VirusTotal: {
-                    ScanID: o.scan_id,
-                    Data: url
+                    ScanID: o.scan_id
                 }
             };
         } else {
@@ -436,7 +460,6 @@ script:
             ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
 
             if (longFormat === 'true') {
-                md += '### Scans\n';
                 scansTable = createScansTable(o.scans);
                 md += tableToMarkdown('Scans', scansTable)
                 if (ec[outputPaths.url]){
@@ -444,7 +467,7 @@ script:
                         Scans: scansTable,
                         ScanID: o.scan_id
                     }
-                    ec[outputPaths.url][0].VirusTotal = scans_ec;
+                    ec[outputPaths.url].VirusTotal = scans_ec;
                 } else {
                     scans_ec = {
                         Data: url,
@@ -637,7 +660,7 @@ script:
             }
         };
         if (ec[outputPaths.domain]){
-            ec['Domain(val.Name==obj.Name)'].VirusTotal = {
+            ec[outputPaths.domain].VirusTotal = {
                 'DownloadedHashes': detected_downloaded_samples,
                 'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
                 "DetectedURLs": detected_urls,
@@ -964,8 +987,6 @@ script:
       description: Scan detection for this URL (True/False)
     - contextPath: URL.VirusTotal.Scans.Result
       description: Scan result for this URL - signature, etc.
-    - contextPath: URL.VirusTotal.ScanID
-      description: Scan ID for this URL
     description: Check URL Reputation
   - name: domain
     arguments:
