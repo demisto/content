@@ -213,7 +213,7 @@ script:
             HumanReadable: md,
             EntryContext: {
                     "mcafee(val.latestDAT === obj.latestDAT)": ec.mcafee, //backward compatability
-                    "McAfee.ePO(val.latestDAT == obj.epoDAT)": datVersion
+                    "McAfee.ePO(val.latestDAT == obj.latestDAT)": datVersion
             }
         };
     }
@@ -233,7 +233,7 @@ script:
                 ContentsFormat: formats.json,
                 HumanReadable: md,
                 EntryContext: {
-                    "mcafee(val.epoDAT==obj.epoDAT)": ec.mcafee, //backward compatability
+                    "mcafee(val.epoDAT == obj.epoDAT)": ec.mcafee, //backward compatability
                     "McAfee.ePO(val.epoDAT == obj.epoDAT)": epoDAT
                 }
             };
@@ -360,6 +360,32 @@ script:
         return prettyFindSystem
     }
 
+    function prettifyFindSystemePO(FindSystem) {
+        var prettyFindSystemePO = [];
+        for (i=0; i < FindSystem.length; i++) {
+            var system = FindSystem[i];
+            prettyFindSystemePO[i] = {
+                'Name': system['EPOComputerProperties.ComputerName'],
+                'Domain': system['EPOComputerProperties.DomainName'],
+                'Hostname': system['EPOComputerProperties.IPHostName'],
+                'IPAddress': system['EPOComputerProperties.IPAddress'],
+                'OS': system['EPOComputerProperties.OSType'],
+                'OSVersion': system['EPOComputerProperties.OSVersion'],
+                'Processor': system['EPOComputerProperties.CPUSpeed'],
+                'ProcessorSpeed': system['EPOComputerProperties.CPUType'],
+                'Processors': system['EPOComputerProperties.NumOfCPU'],
+                'Memory': system['EPOComputerProperties.TotalPhysicalMemory'],
+                'DiskSpace': system['EPOComputerProperties.TotalDiskSpace'],
+                'FreeDiskSpace': system['EPOComputerProperties.FreeDiskSpace'],
+                'FreeMemory': system['EPOComputerProperties.FreeMemory'],
+                'IPSubnet': system['EPOComputerProperties.IPSubnet'],
+                'IPSubnetMask': system['EPOComputerProperties.IPSubnetMask'],
+                'NetAddress': system['EPOComputerProperties.NetAddress'],
+            };
+        }
+        return prettyFindSystemePO
+    }
+
     function epoFindSystems() {
         var name = epoGetSystemGroupPath(args.groupId);
 
@@ -382,7 +408,7 @@ script:
                 HumanReadable: md,
                 EntryContext: {
                     'Endpoint(val.IPAddress==obj.IPAddress)': prettifyFindSystem(result),
-                    'McAfee.ePO.Endpoint(val.IPAddress==obj.IPAddress)': prettifyFindSystem(result),
+                    'McAfee.ePO.Endpoint(val.IPAddress==obj.IPAddress)': prettifyFindSystemePO(result),
                 }
             };
         } else {
@@ -571,6 +597,27 @@ script:
     - contextPath: McAfee.ePO.Endpoint.Memory
       description: 'Amount of memory on this endpoint '
       type: number
+    - contextPath: McAfee.ePO.Endpoint.ProcessorSpeed
+      description: Endpoint CPU speed
+      type: number
+    - contextPath: McAfee.ePO.Endpoint.DiskSpace
+      description: Endpoint Disk Space
+      type: number
+    - contextPath: McAfee.ePO.Endpoint.FreeDiskSpace
+      description: Endpoint Free Disk Space
+      type: number
+    - contextPath: McAfee.ePO.Endpoint.FreeMemory
+      description: Endpoint FreeMemory
+      type: number
+    - contextPath: McAfee.ePO.Endpoint.IPSubnet
+      description: Endpoint IP subnet
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.IPSubnetMask
+      description: Endpoint IP subnet mask
+      type: string
+    - contextPath: McAfee.ePO.Endpoint.NetAddress
+      description: Endpoint Net address
+      type: string
     description: Find systems in the System Tree - by group ID or by search
   - name: epo-command
     arguments: []
