@@ -1,0 +1,339 @@
+id: Detonate URL - Lastline
+version: -1
+name: Detonate URL - Lastline
+fromversion: 4.0.0
+description: Detonates a URL using the Lastline sandbox integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d2f4d7dc-4562-4517-8d63-3539676ca81d
+    type: start
+    task:
+      id: d2f4d7dc-4562-4517-8d63-3539676ca81d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: ed9b631e-e2c3-40e8-8609-a5121e77dc8f
+    type: regular
+    task:
+      id: ed9b631e-e2c3-40e8-8609-a5121e77dc8f
+      version: -1
+      name: Lastline Upload URL
+      description: Uploads the submission to McAfee ATD.
+      script: Lastline_2fix|||url
+      type: regular
+      iscommand: true
+      brand: Lastline_2fix
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      interval: {}
+      long: {}
+      pushToPortal: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
+        complex:
+          root: inputs.URL
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 10321a00-b7ab-4bdb-87e3-b6cae1e12cf5
+    type: playbook
+    task:
+      id: 10321a00-b7ab-4bdb-87e3-b6cae1e12cf5
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        complex:
+          root: lastlineTasks
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: taskId
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: uuid
+      PollingCommandName:
+        simple: url
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: lastlineTasks(val.status != 'Completed')
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: dc362fa0-2ef3-4608-8da8-592277de3945
+    type: regular
+    task:
+      id: dc362fa0-2ef3-4608-8da8-592277de3945
+      version: -1
+      name: Lastline Get Report
+      description: Retrieve the reports from McAfee ATD.
+      script: Lastline_2fix|||lastline-get
+      type: regular
+      iscommand: true
+      brand: Lastline_2fix
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      interval: {}
+      threshold: {}
+      timeout: {}
+      uuid:
+        complex:
+          root: lastlineTasks
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 7aef66ab-1f28-4a35-89d8-173760f509c5
+    type: condition
+    task:
+      id: 7aef66ab-1f28-4a35-89d8-173760f509c5
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks that there is a URL in the playbook’s input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+    type: title
+    task:
+      id: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 0ddd3596-3573-4712-884e-d1bc359b1c91
+    type: condition
+    task:
+      id: 0ddd3596-3573-4712-884e-d1bc359b1c91
+      version: -1
+      name: Is Lastline sandbox enabled?
+      description: |
+        Verify that there is a valid instance of McAfee ATD enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Lastline
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+outputs:
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+releaseNotes: new detonate playbook using the pooling mechanism
