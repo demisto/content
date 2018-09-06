@@ -418,7 +418,8 @@
             "playbookID": "DemistoLockTest"
         },
         {
-            "playbookID": "test-domain-indicator"
+            "playbookID": "test-domain-indicator",
+            "timeout": 400
         },
         {
             "integrations": "VirusTotal - Private API",
