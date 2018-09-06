@@ -929,4 +929,3 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
-releaseNotes: "Added Email headers to the processing."

@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 275,
           "y": 50
         }
       }
@@ -44,7 +44,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
@@ -68,7 +68,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
@@ -127,7 +127,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 910,
           "y": 545
         }
       }
@@ -155,7 +155,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
+          "x": 1340,
           "y": 545
         }
       }
@@ -190,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 680
+          "x": 1340,
+          "y": 720
         }
       }
     note: false
@@ -228,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 875
+          "x": 1340,
+          "y": 895
         }
       }
     note: false
@@ -240,7 +240,7 @@ tasks:
     task:
       id: c6dfcd6f-dde8-4c37-8b1e-596164e47b23
       version: -1
-      name: 'Update user data as object '
+      name: Update user data as object
       script: Salesforce|||salesforce-update-object
       type: regular
       iscommand: true
@@ -276,7 +276,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1135,
           "y": 1070
         }
       }
@@ -325,7 +325,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1135,
           "y": 1245
         }
       }
@@ -342,6 +342,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "15"
     scriptarguments:
       link: {}
       oid:
@@ -352,7 +355,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
+          "x": 920,
           "y": 1420
         }
       }
@@ -369,6 +372,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "15"
     scriptarguments:
       link:
         simple: google.com
@@ -380,7 +386,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1350,
           "y": 1420
         }
       }
@@ -406,7 +412,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
+          "x": 490,
           "y": 1420
         }
       }
@@ -436,7 +442,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 275,
           "y": 195
         }
       }
@@ -464,8 +470,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1070
+          "x": 1780,
+          "y": 1420
         }
       }
     note: false
@@ -506,8 +512,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1245
+          "x": 1350,
+          "y": 1595
         }
       }
     note: false
@@ -516,8 +522,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 1895,
+        "height": 1640,
+        "width": 2110,
         "x": 50,
         "y": 50
       }

@@ -4,7 +4,7 @@
 python Tests/scripts/validate_files_structure.py 'true'
 if [[ $? -ne 0 ]] 
 then
-    echo "\nPlease fix the aforementioned errors and then commit again"
+    echo "Please fix the aforementioned errors and then commit again"
     exit 1
 fi
 
