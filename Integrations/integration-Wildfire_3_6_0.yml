@@ -419,6 +419,3 @@ script:
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Detonate file hosted on a website through WildFire
 hidden: false
-releaseNotes: |-
-  added toversion.
-  add input checks for !file and !wildfire-report commands.

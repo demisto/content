@@ -152,4 +152,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "added context check for Endpoint"
