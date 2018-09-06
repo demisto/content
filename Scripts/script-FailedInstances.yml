@@ -2,7 +2,6 @@ commonfields:
   id: FailedInstances
   version: -1
 fromversion: 4.0.0
-releaseNotes: Add FailedInstances script
 name: FailedInstances
 script: |
   var INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin'];

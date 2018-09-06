@@ -135,4 +135,3 @@ args:
     incident owner (optional)
 scripttarget: 0
 runonce: false
-releaseNotes: "-"

@@ -13,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7e558c1d-5c02-4029-8854-08c651e49c2b
+    taskid: 71423874-3b06-4cb7-8793-4fee37cc0a96
     type: start
     task:
-      id: 7e558c1d-5c02-4029-8854-08c651e49c2b
+      id: 71423874-3b06-4cb7-8793-4fee37cc0a96
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: be108b6a-cb53-4b69-83b3-18afce7cf548
+    taskid: 0743e22f-6693-432f-8942-e2c5c8d7d1c6
     type: regular
     task:
-      id: be108b6a-cb53-4b69-83b3-18afce7cf548
+      id: 0743e22f-6693-432f-8942-e2c5c8d7d1c6
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -65,10 +65,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: b08a5f0c-8215-4248-8902-260c3fa8cea1
+    taskid: 961cdb02-3923-4ff6-8e8d-042daaecb132
     type: regular
     task:
-      id: b08a5f0c-8215-4248-8902-260c3fa8cea1
+      id: 961cdb02-3923-4ff6-8e8d-042daaecb132
       version: -1
       name: ip
       description: Check IP Reputation
@@ -98,10 +98,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 50e13b2c-626d-45b0-88d4-162ead3fc2a1
+    taskid: 644f3518-1ce8-456c-8453-0ac2888c7f35
     type: regular
     task:
-      id: 50e13b2c-626d-45b0-88d4-162ead3fc2a1
+      id: 644f3518-1ce8-456c-8453-0ac2888c7f35
       version: -1
       name: VerifyContext
       description: |-
@@ -134,10 +134,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: d9daba3e-38c1-4174-8614-9615331e9fbb
+    taskid: bf6b22c8-8f2e-491f-810b-63e848c1dcf5
     type: regular
     task:
-      id: d9daba3e-38c1-4174-8614-9615331e9fbb
+      id: bf6b22c8-8f2e-491f-810b-63e848c1dcf5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -164,10 +164,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 1e4cd112-9345-4d2c-8e9a-cc412b982b2f
+    taskid: db257a40-5c02-4d07-8b68-d34ee3b90d1c
     type: regular
     task:
-      id: 1e4cd112-9345-4d2c-8e9a-cc412b982b2f
+      id: db257a40-5c02-4d07-8b68-d34ee3b90d1c
       version: -1
       name: VerifyContext
       description: |-
@@ -200,10 +200,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: ee10d5c4-d7df-4420-840f-eec9d6a96277
+    taskid: e5ea4e58-d3e6-457f-8d18-f895689a8495
     type: regular
     task:
-      id: ee10d5c4-d7df-4420-840f-eec9d6a96277
+      id: e5ea4e58-d3e6-457f-8d18-f895689a8495
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -213,7 +213,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "26"
     scriptarguments:
       all:
         simple: "yes"
@@ -230,10 +230,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: edd084c0-aa6d-42b4-8338-3573cca7bf4e
+    taskid: 28074093-8ae1-4cc2-88a7-3407d883e5d1
     type: regular
     task:
-      id: edd084c0-aa6d-42b4-8338-3573cca7bf4e
+      id: 28074093-8ae1-4cc2-88a7-3407d883e5d1
       version: -1
       name: domain
       description: Check domain reputation
@@ -247,6 +247,7 @@ tasks:
     scriptarguments:
       domain:
         simple: demisto.com
+      fullResponse: {}
       long: {}
       retries: {}
       sampleSize: {}
@@ -263,10 +264,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 77d04f63-2ef8-42be-8193-17eec4ecf9eb
+    taskid: 98fb256b-e7bd-4ac5-8c51-d6988359201f
     type: regular
     task:
-      id: 77d04f63-2ef8-42be-8193-17eec4ecf9eb
+      id: 98fb256b-e7bd-4ac5-8c51-d6988359201f
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -289,16 +290,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
   "9":
     id: "9"
-    taskid: 53bccee8-47ec-4fa7-8477-97c52d6486d7
+    taskid: 872e04c9-e0fe-4702-8a6d-bda991b30eab
     type: regular
     task:
-      id: 53bccee8-47ec-4fa7-8477-97c52d6486d7
+      id: 872e04c9-e0fe-4702-8a6d-bda991b30eab
       version: -1
       name: VerifyContext
       description: |-
@@ -325,16 +326,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
   "10":
     id: "10"
-    taskid: 706496e1-bf82-41c9-8775-16211999cfb2
+    taskid: c2ceb52d-17ac-4343-87ac-4b9247216633
     type: regular
     task:
-      id: 706496e1-bf82-41c9-8775-16211999cfb2
+      id: c2ceb52d-17ac-4343-87ac-4b9247216633
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -344,7 +345,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "27"
     scriptarguments:
       all:
         simple: "yes"
@@ -355,16 +356,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
   "14":
     id: "14"
-    taskid: 24ebde47-e355-406f-8d92-2f1b1bc8cc68
+    taskid: d25275fc-8733-4e85-877d-bc3c8461a64b
     type: regular
     task:
-      id: 24ebde47-e355-406f-8d92-2f1b1bc8cc68
+      id: d25275fc-8733-4e85-877d-bc3c8461a64b
       version: -1
       name: url
       description: Check URL Reputation
@@ -389,16 +390,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 5970
         }
       }
     note: false
   "15":
     id: "15"
-    taskid: 6fbf842e-6867-4440-8637-ec941e63e956
+    taskid: 7a3f1dc5-3b6a-4ae0-822a-4a78765d3c0c
     type: regular
     task:
-      id: 6fbf842e-6867-4440-8637-ec941e63e956
+      id: 7a3f1dc5-3b6a-4ae0-822a-4a78765d3c0c
       version: -1
       name: VerifyContext
       description: |-
@@ -425,16 +426,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 6145
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 80c25b9d-d0bf-46d9-864a-91ee2ac5ccb1
+    taskid: 011b1702-ef5d-45f8-8b8f-b3e43fb284b1
     type: regular
     task:
-      id: 80c25b9d-d0bf-46d9-864a-91ee2ac5ccb1
+      id: 011b1702-ef5d-45f8-8b8f-b3e43fb284b1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -442,6 +443,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
     scriptarguments:
       all:
         simple: "yes"
@@ -452,16 +456,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 6320
         }
       }
     note: false
   "17":
     id: "17"
-    taskid: 01b0c002-fbe7-446e-8317-5203d92922bc
+    taskid: 99480269-782c-45b2-803b-ae105ff96295
     type: regular
     task:
-      id: 01b0c002-fbe7-446e-8317-5203d92922bc
+      id: 99480269-782c-45b2-803b-ae105ff96295
       version: -1
       name: Sleep
       description: |
@@ -476,7 +480,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "30"
     scriptarguments:
       seconds:
         simple: "60"
@@ -485,16 +489,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 4045
         }
       }
     note: false
   "18":
     id: "18"
-    taskid: 0ae6c202-4864-42f4-861e-f260c0654879
+    taskid: f43b1c1a-6c2b-4114-884a-1dfe5fcf7174
     type: regular
     task:
-      id: 0ae6c202-4864-42f4-861e-f260c0654879
+      id: f43b1c1a-6c2b-4114-884a-1dfe5fcf7174
       version: -1
       name: Sleep
       description: |
@@ -522,12 +526,1077 @@ tasks:
         }
       }
     note: false
+  "19":
+    id: "19"
+    taskid: f65e1131-28ce-4f81-854f-72415e7efeaf
+    type: regular
+    task:
+      id: f65e1131-28ce-4f81-854f-72415e7efeaf
+      version: -1
+      name: Sleep
+      description: |
+        vt has a quota of requests per minute that we exceed in the test playbook.
+
+        Sleep for 60 seconds.
+
+        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 3fb071a5-f127-431e-83b4-c0acab8394e7
+    type: regular
+    task:
+      id: 3fb071a5-f127-431e-83b4-c0acab8394e7
+      version: -1
+      name: file
+      description: Check file reputation of the given hash
+      script: VirusTotal|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      file:
+        simple: d41d8cd98f00b204e9800998ecf8427e
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: 1c4782ac-7056-47de-8cdb-877c7309966f
+    type: regular
+    task:
+      id: 1c4782ac-7056-47de-8cdb-877c7309966f
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      expectedValue:
+        simple: d41d8cd98f00b204e9800998ecf8427e
+      fields: {}
+      path:
+        simple: File.MD5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: ca977b45-c194-41ad-82e9-b10b73476842
+    type: regular
+    task:
+      id: ca977b45-c194-41ad-82e9-b10b73476842
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: cd777197-4f4d-499a-8bd0-42e1cd0d3f0e
+    type: regular
+    task:
+      id: cd777197-4f4d-499a-8bd0-42e1cd0d3f0e
+      version: -1
+      name: file
+      description: Check file reputation of the given hash
+      script: VirusTotal|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      file:
+        simple: d41d8cd98f00b204e9800998ecf8427e
+      long:
+        simple: "true"
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: edefff1d-f693-456f-8c21-c9a915cd7219
+    type: regular
+    task:
+      id: edefff1d-f693-456f-8c21-c9a915cd7219
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: cca71f0a-78da-4b31-81c9-d9736c1f8a09
+    type: regular
+    task:
+      id: cca71f0a-78da-4b31-81c9-d9736c1f8a09
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      expectedValue:
+        simple: d41d8cd98f00b204e9800998ecf8427e
+      fields: {}
+      path:
+        simple: File.MD5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 29179daa-f7ce-4e31-8504-0d263cb9ee0c
+    type: regular
+    task:
+      id: 29179daa-f7ce-4e31-8504-0d263cb9ee0c
+      version: -1
+      name: Sleep
+      description: |
+        vt has a quota of requests per minute that we exceed in the test playbook.
+
+        Sleep for 60 seconds.
+
+        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: a8607c1a-392a-49b8-8bb0-5c8d6cd64db7
+    type: regular
+    task:
+      id: a8607c1a-392a-49b8-8bb0-5c8d6cd64db7
+      version: -1
+      name: file
+      description: Check file reputation of the given hash
+      script: VirusTotal|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      file:
+        simple: 7657fcb7d772448a6d8504e4b20168b8
+      long:
+        simple: "true"
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: 17541525-4704-4bb0-832d-e731a9c856b9
+    type: regular
+    task:
+      id: 17541525-4704-4bb0-832d-e731a9c856b9
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      expectedValue:
+        simple: 7657fcb7d772448a6d8504e4b20168b8
+      fields: {}
+      path:
+        simple: File.MD5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: 7f6d3410-45e8-4ab8-89a9-62f774eac375
+    type: regular
+    task:
+      id: 7f6d3410-45e8-4ab8-89a9-62f774eac375
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: 648d6211-9aba-4e32-8995-71ab7577a828
+    type: regular
+    task:
+      id: 648d6211-9aba-4e32-8995-71ab7577a828
+      version: -1
+      name: url
+      description: Check URL Reputation
+      script: VirusTotal|||url
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold:
+        simple: "0"
+      url:
+        simple: http://coffeedoesgood.com
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: a94a0879-1ce9-4d79-8c41-82a90b5d8164
+    type: regular
+    task:
+      id: a94a0879-1ce9-4d79-8c41-82a90b5d8164
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      expectedValue:
+        simple: http://coffeedoesgood.com
+      fields: {}
+      path:
+        simple: DBotScore.Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: 7edc727e-0b12-4c7c-8213-54c226dd9118
+    type: regular
+    task:
+      id: 7edc727e-0b12-4c7c-8213-54c226dd9118
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: bcdf7b8a-8d7f-4990-850f-758fe8b12b5b
+    type: regular
+    task:
+      id: bcdf7b8a-8d7f-4990-850f-758fe8b12b5b
+      version: -1
+      name: url
+      description: Check URL Reputation
+      script: VirusTotal|||url
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      long:
+        simple: "true"
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold:
+        simple: "0"
+      url:
+        simple: http://coffeedoesgood.com
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: 9f8d4991-b928-4b6d-8a23-90a8c6165135
+    type: regular
+    task:
+      id: 9f8d4991-b928-4b6d-8a23-90a8c6165135
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      expectedValue:
+        simple: http://coffeedoesgood.com
+      fields: {}
+      path:
+        simple: DBotScore.Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 15f9191a-38c6-4f43-8619-7e89bd9e5857
+    type: regular
+    task:
+      id: 15f9191a-38c6-4f43-8619-7e89bd9e5857
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: 527c8f7e-4e0a-457d-8fd6-f09979ff3cf1
+    type: regular
+    task:
+      id: 527c8f7e-4e0a-457d-8fd6-f09979ff3cf1
+      version: -1
+      name: url
+      description: Check URL Reputation
+      script: VirusTotal|||url
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      long:
+        simple: "true"
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: www.demisto.com
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: a02e3cdb-64cd-4b8f-8973-c2bbfdb7d5a5
+    type: regular
+    task:
+      id: a02e3cdb-64cd-4b8f-8973-c2bbfdb7d5a5
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      expectedValue:
+        simple: www.demisto.com
+      fields: {}
+      path:
+        simple: DBotScore.Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: 8985f2ec-0f94-4f9c-85b8-d8bde666215a
+    type: regular
+    task:
+      id: 8985f2ec-0f94-4f9c-85b8-d8bde666215a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+  "39":
+    id: "39"
+    taskid: 00840dee-999d-4c17-8618-908c8f5a456b
+    type: regular
+    task:
+      id: 00840dee-999d-4c17-8618-908c8f5a456b
+      version: -1
+      name: ip
+      description: Check IP Reputation
+      script: VirusTotal|||ip
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold:
+        simple: "0"
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+  "40":
+    id: "40"
+    taskid: c0c1478b-b08a-4b6b-8a17-6a225c1324d7
+    type: regular
+    task:
+      id: c0c1478b-b08a-4b6b-8a17-6a225c1324d7
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      expectedValue:
+        simple: 8.8.8.8
+      fields: {}
+      path:
+        simple: DBotScore.Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+  "41":
+    id: "41"
+    taskid: f03a7eaa-1295-4360-8d18-5c2fdfa1a770
+    type: regular
+    task:
+      id: f03a7eaa-1295-4360-8d18-5c2fdfa1a770
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+  "42":
+    id: "42"
+    taskid: a3d06b70-bda1-41bb-8790-961e80d29368
+    type: regular
+    task:
+      id: a3d06b70-bda1-41bb-8790-961e80d29368
+      version: -1
+      name: domain
+      description: Check domain reputation
+      script: VirusTotal|||domain
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      domain:
+        simple: demisto.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold:
+        simple: "0"
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+  "43":
+    id: "43"
+    taskid: b611e3cc-e6a0-4ea4-87c9-3cc6f7451d5d
+    type: regular
+    task:
+      id: b611e3cc-e6a0-4ea4-87c9-3cc6f7451d5d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      expectedValue:
+        simple: demisto.com
+      fields: {}
+      path:
+        simple: DBotScore.Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+  "44":
+    id: "44"
+    taskid: 3bacca89-9573-4fed-846b-b5fa504a909b
+    type: regular
+    task:
+      id: 3bacca89-9573-4fed-846b-b5fa504a909b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+  "45":
+    id: "45"
+    taskid: c5302261-97fd-40b2-815d-2871585b0c01
+    type: regular
+    task:
+      id: c5302261-97fd-40b2-815d-2871585b0c01
+      version: -1
+      name: Sleep
+      description: |
+        vt has a quota of requests per minute that we exceed in the test playbook.
+
+        Sleep for 60 seconds.
+
+        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+  "46":
+    id: "46"
+    taskid: 0c568a1b-9c16-4175-8f74-832d97723e77
+    type: regular
+    task:
+      id: 0c568a1b-9c16-4175-8f74-832d97723e77
+      version: -1
+      name: Sleep
+      description: |
+        vt has a quota of requests per minute that we exceed in the test playbook.
+
+        Sleep for 60 seconds.
+
+        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+  "47":
+    id: "47"
+    taskid: 4dd3c3a4-647d-4d96-89be-373ec104cd4b
+    type: regular
+    task:
+      id: 4dd3c3a4-647d-4d96-89be-373ec104cd4b
+      version: -1
+      name: url
+      description: Check URL Reputation
+      script: VirusTotal|||url
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      long:
+        simple: "true"
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: www.demisto.com
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+  "48":
+    id: "48"
+    taskid: 2c29894e-84c7-4cb3-8601-a0280ec0dcc8
+    type: regular
+    task:
+      id: 2c29894e-84c7-4cb3-8601-a0280ec0dcc8
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      expectedValue:
+        simple: www.demisto.com
+      fields: {}
+      path:
+        simple: DBotScore.Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+    note: false
+  "49":
+    id: "49"
+    taskid: 78de73d9-5738-4f1e-8f3a-279784213968
+    type: regular
+    task:
+      id: 78de73d9-5738-4f1e-8f3a-279784213968
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8245
+        }
+      }
+    note: false
+  "50":
+    id: "50"
+    taskid: b77cbcaa-a437-43d9-83d4-01983fee1100
+    type: regular
+    task:
+      id: b77cbcaa-a437-43d9-83d4-01983fee1100
+      version: -1
+      name: Sleep
+      description: |
+        vt has a quota of requests per minute that we exceed in the test playbook.
+
+        Sleep for 60 seconds.
+
+        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2690,
+        "height": 8290,
         "width": 380,
         "x": 50,
         "y": 50

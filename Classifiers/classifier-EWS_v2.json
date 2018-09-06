@@ -1,5 +1,4 @@
 {
-	"releaseNotes": "Remove default mapping of the html-body to prevent the rendering of malicious links",
 	"id": "c9332555-348b-4d91-85b4-e345cdba12c8",
 	"version": -1,
 	"modified": "2018-04-08T19:42:30.856069216Z",

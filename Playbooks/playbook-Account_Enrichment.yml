@@ -164,4 +164,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Improve input checks and handling"

@@ -1245,4 +1245,3 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: deprecate detonate-file, detonate-url commands, use the relevant detonate playbook instead

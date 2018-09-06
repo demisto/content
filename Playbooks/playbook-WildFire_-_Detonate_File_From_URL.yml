@@ -381,4 +381,3 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
-releaseNotes: WildFire File from URL detonataion playbook, using the generic pooling script.
