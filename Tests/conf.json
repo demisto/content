@@ -47,7 +47,8 @@
         {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
-            "nightly": true
+            "nightly": true,
+            "timeout": 1400
         },
         {
             "integrations": "Preempt",
@@ -455,11 +456,6 @@
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
-        },
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook",
-            "nightly": true
         }
     ],
     "skipped": [
