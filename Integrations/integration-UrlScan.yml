@@ -508,4 +508,3 @@ script:
       description: The actual score
     description: Submit an url to scan
 fromversion: 3.5.0
-releaseNotes: Fixed display of empty ASN

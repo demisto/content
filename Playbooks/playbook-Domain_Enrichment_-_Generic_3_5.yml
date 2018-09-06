@@ -2,7 +2,6 @@ id: domain_enrichment_generic
 version: -1
 fromversion: 3.5.0
 toversion: 3.5.1
-releaseNotes: "-"
 name: Domain Enrichment - Generic
 description: Enrich Domain using one or more integrations
 starttaskid: "0"

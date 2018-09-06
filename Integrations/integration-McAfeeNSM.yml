@@ -646,4 +646,3 @@ script:
       description: Attack Category
     description: Get all available attack definitions in NSM
   runonce: false
-releaseNotes: "Added support for proxy"
