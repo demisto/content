@@ -13,7 +13,7 @@ configuration:
   type: 4
   required: true
 - display: Service Key (for triggering events only)
-  name: IntegrationKey
+  name: ServiceKey
   defaultvalue: ""
   type: 0
   required: false
@@ -30,7 +30,7 @@ script:
     USE_SSL = True
 
     API_KEY = demisto.params()['APIKey']
-    INTEGRATION_KEY = demisto.params()['IntegrationKey']
+    SERVICE_KEY = demisto.params()['ServiceKey']
 
     SERVER_URL = "https://api.pagerduty.com/"
     CREATE_EVENT_URL = "https://events.pagerduty.com/v2/enqueue"
@@ -294,7 +294,7 @@ script:
     def create_new_incident(author, title, severity, action, description='No description'):
         """Create a new incident in the PagerDuty instance."""
         payload = {
-                        "routing_key": INTEGRATION_KEY,
+                        "routing_key": SERVICE_KEY,
                         "event_action": action,
                         "images": [],
                         "links": [],
@@ -408,7 +408,7 @@ script:
 
     def submit_event_command(**kwargs):
         """Create new event."""
-        if INTEGRATION_KEY is None:
+        if SERVICE_KEY is None:
             raise Exception("You must enter a ServiceKey at the integration parmaters to process this action.")
 
         res = create_new_incident(**kwargs)
