@@ -7,6 +7,10 @@
         },
         {
             "integrations": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
+            "integrations": "ThreatExchange",
             "playbookID": "extract_indicators_-_generic_-_test",
             "timeout": 240
         },
@@ -282,10 +286,6 @@
             "playbookID": "Jira-Test"
         },
         {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
-        },
-        {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
@@ -434,10 +434,6 @@
             "playbookID": "Tanium Demo Playbook",
             "nightly": true,
             "timeout": 1200
-        },
-        {
-            "integrations": "ThreatExchange",
-            "playbookID": "ThreatExchange-test"
         },
         {
             "integrations": "Recorded Future",
