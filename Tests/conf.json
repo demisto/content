@@ -6,6 +6,10 @@
             "playbookID": "TextFromHTML_test_playbook"
         },
         {
+            "integrations": "epo",
+            "playbookID": "Test Playbook Mcafee ePO"
+        },
+        {
             "integrations": "ThreatExchange",
             "playbookID": "ThreatExchange-test"
         },
