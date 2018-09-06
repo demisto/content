@@ -13,7 +13,7 @@ configuration:
   type: 4
   required: true
 - display: Service Key (for triggering events only)
-  name: ServiceKey
+  name: IntegrationKey
   defaultvalue: ""
   type: 0
   required: false
@@ -30,9 +30,10 @@ script:
     USE_SSL = True
 
     API_KEY = demisto.params()['APIKey']
-    SERVICE_KEY = demisto.params()['ServiceKey']
+    INTEGRATION_KEY = demisto.params()['IntegrationKey']
 
     SERVER_URL = "https://api.pagerduty.com/"
+    CREATE_EVENT_URL = "https://events.pagerduty.com/v2/enqueue"
 
     DEFAULT_HEADERS = {
                           'Authorization': 'Token token=' + API_KEY,
@@ -290,37 +291,35 @@ script:
             }
         }
 
-    def create_new_incident(author, title, description='No description'):
+    def create_new_incident(author, title, severity, action, description='No description'):
         """Create a new incident in the PagerDuty instance."""
-        url = SERVER_URL + CREATE_INCIDENT_SUFFIX
-        headers = DEFAULT_HEADERS.copy()
-        headers['From'] = author
-        headers['Content-Type'] = "application/json"
-
         payload = {
-                      "incident": {
-                            "type": "incident",
-                            "title": title,
-                            "service": {
-                                "id": SERVICE_KEY,
-                                "type": "service_reference"
-                            },
-                            "body": {
-                                "type": "incident_body",
-                                "details": description
-                            }
-                      }
+                        "routing_key": INTEGRATION_KEY,
+                        "event_action": action,
+                        "images": [],
+                        "links": [],
+                        "payload": {
+                            "summary": title,
+                            "source": author,
+                            "severity": severity
+                        }
                   }
 
-        res = requests.post(url, headers=headers, data=json.dumps(payload), verify=USE_SSL)
+        res = requests.post(CREATE_EVENT_URL,
+                            headers=DEFAULT_HEADERS,
+                            data=json.dumps(payload),
+                            verify=USE_SSL)
+
         res.raise_for_status()
         return res.json()
 
     def extract_new_event_data(response):
         """Extract the data from the response of creating a new command."""
         output = {}
-        output['Status'] = response.get('incident', {}).get('status')
-        output['Incident Key'] = response.get('incident', {}).get('incident_key')
+        output['Status'] = response.get('status', '')
+        output['Message'] = response.get('message', '')
+        output['De-duplication key'] = response.get('dedup_key', '')
+
 
         return {
             'Type': entryTypes['note'],
@@ -407,12 +406,12 @@ script:
         res = http_request('GET', GET_INCIDENTS_SUFFIX, param_dict)
         return extract_incidents_data(res.get("incidents",[]))
 
-    def submit_event_command(author, title, description=None):
+    def submit_event_command(**kwargs):
         """Create new event."""
-        if SERVICE_KEY is None:
+        if INTEGRATION_KEY is None:
             raise Exception("You must enter a ServiceKey at the integration parmaters to process this action.")
 
-        res = create_new_incident(author, title, description)
+        res = create_new_incident(**kwargs)
         return extract_new_event_data(res)
 
     def get_all_schedules_command(query=None, limit=None):
@@ -583,6 +582,23 @@ script:
     - name: title
       required: true
       description: The name of the incident you create
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - critical
+      - error
+      - warning
+      - info
+      description: The severity of the event
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - trigger
+      - acknowledge
+      - resolve
+      description: The action to be executed
     - name: description
       description: A short description of the problem
     outputs:
