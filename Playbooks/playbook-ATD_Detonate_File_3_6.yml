@@ -231,4 +231,3 @@ outputs:
 - contextPath: IP.Address
   description: IP's relevant to the sample
   type: string
-releaseNotes: "-"

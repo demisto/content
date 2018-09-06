@@ -655,4 +655,3 @@ outputs:
   description: The format of the email if available
 scripttarget: 0
 runonce: false
-releaseNotes: "Fixed header parsing."
