@@ -13,7 +13,7 @@
     "origin": "CommonServerPython",
     "cmdType": "builtinVar",
     "return_value": {},
-    "description": "A dictionary containing all supported entry formats - json, markdown, text, image, html, etc (e.g. formats['markdown'])",
+    "description": "A dictionary containing all supported values of entry ContentsFormat/ReadableContentsFormat - json, markdown, text, image, html, etc (e.g. formats['markdown'])",
     "name": "formats",
     "arguments": []
   },
@@ -49,7 +49,7 @@
     "origin": "CommonServerJs",
     "cmdType": "builtinVar",
     "return_value": {},
-    "description": "An object containing all supported values of entry contentsFormat/humanReadableFormat - json, markdown, text, image, html, etc (e.g. formats['markdown'])",
+    "description": "An object containing all supported values of entry ContentsFormat/ReadableContentsFormat - json, markdown, text, image, html, etc (e.g. formats['markdown'])",
     "name": "formats",
     "arguments": []
   },
