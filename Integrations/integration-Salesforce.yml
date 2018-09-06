@@ -1537,4 +1537,3 @@ script:
     description: Delete a case
   isfetch: true
   runonce: false
-releaseNotes: "added command for delete case"

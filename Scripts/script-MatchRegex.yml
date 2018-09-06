@@ -57,4 +57,3 @@ outputs:
   description: List of Regex matches
   type: string
 scripttarget: 0
-releaseNotes: "Added the option to return all matches."

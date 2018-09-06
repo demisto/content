@@ -721,4 +721,3 @@ script:
       IDs from the Falcon Host UI or from the Falcon Streaming API.
     execution: true
   runonce: false
-releaseNotes: "Fixed context and outputs"
