@@ -286,10 +286,6 @@
             "playbookID": "Jira-Test"
         },
         {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
-        },
-        {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
@@ -463,6 +459,10 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
+        },
+        {
+            "integrations": "ThreatConnect",
+            "playbookID": "test-ThreatConnect"
         },
         {
             "integrations": {
