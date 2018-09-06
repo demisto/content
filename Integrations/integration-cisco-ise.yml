@@ -55,14 +55,13 @@ script:
     USERNAME=demisto.params().get('credentials').get('identifier')
     PASSWORD=demisto.params().get('credentials').get('password')
 
-    USE_SSL = not demisto.params().get('insecure', False)
+    USE_SSL=not demisto.params().get('insecure', False)
 
     ISE=requests.session()
     ISE.auth = (USERNAME, PASSWORD)
     ISE.verify = USE_SSL
     ISE.disable_warnings = True
     ISE.timeout = 5
-    ISE.headers.update({'Accept':'application/json', 'Connection': 'keep_alive'})
 
     ''' HELPER FUNCTIONS '''
 
@@ -88,28 +87,24 @@ script:
         else:
             return False
 
-    def http_request(method, url_suffix, params_dict, data=None, headers=None):
+    def http_request(method, url_suffix, params_dict, data=None, headers={}):
 
         url = SERVER_URL + url_suffix
         LOG('running %s request with url=%s' % (method, url))
-
         try:
             if method == 'GET':
-                if headers is not None:
-                    ISE.headers.update(headers)
+                ISE.headers.update(headers)
                 result = ISE.get(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), verify=USE_SSL)
-
                 if result.status_code == 200:
-                    return result.text
+                    return result
                 elif result.status_code == 404:
                     pass
                 else:
-                    raise Exception("Got status code: " + str(result.status_code) + " For the request to the " + url_suffix + " endpoint.")
+                    raise Exception("Got status code: " + str(result.status_code) + " For the request to the " + url_suffix + " endpoint. " + str(result.text))
             elif method == 'PUT':
                 ISE.headers.update({'Accept':'application/json', 'Content-Type':'application/json'})
                 result = ISE.put(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), verify=USE_SSL, data=json.dumps(data))
                 return result
-
 
         except Exception, e:
             LOG(e)
@@ -124,6 +119,10 @@ script:
         """
         headers = None
         if mac_address is not None:
+            headers = {
+                'Accept':'application/json',
+                'Connection': 'keep_alive'
+            }
             api_endpoint = "/ers/config/endpoint?filter=mac.EQ.{}".format(mac_address)
         if group_name is not None:
             api_endpoint = "/ers/config/endpointgroup?filter=name.EQ.{}".format(group_name)
@@ -131,7 +130,7 @@ script:
                 "Content-Type": "application/vnd.com.cisco.ise.identity.endpoint.1.0+xml; charset=utf-8",
                 'Accept':'application/json'
             }
-        return json.loads(http_request('GET', api_endpoint, {}, '', headers))
+        return json.loads(http_request('GET', api_endpoint, {}, '', headers).text)
 
     def get_endpoint_id_command():
         """
@@ -164,9 +163,12 @@ script:
         """
         Gets endpoint details by specific id
         """
-
+        headers = {
+            'Accept':'application/json',
+            'Connection': 'keep_alive'
+        }
         api_endpoint = "/ers/config/endpoint/{}".format(endpoint_id)
-        return json.loads(http_request('GET', api_endpoint, {}, ''))
+        return json.loads(http_request('GET', api_endpoint, {}, {}, headers).text)
 
     def get_endpoint_details_command():
         """
@@ -209,21 +211,18 @@ script:
 
         api_endpoint = "/admin/API/mnt/CoA/Reauth/{}/{}/1".format(psn_address, mac_address)
 
-        response = http_request('GET', api_endpoint, {}, '')
+        response = http_request('GET', api_endpoint, {}, {}, {})
 
-        if 'true' in response.text:
-            return 'Reauthenticated endpoint ' + mac_address + ' succesfully'
-
-        return 'Could not reauthenticate endpoint ' + mac_address
+        return response
 
     def get_psn_for_mac(mac_address):
         """
         Retrieves psn for an endpoint
         """
 
-        api_endpoint = "/admin/API/mnt/AuthStatus/MACAddress/{}/432000/5/All".format(mac_address)
+        api_endpoint = "/admin/API/mnt/AuthStatus/MACAddress/{}/86400/0/0".format(mac_address)
 
-        response = http_request('GET', api_endpoint, {}, '')
+        response = http_request('GET', api_endpoint, {}, {}, {}).text
 
         return response
 
@@ -232,33 +231,36 @@ script:
         corresponds to 'cisco-ise-reauthenticate-endpoint' command. Reauthenticates an endpoint
         """
 
-        mac_address = demisto.args().get('macAddress')
+        mac_address = demisto.args().get('macAddress').upper()
 
         if not is_mac(mac_address):
             return "Please enter a valid mac address"
 
-        mac_address_psn = get_psn_for_mac(mac_address)
+        mac_address = (':').join([x.upper() for x in mac_address.split(':')])
 
+        mac_address_psn = get_psn_for_mac(mac_address)
         if not mac_address_psn:
             return "Couldn't find psn address for mac: " + mac_address
 
-        psn_address = mac_address_psn.get('restAuthStatusOutputList', {}).get('authStatusList',{}).get('authStatusElements', {}).get('acs_server')
+        psn_address = json.loads(xml2json(mac_address_psn)).get('restAuthStatusOutputList', {}).get('authStatusList',{}).get('authStatusElements', {})[0].get('acs_server')
         if not psn_address:
             return "Couldn't find psn address for mac: " + mac_address + " response from psn endpoint was: " + json.dumps(mac_address_psn)
 
-        activation_result = reauthenticate_endpoint(mac_address, psn_address)
+        activation_result = reauthenticate_endpoint(mac_address, psn_address).text
 
-        activation_result_boolean = 'succesfully' in activation_result
+        json_activation_result = json.loads(xml2json(activation_result)).get('remoteCoA').get('results')
+
+        activation_result_boolean = 'true' in json_activation_result
 
         return {
             'Type': entryTypes['note'],
             'Contents': activation_result,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': activation_result,
+            'HumanReadable': 'Activation result was : ' + activation_result_boolean,
             'EntryContext': {
                 "CiscoISE.Endpoint(val.macAddress==obj.macAddress)": {
-                    'macAddress': endpoint_id,
+                    'macAddress': json_activation_result,
                     'reauthenticateResult': activation_result_boolean
                 }
             }
@@ -269,8 +271,12 @@ script:
         Gets data about existing endpoints
         """
 
+        headers = {
+            'Accept':'application/json',
+            'Connection': 'keep_alive'
+        }
         api_endpoint = "/ers/config/endpoint"
-        return json.loads(http_request('GET', api_endpoint, {}, ''))
+        return json.loads(http_request('GET', api_endpoint, {}, {}, headers).text)
 
     def get_endpoints_command():
         """
@@ -292,7 +298,6 @@ script:
                 'name': endpoint.get('name'),
                 'description': endpoint.get('description')
             })
-
 
         return {
             'Type': entryTypes['note'],
@@ -448,7 +453,7 @@ script:
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
-        # raise Exception(str(e))
+        raise Exception(str(e))
   type: python
   commands:
   - name: cisco-ise-get-endpoint-id
