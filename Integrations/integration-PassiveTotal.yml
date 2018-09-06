@@ -9,7 +9,6 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAiCAYAAACUcR1DAAAU/Ul
 description: Analyze and understand threat infrastructure from a variety of sources–passive
   DNS, active DNS, WHOIS, SSL certificates and more–without devoting resources to
   time-intensive manual threat research and analysis
-releaseNotes: "-"
 configuration:
 - display: Server URL
   name: ServerURL
