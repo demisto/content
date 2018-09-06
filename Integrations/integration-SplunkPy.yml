@@ -499,4 +499,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: 'fix encoding issue for Splunk submit event'

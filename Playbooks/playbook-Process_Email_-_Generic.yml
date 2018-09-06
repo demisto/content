@@ -1,4 +1,4 @@
-id: Process Email - Generic
+id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 4.0.0
@@ -929,4 +929,3 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
-releaseNotes: "Added Email headers to the processing."
