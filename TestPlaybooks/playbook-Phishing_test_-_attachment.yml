@@ -135,12 +135,54 @@ tasks:
         }
       }
     note: false
-  "18":
-    id: "18"
-    taskid: 307ca51a-6f8a-42f4-810c-67046dcb81ea
+  "19":
+    id: "19"
+    taskid: 8aeed5dc-3c58-4b71-8e83-69c5b0dc92b1
+    type: regular
+    task:
+      id: 8aeed5dc-3c58-4b71-8e83-69c5b0dc92b1
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "20"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: attachment.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/attachment_malicious.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: c9adfbba-b2eb-47f1-8994-d880fd5b4713
     type: playbook
     task:
-      id: 307ca51a-6f8a-42f4-810c-67046dcb81ea
+      id: c9adfbba-b2eb-47f1-8994-d880fd5b4713
       version: -1
       name: Phishing Investigation - Generic
       playbookName: Phishing Investigation - Generic
@@ -156,48 +198,6 @@ tasks:
         "position": {
           "x": 480,
           "y": 720
-        }
-      }
-    note: false
-  "19":
-    id: "19"
-    taskid: 2875cac5-0703-4a96-8250-743f6d8bcf16
-    type: regular
-    task:
-      id: 2875cac5-0703-4a96-8250-743f6d8bcf16
-      version: -1
-      name: Download EML file
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-      - "18"
-    scriptarguments:
-      body: {}
-      filename:
-        simple: attachment.eml
-      headers: {}
-      insecure: {}
-      method:
-        simple: GET
-      password: {}
-      proxy: {}
-      saveAsFile:
-        simple: "yes"
-      unsecure: {}
-      url:
-        simple: https://github.com/demisto/content/blob/master/TestData/attachment_malicious.eml
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
         }
       }
     note: false
