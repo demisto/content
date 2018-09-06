@@ -1,16 +1,16 @@
 id: Detonate File - Generic
 version: -1
 name: Detonate File - Generic
-fromversion: "4.0.0"
+fromversion: 4.0.0
 description: Detonate file through active integrations that support file detonation
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
+    taskid: 454650df-c42f-4915-84cf-9a908e1bff04
     type: start
     task:
-      id: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
+      id: 454650df-c42f-4915-84cf-9a908e1bff04
       version: -1
       name: ""
       description: Playbook start point
@@ -22,22 +22,22 @@ tasks:
       - "10"
       - "9"
       - "11"
-      - "12"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 50
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: fcaa5290-1c7a-448a-84e6-87662adf9a2e
+    taskid: 2a8f5bbb-7692-4ece-8abe-9801c7b05c3c
     type: title
     task:
-      id: fcaa5290-1c7a-448a-84e6-87662adf9a2e
+      id: 2a8f5bbb-7692-4ece-8abe-9801c7b05c3c
       version: -1
       name: Done
       description: Done
@@ -48,17 +48,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 370
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: 48accd3a-0c84-484c-87ad-f8e83acd168b
+    taskid: f6627718-5952-4240-8fba-104c1350e79b
     type: playbook
     task:
-      id: 48accd3a-0c84-484c-87ad-f8e83acd168b
+      id: f6627718-5952-4240-8fba-104c1350e79b
       version: -1
       name: Detonate File - JoeSecurity
       description: |-
@@ -93,24 +93,42 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 195
         }
       }
     note: false
   "9":
     id: "9"
-    taskid: 9b2b52ec-bd2d-4249-803b-b68009f24234
+    taskid: c04567fa-641d-4b51-8c94-561516554b3d
     type: playbook
     task:
-      id: 9b2b52ec-bd2d-4249-803b-b68009f24234
+      id: c04567fa-641d-4b51-8c94-561516554b3d
       version: -1
       name: ATD - Detonate File
       playbookName: ATD - Detonate File
+      description: |-
+        Detonates a File using the McAfee Advanced Threat Defense sandbox.
+        Advanced Threat Defense supports the following File Types:
+        32-bit Portable Executables (PE)files; 64-bit PE+files
+        exe, sys, dll, com, scr, cpl, ocx, cgi
+        Microsoft Office Suite documents
+        doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
+        Just Systems Ichitaro documents
+        jtd, jtdc
+        Adobe
+        pdf, swf
+        Compressed files
+        gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
+        Android application package
+        apk, Java, JAR, CLASS, Java Script, Java bin files
+        Image files
+        jpeg, png, gif
+        Other file types
+        cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -135,24 +153,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 480,
           "y": 195
         }
       }
     note: false
   "10":
     id: "10"
-    taskid: ae898390-2466-46de-8ea7-8d78e2fd0f04
+    taskid: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
     type: playbook
     task:
-      id: ae898390-2466-46de-8ea7-8d78e2fd0f04
+      id: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
       version: -1
       name: Detonate File - ThreatGrid
       playbookName: Detonate File - ThreatGrid
+      description: Detonate one or more URLs using the Threat Grid integration. This playbook
+        returns relevant reports to the War Room and URL reputations to the context data.
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -187,10 +206,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 46bc4d02-5636-4098-8772-3b7ac7c798cb
+    taskid: f1c56438-d1b6-4848-8608-c6292f3905b9
     type: playbook
     task:
-      id: 46bc4d02-5636-4098-8772-3b7ac7c798cb
+      id: f1c56438-d1b6-4848-8608-c6292f3905b9
       version: -1
       name: CrowdStrike Falcon Sandbox - Detonate file
       description: Detonate one or more files using the CrowdStrike integration. This
@@ -224,20 +243,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1340,
           "y": 195
         }
       }
     note: false
-  "12":
-    id: "12"
-    taskid: f5308484-aab1-47dc-82a7-f883a4ab8a34
+  "13":
+    id: "13"
+    taskid: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
     type: playbook
     task:
-      id: f5308484-aab1-47dc-82a7-f883a4ab8a34
+      id: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
       version: -1
       name: WildFire - Detonate file
-      description: "-"
+      description: |-
+        Detonate one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
       playbookName: WildFire - Detonate file
       type: playbook
       iscommand: false
@@ -249,6 +271,10 @@ tasks:
       File:
         complex:
           root: inputs.File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
     separatecontext: true
     loop:
       iscommand: false
@@ -257,7 +283,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1750,
+          "x": 1770,
           "y": 195
         }
       }
@@ -268,7 +294,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 2080,
+        "width": 2100,
         "x": 50,
         "y": 50
       }
@@ -289,11 +315,11 @@ inputs:
   required: false
   description: File object of file to be detonated
 outputs:
-- contextPath: File
-  description: The File's object
-  type: unknown
-- contextPath: File.MD5
-  description: MD5 of the file
+- contextPath: Joe.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: Joe.Analysis.WebID
+  description: Web ID
   type: string
 - contextPath: File.Name
   description: Filename (only in case of report type=json)
@@ -350,14 +376,14 @@ outputs:
   description: The sample state
 - contextPath: Sample.ID
   description: The sample ID
-- contextPath: Joe.Analysis.WebID
-  description: Web ID
+- contextPath: File
+  description: The File's object
+  type: unknown
+- contextPath: File.MD5
+  description: MD5 of the file
   type: string
 - contextPath: Joe.Analysis.SampleName
   description: Sample Data, could be a file name or URL
-  type: string
-- contextPath: Joe.Analysis.Status
-  description: Analysis Status
   type: string
 - contextPath: Joe.Analysis.Comments
   description: Analysis Comments
@@ -407,4 +433,24 @@ outputs:
 - contextPath: InfoFile
   description: The report file's object
   type: unknown
-releaseNotes: "-"
+- contextPath: WildFire.Report
+  description: The submission object
+  type: unknown
+- contextPath: WildFire.Report.Status
+  description: The status of the submission
+  type: string
+- contextPath: WildFire.Report.SHA256
+  description: SHA256 of the submission
+  type: string
+- contextPath: WildFire.Report.MD5
+  description: MD5 of the submission
+  type: string
+- contextPath: WildFire.Report.FileType
+  description: The type of the submission
+  type: string
+- contextPath: WildFire.Report.Size
+  description: The size of the submission
+  type: number
+- contextPath: Joe.Analysis
+  description: Thee Analysis object
+  type: unknown

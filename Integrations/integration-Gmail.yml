@@ -1551,4 +1551,3 @@ script:
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
-releaseNotes: "-"

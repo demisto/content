@@ -477,7 +477,7 @@ script: |
       candidates_features_list.append(feature_dict)
   if len(candidates_features_list) == 0:
       demisto.results('Did not find any duplicate incidents candidates')
-      exit(0)
+      sys.exit(0)
 
   candidates_features = pd.DataFrame.from_dict(candidates_features_list)
   candidates_features = candidates_features.dropna(axis=0, thresh=(len(use_features) * (1 - CANDIDATES_FEATURES_NA_RATIO)))
@@ -610,4 +610,3 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
-releaseNotes: "-"

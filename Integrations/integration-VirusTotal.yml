@@ -195,7 +195,6 @@ script:
         ec[outputPaths.file] = [];
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal Hash Reputation for: ' + r[i].resource + '\n';
-            md += 'Scan ID: **' + r[i].scan_id + '**\n';
             md += 'Scan date: **' + r[i].scan_date + '**\n';
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
             md += 'VT Link: [' + r[i].resource + '](' + r[i].permalink + ')\n';
@@ -222,7 +221,8 @@ script:
                 md += tableToMarkdown('Scans', scansTable)
                 if (ec[outputPaths.file]){
                     scans_ec = {
-                        "Scans": scansTable
+                        Scans: scansTable,
+                        ScanID: r[i].scan_id
                     }
                     ec[outputPaths.file][0].VirusTotal = scans_ec;
                 } else {
@@ -230,11 +230,17 @@ script:
                         MD5: r[i].md5,
                         SHA1: r[i].sha1,
                         SHA256: r[i].sha256,
-                        "VirusTotal": {
-                            "Scans": scansTable,
+                        VirusTotal: {
+                            Scans: scansTable,
+                            ScanID: r[i].scan_id
                         }
                     }
                     ec[outputPaths.file] = scans_ec;
+                }
+            } else {
+                ec[outputPaths.file][0]['VirusTotal'] = {
+                    ScanID: r[i].scan_id,
+                    MD5: r[i].md5
                 }
             }
             md += '\n';
@@ -369,6 +375,12 @@ script:
     };
 
     var doURL = function(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
+        //lowercase the URL protocol
+        var protocol = url.substr(0, 5).toLowerCase();
+        if (protocol === 'https' || protocol === 'http:') {
+            url = protocol + url.substr(5);
+        }
+
         if (!submitWait) {
             submitWait = 0;
         }
@@ -397,10 +409,14 @@ script:
         }
         if (!o.scans) {
             md += 'URL submitted for scan. Please retry command later\n';
-            md += 'Scan ID: **' + o.scan_id + '**\n\n';
+            ec[outputPaths.url] = {
+                VirusTotal: {
+                    ScanID: o.scan_id,
+                    Data: url
+                }
+            };
         } else {
             md += 'Last scan date: *' + o.scan_date + '*\n';
-            md += 'Scan ID: **' + o.scan_id + '**\n\n';
             md += 'Total scans: **' + o.total + '**\n';
             md += 'Positive scans: **' + o.positives + '**\n';
             md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
@@ -425,20 +441,36 @@ script:
                 md += tableToMarkdown('Scans', scansTable)
                 if (ec[outputPaths.url]){
                     scans_ec = {
-                        "Scans": scansTable
+                        Scans: scansTable,
+                        ScanID: o.scan_id
                     }
                     ec[outputPaths.url][0].VirusTotal = scans_ec;
                 } else {
                     scans_ec = {
                         Data: url,
                         "VirusTotal": {
-                            "Scans": scansTable,
+                            Scans: scansTable,
+                            ScanID: o.scan_id
                         }
                     }
                     ec[outputPaths.url] = scans_ec;
                 }
+            } else {
+                if (ec[outputPaths.url]){
+                    ec[outputPaths.url]['VirusTotal'] = {
+                        ScanID: o.scan_id,
+                    };
+                } else {
+                    ec[outputPaths.url] = {
+                        Data: url,
+                        VirusTotal: {
+                            ScanID: o.scan_id,
+                        }
+                    };
+                }
             }
         }
+
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
@@ -677,7 +709,6 @@ script:
         ec.vtScanID = obj.scan_id;
         var md = '## VirusTotal scan file for [' + entry + '](' + obj.permalink + ')\n';
         md += 'Resource: **' + obj.resource + '**\n';
-        md += 'Scan ID: **' + obj.scan_id + '**\n';
         md += 'MD5 / SHA1 / SHA256: **' + obj.md5 + ' / ' + obj.sha1 + ' / ' + obj.sha256 + '**\n';
         return {Type: entryTypes.note, Contents: result.Body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
@@ -801,6 +832,9 @@ script:
       description: Scan detection for this hash (True,False)
     - contextPath: File.VirusTotal.Scans.Result
       description: Scan result for this hash - signature, etc.
+    - contextPath: File.VirusTotal.ScanID
+      description: Scan ID for this hash
+      type: string
     description: Check file reputation of the given hash
   - name: ip
     arguments:
@@ -930,6 +964,8 @@ script:
       description: Scan detection for this URL (True/False)
     - contextPath: URL.VirusTotal.Scans.Result
       description: Scan result for this URL - signature, etc.
+    - contextPath: URL.VirusTotal.ScanID
+      description: Scan ID for this URL
     description: Check URL Reputation
   - name: domain
     arguments:
@@ -1069,4 +1105,3 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
-releaseNotes: "-"
