@@ -940,4 +940,3 @@ script:
       type: string
     description: Returns a list of all categories
   runonce: false
-releaseNotes: "-"

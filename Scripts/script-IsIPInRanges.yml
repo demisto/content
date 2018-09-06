@@ -61,4 +61,3 @@ outputs:
 - contextPath: IP.InRange
   description: Is the IP is in the input ranges? (could be 'yes' or 'no)
 scripttarget: 0
-releaseNotes: "Better handling of spaces and new lines in provided IP ranges string"
