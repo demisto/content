@@ -1361,4 +1361,3 @@ script:
       description: An Active Directory (AD) domain
     description: Get all the alerts related to a specific incident.
   isfetch: true
-releaseNotes: "Checkbox added to enable selection of alerts importation when fetching incidents"

@@ -147,13 +147,13 @@ def createPyDocumentation(path, origin, language):
     return reformatPythonOutput(x, origin, language)
 
 def main(argv):
-    jsDoc, isErrorJS = createJsDocumentation('./Docs/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
+    jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
     pyDoc, isErrorPy = createPyDocumentation('./Scripts/script-CommonServerPython.yml', 'CommonServerPython', 'python')
 
     if isErrorJS or isErrorPy:
         print "Errors found in common server docs."
-        exit(1)
-    with open('./Docs/doc-CommonServer.json', 'w') as fp:
+        sys.exit(1)
+    with open('./Documentation/doc-CommonServer.json', 'w') as fp:
         jsDoc += pyDoc
         json.dump(jsDoc, fp)
 

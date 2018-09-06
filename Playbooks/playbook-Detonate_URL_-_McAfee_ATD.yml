@@ -484,4 +484,3 @@ outputs:
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
-releaseNotes: "-"
