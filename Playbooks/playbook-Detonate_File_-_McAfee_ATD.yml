@@ -552,4 +552,3 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
-releaseNotes: "-"

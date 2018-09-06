@@ -1161,4 +1161,3 @@ script:
     description: Updates malop status
   isfetch: true
   runonce: false
-releaseNotes: "Added commands: cybereason-add-comment, cybereason-query-malops, cybereason-update-malop-status, cybereason-malop-processes. Added malops fetch. Added client-certificate authentication"
