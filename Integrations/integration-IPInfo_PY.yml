@@ -1,0 +1,237 @@
+commonfields:
+  id: IPInfo PY
+  version: -1
+name: IPInfo PY
+display: IPInfo PY
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Use the ipinfo.io API to get data about an IP address
+configuration:
+- display: API Token (optional)
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |+
+    import requests
+    import os
+    import json
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    # ''' GLOBAL VARS '''
+    BASE_URL = 'http://ipinfo.io/'
+    USE_SSL = not demisto.params().get('insecure', False)
+    APIKEY = demisto.params()['apikey']
+    IP = demisto.args().get('ip')
+    FIELD = demisto.args().get('field')
+
+    headers = {
+        'Content-Type': "application/json",
+        'Accept': "application/json"
+        }
+
+    ## Helper Functions
+
+    ## Sends Request to IP Info
+    def send_request():
+        if APIKEY is None:
+            r = requests.request("GET",BASE_URL+IP+'/json',headers=headers)
+        else:
+            r = requests.request("GET",BASE_URL+IP+'/json?token='+APIKEY,headers=headers)
+        data = r.json()
+        return data
+
+    # Checks to see if Request returned an error message
+    def error_check(data):
+        if 'error' in data:
+            errormsg = data['error']['message']
+            md = '## There has been an error: '+errormsg+''
+            # Alerts user if there was an error
+            demisto.results({
+                'Type': entryTypes['note'],  # note, warning, error
+                'ContentsFormat': formats['markdown'],  # json, markdown, file, text
+                'Contents': md,
+                'HumanReadable':md
+            })
+            return True
+        else:
+            return False
+
+
+    #  FUNCTIONS
+
+    def ipinfo_command():
+        data = send_request()
+        errors = error_check(data)
+
+        # Check for errors
+        if errors is False:
+            loc_unformatted = data.get('loc', '1,2')
+
+            # Let's build a JSON for a MAP!
+            _lat,_long = loc_unformatted.split(',')
+            map_dict = {'lat': _lat,'lng': _long}
+            map_json = json.dumps(map_dict)
+
+            default_value = 'Not found'
+
+            # Mapping Returned Values from Response
+            table = [{'Hostname': data.get('hostname', default_value),
+                'City': data.get('city', default_value),
+                'Region': data.get('region', default_value),
+                'Country': data.get('country', default_value),
+                'Postal': data.get('postal', default_value),
+                'Phone': data.get('phone', default_value),
+                'Organization': data.get('org', default_value),
+                'Latitude': _lat,
+                'Longitude': _long
+            }]
+            # Building Context JSON
+            ec = {
+                'IP':
+                    { 'Address': IP,
+                      'Hostname': data.get('hostname', default_value),
+                      'ASN': data.get('org', default_value),
+                      'Geo': {
+                          'Location': data.get('loc', default_value),
+                          'Country': data.get('country', default_value),
+                          'Description': '"'+data.get('city', default_value) + ', ' + data.get('region', default_value) + ', ' + data.get('postal', default_value) + ', ' + data.get('country', default_value)+'"'}},
+
+                'DBotScore':
+                    {'Indicator': IP,
+                    'Type': 'ip',
+                    'Vendor': 'ipinfo',
+                    'Score': 0}
+            }
+
+            # Headers for the MD Table
+            h = [ 'Hostname', 'City', 'Region','Country', 'Postal', 'Phone', 'Organization', 'Latitude', 'Longitude']
+
+            # Maps being sent
+            demisto.results({
+                'Type': entryTypes['map'],
+                'ContentsFormat': formats['json'],
+                'Contents': map_json
+            })
+
+            ## Post result in Demisto
+            demisto.results({
+                'Type': entryTypes['note'],  # note, warning, error
+                'ContentsFormat': formats['markdown'],  # json, markdown, file, text
+                'Contents': data,
+                'HumanReadable':tableToMarkdown('IPInfo', table, h, removeNull=True),
+                'EntryContext': ec
+            })
+
+    def ipinfo_fields_command():
+        # Make the request (Expected result returns no JSON)
+        r = requests.request("GET",BASE_URL+IP+'/'+FIELD)
+
+        # Check for errors
+        if r.status_code < 200 or r.status_code >= 300:
+            raise Exception("Failed to contact IPInfo")
+
+        # Pull the response body
+        r_body = r.content
+
+        # Markdown for war room response
+        md = '### The '+FIELD+' for IP - '+IP+' is: '+r_body
+
+        # Send to war room
+        demisto.results({
+                'Type': entryTypes['note'],  # note, warning, error
+                'ContentsFormat': formats['markdown'],  # json, markdown, file, text
+                'Contents': md,
+                'HumanReadable':md
+            })
+
+
+    def test():
+
+        # "Google is never down" - Everybody
+        r = requests.request("GET",BASE_URL+'8.8.8.8/json',headers=headers)
+
+        if r.status_code == 200:
+            # World continues to spin
+            demisto.results('ok')
+        else:
+            # Google is down, invest in Bing
+            raise Exception("Failed to contact IPInfo")
+
+    """
+    CODE EXECUTION STARTS HERE
+    """
+    try:
+        if demisto.command() == 'test-module':
+            test()
+            demisto.results('ok')
+
+        elif demisto.command() == 'ipinfo':
+            ipinfo_command()
+
+        elif demisto.command() == 'ipinfo_fields':
+            ipinfo_fields_command()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+
+
+  type: python
+  commands:
+  - name: ipinfo
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to query. E.g. !ip 1.1.1.1
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address
+    - contextPath: IP.Hostname
+      description: The IP hostname
+    - contextPath: IP.ASN
+      description: The IP ASN
+    - contextPath: IP.Geo.Location
+      description: The IP geographic location in coordinates
+    - contextPath: IP.Geo.Country
+      description: The IP country
+    - contextPath: IP.Geo.Description
+      description: The IP location as <City, Region, Postal Code, Country>
+    description: Gets information regarding given IP
+    execution: true
+  - name: ipinfo_fields
+    arguments:
+    - name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - geo
+      - loc
+      - city
+      - region
+      - country
+      - org
+      - hostname
+      - phone
+      description: Name of the field to retrieve. Can be org, city, geo, etc.
+    - name: ip
+      required: true
+      description: IP address to query. E.g. !ip 1.1.1.1
+    description: Retrieve value for a specific field from the IP address information
+  runonce: false
