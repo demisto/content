@@ -19,7 +19,7 @@ configuration:
   required: false
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Fetch incidents
@@ -52,7 +52,7 @@ script:
     SERVER_URL=demisto.params().get('serverURL') + '/api/v3'
     API_KEY=demisto.params()['APIKey']
 
-    USE_SSL = not demisto.params().get('insecure', False)
+    USE_SSL = not demisto.params().get('insecure')
 
     DEFAULT_HEADERS = {
         'Content-Type': 'application/json',
@@ -364,7 +364,7 @@ script:
         args = demisto.args()
         list_params = {}
         # adding the possible params for update
-        possible_params = ['alert', 'id', 'search', 'limit', 'source']
+        possible_params = ['alert', 'id', 'search', 'limit']
         for param in possible_params:
             current_param = args.get(param, False)
             if current_param:
@@ -393,40 +393,174 @@ script:
 
     def list_sessions_command():
         """
-        corresponds to 'sw-list-sessions' command. Returns a list of Stealthwatch observations
+        corresponds to 'sw-list-sessions' command. Returns a list of Stealthwatch
+        sessions
         """
         date_format = "%Y-%m-%dT%H:%M:%SZ"
         list_params = {}
 
+        ip = demisto.args().get('ip')
+        connected_ip = demisto.args().get('connectedIP')
+        connected_device_id = demisto.args().get('connectedDeviceId')
         limit = demisto.args().get('limit')
         start_time = demisto.args().get('startTime', None)
         end_time = demisto.args().get('endTime', None)
+
 
         if start_time and end_time:
             list_params['start_datetime'] = start_time
             list_params['end_datetime'] = end_time
         elif end_time is None:
             start_time_object = datetime.strptime(start_time, date_format)
-            end_time_object = start_time_object + timedelta(hours=1)
+            start_time_object = start_time_object - timedelta(minutes=5)
+            end_time_object = start_time_object + timedelta(minutes=5)
             start_time = start_time_object.strftime(date_format)
             end_time = end_time_object.strftime(date_format)
 
+        list_params['ip'] = ip
+        list_params['connected_ip'] = connected_ip
         list_params['limit'] = limit
         list_params['start_datetime'] = start_time
         list_params['end_datetime'] = end_time
+        list_params['connected_device_id'] = connected_device_id
 
+        unique_session_ids = []
+        final_sessions_data = []
         sessions_data = list_sessions(list_params).get('objects')
+        for sess in sessions_data:
+            if sess['connected_ip'] not in unique_session_ids:
+                unique_session_ids.append(sess['connected_ip'])
+                sess['connected_device_is_external'] = False if demisto.get(sess, 'connected_device_id') else True
+                final_sessions_data.append(sess)
 
         return {
             'Type': entryTypes['note'],
-            'Contents': sessions_data,
+            'Contents': final_sessions_data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Found the following session data', sessions_data),
+            'HumanReadable': tableToMarkdown('Found the following session data', final_sessions_data),
             'EntryContext': {
-                "Stealthwatch.Session(val==obj)": sessions_data
+                "Stealthwatch.Session(val==obj)": final_sessions_data
             }
         }
+
+    def list_external_sessions_command():
+        """
+        corresponds to 'sw-list-external-sessions' command. Returns a list of
+        Stealthwatch sessions
+        """
+        date_format = "%Y-%m-%dT%H:%M:%SZ"
+        list_params = {}
+
+        ip = demisto.args().get('ip')
+        connected_ip = demisto.args().get('connectedIP')
+        connected_device_id = demisto.args().get('connectedDeviceId')
+        limit = demisto.args().get('limit')
+        start_time = demisto.args().get('startTime', None)
+        end_time = demisto.args().get('endTime', None)
+
+
+        if start_time and end_time:
+            list_params['start_datetime'] = start_time
+            list_params['end_datetime'] = end_time
+        elif end_time is None:
+            start_time_object = datetime.strptime(start_time, date_format)
+            start_time_object = start_time_object - timedelta(minutes=5)
+            end_time_object = start_time_object + timedelta(minutes=5)
+            start_time = start_time_object.strftime(date_format)
+            end_time = end_time_object.strftime(date_format)
+
+        list_params['ip'] = ip
+        list_params['connected_ip'] = connected_ip
+        list_params['start_datetime'] = start_time
+        list_params['limit'] = limit
+        list_params['end_datetime'] = end_time
+        list_params['connected_device_id'] = connected_device_id
+
+        sessions_data = list_sessions(list_params).get('objects')
+        external_sessions_data = []
+        unique_session_ids = []
+
+        for sess in sessions_data:
+            if sess['connected_ip'] not in unique_session_ids:
+                unique_session_ids.append(sess['connected_ip'])
+                if demisto.get(sess, 'connected_device_id'):
+                    sess['connected_device_is_external'] = False
+                else:
+                    sess['connected_device_is_external'] = True
+                    external_sessions_data.append(sess)
+
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': external_sessions_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Found the following session data',
+            external_sessions_data),
+            'EntryContext': {
+                "Stealthwatch.ExtSession(val==obj)": external_sessions_data
+            }
+        }
+
+    def list_internal_sessions_command():
+        """
+        corresponds to 'sw-list-internal-sessions' command. Returns a list of
+        internal Stealthwatch sessions
+        """
+        date_format = "%Y-%m-%dT%H:%M:%SZ"
+        list_params = {}
+
+        ip = demisto.args().get('ip')
+        connected_ip = demisto.args().get('connectedIP')
+        connected_device_id = demisto.args().get('connectedDeviceId')
+        limit = demisto.args().get('limit')
+        start_time = demisto.args().get('startTime', None)
+        end_time = demisto.args().get('endTime', None)
+
+
+        if start_time and end_time:
+            list_params['start_datetime'] = start_time
+            list_params['end_datetime'] = end_time
+        elif end_time is None:
+            start_time_object = datetime.strptime(start_time, date_format)
+            start_time_object = start_time_object - timedelta(minutes=5)
+            end_time_object = start_time_object + timedelta(minutes=5)
+            start_time = start_time_object.strftime(date_format)
+            end_time = end_time_object.strftime(date_format)
+
+        list_params['ip'] = ip
+        list_params['connected_ip'] = connected_ip
+        list_params['limit'] = limit
+        list_params['start_datetime'] = start_time
+        list_params['end_datetime'] = end_time
+        list_params['connected_device_id'] = connected_device_id
+
+        sessions_data = list_sessions(list_params).get('objects')
+        internal_sessions_data = []
+        unique_session_ids = []
+        for sess in sessions_data:
+            if sess['connected_ip'] not in unique_session_ids:
+                unique_session_ids.append(sess['connected_ip'])
+                if demisto.get(sess, 'connected_device_id'):
+                    sess['connected_device_is_external'] = False
+                    internal_sessions_data.append(sess)
+                else:
+                    sess['connected_device_is_external'] = True
+
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': internal_sessions_data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Found the following session data',
+            internal_sessions_data),
+            'EntryContext': {
+                "Stealthwatch.IntSession(val==obj)": internal_sessions_data
+            }
+        }
+
 
     def fetch_incidents():
 
@@ -484,6 +618,10 @@ script:
             demisto.results(list_observations_command())
         elif demisto.command() == 'sw-list-sessions':
             demisto.results(list_sessions_command())
+        elif demisto.command() == 'sw-list-external-sessions':
+            demisto.results(list_external_sessions_command())
+        elif demisto.command() == 'sw-list-internal-sessions':
+            demisto.results(list_internal_sessions_command())
         elif demisto.command() == 'fetch-incidents':
             demisto.results(fetch_incidents())
     except Exception, e:
@@ -694,8 +832,6 @@ script:
     - name: limit
       description: Amount of observations to list. Default is 5
       defaultValue: "5"
-    - name: source
-      description: Get observations by specific source
     outputs:
     - contextPath: Stealthwatch.Observation.id
       description: Observation ID
@@ -722,13 +858,18 @@ script:
   - name: sw-list-sessions
     arguments:
     - name: startTime
-      required: true
       description: Session's start time (UTC). For example, startTime="2018-07-31T12:00:00Z"
     - name: endTime
       description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
     - name: limit
-      description: Amount of observations to list. Default is 5
-      defaultValue: "5"
+      description: Amount of observations to list. Default is 400
+      defaultValue: "400"
+    - name: ip
+      description: Source IP address to filter by
+    - name: connectedIP
+      description: Connected IP to filter by
+    - name: connectedDeviceId
+      description: Connected device ID
     outputs:
     - contextPath: Stealthwatch.Session.id
       description: Session ID
@@ -746,9 +887,97 @@ script:
       description: Session connected IP
       type: string
     - contextPath: Stealthwatch.Session.device_id
-      description: Session device ID
+      description: Source device ID
       type: number
+    - contextPath: Stealthwatch.Session.connected_device_id
+      description: Connected device ID
+      type: number
+    - contextPath: Stealthwatch.Session.connected_device_is_external
+      description: Is the connected device external
+      type: boolean
     description: 'Get Sessions by the session''s occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)'
+  - name: sw-list-external-sessions
+    arguments:
+    - name: startTime
+      description: Session's start time (UTC). For example, startTime="2018-07-31T12:00:00Z"
+    - name: endTime
+      description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
+    - name: limit
+      description: Amount of observations to list. Default is 400
+      defaultValue: "400"
+    - name: ip
+      description: Source IP address to filter by
+    - name: connectedIP
+      description: Connected IP to filter by
+    - name: connectedDeviceId
+      description: connectedDeviceId to filter by
+    outputs:
+    - contextPath: Stealthwatch.ExtSession.id
+      description: Session ID
+      type: number
+    - contextPath: Stealthwatch.ExtSession.port
+      description: Session port
+      type: number
+    - contextPath: Stealthwatch.ExtSession.start_timestamp_utc
+      description: Session start time
+      type: string
+    - contextPath: Stealthwatch.ExtSession.ip
+      description: Session IP
+      type: string
+    - contextPath: Stealthwatch.ExtSession.connected_ip
+      description: Session connected IP
+      type: string
+    - contextPath: Stealthwatch.ExtSession.device_id
+      description: Source Device ID
+      type: number
+    - contextPath: Stealthwatch.ExtSession.connected_device_id
+      description: Connected device ID
+      type: number
+    - contextPath: Stealthwatch.ExtSession.connected_device_is_external
+      description: Is the connected device external
+      type: boolean
+    description: Get Sessions with external connected_ips
+  - name: sw-list-internal-sessions
+    arguments:
+    - name: startTime
+      description: Session's start time (UTC). For example, startTime="2018-07-31T12:00:00Z"
+    - name: endTime
+      description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
+    - name: limit
+      description: Amount of sessions to list. Default is 400
+      defaultValue: "400"
+    - name: ip
+      description: Source IP address to filter by
+    - name: connectedIP
+      description: Connected IP to filter by
+    - name: connectedDeviceId
+      description: connectedDeviceId to filter by
+    outputs:
+    - contextPath: Stealthwatch.IntSession.id
+      description: Session ID
+      type: number
+    - contextPath: Stealthwatch.IntSession.port
+      description: Session port
+      type: number
+    - contextPath: Stealthwatch.IntSession.start_timestamp_utc
+      description: Session start time
+      type: string
+    - contextPath: Stealthwatch.IntSession.ip
+      description: Session IP
+      type: string
+    - contextPath: Stealthwatch.IntSession.connected_ip
+      description: Session connected IP
+      type: string
+    - contextPath: Stealthwatch.IntSession.device_id
+      description: Source Device ID
+      type: number
+    - contextPath: Stealthwatch.IntSession.connected_device_id
+      description: Connected device ID
+      type: number
+    - contextPath: Stealthwatch.IntSession.connected_device_is_external
+      description: Is the connected device external
+      type: boolean
+    description: Get Sessions with internal connected_ips
   isfetch: true
   runonce: false
-releaseNotes: "Stealthwatch integration"
+releaseNotes: "-"
