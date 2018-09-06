@@ -456,7 +456,7 @@
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true,
-            "timeout": 1200
+            "timeout": 2200
         }
     ],
     "skipped": [
