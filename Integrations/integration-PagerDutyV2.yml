@@ -9,12 +9,12 @@ description: Alert and notify users using PagerDuty
 configuration:
 - display: API Key
   name: APIKey
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Service Key (for triggering events only)
   name: ServiceKey
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
 script:
@@ -47,7 +47,7 @@ script:
 
     '''SUFFIX ENDPOINTS'''
     GET_SCHEDULES_SUFFIX = 'schedules'
-    CREATE_INCIDENT_SUFFIX = 'PagerDuty Incidents'
+    CREATE_INCIDENT_SUFFIX = 'incidents'
     ON_CALL_BY_SCHEDULE_SUFFIX = 'schedules/{0}/users'
     ON_CALLS_USERS_SUFFIX = 'oncalls?include%5B%5D=users'
     USERS_NOTIFICATION_RULE = 'users/{0}/notification_rules'
@@ -69,10 +69,10 @@ script:
     }
 
     '''TABLE NAMES'''
-    INCIDETS = 'Incidents'
     SCHEDULES = 'All Schedules'
     TRIGGER_EVENT = 'Trigger Event'
     USERS_ON_CALL = 'Users On Call'
+    INCIDETS = 'PagerDuty Incidents'
     CONTACT_METHODS = 'Contact Methods'
     USERS_ON_CALL_NOW = 'Users On Call Now'
     NOTIFICATION_RULES = 'User notification rules'
@@ -87,9 +87,7 @@ script:
                          'Number Of Escalations', 'Resolved By User', 'Assigned To', 'Summary']
 
     ''' HELPER FUNCTIONS '''
-    def http_request(method, url_suffix, params_dict):
-        url = SERVER_URL + url_suffix
-
+    def http_request(method, url, params_dict=None, data=None):
         LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, DEFAULT_HEADERS, json.dumps(params_dict)))
 
         try:
@@ -98,6 +96,7 @@ script:
                                    verify=USE_SSL,
                                    params=params_dict,
                                    headers=DEFAULT_HEADERS,
+                                   data=data
                                   )
             res.raise_for_status()
 
@@ -226,7 +225,7 @@ script:
             output['Last Status Change By'] = incident.get('last_status_change_by', {}).get('summary')
 
             output['Number Of Escalations'] = incident.get('number_of_escalations')
-            if output['Status'] == "resolved":
+            if output['Status'] == 'resolved':
                 output['Resolved By User'] = output.get('Last Status Change By')
             else:
                 output['Resolved By User'] = '-'
@@ -305,13 +304,7 @@ script:
                         }
                   }
 
-        res = requests.post(CREATE_EVENT_URL,
-                            headers=DEFAULT_HEADERS,
-                            data=json.dumps(payload),
-                            verify=USE_SSL)
-
-        res.raise_for_status()
-        return res.json()
+        return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
 
     def extract_new_event_data(response):
         """Extract the data from the response of creating a new command."""
@@ -408,7 +401,8 @@ script:
         if sortBy is not None:
             param_dict['sortBy'] = sortBy
 
-        res = http_request('GET', GET_INCIDENTS_SUFFIX, param_dict)
+        url = SERVER_URL + GET_INCIDENTS_SUFFIX
+        res = http_request('GET', url, param_dict)
         return extract_incidents_data(res.get('incidents',[]))
 
     def submit_event_command(**kwargs):
@@ -427,7 +421,8 @@ script:
         if limit is not None:
             param_dict['limit'] = limit
 
-        res = http_request('GET', GET_SCHEDULES_SUFFIX, param_dict)
+        url = SERVER_URL + GET_SCHEDULES_SUFFIX
+        res = http_request('GET', url, param_dict)
         schedules = res.get('schedules', [])
         return extract_all_schedules_data(schedules)
 
@@ -439,7 +434,8 @@ script:
         if until is not None:
             param_dict['until'] = until
 
-        url = ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
+
+        url = SERVER_URL + ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
         users_on_call = http_request('GET', url, param_dict)
         return extract_on_call_user_data(users_on_call.get('users', []))
 
@@ -449,18 +445,21 @@ script:
         if limit is not None:
             param_dict['limit'] = limit
 
-        users_on_call_now = http_request('GET', ON_CALLS_USERS_SUFFIX, param_dict)
+        url = SERVER_URL + ON_CALLS_USERS_SUFFIX
+        users_on_call_now = http_request('GET', url, param_dict)
         oncalls = users_on_call_now.get('oncalls', {})
         return extract_on_call_now_user_data(oncalls, USERS_ON_CALL_NOW)
 
     def get_users_contact_methods_command(UserID):
         """Get the contact methods of a given user."""
-        user_contact_methods = http_request('GET', USERS_CONTACT_METHODS_SUFFIX.format(UserID), {})
+        url = SERVER_URL + USERS_CONTACT_METHODS_SUFFIX.format(UserID)
+        user_contact_methods = http_request('GET', url, {})
         return extract_users_contact_methods(user_contact_methods)
 
     def get_users_notification_command(UserID):
         """Get the notification rule of a given user"""
-        user_notication_role = http_request('GET', USERS_NOTIFICATION_RULE.format(UserID), {})
+        url = SERVER_URL + USERS_NOTIFICATION_RULE.format(UserID)
+        user_notication_role = http_request('GET', url, {})
         return extract_users_notification_role(user_notication_role)
 
     ''' EXECUTION CODE '''
@@ -607,8 +606,12 @@ script:
     - name: description
       description: A short description of the problem
     outputs:
-    - contextPath: PagerDuty.Event
-      description: Event data
+    - contextPath: PagerDuty.Event.Status
+      description: Status of the action on the event
+    - contextPath: PagerDuty.Event.Message
+      description: PagerDuty message regarding the event
+    - contextPath: PagerDuty.Event.dedup_key
+      description: 'De-Duplication key '
     description: Creates a new event/incident in PagerDuty(In order to use this command
       you have to enter the Service Key in the integration settings)
   - name: PagerDutyGetContactMethods
@@ -644,5 +647,4 @@ script:
       type: string
     description: Get the users notification rules
   runonce: false
-hidden: false
 releaseNotes: "Fixed integration errors."
