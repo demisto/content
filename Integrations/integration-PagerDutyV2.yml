@@ -32,8 +32,8 @@ script:
     API_KEY = demisto.params()['APIKey']
     SERVICE_KEY = demisto.params()['ServiceKey']
 
-    SERVER_URL = "https://api.pagerduty.com/"
-    CREATE_EVENT_URL = "https://events.pagerduty.com/v2/enqueue"
+    SERVER_URL = 'https://api.pagerduty.com/'
+    CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
 
     DEFAULT_HEADERS = {
                           'Authorization': 'Token token=' + API_KEY,
@@ -42,23 +42,23 @@ script:
 
 
     '''PARAMS'''
-    STATUSES = "statuses%5B%5D"
+    STATUSES = 'statuses%5B%5D'
 
 
     '''SUFFIX ENDPOINTS'''
-    GET_SCHEDULES_SUFFIX = "schedules"
-    CREATE_INCIDENT_SUFFIX = "incidents"
-    ON_CALL_BY_SCHEDULE_SUFFIX = "schedules/{0}/users"
-    ON_CALLS_USERS_SUFFIX = "oncalls?include%5B%5D=users"
-    USERS_NOTIFICATION_RULE = "users/{0}/notification_rules"
-    GET_INCIDENTS_SUFFIX = "incidents?include%5B%5D=assignees"
-    USERS_CONTACT_METHODS_SUFFIX = "users/{0}/contact_methods"
+    GET_SCHEDULES_SUFFIX = 'schedules'
+    CREATE_INCIDENT_SUFFIX = 'PagerDuty Incidents'
+    ON_CALL_BY_SCHEDULE_SUFFIX = 'schedules/{0}/users'
+    ON_CALLS_USERS_SUFFIX = 'oncalls?include%5B%5D=users'
+    USERS_NOTIFICATION_RULE = 'users/{0}/notification_rules'
+    GET_INCIDENTS_SUFFIX = 'incidents?include%5B%5D=assignees'
+    USERS_CONTACT_METHODS_SUFFIX = 'users/{0}/contact_methods'
 
     '''CONTACT_METHOD_TYPES'''
-    SMS_CONTACT_TYPE = "sms_contact_method"
-    EMAIL_CONTACT_TYPE = "email_contact_method"
-    PHONE_CONTACT_TYPE = "phone_contact_method"
-    PUSH_CONTACT_TYPE = "push_notification_contact_method"
+    SMS_CONTACT_TYPE = 'sms_contact_method'
+    EMAIL_CONTACT_TYPE = 'email_contact_method'
+    PHONE_CONTACT_TYPE = 'phone_contact_method'
+    PUSH_CONTACT_TYPE = 'push_notification_contact_method'
 
     CONTACT_METHODS_TO_HUMAN_READABLE = {
         '': 'Unknown',
@@ -69,22 +69,22 @@ script:
     }
 
     '''TABLE NAMES'''
-    INCIDETS = "Incidents"
-    SCHEDULES = "All Schedules"
+    INCIDETS = 'Incidents'
+    SCHEDULES = 'All Schedules'
     TRIGGER_EVENT = 'Trigger Event'
     USERS_ON_CALL = 'Users On Call'
-    CONTACT_METHODS = "Contact Methods"
+    CONTACT_METHODS = 'Contact Methods'
     USERS_ON_CALL_NOW = 'Users On Call Now'
-    NOTIFICATION_RULES = "User notification rules"
+    NOTIFICATION_RULES = 'User notification rules'
 
     '''TABLE HEADERS'''
     CONTACT_METHODS_HEADERS = ['ID', 'Type', 'Address']
-    NOTIFICATION_RULES_HEADERS = ["ID", "Type", "Urgency", "Notification timeout(minutes)"]
-    SCHEDULES_HEADERS = ["ID", "Name", "Today", "Time Zone", "Escalation Policy", "Escalation Policy ID"]
-    USERS_ON_CALL_NOW_HEADERS = ["ID", "Email", "Name", "Role", "Color", "User Url", "Avatar Url", "Time Zone"]
-    INCIDENTS_HEADERS = ["ID", "Incident Number", "Created On", "Status", "Html Url", "Service ID", "Service Name", "Service Html Url", "Assigned To User",
-                         "Escalation Policy", "Escalation Policy ID", "Trigger Details Html Url", "Trigger Type", "Last Status Change On", "Last Status Change By",
-                         "Number Of Escalations", "Resolved By User", "Assigned To", "Summary"]
+    NOTIFICATION_RULES_HEADERS = ['ID', 'Type', 'Urgency', 'Notification timeout(minutes)']
+    SCHEDULES_HEADERS = ['ID', 'Name', 'Today', 'Time Zone', 'Escalation Policy', 'Escalation Policy ID']
+    USERS_ON_CALL_NOW_HEADERS = ['ID', 'Email', 'Name', 'Role', 'Color', 'User Url', 'Avatar Url', 'Time Zone']
+    INCIDENTS_HEADERS = ['ID', 'Incident Number', 'Created On', 'Status', 'Html Url', 'Service ID', 'Service Name', 'Service Html Url', 'Assigned To User',
+                         'Escalation Policy', 'Escalation Policy ID', 'Trigger Details Html Url', 'Trigger Type', 'Last Status Change On', 'Last Status Change By',
+                         'Number Of Escalations', 'Resolved By User', 'Assigned To', 'Summary']
 
     ''' HELPER FUNCTIONS '''
     def http_request(method, url_suffix, params_dict):
@@ -114,7 +114,7 @@ script:
         except Exception, e:
             raise Exception(e.message)
 
-        demisto.results("ok")
+        demisto.results('ok')
 
     def extract_on_call_user_data(users):
         """Extact data about user from a given schedule."""
@@ -269,8 +269,8 @@ script:
                 context['escalation_policies'][0]['name'] = output['Escalation Policy']
                 context['escalation_policies'][0]['id'] = output['Escalation Policy ID']
             else:
-                output['Escalation Policy'] = "-"
-                output['Escalation Policy ID'] = "-"
+                output['Escalation Policy'] = '-'
+                output['Escalation Policy ID'] = '-'
 
             context['id'] = output['ID']
             context['name'] = output['Name']
@@ -294,14 +294,14 @@ script:
     def create_new_incident(author, title, severity, action, description='No description'):
         """Create a new incident in the PagerDuty instance."""
         payload = {
-                        "routing_key": SERVICE_KEY,
-                        "event_action": action,
-                        "images": [],
-                        "links": [],
-                        "payload": {
-                            "summary": title,
-                            "source": author,
-                            "severity": severity
+                        'routing_key': SERVICE_KEY,
+                        'event_action': action,
+                        'images': [],
+                        'links': [],
+                        'payload': {
+                            'summary': title,
+                            'source': author,
+                            'severity': severity
                         }
                   }
 
@@ -316,10 +316,15 @@ script:
     def extract_new_event_data(response):
         """Extract the data from the response of creating a new command."""
         output = {}
+        context = {}
+
         output['Status'] = response.get('status', '')
         output['Message'] = response.get('message', '')
         output['De-duplication key'] = response.get('dedup_key', '')
 
+        context['Status'] = output['Status']
+        context['Message'] = output['Message']
+        context['dedup_key'] = output['De-duplication key']
 
         return {
             'Type': entryTypes['note'],
@@ -328,7 +333,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(TRIGGER_EVENT, output),
             'EntryContext': {
-                'PagerDuty.Event(val.id==obj.id)': output
+                'PagerDuty.Event(val.id==obj.id)': context
             }
         }
 
@@ -343,8 +348,8 @@ script:
             output['ID'] = contact_method.get('id')
             output['Type'] = CONTACT_METHODS_TO_HUMAN_READABLE[contact_method.get('type', '')]
 
-            country_code = str(contact_method.get("country_code" ,""))
-            address = contact_method.get('address', "")
+            country_code = str(contact_method.get('country_code' ,''))
+            address = contact_method.get('address', '')
             output['Address'] = country_code + address
 
             outputs.append(output)
@@ -392,24 +397,24 @@ script:
         """Get incidents command."""
         param_dict = {}
         if since is not None:
-            param_dict["since"] = since
+            param_dict['since'] = since
         if until is not None:
-            param_dict["until"] = until
+            param_dict['until'] = until
         if status is not None:
             statuses = status.split(',')
-            statuses_string = STATUSES + "="
+            statuses_string = STATUSES + '='
             statuses = STATUSES.join(statuses)
             param_dict[STATUSES] = statuses
         if sortBy is not None:
-            param_dict["sortBy"] = sortBy
+            param_dict['sortBy'] = sortBy
 
         res = http_request('GET', GET_INCIDENTS_SUFFIX, param_dict)
-        return extract_incidents_data(res.get("incidents",[]))
+        return extract_incidents_data(res.get('incidents',[]))
 
     def submit_event_command(**kwargs):
         """Create new event."""
         if SERVICE_KEY is None:
-            raise Exception("You must enter a ServiceKey at the integration parmaters to process this action.")
+            raise Exception('You must enter a ServiceKey at the integration parmaters to process this action.')
 
         res = create_new_incident(**kwargs)
         return extract_new_event_data(res)
@@ -418,9 +423,9 @@ script:
         """Get all the schedules."""
         param_dict = {}
         if query is not None:
-            param_dict["query"] = query
+            param_dict['query'] = query
         if limit is not None:
-            param_dict["limit"] = limit
+            param_dict['limit'] = limit
 
         res = http_request('GET', GET_SCHEDULES_SUFFIX, param_dict)
         schedules = res.get('schedules', [])
@@ -430,9 +435,9 @@ script:
         """Get the list of user on call in a from scheduleID"""
         param_dict = {}
         if since is not None:
-            param_dict["since"] = since
+            param_dict['since'] = since
         if until is not None:
-            param_dict["until"] = until
+            param_dict['until'] = until
 
         url = ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
         users_on_call = http_request('GET', url, param_dict)
@@ -442,19 +447,19 @@ script:
         """Get the list of users that are on call now."""
         param_dict = {}
         if limit is not None:
-            param_dict["limit"] = limit
+            param_dict['limit'] = limit
 
         users_on_call_now = http_request('GET', ON_CALLS_USERS_SUFFIX, param_dict)
         oncalls = users_on_call_now.get('oncalls', {})
         return extract_on_call_now_user_data(oncalls, USERS_ON_CALL_NOW)
 
     def get_users_contact_methods_command(UserID):
-        "Get the contact methods of a given user."
+        """Get the contact methods of a given user."""
         user_contact_methods = http_request('GET', USERS_CONTACT_METHODS_SUFFIX.format(UserID), {})
         return extract_users_contact_methods(user_contact_methods)
 
     def get_users_notification_command(UserID):
-        "Get the notification rule of a given user"
+        """Get the notification rule of a given user"""
         user_notication_role = http_request('GET', USERS_NOTIFICATION_RULE.format(UserID), {})
         return extract_users_notification_role(user_notication_role)
 
