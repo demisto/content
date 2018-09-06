@@ -49,6 +49,7 @@ comment: |
   While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
   Please make sure timeout of the script also sufficient for the loop.
 enabled: true
+deprecated: true
 args:
 - name: cmdToRun
   required: true
@@ -71,3 +72,4 @@ args:
   description: time to sleep/wait between iterations in seconds (default is 10)
 scripttarget: 0
 timeout: 900ns
+releaseNotes: deprecate the script. please use native loops.
