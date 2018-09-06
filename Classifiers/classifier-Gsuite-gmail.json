@@ -152,6 +152,5 @@
 	"keyTypeMap": {
 		"Gmail": "Phishing"
 	},
-	"brandName": "Gmail",
-    "releaseNotes": "gmail classifier"
+	"brandName": "Gmail"
 }

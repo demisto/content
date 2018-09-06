@@ -644,4 +644,5 @@ script:
       type: string
     description: Get the users notification rules
   runonce: false
+hidden: false
 releaseNotes: "Fixed integration errors."

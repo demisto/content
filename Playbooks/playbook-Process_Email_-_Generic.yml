@@ -5,6 +5,7 @@ fromversion: 4.0.0
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
+releaseNotes: "-"
 tasks:
   "0":
     id: "0"
@@ -24,17 +25,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 377.5,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: be757276-3df5-4c10-87a9-7a5b49646bff
+    taskid: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
     type: condition
     task:
-      id: be757276-3df5-4c10-87a9-7a5b49646bff
+      id: 70863b9a-af3f-4f0a-8e91-cae2c88f5488
       version: -1
       name: Do we have original emails attached?
       description: Check if we have any attachments with relevant attachment types
@@ -50,15 +51,15 @@ tasks:
       - "3"
     scriptarguments:
       value:
-        simple: ${inputs.File((val.Type.toLowerCase().indexOf('composite document
-                  file v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-                  val.Extension == 'eml') && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-                  val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
+          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
+          0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
+          0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 377.5,
           "y": 195
         }
       }
@@ -99,10 +100,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: ba7f4d0b-5fab-436a-877c-c5cfaac66580
+    taskid: 4ac2b332-b76d-463e-824e-717895c5b644
     type: regular
     task:
-      id: ba7f4d0b-5fab-436a-877c-c5cfaac66580
+      id: 4ac2b332-b76d-463e-824e-717895c5b644
       version: -1
       name: Add original email attachments to context
       description: ""
@@ -116,17 +117,17 @@ tasks:
     scriptarguments:
       entryid:
         simple: ${inputs.File(val.Type.toLowerCase().indexOf('composite document file
-          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
-          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
-          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+          v2 document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >=
+          0 || val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >=
+          0 && val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     results:
     - AttachmentName
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 720
+          "x": 680,
+          "y": 370
         }
       }
     note: false
@@ -161,7 +162,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 377.5,
           "y": 1215
         }
       }
@@ -194,7 +195,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 490,
           "y": 1390
         }
       }
@@ -215,7 +216,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 377.5,
           "y": 1915
         }
       }
@@ -239,17 +240,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
+          "x": 377.5,
           "y": 1070
         }
       }
     note: false
   "13":
     id: "13"
-    taskid: 290c46f5-b31b-412e-860a-5758b94081ad
+    taskid: 9d6defc4-5ef1-4523-8136-08372aa15544
     type: regular
     task:
-      id: 290c46f5-b31b-412e-860a-5758b94081ad
+      id: 9d6defc4-5ef1-4523-8136-08372aa15544
       version: -1
       name: Set incident with the Email object data
       description: ""
@@ -261,31 +262,84 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      1longtexttest: {}
+      aaaa: {}
       addLabels: {}
+      adgroupname: {}
+      alertlevel: {}
+      amarkdownsection: {}
+      anothernumberpleasejusttomakesure: {}
       app: {}
+      arcsightcaseid: {}
       assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
+      attach: {}
+      attachamenthash: {}
+      attachmentcount:
+        complex:
+          root: Email
+          accessor: |
+            Attachment.Count
+      attachmentextension:
+        complex:
+          root: Email
+          accessor: Attachment.Extension
+      attachmenthash:
+        complex:
+          root: Email
+          accessor: Attachment.Hash
+      attachmentid:
+        complex:
+          root: Email
+          accessor: Attachment.ID
+      attachmentitem:
+        complex:
+          root: Email
+          accessor: Attachment.Item
       attachmentname:
         complex:
           root: Email
-          accessor: Attachments
-          transformers:
-          - operator: Stringify
-      attachmentsize: {}
-      attachmenttype: {}
+          accessor: Attachment.Name
+      attachmentsize:
+        complex:
+          root: Email
+          accessor: Attachment.Size
+      attachmenttype:
+        complex:
+          root: Email
+          accessor: Attachment.Type
+      awsinstancename: {}
       backupowner: {}
+      bbb: {}
+      blah: {}
+      bool1: {}
+      bool2: {}
+      booleansummary: {}
+      booleantest: {}
+      boolfield: {}
+      booltest: {}
       bugtraq: {}
+      casenumber: {}
+      ccc: {}
+      ccipaddress: {}
+      cleanname: {}
+      compliance: {}
+      constvalue: {}
       customFields: {}
+      customfield: {}
       cve: {}
       cvss: {}
+      date2: {}
+      datepicker: {}
       daysbetweenreportcreation: {}
+      deleteEmptyField:
+        simple: "True"
+      department: {}
+      departmentadmin: {}
       dest: {}
+      destinationip: {}
       destntdomain: {}
       details: {}
+      dstip: {}
       duration: {}
       emailbcc:
         complex:
@@ -303,9 +357,7 @@ tasks:
       emailbodyformat:
         complex:
           root: Email
-          accessor: Format
-          transformers:
-          - operator: Stringify
+          accessor: BodyFormat
       emailbodyhtml:
         complex:
           root: Email
@@ -319,7 +371,10 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailclientname: {}
+      emailclientname:
+        complex:
+          root: Email
+          accessor: ClientName
       emailfrom:
         complex:
           root: Email
@@ -327,165 +382,46 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
+      emailimage:
+        complex:
+          root: Email
+          accessor: Image
       emailinreplyto:
         complex:
           root: Email
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Email.Headers.name
-                iscontext: true
-              right:
-                value:
-                  simple: In-Reply-To
-          accessor: Headers
-          transformers:
-          - operator: WhereFieldEquals
-            args:
-              equalTo:
-                value:
-                  simple: In-Reply-To
-              field:
-                value:
-                  simple: name
-              getField:
-                value:
-                  simple: value
-          - operator: StripChars
-            args:
-              chars:
-                value:
-                  simple: <>
-      emailkeywords: {}
+          accessor: InReplyTo
+      emailkeywords:
+        complex:
+          root: Email
+          accessor: Keywords
       emailmessageid:
         complex:
           root: Email
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Email.Headers.name
-                iscontext: true
-              right:
-                value:
-                  simple: Message-ID
-          accessor: Headers
-          transformers:
-          - operator: WhereFieldEquals
-            args:
-              equalTo:
-                value:
-                  simple: Message-ID
-              field:
-                value:
-                  simple: name
-              getField:
-                value:
-                  simple: value
-          - operator: StripChars
-            args:
-              chars:
-                value:
-                  simple: <>
-      emailreceived: {}
+          accessor: ID
+      emailreceived:
+        complex:
+          root: Email
+          accessor: Received
       emailreplyto:
         complex:
           root: Email
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Email.Headers.name
-                iscontext: true
-              right:
-                value:
-                  simple: Reply-To
-          accessor: Headers
-          transformers:
-          - operator: WhereFieldEquals
-            args:
-              equalTo:
-                value:
-                  simple: Reply-To
-              field:
-                value:
-                  simple: name
-              getField:
-                value:
-                  simple: value
-          - operator: StripChars
-            args:
-              chars:
-                value:
-                  simple: <>
+          accessor: ReplyTo
       emailreturnpath:
         complex:
           root: Email
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Email.Headers.name
-                iscontext: true
-              right:
-                value:
-                  simple: Return-Path
-          accessor: Headers
-          transformers:
-          - operator: WhereFieldEquals
-            args:
-              equalTo:
-                value:
-                  simple: Return-Path
-              field:
-                value:
-                  simple: name
-              getField:
-                value:
-                  simple: value
-          - operator: StripChars
-            args:
-              chars:
-                value:
-                  simple: <>
+          accessor: ReturnPath
       emailsenderip:
         complex:
           root: Email
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Email.Headers.name
-                iscontext: true
-              right:
-                value:
-                  simple: x-originating-ip
-          accessor: Headers
-          transformers:
-          - operator: WhereFieldEquals
-            args:
-              equalTo:
-                value:
-                  simple: x-originating-ip
-              field:
-                value:
-                  simple: name
-              getField:
-                value:
-                  simple: value
-          - operator: StripChars
-            args:
-              chars:
-                value:
-                  simple: '[]'
+          accessor: SenderIP
       emailsize:
         complex:
           root: Email
-          accessor: Text
-          transformers:
-          - operator: strLength
-      emailsource: {}
+          accessor: Size
+      emailsource:
+        complex:
+          root: Email
+          accessor: Source
       emailsubject:
         complex:
           root: Email
@@ -500,62 +436,145 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      emailtocount: {}
-      emailurlclicked: {}
+      emailtocount:
+        complex:
+          root: Email
+          accessor: ToCount
+      emailurlclicked:
+        complex:
+          root: EmailUrlClicked
+      enisacategory: {}
+      escalationdate: {}
       eventid: {}
       falses: {}
       fetchid: {}
       fetchtype: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
       filehash: {}
       filename: {}
       filepath: {}
+      fwlogs: {}
+      gatenumber: {}
+      hash: {}
+      hjhj: {}
+      host: {}
       htmlimage: {}
       htmlrenderedimage: {}
+      htmltypefield: {}
       id: {}
       important: {}
       importantfield: {}
+      infectedhost: {}
+      intelblockcomment: {}
+      intelblockurl: {}
+      internalemail: {}
+      internalusage: {}
+      itaytestfield: {}
+      jiraticketid: {}
+      killchain: {}
       labels: {}
+      lob: {}
+      longtextone: {}
+      longtexttoo: {}
+      mailbody: {}
       malwarefamily: {}
       mdtest: {}
+      mitigated: {}
+      mttd: {}
+      multilinetext: {}
+      mydate: {}
       myfield: {}
+      myname: {}
+      myseverity: {}
       name: {}
+      newmarkdownfield: {}
+      newtextfield: {}
+      noatext: {}
+      numberplease: {}
+      objecttype: {}
       occurred: {}
+      originalhtml: {}
+      oriwithspace: {}
       owner: {}
       phase: {}
+      phishingsender: {}
+      phishingsenderdomain: {}
+      priority: {}
+      qradaroffenceid: {}
+      queues: {}
+      relatedincidentssummary: {}
       replacePlaybook: {}
       reporteduser: {}
+      riskmitigationactionrequirements: {}
+      riskscore: {}
       roles: {}
       screenshot: {}
       screenshot2: {}
       selector: {}
+      sender: {}
+      sensitive: {}
       severity: {}
+      shift: {}
+      shiftnotes: {}
       signature: {}
       single: {}
       single2: {}
       sla: {}
       source: {}
+      sourceip: {}
+      sourceip1: {}
       src: {}
+      srcip: {}
       srcntdomain: {}
       srcuser: {}
+      subcat: {}
+      subcategory: {}
+      summary: {}
       systems: {}
+      targethostname: {}
+      team: {}
+      telefield: {}
+      teleselect: {}
       test: {}
       test2: {}
+      test111: {}
+      testassociationdumpme: {}
       testfield: {}
+      testguy: {}
+      testhtml: {}
+      thisismysuperlongfield: {}
+      tier2owner: {}
       timeassignedtolevel2: {}
       timefield1: {}
       timelevel1: {}
+      timetomitigate: {}
+      timetotriage: {}
+      tldr: {}
+      tlp: {}
+      tttttt: {}
       type: {}
+      uniquefiled: {}
       user: {}
+      useremail: {}
       username: {}
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
+      vvvv: {}
+      zattachmentsgeneric: {}
+      zmaltegoimage: {}
+      zvtfirstseen: {}
+      zvtother: {}
+      zvtvendorcount: {}
     reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 592.5,
           "y": 895
         }
       }
@@ -673,7 +692,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 377.5,
           "y": 1740
         }
       }
@@ -707,7 +726,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 490,
           "y": 1565
         }
       }
@@ -745,7 +764,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 263,
           "y": 370
         }
       }
@@ -770,7 +789,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 545
         }
       }
@@ -804,8 +823,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 50,
+          "y": 698
         }
       }
     note: false
@@ -815,7 +834,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1930,
-        "width": 1025,
+        "width": 1010,
         "x": 50,
         "y": 50
       }
@@ -929,4 +948,3 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
-releaseNotes: "Added Email headers to the processing."

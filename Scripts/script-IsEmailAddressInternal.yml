@@ -66,4 +66,3 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-releaseNotes: Handled context to prevent duplicates
