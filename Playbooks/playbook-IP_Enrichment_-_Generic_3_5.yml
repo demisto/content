@@ -1,6 +1,5 @@
 id: ip_enrichment_generic
 version: -1
-releaseNotes: "-"
 fromversion: 3.5.0
 toversion: 3.5.1
 name: IP Enrichment - Generic
