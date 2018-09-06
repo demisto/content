@@ -28,4 +28,3 @@ args:
   description: Time stamp to convert
 scripttarget: 0
 runonce: false
-releaseNotes: "-"

@@ -38,6 +38,12 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: 'Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser
+    automation)'
+  name: fetchType
+  defaultvalue: cases
+  type: 0
+  required: false
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: ""
@@ -407,6 +413,15 @@ script:
         return getObject(path);
     }
 
+    function deleteObject(path) {
+        response = sendRequestInSession('DELETE', 'sobjects/' + path);
+        if (response.StatusCode != 204) {
+            throw 'object ' + path + ' delete failed with status code: ' + response.StatusCode;
+        }
+
+        return 'object ' + path + 'was successfully deleted.';
+    }
+
     function getCase(oid, caseNumber) {
         if (caseNumber !== undefined) {
             var condition = "CaseNumber='" + caseNumber + "'";
@@ -478,13 +493,32 @@ script:
         return updateCase(oid, caseNumber, undefined, undefined, 'Closed');
     }
 
+    function deleteCase(oid, caseNumber) {
+        if ((oid === undefined) && (caseNumber === undefined)) {
+            return {
+                Type : entryTypes.error,
+                Contents : 'You must specify object ID or a Case Number',
+                // ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown
+            };
+        }
+
+        if (oid === undefined) {
+            var condition = "CaseNumber='" + caseNumber + "'";
+            cases = queryObjects(['ID'], 'Case', condition).records;
+            oid = (cases.length === 1) ? cases[0].Id : undefined;
+        }
+
+        return deleteObject('Case/' + oid);
+    }
+
     function pushComment(oid, text, linkUrl) {
         data = {
             body : {
                 messageSegments : [{
                     type : 'Text',
-                    text : text}
-                ]
+                    text : text
+                }],
             },
             feedElementType : 'FeedItem',
             subjectId : oid
@@ -501,16 +535,52 @@ script:
 
         return createEntry(message, {
             title : 'New Message',
+            contextPath: 'SalesForce.Comment(val.URL && val.URL == obj.URL)',
             data : [
-                {to : 'body', from : 'body.text'},
-                {to : 'Created Date', from : 'createdDate'},
-                {to : 'title', from : 'header.text'},
-                {to : 'Parent Type', from : 'parent.type'},
-                {to : 'Parent Name', from : 'parent.name'},
+                {to : 'Body', from : 'body.text'},
+                {to : 'CreatedDate', from : 'createdDate'},
+                {to : 'Title', from : 'header.text'},
+                {to : 'ParentType', from : 'parent.type'},
+                {to : 'ParentName', from : 'parent.name'},
                 {to : 'URL', from : 'url'},
-                {to : 'Visibility', from : 'Visibility'}
+                {to : 'Visibility', from : 'visibility'}
                 ]
         });
+    }
+
+    function pushCommentThread(id, text) {
+        var data = {
+            body : {
+                messageSegments : [{
+                    type : 'Text',
+                    text : text
+                }]
+            }
+        };
+
+        var response = sendRequestInSession('POST', 'chatter/feed-elements/'+ id +'/capabilities/comments/items', JSON.stringify(data));
+        var message = JSON.parse(response.Body);
+        var output = {
+            Body: message.body.text,
+            CreatedDate: message.createdDate,
+            URL: message.url
+        }
+
+        ec = {
+            'SalesForce.Comment(val.URL && val.URL == obj.URL)': {
+                URL: URI_PREFIX + 'chatter/feed-elements/' + id,
+                Reply: output
+            }
+        }
+
+        return {
+            Type: entryTypes.note,
+            Contents: message,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('New Reply', output),
+            EntryContext: ec
+        };
     }
 
     function casesToIncidents(raw_info, userMapping) {
@@ -519,17 +589,7 @@ script:
             cases.push({
                 name : raw_info[i].Id + " " + raw_info[i].Subject,
                 details : raw_info[i].Description,
-                //severity : raw_info[i].Priority,
                 rawJSON : JSON.stringify(raw_info[i]),
-                //rawJSON : raw_info[i],
-
-                // CaseNumber : raw_info[i].CaseNumber,
-                // Description : raw_info[i].Description,
-                // CreatedDate : raw_info[i].CreatedDate,
-                // ClosedDate : raw_info[i].ClosedDate,
-                // Owner : (user_dict && userMapping[raw_info[i].OwnerId]) || raw_info[i].OwnerId,
-                // Origin : raw_info[i].Origin,
-                // Status : raw_info[i].Status,
                 Reason : raw_info[i].Reason
             });
         }
@@ -540,33 +600,82 @@ script:
         }
     }
 
+
     function fetchIncident() {
+        var fetchType = params.fetchType
+
         lastRun = getLastRun();
         if (lastRun.last_case_time === undefined) {
             current_time = new Date();
             current_time.setMonth(current_time.getMonth() - 1); // TODO - remove this line
-            // logInfo(dateToString(current_time, "%Y-%m-%dT%H:%M:%S.%fZ"));
             lastRun.last_case_time = dateToString(current_time, "%Y-%m-%dT%H:%M:%S.%fZ");
             setLastRun(lastRun);
         }
 
-        // query cases from last time
-        condition = "CreatedDate>" + lastRun.last_case_time + " ORDER BY CreatedDate DESC";
-        properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate', 'OwnerID', 'Priority', 'Origin', 'Status', 'Reason'];
+        var condition;
+        var properties;
+        var incidents;
 
-        var cases = queryObjects(properties, "Case", condition).records;
+        if (fetchType === 'cases') {
+            // query cases from last time
+            condition = "CreatedDate>" + lastRun.last_case_time + " ORDER BY CreatedDate DESC";
+            properties = ['ID', 'CaseNumber', 'Subject', 'Description', 'CreatedDate', 'ClosedDate', 'OwnerID', 'Priority', 'Origin', 'Status', 'Reason'];
 
-        if (cases.length > 0) {
-            new_time = stringToDate(cases[0].CreatedDate, "%Y-%m-%dT%H:%M:%S.%fZ");
-            lastRun.last_case_time = dateToString(new_time, "%Y-%m-%dT%H:%M:%S.%fZ");
+            var cases = queryObjects(properties, "Case", condition).records;
 
-            setLastRun(lastRun);
-            logInfo(lastRun.last_case_time);
-            // logInfo(JSON.stringify(cases));
+            if (cases.length > 0) {
+                new_time = stringToDate(cases[0].CreatedDate, "%Y-%m-%dT%H:%M:%S.%fZ");
+                lastRun.last_case_time = dateToString(new_time, "%Y-%m-%dT%H:%M:%S.%fZ");
+
+                setLastRun(lastRun);
+                var userMapping = getUserNames();
+                incidents = casesToIncidents(cases, userMapping);
+            }
+
+        } else { //fetchType === 'comment'
+
+            //query comments from last time
+
+            incidents = '[]';
+
+            //Fetch comment replies
+            properties = ['Id', 'CommentBody', 'CreatedDate'];
+            condition = "CreatedDate>" + lastRun.last_case_time + " ORDER BY CreatedDate DESC LIMIT 10";
+            var replies = queryObjects(properties, "FeedComment", condition).records;
+
+            if (replies.length > 0) {
+
+                var newTime = stringToDate(replies[0].CreatedDate, "%Y-%m-%dT%H:%M:%S.%fZ");
+                lastRun.last_case_time = dateToString(newTime, "%Y-%m-%dT%H:%M:%S.%fZ");
+                setLastRun(lastRun);
+
+                for (var i = 0; i < replies.length; i++) {
+
+                    //Get reply details
+                    var replyDetails = sendRequestInSession('GET', 'chatter/comments/' + replies[i].Id);
+                    var data = JSON.parse(replyDetails.Body);
+                    var feedElement = data.feedElement;
+                    var parentID = feedElement.id;
+
+                    //Get parent details
+                    var parentDetails = getObject('CaseFeed/' + parentID);
+                    var parentText = parentDetails.Body;
+
+                    if (parentText.indexOf('DemistoID') !== -1) {
+
+                        var messageSegments = data.body.messageSegments;
+                        for (var j = 0; j < messageSegments.length; j++)
+                        if (messageSegments[j].type === 'Text') {
+                            // Found the relavent comment (there's only one), so we return it
+                            return JSON.stringify([{
+                                name: parentText,
+                                details: messageSegments[j].text
+                            }]);
+                        }
+                    }
+                }
+            }
         }
-
-        var userMapping = getUserNames();
-        incidents = casesToIncidents(cases, userMapping);
         return incidents;
     }
 
@@ -598,8 +707,12 @@ script:
             return getCases();
         case 'salesforce-close-case':
             return closeCase(args.oid, args.caseNumber);
+        case 'salesforce-delete-case':
+            return deleteCase(args.oid, args.caseNumber);
         case 'salesforce-push-comment':
             return pushComment(args.oid, args.text, args.link);
+        case 'salesforce-push-comment-threads':
+            return pushCommentThread(args.id, args.text);
         case 'test-module':
             try {
                 sendRequestInSession('GET', '', '');
@@ -1130,6 +1243,28 @@ script:
       description: Chat text
     - name: link
       description: Add a link to the message
+    outputs:
+    - contextPath: SalesForce.Comment.Body
+      description: Comment body
+      type: string
+    - contextPath: SalesForce.Comment.CreatedDate
+      description: Comment created date
+      type: date
+    - contextPath: SalesForce.Comment.Title
+      description: Comment title
+      type: string
+    - contextPath: SalesForce.Comment.ParentType
+      description: Comment parent type
+      type: string
+    - contextPath: SalesForce.Comment.ParentName
+      description: Comment parent name
+      type: string
+    - contextPath: SalesForce.Comment.URL
+      description: Comment URL link
+      type: string
+    - contextPath: SalesForce.Comment.Visibility
+      description: Comment visibility
+      type: string
     description: Add a comment  to chatter
   - name: salesforce-get-case
     arguments:
@@ -1373,5 +1508,33 @@ script:
       description: Case Status. Will be 'Closed'.
       related: ""
     description: Close a case
+  - name: salesforce-push-comment-threads
+    arguments:
+    - name: id
+      required: true
+      description: The Chatter comment Thread ID
+    - name: text
+      required: true
+      description: The comment text
+    outputs:
+    - contextPath: SalesForce.Comment.Reply.Body
+      description: Reply body
+      type: string
+    - contextPath: SalesForce.Comment.Reply.CreatedDate
+      description: Reply created date
+      type: date
+    - contextPath: SalesForce.Comment.Reply.URL
+      description: Reply URL link
+      type: string
+    description: Add the comment to the chatter thread. Use this command only after
+      salesforce-push-comment
+  - name: salesforce-delete-case
+    arguments:
+    - name: oid
+      description: Case Object ID
+    - name: caseNumber
+      description: Case Number
+    description: Delete a case
   isfetch: true
   runonce: false
+releaseNotes: "added command for delete case"

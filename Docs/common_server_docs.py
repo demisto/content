@@ -152,7 +152,7 @@ def main(argv):
 
     if isErrorJS or isErrorPy:
         print "Errors found in common server docs."
-        exit(1)
+        sys.exit(1)
     with open('./Docs/doc-CommonServer.json', 'w') as fp:
         jsDoc += pyDoc
         json.dump(jsDoc, fp)

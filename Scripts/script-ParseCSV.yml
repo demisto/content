@@ -3,9 +3,13 @@ commonfields:
   version: -1
 name: ParseCSV
 script: |
-  import re
   import csv
   import socket
+
+  def unicode_dict_reader(utf8_data, **kwargs):
+      csv_reader = csv.DictReader(utf8_data, **kwargs)
+      for row in csv_reader:
+          yield {unicode(key, 'utf-8'):unicode(value, 'utf-8') for key, value in row.iteritems()}
 
   def is_valid_ipv4_address(address):
       try:
@@ -20,6 +24,18 @@ script: |
           return False
       return True
 
+  def get_entry_by_file_name(file):
+      entries = demisto.executeCommand('getEntries', {})
+      for entry in reversed(entries):
+          fn = demisto.get(entry, 'File')
+
+          if type(fn) not in [unicode, str]:
+              continue
+
+          if file.lower() == fn.lower():
+              return entry
+      raise ValueError('Was unable to find "{}" in the war room. Please ensure the file was uploaded.'.format(file))
+
   csvEntry = None
 
   iplist = []
@@ -32,7 +48,8 @@ script: |
 
   dArgs = demisto.args()
 
-  file = dArgs['file'] if 'file' in dArgs else None
+  entryID = dArgs['entryID'] if 'entryID' in dArgs else None
+  file = dArgs['file'] if 'file' in dArgs else None # file arg deprecated
   parseip = int(dArgs['ips']) if 'ips' in dArgs else -1
   parsedomain = int(dArgs['domains']) if 'domains' in dArgs else -1
   parsehash = int(dArgs['hashes']) if 'hashes' in dArgs else -1
@@ -40,51 +57,52 @@ script: |
 
   if parseip == -1 and parsedomain == -1 and parsehash == -1 and not parseAll:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Select a field to extract.' } )
-      exit()
+      sys.exit(0)
 
-  # find the csv file entry by name
-  entries = demisto.executeCommand('getEntries', {})
-  for entry in entries:
-      fn = demisto.get(entry, 'File')
+  if file is None and entryID is None:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Please provide entryID.' } )
+      sys.exit(0)
 
-      is_text = type(fn) in [unicode, str]
-      is_correct_file = file.lower() == fn.lower()
-      is_csv = fn.lower().endswith('.csv')
+  if entryID is None:
+      # search entry by file name
+      try:
+          entry = get_entry_by_file_name(file)
+          entryID = entry['ID']
+      except ValueError as e:
+          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : e.message } )
+          sys.exit(0)
 
-      if is_text and is_correct_file and is_csv:
-          csvEntry = entry
-          break
+  res = demisto.getFilePath(entryID)
+  if not res:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Entry {} not found".format(entryID)} )
+      sys.exit(0)
+  filePath = res['path']
+  fileName = res['name']
+  if not fileName.lower().endswith('.csv'):
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extention'.format(fileName) } )
+      sys.exit(0)
 
-  if not csvEntry:
-      demisto.results({
-          "Type" : entryTypes["error"],
-          "ContentsFormat" : formats["text"],
-          "Contents" : 'No csv file found in the war room. Ensure the file was uploaded and the filename has ".csv" extension.'
-      })
-      exit(0)
-
-  res = demisto.executeCommand('getFilePath', {'id': entry['ID']})
-  filePath = res[0]['Contents']['path']
   if parseAll:
       all_csv = []
       with open(filePath, mode='r') as f:
-          records = csv.DictReader(f)
+          records = unicode_dict_reader(f)
           for row in records:
               all_csv.append(row)
 
-          ec = { 'ParseCSV.ParsedCSV': all_csv }
-          demisto.results({
-              "Type" : entryTypes["note"],
-              "ContentsFormat" : formats["json"],
-              "ReadableContentsFormat" : formats["markdown"],
-              "Contents" : all_csv,
-              "EntryContext": ec,
-              "HumanReadable": tableToMarkdown(file, all_csv)
-          })
+      ec = { 'ParseCSV.ParsedCSV': all_csv }
+      demisto.results({
+          "Type" : entryTypes["note"],
+          "ContentsFormat" : formats["json"],
+          "ReadableContentsFormat" : formats["markdown"],
+          "Contents" : all_csv,
+          "EntryContext": ec,
+          "HumanReadable": tableToMarkdown(fileName, all_csv)
+      })
+      sys.exit(0)
 
   if parseip == -1 and parsedomain == -1 and parsehash == -1:
       # stop the script if no need to parse ips,domains or hashes
-      exit(0)
+      sys.exit(0)
 
   with open(filePath, 'rU') as f:
       has_header = csv.Sniffer().has_header(f.read(1024))
@@ -159,9 +177,11 @@ comment: This script will parse a CSV file and place the unique IPs, Domains and
   into the context.
 enabled: true
 args:
-- name: file
-  required: true
+- name: entryID
   default: true
+  description: 'The war room entryID of the file.'
+- name: file
+  deprecated: true
   description: The name of the file. The file must be uploaded to the War Room.
 - name: ips
   description: The column number that contains IP Addresses. (First column is column
@@ -192,3 +212,5 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
 scripttarget: 0
+releaseNotes: "add 'entryID' argument to get the file entry by ID. 'file' argument deprecated."
+
