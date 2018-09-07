@@ -429,14 +429,33 @@ script:
             'HumanReadable': msg,
         }
 
+    def list_number_of_active_sessions():
+        """
+        This function is used for test-module to check connectivity
+        """
+        api_endpoint = "/admin/API/mnt/Session/ActiveCount"
+
+        response = http_request('GET', api_endpoint, {}, {}, {})
+
+        return response
+
     ''' EXECUTION CODE '''
     try:
         if demisto.command() == 'test-module':
             #This is the call made when pressing the integration test button.
-            if get_endpoints_command():
-                demisto.results('ok')
-            else:
-                demisto.results('test failed')
+            try:
+                if get_endpoints_command():
+                    demisto.results('ok')
+                elif list_number_of_active_sessions():
+                    demisto.results('ok')
+                else:
+                    demisto.results('test failed')
+            except:
+                if list_number_of_active_sessions():
+                    demisto.results('ok')
+                else:
+                    demisto.results('test failed')
+
         elif demisto.command() == 'cisco-ise-get-endpoint-id':
             demisto.results(get_endpoint_id_command())
         elif demisto.command() == 'cisco-ise-get-endpoint-details':
