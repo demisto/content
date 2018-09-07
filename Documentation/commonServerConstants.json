@@ -4,7 +4,7 @@
     "origin": "CommonServerPython",
     "cmdType": "builtinVar",
     "return_value": {},
-    "description": "A dictionary containing all possible entry types - note, file, error, image, etc (e.g. entryTypes['note'])",
+    "description": "A dictionary containing all possible entry types (e.g. entryTypes['note']). Most commonly used ones are: note (regular entry), error, file and image",
     "name": "entryTypes",
     "arguments": []
   },
@@ -40,7 +40,7 @@
     "origin": "CommonServerJs",
     "cmdType": "builtinVar",
     "return_value": {},
-    "description": "An object containing all possible entry types - note, file, error, image, etc (e.g. entryTypes['note'])",
+    "description": "An object containing all possible entry types - note, file, error, image, etc (e.g. entryTypes.note)",
     "name": "entryTypes",
     "arguments": []
   },
@@ -49,7 +49,7 @@
     "origin": "CommonServerJs",
     "cmdType": "builtinVar",
     "return_value": {},
-    "description": "An object containing all supported values of entry ContentsFormat/ReadableContentsFormat - json, markdown, text, image, html, etc (e.g. formats['markdown'])",
+    "description": "An object containing all supported values of entry ContentsFormat/ReadableContentsFormat - json, markdown, text, image, html, etc (e.g. formats.markdown)",
     "name": "formats",
     "arguments": []
   },
@@ -58,7 +58,7 @@
     "origin": "CommonServerJs",
     "cmdType": "builtinVar",
     "return_value": {},
-    "description": "An object containing all supported dbotscore values and their numeric representations - critical, high, medium, low, unknown and informational (e.g. dbotscores['high'])",
+    "description": "An object containing all supported dbotscore values and their numeric representations - critical, high, medium, low, unknown and informational (e.g. dbotscores.high)",
     "name": "dbotscores",
     "arguments": []
   },
@@ -67,7 +67,7 @@
     "origin": "CommonServerJs",
     "cmdType": "builtinVar",
     "return_value": {},
-    "description": "An object containing commonly used context (output) paths - file, ip url, domain, email, dbotscore (e.g. outputPaths['domain'])",
+    "description": "An object containing commonly used context (output) paths - file, ip url, domain, email, dbotscore (e.g. outputPaths.domain)",
     "name": "outputPaths",
     "arguments": []
   }
