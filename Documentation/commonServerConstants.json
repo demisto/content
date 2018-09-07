@@ -22,7 +22,7 @@
     "origin": "CommonServerPython",
     "cmdType": "builtinVar",
     "return_value": {},
-    "description": "A dictionary containing all supported dbotscore values and their numeric representations - Critical, High, Medium, Low, Unknown and Informational (e.g. dbotscores['High]).",
+    "description": "A dictionary containing all supported dbotscore values and their numeric representations - Critical, High, Medium, Low, Unknown and Informational (e.g. dbotscores['High']).",
     "name": "dbotscores",
     "arguments": []
   },
