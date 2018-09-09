@@ -1224,7 +1224,6 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
-        raise
         return_error(e.message)
   type: python
   commands:
