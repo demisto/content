@@ -228,6 +228,7 @@ tasks:
       id: 104966c4-8595-4a5a-8c75-c84f55e51c84
       version: -1
       name: Advance features
+      description: ""
       type: title
       iscommand: false
       brand: ""
