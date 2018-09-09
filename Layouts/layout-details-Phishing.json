@@ -1,4 +1,5 @@
 {
+	"releaseNotes": "Remove HTML Image field since it can be huge and affect system performance",
 	"typeId": "Phishing",
 	"kind": "details",
 	"layout": {
@@ -182,13 +183,6 @@
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_emailbodyhtml",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_htmlimage",
 						"isVisible": true
 					}
 				],
