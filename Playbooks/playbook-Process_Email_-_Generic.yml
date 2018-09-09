@@ -106,6 +106,7 @@ tasks:
       id: 4ac2b332-b76d-463e-824e-717895c5b644
       version: -1
       name: Add original email attachments to context
+      description: ""
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -138,6 +139,7 @@ tasks:
       id: be6f6daf-0497-423e-8a48-d669ccad567f
       version: -1
       name: Is there an HTML label in the email?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -208,6 +210,7 @@ tasks:
       id: dd0d5106-965e-4a81-8e67-79392ea47d7f
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -252,6 +255,7 @@ tasks:
       id: 9d6defc4-5ef1-4523-8136-08372aa15544
       version: -1
       name: Set incident with the Email object data
+      description: ""
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -623,6 +627,7 @@ tasks:
       id: e6915e5d-bdca-4d59-8636-2e65b2e680e1
       version: -1
       name: Get Original Message - Generic
+      description: ""
       playbookName: Get Original Email - Generic
       type: playbook
       iscommand: false
