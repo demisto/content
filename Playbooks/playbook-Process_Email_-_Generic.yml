@@ -72,6 +72,7 @@ tasks:
       id: 0dd910be-f198-4b5d-8dbb-8d7170049463
       version: -1
       name: Add original email details to context
+      description: ""
       scriptName: Set
       type: regular
       iscommand: false
