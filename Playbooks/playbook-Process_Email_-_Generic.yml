@@ -173,8 +173,7 @@ tasks:
       id: c18ef7a3-f278-4255-86ac-5b127f991302
       version: -1
       name: Render HTML to an image
-      description: |2+
-
+      description: ""
       tags:
       - email_html_image
       script: Rasterize|||rasterize-email
