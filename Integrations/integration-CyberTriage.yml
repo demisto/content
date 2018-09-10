@@ -1,0 +1,229 @@
+commonfields:
+  id: Cyber Triage
+  version: -1
+name: Cyber Triage
+display: Cyber Triage
+category: Endpoint
+image: data:image/png;base64,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
+description: 'Allows you to conduct a mini-forensic investigation on an endpoint.
+  It pushes a collection tool to the remote endpoint, collects volatile and file system
+  data, and analyzes the data. '
+detaileddescription: "This integration allows you to collect and analyze endpoint
+  data using Cyber Triage.  It will send an agentless collection tool to the remote
+  endpoint, retrieve volatile and file system data, and analyze it for evidence of
+  an intrusion. \n\n### SETUP\nTo use this integration, you need the Team version
+  of Cyber Triage (and not the Standalone desktop version). \n\nTo configure the integration,
+  you will need to enter: \n* **hostname** of your Cyber Triage server\n* **REST Port**
+  of your Cyber Triage server. You can find this in the \"Network Settings\" tab of
+  the server's option panel. \n* **API Key** for the Cyber Triage REST API. You can
+  find this in the \"Deployment Mode\"  tab of the server's option panel.\n* **Username/Password**
+  for an administrative account that can be used to run the collection tool on the
+  endpoints. \n\n### STARTING A COLLECTION\nAfter setting up an instance, you can
+  start a collection by using the “ct-triage-endpoint\" command. The hostname or IP
+  of the target endpoint must be provided. \n\nAfter the collection has started, open
+  a Cyber Triage client to review the data.  \n\n### SUPPORT\nIf you have any problems
+  or need an evaluation copy of Cyber Triage, then please email support@cybertriage.com."
+configuration:
+- display: Hostname of Cyber Triage server
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: REST Port
+  name: rest_port
+  defaultvalue: "9443"
+  type: 0
+  required: true
+- display: API Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+script:
+  script: |+
+    import requests
+    import traceback
+    import urllib3
+
+    # Disable warning for inescure requests when cert validation is disabled
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    # Get dict of CT instance parameters and command args
+    ct_params = demisto.params()
+    cmd_args = demisto.args()
+
+    ct_server = ct_params['server']
+    rest_port = ct_params['rest_port']
+    api_key = ct_params['api_key']
+    user = ct_params['credentials']['identifier']
+    password = ct_params['credentials']['password']
+    verify_server_cert = False
+    req_headers = {'restApiKey' : api_key}
+    is_2xx = lambda x: (x/100) == 2 # Returns true if status code (int) is 2xx
+
+    # Dict of Cyber Triage REST APIs currently used
+    REST_APIS = {
+        "check_creds" : "https://{0}:{1}/api/correlation/checkcredentials".format(ct_server, rest_port),
+        "start_collection" : "https://{0}:{1}/api/livesessions".format(ct_server, rest_port)
+    }
+
+    # Method to make rest calls (using requests) and handle error scenarios.
+    #
+    # Args: rest_api    - a string that represents a url to a rest api
+    #       method      - a string that represents an http methods supported by requests (get, put, post, ...)
+    #       json_data   - same as requests json arg
+    #       headers     - same as requests headers arg
+    #       verify_cert - same as requests verify arg
+    #
+    # Return: Dictionary with response, status_code, and exception keys. status_code will be -1 or status code returned in
+    # response object. Exception will be empty unless an exception occured. Response will contain the json response from CT if a 2xx response
+    # occured, otherwise it will represent an error message string.
+    def make_rest_call(rest_api, method, json_data=None, headers=req_headers, verify_cert=verify_server_cert):
+        ret_msg = ''
+        http_status_code = -1
+        e_str = ''
+        e = None
+
+        # Get the request function associate with the type of http request we want to make (ex. GET or POST)
+        try:
+            request_func = getattr(requests, method)
+        except AttributeError:
+            ret_msg = "Invalid requests method: {0}".format(method)
+            demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : ret_msg })
+            sys.exit(1)
+
+        # Attempt to make the rest API call and get data from response
+        try:
+            response = request_func(rest_api, json=json_data, headers=headers, verify=verify_cert)
+            http_status_code = response.status_code
+
+            # Raises ValueError exception if response cannot be converted to json
+            resp_json = response.json()
+
+            # Raises HTTPError exception if we get a non successful http status code (4xx/5xx)
+            response.raise_for_status()
+
+            ret_msg = resp_json
+
+        except ValueError as e:
+            ret_msg = 'Response did not contain valid json data. Response: {}'.format(response.text)
+            demisto.error(traceback.format_exc())
+
+        except requests.exceptions.SSLError as e:
+            ret_msg = "Unable to verify the Cyber Triage server certificate"
+            demisto.error(traceback.format_exc())
+
+        except requests.exceptions.HTTPError as e:
+            # Format error message based on error response in json
+            ret_msg = 'No Error Message found'
+
+            if 'Error' in resp_json:
+                ret_msg = resp_json['Error']
+            elif 'message' in resp_json:
+                ret_msg = resp_json['message']
+
+            demisto.error(traceback.format_exc())
+
+        except requests.exceptions.ConnectionError as e:
+            ret_msg = 'Error while connecting to ({})'.format(rest_api)
+            demisto.error(traceback.format_exc())
+
+        except requests.exceptions.RequestException as e:
+            ret_msg = "An unexpected error has occured"
+            demisto.error(traceback.format_exc())
+
+        # If an exception occured then update the exception string
+        if (e):
+            e_str = "{}: {}".format(type(e).__name__, e)
+
+        return {
+            "response" : ret_msg,
+            "status_code" : http_status_code,
+            "exception" : e_str
+        }
+
+    # Format non 2xx responses from make_rest_call(). These are cases where an error has occured.
+    def format_err_resp(json_resp):
+        return "Error message: {0}\nHTTP Status code: {1}\nExceptions: {2}".format(json_resp['response'],
+                                                                                   json_resp['status_code'],
+                                                                                   json_resp['exception'])
+
+    # This is the call made when running the ct-triage-endpoint command.
+    if demisto.command() == 'ct-triage-endpoint':
+        is_true = lambda x: x == 'yes'
+        is_hash_upload_on = is_true(cmd_args['malware_hash_upload']) # arg value = 'yes' or 'no'
+        is_file_upload_on = is_true(cmd_args['malware_file_upload']) # arg value = 'yes' or 'no'
+        is_fast_scan_on = not(is_true(cmd_args['full_scan']))        # arg value = 'yes' or 'no'
+        endpoint = cmd_args['endpoint']
+
+        # Make data dict for rest call
+        api_data = {'hostName': endpoint}
+        api_data.update({'userId': user})
+        api_data.update({'password': password})
+        api_data.update({'malwareScanRequested': is_hash_upload_on})
+        api_data.update({'sendContent': is_file_upload_on})
+        api_data.update({'fastScan': is_fast_scan_on})
+        api_data.update({'sendIpAddress': False})
+
+        response = make_rest_call(REST_APIS['start_collection'], 'post', api_data)
+
+        if is_2xx(response['status_code']):
+            demisto.results({"Type" : entryTypes["note"], "ContentFormat" : formats["json"], "Contents" : response, "EntryContext" : response["response"]})
+            sys.exit(0)
+        else:
+            demisto.results({"Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : format_err_resp(response)})
+            sys.exit(1)
+
+    # This is the call made when pressing the integration test button.
+    elif demisto.command() == 'test-module':
+        response = make_rest_call(REST_APIS['check_creds'], 'get')
+
+        if is_2xx(response['status_code']):
+            demisto.results("Test connection successful!")
+            sys.exit(0)
+        else:
+            demisto.results({"Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : format_err_resp(response)})
+            sys.exit(1)
+
+    # This shouldn't happen
+    else:
+        demisto.results({"Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Unknown Cyber Triage command"})
+        sys.exit(1)
+
+  type: python
+  commands:
+  - name: ct-triage-endpoint
+    arguments:
+    - name: endpoint
+      required: true
+      default: true
+      description: IP or hostname of a windows endpoint
+    - name: full_scan
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Scan entire file system for suspicious files
+      defaultValue: "yes"
+    - name: malware_hash_upload
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Send MD5 hashes to external malware analysis service
+      defaultValue: "yes"
+    - name: malware_file_upload
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Send unknown files to external malware analysis service. Hash upload
+        must be enabled for file uploads to occur.
+      defaultValue: "no"
+    description: initiates a cyber triage collection on an endpoint
+  runonce: false
