@@ -43,4 +43,3 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-releaseNotes: "New automation for encoding data in ASCII"

@@ -59,4 +59,3 @@ args:
 scripttarget: 1
 dependson: {}
 timeout: 7.2µs
-releaseNotes: "fix file argument not found"

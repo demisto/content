@@ -484,7 +484,7 @@ script:
                 last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
                 qs = qs.filter(datetime_received__gte=last_10_min)
         fields = map(lambda x: x.name, Message.FIELDS)
-        if get_build(VERSION_STR) <= EXCHANGE_2010_SP2:
+        if account.protocol.version.build <= EXCHANGE_2010_SP2:
             fields = filter(lambda x: x != 'text_body', fields)
         qs = qs.filter().only(*fields)
         result = qs.all()
@@ -1259,10 +1259,10 @@ script:
             if demisto.command() == 'fetch-incidents':
                 demisto.info(log_message)
                 demisto.incidents([])
-                exit(0)
+                sys.exit(0)
             if IS_TEST_MODULE:
                 demisto.results(log_message + " Please retry the instance configuration test.")
-                exit(0)
+                sys.exit(0)
             error_message_simple = log_message + " Please retry your request."
 
         # Other exception handling

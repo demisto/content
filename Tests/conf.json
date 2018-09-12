@@ -3,6 +3,31 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": {
+                "name": "activedir",
+                "byoi": false
+            },
+            "playbookID": "calculate_severity_-_critical_assets_-_test"
+        },
+        {
+            "playbookID": "TextFromHTML_test_playbook"
+        },
+        {
+            "integrations": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
+            "integrations": "ThreatExchange",
+            "playbookID": "extract_indicators_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "WildFire",
             "playbookID": "Wildfire Test"
         },
@@ -22,7 +47,8 @@
         {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
-            "nightly": true
+            "nightly": true,
+            "timeout": 1400
         },
         {
             "integrations": "Preempt",
@@ -36,7 +62,7 @@
             "playbookID": "get_original_email_-_ews-_test"
         },
         {
-            "integrations": "PagerDuty",
+            "integrations": "PagerDuty v2",
             "playbookID": "PagerDuty Test"
         },
         {
@@ -74,10 +100,6 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "integrations": "Jask",
-            "playbookID": "Jask_Test"
         },
         {
             "playbookID": "dedup_-_generic_-_test"
@@ -268,10 +290,6 @@
             "playbookID": "Jira-Test"
         },
         {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
-        },
-        {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
@@ -404,7 +422,8 @@
             "playbookID": "DemistoLockTest"
         },
         {
-            "playbookID": "test-domain-indicator"
+            "playbookID": "test-domain-indicator",
+            "timeout": 400
         },
         {
             "integrations": "VirusTotal - Private API",
@@ -416,19 +435,10 @@
             "playbookID": "Cybereason Test"
         },
         {
-            "integrations": "ThreatExchange",
-            "playbookID": "extract_indicators_-_generic_-_test",
-            "timeout": 240
-        },
-        {
             "integrations": "Tanium",
             "playbookID": "Tanium Demo Playbook",
             "nightly": true,
             "timeout": 1200
-        },
-        {
-            "integrations": "ThreatExchange",
-            "playbookID": "ThreatExchange-test"
         },
         {
             "integrations": "Recorded Future",
@@ -442,11 +452,6 @@
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
-        },
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook",
-            "nightly": true
         }
     ],
     "skipped": [
@@ -454,6 +459,10 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
+        },
+        {
+            "integrations": "ThreatConnect",
+            "playbookID": "test-ThreatConnect"
         },
         {
             "integrations": {
@@ -465,12 +474,6 @@
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
-            "nightly": true
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
             "nightly": true
         },
         {
@@ -616,6 +619,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
         },
         {
             "integrations": "Qualys",

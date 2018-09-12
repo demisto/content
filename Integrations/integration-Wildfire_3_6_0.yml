@@ -57,6 +57,9 @@ script:
 
       };
 
+    var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+    var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
+
     function sendRequest(url, body, headers) {
         url.replace(/[\/]+$/, '');
         var res = http(
@@ -147,14 +150,11 @@ script:
     }
 
     function getReport(md5, argHash, file) {
-        var reportUrl = URL + urlDict.report;
-        var hash = md5 || argHash || file;
-        if(!hash)
-            throw 'Missing md5/hash argument.';
-        if ((argHash && !/^[A-Fa-f0-9]{64}$/.test(argHash)) ||
-           (md5 && !/^[A-Fa-f0-9]{32}$/.test(md5))) {
-            throw 'Invalid hash. Only SHA256 and MD5 are supported.';
-        }
+      var reportUrl = URL + urlDict.report;
+      var hash = md5 || argHash || file;
+      if(!hash)
+        throw 'Missing md5/hash/file argument.';
+      if ( MD5_REGEX.test(hash) || SHA256_REGEX.test(hash) ) {
         var bodyXML = 'apikey='+TOKEN+'&format=xml&hash='+hash;
         var resXML = sendRequest(reportUrl, bodyXML, DEFAULT_HEADERS);
         if(!resXML){
@@ -168,13 +168,15 @@ script:
         var report =  dq(result, 'wildfire.task_info.report');
         var file_info = dq(result, 'wildfire.file_info');
         var returnObj = {
-            hash: hash,
-            result: result,
-            report: report,
-            info: file_info
+          hash: hash,
+          result: result,
+          report: report,
+          info: file_info
         };
         return returnObj;
-
+      } else {
+        throw 'Invalid hash. Only SHA256 and MD5 are supported.';
+      }
     }
 
     function createReport(reportResponse, format, verbose) {
@@ -417,4 +419,3 @@ script:
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Detonate file hosted on a website through WildFire
 hidden: false
-releaseNotes: added toversion
