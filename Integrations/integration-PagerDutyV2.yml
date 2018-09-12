@@ -44,7 +44,6 @@ script:
     '''PARAMS'''
     STATUSES = 'statuses%5B%5D'
 
-
     '''SUFFIX ENDPOINTS'''
     GET_SCHEDULES_SUFFIX = 'schedules'
     CREATE_INCIDENT_SUFFIX = 'incidents'
@@ -119,7 +118,7 @@ script:
         """Extact data about user from a given schedule."""
         outputs = []
         contexts = []
-        for i, user in enumerate(users):
+        for user in users:
             output = {}
             context = {}
 
@@ -290,7 +289,7 @@ script:
             }
         }
 
-    def create_new_incident(author, title, severity, action, description='No description'):
+    def create_new_incident(source, summary, severity, action, description='No description', group='', event_class='', component=''):
         """Create a new incident in the PagerDuty instance."""
         payload = {
                         'routing_key': SERVICE_KEY,
@@ -300,7 +299,13 @@ script:
                         'payload': {
                             'summary': title,
                             'source': author,
-                            'severity': severity
+                            'severity': severity,
+                            'group': group,
+                            'class': event_class,
+                            'component': component,
+                            'custom_details': {
+                                'description': description
+                            }
                         }
                   }
 
@@ -579,13 +584,14 @@ script:
     description: Shows incidents in PagerDuty
   - name: PagerDutySubmitEvent
     arguments:
-    - name: author
+    - name: source
       required: true
-      description: The email address of a valid user associated with the account making
-        the request.
-    - name: title
+      description: Specific human-readable unique identifier, such as a hostname,
+        for the system having the problem.
+    - name: summary
       required: true
-      description: The name of the incident you create
+      description: "\t A high-level, text summary message of the event. Will be used
+        to construct an alert's description."
     - name: severity
       required: true
       auto: PREDEFINED
@@ -605,6 +611,15 @@ script:
       description: The action to be executed
     - name: description
       description: A short description of the problem
+    - name: group
+      description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02”
+        and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe"
+        "www"'
+    - name: event_class
+      description: 'The class/type of the event. Example: "High CPU" "Latency"'
+    - name: component
+      description: 'The part or component of the affected system that is broken. Example:
+        "keepalive" "webping"'
     outputs:
     - contextPath: PagerDuty.Event.Status
       description: Status of the action on the event
