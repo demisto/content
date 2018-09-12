@@ -196,6 +196,9 @@ script:
         parsed_url = urlparse(url)
         if not parsed_url.scheme:
             return_error('Please provide a valid URL including a protocol (http/https)')
+        url_list = list(parsed_url)
+        url_list[0] = url_list[0].lower()
+        url = urlparse.urlunparse(url_list)
         malRatingThreshold = -1
         malConfidenceThreshold = -1
         if demisto.get(demisto.args(), 'ratingThreshold'):
