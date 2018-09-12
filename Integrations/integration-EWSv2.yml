@@ -1179,6 +1179,7 @@ script:
 
         if 'unread_count' in map(lambda x: x.name, Folder.FIELDS):
             f_entry['unreadCount'] = f.unread_count
+        return f_entry
 
     def fix_unread_count():
         try:
