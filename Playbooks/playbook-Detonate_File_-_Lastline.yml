@@ -6,7 +6,6 @@ description: |-
   Detonates a File using the Lastline sandbox.
   Lastline supports the following File Types:
 
-  //TODO
   32-bit Portable Executables (PE)files; 64-bit PE+files
   exe, sys, dll, com, scr, cpl, ocx, cgi
   Microsoft Office Suite documents
@@ -57,10 +56,10 @@ tasks:
       version: -1
       name: Lastline Upload File
       description: Uploads the submission to McAfee ATD.
-      script: Lastline_2fix|||lastline-upload
+      script: Lastline|||lastline-upload
       type: regular
       iscommand: true
-      brand: Lastline_2fix
+      brand: Lastline
     nexttasks:
       '#none#':
       - "2"
@@ -144,10 +143,10 @@ tasks:
       version: -1
       name: Lastline Get Report
       description: Retrieve the reports from McAfee ATD.
-      script: Lastline_2fix|||lastline-get
+      script: Lastline|||lastline-get
       type: regular
       iscommand: true
-      brand: Lastline_2fix
+      brand: Lastline
     nexttasks:
       '#none#':
       - "5"
