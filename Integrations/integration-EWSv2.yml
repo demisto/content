@@ -1187,8 +1187,7 @@ script:
             get_folder_by_path(account, FOLDER_NAME)
         except ErrorInvalidPropertyRequest as e:
             if 'FieldURI="folder:UnreadCount"' in e.message:
-                #Folder.FIELDS.pop(7)  # Crude yet effecrtive
-                for i,f in zip(range(len(Folder.FIELDS)), Folder.FIELDS):
+                for i,f in enumerate(Folder.FIELDS):
                     if f.name == 'unread_count':
                         Folder.FIELDS.pop(i)
                         break
