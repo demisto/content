@@ -229,7 +229,7 @@ script:
         }
 
         # we poll the logging service until we have a complete response
-        full_response = logging_service.poll_all(query_id, 0, poll_params)
+        full_response = logging_service.poll(query_id, 0, poll_params)
 
         # delete the query from the service
         logging_service.delete(query_id)
@@ -723,7 +723,7 @@ script:
             test_args = {
                 "query": "SELECT * FROM panw.threat LIMIT 1",
                 "startTime": 0,
-                "endTime": 1609459200,
+                "endTime": 1609459200
             }
             if query_loggings(test_args):
                 demisto.results('ok')
@@ -1081,3 +1081,4 @@ script:
   dockerimage: demisto/python_pancloud
   isfetch: true
   runonce: false
+releaseNotes: "-"
