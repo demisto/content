@@ -18,6 +18,7 @@ script: |
       demisto.executeCommand("taskComplete", closing_args)
 type: python
 tags: []
+comment: Script that will allow to close Manual task on the current investigation
 enabled: true
 args:
 - name: id
@@ -25,3 +26,4 @@ args:
   description: The id of the incident
 scripttarget: 0
 runonce: false
+releaseNotes: "Added a script for closing manual task at the current investigation"
