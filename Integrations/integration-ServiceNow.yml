@@ -565,7 +565,8 @@ script:
         }
 
         ec = createContext(computer, removeNull=True)
-        ec['support_group'] = computer['support_group'].get('value', '') if 'support_group' in computer else ''
+        if 'support_group' in computer:
+            ec['support_group'] = computer['support_group']['value'] if 'value' in computer['support_group'] else ''
 
         entry = {
             'Type': entryTypes['note'],
