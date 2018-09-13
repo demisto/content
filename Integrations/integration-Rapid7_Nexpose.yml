@@ -139,8 +139,12 @@ script:
             'ip': response['records'][0]['ipAddress']
         }
 
-    def send_request(path, method = 'get', body = {}, params = {}, headers=None, is_file=False):
-        url = '%s/%s' % (SERVER_URL, path)
+    def send_request(path, method = 'get', body=None, params=None, headers=None, is_file=False):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+
+        url = '{}{}'.format(SERVER_URL, path)
+
         headers = headers if headers is not None else get_headers()
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
         verify=VERIFY_SSL, proxies=PROXY)
