@@ -192,7 +192,7 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    separatecontext: true
+    separatecontext: false
     view: |-
       {
         "position": {
