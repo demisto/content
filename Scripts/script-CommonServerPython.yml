@@ -432,6 +432,9 @@ script: |-
 
       :type kwds: ``dict``
       :param kwds: function keyword arguments (required)
+
+      :return: string representation of all the arguments
+      :rtype: ``string``
       """
       allargs = [repr(a) for a in args]
       for key,item in kwds.items():
