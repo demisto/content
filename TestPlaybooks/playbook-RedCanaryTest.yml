@@ -64,10 +64,10 @@ tasks:
       id: ac835a47-bbdb-4768-82d2-43f7a36bb37b
       version: -1
       name: List Detections
-      script: Red Canary|||redcanary-list-detections
+      script: RedCanary|||redcanary-list-detections
       type: regular
       iscommand: true
-      brand: Red Canary
+      brand: RedCanary
     nexttasks:
       '#none#':
       - "3"
@@ -131,10 +131,10 @@ tasks:
       id: 13598001-e00f-47a7-8ee7-d02cd994e12a
       version: -1
       name: List EndPoints
-      script: Red Canary|||redcanary-list-endpoints
+      script: RedCanary|||redcanary-list-endpoints
       type: regular
       iscommand: true
-      brand: Red Canary
+      brand: RedCanary
     nexttasks:
       '#none#':
       - "5"
@@ -190,10 +190,10 @@ tasks:
       id: c70867f2-73f1-4457-845e-dd371fad09fb
       version: -1
       name: Acknowledge detection
-      script: Red Canary|||redcanary-acknowledge-detection
+      script: RedCanary|||redcanary-acknowledge-detection
       type: regular
       iscommand: true
-      brand: Red Canary
+      brand: RedCanary
     nexttasks:
       '#none#':
       - "7"
@@ -233,10 +233,10 @@ tasks:
       id: 9eb7f786-2071-403c-8bf0-be4045051405
       version: -1
       name: Execute test playbook on detection using ID
-      script: Red Canary|||redcanary-execute-playbook
+      script: RedCanary|||redcanary-execute-playbook
       type: regular
       iscommand: true
-      brand: Red Canary
+      brand: RedCanary
     nexttasks:
       '#none#':
       - "8"
@@ -267,13 +267,13 @@ tasks:
       id: 7ed6c285-f053-4992-8358-6cb042ce70e1
       version: -1
       name: Remediate detection
-      script: Red Canary|||redcanary-remediate-detection
+      script: RedCanary|||redcanary-remediate-detection
       type: regular
       iscommand: true
-      brand: Red Canary
+      brand: RedCanary
     scriptarguments:
       comment:
-        simple: 'demisto testing '
+        simple: demisto testing
       id:
         complex:
           root: RedCanary
@@ -310,10 +310,10 @@ tasks:
       id: 478c12ab-7b57-421e-859b-9c3eb2e0b950
       version: -1
       name: Execute test playbook on detection using name
-      script: Red Canary|||redcanary-execute-playbook
+      script: RedCanary|||redcanary-execute-playbook
       type: regular
       iscommand: true
-      brand: Red Canary
+      brand: RedCanary
     nexttasks:
       '#none#':
       - "8"
