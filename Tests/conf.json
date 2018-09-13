@@ -41,7 +41,8 @@
             "timeout": 500,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned"
+                "Pwned",
+                "VirusTotal"
             ]
         },
         {
@@ -49,7 +50,8 @@
             "timeout": 500,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned"
+                "Pwned",
+                "VirusTotal"
             ]
         },
         {
