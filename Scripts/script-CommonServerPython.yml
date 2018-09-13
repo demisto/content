@@ -20,7 +20,7 @@ script: |-
   import xml.etree.cElementTree as ET
 
   IS_PY3 = sys.version_info[0] == 3
-  STRING_TYPES = [str, bytes] if IS_PY3 else [str, unicode]
+  STRING_TYPES = (str, bytes) if IS_PY3 else (str, unicode)
 
   entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8, 'entryInfoFile': 9, 'map': 15}
   formats = {'html': 'html', 'table': 'table', 'json': 'json', 'text': 'text', 'dbotResponse': 'dbotCommandResponse', 'markdown': 'markdown'}
@@ -423,6 +423,41 @@ script: |-
   LOG = IntegrationLogger()
 
 
+  def formatAllArgs(args, kwds):
+      """
+      makes a nice string representation of all the arguments
+
+      :type args: ``list``
+      :param args: function arguments (required)
+
+      :type kwds: ``dict``
+      :param kwds: function keyword arguments (required)
+      """
+      allargs = [repr(a) for a in args]
+      for key,item in kwds.items():
+          allargs.append('{}={}'.format(key, item))
+      formattedArgs = ', '.join(allargs)
+
+      return formattedArgs
+
+
+  def logger(func):
+      """
+      decorator function to log the function call using LOG
+
+      :type func: ``function``
+      :param func: function to call (required)
+
+      :return: returns the func return value.
+      :rtype: ``any``
+      """
+      def func_wrapper(*args, **kwargs):
+          LOG('calling {}({})'.format(func.func_name, formatAllArgs(args, kwargs)))
+          return func(*args, **kwargs)
+
+      return func_wrapper
+
+
   def formatCell(data, is_pretty=True):
       """
          Convert a given object to md while decending multiple levels
@@ -437,7 +472,7 @@ script: |-
          :rtype: ``str``
       """
       l_format = '\n' if is_pretty else ''
-      if type(data) in STRING_TYPES:
+      if isinstance(data, STRING_TYPES):
           return data
       elif isinstance(data, dict):
           return '\n'.join(['%s: %s' % (k, flattenCell(v, is_pretty)) for k, v in data.items()])
@@ -459,7 +494,7 @@ script: |-
          :rtype: ``str``
       """
       indent = 4 if is_pretty else None
-      if type(data) in STRING_TYPES:
+      if isinstance(data, STRING_TYPES):
           return data
       elif isinstance(data, list):
           return ',\n'.join(str(d) for d in data)
@@ -494,7 +529,7 @@ script: |-
           return []
       if isinstance(arg, list):
           return arg
-      if type(arg) in STRING_TYPES:
+      if isinstance(arg, STRING_TYPES):
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
           return [s.strip() for s in arg.split(',')]
@@ -520,7 +555,7 @@ script: |-
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
-          strBased = type(data) in STRING_TYPES and type(existing) in STRING_TYPES
+          strBased = isinstance(data, STRING_TYPES) and isinstance(existing, STRING_TYPES)
           if strBased:
               data = data.split(',')
               existing = existing.split(',')
@@ -1098,7 +1133,7 @@ script: |-
         :return: The converted string
         :rtype: ``str``
       """
-      if type(string) in STRING_TYPES:
+      if isinstance(string, STRING_TYPES):
           return " ".join(word.capitalize() for word in string.replace("_"," ").split())
       else:
           raise Exception('The key is not a string: {}'.format(string))
@@ -1114,7 +1149,7 @@ script: |-
        :return: The converted string
        :rtype: ``str``
       """
-      if type(string) in STRING_TYPES:
+      if isinstance(string, STRING_TYPES):
           return "".join(word.capitalize() for word in string.split('_'))
       else:
           raise Exception('The key is not a string: {}'.format(string))
@@ -1128,3 +1163,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: "added logger decorator"

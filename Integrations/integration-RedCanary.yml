@@ -60,7 +60,7 @@ script:
         '''
         if isinstance(t, int):
             return datetime.fromtimestamp(t)
-        elif isinstance(t, tuple(STRING_TYPES)):
+        elif isinstance(t, STRING_TYPES):
             if '.' in t:
                 # in case of "2018-09-14T13:27:18.123456Z"
                 return datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -655,3 +655,4 @@ script:
     description: Execute a predefined playbook on a detection.
   isfetch: true
   runonce: false
+releaseNotes: "New Integration"
