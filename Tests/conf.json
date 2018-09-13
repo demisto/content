@@ -42,7 +42,7 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal"
+                "VirusTotal - Private API"
             ]
         },
         {
@@ -51,7 +51,7 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
-                "VirusTotal"
+                "VirusTotal - Private API"
             ]
         },
         {
