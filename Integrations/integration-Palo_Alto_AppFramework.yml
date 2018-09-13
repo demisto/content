@@ -229,7 +229,7 @@ script:
         }
 
         # we poll the logging service until we have a complete response
-        full_response = logging_service.poll(query_id, 0, poll_params)
+        full_response = logging_service.xpoll(query_id, 0, poll_params)
 
         # delete the query from the service
         logging_service.delete(query_id)
@@ -425,7 +425,7 @@ script:
         query_data = {
             "query": query,
             "startTime": service_start_date_epoch,
-            "endTime": service_end_date_epoch,
+            "endTime": service_end_date_epoch
         }
 
         pages = query_loggings(query_data)
@@ -505,7 +505,7 @@ script:
         query_data = {
             "query": api_query,
             "startTime": service_start_date_epoch,
-            "endTime": service_end_date_epoch,
+            "endTime": service_end_date_epoch
         }
         pages = query_loggings(query_data)
 
@@ -569,7 +569,7 @@ script:
         query_data = {
             "query": api_query,
             "startTime": service_start_date_epoch,
-            "endTime": service_end_date_epoch,
+            "endTime": service_end_date_epoch
         }
 
         pages = query_loggings(query_data)
@@ -636,7 +636,7 @@ script:
         query_data = {
             "query": api_query,
             "startTime": service_start_date_epoch,
-            "endTime": service_end_date_epoch,
+            "endTime": service_end_date_epoch
         }
         pages = query_loggings(query_data)
 
@@ -695,7 +695,7 @@ script:
         query_data = {
             "query": query,
             "startTime": service_start_date_epoch,
-            "endTime": service_end_date_epoch,
+            "endTime": service_end_date_epoch
         }
 
         pages = query_loggings(query_data)
