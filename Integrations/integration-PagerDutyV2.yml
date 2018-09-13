@@ -87,7 +87,7 @@ script:
 
     ''' HELPER FUNCTIONS '''
     def http_request(method, url, params_dict=None, data=None):
-        LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, DEFAULT_HEADERS, json.dumps(params_dict)))
+        LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
 
         try:
             res = requests.request(method,
