@@ -213,7 +213,7 @@ script: |-
                        'Type': entryTypes['note'],
                        'Contents': 'No duplicate incidents has been found.',
                        'EntryContext': context})
-      exit(0)
+      sys.exit(0)
 
   SIMILAR_INCIDENT_KEYS = map(lambda x: remove_prefix('incident.', x), SIMILAR_INCIDENT_KEYS)
 
@@ -348,4 +348,3 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
-releaseNotes: "Fix script output params."
