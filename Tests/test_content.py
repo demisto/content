@@ -125,7 +125,7 @@ def main():
                 integration['params'] = {
                                             'url': 'https://localhost',
                                             'apikey': demisto_api_key,
-                                            'insecure': true,
+                                            'insecure': True,
                                         }
 
         test_message = 'playbook: ' + playbook_id
