@@ -119,7 +119,7 @@ script:
         }
     };
 
-    var deleteIncident = function(ids_to_delete) {
+    var deleteIncidents = function(ids_to_delete) {
         var body = {
             ids: ids_to_delete,
             all: false,
@@ -173,7 +173,7 @@ script:
             return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
         case 'demisto-delete-incidents':
             var ids = argToList(args.ids);
-            return deleteIncident(ids);
+            return deleteIncidents(ids);
         default:
             throw 'Demisto REST APIs - unknown command';
     }
