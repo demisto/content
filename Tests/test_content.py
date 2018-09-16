@@ -122,7 +122,10 @@ def main():
             if integration_params:
                 integration['params'] = integration_params[0].get('params', {})
             elif 'Demisto REST API' == integration['name']:
-                integration['params'] = demisto_api_key
+                integration['params'] = {
+                                            'url': 'https://localhost',
+                                            'apikey': demisto_api_key
+                                        }
 
         test_message = 'playbook: ' + playbook_id
         if integrations:
