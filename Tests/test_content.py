@@ -124,7 +124,8 @@ def main():
             elif 'Demisto REST API' == integration['name']:
                 integration['params'] = {
                                             'url': 'https://localhost',
-                                            'apikey': demisto_api_key
+                                            'apikey': demisto_api_key,
+                                            'insecure': true,
                                         }
 
         test_message = 'playbook: ' + playbook_id
