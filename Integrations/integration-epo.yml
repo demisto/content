@@ -179,7 +179,12 @@ script:
         if (result && Array.isArray(result)) {
             result = result[0];
         }
-        return result.objectId;
+        if (result) {
+          return result.objectId;
+        }
+
+        // If reached here then the response is an empty "OK:", which means VSEContentUpdateDemisto was not found in the server
+        throw 'Error getting DAT update task. It seems the command "VSEContentUpdateDemisto" is missing from the EPO server. Please contact support for more details';
     };
 
     var epoUpdateCLientDat = function() {
@@ -243,7 +248,7 @@ script:
             var md = "McAfee ePO Current DAT file version in repository: **" + epoDAT + '**\n';
             return {Type: entryTypes.note, Contents: result, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
         } else {
-            throw 'Error getting current DAT version. Response: ' + JSON.stringify(result);
+            throw 'Error getting current DAT version. Please check that the DAT file exists. Response: ' + JSON.stringify(result);
         }
     }
 
@@ -415,3 +420,4 @@ script:
       commands. You can also specify 'headers' argument  to filter tables headers.
       e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
   runonce: false
+releaseNotes: "Expanded error throwing to indicate when 'VSEContentUpdateDemisto' task or 'VSCANDAT1000' task is missing"
