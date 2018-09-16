@@ -171,9 +171,6 @@ script:
             }
             var desc = args.description || '';
             return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
-        case 'demisto-delete-incident':
-            var ids = [args.id];
-            return deleteIncident(ids);
         case 'demisto-delete-incidents':
             var ids = argToList(args.ids);
             return deleteIncident(ids);
@@ -238,13 +235,6 @@ script:
     - name: body
       description: Request body
     description: Send HTTP Multipart request to upload files to Demisto server
-  - name: demisto-delete-incident
-    arguments:
-    - name: id
-      required: true
-      description: Incident ID to delete
-    description: Delete a Demisto incident
-    execution: true
   - name: demisto-delete-incidents
     arguments:
     - name: ids
