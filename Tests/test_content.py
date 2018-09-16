@@ -1,9 +1,12 @@
+import sys
+import json
+import string
+import random
 import argparse
+
 import demisto
 from test_integration import test_integration
 from test_utils import print_color, print_error, LOG_COLORS
-import json
-import sys
 
 
 def str2bool(v):
@@ -59,6 +62,13 @@ def main():
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
+    demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+    apikey_json = {
+                    'name': 'test_apikey',
+                    'apikey': demisto_api_key
+                  }
+    c.req('POST', '/apikeys', apikey_json)
+
     with open(conf_path) as data_file:
         conf = json.load(data_file)
 
@@ -111,6 +121,8 @@ def main():
             integration_params = [item for item in secret_params if item["name"] == integration['name']]
             if integration_params:
                 integration['params'] = integration_params[0].get('params', {})
+            elif 'Demisto REST API' == integration['name']:
+                integration['params'] = demisto_api_key
 
         test_message = 'playbook: ' + playbook_id
         if integrations:
