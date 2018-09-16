@@ -1,0 +1,249 @@
+id: SNDBOXTestPlaybook
+version: 4
+name: SNDBOXTestPlaybook
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: ed78ef21-5e4e-4282-8b70-212ee5d6eefe
+    type: start
+    task:
+      id: ed78ef21-5e4e-4282-8b70-212ee5d6eefe
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+        - '1'
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  '1':
+    id: '1'
+    taskid: d908943a-5f45-40b1-8944-b2be0a6d3944
+    type: regular
+    task:
+      id: d908943a-5f45-40b1-8944-b2be0a6d3944
+      version: -1
+      name: Start fresh
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+        - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  '2':
+    id: '2'
+    taskid: ce29230f-63e0-4c79-8a23-9a543ecc6cfe
+    type: regular
+    task:
+      id: ce29230f-63e0-4c79-8a23-9a543ecc6cfe
+      version: -1
+      name: Validate instance is working
+      script: SNDBOX|||SNDBOX-is-online
+      type: regular
+      iscommand: true
+      brand: SNDBOX
+    nexttasks:
+      '#none#':
+        - '9'
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 337
+        }
+      }
+  '5':
+    id: '5'
+    taskid: 305d1966-7f6f-4c58-812d-68c37e505b2a
+    type: regular
+    task:
+      id: 305d1966-7f6f-4c58-812d-68c37e505b2a
+      version: -1
+      name: Get info on the file analysis
+      script: SNDBOX|||SNDBOX-analysis-info
+      type: regular
+      iscommand: true
+      brand: SNDBOX
+    nexttasks:
+      '#none#':
+        - '16'
+    scriptarguments:
+      analysis_id:
+        simple: ${SNDBOX.Analysis.[0].AnalysisID}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 786
+        }
+      }
+  '9':
+    id: '9'
+    taskid: 06650b83-4094-4df1-8cbb-4b9cfe375185
+    type: regular
+    task:
+      id: 06650b83-4094-4df1-8cbb-4b9cfe375185
+      version: -1
+      name: Create sample file
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+        - '10'
+    scriptarguments:
+      data:
+        simple: |-
+          WEB
+          1
+          http://www.sndbox.com/fake.dat
+          2
+          a
+          3
+          b
+          4
+          c
+          5
+      entryId: {}
+      filename:
+        simple: test.iqy
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 491
+        }
+      }
+  '10':
+    id: '10'
+    taskid: a5322055-36e1-4113-8937-4e14d81139eb
+    type: regular
+    task:
+      id: a5322055-36e1-4113-8937-4e14d81139eb
+      version: -1
+      name: Run sample with file
+      script: SNDBOX|||SNDBOX-detonate-file
+      type: regular
+      iscommand: true
+      brand: SNDBOX
+    nexttasks:
+      '#none#':
+        - '5'
+    scriptarguments:
+      file_id:
+        complex:
+          root: File
+          filters:
+            - - operator: string.isEqual
+                left:
+                  value:
+                    simple: File.Name
+                  iscontext: true
+                right:
+                  value:
+                    simple: test.iqy
+          transformers:
+            - operator: getField
+              args:
+                field:
+                  value:
+                    simple: EntryID
+      sample_url: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 625
+        }
+      }
+  '16':
+    id: '16'
+    taskid: 0584f63f-7467-4dfb-8d5f-4e476ddb691a
+    type: regular
+    task:
+      id: 0584f63f-7467-4dfb-8d5f-4e476ddb691a
+      version: -1
+      name: Download Report - JSON
+      script: SNDBOX|||SNDBOX-download-report
+      type: regular
+      iscommand: true
+      brand: SNDBOX
+    scriptarguments:
+      analysis_id: {}
+      type:
+        simple: json
+      webid:
+        complex:
+          root: SNDBOX
+          filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: SNDBOX.Analysis.Status
+                  iscontext: true
+                right:
+                  value:
+                    simple: finished
+          accessor: Analysis
+          transformers:
+            - operator: getField
+              args:
+                field:
+                  value:
+                    simple: AnalysisID
+            - operator: GetFirstObject
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 939
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 984,
+        "width": 380,
+        "x": 480,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
