@@ -102,10 +102,6 @@
             "playbookID": "Extract Indicators From File - test"
         },
         {
-            "integrations": "Jask",
-            "playbookID": "Jask_Test"
-        },
-        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
@@ -623,6 +619,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
         },
         {
             "integrations": "Qualys",
