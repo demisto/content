@@ -1,0 +1,233 @@
+id: ATD - Detonate File
+version: -1
+name: ATD - Detonate File
+toversion: 3.6.0
+fromversion: ""
+description: Detonate a file through McAfee ATD
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bb01d4bd-76d4-4d60-897b-d169fc413163
+    type: start
+    task:
+      id: bb01d4bd-76d4-4d60-897b-d169fc413163
+      version: -1
+      description: "Playbook start point"
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 37
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 7c6ff621-6640-4c67-8fda-45c0fbb577ac
+    type: condition
+    task:
+      id: 7c6ff621-6640-4c67-8fda-45c0fbb577ac
+      version: -1
+      description: |
+              Verify that there is a valid instance of McAfee ATD enabled.
+      name: Is ATD Available?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "7"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: McAfee Advanced Threat Defense
+              ignorecase: true
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+              ignorecase: true
+          accessor: brand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 175
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 35ddeef4-f49f-493d-8679-80624dd4d1d8
+    type: title
+    task:
+      id: 35ddeef4-f49f-493d-8679-80624dd4d1d8
+      version: -1
+      name: End
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 272,
+          "y": 1108
+        }
+      }
+  "7":
+    id: "7"
+    taskid: b9b463d1-6023-4afe-8a69-cdcb3de19822
+    type: condition
+    task:
+      id: b9b463d1-6023-4afe-8a69-cdcb3de19822
+      version: -1
+      name: Is there a file to detonate?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -21,
+          "y": 392
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 626ec891-11a0-41af-8432-5e7efabe0d2b
+    type: regular
+    task:
+      id: 626ec891-11a0-41af-8432-5e7efabe0d2b
+      version: -1
+      description: etonate the file in McAfee ATD
+      name: ATD - Detonate File
+      script: McAfee Advanced Threat Defense|||detonate-file
+      type: regular
+      iscommand: true
+      brand: McAfee Advanced Threat Defense
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      format:
+        simple: pdf
+      threshold:
+        simple: "3"
+      timeout: {}
+      upload:
+        complex:
+          root: inputs.EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -162,
+          "y": 606
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_6_no": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1136,
+        "width": 814,
+        "x": -162,
+        "y": 37
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    complex:
+      root: File
+      accessor: EntryID
+  required: false
+  description: the EntryID of the file to detonate
+outputs:
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string

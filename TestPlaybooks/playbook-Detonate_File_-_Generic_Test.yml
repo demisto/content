@@ -1,4 +1,4 @@
-id: Detonate File - Generic Test
+id: detonate_file_-_generic_test
 version: -1
 name: Detonate File - Generic Test
 fromversion: "4.0.0"
@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92d25eae-3591-4dfc-8a74-1028622b183d
+    taskid: cb5511f1-7b77-492a-8d4a-e83de02a7463
     type: start
     task:
-      id: 92d25eae-3591-4dfc-8a74-1028622b183d
+      id: cb5511f1-7b77-492a-8d4a-e83de02a7463
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: bdcd4aa1-45e9-4c55-87f2-fefc936910f1
+    taskid: 94b6d204-186c-47bb-84e3-2d121b1393e1
     type: regular
     task:
-      id: bdcd4aa1-45e9-4c55-87f2-fefc936910f1
+      id: 94b6d204-186c-47bb-84e3-2d121b1393e1
       version: -1
       name: Download PDF file
       description: Sends http request. Returns the response as json.
@@ -41,7 +41,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
       body: {}
       filename:
@@ -68,10 +68,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 87a4a8be-a86c-4d11-8489-81da1bb327fd
+    taskid: c6d121da-00ab-47a8-897f-8f96a78c2311
     type: regular
     task:
-      id: 87a4a8be-a86c-4d11-8489-81da1bb327fd
+      id: c6d121da-00ab-47a8-897f-8f96a78c2311
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -97,10 +97,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: a1709d1f-6858-4dc7-80eb-7f31feb141ac
+    taskid: 6a2348a6-48be-4edf-88b8-b5ad994a9579
     type: title
     task:
-      id: a1709d1f-6858-4dc7-80eb-7f31feb141ac
+      id: 6a2348a6-48be-4edf-88b8-b5ad994a9579
       version: -1
       name: Done
       type: title
@@ -115,12 +115,12 @@ tasks:
         }
       }
     note: false
-  "5":
-    id: "5"
-    taskid: 4227e833-67b4-4502-8d54-ea74af0f7457
+  "6":
+    id: "6"
+    taskid: b327256a-404a-4370-8cdd-8ea94fb9df3a
     type: playbook
     task:
-      id: 4227e833-67b4-4502-8d54-ea74af0f7457
+      id: b327256a-404a-4370-8cdd-8ea94fb9df3a
       version: -1
       name: Detonate File - Generic
       playbookName: Detonate File - Generic
@@ -130,21 +130,12 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-    scriptarguments:
-      EntryID:
-        simple: ${File.EntryID}
-      File:
-        simple: ${File}
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 605
+          "y": 615
         }
       }
     note: false

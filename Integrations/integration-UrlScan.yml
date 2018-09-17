@@ -110,7 +110,11 @@ script:
         }
 
         if (stats.ipStats && stats.ipStats[0] && stats.ipStats[0].asn) {
-            md += 'ASN: **' + stats.ipStats[0].asn.asn + ' ' + stats.ipStats[0].asn.description + '**\n';
+            if (stats.ipStats[0].asn.asn) {
+              md += 'ASN: **' + stats.ipStats[0].asn.asn + ' ' + (stats.ipStats[0].asn.description || '') + '**\n';
+            } else {
+              md += 'ASN: ** N/A **\n';
+            }
         }
 
         if (stats.malicious) {
