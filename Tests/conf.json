@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ThreatConnect",
+            "playbookID": "test-ThreatConnect"
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
@@ -459,10 +463,6 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
-        },
-        {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
         },
         {
             "integrations": {
