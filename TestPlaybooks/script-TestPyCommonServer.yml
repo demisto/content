@@ -254,6 +254,18 @@ script: |-
   |bar|
   |kat|
   '''
+      tables.append((table_string_array, expected_string_array_tbl, ))
+
+
+      table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header', ['foo', 'bar', 'katz'], 'header_1')
+      expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
+  |header_1|
+  |-|
+  |foo|
+  |bar|
+  |kat|
+  '''
+      tables.append((table_string_array_string_header, expected_string_array_string_header_tbl, ))
 
       results = [actual == expected for actual, expected in tables]
 
