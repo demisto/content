@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
@@ -451,10 +455,6 @@
         }
     ],
     "skipped": [
-        {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
-        },
         {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
