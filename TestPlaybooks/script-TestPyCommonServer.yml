@@ -235,8 +235,8 @@ script: |-
   '''
       tables.append((table_string_header, expected_string_header_tbl, ))
 
-  table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
-  expected_single_column_tbl = '''### tableToMarkdown test with single column
+      table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
+      expected_single_column_tbl = '''### tableToMarkdown test with single column
   |header_1|
   |-|
   |a1|
