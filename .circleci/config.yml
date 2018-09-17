@@ -4,9 +4,9 @@ jobs:
     docker:
       - image: circleci/node:9.11
     environment:
-      CONTENT_VERSION: "18.7.1"
       LATEST_DEMISTO_VERSION: "3.6.0"
       FIRST_RELEASE_AFTER_DEMISTO_RELEASE: "False"
+      CONTENT_VERSION: "18.9.0"
     steps:
       - checkout
       - run:
@@ -28,18 +28,21 @@ jobs:
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
               chmod +x ./Tests/scripts/*
+      - add_ssh_keys:
+          fingerprints:
+              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47"
       - run:
           name: Validate Files and Yaml
           command: |
               chmod +x ./Tests/yamlvalidator
               ./Tests/yamlvalidator
-              ./Tests/scripts/validate_files_structure.sh
+              python ./Tests/scripts/validate_files_structure.py
       - run:
           name: Build Content Descriptor
           command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM 5e28b4819d5ec478d7542901a83ee38bdb215afa $CONTENT_VERSION $LATEST_DEMISTO_VERSION $FIRST_RELEASE_AFTER_DEMISTO_RELEASE
       - run:
           name: Common Server Documentation
-          command: ./Docs/commonServerDocs.sh
+          command: ./Documentation/commonServerDocs.sh
       - run:
           name: Create Content Artifacts
           command: python content_creator.py $CIRCLE_ARTIFACTS
@@ -51,13 +54,13 @@ jobs:
           command: |
               ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
       - run:
-          name: Create Instance
-          command: |
-              ./Tests/scripts/create_instance.sh
-      - run:
           name: Download Configuration
           command: |
               ./Tests/scripts/download_demisto_conf.sh
+      - run:
+          name: Create Instance
+          command: |
+              ./Tests/scripts/create_instance.sh instance.json
       - run:
           name: Setup Instance
           command: |

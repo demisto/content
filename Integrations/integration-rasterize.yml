@@ -8,6 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAA10l
 description: Rasterize URLs or emails given to it
 detaileddescription: Take a URL or HTML body and create an image or PDF out of it
 defaultEnabled: true
+releaseNotes: Do not send the rastarize base64 image as output, since it can be huge and affect the system performance, the correct way is to mark the rastarize entry as note or with a tag
 configuration:
 - display: Use system proxy settings
   name: proxy

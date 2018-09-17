@@ -2,7 +2,7 @@ commonfields:
   id: EmailAskUser
   version: -1
 name: EmailAskUser
-fromversion: 3.5.0
+fromversion: 4.0.0
 script: |-
   // email body type
   var bodyType = 'text';
@@ -30,6 +30,9 @@ script: |-
   var subjectSuffix = ' - #' + incidents[0].id + ' ' + entitlement;
   if (args.task) {
       subjectSuffix += ' #' + args.task;
+      if (args.playbookTaskID && args.playbookTaskID != 'all' && args.playbookTaskID.trim().length > 0) {
+          subjectSuffix += ' #' + args.playbookTaskID;
+      }
   }
   var subject = args.subject + subjectSuffix;
 
@@ -162,5 +165,9 @@ args:
   description: The CC email address
 - name: bcc
   description: The BCC email address
+- name: playbookTaskID
+  description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all`
+    to complete all tasks from all plabooks
+  defaultValue: ${currentPlaybookID}
 scripttarget: 0
 runonce: false
