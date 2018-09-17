@@ -15,12 +15,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -37,7 +37,8 @@ tasks:
       iscommand: true
       brand: EWS Mail Sender
     scriptarguments:
-      attachIDs: {}
+      attachIDs:
+        simple: ${File.EntryID}
       attachNames: {}
       bcc: {}
       body: {}
@@ -52,8 +53,49 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 454,
-          "y": 283
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 7db5b1b3-aae0-46d8-88e3-963f84c286cf
+    type: regular
+    task:
+      id: 7db5b1b3-aae0-46d8-88e3-963f84c286cf
+      version: -1
+      name: Get file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test_file
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password:
+        simple: '{ENCRYPTED}iyMzr5l9JLzg6ThLOlDRxAU7CU3ePLL2BwDWBf3t3wmTZvUbSvo8oPO5vcqeDDHvgB+hx+7G8D7iRQTv/E8UIg=='
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
 view: |-
@@ -61,9 +103,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 328,
-        "width": 384,
-        "x": 450,
+        "height": 415,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }

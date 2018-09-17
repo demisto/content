@@ -127,6 +127,8 @@ schema;command_schema:
       type: seq
       sequence:
       - include: important_schema
+    timeout:
+      type: int
 
 # int
 schema;argument_schema:

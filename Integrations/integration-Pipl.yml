@@ -29,7 +29,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |+
+  script: |-
     var url = params.url;
     var columns;
     if (params.columns) {
@@ -90,7 +90,6 @@ script:
                 delete data[i].Email;
             }
         }
-
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.table,
@@ -128,12 +127,12 @@ script:
             Addresses: ''
         };
         if (person.names) {
-            for (let i = 0; i < person.names.length; i++) {
+            for (var i = 0; i < person.names.length; i++) {
                 response.Names += person.names[i].middle ? person.names[i].first + ' ' + person.names[i].middle + ' ' + person.names[i].last + '\n' : person.names[i].first + ' ' + person.names[i].last + '\n';
             }
         }
         if (person.phones) {
-            for (let i = 0; i < person.phones.length; i++) {
+            for (var i = 0; i < person.phones.length; i++) {
                 response.Phones += person.phones[i].display + ' ' + person.phones[i].display_international + '\n';
             }
         }
@@ -149,38 +148,38 @@ script:
 
         }
         if (person.usernames) {
-            for (let i = 0; i < person.usernames.length; i++) {
+            for (var i = 0; i < person.usernames.length; i++) {
                 response.Usernames += person.usernames[i].content + '\n';
             }
         }
         if (person.emails) {
             response.Email = [];
-            for (let i = 0; i < person.emails.length; i++) {
+            for (var i = 0; i < person.emails.length; i++) {
                 response.Email[i] = {Address:person.emails[i].address};
             }
         }
         if (person.educations) {
-            for (let i = 0; i < person.educations.length; i++) {
+            for (var i = 0; i < person.educations.length; i++) {
                 response.Educations += person.educations[i].display + '\n';
             }
         }
         if (person.user_ids) {
-            for (let i = 0; i < person.user_ids.length; i++) {
+            for (var i = 0; i < person.user_ids.length; i++) {
                 response.UserIDs += person.user_ids[i].content + '\n';
             }
         }
         if (person.urls) {
-            for (let i = 0; i < person.urls.length; i++) {
+            for (var i = 0; i < person.urls.length; i++) {
                 response.URLs += person.urls[i].url + '\n';
             }
         }
         if (person.jobs) {
-            for (let i = 0; i < person.jobs.length; i++) {
+            for (var i = 0; i < person.jobs.length; i++) {
                 response.Jobs += person.jobs[i].display + '\n';
             }
         }
         if (person.addresses) {
-            for (let i = 0; i < person.addresses.length; i++) {
+            for (var i = 0; i < person.addresses.length; i++) {
                 response.Addresses += person.addresses[i].display + '\n';
             }
         }
@@ -204,8 +203,6 @@ script:
         default:
 
     }
-
-
   type: javascript
   commands:
   - name: pipl-search
@@ -276,3 +273,4 @@ script:
     - contextPath: Account.Usernames
       description: Online platforms usernames
     description: Searches for information regarding given email address
+  runonce: false

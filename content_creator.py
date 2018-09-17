@@ -1,11 +1,12 @@
 import os
 import sys
 import yaml
+import json
 import glob
 import shutil
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
-                'Classifiers', 'Layouts', 'IncidentFields']
+                'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
 TEST_DIR = 'TestPlaybooks'
 
@@ -22,12 +23,14 @@ ZIP_TEST = 'content_test'
 
 def is_ge_version(ver1, ver2):
     # fix the version to arrays of numbers
-    if isinstance(ver1, str): ver1 = [int(i) for i in ver1.split('.')]
-    if isinstance(ver2, str): ver2 = [int(i) for i in ver2.split('.')]
+    ver1 = [int(i) for i in str(ver1).split('.')]
+    ver2 = [int(i) for i in str(ver2).split('.')]
 
     for v1, v2 in zip(ver1, ver2):
         if v1 > v2:
             return False
+        elif v2 > v1:
+            return True
 
     # most significant values are equal
     return len(ver1) <= len(ver2)
@@ -36,6 +39,20 @@ def is_ge_version(ver1, ver2):
 def add_tools_to_bundle(bundle):
     for d in glob.glob(os.path.join('Tools', '*')):
         shutil.make_archive(os.path.join(bundle, 'tools-%s' % (os.path.basename(d), )), 'zip', d)
+
+
+# modify incident fields file to contain only `incidentFields` field (array)
+# from { "incidentFields": [...]} to [...]
+def convert_incident_fields_to_array():
+    scan_files = glob.glob(os.path.join('IncidentFields', '*.json'))
+    for path in scan_files:
+        with open(path, 'r+') as f:
+            data = json.load(f)
+            incident_fields = data.get('incidentFields')
+            if incident_fields is not None:
+                f.seek(0)
+                json.dump(incident_fields, f, indent=2)
+                f.truncate()
 
 
 def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
@@ -94,6 +111,8 @@ def main(circle_artifacts):
         os.mkdir(b)
         add_tools_to_bundle(b)
 
+    convert_incident_fields_to_array()
+
     for d in CONTENT_DIRS:
         print 'copying dir %s to bundles ...' % (d,)
         copy_dir_files(d, version_num, BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST)
@@ -106,7 +125,7 @@ def main(circle_artifacts):
 
     print 'copying common server doc to bundles'
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
-        shutil.copyfile('./Docs/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
+        shutil.copyfile('./Documentation/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
 
     print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)

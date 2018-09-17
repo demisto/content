@@ -110,7 +110,11 @@ script:
         }
 
         if (stats.ipStats && stats.ipStats[0] && stats.ipStats[0].asn) {
-            md += 'ASN: **' + stats.ipStats[0].asn.asn + ' ' + stats.ipStats[0].asn.description + '**\n';
+            if (stats.ipStats[0].asn.asn) {
+              md += 'ASN: **' + stats.ipStats[0].asn.asn + ' ' + (stats.ipStats[0].asn.description || '') + '**\n';
+            } else {
+              md += 'ASN: ** N/A **\n';
+            }
         }
 
         if (stats.malicious) {
@@ -158,26 +162,25 @@ script:
 
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
-
-            if (res.results[0].malicious !== 0){
+            if (res.results[0].malicious && res.results[0].malicious > 0){
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
-                    Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
+                    Malicious: {Vendor: 'urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
             } else {
                 ec[outputPaths.url] = {Data: url};
                 dbotScore = 1;
             }
 
-            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'Urlscan.io', Score: dbotScore};
+            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'urlscan.io', Score: dbotScore};
             resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
             resDis.push(getScreenshot(res.results[0]._id));
 
             return resDis;
 
         } else {
-            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'UrlscanIO', Score: dbotScore};
+            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'urlscan.io', Score: dbotScore};
             md += 'No results for this url';
             resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
         }
@@ -208,25 +211,25 @@ script:
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
 
-            if (res.results[0].malicious !== 0){
+            if (res.results[0].malicious && res.results[0].malicious > 0){
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.ip, {
                     Address: ip,
-                    Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
+                    Malicious: {Vendor: 'urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
             } else {
                 ec[outputPaths.ip] = {Address: ip};
                 dbotScore = 1;
             }
 
-            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'Urlscan.io', Score: dbotScore};
+            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'urlscan.io', Score: dbotScore};
             resDis.push ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
             resDis.push(getScreenshot(res.results[0]._id));
 
             return resDis;
 
         }else {
-            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'Urlscan.io', Score: dbotScore};
+            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'urlscan.io', Score: dbotScore};
             md += 'No results for this ip';
             resDis.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
         }
@@ -246,25 +249,25 @@ script:
         if (res.results.length !== 0) {
             md += handleSearchResults(res);
 
-            if (res.results[0].malicious !== 0) {
+            if (res.results[0].malicious && res.results[0].malicious > 0) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.file, {
                     MD5: hash,
-                    Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
+                    Malicious: {Vendor: 'urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
             }else {
                 ec[outputPaths.file] = {MD5: hash};
                 dbotScore = 1;
             }
 
-            ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'Urlscan.io', Score: dbotScore};
+            ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'urlscan.io', Score: dbotScore};
             resDis.push ({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
             resDis.push(getScreenshot(res.results[0]._id));
 
             return resDis;
 
         } else {
-            ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'Urlscan.io', Score: dbotScore};
+            ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'urlscan.io', Score: dbotScore};
             md += 'No results for this hash';
             resDis.push({'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec});
         }
@@ -343,18 +346,18 @@ script:
 
             md += addMD(resStats);
 
-            if (resStats.malicious !== 0){
+            if (resStats.malicious && resStats.malicious > 0){
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: scanUrl,
-                    Malicious: {Vendor: 'Urlscan.io', Description: 'Match found in Urlscan.io database'}
+                    Malicious: {Vendor: 'urlscan.io', Description: 'Match found in Urlscan.io database'}
                 });
             } else {
                 ec[outputPaths.url] = {Data: scanUrl};
                 dbotScore = 1;
             }
 
-            ec.DBotScore = {Indicator: scanUrl, Type: 'url', Vendor: 'Urlscan.io', Score: dbotScore};
+            ec.DBotScore = {Indicator: scanUrl, Type: 'url', Vendor: 'urlscan.io', Score: dbotScore};
 
             if (isPublic === 'private') {
                 resDis.push ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
@@ -367,7 +370,7 @@ script:
             return resDis;
 
         } else {
-            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'Urlscan.io', Score: dbotScore};
+            ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'urlscan.io', Score: dbotScore};
             md += 'No scan results.';
             resDis.push( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, 'HumanReadable': md, 'EntryContext': ec} );
             return resDis;
