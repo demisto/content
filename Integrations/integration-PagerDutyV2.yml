@@ -289,11 +289,12 @@ script:
             }
         }
 
-    def create_new_incident(source, summary, severity, action, description='No description', group='', event_class='', component=''):
+    def create_new_incident(source, summary, severity, action, description='No description', group='', event_class='', component='', dedup_key=None):
         """Create a new incident in the PagerDuty instance."""
         payload = {
                         'routing_key': SERVICE_KEY,
                         'event_action': action,
+                        'dedup_key': dedup_key,
                         'images': [],
                         'links': [],
                         'payload': {
@@ -331,7 +332,8 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(TRIGGER_EVENT, output),
             'EntryContext': {
-                'PagerDuty.Event(val.id==obj.id)': context
+                'PagerDuty.Event(val.id==obj.id)': context,
+                'Event.id(val.id==obj.id)': context['dedup_key']
             }
         }
 
@@ -620,6 +622,8 @@ script:
     - name: component
       description: 'The part or component of the affected system that is broken. Example:
         "keepalive" "webping"'
+    - name: dedup_key
+      description: de-duplication key, used to acknowledge/resolve specific event
     outputs:
     - contextPath: PagerDuty.Event.Status
       description: Status of the action on the event
