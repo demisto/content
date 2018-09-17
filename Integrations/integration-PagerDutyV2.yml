@@ -332,8 +332,8 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(TRIGGER_EVENT, output),
             'EntryContext': {
-                'PagerDuty.Event(val.id==obj.id)': context,
-                'Event.id(val.id==obj.id)': context['dedup_key']
+                'PagerDuty.Event(val.dedup_key==obj.dedup_key)': context,
+                'Event.ID(val.ID==obj.dedup_key)': context['dedup_key']
             }
         }
 
