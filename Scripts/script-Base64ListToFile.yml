@@ -20,16 +20,16 @@ script: |-
   # output file to warroom
   demisto.results(fileResult(outfilename,bin_file))
 type: python
-tags:
+tags: list
 - Utility
-comment: Will covert Base64 file in a list to a binary file and upload to warroom
+comment: Converts Base64 file in a list to a binary file and upload to warroom
 enabled: true
 args:
 - name: listname
   required: true
-  description: Listname of Base64 item (need to be a single file in list)
+  description: List Name of Base64 item (need to be a single file in list)
 - name: filename
-  description: Optional Warroom Output Filename (default filename is listname)
+  description: Optional Warroom Output Filename (default filename is list name)
 outputs:
 - contextPath: File.Name
   description: Filename (only in case of report type=json)
@@ -43,5 +43,7 @@ outputs:
   description: SHA1 hash of the file (only in case of report type=json)
 - contextPath: File.SHA256
   description: SHA256 hash of the file (only in case of report type=json)
+- contextPath: File.EntryID
+  description: EntryID of the file (only in case of report type=json)
 scripttarget: 0
 runonce: false
