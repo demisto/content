@@ -6,7 +6,6 @@ display: IBM QRadar
 category: Analytics & SIEM
 image: data:image/png;base64,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
 description: Get incidents and search QRadar
-releaseNotes: "-"
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -33,7 +32,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Number of offenses to pull per API call
+- display: "Number of offenses to pull per API call (max: 50)"
   name: offensesPerCall
   defaultvalue: "50"
   type: 0
@@ -66,7 +65,7 @@ script:
     var insecure = params.insecure;
     var query = params.query;
     var offensesPerCall = parseInt(params.offensesPerCall || 50);
-
+    offensesPerCall = offensesPerCall > 50 ? 50 : offensesPerCall;
     var createIncidentFromOffense = function(incident) {
         var keys = Object.keys(incident);
         var labels = [];
@@ -225,36 +224,66 @@ script:
         headers = headers.split(',');
     }
     delete(args.headers);
-
+    var findLastPagePos = function (fetchQuery) {
+        // make sure it's not a fluke and we simply have exactly offensePerCall results
+        if (getOffenses(fetchQuery, undefined, offensesPerCall + '-' + offensesPerCall).length == 0) {
+            return offensesPerCall-1;
+        }
+        // search up until we don't have any more results
+        pos = offensesPerCall*2;
+        while (getOffenses(fetchQuery, undefined, pos + '-' + pos).length == 1) {
+            pos *= 2;
+        }
+        // binary search the gap from the last step
+        var high = pos; // doesn't have results
+        var low = pos / 2; // last place we saw results
+        while (high > low+1) { // if
+            pos = parseInt((high + low) / 2); // split the gap and round down
+            if (getOffenses(fetchQuery, undefined, pos + '-' + pos).length == 1) {
+                // we still have results, raise the bar
+                low = pos;
+            } else {
+                // we're too high, lower the bar
+                high = pos;
+            }
+        }
+        // low holds the last pos of the list
+        return low;
+    }
     switch (command) {
         case 'test-module':
-            if (getOffenses(undefined, undefined, '0-1')) {
+            if (getOffenses(undefined, undefined, '0-0')) { // return only one offense
                 return 'ok';
             }
             return 'not ok';
         case 'fetch-incidents':
             var lastRun = getLastRun();
+            // Using startTime is deprecated, and is being supported here for backward compability
+            // it should be removed once everyone use this code at least once
+            var offenseId = lastRun && lastRun.id ? lastRun.id : 0;
             var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''), undefined, '0-' + (offensesPerCall-1));
-            var totalOffenses = res.length;
-            var lastCallOffenses = res.length;
-            while (startTime && lastCallOffenses >= offensesPerCall) {
-                var min = res.length;
-                var max = min + offensesPerCall;
-                var lastIncidentTime = res[res.length-1].start_time;
-
-                res = res.concat(getOffenses('start_time>' + startTime + ' AND start_time<' + lastIncidentTime + (query ? (' AND (' + query +')') : ''), undefined, min + '-' + max));
-                lastCallOffenses = res.length - totalOffenses;
-                totalOffenses = res.length;
+            var fetchQuery = (startTime ? 'start_time>' + startTime : 'id>' + offenseId) + (query ? (' AND (' + query +')') : '');
+            /*
+                qradar returns offenses sorted desc on id and there's no way to change sorting.
+                if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
+                start looking for the end of the list by doubling the page position until we're empty.
+                then start binary search back until you find the end of the list and finally return
+                `offensesPerCall` from the end.
+            */
+            var res = getOffenses(fetchQuery, undefined, '0-' + (offensesPerCall-1));
+            if (res.length >= offensesPerCall) {
+                var lastOffensePos = findLastPagePos(fetchQuery);
+                res = getOffenses(fetchQuery, undefined, lastOffensePos-offensesPerCall+1 + '-' + lastOffensePos);
             }
 
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var offense = res[i];
                 startTime = Math.max(startTime, offense.start_time);
+                offenseId = Math.max(offenseId, offense.id);
                 incidents.push(createIncidentFromOffense(res[i]));
             }
-            setLastRun({startTime: startTime});
+            setLastRun({id: offenseId});
             return JSON.stringify(incidents);
         case 'qr-offenses':
         case 'qradar-offenses':
@@ -538,3 +567,4 @@ script:
     description: Retrieve a note for an offense
   isfetch: true
   runonce: false
+releaseNotes: "-"
