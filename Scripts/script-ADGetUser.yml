@@ -90,8 +90,12 @@ script: |-
               if 'UserAccountControl' not in m['Contents'][0] or m['Contents'][0]['UserAccountControl'] == "":
                   continue
               if userAccountControlOut:
+                  accountControlFlags = ""
                   for flag, mask in UserAccountControlFlags.iteritems():
-                      m['Contents'][0][flag] = int(m['Contents'][0]['UserAccountControl'],10) & mask != 0
+                      if simulated_flag & mask != 0:
+                          accountControlFlags += flag + ", "
+                  accountControlFlags = accountControlFlags[:-2]
+                  m['Contents'][0]['UserAccountControl'] = accountControlFlags
               else:
                   m['Contents'][0]['ACCOUNTDISABLE'] = int(m['Contents'][0]['UserAccountControl'],10) & 2 != 0
           return resAD
