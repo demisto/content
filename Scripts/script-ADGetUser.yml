@@ -92,7 +92,7 @@ script: |-
               if userAccountControlOut:
                   accountControlFlags = ""
                   for flag, mask in UserAccountControlFlags.iteritems():
-                      if simulated_flag & mask != 0:
+                      if int(m['Contents'][0]['UserAccountControl'],10) & mask != 0:
                           accountControlFlags += flag + ", "
                   accountControlFlags = accountControlFlags[:-2]
                   m['Contents'][0]['UserAccountControl'] = accountControlFlags
