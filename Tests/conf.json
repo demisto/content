@@ -3,10 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
-        },
-        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
@@ -43,10 +39,6 @@
         {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
-        },
-        {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations": "VirusTotal",
@@ -459,6 +451,14 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
+        },
+        {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations": "ThreatConnect",
