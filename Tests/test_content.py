@@ -7,7 +7,7 @@ from test_integration import test_integration
 from test_utils import print_color, print_error, LOG_COLORS
 
 
-FILTER_CONF = "../filter_conf.txt"
+FILTER_CONF = "./Tests/filter_file.txt"
 
 
 def str2bool(v):

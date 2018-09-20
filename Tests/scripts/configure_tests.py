@@ -139,7 +139,7 @@ def create_test_file():
     """Create a file containing all the tests we need to run for the CI"""
     branches = run_git_command("git branch")
     branch_name = re.search("(?<=\* )\w+", branches)
-    files_string = run_git_command("git diff --name-only master {0}".format(branch_name))
+    files_string = run_git_command("git diff --name-only master {0}".format(branch_name.group(0)))
     modified_files, modified_tests_list = get_modified_files(files_string)
     tests = get_test_list(modified_files, modified_tests_list)
 
