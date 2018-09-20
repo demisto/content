@@ -1,9 +1,13 @@
+import sys
+import json
 import argparse
+
 import demisto
 from test_integration import test_integration
 from test_utils import print_color, print_error, LOG_COLORS
-import json
-import sys
+
+
+FILTER_CONF = "../filter_conf.txt"
 
 
 def str2bool(v):
@@ -13,6 +17,7 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
@@ -71,6 +76,10 @@ def main():
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
+    with open(FILTER_CONF, 'r') as filter_file:
+        filterd_tests = filter_file.readlines()
+        filterd_tests = [line.strip('\n') for line in filterd_tests]
+
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
         return
@@ -78,14 +87,16 @@ def main():
     succeed_playbooks = []
     failed_playbooks = []
     for t in tests:
+        playbook_id = t['playbookID']
+        integrations_conf = t.get('integrations', [])
+
+        if not is_nightly and playbook_id not in filterd_tests:
+            continue
+
         test_options = {
             'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
             'interval': conf.get('testInterval', 10)
         }
-
-        playbook_id = t['playbookID']
-
-        integrations_conf = t.get('integrations', [])
 
         if not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
