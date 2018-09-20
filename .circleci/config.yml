@@ -4,8 +4,8 @@ jobs:
     docker:
       - image: circleci/node:9.11
     environment:
-      CONTENT_VERSION: "18.9.0"
-      GIT_SHA1: "b79f11cbba47fd7d3d802a373f43c18629e8acdc"
+      CONTENT_VERSION: "18.9.2"
+      GIT_SHA1: "5c5e8ac47db85abc2134f87f7d0f4fdbc8de272f"
     parallelism: 2
     steps:
       - checkout

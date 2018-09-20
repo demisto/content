@@ -2,7 +2,6 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
-releaseNotes: "Added dbotscore dictionary"
 script: |-
   # Common functions script
   # =======================
@@ -1141,4 +1140,3 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "tableToMarkdown in python supports simple array of strings (e.g ['foo', 'bar', 'koo']"

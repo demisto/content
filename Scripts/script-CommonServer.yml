@@ -2,7 +2,6 @@ commonfields:
   id: CommonServer
   version: 1
 name: CommonServer
-releaseNotes: "Added dbotscore object"
 script: |-
   // Common functions script
   // =======================
