@@ -850,6 +850,64 @@ script:
       default: true
       description: Detection ID
     outputs:
+    - contextPath: RedCanary.Detection.ID
+      description: Detection ID.
+      type: number
+    - contextPath: RedCanary.Detection.Headline
+      description: Human readable text about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Severity
+      description: The severity of the detection. High, medium, or low
+      type: string
+    - contextPath: RedCanary.Detection.Summary
+      description: A summary of information about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Classification
+      description: Detection Classification
+      type: string
+    - contextPath: RedCanary.Detection.Subclassification
+      description: Detection Subclassification
+      type: string
+    - contextPath: RedCanary.Detection.Time
+      description: The time the detection was confirmed as a threat by Red Canary
+      type: date
+    - contextPath: RedCanary.Detection.Acknoledged
+      description: Whether or not the detection is acknowledged.
+      type: boolean
+    - contextPath: RedCanary.Detection.RemediationStatus
+      description: The state the detection is currently in.
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    - contextPath: Account.Username
+      description: Endpoint user name
+      type: string
+    - contextPath: Account.Hostname
+      description: Endpoint host name
+      type: string
     - contextPath: Domain.Name
       description: Domain name
       type: string
