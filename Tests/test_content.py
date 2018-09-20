@@ -51,8 +51,6 @@ def main():
     is_nightly = options.nightly
     circle_node_index = options.circle_node_index
 
-    print "circle_node_index - " + str(circle_node_index) + ", type - " + str(type(circle_node_index))
-
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
         sys.exit(1)
