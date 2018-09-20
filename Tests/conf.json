@@ -41,6 +41,10 @@
             "playbookID": "rsa_packets_and_logs_test"
         },
         {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true,
@@ -129,6 +133,10 @@
         },
         {
             "playbookID": "buildewsquery_test"
+        },
+        {
+            "integrations": "Rapid7 Nexpose",
+            "playbookID": "nexpose_test"
         },
         {
             "integrations": "EWS Mail Sender",
@@ -440,6 +448,10 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
         }
     ],
     "skipped": [
@@ -616,18 +628,6 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
-        },
-        {
-            "integrations": "Rapid7 Nexpose",
-            "playbookID": "nexpose_test"
-        },
-        {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
         }
     ]
 }
