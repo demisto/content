@@ -5,7 +5,7 @@ description: Detonate one or more files using the Wildfire integration. This pla
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
   APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
-fromversion: 3.6.0
+fromversion: 3.5.0
 toversion: 3.6.0
 starttaskid: "0"
 tasks:
@@ -422,3 +422,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+releaseNotes: "-"

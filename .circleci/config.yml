@@ -40,7 +40,7 @@ jobs:
           command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM b79f11cbba47fd7d3d802a373f43c18629e8acdc $CONTENT_VERSION
       - run:
           name: Common Server Documentation
-          command: ./Docs/commonServerDocs.sh
+          command: ./Documentation/commonServerDocs.sh
       - run:
           name: Create Content Artifacts
           command: python content_creator.py $CIRCLE_ARTIFACTS
