@@ -83,8 +83,19 @@ script:
                 Contents: raw,
                 ContentsFormat: formats.json,
                 ReadableContentsFormat: formats.markdown,
-                EntryContext: {'Venafi.Certificats(val.ID==obj.ID)': certs},
-                HumanReadable: tableToMarkdown('Venafi certificats query response', certs),
+                EntryContext: {'Venafi.Certificates(val.ID==obj.ID)': certs},
+                HumanReadable: tableToMarkdown('Venafi certificates query response', certs),
+            };
+            return entry;
+        case 'venafi-get-details':
+            var res = sendRequest('GET', '/vedsdk/certificates/' + args.guid, undefined, auth.APIKey);
+            entry = {
+                Type: entryTypes.note,
+                Contents: raw,
+                ContentsFormat: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                EntryContext: {'Venafi.Certificate.Details(val.ID==obj.ID)': res},
+                HumanReadable: tableToMarkdown('Venafi Certificate Details', res),
             };
             return entry;
         default:
@@ -185,18 +196,24 @@ script:
     - name: ValidToLess
       description: Certificates that expire before the specified date
     outputs:
-    - contextPath: Venafi.Certificats.CreatedOn
+    - contextPath: Venafi.Certificates.CreatedOn
       description: Certificate creation date
-    - contextPath: Venafi.Certificats.DN
+    - contextPath: Venafi.Certificates.DN
       description: Certificate DN
-    - contextPath: Venafi.Certificats.Name
+    - contextPath: Venafi.Certificates.Name
       description: Certificate name
-    - contextPath: Venafi.Certificats.ParentDN
+    - contextPath: Venafi.Certificates.ParentDN
       description: Certificate parent DN
-    - contextPath: Venafi.Certificats.SchemaClass
+    - contextPath: Venafi.Certificates.SchemaClass
       description: Certificate schema
-    - contextPath: Venafi.Certificats.ID
+    - contextPath: Venafi.Certificates.ID
       description: Certificate ID (GUID)
     description: Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
       format. Additional fields can be used in the query by adding them in a key=value
       manner
+  - name: venafi-get-details
+    arguments:
+    - name: guid
+      required: true
+    description: Use a certificate guid to extract more details from the cert store.
+  runonce: false
