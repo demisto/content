@@ -143,7 +143,7 @@ def create_test_file():
     modified_files, modified_tests_list = get_modified_files(files_string)
     tests = get_test_list(modified_files, modified_tests_list)
 
-    with open("../filter_file.txt", "w") as filter_file:
+    with open("./Tests/filter_file.txt", "w") as filter_file:
         filter_file.write('\n'.join(tests))
 
 
