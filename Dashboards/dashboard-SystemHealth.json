@@ -2,7 +2,6 @@
 	"id": "health-status-dashboard",
     "version": -1,
 	"fromVersion": "3.5.1",
-	"releaseNotes": "update memory and cpu usage graphs",
 	"period": {
 		"byTo": "days",
 		"byFrom": "minutes",
