@@ -37,3 +37,5 @@ scripttarget: 0
 dependson:
   must:
   - demisto-api-post
+deprecated: true
+releaseNotes: "Deprecating DemistoDeleteIncident script."
