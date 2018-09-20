@@ -1,5 +1,4 @@
 {
-	"releaseNotes": "Remove HTML Image field since it can be huge and affect system performance",
 	"incidentFields": [
 		{
 			"id": "incident_app",

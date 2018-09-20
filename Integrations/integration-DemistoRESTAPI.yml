@@ -243,4 +243,3 @@ script:
     description: Delete Demisto incidents
     execution: true
   runonce: false
-releaseNotes: "Added delete incident command"
