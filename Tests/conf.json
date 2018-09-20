@@ -45,10 +45,6 @@
             "playbookID": "rsa_packets_and_logs_test"
         },
         {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
             "nightly": true,
@@ -452,10 +448,6 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
-        },
-        {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
         }
     ],
     "skipped": [
@@ -463,6 +455,14 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
+        },
+        {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations": "ThreatConnect",
