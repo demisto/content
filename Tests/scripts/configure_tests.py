@@ -19,13 +19,18 @@ import pip
 import sys
 from subprocess import Popen, PIPE
 
+# Search Keyword for the changed file
+TEST_ID = 'id'
+TESTS_LIST = 'tests'
+
 # file types regexes
 SCRIPT_REGEX = "Scripts.*script-.*.yml"
 PLAYBOOK_REGEX = "Playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "Integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
+TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.*(?!playbook)-.*.yml"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX]
 
 
 KNOWN_FILE_STATUSES = ['a', 'm', 'd']
@@ -69,6 +74,7 @@ def checked_type(file_path):
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     modified_files_list = []
+    modified_tests_list = []
     all_files = files_string.split('\n')
 
     for f in all_files:
@@ -82,15 +88,17 @@ def get_modified_files(files_string):
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
             if checked_type(file_path):
                 modified_files_list.append(file_path)
+            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                modified_tests_list.append(file_path)
 
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error("{0} file status is an unknown known one, "
                         "please check. File status was: {1}".format(file_path,file_status))
 
-    return modified_files_list
+    return modified_files_list, modified_tests_list
 
 
-def collect_tests(file_path):
+def collect_tests(file_path, search_key):
     """Collect tests mentioned in file_path"""
     data_dictionary = None
 
@@ -103,25 +111,37 @@ def collect_tests(file_path):
                 return False
 
     if data_dictionary and data_dictionary.get('tests') is not None:
-        return data_dictionary.get('tests', '-')
+        return data_dictionary.get(search_key, '-')
+
+
+def get_test_list(modified_files, modified_tests_list):
+    """Create a test list that should run"""
+    tests = []
+    for file_path in modified_files:
+        print
+        "Gathering tests from {}".format(file_path)
+        for test in collect_tests(file_path, TESTS_LIST):
+            if test not in tests:
+                tests.append(test)
+
+    for file_path in modified_tests_list:
+        test = collect_tests(file_path, TEST_ID)
+        if test not in tests:
+            tests.append(test)
+
+    if '-' in tests:
+        tests = ['-', ]
+
+    return tests
 
 
 def create_test_file():
     """Create a file containing all the tests we need to run for the CI"""
     branches = run_git_command("git branch")
     branch_name = re.search("(?<=\* )\w+", branches)
-    files_string = run_git_command("git diff --name-only master {0}".format(branch_name.group(0)))
-    modified_files = get_modified_files(files_string)
-
-    tests = []
-    for file_path in modified_files:
-        print "Gathering tests from {}".format(file_path)
-        for test in collect_tests(file_path):
-            if test not in tests:
-                tests.append(test)
-
-    if '-' in tests:
-        tests = ['-', ]
+    files_string = run_git_command("git diff --name-only master {0}".format(branch_name))
+    modified_files, modified_tests_list = get_modified_files(files_string)
+    tests = get_test_list(modified_files, modified_tests_list)
 
     with open("../filter_file.txt", "w") as filter_file:
         filter_file.write('\n'.join(tests))
