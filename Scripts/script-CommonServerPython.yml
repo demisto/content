@@ -478,7 +478,7 @@ script: |-
       if isinstance(data, STRING_TYPES):
           return data
       elif isinstance(data, dict):
-          return '\n'.join(['%s: %s' % (k, flattenCell(v, is_pretty)) for k, v in data.items()])
+          return '\n'.join(['{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
       else:
           return flattenCell(data, is_pretty)
 
@@ -581,8 +581,8 @@ script: |-
          :type t: ``dict`` or ``list``
          :param t: The JSON table - List of dictionaries with the same keys or a single dictionary (required)
 
-         :type headers: ``list``
-         :keyword headers: A list of headers to be presented in the output table (by order). Default will include all available headers.
+         :type headers: ``list`` or ``string``
+         :keyword headers: A list of headers to be presented in the output table (by order). If string will be passed then table will have single header. Default will include all available headers.
 
          :type headerTransform: ``function``
          :keyword headerTransform: A function that formats the original data headers (optional)
@@ -604,6 +604,19 @@ script: |-
 
       if not isinstance(t, list):
           t = [t]
+
+      if headers and isinstance(headers, STRING_TYPES):
+          headers = [headers]
+
+      if not isinstance(t[0], dict):
+          # the table cotains only simple objects (strings, numbers)
+          # should be only one header
+          if headers and len(headers) > 0:
+              header = headers[0]
+              t = map(lambda item: dict((h, item) for h in [header]), t)
+          else:
+              raise Exception("Missing headers param for tableToMarkdown. Example: headers=['Some Header']")
+
       # in case of headers was not provided (backward compatibility)
       if not headers:
           headers = list(t[0].keys())
@@ -766,7 +779,7 @@ script: |-
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
-  def file_result_existing_file(filename, saveFilename = None):
+  def file_result_existing_file(filename, saveFilename=None):
       """
          Rename an existing file
 
@@ -1166,4 +1179,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "added logger decorator"
+releaseNotes: "tableToMarkdown in python supports simple array of strings (e.g ['foo', 'bar', 'koo']"
