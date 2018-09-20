@@ -440,10 +440,6 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
-        },
-        {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
         }
     ],
     "skipped": [
@@ -628,6 +624,10 @@
         {
             "integrations": "Symantec Messaging Gateway",
             "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
         }
     ]
 }
