@@ -1,9 +1,6 @@
 """
 This script is used to create a temp_conf.json file which will run only the needed the tests for a given change.#############################################
 """
-import pip
-import sys
-
 try:
     import yaml
 except ImportError:
@@ -18,60 +15,23 @@ except ImportError:
 
 import re
 import os
-import json
+import pip
+import sys
 from subprocess import Popen, PIPE
 
-# dirs
-MISC_DIR = "Misc"
-SCRIPTS_DIR = "Scripts"
-REPORTS_DIR = "Reports"
-WIDGETS_DIR = "Widgets"
-LAYOUTS_DIR = "Layouts"
-PLAYBOOKS_DIR = "Playbooks"
-DASHBOARDS_DIR = "Dashboards"
-CLASSIFIERS_DIR = "Classifiers"
-CONNECTIONS_DIR = "Connections"
-INTEGRATIONS_DIR = "Integrations"
-TEST_PLAYBOOKS_DIR = "TestPlaybooks"
-INCIDENT_FIELDS_DIR = "IncidentFields"
-
 # file types regexes
-SCRIPT_REGEX = "{}.*script-.*.yml".format(SCRIPTS_DIR)
-MISC_REGEX = "{}.*reputations.*.json".format(MISC_DIR)
-REPORT_REGEX = "{}.*report-.*.json".format(REPORTS_DIR)
-LAYOUT_REGEX = "{}.*layout-.*.json".format(LAYOUTS_DIR)
-WIDGETS_REGEX = "{}.*widget-.*.json".format(WIDGETS_DIR)
-PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(PLAYBOOKS_DIR)
-DASHBOARD_REGEX = "{}.*dashboard-.*.json".format(DASHBOARDS_DIR)
-CLASSIFIER_REGEX = "{}.*classifier-.*.json".format(CLASSIFIERS_DIR)
-INTEGRATION_REGEX = "{}.*integration-.*.yml".format(INTEGRATIONS_DIR)
-TEST_PLAYBOOK_REGEX = "{}.*playbook-.*.yml".format(TEST_PLAYBOOKS_DIR)
-INCIDENT_FIELDS_REGEX = "{}.*incidentfields.*.json".format(INCIDENT_FIELDS_DIR)
-CONNECTIONS_REGEX = "{}.*canvas-context-connections.*.json".format(CONNECTIONS_DIR)
+SCRIPT_REGEX = "Scripts.*script-.*.yml"
+PLAYBOOK_REGEX = "Playbooks.*playbook-.*.yml"
+INTEGRATION_REGEX = "Integrations.*integration-.*.yml"
+TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, WIDGETS_REGEX, DASHBOARD_REGEX,
-                         CONNECTIONS_REGEX, CLASSIFIER_REGEX, LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, MISC_REGEX,
-                         REPORT_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX]
 
-SKIPPED_SCHEMAS = [MISC_REGEX, REPORT_REGEX]
 
 KNOWN_FILE_STATUSES = ['a', 'm', 'd']
 
-REGEXES_TO_SCHEMA_DIC = {LAYOUT_REGEX:"layout",
-                         SCRIPT_REGEX: "script",
-                         WIDGETS_REGEX: "widget",
-                         PLAYBOOK_REGEX: "playbook",
-                         DASHBOARD_REGEX:"dashboard",
-                         CLASSIFIER_REGEX: "classifier",
-                         INTEGRATION_REGEX: "integration",
-                         TEST_PLAYBOOK_REGEX:"test-playbook",
-                         INCIDENT_FIELDS_REGEX:"incidentfields",
-                         CONNECTIONS_REGEX: "canvas-context-connections"}
-
 SCHEMAS_PATH = "Tests/schemas/"
 
-DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR,
-        LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
 
 class LOG_COLORS:
     NATIVE = '\033[m'
@@ -119,8 +79,10 @@ def get_modified_files(files_string):
         file_path = file_data[1]
         file_status = file_data[0]
 
-        if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
-            modified_files_list.append(file_path)
+        if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
+            if checked_type(file_path):
+                modified_files_list.append(file_path)
+
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error("{0} file status is an unknown known one, "
                         "please check. File status was: {1}".format(file_path,file_status))
@@ -133,9 +95,7 @@ def collect_tests(file_path):
     data_dictionary = None
 
     with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".json"):
-            data_dictionary = json.load(f)
-        elif file_path.endswith(".yaml") or file_path.endswith('.yml'):
+        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
             try:
                 data_dictionary = yaml.safe_load(f)
             except Exception as e:
@@ -143,12 +103,13 @@ def collect_tests(file_path):
                 return False
 
     if data_dictionary and data_dictionary.get('tests') is not None:
-        return data_dictionary.get('tests')
+        return data_dictionary.get('tests', '-')
 
 
 def create_test_file():
     """Create a file containing all the tests we need to run for the CI"""
-    branch_name = run_git_command("git branch | grep \* | cut -d ' ' -f2")
+    branches = run_git_command("git branch")
+    branch_name = re.search("(?<=\* )\w+", branches)
     files_string = run_git_command("git diff --name-only master {0}".format(branch_name))
     modified_files = get_modified_files(files_string)
 
@@ -159,8 +120,8 @@ def create_test_file():
             if test not in tests:
                 tests.append(test)
 
-    if "-" in tests:
-        tests = ["-", ]
+    if '-' in tests:
+        tests = ['-', ]
 
     with open("../filter_file.txt", "w") as filter_file:
         filter_file.write('\n'.join(tests))
