@@ -216,4 +216,3 @@ script:
     - name: guid
       required: true
     description: Use a certificate guid to extract more details from the cert store.
-  runonce: false
