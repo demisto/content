@@ -19,12 +19,12 @@ detaileddescription: "This integration allows you to collect and analyze endpoin
   find this in the \"Deployment Mode\"  tab of the server's option panel.\n* **Username/Password**
   for an administrative account that can be used to run the collection tool on the
   endpoints. \n\n### STARTING A COLLECTION\nAfter setting up an instance, you can
-  start a collection by using the “ct-triage-endpoint\" command. The hostname or IP
+  start a collection by using the â€œct-triage-endpoint\" command. The hostname or IP
   of the target endpoint must be provided. \n\nAfter the collection has started, open
   a Cyber Triage client to review the data.  \n\n### SUPPORT\nIf you have any problems
   or need an evaluation copy of Cyber Triage, then please email support@cybertriage.com."
 configuration:
-- display: Hostname of Cyber Triage server
+- display: Hostname of Cyber Triage server (eg. 192.168.1.2)
   name: server
   defaultvalue: ""
   type: 0
@@ -44,32 +44,46 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: Use proxy
+  name: use_proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
 script:
-  script: |+
+  script: |
     import requests
     import traceback
     import urllib3
+    import os
 
-    # Disable warning for inescure requests when cert validation is disabled
+    # Disable warning for insecure requests when cert validation is disabled
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     # Get dict of CT instance parameters and command args
-    ct_params = demisto.params()
-    cmd_args = demisto.args()
+    CT_PARAMS = demisto.params()
+    CMD_ARGS = demisto.args()
 
-    ct_server = ct_params['server']
-    rest_port = ct_params['rest_port']
-    api_key = ct_params['api_key']
-    user = ct_params['credentials']['identifier']
-    password = ct_params['credentials']['password']
-    verify_server_cert = False
-    req_headers = {'restApiKey' : api_key}
-    is_2xx = lambda x: (x/100) == 2 # Returns true if status code (int) is 2xx
+    CT_SERVER = CT_PARAMS['server']
+    REST_PORT = CT_PARAMS['rest_port']
+    API_KEY = CT_PARAMS['api_key']
+    USER = CT_PARAMS['credentials']['identifier']
+    PASSWORD = CT_PARAMS['credentials']['password']
+    VERIFY_SERVER_CERT = False
+    REQ_HEADERS = {'restApiKey' : API_KEY}
+    USE_PROXY = CT_PARAMS['use_proxy']
+    IS_2XX = lambda x: (x/100) == 2 # Returns true if status code (int) is 2xx
+
+    # Delete request proxy environment variables if user does not want to use proxy
+    if not USE_PROXY:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     # Dict of Cyber Triage REST APIs currently used
     REST_APIS = {
-        "check_creds" : "https://{0}:{1}/api/correlation/checkcredentials".format(ct_server, rest_port),
-        "start_collection" : "https://{0}:{1}/api/livesessions".format(ct_server, rest_port)
+        'check_creds' : 'https://{0}:{1}/api/correlation/checkcredentials'.format(CT_SERVER, REST_PORT),
+        'start_collection' : 'https://{0}:{1}/api/livesessions'.format(CT_SERVER, REST_PORT)
     }
 
     # Method to make rest calls (using requests) and handle error scenarios.
@@ -81,9 +95,9 @@ script:
     #       verify_cert - same as requests verify arg
     #
     # Return: Dictionary with response, status_code, and exception keys. status_code will be -1 or status code returned in
-    # response object. Exception will be empty unless an exception occured. Response will contain the json response from CT if a 2xx response
-    # occured, otherwise it will represent an error message string.
-    def make_rest_call(rest_api, method, json_data=None, headers=req_headers, verify_cert=verify_server_cert):
+    # response object. Exception will be empty unless an exception occurred. Response will contain the json response from CT if a 2xx response
+    # occurred, otherwise it will represent an error message string.
+    def make_rest_call(rest_api, method, json_data=None, headers=REQ_HEADERS, verify_cert=VERIFY_SERVER_CERT):
         ret_msg = ''
         http_status_code = -1
         e_str = ''
@@ -93,8 +107,8 @@ script:
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            ret_msg = "Invalid requests method: {0}".format(method)
-            demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : ret_msg })
+            ret_msg = 'Invalid requests method: {0}'.format(method)
+            return_error(ret_msg)
             sys.exit(1)
 
         # Attempt to make the rest API call and get data from response
@@ -115,7 +129,7 @@ script:
             demisto.error(traceback.format_exc())
 
         except requests.exceptions.SSLError as e:
-            ret_msg = "Unable to verify the Cyber Triage server certificate"
+            ret_msg = 'Unable to verify the Cyber Triage server certificate'
             demisto.error(traceback.format_exc())
 
         except requests.exceptions.HTTPError as e:
@@ -134,37 +148,46 @@ script:
             demisto.error(traceback.format_exc())
 
         except requests.exceptions.RequestException as e:
-            ret_msg = "An unexpected error has occured"
+            ret_msg = 'An unexpected error has occurred'
             demisto.error(traceback.format_exc())
 
-        # If an exception occured then update the exception string
+        # If an exception occurred then update the exception string
         if (e):
-            e_str = "{}: {}".format(type(e).__name__, e)
+            e_str = '{}: {}'.format(type(e).__name__, e)
 
         return {
-            "response" : ret_msg,
-            "status_code" : http_status_code,
-            "exception" : e_str
+            'response' : ret_msg,
+            'status_code' : http_status_code,
+            'exception' : e_str
         }
 
-    # Format non 2xx responses from make_rest_call(). These are cases where an error has occured.
+    # Format non 2xx responses from make_rest_call(). These are cases where an error has occurred.
     def format_err_resp(json_resp):
-        return "Error message: {0}\nHTTP Status code: {1}\nExceptions: {2}".format(json_resp['response'],
+        return 'Error message: {0}\nHTTP Status code: {1}\nExceptions: {2}'.format(json_resp['response'],
                                                                                    json_resp['status_code'],
                                                                                    json_resp['exception'])
 
-    # This is the call made when running the ct-triage-endpoint command.
-    if demisto.command() == 'ct-triage-endpoint':
+    def test_connection():
+        response = make_rest_call(REST_APIS['check_creds'], 'get')
+
+        if IS_2XX(response['status_code']):
+            demisto.results('Test connection successful!')
+            sys.exit(0)
+        else:
+            return_error(format_err_resp(response))
+            sys.exit(1)
+
+    def triage_endpoint():
         is_true = lambda x: x == 'yes'
-        is_hash_upload_on = is_true(cmd_args['malware_hash_upload']) # arg value = 'yes' or 'no'
-        is_file_upload_on = is_true(cmd_args['malware_file_upload']) # arg value = 'yes' or 'no'
-        is_fast_scan_on = not(is_true(cmd_args['full_scan']))        # arg value = 'yes' or 'no'
-        endpoint = cmd_args['endpoint']
+        is_hash_upload_on = is_true(CMD_ARGS['malware_hash_upload']) # arg value = 'yes' or 'no'
+        is_file_upload_on = is_true(CMD_ARGS['malware_file_upload']) # arg value = 'yes' or 'no'
+        is_fast_scan_on = not(is_true(CMD_ARGS['full_scan']))        # arg value = 'yes' or 'no'
+        endpoint = CMD_ARGS['endpoint']
 
         # Make data dict for rest call
         api_data = {'hostName': endpoint}
-        api_data.update({'userId': user})
-        api_data.update({'password': password})
+        api_data.update({'userId': USER})
+        api_data.update({'password': PASSWORD})
         api_data.update({'malwareScanRequested': is_hash_upload_on})
         api_data.update({'sendContent': is_file_upload_on})
         api_data.update({'fastScan': is_fast_scan_on})
@@ -172,29 +195,29 @@ script:
 
         response = make_rest_call(REST_APIS['start_collection'], 'post', api_data)
 
-        if is_2xx(response['status_code']):
-            demisto.results({"Type" : entryTypes["note"], "ContentFormat" : formats["json"], "Contents" : response, "EntryContext" : response["response"]})
+        ec = {
+            'CyberTriage' : response['response']
+        }
+
+        if IS_2XX(response['status_code']):
+            demisto.results({
+                'Type' : entryTypes['note'],
+                'ContentFormat' : formats['json'],
+                'Contents' : response,
+                'EntryContext' : ec
+            })
             sys.exit(0)
         else:
-            demisto.results({"Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : format_err_resp(response)})
+            return_error(format_err_resp(response))
             sys.exit(1)
+
+    # This is the call made when running the ct-triage-endpoint command.
+    if demisto.command() == 'ct-triage-endpoint':
+        triage_endpoint()
 
     # This is the call made when pressing the integration test button.
     elif demisto.command() == 'test-module':
-        response = make_rest_call(REST_APIS['check_creds'], 'get')
-
-        if is_2xx(response['status_code']):
-            demisto.results("Test connection successful!")
-            sys.exit(0)
-        else:
-            demisto.results({"Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : format_err_resp(response)})
-            sys.exit(1)
-
-    # This shouldn't happen
-    else:
-        demisto.results({"Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Unknown Cyber Triage command"})
-        sys.exit(1)
-
+        test_connection()
   type: python
   commands:
   - name: ct-triage-endpoint
@@ -225,5 +248,9 @@ script:
       description: Send unknown files to external malware analysis service. Hash upload
         must be enabled for file uploads to occur.
       defaultValue: "no"
+    outputs:
+    - contextPath: CyberTriage.SessionId
+      description: The session ID for the newly created session
+      type: string
     description: initiates a cyber triage collection on an endpoint
   runonce: false
