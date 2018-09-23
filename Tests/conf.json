@@ -13,6 +13,9 @@
             "playbookID": "TextFromHTML_test_playbook"
         },
         {
+            "playbookID": "PortListenCheck-test"
+        },
+        {
             "integrations": "ThreatExchange",
             "playbookID": "ThreatExchange-test"
         },
