@@ -150,10 +150,6 @@
 					"simple": "text_body",
 					"complex": null
 				},
-				"Email Body HTML": {
-					"simple": "body",
-					"complex": null
-				},
 				"Email CC": {
 					"simple": "",
 					"complex": {

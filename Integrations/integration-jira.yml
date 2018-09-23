@@ -4,7 +4,6 @@ commonfields:
 name: jira
 display: Atlassian Jira
 fromversion: 2.6.0
-releaseNotes: Add support for creating sub tasks
 category: Case Management
 image: data:image/png;base64,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
 description: Issue tracking product, developed by Atlassian
@@ -128,7 +127,7 @@ script:
         }
 
         var result = http(params.url + resourceUrl, requestParams, params.insecure, params.proxy);
-        if (result.StatusCode !== 200 && result.StatusCode !== 201) {
+        if (result.StatusCode !== 200 && result.StatusCode !== 201 && result.StatusCode !== 204) {
             throw 'Failed to send request, request status code: ' + result.StatusCode + ', ' + result.Body;
         }
         return result;
@@ -229,7 +228,7 @@ script:
             mdObj['description'] = dq(element, 'fields.description');
             mdObj['duedate'] = dq(element, 'fields.duedate');
             mdObj['ticket_link'] = dq(element, 'self');
-            mdObj['creted'] = dq(element, 'fields.created');
+            mdObj['created'] = dq(element, 'fields.created');
             var attachments = dq(element, 'fields.attachment');
             if(Array.isArray(attachments) && attachments.length > 0) {
                 var attachmentNames = [];
@@ -252,6 +251,9 @@ script:
         if (args.projectKey && args.projectKey.length > 0 ){
             data.projectKey = args.projectKey;
         }
+        else if (params.projectKey && params.projectKey.length > 0 ){
+            data.projectKey = params.projectKey;
+         }
         createIssueObj['md'].push(data);
         var id = dq(data, 'id');
         var key = dq(data, 'key');
@@ -361,6 +363,139 @@ script:
         };
     };
 
+    function getProjectID(projectKey, projectName) {
+        var result = sendRequest('GET', 'rest/api/2/issue/createmeta')
+        var jRes = JSON.parse(result.Body);
+        var projects = jRes.projects;
+        for (i in projects) {
+            if ((projectKey && projectKey.length > 0 && projects[i].key == projectKey) ||
+                (projectName && projectName.length > 0 && projects[i].name == projectName)) {
+                    return projects[i].id
+                }
+        }
+        throw 'Project not found';
+
+    }
+
+    var getIssueFields = function(){
+        var issue = {};
+        if (args.issueJson){
+            issue = JSON.parse(args.issueJson);
+        }
+        if (!issue.fields) {
+            issue.fields= {};
+        }
+        if (!issue.fields.issuetype && command == "jira-create-issue"){
+            issue.fields.issuetype = {};
+        }
+        if (args.summary && args.summary.length > 0 ){
+            issue.fields.summary = args.summary;
+        }
+        if (args.projectKey && args.projectKey.length > 0 ){
+            if (!issue.fields.project) {
+                issue.fields.project= {};
+            }
+            issue.fields.project.key = args.projectKey;
+        }
+
+        if (args.projectName && args.projectName.length > 0 ){
+            if (!issue.fields.project) {
+                issue.fields.project= {};
+            }
+            issue.fields.project.name = args.projectName;
+        }
+        if (command == "jira-create-issue"){
+            if (!issue.fields.project) {
+                issue.fields.project= {};
+            }
+            issue.fields.project.id = getProjectID(issue.fields.project.key, issue.fields.project.name);
+        }
+
+        if (args.issueTypeName && args.issueTypeName.length > 0 ){
+            issue.fields.issuetype.name = args.issueTypeName;
+        }
+        if (args.issueTypeId && args.issueTypeId.length > 0 ){
+            issue.fields.issuetype.id = args.issueTypeId;
+        }
+        if (args.parentIssueId && args.parentIssueId.length > 0 ){
+            if (!issue.fields.parent) {
+                issue.fields.parent = {};
+            }
+            issue.fields.parent.id = args.parentIssueId;
+        }
+        if (args.parentIssueKey && args.parentIssueKey.length > 0 ){
+            if (!issue.fields.parent) {
+                issue.fields.parent = {};
+            }
+            issue.fields.parent.key = args.parentIssueKey;
+        }
+        if (args.description && args.description.length > 0 ){
+            issue.fields.description = args.description;
+        }
+        if (args.labels && args.labels.length > 0 ){
+            issue.fields.labels = args.labels.split(",");
+        }
+        if (args.priority && args.priority.length > 0 ){
+            if (!issue.fields.priority) {
+                issue.fields.priority = {};
+            }
+            issue.fields.priority.name = args.priority;
+        }
+        if (args.dueDate && args.dueDate.length > 0 ){
+            issue.fields.duedate = args.dueDate;
+        }
+        if (args.assignee && args.assignee.length > 0 ){
+            if (!issue.fields.assignee) {
+                issue.fields.assignee = {};
+            }
+            issue.fields.assignee.name = args.assignee;
+        }
+        if (args.reporter && args.reporter.length > 0 ){
+            if (!issue.fields.reporter) {
+                issue.fields.reporter = {};
+            }
+            issue.fields.reporter.name = args.reporter;
+        }
+        return issue;
+    };
+
+    var GetIssue = function(flag){
+        var flag = flag || 0 ;
+        var result = sendRequest('GET', 'rest/api/2/issue/'+args.issueId)
+        var jRes = JSON.parse(result.Body);
+        var mdAndContext = generateMDContextGetIssue(jRes);
+        md = tblToMd(command, mdAndContext['md'],argToList(args.headers));
+        if (flag == 1) {
+          md += 'Issue #' + String(args.issueId) + ' was updated successfully';
+        }
+        return {
+                    Type: entryTypes.note,
+                    Contents: jRes,
+                    ContentsFormat: formats.json,
+                    HumanReadable: md,
+                    ReadableContentsFormat: formats.markdown,
+                    EntryContext:{'Ticket(val.Id == obj.Id)' : mdAndContext['context']}
+
+        };
+    }
+
+
+    var EditStatus = function(){
+      var url = 'rest/api/2/issue/' + String(args.issueId) + '/transitions'
+      var result = sendRequest('GET', url);
+      var jRes = JSON.parse(result.Body);
+      checkError = true;
+      for (i = 0; i < jRes.transitions.length; i++ ) {
+          if (jRes.transitions[i].name.toLowerCase() == args.status.toLowerCase()){
+            checkError = false;
+            var url = 'rest/api/2/issue/' + String(args.issueId) + '/transitions?expand=transitions.fields'
+            json = {"transition":{"id":String(jRes.transitions[i].id)}}
+            var result = sendRequest('POST', url, JSON.stringify(json));
+          }
+      }
+      if (checkError)
+        throw 'Status ' + args.status + ' not found';
+    }
 
     // The command input arg holds the command sent from the user.
     switch (command) {
@@ -369,96 +504,81 @@ script:
             var res = sendRequest('GET','rest/api/2/myself')
             return res.StatusCode >= 200 && res.StatusCode < 400
         case 'jira-get-issue':
-            var result = sendRequest('GET', 'rest/api/2/issue/'+args.issueId)
-            var jRes = JSON.parse(result.Body);
-            var mdAndContext = generateMDContextGetIssue(jRes);
-            md = tblToMd(command, mdAndContext['md'],argToList(args.headers));
-            return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext:{'Ticket(val.Id == obj.Id)' : mdAndContext['context']}};
+            return GetIssue();
+
         case 'jira-issue-query':
             var jRes = runQuery(args.query,args.startAt,args.maxResults);
             var issues = dq(jRes,'issues');
             var mdAndContext = generateMDContextGetIssue(issues);
             md = tblToMd(command, mdAndContext['md'], argToList(args.headers));
-            return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext:{'Ticket(val.Id == obj.Id)' : mdAndContext['context']}};
+            return {
+                        Type: entryTypes.note,
+                        Contents: jRes,
+                        ContentsFormat: formats.json,
+                        HumanReadable: md,
+                        ReadableContentsFormat: formats.markdown,
+                        EntryContext:{'Ticket(val.Id == obj.Id)' : mdAndContext['context']}
+
+            };
         case 'jira-create-issue':
-            var url = 'rest/api/2/issue/';
-            var issue = {};
-            if (args.issueJson){
-                issue = JSON.parse(args.issueJson);
-            }
-            if (!issue.fields) {
-                issue.fields= {};
-            }
-            if (!issue.fields.project) {
-                issue.fields.project= {};
-            }
-            if (!issue.fields.issuetype) {
-                issue.fields.issuetype = {};
-            }
-            if (args.summary && args.summary.length >0 ){
-                issue.fields.summary = args.summary;
-            }
-            if (args.projectKey && args.projectKey.length > 0 ){
-                issue.fields.project.key = args.projectKey;
-            }
-            if (args.projectName && args.projectName.length > 0 ){
-                issue.fields.project.name = args.projectName;
-            }
-            if (args.issueTypeName && args.issueTypeName.length > 0 ){
-                issue.fields.issuetype.name = args.issueTypeName;
-            }
-            if (args.issueTypeId && args.issueTypeId.length > 0 ){
-                issue.fields.issuetype.id = args.issueTypeId;
-            }
-            if (args.parentIssueId && args.parentIssueId.length > 0 ){
-                if (!issue.fields.parent) {
-                    issue.fields.parent = {};
-                }
-                issue.fields.parent.id = args.parentIssueId;
-            }
-            if (args.parentIssueKey && args.parentIssueKey.length > 0 ){
-                if (!issue.fields.parent) {
-                    issue.fields.parent = {};
-                }
-                issue.fields.parent.key = args.parentIssueKey;
-            }
-            if (args.description && args.description.length > 0 ){
-                issue.fields.description = args.description;
-            }
-            if (args.labels && args.labels.length > 0 ){
-                issue.fields.labels = args.labels.split(",");
-            }
-            if (args.priorityName && args.priorityName.length > 0 ){
-                if (!issue.fields.priority) {
-                    issue.fields.priority = {};
-                }
-                issue.fields.priority.name = args.priorityName;
-            }
-            if (args.dueDate && args.dueDate.length > 0 ){
-                issue.fields.duedate = args.dueDate;
-            }
-            if (args.assignee && args.assignee.length > 0 ){
-                if (!issue.fields.assignee) {
-                    issue.fields.assignee = {};
-                }
-                issue.fields.assignee.name = args.assignee;
-            }
-            if (args.reporter && args.reporter.length > 0 ){
-                if (!issue.fields.reporter) {
-                    issue.fields.reporter = {};
-                }
-                issue.fields.reporter.name = args.reporter;
-            }
+            var url = 'rest/api/2/issue';
+            var issue = getIssueFields()
             var result = sendRequest('POST', url, JSON.stringify(issue));
             var jRes = JSON.parse(result.Body);
             var mdAndContext = generateMdContextCreateIssue(jRes);
             var md = tblToMd(command, mdAndContext['md'], "");
-            return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext: mdAndContext['context']};
+            return {
+                        Type: entryTypes.note,
+                        Contents: jRes,
+                        ContentsFormat: formats.json,
+                        HumanReadable: md,
+                        ReadableContentsFormat: formats.markdown,
+                        EntryContext: mdAndContext['context']
+
+            };
+        case 'jira-edit-issue':
+            var url = 'rest/api/2/issue/' + String(args.issueId);
+            var issue = getIssueFields()
+            var result = sendRequest('PUT', url, JSON.stringify(issue));
+
+            if (args.status && args.status.length > 0 ){
+              EditStatus()
+            }
+            return GetIssue(1);
+
+        case 'jira-get-comments':
+            url = 'rest/api/2/issue/' + String(args.issueId) + '/comment';
+            var result = sendRequest('GET', url);
+            var body = JSON.parse(result.Body);
+            var comments = [];
+            if (body.comments.length > 0){
+                for (i = 0; i < body.comments.length; i++){
+                    comments.push({'Comment': body.comments[i].body, 'User': body.comments[i].updateAuthor.name, 'Created': body.comments[i].created});
+                }
+                var md = tableToMarkdown("Comments", comments);
+                return {
+                            'ContentsFormat': formats.json,
+                            'Type': entryTypes.note,
+                            'Contents': body,
+                            "HumanReadable": md,
+                            "EntryContext": {'Ticket(val.Id == obj.Id)': {'Id': args.issueId,"Comment":comments}}
+
+                };
+            }
+            else return 'No comments were found in the ticket'
+
+
         case 'jira-issue-upload-file':
             var jRes = uploadFile(args.upload, args.issueId);
             var md = generateMdUploadIssue(jRes);
             md = tblToMd(command, md, "");
-            return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown};
+            return {
+                Type: entryTypes.note,
+                Contents: jRes,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                ReadableContentsFormat: formats.markdown
+            };
         case 'jira-issue-add-comment':
             var url = 'rest/api/2/issue/'+ args.issueId + '/comment';
             var comment = {};
@@ -472,7 +592,13 @@ script:
             var jRes = JSON.parse(result.Body);
             var md = generateMdCommentOrLinkIssue(jRes)
             md = tblToMd(command, md, "");
-            return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown};
+            return {
+                Type: entryTypes.note,
+                Contents: jRes,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                ReadableContentsFormat: formats.markdown
+            };
         case 'jira-issue-add-link':
             var url = 'rest/api/2/issue/'+ args.issueId + '/remotelink';
             var link = {};
@@ -495,7 +621,13 @@ script:
             var jRes = JSON.parse(result.Body);
             var md = generateMdCommentOrLinkIssue(jRes)
             md = tblToMd(command, jRes, "");
-            return {Type: entryTypes.note, Contents: jRes, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown};
+            return {
+               Type: entryTypes.note,
+               Contents: jRes,
+               ContentsFormat: formats.json,
+               HumanReadable: md,
+               ReadableContentsFormat: formats.markdown
+            };
         case 'fetch-incidents':
             var lastRun = getLastRun();
             var idOffset = lastRun && lastRun.idOffset ? lastRun.idOffset : params.idOffset;
@@ -644,5 +776,56 @@ script:
       required: true
       description: Issue Id
     description: Creates (or updates) issue link
+  - name: jira-edit-issue
+    arguments:
+    - name: issueId
+      required: true
+      description: The ID of the issue to edit
+    - name: issueJson
+      description: Issue object in json format
+    - name: summary
+      description: Summary of the issue
+    - name: description
+      description: Issue description
+    - name: labels
+      description: 'comma separated list of label '
+    - name: priority
+      description: priorty name , like High/Medium
+    - name: dueDate
+      description: DueDate for the issue, in format of 2018-03-11
+    - name: assignee
+      description: assignee name
+    - name: status
+      description: status name
+    outputs:
+    - contextPath: Ticket.Id
+      description: Id of ticket
+    - contextPath: Ticket.Key
+      description: Key of ticket
+    - contextPath: Ticket.Assignee
+      description: User assigned to ticket
+    - contextPath: Ticket.Creator
+      description: User who created the ticket
+    - contextPath: Ticket.Summary
+      description: Summary of ticket
+    - contextPath: Ticket.Status
+      description: Status of ticket
+    description: Edit JIRA issue
+  - name: jira-get-comments
+    arguments:
+    - name: issueId
+      required: true
+      description: The issue id to get comments of
+    outputs:
+    - contextPath: Ticket.Comment.Comment
+      description: The comment text
+      type: string
+    - contextPath: Ticket.Comment.Created
+      description: Creation date
+      type: string
+    - contextPath: Ticket.Comment.User
+      description: The user that created the comment
+      type: string
+    description: Gets the comments added to a ticket
   isfetch: true
-system: true
+  runonce: false

@@ -160,7 +160,7 @@ script:
                     'SHA1': vt_response.get('sha1'),
                     'SHA256': vt_response.get('sha256'),
                     'Malicious': {
-                        'Vendor': 'VirusTotal',
+                        'Vendor': 'VirusTotal - Private API',
                         'Detections': positives,
                         'TotalEngines': demisto.get(vt_response, 'total')
                     },
@@ -172,7 +172,7 @@ script:
         else:
             dbotScore = 1
 
-        ec['DBotScore'].append({'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal', 'Score': dbotScore})
+        ec['DBotScore'].append({'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
         md += 'MD5: **' + vt_response.get('md5') + '**\n'
         md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
         md += 'SHA256: **' + vt_response.get('sha256') + '**\n'
@@ -248,7 +248,7 @@ script:
                     "DBotScore" : {
                         'Indicator': file_hash,
                         'Type': 'hash',
-                        'Vendor': 'VirusTotal',
+                        'Vendor': 'VirusTotal - Private API',
                         'Score': 0
                     }
                 },
@@ -407,7 +407,7 @@ script:
                     "DBotScore" : {
                             'Indicator': domain,
                             'Type': 'domain',
-                            'Vendor': 'VirusTotal',
+                            'Vendor': 'VirusTotal - Private API',
                             'Score': 0
                         }
                 },
@@ -572,7 +572,7 @@ script:
                     'Data': url,
                     'Malicious': {
                         'Description': 'Detections / Total: ' + positives + ' / ' + response.get('total', ''),
-                        'Vendor': 'VirusTotal'
+                        'Vendor': 'VirusTotal - Private API'
                     },
                 },
             })
@@ -582,7 +582,7 @@ script:
         else:
             dbotScore = 1
 
-        ec['DBotScore'].append({'Indicator': url, 'Type': 'url', 'Vendor': 'VirusTotal', 'Score': dbotScore})
+        ec['DBotScore'].append({'Indicator': url, 'Type': 'url', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
         if (dbotScore < 3):
             ec.update({
                 outputPaths['url']: {
@@ -678,7 +678,7 @@ script:
                     "DBotScore": {
                         'Indicator': ip,
                         'Type': 'ip',
-                        'Vendor': 'VirusTotal',
+                        'Vendor': 'VirusTotal - Private API',
                         'Score': 0
                     }
                 },
@@ -753,7 +753,7 @@ script:
                     },
                     'Malicious': {
                         'Description': 'Recent malicious downloads: ' + str(bad_downloads_amount),
-                        'Vendor': 'VirusTotal'
+                        'Vendor': 'VirusTotal - Private API'
                     }
                 }
             })
@@ -763,7 +763,7 @@ script:
         else:
             dbotScore = 1
 
-        ec['DBotScore'] = {'Indicator': ip, 'Type': 'ip', 'Vendor': 'VirusTotal', 'Score': dbotScore}
+        ec['DBotScore'] = {'Indicator': ip, 'Type': 'ip', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore}
         if (dbotScore < 3):
             ec.update({
                 outputPaths['ip']: {
@@ -889,7 +889,7 @@ script:
                     "DBotScore" : {
                         'Indicator': file_hash,
                         'Type': 'hash',
-                        'Vendor': 'VirusTotal',
+                        'Vendor': 'VirusTotal - Private API',
                         'Score': 0
                     }
                 },
@@ -1392,4 +1392,3 @@ script:
       This call can be used in conjuction with the file searching call in order to
       download samples that match a given set of criteria.
   runonce: false
-releaseNotes: "Integration with Virus Total's private API"
