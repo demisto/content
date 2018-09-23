@@ -3,7 +3,17 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": {
+                "name": "activedir",
+                "byoi": false
+            },
+            "playbookID": "calculate_severity_-_critical_assets_-_test"
+        },
+        {
             "playbookID": "TextFromHTML_test_playbook"
+        },
+        {
+            "playbookID": "PortListenCheck-test"
         },
         {
             "integrations": "ThreatExchange",
@@ -34,13 +44,10 @@
             "playbookID": "rsa_packets_and_logs_test"
         },
         {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
-            "nightly": true
+            "nightly": true,
+            "timeout": 1400
         },
         {
             "integrations": "Preempt",
@@ -92,10 +99,6 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "integrations": "Jask",
-            "playbookID": "Jask_Test"
         },
         {
             "playbookID": "dedup_-_generic_-_test"
@@ -444,15 +447,6 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
-        },
-        {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
-        },
-        {
-            "integrations": "VirusTotal",
-            "playbookID": "virusTotal-test-playbook",
-            "nightly": true
         }
     ],
     "skipped": [
@@ -460,6 +454,14 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
+        },
+        {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations": "ThreatConnect",
@@ -620,6 +622,10 @@
         {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
+        },
+        {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
         },
         {
             "integrations": "Qualys",

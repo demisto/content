@@ -32,8 +32,7 @@ script: |
   return {
     Type: entryTypes.note,
     Contents: isInRange ? 'yes' : 'no',
-    ContentsFormat: formats.json,
-    HumanReadable: isInRange ? 'yes' : 'no',
+    ContentsFormat: formats.text,
     EntryContext: ec
   };
 type: javascript

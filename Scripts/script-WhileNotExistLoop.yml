@@ -41,6 +41,7 @@ comment: |
   While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until ${keyToWatch} field is in the context.
   Please make sure timeout of the script also sufficient for the loop.
 enabled: true
+deprecated: true
 args:
 - name: cmdToRun
   required: true
