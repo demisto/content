@@ -105,10 +105,11 @@ script:
             'is-flagged':'isFlagged',
             'is-closed':'isClosed',
             'source-ID': 'sourceId',
-            'first-seen-from': 'lastSeenFrom',
+            'first-seen-from': 'firstSeenFrom',
             'first-seen-to': 'firstSeenTo',
             'last-seen-from': 'lastSeenFrom',
-            'last-seen-to': 'lastSeenTo'
+            'last-seen-to': 'lastSeenTo',
+            'value': 'iocValue',
         }
         params = {}
         for k in demisto.args():
@@ -181,7 +182,7 @@ script:
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':activity},
-            'Contents': r,
+            'Contents': activity,
             'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity], ['ID', 'Severity', 'Type', 'FoundDate', 'Source.Type', 'Source.URL', 'Source.Email', 'Source.NetworkType', 'IsClosed', 'IsFlagged']),
             'ContentsFormat': formats['json']
         })
@@ -408,7 +409,7 @@ script:
         Search for IOC by value
         """
         value = demisto.getArg('value')
-        r = req('GET', 'public/v1/iocs/ioc-by-value?iocValue=' + value).json()
+        r = req('GET', 'public/v1/iocs/ioc-by-value', handle_filters()).json()
         IOC = IOC_to_readable(r)
         demisto.results(
             {
@@ -462,7 +463,7 @@ script:
         """
         Gets all IOCs with the given filters
         """
-        r = req('GET', handle_filters('public/v1/iocs/complete-iocs-list?')).json()
+        r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters()).json()
         iocs = []
         for k in r:
             iocs.append(IOC_to_readable(k))
