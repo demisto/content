@@ -669,20 +669,20 @@ script:
       description: Description of the site
       type: string
     - contextPath: Bigfix.Site.Resource
-      description: URL of the site
+      description: Link to the endpoint resource.
       type: string
     - contextPath: Bigfix.Site.Type
       description: Type of the site (master,custom,external,operator)
       type: string
     - contextPath: Bigfix.Site.Domain
-      description: Domain
+      description: Site domain
       type: string
     - contextPath: Bigfix.Site.GatherURL
       type: string
-      description:
+      description: Gather URL
     - contextPath: Bigfix.Site.GlobalReadPermission
       type: string
-      description:
+      description: Global Read Permission available or not.
     description: Retrieves all the sites
   - name: bigfix-get-site
     arguments:
@@ -701,12 +701,29 @@ script:
       defaultValue: master
     outputs:
     - contextPath: Bigfix.Site
+      description: Site
+      type: unknown
     - contextPath: Bigfix.Site.Name
+      description: Name of the site
+      type: string
     - contextPath: Bigfix.Site.Description
+      description: Description of the site
+      type: string
+    - contextPath: Bigfix.Site.Resource
+      description: Link to the endpoint resource.
+      type: string
     - contextPath: Bigfix.Site.Type
+      description: Type of the site (master,custom,external,operator)
+      type: string
     - contextPath: Bigfix.Site.Domain
+      description: Site domain
+      type: string
     - contextPath: Bigfix.Site.GatherURL
+      type: string
+      description: Gather URL
     - contextPath: Bigfix.Site.GlobalReadPermission
+      type: string
+      description: Global Read Permission available or not.
     description: Retrieve single site by name and type
   - name: bigfix-get-patches
     arguments:
@@ -725,29 +742,47 @@ script:
         must be provided
     outputs:
     - contextPath: Bigfix.Patch.ID
-      description: 'The ID of patch '
+      description: Patch (fixlet) ID
       type: string
     - contextPath: Bigfix.Patch.LastModified
       type: date
+      description: Last modified Timestamp.
     - contextPath: Bigfix.Patch.Name
-      description: The name of the patch
+      description: Name of the Patch requested.
       type: string
     - contextPath: Bigfix.Patch.Resource
       description: The link for the patch
       type: string
     - contextPath: Bigfix.Patch.Description
+      type: string
+      description: Description of the Patch requested.
     - contextPath: Bigfix.Patch.Relevance
+      type: string
+      description: Relevance of the Patch requested.
     - contextPath: Bigfix.Patch.Category
       type: string
+      description: Category of the Patch requested.
     - contextPath: Bigfix.Patch.DownloadSize
+      description: Download size.
+      type: string
     - contextPath: Bigfix.Patch.Source
+      description: Source from where the patch is coming from.
+      type: string
     - contextPath: Bigfix.Patch.SourceID
+      description: Source ID of the Patch requested.
+      type: string
     - contextPath: Bigfix.Patch.SourceSeverity
+      description: Source Severity of the Patch requested.
+      type: string
     - contextPath: Bigfix.Patch.SourceReleaseDate
+      description: Source Release Date of the Patch requested.
+      type: string
     - contextPath: Bigfix.Patch.ActionID
+      description: Action ID of the Patch requested.
       type: string
     - contextPath: Bigfix.Patch.ActionScript
       type: string
+      description: Action Script of the Patch requested.
     description: Retrieve all the patches (fixlets) of site
   - name: bigfix-get-endpoints
     arguments: []
@@ -992,25 +1027,26 @@ script:
     - contextPath: Bigfix.Patch.Description
       description: Description
     - contextPath: Bigfix.Patch.Relevance
-      description:
+      description: Relevance of the Patch requested.
     - contextPath: Bigfix.Patch.Category
       type: string
-      description:
+      description: Category of the Patch requested.
     - contextPath: Bigfix.Patch.DownloadSize
-      description:
+      description: Download size.
     - contextPath: Bigfix.Patch.Source
-      description:
+      description: Source from where the patch is coming from.
     - contextPath: Bigfix.Patch.SourceID
-      description:
+      description: Source ID of the Patch requested.
     - contextPath: Bigfix.Patch.SourceSeverity
-      description:
+      description: Source Severity of the Patch requested.
     - contextPath: Bigfix.Patch.SourceReleaseDate
-      description:
+      description: Source Release Date of the Patch requested.
     - contextPath: Bigfix.Patch.ActionID
-      description: Action ID
+      description: Action ID of the Patch requested.
       type: string
     - contextPath: Bigfix.Patch.ActionScript
       type: string
+      description: Action Script of the Patch requested.
     description: Retrieve patch (fixlet) by id
   runonce: false
 releaseNotes: "-"
