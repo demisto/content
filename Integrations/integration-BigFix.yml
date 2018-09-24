@@ -675,11 +675,14 @@ script:
       description: Type of the site (master,custom,external,operator)
       type: string
     - contextPath: Bigfix.Site.Domain
+      description: Domain
       type: string
     - contextPath: Bigfix.Site.GatherURL
       type: string
+      description:
     - contextPath: Bigfix.Site.GlobalReadPermission
       type: string
+      description:
     description: Retrieves all the sites
   - name: bigfix-get-site
     arguments:
@@ -1010,3 +1013,4 @@ script:
       type: string
     description: Retrieve patch (fixlet) by id
   runonce: false
+releaseNotes: "-"
