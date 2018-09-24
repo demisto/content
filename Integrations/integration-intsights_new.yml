@@ -210,7 +210,7 @@ script:
                 'Type': entryTypes['note'],
                 'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': question_details},
                 'Contents': question_details,
-                'HumanReadable': tableToMarkdown('Intsights Ask the Analyst: Your question has been successfully sent to an analyst about the requested alert', [question_details], ['ID', 'Question']),
+                'HumanReadable': tableToMarkdown('IntSights Ask the Analyst: Your question has been successfully sent to an analyst about the requested alert', [question_details], ['ID', 'Question']),
                 'ContentsFormat': formats['json']
             }
         )
@@ -240,7 +240,7 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': activities},
             'Contents': r,
-            'HumanReadable': tableToMarkdown('Intsights Alert Activity Log', activities, ['ID', 'Activities.Type', 'Activities.Initiator', 'Activities.CreatedDate', 'Activities.UpdateDate', 'Activities.RemediationBlocklistUpdate', 'Activities.AskTheAnalyst.Replies', 'Activities.Mail.Replies', 'Activities.ReadBy']),
+            'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', activities, ['ID', 'Activities.Type', 'Activities.Initiator', 'Activities.CreatedDate', 'Activities.UpdateDate', 'Activities.RemediationBlocklistUpdate', 'Activities.AskTheAnalyst.Replies', 'Activities.Mail.Replies', 'Activities.ReadBy']),
             'ContentsFormat': formats['json']
         })
 
@@ -257,7 +257,7 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': severity_details},
             'Contents': severity_details,
-            'HumanReadable': tableToMarkdown('Intsights Update Alert Severity: The Alert severity has been successfully updated.', [severity_details], ['ID', 'Severity']),
+            'HumanReadable': tableToMarkdown('IntSights Update Alert Severity: The Alert severity has been successfully updated.', [severity_details], ['ID', 'Severity']),
             'ContentsFormat': formats['json']
         })
 
@@ -532,7 +532,7 @@ script:
         r = req('PATCH', 'public/v1/data/alerts/change-iocs-blocklist-status/' + alert_id, json_data={'Iocs': data})
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'Intsights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': statuses}},
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': statuses}},
             'Contents': {'ID': alert_id, 'Status': statuses},
             'HumanReadable': tableToMarkdown('IntSights Update IOC BlockList Status for ' + alert_id, data, ['BlocklistStatus']),
             'ContentsFormat': formats['json']
@@ -653,10 +653,10 @@ script:
       description: If the assigned user is MSSP user or not
       defaultValue: "false"
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: Intsights.Alerts.Assignees.AssigneeID
+    - contextPath: IntSights.Alerts.Assignees.AssigneeID
       description: The ID of the assignee
       type: string
     description: Assign an alert
@@ -667,7 +667,7 @@ script:
       default: true
       description: Alert's unique ID
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
     description: Unassign an alert
@@ -684,13 +684,13 @@ script:
       required: true
       description: Content added to the alert details
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: Alert ID
       type: string
-    - contextPath: Intsights.Alerts.Mail.EmailID
+    - contextPath: IntSights.Alerts.Mail.EmailID
       description: The email ID
       type: string
-    - contextPath: Intsights.Alerts.Question
+    - contextPath: IntSights.Alerts.Question
       description: The question asked
       type: string
     description: Send mail with the alert details and a question
@@ -705,10 +705,10 @@ script:
     - contextPath: IntSights.Alerts.ID
       description: Alert ID
       type: string
-    - contextPath: Intsights.Alerts.Question
+    - contextPath: IntSights.Alerts.Question
       description: The question asked
       type: string
-    description: Send a question to Intsights analyst about the requested alert
+    description: Send a question to IntSights analyst about the requested alert
   - name: intsights-add-tag-to-alert
     arguments:
     - name: alert-id
@@ -719,10 +719,10 @@ script:
       required: true
       description: The new tag string
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: Intsights.Alerts.Tags.TagName
+    - contextPath: IntSights.Alerts.Tags.TagName
       description: The name of the tag
       type: string
     description: Adds a tag to the alert
@@ -736,10 +736,10 @@ script:
       required: true
       description: Tags's unique ID to remove
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: Intsights.Alerts.Tags.TagID
+    - contextPath: IntSights.Alerts.Tags.TagID
       description: The tag ID
       type: string
     description: ' Removes a tag from the alert'
@@ -753,10 +753,10 @@ script:
       required: true
       description: Desired comment
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: Intsights.Alerts.Comment
+    - contextPath: IntSights.Alerts.Comment
       description: The comment
       type: string
     description: Add comment to alert
@@ -777,7 +777,7 @@ script:
     - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: Intsights.Alerts.Severity
+    - contextPath: IntSights.Alerts.Severity
       description: The severity of the alert
       type: string
     description: Change the alert's severity
@@ -826,49 +826,49 @@ script:
       default: true
       description: Desired IOC value
     outputs:
-    - contextPath: Intsights.Iocs.ID
+    - contextPath: IntSights.Iocs.ID
       description: The IOC ID
       type: string
-    - contextPath: Intsights.Iocs.Value
+    - contextPath: IntSights.Iocs.Value
       description: The IOC value
       type: string
-    - contextPath: Intsights.Iocs.Type
+    - contextPath: IntSights.Iocs.Type
       description: The IOC type
       type: string
-    - contextPath: Intsights.Iocs.FirstSeen
+    - contextPath: IntSights.Iocs.FirstSeen
       description: When the IOC was first seen
       type: date
-    - contextPath: Intsights.Iocs.LastSeen
+    - contextPath: IntSights.Iocs.LastSeen
       description: When the IOC was last seen
       type: date
-    - contextPath: Intsights.Iocs.SourceID
+    - contextPath: IntSights.Iocs.SourceID
       description: The IOC source ID
       type: string
-    - contextPath: Intsights.Iocs.SourceName
+    - contextPath: IntSights.Iocs.SourceName
       description: The IOC source name
       type: string
-    - contextPath: Intsights.Iocs.SourceConfidenceLevel
+    - contextPath: IntSights.Iocs.SourceConfidenceLevel
       description: The IOC source confidence level
       type: string
-    - contextPath: Intsights.Iocs.Severity
+    - contextPath: IntSights.Iocs.Severity
       description: The IOC severity
       type: string
-    - contextPath: Intsights.Iocs.AccountID
+    - contextPath: IntSights.Iocs.AccountID
       description: The IOC account ID
       type: string
-    - contextPath: Intsights.Iocs.Domain
+    - contextPath: IntSights.Iocs.Domain
       description: The IOC domain
       type: string
-    - contextPath: Intsights.Iocs.Status
+    - contextPath: IntSights.Iocs.Status
       description: The IOC status
       type: string
-    - contextPath: Intsights.Iocs.Flags.IsInAlexa
+    - contextPath: IntSights.Iocs.Flags.IsInAlexa
       description: Whether or not the IOC is in Alexa
       type: boolean
-    - contextPath: Intsights.Iocs.Enrichment.Status
+    - contextPath: IntSights.Iocs.Enrichment.Status
       description: IOC enrichment status
       type: string
-    - contextPath: Intsights.Iocs.Enrichment.Data
+    - contextPath: IntSights.Iocs.Enrichment.Data
       description: IOC enrichment data
       type: string
     description: Search for exact IOC value
@@ -906,49 +906,49 @@ script:
       description: 'Ioc date of last seen in the following string format - MM/DD/YYYY
         Default value: 0'
     outputs:
-    - contextPath: Intsights.Iocs.ID
+    - contextPath: IntSights.Iocs.ID
       description: The IOC ID
       type: string
-    - contextPath: Intsights.Iocs.Value
+    - contextPath: IntSights.Iocs.Value
       description: The IOC value
       type: string
-    - contextPath: Intsights.Iocs.Type
+    - contextPath: IntSights.Iocs.Type
       description: The IOC type
       type: string
-    - contextPath: Intsights.Iocs.FirstSeen
+    - contextPath: IntSights.Iocs.FirstSeen
       description: IOC first seen
       type: date
-    - contextPath: Intsights.Iocs.LastSeen
+    - contextPath: IntSights.Iocs.LastSeen
       description: IOC last seen
       type: date
-    - contextPath: Intsights.Iocs.SourceID
+    - contextPath: IntSights.Iocs.SourceID
       description: The IOC source ID
       type: string
-    - contextPath: Intsights.Iocs.SourceName
+    - contextPath: IntSights.Iocs.SourceName
       description: The IOC source name
       type: string
-    - contextPath: Intsights.Iocs.SourceConfidenceLevel
+    - contextPath: IntSights.Iocs.SourceConfidenceLevel
       description: The IOC source confidence level
       type: string
-    - contextPath: Intsights.Iocs.Severity
+    - contextPath: IntSights.Iocs.Severity
       description: The IOC severity
       type: string
-    - contextPath: Intsights.Iocs.AccountID
+    - contextPath: IntSights.Iocs.AccountID
       description: The IOC account ID
       type: string
-    - contextPath: Intsights.Iocs.Domain
+    - contextPath: IntSights.Iocs.Domain
       description: The IOC domain
       type: string
-    - contextPath: Intsights.Iocs.Status
+    - contextPath: IntSights.Iocs.Status
       description: The IOC status
       type: string
-    - contextPath: Intsights.Iocs.Flags.IsInAlexa
+    - contextPath: IntSights.Iocs.Flags.IsInAlexa
       description: Whether or not the IOC is in Alexa
       type: boolean
-    - contextPath: Intsights.Iocs.Enrichment.Status
+    - contextPath: IntSights.Iocs.Enrichment.Status
       description: IOC enrichment status
       type: string
-    - contextPath: Intsights.Iocs.Enrichment.Data
+    - contextPath: IntSights.Iocs.Enrichment.Data
       description: IOC enrichment data
       type: string
     description: Get count totals of the available IOCs
@@ -1040,7 +1040,7 @@ script:
       default: true
       description: The alert ID
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert's ID
       type: string
     description: request alert takedown
@@ -1051,10 +1051,10 @@ script:
       default: true
       description: The alert ID
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: Intsights.Alerts.TakedownStatus
+    - contextPath: IntSights.Alerts.TakedownStatus
       description: The takedown status
       type: string
     description: Get alert takedown status
@@ -1075,10 +1075,10 @@ script:
       description: 'Comma separated list of each IOC''s blocklist status. Options:
         Sent,NotSent'
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: Intsights.Alerts.Status
+    - contextPath: IntSights.Alerts.Status
       description: 'The blocklist status '
       type: string
     description: Update IOC blocklist status
@@ -1089,10 +1089,10 @@ script:
       default: true
       description: The alert ID
     outputs:
-    - contextPath: Intsights.Alerts.ID
+    - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: Intsights.Alerts.Status
+    - contextPath: IntSights.Alerts.Status
       description: The blocklist status
       type: string
     description: Get IOC blocklist status
