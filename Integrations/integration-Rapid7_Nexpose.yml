@@ -139,8 +139,12 @@ script:
             'ip': response['records'][0]['ipAddress']
         }
 
-    def send_request(path, method = 'get', body = {}, params = {}, headers=None, is_file=False):
-        url = '%s/%s' % (SERVER_URL, path)
+    def send_request(path, method = 'get', body=None, params=None, headers=None, is_file=False):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+
+        url = '{}/{}'.format(SERVER_URL, path)
+
         headers = headers if headers is not None else get_headers()
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
         verify=VERIFY_SSL, proxies=PROXY)
@@ -1160,7 +1164,13 @@ script:
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
         hosts = demisto.args().get('hosts', '')
 
-        scan_response = start_scan(site, hosts.split(','), name)
+        if not hosts:
+            assets = get_site_assets(site)
+            hosts = [asset['ip'] for asset in assets]
+        else:
+            hosts = argToList(hosts)
+
+        scan_response = start_scan(site, hosts, name)
 
         if(scan_response is None or 'id' not in scan_response):
             return 'Could not start scan'
@@ -1175,7 +1185,13 @@ script:
             'name': name,
             'hosts': hosts
         }
+
         return send_request(path, 'post', body=body)
+
+    def get_site_assets(site_id):
+        path = 'sites/' + site_id + '/assets'
+
+        return get_list_response(path)
 
     try:
         if demisto.command() == 'test-module':
@@ -1837,6 +1853,7 @@ script:
       description: Multiple criteria of <string> The hosts that should be included
         as a part of the scan. This should be a mixture of IP Addresses and Hostnames
         as a comma separated string array.
+      isArray: true
     - name: name
       description: <string> The user-driven scan name for the scan.
     outputs:
@@ -1921,4 +1938,4 @@ script:
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Added ability to create a site"
+releaseNotes: "Fix site scanning - allow scanning of all assets within the site"

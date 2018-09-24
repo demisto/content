@@ -425,4 +425,3 @@ script:
     description: This method returns information about an account. If more than one
       account meets the search criteria, only the first account will be returned.
   runonce: false
-releaseNotes: "Added cyber-ark-aim-query support and arguments."

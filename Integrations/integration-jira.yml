@@ -829,4 +829,3 @@ script:
     description: Gets the comments added to a ticket
   isfetch: true
   runonce: false
-releaseNotes: Fixed jira-edit-issue

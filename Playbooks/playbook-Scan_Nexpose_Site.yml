@@ -1,8 +1,7 @@
-id: nexpose_scan_site
+id: scan_site_nexpose
 version: -1
-name: Nexpose Scan Site
-description: Starts a Nexpose scan by site id and waits for it to finish by polling
-  its status in pre-defined intervals.
+name: Scan Site - Nexpose
+description: Starts a Nexpose scan by site id and waits for the scan to finish by polling its status in pre-defined intervals.
 starttaskid: "0"
 tasks:
   "0":
@@ -294,4 +293,3 @@ outputs:
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
 fromversion: 4.0.0
-releaseNotes: "Added validations"
