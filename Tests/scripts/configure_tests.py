@@ -7,11 +7,6 @@ except ImportError:
     print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
     sys.exit(1)
 
-try:
-    import pykwalify
-except ImportError:
-    print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
-    sys.exit(1)
 
 import re
 import os
@@ -113,7 +108,7 @@ def get_test_list(modified_files, modified_tests_list):
     """Create a test list that should run"""
     tests = []
     for file_path in modified_files:
-        print "Gathering tests from {}".format(file_path)
+        # print "Gathering tests from {}".format(file_path)
         for test in collect_tests(file_path, TESTS_LIST):
             if test not in tests:
                 tests.append(test)
@@ -132,9 +127,16 @@ def get_test_list(modified_files, modified_tests_list):
 def create_test_file():
     """Create a file containing all the tests we need to run for the CI"""
     branches = run_git_command("git branch")
-    branch_name = re.search("(?<=\* )\w+", branches)
-    files_string = run_git_command("git diff --name-status master...{0}".format(branch_name.group(0)))
+    branch_name_reg = re.search("(?<=\* )\w+", branches)
+    branch_name = branch_name_reg.group(0)
+
+    print_color(branch_name, LOG_COLORS.GREEN)
+
+    files_string = run_git_command("git diff --name-status master...{0}".format(branch_name))
     modified_files, modified_tests_list = get_modified_files(files_string)
+
+    print_color(modified_files, LOG_COLORS.GREEN)
+
     tests = get_test_list(modified_files, modified_tests_list)
 
     with open("./Tests/filter_file.txt", "w") as filter_file:
