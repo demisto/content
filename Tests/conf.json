@@ -7,6 +7,10 @@
             "playbookID": "SCADAfence_test"
         },
         {
+            "integrations": "epo",
+            "playbookID": "Test Playbook Mcafee ePO"
+        },
+        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
