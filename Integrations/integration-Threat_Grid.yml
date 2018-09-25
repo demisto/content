@@ -1090,4 +1090,3 @@ script:
       type: int
     description: Convert a URL into a file for Threat Grid file detonation.
   runonce: false
-releaseNotes: "-"
