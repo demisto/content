@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
@@ -454,10 +458,6 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
-        },
-        {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
         },
         {
             "integrations": "Symantec Messaging Gateway",
