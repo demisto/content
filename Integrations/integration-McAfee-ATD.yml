@@ -90,9 +90,6 @@ script:
         ''' Converts a string array to int array '''
         return map(int, stringArr)
 
-    def resToMD(body, title):
-        return tableToMarkdown(title, body, body.keys(), None, True)
-
     def castToInt(val):
         ''' Casts a string to int '''
         if (type(val) == str):
@@ -132,7 +129,7 @@ script:
         return res
 
     def sendRequest(uri, method, headers = {}, body = {}, params={}, files={}):
-        ''' Makes an API call to the server URL with the supplied uri, method, headers, body '''
+        ''' Prepares an API call to the server URL '''
         body = sendRequestRaw(uri,method, headers, body, params, files).content
         res = json.loads(body)
         if 'success' in res:
@@ -544,7 +541,7 @@ script:
         jresString = json.dumps(jres)
 
         if (report_type == 'json'):
-            md = resToMD(summary,'ATD Sandbox Report')
+            md = tableToMarkdown(title, body, body.keys(), None, True)
             return{
                 'content': jresString,
                 'md': md,
