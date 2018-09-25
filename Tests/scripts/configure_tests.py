@@ -27,10 +27,6 @@ TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.*(?!playbook)-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX]
 
-KNOWN_FILE_STATUSES = ['a', 'm', 'd']
-
-SCHEMAS_PATH = "Tests/schemas/"
-
 
 class LOG_COLORS:
     NATIVE = '\033[m'
@@ -129,29 +125,25 @@ def create_test_file():
     branches = run_git_command("git branch")
     branch_name_reg = re.search("(?<=\* )\w+", branches)
     branch_name = branch_name_reg.group(0)
+
+    print("Getting changed files from the branch: {0}".format(branch_name))
     files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
-    print_color(files_string, LOG_COLORS.GREEN)
     modified_files, modified_tests_list = get_modified_files(files_string)
 
-    print_color(modified_files, LOG_COLORS.GREEN)
-
     tests = get_test_list(modified_files, modified_tests_list)
+    tests_string = '\n'.join(tests)
+    print('Collected the following tests:\n{0}'.format(tests_string))
 
+    print("Creating filter_file.txt")
     with open("./Tests/filter_file.txt", "w") as filter_file:
-        filter_file.write('\n'.join(tests))
-
-    print_color('\n'.join(tests), LOG_COLORS.GREEN)
-
-
-def main():
-    print_color("Starting creation of test filter file", LOG_COLORS.GREEN)
-
-    # Create test file based only on committed files
-    create_test_file()
-
-    print_color("Finished creation of the test filter file", LOG_COLORS.GREEN)
-    sys.exit(0)
+        filter_file.write(tests_string)
 
 
 if __name__ == "__main__":
-   main()
+   print_color("Starting creation of test filter file", LOG_COLORS.GREEN)
+
+   # Create test file based only on committed files
+   create_test_file()
+
+   print_color("Finished creation of the test filter file", LOG_COLORS.GREEN)
+   sys.exit(0)
