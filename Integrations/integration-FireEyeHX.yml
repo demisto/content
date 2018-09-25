@@ -2054,6 +2054,7 @@ script:
     def fetch_incidents():
 
         lastRun = demisto.getLastRun()
+        alerts = []
         if lastRun and lastRun.get('min_id'):
             #get all alerts with id greater than min_id
             alerts = get_all_alerts(
@@ -2061,7 +2062,7 @@ script:
                 sort='_id+ascending'
             )
             #results are sorted in ascending order - the last alert holds the greatest id
-            min_id = alerts[-1].get('_id')
+            min_id = alerts[-1].get('_id') if alerts else None
         else:
             #get the last 100 alerts
             alerts = get_all_alerts(
@@ -2069,11 +2070,12 @@ script:
                 limit=100
             )
             #results are sorted in descending order - the first alert holds the greatest id
-            min_id = alerts[0].get('_id')
+            min_id = alerts[0].get('_id') if alerts else None
 
         incidents = [parse_alert_to_incident(alert) for alert in alerts]
         demisto.incidents(incidents)
-        demisto.setLastRun({'min_id': min_id})
+        if min_id is not None:
+            demisto.setLastRun({'min_id': min_id})
 
 
     def parse_alert_to_incident(alert):
@@ -2772,3 +2774,4 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
+releaseNotes: "Fix fetch events to handle empty results"
