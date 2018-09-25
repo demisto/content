@@ -76,15 +76,15 @@ def get_modified_files(files_string):
     modified_tests_list = []
     all_files = files_string.split('\n')
 
-    for f in all_files:
-        if checked_type(file_path):
-            modified_files_list.append(file_path)
-        elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            modified_tests_list.append(file_path)
+    for file in all_files:
+        if checked_type(file):
+            modified_files_list.append(file)
+        elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
+            modified_tests_list.append(file)
 
-        if f.lower() not in KNOWN_FILE_STATUSES:
+        if file.lower() not in KNOWN_FILE_STATUSES:
             print_error("{0} file status is an unknown known one, "
-                        "please check. File status was: {1}".format(f,f))
+                        "please check. File status was: {1}".format(file,file))
 
     return modified_files_list, modified_tests_list
 
