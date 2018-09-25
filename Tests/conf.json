@@ -451,6 +451,10 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "RSA NetWitness Endpoint",
+            "playbookID": "NetWitness Endpoint Test"
         }
     ],
     "skipped": [
