@@ -129,7 +129,7 @@ def create_test_file():
     branches = run_git_command("git branch")
     branch_name_reg = re.search("(?<=\* )\w+", branches)
     branch_name = branch_name_reg.group(0)
-    files_string = run_git_command("git diff --name-status master...{0}".format(branch_name))
+    files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
     print_color(files_string, LOG_COLORS.GREEN)
     modified_files, modified_tests_list = get_modified_files(files_string)
 
