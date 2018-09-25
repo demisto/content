@@ -77,14 +77,18 @@ def get_modified_files(files_string):
     all_files = files_string.split('\n')
 
     for file in all_files:
-        if checked_type(file):
-            modified_files_list.append(file)
-        elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
-            modified_tests_list.append(file)
+        file_data = f.split()
+        if not file_data:
+            continue
 
-        if file.lower() not in KNOWN_FILE_STATUSES:
-            print_error("{0} file status is an unknown known one, "
-                        "please check. File status was: {1}".format(file,file))
+        file_path = file_data[1]
+        file_status = file_data[0]
+
+        if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
+            if checked_type(file_path):
+                modified_files_list.append(file_path)
+            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                modified_tests_list.append(file_path)
 
     return modified_files_list, modified_tests_list
 
@@ -99,7 +103,7 @@ def collect_tests(file_path, search_key):
                 data_dictionary = yaml.safe_load(f)
             except Exception as e:
                 print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return False
+                return []
 
     if data_dictionary and data_dictionary.get('tests') is not None:
         return data_dictionary.get(search_key, '-')
@@ -109,8 +113,7 @@ def get_test_list(modified_files, modified_tests_list):
     """Create a test list that should run"""
     tests = []
     for file_path in modified_files:
-        print
-        "Gathering tests from {}".format(file_path)
+        print "Gathering tests from {}".format(file_path)
         for test in collect_tests(file_path, TESTS_LIST):
             if test not in tests:
                 tests.append(test)
@@ -130,7 +133,7 @@ def create_test_file():
     """Create a file containing all the tests we need to run for the CI"""
     branches = run_git_command("git branch")
     branch_name = re.search("(?<=\* )\w+", branches)
-    files_string = run_git_command("git diff --name-only master {0}".format(branch_name.group(0)))
+    files_string = run_git_command("git diff --name-status master {0}".format(branch_name.group(0)))
     modified_files, modified_tests_list = get_modified_files(files_string)
     tests = get_test_list(modified_files, modified_tests_list)
 
