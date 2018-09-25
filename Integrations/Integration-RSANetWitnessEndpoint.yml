@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAqCAYAAAB4Ip8uAAAPyUl
 description: 'RSA NetWitness Endpoint provides deep visibility beyond basic endpoint
   security solutions by monitoring and collecting activity across all of your endpoints—on
   and off your network. The RSA–Demisto integration provides access to information
-  about endpoints, modules and indicators.'
+  about endpoints, modules and indicators. '
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:30022)
   name: server
@@ -336,8 +336,8 @@ script:
             'machine_name': filters.get('machineName'),  # string
             'iocscore_gte': filters.get('iocScoreGreaterThan'),  # int
             'iocscore_lte': filters.get('iocScoreLessThan'),  # int
-            'ip_address': filters.get('ipAdress'),  # string
-            'mac_address': filters.get('macAddress'),  # string
+            'IpAddress': filters.get('ipAddress'),  # string
+            'macAddress': filters.get('macAddress'),  # string
             'Properties': 'Online,OperatingSystem,LastScanUTCTime,IOCScore,MacAddress,LocalIp',  # string
             'page': 1,  # int
         }
@@ -632,7 +632,7 @@ script:
             'ContentsFormat': formats['text']
         }
         demisto.results(entry)
-    S
+
 
     def blacklist_domains(domains):
         blacklist_domains_request(domains)
@@ -683,7 +683,7 @@ script:
                 if args.get('includeMachineIOCs') == 'yes':
                     list_iocs(machine, 100)
                 if args.get('includeMachineModules') == 'yes':
-                    get_machine_modules(machine, {}, 50)
+                    get_machine_modules(machine, {}, 100)
 
         elif command == 'netwitness-get-machine':
 
@@ -760,7 +760,7 @@ script:
     - name: iocScoreLessThan
       description: Filter all machines whose IOC score is less than or equal to this
         value. Default = 1024. Cant be zero.
-    - name: ipAdress
+    - name: ipAddress
       description: Filter all machines based on IP address.
     - name: macAddress
       description: Filter all machines based on MAC address.
