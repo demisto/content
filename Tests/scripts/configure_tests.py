@@ -24,9 +24,9 @@ TEST_ID = 'id'
 TESTS_LIST = 'tests'
 
 # file types regexes
-SCRIPT_REGEX = "Scripts.*script-.*.yml"
-PLAYBOOK_REGEX = "Playbooks.*playbook-.*.yml"
-INTEGRATION_REGEX = "Integrations.*integration-.*.yml"
+SCRIPT_REGEX = "scripts.*script-.*.yml"
+PLAYBOOK_REGEX = "playbooks.*playbook-.*.yml"
+INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.*(?!playbook)-.*.yml"
 
@@ -77,7 +77,7 @@ def get_modified_files(files_string):
     all_files = files_string.split('\n')
 
     for file in all_files:
-        file_data = f.split()
+        file_data = file.split()
         if not file_data:
             continue
 
@@ -133,7 +133,7 @@ def create_test_file():
     """Create a file containing all the tests we need to run for the CI"""
     branches = run_git_command("git branch")
     branch_name = re.search("(?<=\* )\w+", branches)
-    files_string = run_git_command("git diff --name-status master {0}".format(branch_name.group(0)))
+    files_string = run_git_command("git diff --name-status master...{0}".format(branch_name.group(0)))
     modified_files, modified_tests_list = get_modified_files(files_string)
     tests = get_test_list(modified_files, modified_tests_list)
 
