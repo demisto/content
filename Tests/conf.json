@@ -7,6 +7,11 @@
             "playbookID": "SCADAfence_test"
         },
         {
+          "integrations": "Trend Micro Deep Discovery Analyzer",
+          "playbookID": "Test Playbook TrendMicroDDA",
+          "timeout": 500
+        },
+        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
