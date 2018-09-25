@@ -33,6 +33,31 @@ script: |-
       output += line[lastDigit:len(line)] + '\n'
       return output
 
+  def addErrorLines(scriptToScan, scriptType):
+      res = ''
+      if 'python' in scriptType:
+          errorKey = 'raise '
+      elif 'javascript' in scriptType:
+          errorKey = 'throw '
+      # Unsupported script type
+      else:
+          return res
+      linesToSkip = 0
+      scriptLines = scriptToScan.splitlines()
+      for idx in range(0, len(scriptLines)):
+          # Skip line if went over it in a previou iteration
+          if linesToSkip > 0:
+              linesToSkip -= 1
+              continue
+          if errorKey in scriptLines[idx]:
+              res += '* ' + scriptLines[idx] + '\n'
+              if '(' in scriptLines[idx]:
+                  subIdx = idx
+                  while not ')' in scriptLines[subIdx]:
+                      subIdx += 1
+                      res += ' ' + scriptLines[subIdx]
+      return res
+
   name = dataMap['name']
   doc = ''
 
@@ -171,6 +196,11 @@ script: |-
   if 'troubleshooting' in demisto.args():
       doc +=addLines(demisto.args()['troubleshooting'])
 
+  # Possible Errors
+
+  doc += '\n## Possible Errors:\n'
+  doc += addErrorLines(dataMap['script']['script'], dataMap['script']['type'])
+
   filename = name + '-documantation.txt'
   demisto.results(fileResult(filename, doc))
 type: python
@@ -198,3 +228,4 @@ args:
   description: Known limitations. Number the steps by 'x.' (i.e. '1.')
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
