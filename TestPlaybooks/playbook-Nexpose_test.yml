@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a118d6ce-1b8f-40db-8686-971f8ef45b95
+    taskid: 98ddf65c-717d-4749-8599-124c1edc125d
     type: start
     task:
-      id: a118d6ce-1b8f-40db-8686-971f8ef45b95
+      id: 98ddf65c-717d-4749-8599-124c1edc125d
       version: -1
       name: ""
       iscommand: false
@@ -21,16 +21,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 7fef517a-8968-440c-823e-74c11eb20c34
+    taskid: 2e5c1e1f-bdd0-42d8-8c44-1c4f52e0044e
     type: regular
     task:
-      id: 7fef517a-8968-440c-823e-74c11eb20c34
+      id: 2e5c1e1f-bdd0-42d8-8c44-1c4f52e0044e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -49,16 +50,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 201
+          "x": 50,
+          "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 3f34ef51-5bce-4312-8c0c-b7b0cc397711
+    taskid: ace4cdd2-76a7-4335-8bf8-f67ed1747eaa
     type: regular
     task:
-      id: 3f34ef51-5bce-4312-8c0c-b7b0cc397711
+      id: ace4cdd2-76a7-4335-8bf8-f67ed1747eaa
       version: -1
       name: nexpose-get-assets
       description: Returns all assets for which you have access.
@@ -77,16 +79,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 381
+          "x": 50,
+          "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 88f8082b-274c-4bfd-821d-9360eab9a88f
+    taskid: 9231d489-297d-4823-86e2-95c1a28c886e
     type: regular
     task:
-      id: 88f8082b-274c-4bfd-821d-9360eab9a88f
+      id: 9231d489-297d-4823-86e2-95c1a28c886e
       version: -1
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
@@ -113,16 +116,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 565
+          "x": 50,
+          "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: d2f7fe69-fe4b-42b2-8daa-7fb32cc6ecb1
+    taskid: 15446f3f-d228-4225-8a51-ad679d88bfe0
     type: regular
     task:
-      id: d2f7fe69-fe4b-42b2-8daa-7fb32cc6ecb1
+      id: 15446f3f-d228-4225-8a51-ad679d88bfe0
       version: -1
       name: nexpose-get-asset
       description: Returns the specified asset.
@@ -140,16 +144,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 903
+          "x": 50,
+          "y": 895
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: f36b2d59-eda5-4453-86a1-f0936a2050ce
+    taskid: 01069902-746c-4b83-83a4-223c1116b7f5
     type: regular
     task:
-      id: f36b2d59-eda5-4453-86a1-f0936a2050ce
+      id: 01069902-746c-4b83-83a4-223c1116b7f5
       version: -1
       name: VerifyContext
       description: |-
@@ -175,16 +180,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 1070
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: 6bc429e0-1309-4929-8bbc-92479ac47d14
+    taskid: ac909c39-cb29-4bf6-854a-9161b2be572a
     type: regular
     task:
-      id: 6bc429e0-1309-4929-8bbc-92479ac47d14
+      id: ac909c39-cb29-4bf6-854a-9161b2be572a
       version: -1
       name: nexpose-create-assets-report
       description: Generates a new report on given assets according to a template
@@ -199,22 +205,24 @@ tasks:
     scriptarguments:
       assets:
         simple: ${Nexpose.Asset.AssetId}
+      format: {}
       name: {}
       template: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1580
+          "x": 50,
+          "y": 1595
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: e57cb3d7-4c60-43d7-88a6-f56ec6f6008b
+    taskid: 0331bfef-4f75-4571-800d-85b210e4681e
     type: regular
     task:
-      id: e57cb3d7-4c60-43d7-88a6-f56ec6f6008b
+      id: 0331bfef-4f75-4571-800d-85b210e4681e
       version: -1
       name: nexpose-get-asset-vulnerability
       description: Returns the details and possible remediations for an asset's given
@@ -235,16 +243,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1238
+          "x": 50,
+          "y": 1245
         }
       }
+    note: false
   "9":
     id: "9"
-    taskid: 42a7c4e0-cfa9-4e7d-88b6-5673fd77e20d
+    taskid: 3a8e6d0f-d76f-4f5a-8438-acc561205d5a
     type: regular
     task:
-      id: 42a7c4e0-cfa9-4e7d-88b6-5673fd77e20d
+      id: 3a8e6d0f-d76f-4f5a-8438-acc561205d5a
       version: -1
       name: VerifyContext
       description: |-
@@ -270,16 +279,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1409
+          "x": 50,
+          "y": 1420
         }
       }
+    note: false
   "10":
     id: "10"
-    taskid: 6fd94238-e502-487c-80fa-e258c1e8f571
+    taskid: b7cfb3fa-f4dd-47bd-88a5-3e13492ff37d
     type: regular
     task:
-      id: 6fd94238-e502-487c-80fa-e258c1e8f571
+      id: b7cfb3fa-f4dd-47bd-88a5-3e13492ff37d
       version: -1
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
@@ -306,16 +316,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 738
+          "x": 50,
+          "y": 720
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: 0d64231f-7bbe-47c6-8912-b670fb6ff3d8
+    taskid: 57398db9-47fd-485b-8226-e28641d73a4e
     type: regular
     task:
-      id: 0d64231f-7bbe-47c6-8912-b670fb6ff3d8
+      id: 57398db9-47fd-485b-8226-e28641d73a4e
       version: -1
       name: nexpose-create-assets-report-xml
       description: Generates a new report on given assets according to a template
@@ -338,16 +349,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1760
+          "x": 50,
+          "y": 1770
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: a4d832e5-61d0-47a4-8aa5-b98288e98e3b
+    taskid: a548d7a3-9758-4a39-8302-05f609568e8a
     type: regular
     task:
-      id: a4d832e5-61d0-47a4-8aa5-b98288e98e3b
+      id: a548d7a3-9758-4a39-8302-05f609568e8a
       version: -1
       name: VerifyContext
       description: |-
@@ -360,28 +372,90 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
       expectedValue:
         simple: '["pdf","xml"]'
       fields: {}
       path:
-        simple: File.Extension
+        simple: InfoFile.Extension
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1987
+          "x": 50,
+          "y": 1945
         }
       }
+    note: false
+  "14":
+    id: "14"
+    taskid: 0b21d1e7-ee8f-45ca-8ef4-92f185737153
+    type: regular
+    task:
+      id: 0b21d1e7-ee8f-45ca-8ef4-92f185737153
+      version: -1
+      name: nexpose-create-site
+      description: Creates a new site with the specified configuration.
+      script: Rapid7 Nexpose|||nexpose-create-site
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      assets:
+        simple: ${Endpoint.IP}
+      description: {}
+      importance: {}
+      name:
+        simple: test_playbook_site
+      scanTemplateId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: bc8aa772-137e-43de-8534-7acda0ab56f6
+    type: regular
+    task:
+      id: bc8aa772-137e-43de-8534-7acda0ab56f6
+      version: -1
+      name: nexpose-delete-site
+      description: Delete a site
+      script: Rapid7 Nexpose|||nexpose-delete-site
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Site.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2032,
+        "height": 2340,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }

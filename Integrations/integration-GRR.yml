@@ -17,7 +17,7 @@ configuration:
   defaultvalue: "8000"
   type: 0
   required: false
-- display: Credentials
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9

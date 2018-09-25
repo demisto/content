@@ -1,0 +1,173 @@
+id: WildFire - Detonate file
+version: -1
+name: WildFire - Detonate file
+toversion: 3.1.0
+fromversion: ""
+description: Perform malware dynamic analysis
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 47b6de2e-e418-4386-8888-860bc6d48175
+    type: start
+    task:
+      id: 47b6de2e-e418-4386-8888-860bc6d48175
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 26
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 585ad15b-5cfd-45bc-8825-97fe9b0540e1
+    type: regular
+    task:
+      id: 585ad15b-5cfd-45bc-8825-97fe9b0540e1
+      version: -1
+      name: Submit the file to Wildfire
+      description: Upload file to WildFire for analysis.
+      script: WildFire|||wildfire-upload
+      type: regular
+      iscommand: true
+      brand: WildFire
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      upload: ${File.EntryID}
+    view: |-
+      {
+        "position": {
+          "x": 1,
+          "y": 373
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c318d399-8159-4017-830e-81956395fe21
+    type: regular
+    task:
+      id: c318d399-8159-4017-830e-81956395fe21
+      version: -1
+      name: Get wildfire report in requested format
+      description: Retrieve results for a file hash using WildFire
+      script: WildFire|||wildfire-report
+      type: regular
+      iscommand: true
+      brand: WildFire
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      format: ${inputs.ReportFormat}
+      hash: ""
+      md5: ${File.MD5}
+      verbose: ""
+    view: |-
+      {
+        "position": {
+          "x": 1,
+          "y": 557
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 20ef69c7-2840-4c83-854b-ea213c875e4b
+    type: condition
+    task:
+      id: 20ef69c7-2840-4c83-854b-ea213c875e4b
+      version: -1
+      name: 'Is Wildfire Available? '
+      description: ""
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "1"
+    scriptarguments:
+      value: modules.brand(val==='WildFire')
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 176
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 294e47a9-3554-41ba-8e46-315ff451a574
+    type: title
+    task:
+      id: 294e47a9-3554-41ba-8e46-315ff451a574
+      version: -1
+      name: 'End '
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 309,
+          "y": 937
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 9c6eb442-5350-4f44-8fc8-4a60efc85dfa
+    type: regular
+    task:
+      id: 9c6eb442-5350-4f44-8fc8-4a60efc85dfa
+      version: -1
+      name: Also get WildFire report as PDF
+      description: Retrieve results for a file hash using WildFire
+      script: WildFire|||wildfire-report
+      type: regular
+      iscommand: true
+      brand: WildFire
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      format: pdf
+      hash: ""
+      md5: ${File.MD5}
+      verbose: ""
+    view: |-
+      {
+        "position": {
+          "x": 1,
+          "y": 735
+        }
+      }
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 976,
+        "width": 688,
+        "x": 1,
+        "y": 26
+      }
+    }
+  }
+inputs:
+- key: ReportFormat
+  value: xml
+  description: ""
