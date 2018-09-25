@@ -32,7 +32,6 @@ TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.*(?!playbook)-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX]
 
-
 KNOWN_FILE_STATUSES = ['a', 'm', 'd']
 
 SCHEMAS_PATH = "Tests/schemas/"
@@ -78,22 +77,14 @@ def get_modified_files(files_string):
     all_files = files_string.split('\n')
 
     for f in all_files:
-        file_data = f.split()
-        if not file_data:
-            continue
+        if checked_type(file_path):
+            modified_files_list.append(file_path)
+        elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            modified_tests_list.append(file_path)
 
-        file_path = file_data[1]
-        file_status = file_data[0]
-
-        if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
-            if checked_type(file_path):
-                modified_files_list.append(file_path)
-            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                modified_tests_list.append(file_path)
-
-        if file_status.lower() not in KNOWN_FILE_STATUSES:
+        if f.lower() not in KNOWN_FILE_STATUSES:
             print_error("{0} file status is an unknown known one, "
-                        "please check. File status was: {1}".format(file_path,file_status))
+                        "please check. File status was: {1}".format(f,f))
 
     return modified_files_list, modified_tests_list
 
@@ -145,6 +136,8 @@ def create_test_file():
 
     with open("./Tests/filter_file.txt", "w") as filter_file:
         filter_file.write('\n'.join(tests))
+
+    print_color('\n'.join(tests), LOG_COLORS.GREEN)
 
 
 def main():
