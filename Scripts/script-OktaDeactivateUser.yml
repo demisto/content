@@ -28,3 +28,7 @@ args:
   description: Username in Okta to deactivate
 scripttarget: 0
 deprecated: true
+dependson:
+  must:
+  - okta-deactivate-user
+releaseNotes: "-"
