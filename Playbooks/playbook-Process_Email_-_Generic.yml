@@ -5,7 +5,6 @@ fromversion: 4.0.0
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
-releaseNotes: "-"
 tasks:
   "0":
     id: "0"
@@ -26,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 50
+          "y": -280
         }
       }
     note: false
@@ -60,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 195
+          "y": -65
         }
       }
     note: false
@@ -93,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": -60,
+          "y": 820
         }
       }
     note: false
@@ -126,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 370
+          "x": 630,
+          "y": 195
         }
       }
     note: false
@@ -162,27 +161,29 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1215
+          "x": 340,
+          "y": 1220
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 2373f9de-c13d-42ca-84be-8735743156e6
+    taskid: c18ef7a3-f278-4255-86ac-5b127f991302
     type: regular
     task:
-      id: 2373f9de-c13d-42ca-84be-8735743156e6
+      id: c18ef7a3-f278-4255-86ac-5b127f991302
       version: -1
       name: Render HTML to an image
       description: ""
+      tags:
+      - email_html_image
       script: Rasterize|||rasterize-email
       type: regular
       iscommand: true
       brand: Rasterize
     nexttasks:
       '#none#':
-      - "15"
+      - "6"
     scriptarguments:
       height: {}
       htmlBody:
@@ -195,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1390
+          "x": 100,
+          "y": 1440
         }
       }
     note: false
@@ -216,8 +217,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1915
+          "x": 340,
+          "y": 1670
         }
       }
     note: false
@@ -240,7 +241,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 340,
           "y": 1070
         }
       }
@@ -574,160 +575,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 895
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: 89a7a856-46ff-46f6-8f1c-b2f772c12881
-    type: regular
-    task:
-      id: 89a7a856-46ff-46f6-8f1c-b2f772c12881
-      version: -1
-      name: Set HTML Image custom field
-      description: Set the base64 of the rendered image to the custom field and the
-        Summary page
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      addLabels: {}
-      app: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      bugtraq: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      daysbetweenreportcreation: {}
-      dest: {}
-      destntdomain: {}
-      details: {}
-      duration: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      htmlimage:
-        simple: |
-          ![HTML render](data:image/png;base64,${Base64.encoded})
-      htmlrenderedimage:
-        simple: '![HTML render](data:image/png;base64,${Base64.encoded})'
-      id: {}
-      important: {}
-      importantfield: {}
-      labels: {}
-      malwarefamily: {}
-      mdtest: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      selector: {}
-      severity: {}
-      signature: {}
-      single: {}
-      single2: {}
-      sla: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1740
-        }
-      }
-    note: false
-  "15":
-    id: "15"
-    taskid: 50661f40-4640-4b90-8f01-8143cec44c79
-    type: condition
-    task:
-      id: 50661f40-4640-4b90-8f01-8143cec44c79
-      version: -1
-      name: Is there a base64 encoding for the rendered image?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Base64.encoded
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1565
+          "x": 630,
+          "y": 820
         }
       }
     note: false
@@ -764,8 +613,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 263,
-          "y": 370
+          "x": 110,
+          "y": 195
         }
       }
     note: false
@@ -789,8 +638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 340,
+          "y": 430
         }
       }
     note: false
@@ -823,20 +672,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 698
+          "x": 340,
+          "y": 620
         }
       }
     note: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "16_2_#default#": 0.73,
+      "18_13_yes": 0.72,
+      "18_2_#default#": 0.47,
+      "4_5_yes": 0.57
+    },
     "paper": {
       "dimensions": {
-        "height": 1930,
-        "width": 1010,
-        "x": 50,
-        "y": 50
+        "height": 2015,
+        "width": 1070,
+        "x": -60,
+        "y": -280
       }
     }
   }
