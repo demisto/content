@@ -1193,7 +1193,7 @@ script:
 
     def fix_textfield(**kwargs):
         if 'target_mailbox' in kwargs and kwargs['target_mailbox']:
-            account = get_account(target_mailbox)
+            account = get_account(kwargs['target_mailbox'])
         else:
             account = get_account(ACCOUNT_EMAIL)
         if account.protocol.version.build <= EXCHANGE_2010_SP2:
