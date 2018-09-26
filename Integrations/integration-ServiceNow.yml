@@ -488,7 +488,10 @@ script:
 
     def query_command():
         sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
-        sysparm_query = demisto.args().get('sysparm_query')
+        sysparm_query = demisto.args().get('query')
+        if not sysparm_query:
+            #backward compatibility
+            sysparm_query = demisto.args().get('sysparm_query')
         ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
         res = query(ticket_type, sysparm_limit, sysparm_query)
@@ -505,7 +508,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, removeNull=True),
             'EntryContext': {
-                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result'])
             }
         }
 
@@ -681,6 +684,7 @@ script:
     def fetch_incidents():
         query_params = {}
         incidents = []
+        sysparm_query = demisto.params().get('query')
         sysparm_query = demisto.params().get('sysparm_query')
         sysparm_limit = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
         ticket_type = demisto.params()['ticket_type']
@@ -723,8 +727,7 @@ script:
                 file_entries = get_ticket_attachment_entries(result['sys_id'])
                 for file_result in file_entries:
                     if file_result['Type'] == entryTypes['error']:
-                        demisto.error(file_result['Contents'])
-                        raise Exception(file_result['Contents'])
+                        return_error(file_result['Contents'])
                     file_names.append({
                         'path': file_result['FileID'],
                         'name': file_result['File']
@@ -812,6 +815,22 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: File.Info
+      description: Attachment file info
+    - contextPath: File.Name
+      description: Attachment file name
+    - contextPath: File.Size
+      description: Attachment file size
+    - contextPath: File.SHA1
+      description: Attachment file SHA1
+    - contextPath: File.SHA256
+      description: Attachment file SHA256
+    - contextPath: File.EntryID
+      description: Attachment file entry ID
+    - contextPath: File.Type
+      description: Attachment file type
+    - contextPath: File.MD5
+      description: Attachment file MD5
     description: Retrieve ticket information by specific ticket ID
   - name: servicenow-incident-get
     deprecated: true
@@ -1626,6 +1645,7 @@ script:
       description: Limit for how many tickets to retrieve
       defaultValue: "10"
     - name: sysparm_query
+      deprecated: true
       description: Query
     - name: ticket_type
       auto: PREDEFINED
@@ -1636,6 +1656,8 @@ script:
       - sc_request
       description: Ticket type to create
       defaultValue: incident
+    - name: query
+      description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket System ID
