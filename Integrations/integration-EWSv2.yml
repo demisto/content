@@ -106,6 +106,12 @@ script:
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
+    # Fallback imports
+    import xml.etree.ElementTree as ET
+    import requests
+    from requests.auth import HTTPDigestAuth, HTTPBasicAuth
+    from requests_ntlm import HttpNtlmAuth
+
     # consts
     VERSIONS = {
         '2007': EXCHANGE_2007,
@@ -149,6 +155,10 @@ script:
 
     ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
                              'toRecipients', ]
+
+    # Fallback constants
+    FALLBACK_REQUEST_HEADERS = {'Content-Type': "text/xml; charset=utf-8"}
+    FALLBACK_NS = {'t': "http://schemas.microsoft.com/exchange/services/2006/types"}
 
     # Load integratoin params from demisto
     USE_PROXY = demisto.params()['proxy']
@@ -225,6 +235,15 @@ script:
             return DIGEST
         raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
 
+    def fallback_get_auth():
+        auth_method = AUTH_METHOD_STR.lower()
+        if auth_method == 'ntlm':
+            return HttpNtlmAuth(USERNAME, PASSWORD)
+        elif auth_method == 'basic':
+            return HTTPBasicAuth(USERNAME, PASSWORD)
+        elif auth_method == 'digest':
+            return HTTPDigestAuth(USERNAME, PASSWORD)
+        raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
 
     def get_items_from_mailbox(account, item_ids):
         if type(item_ids) is not list:
@@ -256,6 +275,8 @@ script:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
         return Version(VERSIONS[version_str])
 
+    def fallback_get_version():
+        return get_version(VERSION_STR).api_version
 
     def get_folder_by_path(account, path):
         # handle exchange folder id
@@ -276,6 +297,65 @@ script:
             folder_result = folder_filter_by_name[0]
 
         return folder_result
+
+
+    def get_top_folder_id(mailbox):
+        payload = '''<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+          xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+            <soap:Header>
+            <t:RequestServerVersion Version="{}" />
+          </soap:Header>
+          <soap:Body>
+            <FindFolder Traversal="Shallow" xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">
+              <FolderShape>
+                <t:BaseShape>Default</t:BaseShape>
+              </FolderShape>
+                <ParentFolderIds>
+                    <t:DistinguishedFolderId Id="root">
+                        <t:Mailbox>
+                            <t:EmailAddress>{}</t:EmailAddress>
+                        </t:Mailbox>
+                    </t:DistinguishedFolderId>
+                </ParentFolderIds>
+            </FindFolder>
+          </soap:Body>
+        </soap:Envelope>'''.format(fallback_get_version(), mailbox)
+
+        res = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
+        res.raise_for_status()
+        folderid_elem = ET.fromstring(res.content).find(".//*[t:DisplayName='Top of Information Store']/t:FolderId", FALLBACK_NS)
+        return folderid_elem.attrib['Id'], folderid_elem.attrib['ChangeKey']
+
+
+    def get_subfolder_id(folder_id, change_key, child_name):
+        payload = '''<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+              xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+                <soap:Header>
+                <t:RequestServerVersion Version="{}" />
+              </soap:Header>
+              <soap:Body>
+                <FindFolder Traversal="Shallow" xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">
+                  <FolderShape>
+                    <t:BaseShape>Default</t:BaseShape>
+                  </FolderShape>
+                    <ParentFolderIds>
+                        <t:FolderId Id="{}" ChangeKey="{}"/>
+                    </ParentFolderIds>
+                </FindFolder>
+              </soap:Body>
+            </soap:Envelope>'''.format(fallback_get_version(), folder_id, change_key)
+        res = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
+        res.raise_for_status()
+        subfolder_id_elem = ET.fromstring(res.content).find(".//*[t:DisplayName='{}']/t:FolderId".format(child_name), FALLBACK_NS)
+        return subfolder_id_elem.attrib['Id'], subfolder_id_elem.attrib['ChangeKey']
+
+
+    def fallback_get_folder_by_path(mailbox, path):
+        folder_id, change_key = get_top_folder_id(mailbox)
+        path = path.replace("/", "\\").split('\\')
+        for sf in path:
+            folder_id, change_key = get_subfolder_id(folder_id, change_key, sf)
+        return folder_id, change_key
 
 
     def prepare():
@@ -757,6 +837,202 @@ script:
             return []
 
 
+    def fallback_fetch_emails_as_incidents():
+        start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
+        last_run = get_last_run()
+
+        folder_id, change_key = fallback_get_folder_by_path(ACCOUNT_EMAIL, FOLDER_NAME)
+
+        payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+            <soap:Header>
+                <t:RequestServerVersion Version="{}" />'''.format(fallback_get_version())
+        if demisto.params()['impersonation']:
+            payload += '''<t:ExchangeImpersonation>
+                        <t:ConnectingSID>
+                        <t:PrimarySmtpAddress>{}</t:PrimarySmtpAddress>
+                        </t:ConnectingSID>
+                        </t:ExchangeImpersonation>'''.format(ACCOUNT_EMAIL)
+        payload += '''</soap:Header>
+            <soap:Body>
+                <m:FindItem Traversal="Shallow">
+                    <m:ItemShape>
+                        <t:BaseShape>IdOnly</t:BaseShape>
+                    </m:ItemShape>
+                    <m:IndexedPageItemView MaxEntriesReturned="100" Offset="0" BasePoint="Beginning" />
+                    <m:Restriction>
+                        <t:And>
+                            <t:IsGreaterThan>
+                                <t:FieldURI FieldURI="item:DateTimeReceived" />
+                                <t:FieldURIOrConstant>
+                                    <t:Constant Value="{}"/>
+                                </t:FieldURIOrConstant>
+                            </t:IsGreaterThan>'''.format(last_run[LAST_RUN_TIME])
+        if LAST_RUN_IDS in last_run and last_run[LAST_RUN_IDS]:
+            for last_id in last_run[LAST_RUN_IDS]:
+                payload += '''<t:IsNotEqualTo>
+                        <t:FieldURI FieldURI="item:ItemId" />
+                        <t:FieldURIOrConstant>
+                            <t:Constant Value="{}"/>
+                        </t:FieldURIOrConstant>
+                    </t:IsNotEqualTo>'''.format(last_id)
+        payload += '''</t:And>
+            </m:Restriction>
+            <m:SortOrder>
+                <t:FieldOrder Order="Ascending">
+                    <t:FieldURI FieldURI="item:DateTimeReceived" />
+                </t:FieldOrder>
+            </m:SortOrder>
+            <m:ParentFolderIds>'''
+        if folder_id:
+            payload += '<t:FolderId Id="{}" ChangeKey="{}"></t:FolderId>'.format(folder_id, change_key)
+        else:
+            payload += '''<t:DistinguishedFolderId Id="inbox">
+                <t:Mailbox>
+                    <t:EmailAddress>{}</t:EmailAddress>
+                </t:Mailbox>
+            </t:DistinguishedFolderId>'''.format(ACCOUNT_EMAIL)
+        payload += '''</m:ParentFolderIds>
+                    </m:FindItem>
+                </soap:Body>
+            </soap:Envelope>'''
+
+        raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
+        raw.raise_for_status()
+        demisto.results(raw.content)
+        sys.exit(0)
+        # 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass'
+        # Now iterate on email ids, and do get items one by one
+        '''var itemIdPath = "Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message.ItemId.-Id";
+        var itemIds = dq(raw, itemIdPath);
+        if (itemIds && !Array.isArray(itemIds)) {
+            itemIds = [itemIds];
+        }
+        incidents = [];
+        if (itemIds) {
+            itemArgs = {};
+            itemArgs['item-ids'] = '';
+            for (var i = 0 ; i < itemIds.length; i++) {
+                itemArgs['item-ids'] += '<t:ItemId Id="' + itemIds[i] + '" />'
+            }
+            itemArgs['target-mailbox'] = getDefaultTargetMailbox();
+            itemArgs.version = params.defaultServerVersion;
+            itemArgs['include-mime-content'] = "false";
+            setImpersonation(itemArgs);
+            rawItem = sendRequest(commandsDictionary['ews-get-items'].template, itemArgs, commandsDictionary['ews-get-items'].resStatus);
+            actualMessages = rawItem.Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage;
+            if (actualMessages && !Array.isArray(actualMessages)) {
+                actualMessages = [actualMessages];
+            }
+            if (actualMessages) {
+                //Now create an incident from each item
+                for (var i = 0 ; i < actualMessages.length; i++) {
+                    // if fetched incident is the same as the one in lastRun - ignore it
+                    if (lastRun.lastId == actualMessages[i].Items.Message.ItemId["-Id"]) {
+                      continue;
+                    }
+
+                    message = actualMessages[i];
+                    if (message['-ResponseClass'] === 'Success') {
+                        //There is a reall item here, lets start to create the incident
+                        incident = {};
+                        incident.details = message.Items.Message.Body['#text'];
+                        incident.name = message.Items.Message.Subject;
+                        incident.occurred = new Date(Date.parse(message.Items.Message.DateTimeReceived));
+                        if (lastRun.lastTime < incident.occurred.getTime()) {
+                            lastRun.lastTime = incident.occurred.getTime();
+                            lastRun.lastId = message.Items.Message.ItemId["-Id"];
+                            setLastRun(lastRun);
+                        }
+                        labels = [];
+                        //handle  recipients
+                        recipients = message.Items.Message.ToRecipients;
+                        recipients = recipients ? recipients.Mailbox : null;
+                        if (recipients && !Array.isArray(recipients)) {
+                            recipients = [recipients];
+                        }
+                        if (recipients) {
+                            for (j = 0 ; j < recipients.length; j++) {
+                                labels.push({type: 'Email', value: recipients[j].EmailAddress})
+                            }
+                        }
+                        //handle cc
+                        recipients = message.Items.Message.CcRecipients;
+                        recipients = recipients ? recipients.Mailbox : null;
+                        if (recipients && !Array.isArray(recipients)) {
+                            recipients = [recipients];
+                        }
+                        if (recipients) {
+                            for (j = 0 ; j < recipients.length; j++) {
+                                labels.push({type: 'Email/cc', value: recipients[j].EmailAddress})
+                            }
+                        }
+                        //handle Email/from
+                        sender = message.Items.Message.From.Mailbox;
+                        if (sender) {
+                            labels.push({type: 'Email/from', value: sender.EmailAddress})
+                        }
+                        //Email format
+                        format = message.Items.Message.Body;
+                        bodyFormatLabel = 'Email/text';
+                        if (format) {
+                            labels.push({type: 'Email/format', value: format['-BodyType']})
+                            if (format['-BodyType'] === 'HTML') {
+                                bodyFormatLabel = 'Email/html';
+                            }
+                        }
+                        labels.push({type: bodyFormatLabel, value: format['#text'] });
+                        labels.push({type: 'Email/subject', value: incident.name });
+
+                        //Handle attachment - file name
+                        attachments = message.Items.Message.Attachments;
+                        attachments = attachments ? attachments.FileAttachment : null;
+                        if (attachments && !Array.isArray(attachments)) {
+                            attachments = [attachments];
+                        }
+                        if (attachments) {
+                            for (j = 0; j < attachments.length; j++ ) {
+                                labels.push({type: 'Email/attachments', value: attachments[j].Name});
+                                labels.push({type: 'Email/attachmentId', value: attachments[j].AttachmentId['-Id']});
+                            }
+                        }
+
+                        //Handle item attachment
+                        attachments = message.Items.Message.Attachments;
+                        attachments = attachments ? attachments.ItemAttachment : null;
+                        if (attachments && !Array.isArray(attachments)) {
+                            attachments = [attachments];
+                        }
+                        if (attachments) {
+                            for (j = 0; j < attachments.length; j++ ) {
+                                labels.push({type: 'Email/attachmentItems', value: attachments[j].Name});
+                                labels.push({type: 'Email/attachmentItemsId', value: attachments[j].AttachmentId['-Id']});
+                            }
+                        }
+
+                        //Handle headers
+                        headers = message.Items.Message.InternetMessageHeaders.InternetMessageHeader;
+                        if (headers && !Array.isArray(headers)) {
+                            headers = [headers];
+                        }
+                        if (headers) {
+                            for (j = 0; j < headers.length; j++ ) {
+                                labels.push({type: 'Email/Header/'+headers[j]['-HeaderName'], value: headers[j]['#text']});
+                            }
+                        }
+
+                        //Add item ID
+                        labels.push({type: 'Email/ID', value: message.Items.Message.ItemId['-Id']})
+
+                        incident.labels = labels;
+                        incident.rawJSON = JSON.stringify(message.Items.Message);
+                        incidents.push(incident);
+                    }
+                }
+            }
+        }
+        return JSON.stringify(incidents);'''
+
+
     def get_entry_for_file_attachment(item_id, attachment):
         entry = fileResult(get_attachment_name(attachment.name), attachment.content)
         ec = {
@@ -1226,7 +1502,11 @@ script:
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
-            incidents = fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
+            incidents = None
+            try:
+                incidents = fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
+            except:
+                incidents = fallback_fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
             demisto.incidents(str_to_unicode(incidents))
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
@@ -1262,6 +1542,8 @@ script:
             encode_and_submit_results(get_items(**args))
         elif demisto.command() == 'ews-get-folder':
             encode_and_submit_results(get_folder(**args))
+        elif demisto.command() == 'ews-fb-fetch-incidents':
+            fallback_fetch_emails_as_incidents()
 
 
     except Exception, e:
@@ -1880,6 +2162,10 @@ script:
       type: number
       description: Unread emails in the folder.
     description: Get a single specific folder.
+  - name: ews-fb-fetch-incidents
+    arguments: []
+    description: test fallback fetch incidents
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
+releaseNotes: "-"
