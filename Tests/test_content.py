@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import argparse
@@ -151,6 +152,7 @@ def main():
         print '------ Test %s end ------' % (test_message,)
 
     print_test_summary(succeed_playbooks, failed_playbooks)
+    os.remove(FILTER_CONF)
     if len(failed_playbooks):
         sys.exit(1)
 
