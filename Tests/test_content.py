@@ -22,6 +22,7 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
+    parser.add_argument('-i', '--circle_node_index', type=int, help='circle node index')
     options = parser.parse_args()
 
     return options
@@ -48,6 +49,7 @@ def main():
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
+    circle_node_index = options.circle_node_index
 
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
@@ -77,67 +79,68 @@ def main():
 
     succeed_playbooks = []
     failed_playbooks = []
-    for t in tests:
-        test_options = {
-            'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
-            'interval': conf.get('testInterval', 10)
-        }
+    for i, t in enumerate(tests):
+        if i % 2 == int(circle_node_index):
+            test_options = {
+                'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
+                'interval': conf.get('testInterval', 10)
+            }
 
-        playbook_id = t['playbookID']
+            playbook_id = t['playbookID']
 
-        integrations_conf = t.get('integrations', [])
+            integrations_conf = t.get('integrations', [])
 
-        if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf]
+            if not isinstance(integrations_conf, list):
+                integrations_conf = [integrations_conf]
 
-        integrations = []
-        for integration in integrations_conf:
-            if type(integration) is dict:
-                # dict description
-                integrations.append({
-                    'name': integration.get('name'),
-                    'byoi': integration.get('byoi',True),
-                    'params': {}
-                })
+            integrations = []
+            for integration in integrations_conf:
+                if type(integration) is dict:
+                    # dict description
+                    integrations.append({
+                        'name': integration.get('name'),
+                        'byoi': integration.get('byoi',True),
+                        'params': {}
+                    })
+                else:
+                    # string description
+                    integrations.append({
+                        'name': integration,
+                        'byoi': True,
+                        'params': {}
+                    })
+
+            for integration in integrations:
+                integration_params = [item for item in secret_params if item["name"] == integration['name']]
+                if integration_params:
+                    integration['params'] = integration_params[0].get('params', {})
+
+            test_message = 'playbook: ' + playbook_id
+            if integrations:
+                integrations_names = [integration['name'] for integration in integrations]
+                test_message = test_message + ' with integration(s): ' + ','.join(integrations_names)
+
+            print '------ Test %s start ------' % (test_message, )
+
+            nightly_test = t.get('nightly', False)
+
+            skip_test = True if nightly_test and not is_nightly else False
+
+            if skip_test:
+                print 'Skip test'
             else:
-                # string description
-                integrations.append({
-                    'name': integration,
-                    'byoi': True,
-                    'params': {}
-                })
+                # run test
+                succeed = test_integration(c, integrations, playbook_id, test_options)
 
-        for integration in integrations:
-            integration_params = [item for item in secret_params if item["name"] == integration['name']]
-            if integration_params:
-                integration['params'] = integration_params[0].get('params', {})
+                # use results
+                if succeed:
+                    print 'PASS: %s succeed' % (test_message,)
+                    succeed_playbooks.append(playbook_id)
+                else:
+                    print 'Failed: %s failed' % (test_message,)
+                    failed_playbooks.append(playbook_id)
 
-        test_message = 'playbook: ' + playbook_id
-        if integrations:
-            integrations_names = [integration['name'] for integration in integrations]
-            test_message = test_message + ' with integration(s): ' + ','.join(integrations_names)
-
-        print '------ Test %s start ------' % (test_message, )
-
-        nightly_test = t.get('nightly', False)
-
-        skip_test = True if nightly_test and not is_nightly else False
-
-        if skip_test:
-            print 'Skip test'
-        else:
-            # run test
-            succeed = test_integration(c, integrations, playbook_id, test_options)
-
-            # use results
-            if succeed:
-                print 'PASS: %s succeed' % (test_message,)
-                succeed_playbooks.append(playbook_id)
-            else:
-                print 'Failed: %s failed' % (test_message,)
-                failed_playbooks.append(playbook_id)
-
-        print '------ Test %s end ------' % (test_message,)
+            print '------ Test %s end ------' % (test_message,)
 
     print_test_summary(succeed_playbooks, failed_playbooks)
     if len(failed_playbooks):

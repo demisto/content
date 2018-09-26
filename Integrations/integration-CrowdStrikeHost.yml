@@ -57,7 +57,7 @@ script:
                 Method: method,
                 Body: body ? JSON.stringify(body) : ''
             },
-            params.isecure,
+            params.insecure,
             params.useproxy
         );
         if (result.StatusCode < 200 || result.StatusCode > 299) {
@@ -721,3 +721,4 @@ script:
       IDs from the Falcon Host UI or from the Falcon Streaming API.
     execution: true
   runonce: false
+releaseNotes: "Fixed support for \"Trust any certificate\" checkbox"
