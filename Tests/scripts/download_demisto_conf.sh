@@ -51,5 +51,6 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
 fi
-
+echo "using instance:"
+cat instance.json
 echo "Successfully downloaded configuration files"

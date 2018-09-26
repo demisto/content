@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
@@ -11,6 +15,9 @@
         },
         {
             "playbookID": "TextFromHTML_test_playbook"
+        },
+        {
+            "playbookID": "PortListenCheck-test"
         },
         {
             "integrations": "ThreatExchange",
@@ -59,10 +66,6 @@
         {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
-        },
-        {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations": "VirusTotal",
@@ -468,10 +471,6 @@
         {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
-        },
-        {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
         }
     ],
     "skipped": [
@@ -479,6 +478,10 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations": "ThreatConnect",
