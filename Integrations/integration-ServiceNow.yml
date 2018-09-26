@@ -1806,4 +1806,4 @@ script:
       type: string
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
-releaseNotes: "Integration now in Python. Added outputs and option to get ticket attachments(get command, fetch incidents)"
+releaseNotes: "Added option to get ticket attachments(get command, fetch incidents) and additional outputs"
