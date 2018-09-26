@@ -44,18 +44,33 @@ script: |-
           return res
       linesToSkip = 0
       scriptLines = scriptToScan.splitlines()
-      for idx in range(0, len(scriptLines)):
-          # Skip line if went over it in a previou iteration
+      for idx in range(len(scriptLines)):
+          # Skip lines that were already scanned
           if linesToSkip > 0:
               linesToSkip -= 1
               continue
           if errorKey in scriptLines[idx]:
-              res += '* ' + scriptLines[idx] + '\n'
+              line = scriptLines[idx]
               if '(' in scriptLines[idx]:
-                  subIdx = idx
-                  while not ')' in scriptLines[subIdx]:
-                      subIdx += 1
-                      res += ' ' + scriptLines[subIdx]
+                  bracketOpenIdx = line.index('(') + 1
+                  if ')' in line:
+                      bracketCloseIdx = line.index(')')
+                      res += '* ' + line[bracketOpenIdx:bracketCloseIdx] + '\n'
+                  # Handle multi line error
+                  else:
+                      res += '*' + ('' if len(line[bracketOpenIdx:].lstrip()) < 1 else ' ' + line[bracketOpenIdx:] + '\n')
+                      while not ')' in scriptLines[idx + linesToSkip + 1]:
+                          linesToSkip += 1
+                          line = scriptLines[idx + linesToSkip]
+                          res += ' ' + line.lstrip() + '\n'
+                      # Adding last line of error
+                      linesToSkip += 1
+                      line = scriptLines[idx + linesToSkip]
+                      bracketCloseIdx = line.index(')')
+                      res += line[:bracketCloseIdx].lstrip() + '\n'
+              else:
+                  afterErrorKeyIdx = line.index(errorKey) + len(errorKey)
+                  res += '* ' + line[afterErrorKeyIdx:] + '\n'
       return res
 
   name = dataMap['name']
