@@ -136,9 +136,10 @@ script:
         for result in res['object']:
             result['eventdate'] = datetime.fromtimestamp(result['eventdate'] / 1000).strftime('%Y-%m-%dT%H:%M:%SZ')
             ip_field = 'srcHost' if 'srcHost' in result else 'clientIpAddress'
-            decimal_ip = result[ip_field]
-            # Convert decimal IP to IP
-            result[ip_field] = socket.inet_ntoa(struct.pack('!L', int(decimal_ip))) if decimal_ip else ''
+            if ip_field in result:
+                decimal_ip = result[ip_field]
+                # Convert decimal IP to IP
+                result[ip_field] = socket.inet_ntoa(struct.pack('!L', int(decimal_ip))) if decimal_ip else ''
             hr.append(result)
 
         headers = res['object'][0].keys()
