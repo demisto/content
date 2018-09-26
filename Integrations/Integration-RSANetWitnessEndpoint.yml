@@ -472,7 +472,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("NetWitness Endpoint - Machine IOC's", context, IOC_DATA),
             'EntryContext': {
-                "NetWitness.IOCS(obj.Name==val.Name)": context,
+                "NetWitness.IOCS(obj.Description==val.Description)": context,
             }
         }
         demisto.results(entry)
