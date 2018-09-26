@@ -36,9 +36,9 @@ script: |-
   def addErrorLines(scriptToScan, scriptType):
       res = ''
       if 'python' in scriptType:
-          errorKey = 'raise '
+          errorKeys = ['return_error', 'raise ']
       elif 'javascript' in scriptType:
-          errorKey = 'throw '
+          errorKeys = ['throw ']
       # Unsupported script type
       else:
           return res
@@ -49,9 +49,9 @@ script: |-
           if linesToSkip > 0:
               linesToSkip -= 1
               continue
-          if errorKey in scriptLines[idx]:
-              line = scriptLines[idx]
-              if '(' in scriptLines[idx]:
+          line = scriptLines[idx]
+          if any(key in line for key in errorKeys):
+              if '(' in line:
                   bracketOpenIdx = line.index('(') + 1
                   if ')' in line:
                       bracketCloseIdx = line.index(')')
@@ -69,7 +69,8 @@ script: |-
                       bracketCloseIdx = line.index(')')
                       res += line[:bracketCloseIdx].lstrip() + '\n'
               else:
-                  afterErrorKeyIdx = line.index(errorKey) + len(errorKey)
+                  firstMatchingErrorKey = next((key for key in errorKeys if key in line), False)
+                  afterErrorKeyIdx = line.index(firstMatchingErrorKey) + len(firstMatchingErrorKey)
                   res += '* ' + line[afterErrorKeyIdx:] + '\n'
       return res
 
@@ -213,8 +214,9 @@ script: |-
 
   # Possible Errors
 
-  doc += '\n## Possible Errors:\n'
-  doc += addErrorLines(dataMap['script']['script'], dataMap['script']['type'])
+  if 'True' == demisto.args()['withErrors']:
+      doc += '\n## Possible Errors (DO NOT PUBLISH ON ZENDESK):\n'
+      doc += addErrorLines(dataMap['script']['script'], dataMap['script']['type'])
 
   filename = name + '-documantation.txt'
   demisto.results(fileResult(filename, doc))
@@ -241,6 +243,13 @@ args:
   description: Additional information. Number the steps by 'x.' (i.e. '1.')
 - name: limit
   description: Known limitations. Number the steps by 'x.' (i.e. '1.')
+- name: withErrors
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: Flag for creating documentation with errors
+  defaultValue: "True"
 scripttarget: 0
 runonce: false
 releaseNotes: "-"
