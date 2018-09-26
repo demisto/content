@@ -729,13 +729,13 @@ script:
             malop_creation_time = malops[malop]['simpleValues']['creationTime']['values'][0]
 
             if management_status.lower() == 'unread' or management_status.lower() == 'reopen': # Fetching only incidents with the following status management: UNREAD and REOPEN
-                incident = malop_to_incident(malop)
+                incident = malop_to_incident(malops[malop])
                 incidents.append(incident)
 
                 malopGUID = malops[malop]['guidString']
                 update_malop_status(malopGUID, 'Open')
 
-            elif malop_creation_time >= last_creation_time:
+            elif malop_creation_time > last_creation_time:
                 incident = malop_to_incident(malops[malop])
                 incidents.append(incident)
 
@@ -1161,3 +1161,4 @@ script:
     description: Updates malop status
   isfetch: true
   runonce: false
+releaseNotes: "Improved fetch incidents implementation"
