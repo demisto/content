@@ -6,13 +6,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 40f85a6a-dfe6-4c31-86d1-a5523fbc766f
+    taskid: 9c17a635-9e99-417a-8c68-880d51d249ea
     type: start
     task:
-      id: 40f85a6a-dfe6-4c31-86d1-a5523fbc766f
+      id: 9c17a635-9e99-417a-8c68-880d51d249ea
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: a129b3d1-c74a-40bc-8739-a632efc7cc46
+    taskid: 9d782edf-e520-4aea-89f0-4fdc5a62717d
     type: regular
     task:
-      id: a129b3d1-c74a-40bc-8739-a632efc7cc46
+      id: 9d782edf-e520-4aea-89f0-4fdc5a62717d
       version: -1
       name: epo-help
       description: print help on ePO commands
@@ -58,10 +57,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: c71a3914-30c2-4e9b-8c33-912e2a537098
+    taskid: cc7909c6-5df1-4ed1-8f99-03c27d0589a8
     type: regular
     task:
-      id: c71a3914-30c2-4e9b-8c33-912e2a537098
+      id: cc7909c6-5df1-4ed1-8f99-03c27d0589a8
       version: -1
       name: epo-get-current-dat
       description: Check the existing DAT file version in ePO
@@ -71,7 +70,7 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "14"
+      - "3"
     separatecontext: false
     view: |-
       {
@@ -83,10 +82,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 5cc56e31-15d6-4f0c-8243-56d4f5619553
+    taskid: f894f664-e25c-4c41-85ad-3c33cd6c648a
     type: regular
     task:
-      id: 5cc56e31-15d6-4f0c-8243-56d4f5619553
+      id: f894f664-e25c-4c41-85ad-3c33cd6c648a
       version: -1
       name: epo-get-latest-dat
       description: Check the latest DAT file in McAfee repository
@@ -96,22 +95,22 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "15"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: 22f4aa97-b05c-4212-893f-4dbb63bb766f
+    taskid: 69c6da75-438d-456f-8206-82543ec88da7
     type: regular
     task:
-      id: 22f4aa97-b05c-4212-893f-4dbb63bb766f
+      id: 69c6da75-438d-456f-8206-82543ec88da7
       version: -1
       name: epo-get-system-tree-group
       description: Get System Tree groups
@@ -129,19 +128,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 895
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 96b59411-9dd3-4bb0-8d48-7c5f7fe600c5
+    taskid: 09f0aa2b-df1d-45a7-84dc-09f127a28095
     type: title
     task:
-      id: 96b59411-9dd3-4bb0-8d48-7c5f7fe600c5
+      id: 09f0aa2b-df1d-45a7-84dc-09f127a28095
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -150,16 +148,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: f697c963-87d8-449b-84b3-35796f8f1510
+    taskid: 9fd03fcd-40bb-42e0-856e-b491869b6a1f
     type: regular
     task:
-      id: f697c963-87d8-449b-84b3-35796f8f1510
+      id: 9fd03fcd-40bb-42e0-856e-b491869b6a1f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -188,10 +186,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: bb49e1b4-49c0-44ed-8a80-c855470df598
+    taskid: 0611ceaf-3264-45cd-817d-e8bc928e0380
     type: regular
     task:
-      id: bb49e1b4-49c0-44ed-8a80-c855470df598
+      id: 0611ceaf-3264-45cd-817d-e8bc928e0380
       version: -1
       name: epo-update-client-dat
       description: Run client task to update the DAT file
@@ -215,16 +213,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: 2bdc6df7-5381-40b7-8961-096c3729a3f8
+    taskid: 1cb1bd51-d39a-4fc3-89e2-4e91de885a43
     type: regular
     task:
-      id: 2bdc6df7-5381-40b7-8961-096c3729a3f8
+      id: 1cb1bd51-d39a-4fc3-89e2-4e91de885a43
       version: -1
       name: epo-update-repository
       description: Trigger a Server Task in specific ePO servers to pull latest signatures
@@ -241,16 +239,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
   "12":
     id: "12"
-    taskid: 9df45541-d0b9-428d-8697-653eb8118276
+    taskid: bd51bc8b-e4d9-4716-8378-c90d72c79f76
     type: regular
     task:
-      id: 9df45541-d0b9-428d-8697-653eb8118276
+      id: bd51bc8b-e4d9-4716-8378-c90d72c79f76
       version: -1
       name: epo-find-systems
       description: Find systems in the System Tree - by group ID or by search
@@ -270,86 +268,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: 732cff6c-d8f0-490a-8e4b-ca979b15ecaa
-    type: condition
-    task:
-      id: 732cff6c-d8f0-490a-8e4b-ca979b15ecaa
-      version: -1
-      name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    scriptarguments:
-      left:
-        complex:
-          root: McAfee
-          accessor: ePO.epoDAT
-      right:
-        simple: "9005"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "15":
-    id: "15"
-    taskid: 6d7ddd79-6562-462d-88a1-b79e736c63bf
-    type: condition
-    task:
-      id: 6d7ddd79-6562-462d-88a1-b79e736c63bf
-      version: -1
-      name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    scriptarguments:
-      left:
-        complex:
-          root: McAfee
-          accessor: ePO.latestDAT
-      right:
-        simple: "9005"
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 58c799d0-5202-4a52-8d27-77c78536637a
+    taskid: 41943e01-12d0-4689-884c-88607cb93ddc
     type: condition
     task:
-      id: 58c799d0-5202-4a52-8d27-77c78536637a
+      id: 41943e01-12d0-4689-884c-88607cb93ddc
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -384,16 +312,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
   "17":
     id: "17"
-    taskid: ec0bb31c-ae25-4b39-8cc0-d3cc294b9590
+    taskid: 5bc47760-eb7d-4928-831d-119dbc38c328
     type: condition
     task:
-      id: ec0bb31c-ae25-4b39-8cc0-d3cc294b9590
+      id: 5bc47760-eb7d-4928-831d-119dbc38c328
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -428,7 +356,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1776
+          "y": 1420
         }
       }
     note: false
@@ -437,7 +365,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 1960,
         "width": 380,
         "x": 50,
         "y": 50
