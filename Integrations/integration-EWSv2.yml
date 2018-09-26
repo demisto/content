@@ -1192,7 +1192,7 @@ script:
             raise  # Let the other error hadling logic deal with it
 
     def fix_textfield(**kwargs):
-        if 'target_mailbox' in kwargs and kwargs['target_maibox']:
+        if 'target_mailbox' in kwargs and kwargs['target_mailbox']:
             account = get_account(target_mailbox)
         else:
             account = get_account(ACCOUNT_EMAIL)
