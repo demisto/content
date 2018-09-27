@@ -424,4 +424,4 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
-releaseNotes: new detonate playbook using the pooling mechanis
+releaseNotes: new detonate playbook using the pooling mechanism.

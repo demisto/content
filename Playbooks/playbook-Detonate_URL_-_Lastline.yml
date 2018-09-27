@@ -325,4 +325,4 @@ outputs:
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
-releaseNotes: new detonate playbook using the pooling mechanism
+releaseNotes: new detonate playbook using the pooling mechanism.
