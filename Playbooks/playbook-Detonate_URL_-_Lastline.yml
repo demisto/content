@@ -114,10 +114,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: a730a83e-486d-4d8a-8b13-5218c7e89c14
+    taskid: d401f915-5858-4733-84e1-88c734ff94fd
     type: regular
     task:
-      id: a730a83e-486d-4d8a-8b13-5218c7e89c14
+      id: d401f915-5858-4733-84e1-88c734ff94fd
       version: -1
       name: Lastline Get Report
       description: Retrieve the reports from Lastline.
@@ -133,15 +133,6 @@ tasks:
       uuid:
         complex:
           root: Lastline
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Lastline.Submission.status
-                iscontext: true
-              right:
-                value:
-                  simple: Completed
           accessor: Submission.uuid
     separatecontext: false
     view: |-
@@ -334,4 +325,4 @@ outputs:
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
-releaseNotes: new detonate playbook using the pooling mechanis
+releaseNotes: new detonate playbook using the pooling mechanism
