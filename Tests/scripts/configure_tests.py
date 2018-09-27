@@ -1,5 +1,5 @@
 """
-This script is used to create a temp_conf.json file which will run only the needed the tests for a given change.#############################################
+This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
 try:
     import yaml
@@ -20,10 +20,10 @@ TESTS_LIST = 'tests'
 
 # file types regexes
 SCRIPT_REGEX = "scripts.*script-.*.yml"
-PLAYBOOK_REGEX = "playbooks.*playbook-.*.yml"
+PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
-TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.*(?!playbook)-.*.yml"
+TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX]
 
@@ -96,7 +96,7 @@ def collect_tests(file_path, search_key):
                 print_error(file_path + " has yml structure issue. Error was: " + str(e))
                 return []
 
-    if data_dictionary and data_dictionary.get('tests') is not None:
+    if data_dictionary and data_dictionary.get(search_key) is not None:
         return data_dictionary.get(search_key, '-')
 
 
