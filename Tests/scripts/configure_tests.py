@@ -96,8 +96,8 @@ def collect_tests(file_path, search_key):
                 print_error(file_path + " has yml structure issue. Error was: " + str(e))
                 return []
 
-    if data_dictionary and data_dictionary.get(search_key) is not None:
-        return data_dictionary.get(search_key, '-')
+    if data_dictionary:
+        return data_dictionary.get(search_key, ['-', ])
 
 
 def get_test_list(modified_files, modified_tests_list):
@@ -115,7 +115,7 @@ def get_test_list(modified_files, modified_tests_list):
             tests.append(test)
 
     if '-' in tests:
-        tests = ['-', ]
+        tests = []
 
     return tests
 
