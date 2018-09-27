@@ -1,0 +1,194 @@
+id: Lastline - testplaybook
+version: -1
+name: Lastline - testplaybook
+description: Test PB for Lastline integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 30a0f72b-95a6-4902-8820-7f1343bf0dcb
+    type: start
+    task:
+      id: 30a0f72b-95a6-4902-8820-7f1343bf0dcb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 11766e67-21df-42a9-8622-c4876f84348d
+    type: playbook
+    task:
+      id: 11766e67-21df-42a9-8622-c4876f84348d
+      version: -1
+      name: Detonate File - Lastline
+      playbookName: Detonate File - Lastline
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 206ed351-4acf-4b96-8fe6-482adbac3619
+    type: playbook
+    task:
+      id: 206ed351-4acf-4b96-8fe6-482adbac3619
+      version: -1
+      name: Detonate URL - Lastline
+      playbookName: Detonate URL - Lastline
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 94ec2e74-8080-4ebf-86cf-aecafca4e3bd
+    type: regular
+    task:
+      id: 94ec2e74-8080-4ebf-86cf-aecafca4e3bd
+      version: -1
+      name: Set
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 9d76a1e6-10f1-4132-8dcc-62896ba790ea
+    type: regular
+    task:
+      id: 9d76a1e6-10f1-4132-8dcc-62896ba790ea
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      data:
+        simple: How I need a drink, alcoholic in nature, after the heavy coding, involving  design
+          patterns.
+      entryId: {}
+      filename:
+        simple: test_file_lastline.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: de4b7272-15b6-4021-8618-5224b3fc2257
+    type: regular
+    task:
+      id: de4b7272-15b6-4021-8618-5224b3fc2257
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

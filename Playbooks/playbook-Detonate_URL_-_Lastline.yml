@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d2f4d7dc-4562-4517-8d63-3539676ca81d
+    taskid: 703b80c2-e281-498a-8d00-2bbf1e6f2df0
     type: start
     task:
-      id: d2f4d7dc-4562-4517-8d63-3539676ca81d
+      id: 703b80c2-e281-498a-8d00-2bbf1e6f2df0
       version: -1
       name: ""
       description: ""
@@ -30,14 +30,14 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: ed9b631e-e2c3-40e8-8609-a5121e77dc8f
+    taskid: 8adc1b63-514e-47bc-87e5-7d1a676d19ac
     type: regular
     task:
-      id: ed9b631e-e2c3-40e8-8609-a5121e77dc8f
+      id: 8adc1b63-514e-47bc-87e5-7d1a676d19ac
       version: -1
       name: Lastline Upload URL
-      description: Uploads the submission to McAfee ATD.
-      script: Lastline|||url
+      description: Uploads the submission to Latline.
+      script: Lastline|||lastline-upload-url
       type: regular
       iscommand: true
       brand: Lastline
@@ -45,18 +45,11 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      interval: {}
-      long: {}
       pushToPortal: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
       threshold: {}
-      timeout: {}
       url:
         complex:
           root: inputs.URL
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -68,10 +61,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 10321a00-b7ab-4bdb-87e3-b6cae1e12cf5
+    taskid: d71c2b83-4d1c-46c2-8dcd-cd697b6dba10
     type: playbook
     task:
-      id: 10321a00-b7ab-4bdb-87e3-b6cae1e12cf5
+      id: d71c2b83-4d1c-46c2-8dcd-cd697b6dba10
       version: -1
       name: GenericPolling
       description: |-
@@ -92,25 +85,20 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: lastlineTasks
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: taskId
+          root: Lastline
+          accessor: Submission.uuid
       Interval:
         complex:
           root: inputs.Interval
       PollingCommandArgName:
         simple: uuid
       PollingCommandName:
-        simple: url
+        simple: lastline-get-report
       Timeout:
         complex:
           root: inputs.Timeout
       dt:
-        simple: lastlineTasks(val.status != 'Completed')
+        simple: Lastline.Submission(val.status != 'Completed')
     separatecontext: true
     loop:
       iscommand: false
@@ -126,14 +114,14 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: dc362fa0-2ef3-4608-8da8-592277de3945
+    taskid: a730a83e-486d-4d8a-8b13-5218c7e89c14
     type: regular
     task:
-      id: dc362fa0-2ef3-4608-8da8-592277de3945
+      id: a730a83e-486d-4d8a-8b13-5218c7e89c14
       version: -1
       name: Lastline Get Report
-      description: Retrieve the reports from McAfee ATD.
-      script: Lastline|||lastline-get
+      description: Retrieve the reports from Lastline.
+      script: Lastline|||lastline-get-report
       type: regular
       iscommand: true
       brand: Lastline
@@ -141,12 +129,20 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      interval: {}
       threshold: {}
-      timeout: {}
       uuid:
         complex:
-          root: lastlineTasks
+          root: Lastline
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Lastline.Submission.status
+                iscontext: true
+              right:
+                value:
+                  simple: Completed
+          accessor: Submission.uuid
     separatecontext: false
     view: |-
       {
@@ -158,10 +154,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 7aef66ab-1f28-4a35-89d8-173760f509c5
+    taskid: 9cf17ba9-0559-471e-8012-1abbd588a590
     type: condition
     task:
-      id: 7aef66ab-1f28-4a35-89d8-173760f509c5
+      id: 9cf17ba9-0559-471e-8012-1abbd588a590
       version: -1
       name: Is there a URL to detonate?
       description: Checks that there is a URL in the playbook’s input.
@@ -192,10 +188,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+    taskid: 686f6312-301b-461a-877c-6e4ec794393f
     type: title
     task:
-      id: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+      id: 686f6312-301b-461a-877c-6e4ec794393f
       version: -1
       name: Done
       description: ""
@@ -213,14 +209,14 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: 0ddd3596-3573-4712-884e-d1bc359b1c91
+    taskid: 5305d933-86c0-46b2-8889-9c675f21f978
     type: condition
     task:
-      id: 0ddd3596-3573-4712-884e-d1bc359b1c91
+      id: 5305d933-86c0-46b2-8889-9c675f21f978
       version: -1
       name: Is Lastline sandbox enabled?
       description: |
-        Verify that there is a valid instance of McAfee ATD enabled.
+        Verify that there is a valid instance of Lastline enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -338,4 +334,4 @@ outputs:
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
-releaseNotes: new detonate playbook using the pooling mechanism
+releaseNotes: new detonate playbook using the pooling mechanis

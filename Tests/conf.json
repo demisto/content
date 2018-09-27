@@ -7,6 +7,10 @@
             "playbookID": "SCADAfence_test"
         },
         {
+            "integrations": "Lastline",
+            "playbookID": "Lastline - testplaybook"
+        },
+        {
             "integrations": "epo",
             "playbookID": "Test Playbook Mcafee ePO"
         },

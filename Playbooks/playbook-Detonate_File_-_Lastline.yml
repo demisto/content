@@ -5,31 +5,15 @@ fromversion: 4.0.0
 description: |-
   Detonates a File using the Lastline sandbox.
   Lastline supports the following File Types:
-
-  32-bit Portable Executables (PE)files; 64-bit PE+files
-  exe, sys, dll, com, scr, cpl, ocx, cgi
-  Microsoft Office Suite documents
-  doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
-  Just Systems Ichitaro documents
-  jtd, jtdc
-  Adobe
-  pdf, swf
-  Compressed files
-  gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
-  Android application package
-  apk, Java, JAR, CLASS, Java Script, Java bin files
-  Image files
-  jpeg, png, gif
-  Other file types
-  cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+  EXE, SYS, DLL, COM, SCR, CPL, OCX, CGI, DOC, DOTM, DOCX, DOTX, XLS, PPAM, XSLX, PPS, XLSB, PPSX, XLSM, PPSM, PPT, PPTX, PPTM, RTF, SHS, XLTM, SLDM, XLTX, SLDX, XLAM, THMX, DOCM, XAR, JTD, JTDC, PDF, SWF, GZ, 7Z, TGZ, MSI, ZIP, LZH, CAB, LZMA, APK, JAR, CLASS, JPEG, PNG, GIF, CMD, ACE, BAT, ARJ, VBS, CHM, XML, LNK, URL, MOF, HTM, OCX, HTML, POTM, EML, POTX, MSG, PS, |VB, REG, VBA, WSC, VBE, WSF, VBS, WSH
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
+    taskid: 2251b2ee-5743-45f5-81bf-7da8693c7b61
     type: start
     task:
-      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
+      id: 2251b2ee-5743-45f5-81bf-7da8693c7b61
       version: -1
       name: ""
       description: '-'
@@ -49,14 +33,14 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: f142846a-82fb-4224-8c83-0debc6838bf1
+    taskid: 931a99fb-8c91-4fd9-8173-0e38e05d658c
     type: regular
     task:
-      id: f142846a-82fb-4224-8c83-0debc6838bf1
+      id: 931a99fb-8c91-4fd9-8173-0e38e05d658c
       version: -1
       name: Lastline Upload File
-      description: Uploads the submission to McAfee ATD.
-      script: Lastline|||lastline-upload
+      description: Uploads the submission to Lastline.
+      script: Lastline|||lastline-upload-file
       type: regular
       iscommand: true
       brand: Lastline
@@ -64,14 +48,12 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      file_id:
+      entryID:
         complex:
           root: inputs.File
           accessor: EntryID
-      interval: {}
       pushToPortal: {}
       threshold: {}
-      timeout: {}
     separatecontext: false
     view: |-
       {
@@ -83,10 +65,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 31cc4d72-411d-473f-87f3-ee6afab1c031
+    taskid: 10ec1d52-9321-4491-8ce4-b3b371692182
     type: playbook
     task:
-      id: 31cc4d72-411d-473f-87f3-ee6afab1c031
+      id: 10ec1d52-9321-4491-8ce4-b3b371692182
       version: -1
       name: GenericPolling
       description: |-
@@ -107,20 +89,20 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: lastlineTasks
-          accessor: uuid
+          root: Lastline
+          accessor: Submission.uuid
       Interval:
         complex:
           root: inputs.Interval
       PollingCommandArgName:
         simple: uuid
       PollingCommandName:
-        simple: lastline-get
+        simple: lastline-get-report
       Timeout:
         complex:
           root: inputs.Timeout
       dt:
-        simple: lastlineTasks(val.status != 'Completed').uuid
+        simple: Lastline.Submission(val.status != 'Completed').uuid
     separatecontext: true
     loop:
       iscommand: false
@@ -136,14 +118,14 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: d731e915-68ae-4a15-87bb-4df7ea2afc6c
+    taskid: 65873615-76c2-4fae-81e7-ca947b5fbd67
     type: regular
     task:
-      id: d731e915-68ae-4a15-87bb-4df7ea2afc6c
+      id: 65873615-76c2-4fae-81e7-ca947b5fbd67
       version: -1
       name: Lastline Get Report
-      description: Retrieve the reports from McAfee ATD.
-      script: Lastline|||lastline-get
+      description: Retrieve the report from Lastline.
+      script: Lastline|||lastline-get-report
       type: regular
       iscommand: true
       brand: Lastline
@@ -151,13 +133,20 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      interval: {}
       threshold: {}
-      timeout: {}
       uuid:
         complex:
-          root: lastlineTasks
-          accessor: uuid
+          root: Lastline
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Lastline.Submission.status
+                iscontext: true
+              right:
+                value:
+                  simple: Completed
+          accessor: Submission.uuid
     separatecontext: false
     view: |-
       {
@@ -169,10 +158,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
+    taskid: 6185e7bf-d4ea-428f-84f3-8f69c900e8e8
     type: title
     task:
-      id: e589b774-3cee-4dff-8e14-788ef3590dfa
+      id: 6185e7bf-d4ea-428f-84f3-8f69c900e8e8
       version: -1
       name: Done
       description: finished
@@ -190,14 +179,14 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: d98703b5-ce3f-488c-8126-7c7ecd1c6c14
+    taskid: 5c234487-81fd-4b4f-8ae1-0b8fd37b942c
     type: condition
     task:
-      id: d98703b5-ce3f-488c-8126-7c7ecd1c6c14
+      id: 5c234487-81fd-4b4f-8ae1-0b8fd37b942c
       version: -1
       name: Is LastLine sandbox enabled?
       description: |
-        Verify that there is a valid instance of McAfee ATD enabled.
+        Verify that there is a valid instance of Lastline enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -223,7 +212,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Latline
+                        simple: Lastline
                 - - operator: isEqualString
                     left:
                       value:
@@ -244,10 +233,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
+    taskid: fea8caab-2280-4b3a-81ca-0477bc5d1854
     type: condition
     task:
-      id: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
+      id: fea8caab-2280-4b3a-81ca-0477bc5d1854
       version: -1
       name: Is File type supported?
       description: Check if file type is supported.
@@ -309,10 +298,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
+    taskid: 880a4474-6ff0-4426-83c3-38bbf36f090e
     type: regular
     task:
-      id: 3814f559-a639-4e80-8d6e-c74b9e96e495
+      id: 880a4474-6ff0-4426-83c3-38bbf36f090e
       version: -1
       name: Set File to context
       description: Set the file object into context.
@@ -341,10 +330,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
+    taskid: 823f4f10-b0d8-4c6b-8bc0-b7ec01897534
     type: condition
     task:
-      id: 9b8022fc-dfd0-4806-8ead-65f53804065f
+      id: 823f4f10-b0d8-4c6b-8bc0-b7ec01897534
       version: -1
       name: Is there a File to Detonate?
       description: Checks that there is a file in the playbook’s input.
@@ -435,4 +424,4 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
-releaseNotes: new detonate playbook using the pooling mechanism
+releaseNotes: new detonate playbook using the pooling mechanis
