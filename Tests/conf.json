@@ -55,7 +55,8 @@
                 "Pwned",
                 "VirusTotal - Private API",
                 "Demisto REST API"
-            ]
+            ],
+            "nightly": true
         },
         {
             "playbookID": "Phishing test - Inline",
@@ -65,7 +66,8 @@
                 "Pwned",
                 "VirusTotal - Private API",
                 "Demisto REST API"
-            ]
+            ],
+            "nightly": true
         },
         {
             "integrations": "RSA NetWitness Packets and Logs",
