@@ -43,6 +43,7 @@ script:
     import hmac
     import hashlib
     from datetime import datetime
+    from collections import Counter
     import socket, struct
 
     # disable insecure warnings
@@ -62,7 +63,8 @@ script:
 
     def load_proxy():
         proxy = {}
-        if "proxy" in demisto.params():
+
+        if demisto.params().get('proxy', False):
             proxy["http"] = os.environ["http_proxy"]
             proxy["https"] = os.environ["https_proxy"]
         return proxy
@@ -76,10 +78,9 @@ script:
         if body:
             message += json.dumps(body)
         message += str(timestamp)
+        sign = hmac.new(API_SECRET.encode("utf-8"), message.encode("utf-8"), hashlib.sha256)
 
-        hmac_hash = hmac.new(str(API_SECRET), str(message), hashlib.sha256).hexdigest()
-
-        return hmac_hash
+        return sign.hexdigest()
 
     def get_headers(body = ''):
         headers = {
@@ -94,12 +95,17 @@ script:
         return headers
 
     def send_request(path, headers = get_headers(), method = 'get', body = {}, params = {}):
-        url = '%s/%s' % (SERVER_URL, path)
+        url = '{}/{}'.format(SERVER_URL, path)
 
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL, proxies=PROXY)
+
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
-        return res.json()
+            raise Exception('Got status code {} with url {} with body {} with headers {}'.format(str(res.status_code), url, res.content, str(res.headers)))
+
+        try:
+            return res.json()
+        except:
+            return res.content
 
     def get_timestamp_in_seconds(timestamp):
         dt = datetime.strptime(timestamp,'%Y-%m-%dT%H:%M:%SZ').timetuple()
@@ -108,12 +114,14 @@ script:
 
     ''' FUNCTIONS '''
     def query_command():
-        query = demisto.args().get('query', None)
-        query_id = demisto.args().get('queryId', None)
+        query = demisto.args().get('query')
+        query_id = demisto.args().get('queryId')
         timestamp_from = demisto.args()['from']
         timestamp_to = demisto.args().get('to', datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'))
-        skip = demisto.args().get('skip', None)
-        limit = demisto.args().get('limit', None)
+        skip = demisto.args().get('skip')
+        limit = demisto.args().get('limit')
+        write_context = demisto.args()['writeToContext'].lower()
+
 
         if (not query and not query_id) or (query and query_id):
             raise ValueError('Query or query id must be specified')
@@ -127,33 +135,41 @@ script:
             'ReadableContentsFormat': formats['markdown']
         }
 
-        if 'object' not in res or len(res['object']) == 0:
+        if 'object' not in res or not res['object'] or len(res['object']) == 0:
             entry['HumanReadable'] = 'No results found'
             return entry
 
-        hr = []
-
+        results = []
         for result in res['object']:
-            result['eventdate'] = datetime.fromtimestamp(result['eventdate'] / 1000).strftime('%Y-%m-%dT%H:%M:%SZ')
-            ip_field = 'srcHost' if 'srcHost' in result else 'clientIpAddress'
-            if ip_field in result:
-                decimal_ip = result[ip_field]
+            if 'eventdate' in result:
+                result['eventdate'] = datetime.fromtimestamp(result['eventdate'] / 1000).strftime('%Y-%m-%dT%H:%M:%SZ')
+            # temporary
+            if 'srcIp' in result:
+                decimal_ip = result['srcIp']
                 # Convert decimal IP to IP
-                result[ip_field] = socket.inet_ntoa(struct.pack('!L', int(decimal_ip))) if decimal_ip else ''
-            hr.append(result)
+                result['srcIp'] = socket.inet_ntoa(struct.pack('!L', int(decimal_ip))) if decimal_ip else ''
+            results.append(result)
+
+        # remove duplicates and add a count of them instead
+        unique_results = [dict(t + (('eventcount', c),)) for t, c in Counter(tuple(r.items()) for r in results).items()]
 
         headers = res['object'][0].keys()
-        headers.remove('eventdate')
-        headers = ['eventdate'] + headers
+        if 'eventdate' in headers:
+            # set event date as first column
+            headers.remove('eventdate')
+            headers = ['eventdate'] + headers
+        if 'eventcount' not in headers:
+            headers.append('eventcount')
 
 
-        md = tableToMarkdown('Devo query results', hr, headers, removeNull=True)
-        context = hr
+        md = tableToMarkdown('Devo query results', unique_results, headers, removeNull=True)
+        context = createContext(unique_results, removeNull=True)
 
         entry['HumanReadable'] = md
-        entry['EntryContext'] = {
-            'Devo.Results' : context
-        }
+        if write_context == 'true':
+            entry['EntryContext'] = {
+                'Devo.Results' : createContext(context)
+            }
 
         return entry
 
@@ -180,16 +196,20 @@ script:
 
         return send_request(path, headers, 'post', query_body)
 
+
     ''' EXECUTION CODE '''
     try:
         if demisto.command() == 'test-module':
-            path = 'jobs'
+            path = 'system/ping'
             send_request(path)
             demisto.results('ok')
         elif demisto.command() == 'devo-query':
             demisto.results(query_command())
     except Exception as e:
         raise
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e)
   type: python
   commands:
   - name: devo-query
@@ -209,6 +229,9 @@ script:
     - name: limit
       description: Limit the results of the query. The query will stop after returning
         the first X elements of the query or reaching its end.
+    - name: writeToContext
+      description: Wether to write results to context or not
+      defaultValue: "false"
     outputs:
     - contextPath: Devo.Results
       description: The query results
