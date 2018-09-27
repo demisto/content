@@ -125,10 +125,12 @@ def main():
             integrations_conf = [integrations_conf]
 
         integrations = []
+        has_skipped_integration = False
         for integration in integrations_conf:
             if type(integration) is dict:
                 if integration.get('name') in skipped_integrations_conf:
-                    continue
+                    has_skipped_integration = True
+                    break
 
                 # dict description
                 integrations.append({
@@ -138,7 +140,8 @@ def main():
                 })
             else:
                 if integration in skipped_integrations_conf:
-                    continue
+                    has_skipped_integration = True
+                    break
 
                 # string description
                 integrations.append({
@@ -146,6 +149,9 @@ def main():
                     'byoi': True,
                     'params': {}
                 })
+
+        if has_skipped_integration:
+            continue
 
         for integration in integrations:
             integration_params = [item for item in secret_params if item["name"] == integration['name']]
