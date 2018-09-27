@@ -7,6 +7,10 @@
             "playbookID": "SCADAfence_test"
         },
         {
+            "integrations": "epo",
+            "playbookID": "Test Playbook Mcafee ePO"
+        },
+        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
@@ -41,6 +45,28 @@
         {
             "integrations": "GRR",
             "playbookID": "grr_test",
+            "nightly": true
+        },
+        {
+            "playbookID": "Phishing test - attachment",
+            "timeout": 500,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ],
+            "nightly": true
+        },
+        {
+            "playbookID": "Phishing test - Inline",
+            "timeout": 500,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ],
             "nightly": true
         },
         {
@@ -455,6 +481,10 @@
         {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Test"
         }
     ],
     "skipped": [
