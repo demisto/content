@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import string
@@ -9,6 +10,9 @@ from test_integration import test_integration
 from test_utils import print_color, print_error, LOG_COLORS
 
 
+FILTER_CONF = "./Tests/filter_file.txt"
+
+
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -16,6 +20,7 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
@@ -25,7 +30,6 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
-    parser.add_argument('-i', '--circle_node_index', type=int, help='circle node index')
     options = parser.parse_args()
 
     return options
@@ -52,7 +56,6 @@ def main():
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
-    circle_node_index = options.circle_node_index
 
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
@@ -83,82 +86,89 @@ def main():
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
+    with open(FILTER_CONF, 'r') as filter_file:
+        filterd_tests = filter_file.readlines()
+        filterd_tests = [line.strip('\n') for line in filterd_tests]
+        is_filter_configured = True if filterd_tests else False
+
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
         return
 
     succeed_playbooks = []
     failed_playbooks = []
-    for i, t in enumerate(tests):
-        if i % 2 == int(circle_node_index):
-            test_options = {
-                'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
-                'interval': conf.get('testInterval', 10)
-            }
+    for t in tests:
+        playbook_id = t['playbookID']
+        integrations_conf = t.get('integrations', [])
 
-            playbook_id = t['playbookID']
+        if is_filter_configured and not is_nightly and playbook_id not in filterd_tests:
+            continue
 
-            integrations_conf = t.get('integrations', [])
+        test_options = {
+            'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
+            'interval': conf.get('testInterval', 10)
+        }
 
-            if not isinstance(integrations_conf, list):
-                integrations_conf = [integrations_conf]
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
 
-            integrations = []
-            for integration in integrations_conf:
-                if type(integration) is dict:
-                    # dict description
-                    integrations.append({
-                        'name': integration.get('name'),
-                        'byoi': integration.get('byoi',True),
-                        'params': {}
-                    })
-                else:
-                    # string description
-                    integrations.append({
-                        'name': integration,
-                        'byoi': True,
-                        'params': {}
-                    })
-
-            for integration in integrations:
-                integration_params = [item for item in secret_params if item["name"] == integration['name']]
-                if integration_params:
-                    integration['params'] = integration_params[0].get('params', {})
-                elif 'Demisto REST API' == integration['name']:
-                    integration['params'] = {
-                                                'url': 'https://localhost',
-                                                'apikey': demisto_api_key,
-                                                'insecure': True,
-                                            }
-
-            test_message = 'playbook: ' + playbook_id
-            if integrations:
-                integrations_names = [integration['name'] for integration in integrations]
-                test_message = test_message + ' with integration(s): ' + ','.join(integrations_names)
-
-            print '------ Test %s start ------' % (test_message, )
-
-            nightly_test = t.get('nightly', False)
-
-            skip_test = True if nightly_test and not is_nightly else False
-
-            if skip_test:
-                print 'Skip test'
+        integrations = []
+        for integration in integrations_conf:
+            if type(integration) is dict:
+                # dict description
+                integrations.append({
+                    'name': integration.get('name'),
+                    'byoi': integration.get('byoi',True),
+                    'params': {}
+                })
             else:
-                # run test
-                succeed = test_integration(c, integrations, playbook_id, test_options)
+                # string description
+                integrations.append({
+                    'name': integration,
+                    'byoi': True,
+                    'params': {}
+                })
 
-                # use results
-                if succeed:
-                    print 'PASS: %s succeed' % (test_message,)
-                    succeed_playbooks.append(playbook_id)
-                else:
-                    print 'Failed: %s failed' % (test_message,)
-                    failed_playbooks.append(playbook_id)
+        for integration in integrations:
+            integration_params = [item for item in secret_params if item["name"] == integration['name']]
+            if integration_params:
+                integration['params'] = integration_params[0].get('params', {})
+            elif 'Demisto REST API' == integration['name']:
+                integration['params'] = {
+                                            'url': 'https://localhost',
+                                            'apikey': demisto_api_key,
+                                            'insecure': True,
+                                        }
 
-            print '------ Test %s end ------' % (test_message,)
+        test_message = 'playbook: ' + playbook_id
+        if integrations:
+            integrations_names = [integration['name'] for integration in integrations]
+            test_message = test_message + ' with integration(s): ' + ','.join(integrations_names)
+
+        print '------ Test %s start ------' % (test_message, )
+
+        nightly_test = t.get('nightly', False)
+
+        skip_test = True if nightly_test and not is_nightly else False
+
+        if skip_test:
+            print 'Skip test'
+        else:
+            # run test
+            succeed = test_integration(c, integrations, playbook_id, test_options)
+
+            # use results
+            if succeed:
+                print 'PASS: %s succeed' % (test_message,)
+                succeed_playbooks.append(playbook_id)
+            else:
+                print 'Failed: %s failed' % (test_message,)
+                failed_playbooks.append(playbook_id)
+
+        print '------ Test %s end ------' % (test_message,)
 
     print_test_summary(succeed_playbooks, failed_playbooks)
+    os.remove(FILTER_CONF)
     if len(failed_playbooks):
         sys.exit(1)
 
