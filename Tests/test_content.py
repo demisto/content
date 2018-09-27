@@ -80,6 +80,7 @@ def main():
     with open(FILTER_CONF, 'r') as filter_file:
         filterd_tests = filter_file.readlines()
         filterd_tests = [line.strip('\n') for line in filterd_tests]
+        is_filter_configured = True if filterd_tests else False
 
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
@@ -91,7 +92,7 @@ def main():
         playbook_id = t['playbookID']
         integrations_conf = t.get('integrations', [])
 
-        if not is_nightly and playbook_id not in filterd_tests:
+        if is_filter_configured and not is_nightly and playbook_id not in filterd_tests:
             continue
 
         test_options = {

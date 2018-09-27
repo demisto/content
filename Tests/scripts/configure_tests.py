@@ -127,16 +127,15 @@ def create_test_file():
     branch_name = branch_name_reg.group(0)
 
     print("Getting changed files from the branch: {0}".format(branch_name))
+    tests_string = ''
     if branch_name != 'master':
         files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
-    else:
-        files_string = run_git_command("git log --max-count=1 --pretty=format: --name-status")
 
-    modified_files, modified_tests_list = get_modified_files(files_string)
+        modified_files, modified_tests_list = get_modified_files(files_string)
 
-    tests = get_test_list(modified_files, modified_tests_list)
-    tests_string = '\n'.join(tests)
-    print('Collected the following tests:\n{0}'.format(tests_string))
+        tests = get_test_list(modified_files, modified_tests_list)
+        tests_string = '\n'.join(tests)
+        print('Collected the following tests:\n{0}'.format(tests_string))
 
     print("Creating filter_file.txt")
     with open("./Tests/filter_file.txt", "w") as filter_file:
