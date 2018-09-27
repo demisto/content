@@ -24,7 +24,7 @@ detaileddescription: "This integration allows you to collect and analyze endpoin
   a Cyber Triage client to review the data.  \n\n### SUPPORT\nIf you have any problems
   or need an evaluation copy of Cyber Triage, then please email support@cybertriage.com."
 configuration:
-- display: Hostname of Cyber Triage server (eg. 192.168.1.2)
+- display: Hostname of Cyber Triage server (e.g. 192.168.1.2)
   name: server
   defaultvalue: ""
   type: 0
@@ -171,11 +171,9 @@ script:
         response = make_rest_call(REST_APIS['check_creds'], 'get')
 
         if IS_2XX(response['status_code']):
-            demisto.results('Test connection successful!')
-            sys.exit(0)
+            demisto.results('ok')
         else:
             return_error(format_err_resp(response))
-            sys.exit(1)
 
     def triage_endpoint():
         is_true = lambda x: x == 'yes'
@@ -183,6 +181,11 @@ script:
         is_file_upload_on = is_true(CMD_ARGS['malware_file_upload']) # arg value = 'yes' or 'no'
         is_fast_scan_on = not(is_true(CMD_ARGS['full_scan']))        # arg value = 'yes' or 'no'
         endpoint = CMD_ARGS['endpoint']
+
+        if is_ip_valid(endpoint):
+            endpoint_context = { 'IPAddress' : endpoint }
+        else:
+            endpoint_context = { 'Hostname' : endpoint }
 
         # Make data dict for rest call
         api_data = {'hostName': endpoint}
@@ -196,20 +199,21 @@ script:
         response = make_rest_call(REST_APIS['start_collection'], 'post', api_data)
 
         ec = {
-            'CyberTriage' : response['response']
+            'CyberTriage' : response['response'],
+            'Endpoint' : endpoint_context
         }
 
         if IS_2XX(response['status_code']):
             demisto.results({
                 'Type' : entryTypes['note'],
-                'ContentFormat' : formats['json'],
+                'ContentsFormat' : formats['json'],
                 'Contents' : response,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable' : 'A collection has been scheduled for {0}'.format(endpoint),
                 'EntryContext' : ec
             })
-            sys.exit(0)
         else:
             return_error(format_err_resp(response))
-            sys.exit(1)
 
     # This is the call made when running the ct-triage-endpoint command.
     if demisto.command() == 'ct-triage-endpoint':
@@ -252,5 +256,9 @@ script:
     - contextPath: CyberTriage.SessionId
       description: The session ID for the newly created session
       type: string
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint IP address that Cyber Triage investigated
+    - contextPath: Endpoint.Hostname
+      description: The endpoint hostname that Cyber Triage investigated
     description: initiates a cyber triage collection on an endpoint
   runonce: false
