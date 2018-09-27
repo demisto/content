@@ -123,8 +123,8 @@ def get_test_list(modified_files, modified_tests_list):
 def create_test_file():
     """Create a file containing all the tests we need to run for the CI"""
     branches = run_git_command("git branch")
-    branch_name_reg = re.search("(?<=\* )\w+", branches)
-    branch_name = branch_name_reg.group(0)
+    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name = branch_name_reg.group(1)
 
     print("Getting changed files from the branch: {0}".format(branch_name))
     tests_string = ''

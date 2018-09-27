@@ -479,6 +479,10 @@
             "playbookID": "RTIR Test"
         },
         {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Test"
+        },
+        {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
