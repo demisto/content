@@ -7,7 +7,7 @@ import argparse
 
 import demisto
 from test_integration import test_integration
-from test_utils import print_color, print_error, LOG_COLORS
+from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
 
 FILTER_CONF = "./Tests/filter_file.txt"
@@ -35,17 +35,22 @@ def options_handler():
     return options
 
 
-def print_test_summary(succeed_playbooks, failed_playbooks):
+def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
+    skipped_count = len(skipped_tests)
 
     print('\nTEST RESULTS:')
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
-    if len(failed_playbooks) > 0:
+    if failed_count > 0:
         print_error('\t Number of failed tests - ' + str(failed_count) + ':')
         for playbook_id in failed_playbooks:
             print_error('\t - ' + playbook_id)
+    if skipped_count > 0:
+        print_warning('\t Number of skipped tests - ' + str(skipped_count) + ':')
+        for playbook_id in skipped_tests:
+            print_warning('\t - ' + playbook_id)
 
 
 def main():
@@ -83,6 +88,8 @@ def main():
             secret_conf = json.load(data_file)
 
     tests = conf['tests']
+    skipped_tests_conf = conf['skipped_tests']
+    skipped_integrations_conf = conf['skipped_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
@@ -97,9 +104,14 @@ def main():
 
     succeed_playbooks = []
     failed_playbooks = []
+    skipped_tests = []
     for t in tests:
         playbook_id = t['playbookID']
         integrations_conf = t.get('integrations', [])
+
+        if playbook_id in skipped_tests_conf:
+            skipped_tests.append(playbook_id)
+            continue
 
         if is_filter_configured and not is_nightly and playbook_id not in filterd_tests:
             continue
@@ -113,8 +125,13 @@ def main():
             integrations_conf = [integrations_conf]
 
         integrations = []
+        has_skipped_integration = False
         for integration in integrations_conf:
             if type(integration) is dict:
+                if integration.get('name') in skipped_integrations_conf:
+                    has_skipped_integration = True
+                    break
+
                 # dict description
                 integrations.append({
                     'name': integration.get('name'),
@@ -122,12 +139,19 @@ def main():
                     'params': {}
                 })
             else:
+                if integration in skipped_integrations_conf:
+                    has_skipped_integration = True
+                    break
+
                 # string description
                 integrations.append({
                     'name': integration,
                     'byoi': True,
                     'params': {}
                 })
+
+        if has_skipped_integration:
+            continue
 
         for integration in integrations:
             integration_params = [item for item in secret_params if item["name"] == integration['name']]
@@ -167,7 +191,7 @@ def main():
 
         print '------ Test %s end ------' % (test_message,)
 
-    print_test_summary(succeed_playbooks, failed_playbooks)
+    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests)
     os.remove(FILTER_CONF)
     if len(failed_playbooks):
         sys.exit(1)

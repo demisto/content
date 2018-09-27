@@ -481,9 +481,7 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Test"
-        }
-    ],
-    "skipped": [
+        },
         {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
@@ -531,7 +529,6 @@
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-
             "integrations": "Farsight DNSDB",
             "playbookID": "DNSDBTest"
         },
@@ -554,25 +551,6 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
-        },
-        {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io",
-                {
-                    "name": "activedir",
-                    "byoi": false
-                }],
-            "playbookID": "entity_enrichment_generic_test",
-            "timeout": 240
-        },
-        {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
         },
         {
             "integrations": "Remedy AR",
@@ -601,22 +579,6 @@
                 "VirusTotal"
             ],
             "playbookID": "File Enrichment - Generic Test"
-        },
-        {
-            "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                {
-                    "name": "carbonblackprotection",
-                    "byoi": false
-                },
-                {
-                    "name": "carbonblack",
-                    "byoi": false
-                }
-            ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
@@ -661,6 +623,77 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
+        },
+        {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io",
+                {
+                    "name": "activedir",
+                    "byoi": false
+                }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 400
+        },
+        {
+            "integrations": [
+                "FalconHost",
+                "McAfee Threat Intelligence Exchange",
+                {
+                    "name": "carbonblackprotection",
+                    "byoi": false
+                },
+                {
+                    "name": "carbonblack",
+                    "byoi": false
+                }
+            ],
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "timeout": 500
         }
+    ],
+    "skipped_tests": [
+        "block_endpoint_-_carbon_black_response_-_test",
+        "VxStream Test",
+        "File Enrichment - Generic Test",
+        "entity_enrichment_generic_test",
+        "url_enrichment_-_generic_test",
+        "search_endpoints_by_hash_-_generic_-_test"
+    ],
+    "skipped_integrations": [
+        "RedLock",
+        "Symantec Messaging Gateway",
+        "ThreatConnect",
+        "Cylance Protect",
+        "QRadar",
+        "VMware",
+        "Anomali ThreatStream",
+        "Farsight DNSDB",
+        "carbonblack-v2",
+        "Cisco Umbrella Investigate",
+        "icebrg",
+        "Symantec MSS",
+        "Remedy AR",
+        "McAfee Active Response",
+        "McAfee Threat Intelligence Exchange",
+        "ArcSight Logger",
+        "XFE",
+        "iDefense",
+        "LogRhythm",
+        "FireEye HX",
+        "Phish.AI",
+        "Centreon",
+        "TruSTAR",
+        "AlphaSOC Wisdom",
+        "Jask",
+        "Qualys"
     ]
 }
