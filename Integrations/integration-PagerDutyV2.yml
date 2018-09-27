@@ -645,7 +645,7 @@ script:
     - contextPath: resolve_reason
       description: The reason for resolving the issue
       type: string
-    description: Shows incidents in PagerDuty
+    description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
   - name: PagerDuty-submit-event
     arguments:
     - name: source
