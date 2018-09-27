@@ -146,8 +146,7 @@ script:
                 'EventDate': alert['eventDateTime'],
                 'Status': alert['status'],
                 'Vendor': alert['vendorInformation']['vendor'],
-                'Provider': alert['vendorInformation']['provider'],
-                #'MalwareStates': alert['malwareStates'] removing for now
+                'Provider': alert['vendorInformation']['provider']
             })
         ec = {
             'MsGraph.Alert(val.ID && val.ID === obj.ID)': outputs
@@ -390,7 +389,8 @@ script:
             'CreatedDate': alert_details['createdDateTime'],
             'EventDate': alert_details['eventDateTime'],
             'Status': alert_details['status'],
-            'MalwareStates': alert_details['malwareStates']
+            'Vendor': alert_details['vendorInformation']['vendor'],
+            'Provider': alert_details['vendorInformation']['provider']
         }
         ec = {
             'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
@@ -670,12 +670,11 @@ script:
     - contextPath: MsGraph.Alert.Status
       description: Alert status
       type: string
-    - contextPath: MsGraph.Alert.VendorProvider
-      description: Alert vendor/provider
+    - contextPath: MsGraph.Alert.Vendor
+      description: Alert vendor
       type: string
-    - contextPath: MsGraph.Alert.MalwareStates
-      description: Alert malware states
-      type: string
+    - contextPath: MsGraph.Alert.Provider
+      description: Alert provider
     description: Get details for a specific alert.
   - name: msg-update-alert
     arguments:
