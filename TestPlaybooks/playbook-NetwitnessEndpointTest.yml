@@ -1,6 +1,6 @@
-id: Netwitness Endpoint Test
+id: NetWitness Endpoint Test
 version: -1
-name: Netwitness Endpoint Test
+name: NetWitness Endpoint Test
 starttaskid: "0"
 tasks:
   "0":
