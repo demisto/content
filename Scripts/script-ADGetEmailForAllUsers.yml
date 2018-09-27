@@ -30,5 +30,3 @@ dependson:
   must:
   - ad-search
 timeout: 0s
-releaseNotes: "-"
-

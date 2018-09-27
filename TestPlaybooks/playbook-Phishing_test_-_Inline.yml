@@ -1,0 +1,224 @@
+id: Phishing test - Inline
+version: -1
+name: Phishing test - Inline
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fc2ec0f9-a350-46e6-82c6-66920f1418ec
+    type: start
+    task:
+      id: fc2ec0f9-a350-46e6-82c6-66920f1418ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: b4c9009f-25fc-4be2-8979-9a9ebb70f9af
+    type: title
+    task:
+      id: b4c9009f-25fc-4be2-8979-9a9ebb70f9af
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: da0e5042-5f15-44da-8b57-db3fee4ccf67
+    type: regular
+    task:
+      id: da0e5042-5f15-44da-8b57-db3fee4ccf67
+      version: -1
+      name: PhishingIncident - Inline
+      scriptName: PhishingIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      malicious_location:
+        simple: inline
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: fb159225-2183-45e8-8088-0c58b80f0ceb
+    type: regular
+    task:
+      id: fb159225-2183-45e8-8088-0c58b80f0ceb
+      version: -1
+      name: Close Manual review
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      command:
+        simple: '!CompleteManualTask id=${incident.id}'
+      cron:
+        simple: '*/1 * * * *'
+      endDate: {}
+      times:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: e59e5250-3002-4ad7-8edd-501f9792ba0f
+    type: regular
+    task:
+      id: e59e5250-3002-4ad7-8edd-501f9792ba0f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 50f1826c-6f40-401c-845a-1f38a499e537
+    type: regular
+    task:
+      id: 50f1826c-6f40-401c-845a-1f38a499e537
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "12"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: inline.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/Inline_malicious.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 9ad66888-26ce-4ec4-8190-2bb9176bd87b
+    type: playbook
+    task:
+      id: 9ad66888-26ce-4ec4-8190-2bb9176bd87b
+      version: -1
+      name: Phishing Investigation - Generic
+      playbookName: Phishing Investigation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Role:
+        simple: Administrator
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

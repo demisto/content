@@ -95,7 +95,7 @@ script:
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
-        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress
+        ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
     from exchangelib.util import create_element, add_xml_child
@@ -1169,14 +1169,32 @@ script:
         return get_entry_for_object("Folder %s" % (folder_path,), CONTEXT_UPDATE_FOLDER, folder)
 
     def folder_to_context_entry(f):
-        return {
+        f_entry =  {
             'name': f.name,
             'totalCount': f.total_count,
-            'unreadCount': f.unread_count,
             'id': f.folder_id,
             'childrenFolderCount': f.child_folder_count,
             'changeKey': f.changekey
         }
+
+        if 'unread_count' in map(lambda x: x.name, Folder.FIELDS):
+            f_entry['unreadCount'] = f.unread_count
+        return f_entry
+
+    def fix_unread_count():
+        try:
+            account = get_account(ACCOUNT_EMAIL)
+            get_folder_by_path(account, FOLDER_NAME)
+        except ErrorInvalidPropertyRequest as e:
+            if 'FieldURI="folder:UnreadCount"' in e.message:
+                for i,f in enumerate(Folder.FIELDS):
+                    if f.name == 'unread_count':
+                        Folder.FIELDS.pop(i)
+                        break
+        except:
+            raise  # Let the other error hadling logic deal with it
+
+
 
     def test_module():
         try:
@@ -1203,6 +1221,7 @@ script:
     try:
         config = prepare()
         args = prepare_args(demisto.args())
+        fix_unread_count()
 
         if demisto.command() == 'test-module':
             test_module()
@@ -1864,4 +1883,3 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "-"

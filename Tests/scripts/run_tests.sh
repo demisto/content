@@ -18,5 +18,5 @@ PASSWORD=$temp
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
 
-echo "Starts tests with server url - $SERVER_URL"
-python ./Tests/test_content.py -u "$USERNAME" -p "$PASSWORD" -s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY
+echo "Starts tests with server url - $SERVER_URL, circle node - $CIRCLE_NODE_INDEX"
+python ./Tests/test_content.py -u "$USERNAME" -p "$PASSWORD" -s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -i $CIRCLE_NODE_INDEX
