@@ -43,11 +43,11 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests):
     print('\nTEST RESULTS:')
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
-    if len(failed_playbooks) > 0:
+    if failed_count > 0:
         print_error('\t Number of failed tests - ' + str(failed_count) + ':')
         for playbook_id in failed_playbooks:
             print_error('\t - ' + playbook_id)
-    if len(skipped_count) > 0:
+    if skipped_count > 0:
         print_warning('\t Number of skipped tests - ' + str(skipped_count) + ':')
         for playbook_id in skipped_tests:
             print_warning('\t - ' + playbook_id)
