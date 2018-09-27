@@ -21,7 +21,7 @@ configuration:
   type: 9
   required: false
 - display: Trust any certificate (unsecure)
-  name: unsecure
+  name: insecure
   defaultvalue: "false"
   type: 8
   required: false
@@ -73,7 +73,7 @@ script:
     BASE_PATH = '{}/api/v2'.format(SERVER_URL) if SERVER_URL.endswith('/') else '{}/api/v2'.format(SERVER_URL)
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
-    USE_SSL = not demisto.params()['unsecure']
+    USE_SSL = not demisto.params()['insecure']
     PROXIES = set_proxies()
 
     MACHINE_DATA_EXTENDED = [
