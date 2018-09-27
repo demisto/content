@@ -156,7 +156,7 @@ script:
             'Contents': alerts,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Microsoft Security Graph Alerts', outputs, ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status'],removeNull=True), #sort cols
+            'HumanReadable': tableToMarkdown('Microsoft Security Graph Alerts', outputs, ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status'], removeNull=True),
             'EntryContext': ec
         }
         demisto.results(entry)
@@ -175,8 +175,6 @@ script:
             filters += "&createdDate lt '{}'".format(time_to)
         if filter_query:
             filters += "&{}".format(filter_query)
-        # if vendor:
-        #     filters += "&vendor eq '{}'".format(vendor)
         cmd_url = 'security/alerts/?$filter=' + filters[1:]
         response = http_request('GET', cmd_url)
         return response
