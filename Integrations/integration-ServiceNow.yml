@@ -58,6 +58,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Get incident attachments
+  name: get_attachments
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
     import re
@@ -146,13 +151,13 @@ script:
         try:
             obj = res.json()
         except Exception as e:
-            raise Exception('Error parsing reply - ' + res.content + ' - ' + e.message)
+            raise Exception('Error parsing reply - {} - {}'.format(res.content, e.message))
 
         if 'error' in obj:
-            raise Exception('ServiceNow Error: ' + obj['error']['detail'])
+            raise Exception('ServiceNow Error: {}, details: {}'.format(obj['error']['message'], obj['error']['detail']))
 
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + str(res.content) + ' with headers ' + str(res.headers))
+            raise Exception('Got status code {} with url {} with body {} with headers {}'.format(str(res.status_code), url, str(res.content), str(res.headers)))
 
         return obj
 
@@ -286,21 +291,28 @@ script:
 
         return dic_template
 
-    def get_incident_command():
+    def get_ticket_command():
         ticket_type = get_table_name(demisto.args().get('ticket_type'))
         ticket_id = demisto.args().get('id')
         number = demisto.args().get('number')
+        get_attachments = demisto.args().get('get_attachments', 'false')
 
-        res = get_incident(ticket_id, number, ticket_type)
+        res = get_ticket(ticket_id, number, ticket_type)
         if not res or 'result' not in res:
-            return 'Cannot find incident'
+            return 'Cannot find ticket'
 
         if isinstance(res['result'], list):
             if len(res['result']) == 0:
-                return 'Cannot find incident'
+                return 'Cannot find ticket'
             ticket = res['result'][0]
         else:
             ticket = res['result']
+
+        entries = []
+
+        if get_attachments.lower() != 'false':
+            entries = get_ticket_attachment_entries(ticket['sys_id'])
+
         hr = get_ticket_human_readable(ticket)
 
         entry = {
@@ -314,10 +326,12 @@ script:
             }
         }
 
-        return entry
+        entries.append(entry)
+
+        return entries
 
 
-    def get_incident(ticket_id, number, ticket_type):
+    def get_ticket(ticket_id, number, ticket_type):
         path = None
         query_params = {}
         if ticket_id:
@@ -328,9 +342,34 @@ script:
                 'number': number
             }
         else:
-            raise ValueError('incident-get requires either incident ID (sys_id) or incident number')
+            raise ValueError('servicenow-get requires either ticket ID (sys_id) or ticket number')
 
         return send_request(path, 'get', params = query_params)
+
+
+    def get_ticket_attachments(ticket_id):
+        path = 'attachment'
+        query_params = {
+            'sysparm_query': 'table_sys_id=' + ticket_id
+        }
+
+        return send_request(path, 'get', params = query_params)
+
+
+    def get_ticket_attachment_entries(ticket_id):
+        entries = []
+        links = []
+        attachments_res = get_ticket_attachments(ticket_id)
+        if 'result' in attachments_res and len(attachments_res['result']) > 0:
+            attachments = attachments_res['result']
+            links = [(attachment['download_link'], attachment['file_name']) for attachment in attachments]
+
+        for link in links:
+            file_res = requests.get(link[0], auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies=PROXY)
+            if file_res is not None:
+                entries.append(fileResult(link[1], file_res.content))
+
+        return entries
 
 
     def update_command():
@@ -449,13 +488,16 @@ script:
 
     def query_command():
         sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
-        sysparm_query = demisto.args().get('sysparm_query')
+        sysparm_query = demisto.args().get('query')
+        if not sysparm_query:
+            #backward compatibility
+            sysparm_query = demisto.args().get('sysparm_query')
         ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
         res = query(ticket_type, sysparm_limit, sysparm_query)
 
         if not res or 'result' not in res:
-            return 'Cannot find incident'
+            return 'Cannot find ticket'
 
         hr = get_ticket_human_readable(res['result'])
 
@@ -466,7 +508,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, removeNull=True),
             'EntryContext': {
-                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result'])
             }
         }
 
@@ -642,9 +684,11 @@ script:
     def fetch_incidents():
         query_params = {}
         incidents = []
+        sysparm_query = demisto.params().get('query')
         sysparm_query = demisto.params().get('sysparm_query')
         sysparm_limit = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
         ticket_type = demisto.params()['ticket_type']
+        get_attachments = demisto.params().get('get_attachments', False)
 
         last_run = demisto.getLastRun()
         if 'time' not in last_run:
@@ -677,11 +721,24 @@ script:
                     })
 
             severity = int(result['severity']) if 'severity' in result else 0
+
+            file_names = []
+            if get_attachments:
+                file_entries = get_ticket_attachment_entries(result['sys_id'])
+                for file_result in file_entries:
+                    if file_result['Type'] == entryTypes['error']:
+                        return_error(file_result['Contents'])
+                    file_names.append({
+                        'path': file_result['FileID'],
+                        'name': file_result['File']
+                    })
+
             incidents.append({
                 'name': 'ServiceNow Incident ' + result['number'],
                 'labels': labels,
                 'details': json.dumps(result),
                 'severity': severity,
+                'attachment': file_names,
                 'rawJSON': json.dumps(result)
             })
 
@@ -700,7 +757,7 @@ script:
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
         elif demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update':
-            demisto.results(get_incident_command())
+            demisto.results(get_ticket_command())
         elif demisto.command() == 'servicenow-update' or demisto.command() == 'servicenow-incident-update':
             demisto.results(update_command())
         elif demisto.command() == 'servicenow-create' or demisto.command() == 'servicenow-incident-create':
@@ -740,6 +797,8 @@ script:
       defaultValue: incident
     - name: number
       description: Ticket number to retrieve
+    - name: get_attachments
+      description: Wether to retrieve ticket attachments, default false
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket System ID
@@ -756,6 +815,22 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: File.Info
+      description: Attachment file info
+    - contextPath: File.Name
+      description: Attachment file name
+    - contextPath: File.Size
+      description: Attachment file size
+    - contextPath: File.SHA1
+      description: Attachment file SHA1
+    - contextPath: File.SHA256
+      description: Attachment file SHA256
+    - contextPath: File.EntryID
+      description: Attachment file entry ID
+    - contextPath: File.Type
+      description: Attachment file type
+    - contextPath: File.MD5
+      description: Attachment file MD5
     description: Retrieve ticket information by specific ticket ID
   - name: servicenow-incident-get
     deprecated: true
@@ -773,6 +848,8 @@ script:
       defaultValue: incident
     - name: number
       description: Ticket number to retrieve
+    - name: get_attachments
+      description: Wether to retrieve ticket attachments, default false
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket System ID
@@ -1568,6 +1645,7 @@ script:
       description: Limit for how many tickets to retrieve
       defaultValue: "10"
     - name: sysparm_query
+      deprecated: true
       description: Query
     - name: ticket_type
       auto: PREDEFINED
@@ -1578,6 +1656,8 @@ script:
       - sc_request
       description: Ticket type to create
       defaultValue: incident
+    - name: query
+      description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
     outputs:
     - contextPath: Ticket.Id
       description: ServiceNow ticket System ID
@@ -1726,3 +1806,4 @@ script:
       type: string
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
+releaseNotes: "Added option to get ticket attachments(get command, fetch incidents) and additional outputs"
