@@ -16,7 +16,7 @@
 					"complex": null
 				},
 				"severity": {
-					"simple": "evnet_severity",
+					"simple": "event_severity",
 					"complex": null
 				}
 			},
