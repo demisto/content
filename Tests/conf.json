@@ -620,6 +620,10 @@
             "playbookID": "Jask_Test"
         },
         {
+            "integrations": "RSA NetWitness Endpoint",
+            "playbookID": "NetWitness Endpoint Test"
+        },
+        {
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
