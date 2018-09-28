@@ -485,6 +485,10 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Test"
+        },
+        {
+            "integrations": "RSA NetWitness Endpoint",
+            "playbookID": "NetWitness Endpoint Test"
         }
     ],
     "skipped": [
