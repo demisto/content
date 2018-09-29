@@ -39,6 +39,9 @@ script: |-
           case 'Date':
               timeStr = d.toDateString();
               break;
+
+
+
           default:
               throw 'Unsupported date format: '+args.dateFormat
       }
