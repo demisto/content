@@ -23,7 +23,7 @@ configuration:
   type: 9
   required: true
 - display: Use system proxy settings
-  name: useProxy
+  name: proxy
   defaultvalue: "true"
   type: 8
   required: false
@@ -43,6 +43,12 @@ script:
     from requests.auth import HTTPBasicAuth
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -50,12 +56,12 @@ script:
 
     BASE_URL=re.sub("/[\/]+$/", "", demisto.params().get('serverURL'))
     SERVER_PORT=demisto.params().get('serverPort')
-    SERVER_URL=BASE_URL + ':' + str(SERVER_PORT)
+    SERVER_URL=BASE_URL + ':' + SERVER_PORT
 
     USERNAME=demisto.params().get('credentials').get('identifier')
     PASSWORD=demisto.params().get('credentials').get('password')
 
-    USE_SSL=not demisto.params().get('insecure', False)
+    USE_SSL = not demisto.params().get('insecure', False)
 
     ISE=requests.session()
     ISE.auth = (USERNAME, PASSWORD)
@@ -64,16 +70,6 @@ script:
     ISE.timeout = 5
 
     ''' HELPER FUNCTIONS '''
-
-    def load_proxy():
-        """ Loads the system configured proxy if enabled in configuration """
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
-    PROXY = load_proxy()
 
     def is_mac(mac):
         """
@@ -139,11 +135,17 @@ script:
         mac_address = demisto.args().get('macAddress')
 
         if not is_mac(mac_address):
-            return "Please enter a valid mac address"
+            return_error('Given MAC address is invalid')
 
         endpoint_data = get_endpoint_id(mac_address)
-
         endpoint_id = endpoint_data.get('SearchResult', {}).get('resources', [])[0].get('id', None)
+
+        ec = {
+            'Endpoint(val.id === obj.id)': {
+                'ID': endpoint_id,
+                'MACAddress': mac_address
+            }
+        }
 
         return {
             'Type': entryTypes['note'],
@@ -151,12 +153,7 @@ script:
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': "The endpoint's ID is: " + endpoint_id,
-            'EntryContext': {
-                "CiscoISE.Endpoint(val.id==obj.id)": {
-                    'id': endpoint_id,
-                    'macAdress': mac_address
-                }
-            }
+            'EntryContext': ec
         }
 
     def get_endpoint_details(endpoint_id):
@@ -167,8 +164,12 @@ script:
             'Accept':'application/json',
             'Connection': 'keep_alive'
         }
-        api_endpoint = "/ers/config/endpoint/{}".format(endpoint_id)
-        return json.loads(http_request('GET', api_endpoint, {}, {}, headers).text)
+        api_endpoint = '/ers/config/endpoint/{}'.format(endpoint_id)
+        response = http_request('GET', api_endpoint, {}, {}, headers)
+        if response:
+            return json.loads(response.text)
+        else:
+            return_error('Endpoint was not found.')
 
     def get_endpoint_details_command():
         """
@@ -179,79 +180,83 @@ script:
         endpoint_mac_address = demisto.args().get('macAddress')
 
         if endpoint_mac_address and not is_mac(endpoint_mac_address):
-            return "Please enter a valid mac address"
+            return_error('Given MAC address is invalid')
 
         if not endpoint_id and not endpoint_mac_address:
-            return 'Please enter either endpoint id or endpoint mac address'
+            return_error('Either endpoint ID or MAC address should be provided')
 
         if endpoint_mac_address and not endpoint_id:
             endpoint_id = get_endpoint_id(endpoint_mac_address).get('SearchResult', {}).get('resources', [])[0].get('id', None)
 
         endpoint_data = get_endpoint_details(endpoint_id)
 
-        endpoint_details = endpoint_data.get('ERSEndPoint', [])
+        endpoint_details = endpoint_data.get('ERSEndPoint')
 
-        endpoint_details['link'] = endpoint_details.get('link', {}).get('href')
-
-        return {
-            'Type': entryTypes['note'],
-            'Contents': endpoint_details,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Endpoint details', endpoint_details),
-            'EntryContext': {
-                "CiscoISE.Endpoint(val.id==obj.id)": endpoint_details
+        if endpoint_details:
+            hr = {
+                'ID': endpoint_details['id'],
+                'MACAddress': endpoint_details['mac'],
+                'Description': endpoint_details['description'],
+                'GroupID': endpoint_details['groupId'],
+                'Link': '[{0}]({0})'.format(endpoint_details['link'].get('href')),
+                'CustomAttributes': endpoint_details.get('customAttributes').get('customAttributes')
             }
-        }
+
+            ec = {
+                'Endpoint(val.ID === obj.ID)': {
+                    'ID': endpoint_details['id'],
+                    'MACAddress': endpoint_details['mac']
+                },
+                'CiscoISE.Endpoint(val.ID === obj.ID)': endpoint_details
+            }
+            title = 'Endpoint details - ' + (endpoint_id or endpoint_mac_address)
+            return {
+                'Type': entryTypes['note'],
+                'Contents': endpoint_details,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, hr, removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            return 'No results found'
 
     def reauthenticate_endpoint(mac_address, psn_address):
         """
         Reauthenticates an endpoint
         """
-
         api_endpoint = "/admin/API/mnt/CoA/Reauth/{}/{}/1".format(psn_address, mac_address)
-
         response = http_request('GET', api_endpoint, {}, {}, {})
-
         return response
 
     def get_psn_for_mac(mac_address):
         """
         Retrieves psn for an endpoint
         """
-
         api_endpoint = "/admin/API/mnt/AuthStatus/MACAddress/{}/86400/0/0".format(mac_address)
-
-        response = http_request('GET', api_endpoint, {}, {}, {}).text
-
-        return response
+        response = http_request('GET', api_endpoint, {}, {}, {})
+        if response:
+            return response
+        else:
+            return_error('Could not reauthenticate the endpoint')
 
     def reauthenticate_endpoint_command():
         """
         corresponds to 'cisco-ise-reauthenticate-endpoint' command. Reauthenticates an endpoint
         """
-
         mac_address = demisto.args().get('macAddress').upper()
-
         if not is_mac(mac_address):
             return "Please enter a valid mac address"
-
         mac_address = (':').join([x.upper() for x in mac_address.split(':')])
-
         mac_address_psn = get_psn_for_mac(mac_address)
         if not mac_address_psn:
             return "Couldn't find psn address for mac: " + mac_address
-
         psn_address = json.loads(xml2json(mac_address_psn)).get('restAuthStatusOutputList', {}).get('authStatusList',{}).get('authStatusElements', {})[0].get('acs_server')
         if not psn_address:
             return "Couldn't find psn address for mac: " + mac_address + " response from psn endpoint was: " + json.dumps(mac_address_psn)
-
         activation_result = reauthenticate_endpoint(mac_address, psn_address).text
-
         json_activation_result = json.loads(xml2json(activation_result)).get('remoteCoA').get('results')
-
         activation_result_boolean = 'true' in json_activation_result
-
         return {
             'Type': entryTypes['note'],
             'Contents': activation_result,
@@ -270,7 +275,6 @@ script:
         """
         Gets data about existing endpoints
         """
-
         headers = {
             'Accept':'application/json',
             'Connection': 'keep_alive'
@@ -290,24 +294,33 @@ script:
 
         endpoints = endpoints_data.get('resources', [])
 
-        final_endpoint_data = []
+        context = []
+        hr = []
+
         for endpoint in endpoints:
-            final_endpoint_data.append({
-                'id': endpoint.get('id'),
-                'link': endpoint.get('link', {}).get('href'),
-                'name': endpoint.get('name'),
-                'description': endpoint.get('description')
-            })
+            context_dict = {
+                'ID': endpoint.get('id'),
+                'MACAddress': endpoint.get('name')
+            }
+            hr_dict = dict(context_dict)
+            link_data = endpoint.get('link')
+            if link_data:
+                href = link_data.get('href')
+                hr_dict['Link'] = '[{0}]({0})'.format(href)
+            context.append(context_dict)
+            hr.append(hr_dict)
+
+        ec = {
+            'Endpoint(val.ID == obj.ID)': context
+        }
 
         return {
             'Type': entryTypes['note'],
-            'Contents': final_endpoint_data,
+            'Contents': endpoints,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Endpoints', final_endpoint_data),
-            'EntryContext': {
-                "CiscoISE.Endpoint(val.id==obj.id)": final_endpoint_data
-            }
+            'HumanReadable': tableToMarkdown('Cisco pxGrid ISE Endpoints', hr, removeNull=True),
+            'EntryContext': ec
         }
 
     def update_endpoint_by_id(endpoint_id, endpoint_details):
@@ -367,7 +380,7 @@ script:
             if len(updated_fields_dict_list) > 0:
                 updated_fields_string = ' the new custom fields are: ' + json.dumps(updated_fields_dict_list[0].get('newValue'))
             else:
-                updated_fields_string = ", but the fields that you've tried to update already had that specific value"
+                updated_fields_string = ", but the fields that you've tried to update already had that specific value or do not exist"
 
             return 'Successfully updated endpoint %s' % endpoint_id + updated_fields_string
 
@@ -416,7 +429,7 @@ script:
             # Create result
             msg = "Endpoint " + endpoint_id + " updated successfully" if update_result.status_code == 200 else "Update failed for endpoint " + endpoint_id + ", got the following response: " + \
                     json.dumps(json.loads(update_result.text).get('ERSResponse',{}).get('messages',[]))
-            result = [{ "Update status": msg }]
+            result = [{'Update status': msg}]
 
         except Exception as e:
             raise Exception("Exception: Failed to update endpoint {}: ".format(endpoint_id) + str(e))
@@ -443,19 +456,12 @@ script:
     try:
         if demisto.command() == 'test-module':
             #This is the call made when pressing the integration test button.
-            try:
-                if get_endpoints_command():
-                    demisto.results('ok')
-                elif list_number_of_active_sessions():
-                    demisto.results('ok')
-                else:
-                    demisto.results('test failed')
-            except:
-                if list_number_of_active_sessions():
-                    demisto.results('ok')
-                else:
-                    demisto.results('test failed')
-
+            if get_endpoints_command():
+                demisto.results('ok')
+            elif list_number_of_active_sessions():
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
         elif demisto.command() == 'cisco-ise-get-endpoint-id':
             demisto.results(get_endpoint_id_command())
         elif demisto.command() == 'cisco-ise-get-endpoint-details':
@@ -481,11 +487,11 @@ script:
       required: true
       description: MAC address of the endpoint (format 11:22:33:44:55:66)
     outputs:
-    - contextPath: CiscoISE.Endpoint.id
-      description: Endpoint's id
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
       type: string
-    - contextPath: CiscoISE.Endpoint.macAdress
-      description: Endpoint's mac address
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC address
       type: string
     description: Get endpoint's ID by its MAC
   - name: cisco-ise-get-endpoint-details
@@ -507,6 +513,12 @@ script:
     - contextPath: CiscoISE.Endpoint.groupId
       description: Endpoint groupID
       type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC address
+      type: string
     description: Get details about certain endpoint
   - name: cisco-ise-reauthenticate-endpoint
     arguments:
@@ -524,17 +536,11 @@ script:
   - name: cisco-ise-get-endpoints
     arguments: []
     outputs:
-    - contextPath: CiscoISE.Endpoint.id
-      description: Endpoint id
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
       type: string
-    - contextPath: CiscoISE.Endpoint.link
-      description: Endpoint link
-      type: string
-    - contextPath: CiscoISE.Endpoint.name
-      description: Endpoint name
-      type: string
-    - contextPath: CiscoISE.Endpoint.description
-      description: Endpoint description
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC address
       type: string
     description: Get data about the existing endpoints
   - name: cisco-ise-update-endpoint-custom-attribute
@@ -555,7 +561,7 @@ script:
   - name: cisco-ise-update-endpoint-group
     arguments:
     - name: groupId
-      description: The group ID to assign to this endpoint
+      description: The group ID to assign to this endpoint, e.g. 1
     - name: macAddress
       description: MAC address of the endpoint (format 11:22:33:44:55:66)
     - name: id
@@ -564,4 +570,3 @@ script:
       description: Name of the new group for the endpoint
     description: Updates the group of an endpoint
   runonce: false
-releaseNotes: "-"
