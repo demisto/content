@@ -1,7 +1,6 @@
 id: ip_enrichment_generic
 version: -1
 name: IP Enrichment - Generic
-releaseNotes: "Add support for VirusTotal Private API"
 fromversion: 3.6.0
 description: |-
   Enrich IP using one or more integrations.

@@ -466,4 +466,3 @@ outputs:
 - contextPath: File.Extension
   description: File Extension
   type: string
-releaseNotes: "-"

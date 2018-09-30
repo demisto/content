@@ -454,4 +454,3 @@ outputs:
 - contextPath: Joe.Analysis
   description: Thee Analysis object
   type: unknown
-releaseNotes: Add WildFire detonate File playbook
