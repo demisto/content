@@ -34,7 +34,7 @@ tasks:
       version: -1
       name: rtir-create-ticket
       description: Create new ticket on RTIR
-      script: '|||rtir-create-ticket'
+      script: RTIR|||rtir-create-ticket
       type: regular
       iscommand: true
       brand: ""
@@ -76,7 +76,7 @@ tasks:
       version: -1
       name: rtir-edit-ticket
       description: Modify a ticket on RTIR
-      script: '|||rtir-edit-ticket'
+      script: RTIR|||rtir-edit-ticket
       type: regular
       iscommand: true
       brand: ""
@@ -141,7 +141,7 @@ tasks:
       version: -1
       name: rtir-search-ticket
       description: Search for tickets on RTIR
-      script: '|||rtir-search-ticket'
+      script: RTIR|||rtir-search-ticket
       type: regular
       iscommand: true
       brand: ""
@@ -182,7 +182,7 @@ tasks:
       version: -1
       name: rtir-get-ticket
       description: Gets the data for a single ticket.
-      script: '|||rtir-get-ticket'
+      script: RTIR|||rtir-get-ticket
       type: regular
       iscommand: true
       brand: ""
