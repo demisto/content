@@ -675,7 +675,9 @@
         "Jira-Test",
         "VerifyHumanReadableFormat",
         "Cybereason Test",
-        "McAfee ATD"
+        "McAfee ATD",
+        "RTIR Test",
+        "NetWitness Endpoint Test"
     ],
     "skipped_integrations": [
         "RedLock",
