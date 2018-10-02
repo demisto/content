@@ -10,6 +10,8 @@ function start_new_server() {
 }
 
 function create_golang_env() {
+    /usr/bin/ruby -e '$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)'
+    brew install go
     mkdir $HOME/dev/go
     export GOPATH=$HOME/dev/go
 }
@@ -31,7 +33,6 @@ function setup_server_repo() {
 }
 
 funcion install_extrenal_libs() {
-    /usr/bin/ruby -e '$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)'
     brew install libxmlsec1
     brew install phantomjs
 }
