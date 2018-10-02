@@ -674,7 +674,8 @@
         "Intezer Testing",
         "Jira-Test",
         "VerifyHumanReadableFormat",
-        "Cybereason Test"
+        "Cybereason Test",
+        "McAfee ATD"
     ],
     "skipped_integrations": [
         "RedLock",
