@@ -674,7 +674,7 @@
         "Intezer Testing",
         "Jira-Test",
         "VerifyHumanReadableFormat",
-        "Cybereason"
+        "Cybereason Test"
     ],
     "skipped_integrations": [
         "RedLock",
