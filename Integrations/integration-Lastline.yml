@@ -796,7 +796,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    - contextPath: LastLine.Submission.status
+    - contextPath: Lastline.Submission.status
       description: Status of the submission
       type: string
     description: Get analysis report
