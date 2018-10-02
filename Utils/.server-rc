@@ -1,0 +1,20 @@
+alias start_server="$GOPATH/bin/server -public ~/dev/demisto/web-client/dist/ -conf conf_for_systemtests -insecure -loglevel info -stdout"
+
+alias start_new_server="$GOPATH/bin/server -public ~/dev/demisto/web-client/dist/ -conf conf_for_systemtests -insecure -loglevel info -stdout -onetimeconf onetimeconf.json"
+
+function create_golang_env() {
+    mkdir $HOME/dev/go
+    export GOPATH=$HOME/dev/go
+}
+
+function setup_server_repo() {
+    mkdir $HOME/dev/go/src
+    mkdir $HOME/dev/go/src/github.com
+    mkdir $HOME/dev/go/src/github.com/demisto
+    git clone $1 ###################################Server path in git##########################################
+    cd $HOME/dev/go/src/github.com/demisto/server
+    cp .hooks/* .git/hooks
+    go get github.com/kardianos/govendor
+    $GOPATH/bin/govendor sync
+    go install
+}
