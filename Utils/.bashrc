@@ -1,4 +1,6 @@
-alias content="cd $HOME/dev/demisto/content"
+export CONTENT=$HOME/dev/demisto/content
+
+alias content="cd $CONTENT"
 
 function trigger_content_nightly() {
     if [[ "$1" == "--help" ]]; then

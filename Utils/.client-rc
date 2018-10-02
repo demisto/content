@@ -1,0 +1,18 @@
+export CLIENT=$HOME/dev/demisto/web-client
+
+alias content="cd $CLIENT"
+
+function install-web-env() {
+    brew install node
+    sudo npm install webpack -g
+}
+
+function set-env() {
+    install-web-env
+    mkdir $HOME/dev/demisto
+    cd $HOME/dev/demisto
+    git clone git@github.com:demisto/web-client.git
+    cd web-client
+    npm install
+    npm run build
+}
