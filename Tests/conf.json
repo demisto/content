@@ -457,7 +457,7 @@
         {
             "integrations": "VirusTotal - Private API",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
-            "nightly": true
+            "nightly": false
         },
         {
             "integrations": "Cybereason",
