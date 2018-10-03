@@ -8,7 +8,7 @@
         },
         {
             "integrations": "Trend Micro Deep Discovery Analyzer",
-            "playbokID": "Test Playbook TrendMicroDDA"
+            "playbookID": "Test Playbook TrendMicroDDA"
         },
         {
             "integrations": "epo",
