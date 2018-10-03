@@ -1426,6 +1426,6 @@ script:
   runonce: false
 releaseNotes: "-"
 tests:
-- "VxStream Test"
-- "detonate_file_-_generic_test"
-- "detonate_url_-_generic_test"
+- VxStream Test
+- detonate_file_-_generic_test
+- detonate_url_-_generic_test
