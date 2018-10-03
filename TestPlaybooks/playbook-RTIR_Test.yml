@@ -1,5 +1,5 @@
 id: RTIR Test
-version: 10
+version: 12
 name: RTIR Test
 starttaskid: "0"
 tasks:
@@ -183,23 +183,23 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 1d27525d-aeb4-4cec-8d6f-05b78be4f0e1
+    taskid: 7542bf26-9628-4b18-8edd-5f8dae2cbe5a
     type: regular
     task:
-      id: 1d27525d-aeb4-4cec-8d6f-05b78be4f0e1
+      id: 7542bf26-9628-4b18-8edd-5f8dae2cbe5a
       version: -1
       name: rtir-get-ticket
       description: Gets the data for a single ticket.
       script: RTIR|||rtir-get-ticket
       type: regular
       iscommand: true
-      brand: ""
+      brand: RTIR
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
       ticket-id:
-        simple: ${RTIR.Ticket.[0].ID}
+        simple: ${RTIR.Ticket.ID}
     separatecontext: false
     view: |-
       {
