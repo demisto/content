@@ -666,7 +666,6 @@
     ],
     "skipped_tests": [
         "block_endpoint_-_carbon_black_response_-_test",
-        "VxStream Test",
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
         "url_enrichment_-_generic_test",
