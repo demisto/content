@@ -1393,3 +1393,5 @@ script:
       download samples that match a given set of criteria.
   runonce: false
 releaseNotes: fix output to warroom of vt-private-get-url-report command
+tests:
+  - virusTotalPrivateAPI-test-playbook
