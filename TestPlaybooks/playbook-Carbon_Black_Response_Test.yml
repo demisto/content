@@ -1,0 +1,901 @@
+id: CarbonBlackResponseTest
+version: -1
+name: Carbon Black Response Test
+description: Tests carbon black enterprise response selected use cases and commands
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3c5a538f-bb22-400d-82dc-bf1768434718
+    type: start
+    task:
+      id: 3c5a538f-bb22-400d-82dc-bf1768434718
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 4f643586-ef5b-41ca-8ed7-43af4d68d682
+    type: title
+    task:
+      id: 4f643586-ef5b-41ca-8ed7-43af4d68d682
+      version: -1
+      name: Isolate Endpoint
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: de8702c5-135b-4dd3-8144-103c0bae5747
+    type: title
+    task:
+      id: de8702c5-135b-4dd3-8144-103c0bae5747
+      version: -1
+      name: Search for a binary and fetch it
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 562d4981-8104-4602-8017-ac4acbfbb33b
+    type: title
+    task:
+      id: 562d4981-8104-4602-8017-ac4acbfbb33b
+      version: -1
+      name: Add hash to blacklist
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4625
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: e9f4a4d9-7414-4e67-8d8f-64d658a6eddb
+    type: regular
+    task:
+      id: e9f4a4d9-7414-4e67-8d8f-64d658a6eddb
+      version: -1
+      name: List available sensors
+      script: carbonblack-v2|||cb-list-sensors
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 4e92a965-4845-4ded-8776-061605903aba
+    type: regular
+    task:
+      id: 4e92a965-4845-4ded-8776-061605903aba
+      version: -1
+      name: Isolate (quarantine) sensor (endpoint)
+      script: carbonblack-v2|||cb-quarantine-device
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      sensor:
+        simple: ${CbResponse.FilteredSensors.[0].CbSensorID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 5cbf79be-a148-4499-8e0c-fca167f4b82c
+    type: regular
+    task:
+      id: 5cbf79be-a148-4499-8e0c-fca167f4b82c
+      version: -1
+      name: Check that sensor was blocked
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      expectedValue:
+        simple: '["Blocked"]'
+      fields: {}
+      path:
+        simple: Endpoint.LastAction
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3605
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 4587271d-e523-44d6-8124-025920f09b70
+    type: regular
+    task:
+      id: 4587271d-e523-44d6-8124-025920f09b70
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2905
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 45789458-02ba-4ae5-83e4-70de28d98aa9
+    type: regular
+    task:
+      id: 45789458-02ba-4ae5-83e4-70de28d98aa9
+      version: -1
+      name: Get binaries by query
+      script: carbonblack-v2|||cb-binary
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      facet: {}
+      query: {}
+      rows: {}
+      sort: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4275
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 75bdd004-0aa9-48fc-8630-c8194bbbdfb5
+    type: regular
+    task:
+      id: 75bdd004-0aa9-48fc-8630-c8194bbbdfb5
+      version: -1
+      name: cb-block-hash
+      script: carbonblack-v2|||cb-block-hash
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    scriptarguments:
+      banCount: {}
+      lastBanHost: {}
+      lastBanTime: {}
+      md5hash:
+        simple: ${CbResponse.BlockedHashes.[0].MD5}
+      text:
+        simple: Reason for blocking hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5295
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: 5e48d70e-ac24-46eb-8d03-43d6ed0902bd
+    type: regular
+    task:
+      id: 5e48d70e-ac24-46eb-8d03-43d6ed0902bd
+      version: -1
+      name: cb-unblock-hash
+      script: carbonblack-v2|||cb-unblock-hash
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      md5hash:
+        simple: ${CbResponse.BlockedHashes.[0].MD5}
+      text:
+        simple: Unblocked for testing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5120
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: c8e7890d-a3c9-4acc-885f-5796b955541f
+    type: regular
+    task:
+      id: c8e7890d-a3c9-4acc-885f-5796b955541f
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4100
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: c344456c-b1fa-4e7d-8393-ab8c999dc3a9
+    type: regular
+    task:
+      id: c344456c-b1fa-4e7d-8393-ab8c999dc3a9
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4770
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 5662aca2-b46f-461b-8fc6-c9ec2ca22345
+    type: regular
+    task:
+      id: 5662aca2-b46f-461b-8fc6-c9ec2ca22345
+      version: -1
+      name: Get hash blacklist and choose an item to unblock and block
+      script: carbonblack-v2|||cb-get-hash-blacklist
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      filter:
+        simple: enabled == true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4945
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 12ceea21-8b27-4b9a-87c7-e0c3b7844ede
+    type: title
+    task:
+      id: 12ceea21-8b27-4b9a-87c7-e0c3b7844ede
+      version: -1
+      name: Update alert's status
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: 181a0808-02de-4826-8fb9-ef850a9270e7
+    type: regular
+    task:
+      id: 181a0808-02de-4826-8fb9-ef850a9270e7
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: 2c40cafa-a9ae-4c45-8632-5561dbd8227a
+    type: regular
+    task:
+      id: 2c40cafa-a9ae-4c45-8632-5561dbd8227a
+      version: -1
+      name: List alerts
+      script: carbonblack-v2|||cb-alert
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      facet: {}
+      query: {}
+      rows: {}
+      sort: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: d356e624-5db2-4c79-8099-946b363efa02
+    type: regular
+    task:
+      id: d356e624-5db2-4c79-8099-946b363efa02
+      version: -1
+      name: Update alert status to Unresolved
+      script: carbonblack-v2|||cb-alert-update
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      setIgnored: {}
+      status:
+        simple: Unresolved
+      uniqueId:
+        simple: ${CbResponse.Alerts.[0].CbAlertID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: da58906c-ca35-44b8-8662-989ab0585d7a
+    type: regular
+    task:
+      id: da58906c-ca35-44b8-8662-989ab0585d7a
+      version: -1
+      name: Update alert status to False Positive
+      script: carbonblack-v2|||cb-alert-update
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      setIgnored: {}
+      status:
+        simple: False Positive
+      uniqueId:
+        simple: ${CbResponse.Alerts.[0].CbAlertID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: f1b62745-9a16-474d-8d63-d9402288d2f4
+    type: regular
+    task:
+      id: f1b62745-9a16-474d-8d63-d9402288d2f4
+      version: -1
+      name: Fetch binary
+      script: carbonblack-v2|||cb-binary-get
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      md5:
+        simple: ${File.[0].MD5}
+      summary:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4450
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: 7ca25a6a-7138-4942-8745-a9a50da915c1
+    type: regular
+    task:
+      id: 7ca25a6a-7138-4942-8745-a9a50da915c1
+      version: -1
+      name: Unquarantine sensor (endpoint)
+      script: carbonblack-v2|||cb-unquarantine-device
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      sensor:
+        simple: ${CbResponse.FilteredSensors.[0].CbSensorID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: 9a698fd3-50e4-40cf-8a0d-b4fe95522f7b
+    type: title
+    task:
+      id: 9a698fd3-50e4-40cf-8a0d-b4fe95522f7b
+      version: -1
+      name: Get processes info
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 1b4ac0f6-8e77-4fd2-8afa-5cd8c07aadcd
+    type: regular
+    task:
+      id: 1b4ac0f6-8e77-4fd2-8afa-5cd8c07aadcd
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: 33e0662e-177e-4c6c-828e-648845a5b0ca
+    type: regular
+    task:
+      id: 33e0662e-177e-4c6c-828e-648845a5b0ca
+      version: -1
+      name: Fetch list of processes
+      script: carbonblack-v2|||cb-get-processes
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      facet: {}
+      query: {}
+      rows: {}
+      sort: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: 7ef3e6d7-5281-4598-8f90-d65e6925920d
+    type: regular
+    task:
+      id: 7ef3e6d7-5281-4598-8f90-d65e6925920d
+      version: -1
+      name: Get event info on a process
+      script: carbonblack-v2|||cb-process-events
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      pid:
+        simple: ${Process.[0].CbID}
+      segid:
+        simple: ${Process.[0].CbSegmentID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: 0c852123-fa1e-4ade-8ae5-cd321b224a10
+    type: regular
+    task:
+      id: 0c852123-fa1e-4ade-8ae5-cd321b224a10
+      version: -1
+      name: Get process by pid/segid
+      script: carbonblack-v2|||cb-get-process
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      pid:
+        simple: ${Process.[0].CbID}
+      segid:
+        simple: ${Process.[0].CbSegmentID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+  "39":
+    id: "39"
+    taskid: deaae613-5fc1-466a-8f17-959e48b0ad88
+    type: regular
+    task:
+      id: deaae613-5fc1-466a-8f17-959e48b0ad88
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "40":
+    id: "40"
+    taskid: d7687f71-ae07-4cb6-880f-79a86d2884a7
+    type: regular
+    task:
+      id: d7687f71-ae07-4cb6-880f-79a86d2884a7
+      version: -1
+      name: Create a new watchlist
+      script: carbonblack-v2|||cb-watchlist-new
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      name:
+        simple: TestWatchlist#123
+      search-query:
+        simple: bla-bla
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "41":
+    id: "41"
+    taskid: be2a3d1b-ded3-49b3-8eea-d005a1feeaab
+    type: regular
+    task:
+      id: be2a3d1b-ded3-49b3-8eea-d005a1feeaab
+      version: -1
+      name: Set (update) watchlist name
+      script: carbonblack-v2|||cb-watchlist-set
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      indexType: {}
+      name:
+        simple: TestWatchlist#123Changed
+      search-query: {}
+      watchlist-id:
+        simple: ${CbResponse.Watchlists.CbWatchlistID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "42":
+    id: "42"
+    taskid: 04f4d4c6-9124-4fe9-87ad-898e1fd710cc
+    type: regular
+    task:
+      id: 04f4d4c6-9124-4fe9-87ad-898e1fd710cc
+      version: -1
+      name: Delete the created watchlist
+      script: carbonblack-v2|||cb-watchlist-del
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      watchlist-id:
+        simple: ${CbResponse.Watchlists.CbWatchlistID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "43":
+    id: "43"
+    taskid: ea8bbaa8-233f-4e60-83d3-c54eae4bb98b
+    type: regular
+    task:
+      id: ea8bbaa8-233f-4e60-83d3-c54eae4bb98b
+      version: -1
+      name: Check that watchlist name was changed
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      expectedValue:
+        simple: TestWatchlist#123Changed
+      fields: {}
+      path:
+        simple: CbResponse.Watchlists.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "44":
+    id: "44"
+    taskid: 7c97d9ef-5a56-49ee-82e6-1856933062fd
+    type: regular
+    task:
+      id: 7c97d9ef-5a56-49ee-82e6-1856933062fd
+      version: -1
+      name: Get Online Sensors
+      scriptName: CarbonBlackResponseFilterSensors
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      hostname: {}
+      sensors:
+        simple: ${CbResponse.Sensors}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5340,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -90,3 +90,8 @@ outputs:
 - contextPath: Endpoint.Hostname
   description: Hostname
 scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - epo-command
+releaseNotes: "-"

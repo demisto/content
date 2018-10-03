@@ -1,0 +1,273 @@
+commonfields:
+  id: EasyVista
+  version: -1
+name: EasyVista
+display: EasyVista
+category: IT Services
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAGH9JREFUeAHtWgdcVMfWn7vlsrvAAtJVQBTEhtiwYRQfRjT2JGBsMab48jTqZ2LyviRGMTFRE6PJSx5RI1iwBUvEXlFjxWisdFGQLr1sL/f95+Lisixovtfy/X67v9/duTNz5szMaXPOmUuI7WejgI0CNgrYKGCjgI0CNgrYKGCjgI0CNgrYKGCjgI0CNgrYKGCjgI0CNgrYKGCjwB+EAhwhAroUU/m0ZQFOiId51jEU7++Bf9r8/8l+juMYPCI8Ejw8nf6T87c2F8+AlgC4vrPF/Zf7Dc2prx1TqVL1INp6gVDqqPdi7dM6ydrsPzdm0SUg0NPxlDlvnNjp/asmO7xQURuKxq61qloRMeiJTOasc2LZ66HydvuTRs77DWOMpjk/+C2p7dH8Wy8WqOqGVKkVbkSvIW3krpqBIt+FentGdaL47kai0QgJyxAx45CtzXWZx8TE8HOacJiXnfZ+GJZTV7WMaLSESFlGLnFa4z43PrOWkLBHjx4lMAzTOLf5OPN3Pz+/QTqdzq2oqOhgZGRkwM2bN0NLS0t3msPQdzBTGBISMqaiomKawWDws7e3d6ivry+Wy+UpoaGh8Tt27Lj/eEx/kUg0ynK8Xo/NQrDRJ7bStxVtuebto0ePdr969erL48aN27R582Y17YuIiPDMzMwMw9xKb29vEXBerKmp6dulS5dfdu/erRWZIzB/n5m8obtrac6aypLCkbxuGUEXEUsMWjUp1GsjC+trFrTd9fHOr7oOfXdRSGRZz5+XLbtTcuUvhNO58eym8FTphSxRahREqVeNOqBUvN9z76ffxNT6LF06a5Z2UNKKKV+mJq+EjLQnBgOlGOYQk0q9gtwxlN5/+EnGe+xf23vqpEwIMXBER4wRIwY4xwPxr+ZrNb1TIZMqdTOIWBxBOIiRQUCC23rOd/L3F9wsKPjmzTffPAvYPBO8tZIyzd/f/3NHR8fj6D8oEAh6GY3GD9C+C8KBKRp+qNt169btx9ra2lCZTBan1Wq/cXZ21kgkEn+0jT137lxyz54918bHx8e+/fbbRCgUcsBjGk6Al+Tn579hZ2dX6OHhkWzZB3zcjRs3GuHpS25u7gQIQ+ytW7eyUT1F2zp16lRZXFws6t69ez3GTINghrm4uPTCOi6j2zqDo09sDNtRmL5Xp1N5Ei2URUzlAI/OoCEikR0xYp86naCYqZm2Nu1Ch1cuXXpem39MQYwGN6KjgiAEPB49mEbf9cChQbtAy97RlS0Y5hP4ba89K4NvVRUlEJ2G4fWZzqHndIQR6onBKM1n6md8F/fex74PT8TmKMrWEzU00o4j6RWVMzH7NbCvkdiYjP/NTUy0V9dejCRGzAcAmcj+yoVTtZkkJYVr3759xpkzZyIASAWkxd/UqVPdQCj/zp07J0IzIHcwQYSozAeAuUzv3r3fraqq6jVr1qwhK1asqKD9eXm87PyG/n1hYWEDq6urv1++fHnStWvXrqKbPk1+sBRBYPz1lJSUtU06rFSAU9SxY8dxGBOHeaehfpoK3IYNG3Q9evRQSKVSLXDdxXp74D1VrVbzytvsvHjt8N+99hdl79CpwFw1aCiSEk87l596OfmNcbOXh/Rwah/Zjm2zh4ilhCgNpEhVEzYqP/mjjD2CtfbEPosROt5xFDl/0ZF1n04Y8YhOEo8FMrHjbRgiEF2Eg5k9+t2OzMp79ZVfEo2eIXosQWCnCZS6Lx/kEdB3tFtgcKiLX7i/g+tPxyquDx7p3Wk30QtBQAgKhKRIrXzpo5RTbazQgJzU3B0EtnfgDw2BHfGTOe2n5hyEMDg4OPxcV1c3iTLH2lhTG4gdAfgHx48ff2hqs1IKS0pKpsIkLjYx1xyGEv7SpUuXU1NTn/v55595rpv3m94p06C5rKneWtm/f/8gjUbjBiYvU6lUwTNnzmykAYTxlpOT0wNfX99Tr7766js+Pj4bcVTwJpznsgkx2ClwLytZqtVrfIkWdLCzI6GuvkuuTlq4AjUqyaSckEyue9TZDh/3rMozlr9F1AaSqq+a/c6fw76JMqgnvNDtubxoHx9V3WOkOYScXnH+UMKyrPMn1Iy+n6dAdvm1GV3aKe5d6U7AX8KKiQfrtCtrSsxS1Ew2LAdrOf9ddrZ4XmCgdvemj/dj3jcgELAmRq8j+b9NAPommgh4Rq7TvcSrrhHCoBMovB3d9qQ/Xoe/v38STOdcaKgHmkofNzcpKPNBnJfFYvEBKhRNOs0q6LNzdXW1CwgIuGdpRs3ACOCU5vV/5r2ysnIyxl/euXNnQbt27fJv3749DvXNFOe+ffsKaIlfWUNBMh6XDZ6xqTLm8HafcpViOlFR0yomrkKH41eXb1tpYq4JjkndrR3tGbSM6NkqYkAvRzzOVmSGb46cmkGZa4IzlR8+N7aqp7PnWiK0I04S+7r86nInwgmF9IwkYIaTWFZqxlx+GK3PDwyE/Sacn73jZqIVGokR8NDivNq617jZs5s4Jj/knXeu1xnHEzU9CkREImRTTr/gkmtaw9GjR+/BhBWCMJGmNsty0aJFrtCoHjDnByz7zOuJiYk6MM+YlZXlY97+73qPiYkRweSOgundh3k5ao3gML74NGtE1wOKPfmlVz6MxBnowBOeiEmw3Hsdc/267gnEk7cfIqJLhCLhLZhhsIAhZQr1wCe9Td+oZXCTOFyDp2WsUKg9Q7z9SmGatYRGFGBYdm3l1KG7vx0MOKhe89+1qL9eEQrE16mJh6dFqpWaQWMmDAgxh0z49eYwzsB58wInYEknmcvPDIlu1EIQxgBPM0mpVL4MwjTZtwnP+fPnRwKuEGWuqc1aGRUVpXNzczsCM71y27Ztcmsw/8q2w4cP98eahQcOHLhG8Q4YMOAYhLXLmDFjfJ82T+NGqYmr1WgG84aY7l8vqGnHyK9BOxmrDzSMNbIwdeAJPGWtzigxTcadOSOZdHxjj+Dtq6a5x3/6mdvGZYlHH+bCodIzdXrDqDXvfVHpIXE4SuCv8WZao2//y6Pi097xn8WFJsYOw2bQ8eQHouvbS523EAGEyQidhn1JLSulzhZfoQKUX1P3IvW0YRkgBExNkHP7g08wNLzBQUlSKBRBw4cPt8oUeLWjH5tn01FhiYKvUy2aM2dODASmfuHChefgLUdgzU2OO6sD/4+N5eXlU6C15+Apw9MkZOvWreXwwu+kp6ePfxpKnkAUiBKJjV18XKfXjOA9YQa6wnFp8JgbtaAZMpGgI0y5cwdHp7WfDOy2dG9aqfe9uprX89V1L6jUuiDqURHB4ykwAe8JsyKuu7NrVGd72dmjpWXH1EZtP76droB60iCtVCq54y+T7/qTZ+Dm70dOKKLzRh1O9Nqdc+MuvHdXWmfEdsWfDxge/NGAERWxt2+7vHPup1SjVuNNxAIiFUoOKud+OhEzN2EUZQLM71mEJmvu37+/j+Ix/aZNmyY/efLkBZzBk65fv55jah85cuREnLMfwCSGUcaa2mkJ71gWHR39Abzl12A+i3Au/w3algQczY4p83GmdzhFuxD23MBaVpnaLMv169fLlixZchk4X8N8jXEThHUSjpN3Hz58OJwqgOU4U71RgykxdCotRwzQAOpoGmF7WWkIkdn3sfrYo91O5tzdye3DB2c1Hy29kLnwSGHe1ayaqr+qlOpgeBgs0SHs0TFpMqN4r4yw30O71GhjUitr1uVpBN2+HBDxQoBDm1giktQRMQwAXabeSOj4tKrKz2PvXb/WJ+Hb2aAqkzgm+lFbieMxXotx7qPNe09WKi/B29IuDUXk1mCecbTAe95nyVy6YUoIaN0hxIrUTAPkyQ/JjHD0l4GID560tv7Wr18/JZgTg2TDQMTCR5AMWY4ExzVo9P/gnHZoffSz9a5bt24YBFLz66+/3jYf8corryQjJPLAGgLM2y3fGxkMggkYkRSUo6ShzaJ6EPt9UqeZY/Wp182RcKLpd3fmre0YJvuxQFm3jKh0TohlEdTLijs6usdE+vmHJs7/vLfinU+jldl5n8AaqPkz0mB0u1dV/u28PkOrsme+/870ziGhFF4skt6ljhg/v1pPjEqN92/lZet9Nqx8h64qyNFjE5aJpaKGePt+be1rqLD3qyonEd7ONBwto307n7TcqKnetm3b/WBuX5hWJ1MbZTacmJegTYfA5CZab4JprUTGqCQ7O3v5119/3adNmzZfl5WVvbFgwYIrOCMHtzbuaX10XTDPk5G02AlYVDmB6Vm5cqUCGbPLsB5TW8Njfm5wTgK2pNqUUSIsO9UnKGnHy9No1sTqjwZaPTb9bdyDmvLpRAPvB96rjJWmvB4YMuX7yPEP7qP/OHm7Yay3hwxWgUEKBxkmWGtoMpk9m2E2bODI6OhMAC1DImLVh0WZL6RWV35Qp1IMoGlOmrQoUKhWzjyy68jm0ZN/cfxu+e16PRdCGVxN1ING/rQluqTg/nCq+dTzl4ulJ9ZEjCte2zBrs3/MkQ3zVgZz/Bw6+XM6NjbWHjFmL2SiPissLGw25lkbpk+fXgvYeDBhO5IPi2EVDsEhGwIBSHtWHOZwq1atkiPmfQHnb49evXqNgsY2dsPJokkYfyQ9QjDfMgjmk85GKLDE9A6d4NzsZLDxMNHUkWEE7PXq8kmmfmsl1fqHdXUv844S7/yI9T0c3RdS5jaD14u4x6a/QUN5TWwKBedHfWXa2/uO9w4f7ipxTIJXAGGgK2Nkl4tKh2ATurZSpwS+nca6Wk58Mi8nAR6eL+/5w8/xljgkYkSLWkgJAY04DMkfa5p9zZo1/UGwurt37+aa2v6ZEnNogCsG5/JRmNalYACW9Pt/MPPjYPoLkVD5O5iciGRG40Pr8CdWsizrDK+6f0vYGxlMAbq28TwOQml4T1RrIA9q6//yRUoK79S0gEDAcMKO1CzTeJYhQv3zAcG8U2QJ79zGHSlO5C0pY+hjMDceTaEHDx6saitr8z1UsgEWR4bAKGxLocJ8fRPhJ9TwIRY9SmhqlD9SBIQxisrGegWfbYqteQ0OSxLM8YCvvvrKnvaCIS8h93wSZYvOSnMsrbdQQQKD10PDugCyCZ1bH9nQC6EQ4BJjCrz6H5KTkzddvHgxzvKBNYqHmT6JS5EpLeFsMvGBl6emu7GyJBr2UIdHq9V3+Pbqhc0xN244t4AAuTaBmic2hBRxKHs2K627JWxUYmKAQGvYDuvgwOsWYJv6o5YjkAXVqLvwjKPCDwaKGFE+hYqPnFjoaSc7TIQ0ZMLyTQ9CKA87yYnV44ZXNsfWtOXUqVOZCDNq4uLi+oGQNF3Yv0OHDvubQv3zNWhXFQSJPXToUJOw71kwwztvDxPcFbdVR1qDhwBsxfHyvElYLWGbqBEl5YxOnWK2Z2T9ychwbgRaXGpUjl195uSlkLgNP9hzgjOucnltvV7pqNKSXm96eR0VZtw9B88WoRW0WMcJblRWrRu0OW6xlugvyoQyp0fK+jG7c3Pm4CLCq0Hr6BLAGMo4nL9916/vUmvUj29n75js7eKSqycqWWpheURaddUSXG4AVgjtFdQP9G178S5qdI1DnF02larUUyBRqD7+IXZ3EMu2035TU0sl1S5cpx1HTByJs60cTFYePHgwDe0tDWlsp+Z2xowZQ3C23pwwYUJdY4eVF3jrA2D6y8aOHcvnha2AtNiE83si5krdu3dvUWvrWrp06dX58+cbExISqE9xzBJhEwbTzoSxL6YHfPdd1D0dt4cwBld6m1RvUHe9pSn/G255dKS0FHeYSERIJOK8mqo/R3UI2BKbkf4+GCFHP1EqVD6XtaVbcIOkgkOFOFgA2y2gzs9VJQ5NPTZNYxyeVfjPUyg8y/W6VdmV1QbcnyHlzElhM+X8DRQVAuTDA+Xy5T9Gjs/dSIfhd/7VWb/IvvzyjooYexJ6BQfGMJwgf0afPhdjeIin/yFmTYID8y0eCbSA3szAS3ymnxBx8ie4TCDvvffeVHjOWHPzH7xoz127dv0vjoOVwP1UoTPHQK0KztcomPh1TxsLTdfiAuIELlJmYdwJS/gmJto0yb15886Ge7Qb5SJxuEBYxKc0HUk1VM+J4a0ilYkGjYHUqg2LXw8Oru3iKJ+FOLaWz0zRTBL6cI7juglnrkGg8pM5/JA8ceJIOHFHiQThoUhCxHraT4iEETMNoRMG6jlPHA1gLjpouCSW1naRO3+UMWfOarCaFws6BpvQetnZn+RjYioEMNftZY4nlg4c2KpG0bGm34ULFzKoNuKMnI3k/V5Tu2UJ801DE5xZDT/MrYeH/ArMp2L79u0pgYGB74eHh3dBHtsepQiPV9++fWfu2bPnDEKmc4irt5jGWpbAJQZuEKzpD04TPeY6wELQO+mn/jw9PXfi9ug5MLuZv9RMg03Yzr7x6jVMPqJf3JYRuTU1o6vV2mAxy7RjkFHgGEGBm4S97ebgcGxVaak2Y+7cfYM3bs26V1f9dpVa259lGDcdZyxxkUqu+Do5bL06a9ZtZj4xDk9I2O+g0GiNuB92YkVIcxJDNy+3HH1JRXw1YboKGcbLQBglK2DyHVn2fF9Xj71JM6KzzJlrWh/iLUWjV47w0N/ZhXrPjUJggmupBHENQUFB2/AFRAmcmEzUrYIiyVCG5EiTu1yEPZWgTXSfPn3GI06djRj4LVwNKmHy6xFquQFXmb+//2rktLfQeawiRiM09DZMeK5lP5gVBB9h8+rVqytgISy7m9VhTa4hK3YSN07UoStrBvC0BlCN+kTCSxwnpQ99p22W43g43HwUcZyMgzRbg7EcQ+v8uHDSMC77CK71rV86mMZygJUsX3OcLF3JkSUrOHb56ow1ly7xFsEE86wlGNVsH5ZjW4NBnxB3sK4wqQHwxDvjbG5H2yxxWKu3hJe2t9RnDQ9tawn+qZtrCeF/sz3ixx3Pny4sPIL4V0TP6O7O8iWpC9767L+5pj/q3FbP4D/aYnkNf2xFxm/bG3ah+NEGxL84Xmj4JCgdFhDw4x9tzX+U9fwuDcbNhhifoLyOjIoBJqEId6uD4GzsRMLdF45KOr7mc0U8GYHw4Obp06dL3d3dH+GDskB84ySEt5qH864DMjD+8GALMNYF7VKcb2no0yG71BtniBZnlgrnmHDy5MlJcP81lLkBX/+4uNJg6Ew/WVHqdOFwxiQIu+ChSUiIq9Nfbt65HDf64cPXEXcWIA/MwCsGWvsqZKv8vby81MCXjDk6w+mRZWRkFOJ8+xPW+VtOTk4AGJGCtZTgrO0OhyoXjxxj8REomw/YDkhr5mBfUiQU7IFPhaySHnseB8fm/IMHD3qCDrnFxcXGiRMn3sZnPn3gNdthH064eMhG3hvHskKMshuSES4o8d3B0Zz/JPN/lwaDufTKzBmMO4JrqmFwEvaCcLPxFd98EO0tEKoPCByExL2GZooA6wHCheN8+hRf/y0Cc8dAOCJBdB3OqxGo9wUhJ+MeloWACAAnB4HDgN8wb948Pqu0m0sU59TUTa+q00xXqvSj4KGDuWC7nYx0dZLH36zI2/iBVusK4XkehNMiXBgK3PQM6w+hod8xTS4oKHgRhH6efu2IMgpz7sYaPdE/EPOqsXYP7GMhGLsI44ah/gaEbxxlJJ534fT0xLomQzBnIFc9CW23AOeJ/Y2D0GghUK9AWOZiDbOAl+5RBngf9C+DEzYc/blYhx32azXL9+9k+O9iMBapwmaFYKI7vD8WxHLHRpDx0h7G0wsboTccv9AbDjDLFV899ERdi0eJjcuxkUIQUQgtYDGeAUGcQcx0CEgnSP0Qf3//s+hnwWAx8tK8dYndrO+IbFVn3j+mH+7Ra0WxXWlXZ/nitLFec/iP6jw8FMjZ7snNzaWfsQixRnykR/QQsiA8m1AfgLXfx3s9BE4MZiJWI1SYaqBZapQGrKMMMHIwhX5VqQVMVzCyEI8YuIcD3gF97SEUvkghtoXQjMYeqqHdKqw5H/2DsZ8stAkwXyXmUQM2FdYjHPQoAsoqeN/PdE8MXP+y3+8y0SAegzhvIjRQBinNg2nuDeIcgFlygJnC/hkZYIKxupvYtBRE6o7PR5PR7g3NysVnpR54H4SnEuaqEMQtBNH9gIOBWe8PotwDIWjMKQdh4ylBguKSHHXl5eNFQqYTwwgMAhGTNsjDOyV+yshGbRg/frwj8EdBc4sgZGIQ2BEfxJVCsAohhG2wThbak4t7Wr+0tLQ6MGdQcHBwJsoAxMFXELcWwCJ5A6YaTAqFZfoF6/LHJb8LynTsaSiE9QLWKAW+djDNHaH5dwHbAwytoJqJ5yHCJS8Iti9o4QwT/oDuB+8h2OtlWClfpCxv/cs4Z0Nko4CNAjYK2Chgo4CNAjYK2Chgo4CNAjYK2Chgo4CNAjYK2Chgo4CNAjYK/P+hwD8AOtZwi6AvvF8AAAAASUVORK5CYII=
+description: EasyVista Service Manager manages the entire process of designing, managing
+  and delivering IT services.
+configuration:
+- display: Server URL (e.g. https://your_company.easyvista.com)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Account
+  name: account
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |+
+    ''' IMPORTS '''
+    import requests
+    import os
+    import json
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    ACCOUNT=demisto.params()['account']
+    USERNAME=demisto.params()['credentials']['identifier']
+    PASSWORD=demisto.params()['credentials']['password']
+    SERVER=demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+    BASE_URL=SERVER + '/api/v1/' + ACCOUNT + '/'
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    ''' HELPER FUNCTIONS '''
+    def http_request(method, url_suffix):
+        LOG('running request with url=%s' % (BASE_URL + url_suffix))
+        try:
+            res = requests.request(
+                method,
+                BASE_URL + url_suffix,
+                verify=USE_SSL,
+                auth=requests.auth.HTTPBasicAuth(USERNAME,PASSWORD)
+            )
+            if res.status_code != 200:
+                raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
+        except Exception, e:
+            LOG(e)
+            raise
+        return res.json()
+
+    def dict_to_str(obj):
+        """
+        Input - dictionary :
+        {
+            key1_keya: "valuea",
+            key1_keyb: "valueb",
+            HREF: "http://link"
+        }
+
+        Output - string:
+        Key1Keya: Valuea
+        Key1Keyb: Valueb
+        """
+        string_result = ''
+        context_result = {}
+        for key, value in obj.iteritems():
+            if key != 'HREF':
+                string_result += underscoreToCamelCase(key) + ': ' + value + '<br>'
+                context_result[underscoreToCamelCase(key)] = value
+        return string_result, context_result
+
+    ''' FUNCTIONS '''
+    def search_command():
+        request = demisto.args().get('request')
+        if request:
+            response = search(request=request)
+        else:
+            asset = demisto.args().get('asset')
+            attribute = demisto.args().get('attribute')
+            value = demisto.args().get('value')
+            if asset and attribute and value:
+                response = search(asset, attribute, value)
+            else:
+                return 'Not enough arguments given'
+        records = []
+        context = []
+        for record in response:
+            string_record = {}
+            context_record = {}
+            for header in record:
+                current_context = {}
+                if isinstance(record[header], dict):
+                    current_string, current_context = dict_to_str(record[header])
+                    if len(current_string) == 0:
+                        string_record[header] = None
+                    else:
+                        string_record[header] = current_string
+                    context_record[underscoreToCamelCase(header)] = current_context
+            records.append(string_record)
+            context.append(context_record)
+        if records:
+            title = 'EasyVista Search Results'
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': records,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, records, headerTransform=underscoreToCamelCase, removeNull=True),
+                'EntryContext': {
+                    'EasyVista.Records': context
+                }
+            })
+        else:
+            demisto.results('No records found')
+
+    def search(asset=None, attribute=None, value=None, request=None):
+        cmd_url = 'requests?search='
+        if request:
+            cmd_url += request
+        else:
+            cmd_url += asset + '.' + attribute + ':"' + value + '"'
+        records = http_request('GET', cmd_url)['records']
+        return records
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        if demisto.command() == 'test-module':
+            http_request('GET', 'assets')
+            demisto.results('ok')
+
+        elif demisto.command() == 'easy-vista-search':
+            search_command()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+  type: python
+  commands:
+  - name: easy-vista-search
+    arguments:
+    - name: asset
+      description: Asset to search, e.g. requestor (This argument is mandatory if
+        the "request" argument is not given)
+    - name: attribute
+      description: Attribute to search, e.g. last_name (This argument is mandatory
+        if the "request" argument is not given)
+    - name: value
+      description: Value to search, e.g. "Morley, Gaby" (This argument is mandatory
+        if the "request" argument is not given)
+    - name: request
+      description: Integrated request of assets, attributes and values, e.g.  requestor.last_name:"Morley,
+        Gaby" (This argument replaces the other arguments given each one separately)
+    outputs:
+    - contextPath: EasyVista.Records.CatalogRequest.CatalogRequestPath
+      description: Catalog Request Path
+      type: string
+    - contextPath: EasyVista.Records.CatalogRequest.Code
+      description: Catalog Request Code
+      type: string
+    - contextPath: EasyVista.Records.CatalogRequest.SdCatalogId
+      description: SD Catalog ID
+      type: string
+    - contextPath: EasyVista.Records.CatalogRequest.TitleEn
+      description: Request Title
+      type: string
+    - contextPath: EasyVista.Records.Department.DepartmentCode
+      description: Department Code
+      type: string
+    - contextPath: EasyVista.Records.Department.DepartmentEn
+      description: Department Name
+      type: string
+    - contextPath: EasyVista.Records.Department.DepartmentId
+      description: Department ID
+      type: string
+    - contextPath: EasyVista.Records.Department.DepratmentLabel
+      description: Department Label
+      type: string
+    - contextPath: EasyVista.Records.Department.DepartmentPath
+      description: Department Path
+      type: string
+    - contextPath: EasyVista.Records.KnownProblem.KnownProblemPath
+      description: Known Problem Path
+      type: string
+    - contextPath: EasyVista.Records.KnownProblem.KnownProblemsId
+      description: Known Problems ID
+      type: string
+    - contextPath: EasyVista.Records.KnownProblem.KpNumber
+      description: Number of Known Problems
+      type: string
+    - contextPath: EasyVista.Records.KnownProblem.QuestionEn
+      description: Known problem question
+      type: string
+    - contextPath: EasyVista.Records.Location.City
+      description: City
+      type: string
+    - contextPath: EasyVista.Records.Location.LocationCode
+      description: Location Code
+      type: string
+    - contextPath: EasyVista.Records.Location.LocationEn
+      description: Location En
+      type: string
+    - contextPath: EasyVista.Records.Location.LocationId
+      description: Location ID
+      type: string
+    - contextPath: EasyVista.Records.Location.LocationPath
+      description: Location Path
+      type: string
+    - contextPath: EasyVista.Records.Recipient.BeginOfContract
+      description: Begin Of Contract Date
+      type: string
+    - contextPath: EasyVista.Records.Recipient.CellularNumber
+      description: Cellular number of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.DerpartmentPath
+      description: Department path of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.EMail
+      description: Email address of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.EmployeeId
+      description: Employee ID of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.LastName
+      description: Last name of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.LocationPath
+      description: Location of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.PhoneNumber
+      description: Phone number of recipient
+      type: string
+    - contextPath: EasyVista.Records.Status.StatusEn
+      description: Status of request
+      type: string
+    - contextPath: EasyVista.Records.Status.StatusGuid
+      description: Request GUID
+      type: string
+    - contextPath: EasyVista.Records.Status.StatusId
+      description: Request ID
+      type: string
+    description: This method allows a list of incidents / requests (service, change,
+      investment) to be obtained.

@@ -1,0 +1,218 @@
+id: 'QRadar - Get offense correlations '
+version: -1
+name: 'QRadar - Get offense correlations '
+toversion: 3.1.0
+fromversion: ""
+description: |-
+  Run on a QRadar offense to get more information
+
+  * Get all correlations relevant to the offense
+  * Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs" to "True")
+
+  Inputs:
+  * GetCorrelationLogs (default: False)
+  * MaxLogsCount (default: 20)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: efaa120a-35d6-437c-8ac7-0ece067386c6
+    type: start
+    task:
+      id: efaa120a-35d6-437c-8ac7-0ece067386c6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 51
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 12b7da80-4881-428c-8d37-f513dadd6480
+    type: condition
+    task:
+      id: 12b7da80-4881-428c-8d37-f513dadd6480
+      version: -1
+      name: Is this a QRadar offense?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    scriptarguments:
+      value: ${incident.labels(val.Brand=="QRadar")}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 79031f54-97bb-4a27-84d1-665f762c3428
+    type: title
+    task:
+      id: 79031f54-97bb-4a27-84d1-665f762c3428
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 777beed6-580b-4cc6-82c6-1a23309d8313
+    type: regular
+    task:
+      id: 777beed6-580b-4cc6-82c6-1a23309d8313
+      version: -1
+      name: Get Offense correlations
+      scriptName: QRadarGetOffenseCorrelations
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      fields: ""
+      headers: ""
+      interval: ""
+      offenseID: ""
+      range: ""
+      startTime: ""
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 09959beb-a116-4202-8bd1-8388eac3d3b3
+    type: regular
+    task:
+      id: 09959beb-a116-4202-8bd1-8388eac3d3b3
+      version: -1
+      name: Get correlations' logs
+      scriptName: QRadarGetCorrelationLogs
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      additionalQueryFields: ""
+      fields: ""
+      headers: ""
+      interval: ""
+      offenseID: ""
+      qid: ""
+      range: 0-${inputs.MaxLogsCount}
+      startTime: ""
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 865
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 449b51e7-fde6-49a9-8cc3-6231bcc7c358
+    type: title
+    task:
+      id: 449b51e7-fde6-49a9-8cc3-6231bcc7c358
+      version: -1
+      name: Get offense information
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 2e19a41a-872f-40ca-840d-af419b4ea32d
+    type: condition
+    task:
+      id: 2e19a41a-872f-40ca-840d-af419b4ea32d
+      version: -1
+      name: Should query for the correlations' logs?
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    scriptarguments:
+      left: ${inputs.=(val.GetCorrelationLogs.toLowerCase())}
+      right: "true"
+    results:
+    - AreValuesEqual
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1054,
+        "width": 605,
+        "x": 50,
+        "y": 51
+      }
+    }
+  }
+inputs:
+- key: GetCorrelationLogs
+  value: "False"
+  description: If "True" will get all of the offense's correlations logs
+- key: MaxLogsCount
+  value: "20"
+  description: 'Maximum number of log entires to query from QRadar (default: 20)'

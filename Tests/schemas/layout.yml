@@ -1,0 +1,79 @@
+type: map
+mapping:
+  typeId:
+    type: str
+    required: yes
+  kind:
+    type: str
+    required: yes
+  fromVersion:
+    type: str
+  toVersion:
+    type: str
+  releaseNotes:
+    type: str
+  system:
+    type: bool
+  layout:
+    type: map
+    mapping:
+      id:
+        type: str
+        required: yes
+      version:
+        type: number
+        required: yes
+      modified:
+        type: str
+      name:
+        type: str
+      sections:
+        type: seq
+        required: yes
+        sequence:
+        - include: section_schema
+
+
+
+
+schema;section_schema:
+  type: map
+  mapping:
+    id:
+      type: str
+    version:
+      type: number
+    modified:
+      type: str
+    name:
+      type: str
+    type:
+      type: str
+    isVisible:
+      type: bool
+    readOnly:
+      type: bool
+    description:
+      type: str
+    query:
+      type: any
+    queryType:
+      type: str
+    fields:
+      type: seq
+      sequence:
+      - include: field_schema
+
+schema;field_schema:
+  type: map
+  mapping:
+      id:
+        type: str
+      version:
+        type: number
+      modified:
+        type: str
+      fieldId:
+        type: str
+      isVisible:
+        type: bool

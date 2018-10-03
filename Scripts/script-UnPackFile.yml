@@ -6,7 +6,7 @@ script: |-
   from pyunpack import Archive
   import os
   from os.path import isfile
-  import subprocess
+  from os.path import isdir
 
   filePath = None
   fileEntryID = ''
@@ -65,13 +65,20 @@ script: |-
   filePath = res[0]['Contents']['path']
 
   filenames = []
+  # remembering which files and dirs we currently have so we add them later as newly extracted files.
   excludedFiles = [f for f in os.listdir('.') if isfile(f)]
-  Archive(filePath).extractall_patool('.', None)
-  for root, directories, files in os.walk('.'):
-      for name in files:
-          if not name in str(excludedFiles) and isfile(name):
-              filenames.append(name)
+  excludedDirs = [d for d in os.listdir('.') if isdir(d)]
 
+  # extracting the archive file
+  Archive(filePath).extractall_patool('.', None)
+  # recursing over the file system top down
+  for root, directories, files in os.walk('.'):
+      # removing the previously existing dirs from the search
+      directories[:] = [d for d in directories if d not in excludedDirs]
+      for f in files:
+          # skipping previously existing files and verifying that the current file is a file and then adding it to the extracted files list
+          if f not in excludedFiles and isfile(os.path.join(root, f)):
+              filenames.append(os.path.join(root,f))
   if len(filenames) == 0:
       demisto.results({
           'Type': entryTypes['error'],
@@ -80,19 +87,20 @@ script: |-
       })
   else:
       results = []
-      for filename in filenames:
-          demisto.results(file_result_existing_file(filename))
-
+      # extracted files can be in sub directories so we save the base names of the files and also the full path of the file
+      files_base_names = [os.path.basename(file_path) for file_path in filenames]
+      files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
+      for file_path, file_name in files_dic.items():
+          demisto.results(file_result_existing_file(file_path, file_name))
       results.append(
           {
               'Type': entryTypes['note'],
               'ContentsFormat': formats['json'],
-              'Contents': { 'extractedFiles': filenames },
-              'EntryContext': { 'ExtractedFiles': filenames, 'File(val.EntryID=="' + fileEntryID + '").Unpacked': True },
+              'Contents': { 'extractedFiles': files_base_names },
+              'EntryContext': { 'ExtractedFiles': files_base_names, 'File(val.EntryID=="' + fileEntryID + '").Unpacked': True },
               'ReadableContentsFormat' : formats['markdown'],
-              'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': x } for x in filenames ])
+              'HumanReadable': tableToMarkdown('Extracted Files', [ { 'name': file_name , 'path': file_path } for file_path, file_name in files_dic.items()])
           })
-
       demisto.results(results)
 type: python
 tags:
@@ -110,9 +118,11 @@ args:
 - name: entryID
   description: entry id of the attached packed file in the warroom
 - name: lastPackedFileInWarroom
-  description: Set to package file extension to look for the last of its kind in the war room
+  description: Set to package file extension to look for the last of its kind in the
+    war room
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from package
 scripttarget: 0
+runonce: false
 dockerimage: demisto/unrar:1.4

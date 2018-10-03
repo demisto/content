@@ -2,6 +2,7 @@ commonfields:
   id: IncidentSet
   version: -1
 name: IncidentSet
+fromversion: 3.5.1
 script: |-
   res = []
   dArgs = {}
@@ -48,7 +49,14 @@ args:
 - name: details
   description: Incident details
 - name: severity
-  description: The severity to set. Can be "low","medium","high" or "critical".
+  auto: PREDEFINED
+  predefined:
+  - unknown
+  - low
+  - medium
+  - high
+  - critical
+  description: The severity to set. Can be "unknown", "low","medium","high" or "critical".
 - name: type
   description: Incident type
 - name: name
@@ -70,3 +78,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+deprecated: true

@@ -1,0 +1,307 @@
+id: Remedy AR Test
+version: -1
+name: Remedy AR Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bc9930f0-ba0a-415f-8ce2-3f3ed571dde8
+    type: start
+    task:
+      id: bc9930f0-ba0a-415f-8ce2-3f3ed571dde8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 713a5446-8700-459a-8541-335b40935793
+    type: title
+    task:
+      id: 713a5446-8700-459a-8541-335b40935793
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "2":
+    id: "2"
+    taskid: afb4a02a-5816-481e-8f31-c189186b6e9d
+    type: regular
+    task:
+      id: afb4a02a-5816-481e-8f31-c189186b6e9d
+      version: -1
+      name: Get Server Details
+      description: Retrieves server details
+      script: Remedy AR|||remedy-get-server-details
+      type: regular
+      iscommand: true
+      brand: Remedy AR
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fields: {}
+      qualification:
+        simple: '''400127400'' = "BMC.ASSET" AND ''Category'' = "Server" AND ''Company''
+          != "Realtor.com"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 19c8c8ab-e49f-4ca9-87f5-2392c2e8de03
+    type: regular
+    task:
+      id: 19c8c8ab-e49f-4ca9-87f5-2392c2e8de03
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Company,Name,Reconciliation Identity,Short Description
+      path:
+        simple: Remedy.ServerDetails
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: d48c685f-6abe-4490-8353-e3873867ed47
+    type: regular
+    task:
+      id: d48c685f-6abe-4490-8353-e3873867ed47
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 951b55a1-f115-4b38-8d6b-ba32f5d5f793
+    type: regular
+    task:
+      id: 951b55a1-f115-4b38-8d6b-ba32f5d5f793
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    taskid: d3df7487-913d-46b5-8938-ab9b05bd7684
+    type: regular
+    task:
+      id: d3df7487-913d-46b5-8938-ab9b05bd7684
+      version: -1
+      name: Search By IP Address
+      description: Retrieves server details
+      script: Remedy AR|||remedy-get-server-details
+      type: regular
+      iscommand: true
+      brand: Remedy AR
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      fields: {}
+      qualification:
+        simple: '''400127400'' = "BMC.ASSET" AND ''Company'' != "Realtor.com" AND
+          ''NC_IOPs'' = "10.238.89.39"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: bf3c6fb4-3284-4118-8566-eaa7f924d9b4
+    type: regular
+    task:
+      id: bf3c6fb4-3284-4118-8566-eaa7f924d9b4
+      version: -1
+      name: Search By Name
+      description: Retrieves server details
+      script: Remedy AR|||remedy-get-server-details
+      type: regular
+      iscommand: true
+      brand: Remedy AR
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      fields: {}
+      qualification:
+        simple: '''400127400'' = "BMC.ASSET" AND ''Company'' != "Realtor.com" AND
+          ''Name'' = "brx1-printa-01"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 2b6f9b4e-5eb3-4972-8176-4fe046668999
+    type: regular
+    task:
+      id: 2b6f9b4e-5eb3-4972-8176-4fe046668999
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Company,NC_IOPs,Name,Reconciliation Identity,Short Description
+      path:
+        simple: Remedy.ServerDetails
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "9":
+    id: "9"
+    taskid: d49a0fa3-ffda-40af-85df-b67b9974b933
+    type: regular
+    task:
+      id: d49a0fa3-ffda-40af-85df-b67b9974b933
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Company,NC_IOPs,Name,Reconciliation Identity,Short Description
+      path:
+        simple: Remedy.ServerDetails
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

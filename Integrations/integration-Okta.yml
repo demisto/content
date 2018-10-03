@@ -4,7 +4,7 @@ commonfields:
 name: okta
 display: okta
 category: Authentication
-image: data:image/png;base64,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
+image: data:image/png;base64,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
 description: Integration with Okta's cloud-based identity management service
 detaileddescription: |-
   To get an API token go to the following URL:
@@ -20,9 +20,27 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
-    var profileArgs = [
+    function fixUrl(base) {
+        var res = base;
+        if (base && base[base.length - 1] !== '/') {
+            res = res + '/';
+        }
+        return res;
+    }
+
+    var PROFILE_ARGS = [
         'firstName',
         'lastName',
         'email',
@@ -56,154 +74,134 @@ script:
         'manager'
     ];
 
-    var fixUrl = function(base) {
-        res = base;
-        if (base && base[base.length - 1] != '/') {
-            res = res + '/';
-        }
-        return res;
-    };
+    var SERVER_URL = fixUrl(params.url) + 'api/v1/';
+    var DEFAULT_SEARCH_LIMIT = 200;
+    var CLIENT_USERAGENT = 'Demisto/1.0'
 
-    var parseResponse = function(resp) {
-        if (resp.StatusCode === 200) {
-            try {
-                return JSON.parse(resp.Body);
-            } catch (e) {
-                return resp.Body;
+    function createReadableLog(log){
+        var logObject = {};
+
+        var time  = new Date(log.published);
+        logObject.Time = time.toLocaleString();
+        logObject.Actor = log.actor.displayName + ' (' + log.actor.type + ')';
+        logObject.ActorAlternateId = log.actor.alternateId;
+        logObject.EventInfo = log.displayMessage;
+        logObject.EventOutcome = log.outcome.result + (log.outcome.reason ? ': ' + log.outcome.reason : '');
+        logObject.EventSeverity = log.severity;
+        logObject.Client = '';
+        if(log.client.userAgent){
+            var browser = log.client.userAgent.browser;
+            var os = log.client.userAgent.os;
+            logObject.Client += (browser && browser.toLowerCase() !== 'unknown' ? browser : 'Unknown browser') + ' on ';
+            logObject.Client += (os && os.toLowerCase() !== 'unknown' ? os : 'Unknown OS') + ' ';
+        }
+        if(log.client.device){
+            logObject.Client += log.client.device.toLowerCase() !== 'unknown' ? log.client.device : 'Unknown device';
+        }
+        logObject.RequestIP = log.client.ipAddress;
+        logObject.ChainIP = dq(log.request.ipChain, 'ip');
+
+        var targets = '';
+        if(log.target){
+            log.target.forEach(function(target){
+                targets += target.displayName + ' (' + target.type + ')\n';
+            });
+        }
+
+        logObject.Targets = targets || '-';
+
+        return logObject;
+    }
+
+    function getPagedResults(path, queryParams){
+        var results = [];
+
+        do {
+            var resObject = sendRequest(path, 'GET', queryParams, '', true);
+            results = results.concat(resObject.body);
+            var link = resObject.link;
+
+            if(!link || link.length < 2 || queryParams.limit){
+                // No next page or limit is specified
+                break;
             }
-        } else {
-          err = resp.Status;
-          if (resp.Body) {
-              err += '\n' + resp.Body;
-          }
-          throw err;
-        }
-    };
-
-    var getRaw = function(args, params, uri) {
-        url = fixUrl(params.url);
-        url = url + uri;
-         res = http(
-            url,
-            {
-                Method: 'GET',
-                Headers: {
-                    Authorization: ['SSWS ' + params.apitoken]
+            else{
+                // Get the next page for the results
+                var afterPattern = /\bafter=(.*)>/;
+                var linkMatch = link[1].match(afterPattern);
+                if(!linkMatch){
+                    break;
                 }
-            },
-            true
-        );
-        return res;
-    };
 
-    var post = function(args, params, uri, body) {
-        url = fixUrl(params.url);
-        url = url + uri;
-        readyBody = null;
-        if (body) {
-            readyBody = JSON.stringify(body);
-        }
-        res = http(
-            url,
-            {
-                Method: 'POST',
-                Headers: {
-                    Authorization: ['SSWS ' + params.apitoken],
-                    Accept: ['application/json'],
-                    'Content-Type': ['application/json']
-                },
-                Body: readyBody
-            },
-            true
-        );
-        return parseResponse(res);
-    };
+                queryParams['after'] = linkMatch[1];
+            }
 
+        } while(resObject.body.length > 0)
 
-    var get = function(args, params, uri) {
-        raw = getRaw(args, params, uri);
-        res =  parseResponse(raw);
-        if (res && res.length && res.length > 1 ) {
-            return { result: res };
-        } else if (res && res.length === 0) {
-            return {};
-        }else {
-            return res;
-        }
-    };
+        return results;
+    }
 
-    var getUserId = function(args, params) {
-        username = args.username;
-        uri = '/api/v1/users?filter=profile.login+eq+"'+encodeURIComponent(username)+'"';
-        res = get(args, params, uri);
-        if (res && res.length && res.length == 1) {
-            return res[0].id;
-        } else {
-            throw 'Unable to find userId ' + username + '\n' + JSON.stringify(res);
-        }
-    };
-
-    var buildProfile = function(args) {
+    function buildProfile(args) {
         var profile = {};
         var keys = Object.keys(args);
-        for (var i = 0 ; i < profileArgs.length; i++) {
-            if (args[profileArgs[i]]) {
-                profile[profileArgs[i]] = args[profileArgs[i]];
+        for (var i = 0 ; i < PROFILE_ARGS.length; i++) {
+            if (args[PROFILE_ARGS[i]]) {
+                profile[PROFILE_ARGS[i]] = args[PROFILE_ARGS[i]];
             }
         }
         return profile;
-    };
+    }
 
-    var buildCredentials = function(args) {
-      var creds = {};
-      if (args.password) {
-          var  pswd = { value: args.password };
-          creds.password = pswd;
-      }
-      if (args.passwordQuestion || args.passwordAnswer) {
-          var recovery = {
-              question: args.passwordQuestion,
-              answer: args.passwordAnswer
-          };
-          creds.recovery_question = recovery;
-      }
-      if (args.providerName || args.providerType) {
-          var provider = {
-              name: args.providerName,
-              type: args.providerType
-          };
-          creds.provider = provider;
-      }
-      return creds;
-    };
+    function buildCredentials(args) {
+        var creds = {};
+        if (args.password) {
+            var  pswd = { value: args.password };
+            creds.password = pswd;
+        }
+        if (args.passwordQuestion || args.passwordAnswer) {
+            var recovery = {
+                question: args.passwordQuestion,
+                answer: args.passwordAnswer
+            };
+            creds.recovery_question = recovery;
+        }
+        if (args.providerName || args.providerType) {
+            var provider = {
+                name: args.providerName,
+                type: args.providerType
+            };
+            creds.provider = provider;
+        }
+        return creds;
+    }
 
-    var identLevel = function(count) {
+    function identLevel(count) {
         var ret='';
         for (var i=0;i<count;i++) {
             ret += '     ';
         }
         return ret;
-    };
+    }
 
-    var flattenValue = function(value,level) {
+    function flattenValue(value, level, isArray) {
         if (!level) {
             level=0;
         }
-        if (!value || value == '') {
+        if (!value || value === '') {
             return '<br>';
-        } else if (typeof value == 'string') {
+        } else if (typeof value === 'string') {
             return value + '<br>';
         } else {
-            var ret = (level>0) ? identLevel(level-1) + '{ <br>' : '';
-            for (key in value) {
-                ret += identLevel(level) + key + ': ' + flattenValue(value[key],level+1);
+            var ret = (level>0) ? (identLevel(level-1) + (isArray ? '' : '{') + ' <br>') : '';
+            for (var key in value) {
+                ret += identLevel(level) + (isArray ? '' : key + ': ') + flattenValue(value[key],level+1,isArray);
             }
-            return (level>0) ? ret + identLevel(level-1) + '}<br>' : ret;
+            return (level>0) ? (ret + identLevel(level-1) + (isArray ? '' : '}') + '<br>') : ret;
         }
 
-    };
+    }
 
-    var profileToMd = function (profile) {
+    function profileToMd(profile) {
         var head = '|';
         var line = '|';
         var data = '|';
@@ -214,25 +212,26 @@ script:
             data += profile[key] + '|';
         }
         return head + '\n' + line + '\n' + data + '\n';
-    };
+    }
 
-    var usersToMd = function (users, verbose) {
+    function usersToMarkdown(users, verbose) {
         var md='';
 
         if (!Array.isArray(users)) {
             users = [users] ;
         }
 
-        if (verbose=='true') {
+        var user;
+        if (verbose==='true') {
             for (var i=0;i<users.length;i++) {
-                var user=users[i];
+                user=users[i];
                 md += '### User: ' + user.profile.login +'\n';
                 md += '#### Profile:\n';
                 md += profileToMd(user.profile);
                 md += '#### Additional data:\n';
                 md += 'Key|Value\n-|-\n';
                 for (var key in user) {
-                    if (key != 'profile') {
+                    if (key !== 'profile') {
                         md += key+'|'+flattenValue(user[key]) + '\n';
                     }
                 }
@@ -240,7 +239,7 @@ script:
         } else {
             md += 'ID|Login|First Name|Last Name|Mobile Phone|Last Login|Status\n-|-|-|-|-|-|-\n';
             for (var i=0;i<users.length;i++) {
-                var user=users[i];
+                user = users[i];
                 md += user.id + '|';
                 md += user.profile.login + '|';
                 md += user.profile.firstName+'|';
@@ -251,10 +250,9 @@ script:
             }
         }
         return md;
-    };
+    }
 
-    var usersToEc = function(users) {
-
+    function usersToEntryContext(users) {
         var ec={};
         ec.Account = [];
         if (!Array.isArray(users)) {
@@ -262,7 +260,7 @@ script:
         }
         for (var i=0;i<users.length;i++) {
             var user=users[i];
-            var ecItem={id:user.id,Type:'Okta'};
+            var ecItem={id:user.id, ID:user.id,Type:'Okta'};
             if (user.profile.firstName || user.profile.lastName) {
                 var displayName='';
                 displayName += (user.profile.firstName)? user.profile.firstName + ' ' : '';
@@ -278,140 +276,775 @@ script:
             if (user.objectClass) {
                 ecItem.Groups = user.objectClass;
             }
+            if (user.group){
+                ecItem.Group = user.group;
+            }
             ec.Account.push(ecItem);
         }
         return ec;
-    };
-
-    // The command input arg holds the command sent from the user.
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            var resp = getRaw(args, params, 'api/v1/users?limit=1');
-            if (resp.StatusCode === 200) {
-                return 'ok';
-            } else if (resp.Status) {
-                return resp.Status;
-            } else {
-                return resp;
-            }
-            break;
-        case 'okta-unlock-user':
-            var userId = getUserId(args, params);
-            var res = post(args, params, 'api/v1/users/' + userId + '/lifecycle/unlock');
-            var md = "### Okta user unlocked: " + args.username + '\n';
-            md += 'User ID: ' + userId + '\n';
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
-        case 'okta-deactivate-user':
-            var userId = getUserId(args, params);
-            var res = post(args, params, 'api/v1/users/' + userId + '/lifecycle/deactivate');
-            var md = "### Okta user deactivated: " + args.username + '\n';
-            md += 'User ID: ' + userId + '\n';
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
-        case 'okta-activate-user':
-            var userId = getUserId(args, params);
-            var res = post(args, params, 'api/v1/users/' + userId + '/lifecycle/activate');
-            var md = "### Okta user activated: " + args.username + '\n';
-            md += 'User ID: ' + userId + '\n';
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
-        case 'okta-get-groups':
-            var userId = getUserId(args, params);
-            var res = get(args, params, 'api/v1/users/' + userId + '/groups');
-            var md = "### Okta groups for user " + args.username + '\n';
-            md += 'User ID: ' + userId + '\n';
-            md += '#### Groups:\n';
-            md += res[0].objectClass + '\n';
-            md += '#### Profiles:\n';
-            md += objToMd(res[0].profile) + '\n';
-            var ec = usersToEc(res);
-            return {Type: entryTypes.note, entryContext: ec, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
-        case 'okta-set-password':
-            var userId = getUserId(args, params);
-            var body = {
-                "credentials": {
-                    "password" : { "value": args.password }
-                }
-            };
-            res = post(args, params, 'api/v1/users/' + userId, body);
-            var md = "### Okta user password set: " + args.username + '\n';
-            md += 'User ID: ' + userId + '\n';
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
-        case 'okta-search':
-            var limit = 200;
-            if (args.limit) {
-                limit = args.limit;
-            }
-            var term = args.term;
-            if (term) {
-                term = encodeURIComponent(term);
-            }
-            res = get(args, params, 'api/v1/users?q=' + term + '&limit=' + limit);
-            if (res && res.result && res.result.length>0) {
-                var md = '### Okta users found:\n';
-                md += usersToMd(res.result,args.verbose);
-                var ec = usersToEc(res.result);
-            } else {
-                var md = '### No users found in Okta\n';
-            }
-            return {Type: entryTypes.note, EntryContext: ec, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
-        case 'okta-get-user':
-            var term = args.username;
-            if (term) {
-                term = encodeURIComponent(term);
-            } else {
-                term = args.userid;
-                if (!term) {
-                    throw "You must supply either 'username' or 'userid'"
-                }
-            }
-            var res = get(args, params, 'api/v1/users/' + term);
-
-            var md = '### Okta user:\n';
-            md += usersToMd(res,args.verbose);
-            var ec = usersToEc(res);
-            return {Type: entryTypes.note, EntryContext: ec, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
-        case 'okta-create-user':
-            var cred = buildCredentials(args);
-            var profile = buildProfile(args);
-            var groupIds = args.groupIds;
-            if (groupIds) {
-                groupIds = groupIds.split(',');
-            }
-            var body = {
-                profile: profile,
-                groupIds: groupIds,
-                credentials: cred
-            };
-            var activate = false;
-            if (args.activate) {
-                activate = args.activate.toLowerCase() === 'true';
-            }
-            var uri = '/api/v1/users?activate=' + activate;
-            if (cred && cred.provider) {
-                uri += '&provider=true';
-            }
-            var res = post(args, params, uri, body);
-
-            var md = "### Okta user created: " + args.login + '\n';
-            md += profileToMd(res.profile);
-            var ec = usersToEc(res);
-            return {Type: entryTypes.note, EntryContext: ec, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
-        case 'okta-update-user':
-            var userId = getUserId(args, params);
-            var cred = buildCredentials(args);
-            var profile = buildProfile(args);
-            profile.login = args.username;
-            var body = {
-                profile: profile,
-                credentials: cred
-            };
-            var uri = '/api/v1/users/' + userId;
-            var res = post(args, params, uri, body);
-            var md = "### Okta user updated: " + args.username + '\n';
-            md += 'User ID: ' + userId + '\n';
-            md += profileToMd(res.profile);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md};
     }
+
+
+    function sendRequest(path, method, queryParams, body, pagination){
+        var url = SERVER_URL.concat(path);
+        var query = '';
+        if(queryParams){
+            query = encodeToURLQuery(queryParams);
+        }
+
+        url = url.concat(query);
+
+        // backward compatibility
+        if(params.proxy){
+            if(params.proxy === "true"){
+                params.proxy = true;
+            }
+            else if(params.proxy === "false"){
+                params.proxy = false;
+            }
+        }
+
+        var res = http(
+            url,
+            {
+                Method: method ? method : 'GET',
+                Headers: {
+                    'User-Agent': [CLIENT_USERAGENT],
+                    Authorization: ['SSWS ' + params.apitoken],
+                    Accept: ['application/json'],
+                    'Content-Type': ['application/json']
+                },
+                Body: body ? JSON.stringify(body) : body
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed on request ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+
+        if(pagination){
+            return {
+                body: JSON.parse(res.Body),
+                link: res.Headers['Link']
+            };
+        }
+
+        if(!(res.Body)){
+            return '';
+        }
+
+        return JSON.parse(res.Body);
+    }
+
+    function getUserId(username){
+        var uri = 'users?filter=' + encodeURIComponent('profile.login eq "' + username + '"');
+        var res = sendRequest(uri);
+        if (res && res.length && res.length === 1) {
+            return res[0].id;
+        } else {
+            throw 'Unable to find userId ' + username + '\n' + JSON.stringify(res);
+        }
+    }
+
+    function getGroupId(groupName){
+        var group = listGroups(groupName);
+        if(!group){
+            throw 'Unable to find group ' + groupName + '\n' + JSON.stringify(group);
+        }
+
+        return group[0].id;
+    }
+
+    function suspendUserCommand(){
+        var userId = getUserId(args.username);
+
+        var res = suspendUser(userId);
+
+        var md = "### Okta user suspended: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function suspendUser(userId){
+        var uri = 'users/' + userId + '/lifecycle/suspend';
+
+        return sendRequest(uri, 'POST');
+    }
+
+    function unSuspendUser(userId){
+        var uri = 'users/' + userId + '/lifecycle/unsuspend';
+
+        return sendRequest(uri, 'POST');
+    }
+
+    function unSuspendUserCommand(){
+        var userId = getUserId(args.username);
+
+        var res = unSuspendUser(userId);
+
+        var md = "### Okta user unsuspended: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+
+    function unlockUserCommand(){
+        var userId = getUserId(args.username);
+
+        var res = unlockUser(userId);
+
+        var md = "### Okta user unlocked: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function unlockUser(userId){
+        var uri = 'users/' + userId + '/lifecycle/unlock';
+        return sendRequest(uri, 'POST');
+    }
+
+    function deactivateUserCommand() {
+        var userId = getUserId(args.username);
+
+        var res = deactivateUser(userId);
+
+        var md = "### Okta user deactivated: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function deactivateUser(userId){
+        var uri = 'users/' + userId + '/lifecycle/deactivate';
+
+        return sendRequest(uri, 'POST');
+    }
+
+    function activateUserCommand(){
+        var userId = getUserId(args.username);
+
+        var res = activateUser(userId);
+
+        var md = "### Okta user activated: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function activateUser(userId) {
+        var uri = 'users/' + userId + '/lifecycle/activate';
+
+        return sendRequest(uri, 'POST');
+    }
+
+    function getGroupsCommand() {
+        var userId = getUserId(args.username);
+
+        var results = getGroups(userId);
+        var hr = getGroupsHumanReadable(results);
+        var ec = {
+            Group: hr,
+            ID: userId,
+            Type: 'Okta'
+        };
+
+        var md = "### Okta groups for user " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';;
+        md += tableToMarkdown('Groups', hr);
+        return {
+            Type: entryTypes.note,
+            EntryContext: {
+                'Account(val.ID==obj.ID)' : ec
+            },
+            Contents: results,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function getGroupsHumanReadable(results){
+        if(!Array.isArray(results)){
+            results = [results];
+        }
+
+        var groups = [];
+        results.forEach(function(resGroup){
+            var group = {
+                ID: resGroup.id,
+                Created: resGroup.created,
+                ObjectClass: resGroup.objectClass,
+                LastUpdated: resGroup.lastUpdated,
+                LastMembershipUpdated: resGroup.lastMembershipUpdated,
+                Type: resGroup.type,
+                Name: resGroup.profile.name,
+                Description: resGroup.profile.description
+            };
+
+            groups.push(group);
+        });
+
+        return groups;
+    }
+
+    function getGroups(userId) {
+        var uri = 'users/' + userId + '/groups';
+
+        return sendRequest(uri);
+    }
+
+    function listGroupsCommand(){
+        var results = listGroups(args.query, args.filter, args.limit);
+
+        var hr = getGroupsHumanReadable(results);
+
+        return {
+            Type: entryTypes.note,
+            entryContext: {
+                'Okta.Group(val.ID==obj.ID)' : hr
+            },
+            Contents: results,
+            ContentsFormat: formats.json,
+            HumanReadable: tableToMarkdown('Groups', hr)
+        };
+    }
+
+    function listGroups(query, filter, limit){
+        var queryParams = {};
+
+        if(filter){
+            queryParams.filter = filter;
+        }
+
+        if(query){
+            queryParams.q = encodeURIComponent(query);
+        }
+
+        if(limit){
+            queryParams.limit = limit;
+        }
+
+        return getPagedResults('groups', queryParams);
+    }
+
+    function getGroupMembersCommand(){
+        var groupId = args.groupId;
+        var groupName = args.groupName;
+
+        if(!groupId && !groupName){
+            throw 'Missing arguments for command';
+        }
+
+        if(!groupId){
+            groupId = getGroupId(groupName);
+        }
+
+        var members = getGroupMembers(groupId, args.limit);
+        var group = getGroupsHumanReadable(listGroups(groupName)[0]);
+
+        members.forEach(function(member){
+            member.group = group;
+        });
+
+        var md = usersToMarkdown(members, args.verbose);
+        var ec = usersToEntryContext(members);
+
+        var entry = {
+            Type: entryTypes.note,
+            EntryContext: ec,
+            Contents: members,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+
+        return entry;
+    }
+
+    function getGroupMembers(groupId, limit){
+        queryParams = {}
+
+        if(limit){
+            queryParams.limit = limit;
+        }
+
+        return getPagedResults('groups/' + groupId + '/users', queryParams);
+    }
+
+    function addUserToGroupCommand(){
+        var groupId = args.groupId;
+        var userId = args.userId;
+        var username = args.username;
+        var groupName = args.groupName;
+
+        if((!userId && !username) || (!groupId && !groupName)){
+            throw 'Missing arguments for command';
+        }
+
+        if(!userId){
+            userId = getUserId(username);
+        }
+
+        if(!groupId){
+            groupId = getGroupId(groupName);
+        }
+
+        var res = addUserToGroup(userId, groupId);
+
+        return 'Succesfully added user to group';
+    }
+
+    function addUserToGroup(userId, groupId){
+        var uri = 'groups/' + groupId + '/users/' + userId;
+
+        return sendRequest(uri, 'PUT');
+    }
+
+    function removeUserFromGroupCommand(){
+        var groupId = args.groupId;
+        var userId = args.userId;
+        var username = args.username;
+        var groupName = args.groupName;
+
+        if((!userId && !username) || (!groupId && !groupName)){
+            throw 'Missing arguments for command';
+        }
+
+        if(!userId){
+            userId = getUserId(username);
+        }
+
+        if(!groupId){
+            groupId = getGroupId(groupName);
+        }
+
+        var res = removeUserFromGroup(userId, groupId);
+
+        return 'Succesfully removed user from group';
+    }
+
+    function removeUserFromGroup(userId, groupId){
+        var uri = 'groups/' + groupId + '/users/' + userId;
+
+        return sendRequest(uri, 'DELETE');
+    }
+
+    function setPasswordCommand(){
+        var userId = getUserId(args.username);
+
+        var res = setPassword(userId, args.password);
+
+        var md = "### Okta user password set: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat:
+            formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function setPassword(userId, password) {
+        var uri = 'users/' + userId;
+
+        var body =  {
+            "credentials": {
+                "password" : { "value": password }
+            }
+        };
+
+        return sendRequest(uri, 'POST', body);
+    }
+
+    function searchCommand(){
+        var limit = args.limit ? args.limit : DEFAULT_SEARCH_LIMIT;
+        var term = args.term ? encodeURIComponent(args.term) : args.term;
+
+        var res = search(term, limit);
+
+        var md;
+        var ec;
+        if (res && res.length>0) {
+            md = '### Okta users found:\n';
+            md += usersToMarkdown(res, args.verbose);
+            ec = usersToEntryContext(res);
+        }
+        else {
+            md = '### No users found in Okta\n';
+        }
+
+        return {
+            Type: entryTypes.note,
+            EntryContext: ec,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function search(term, limit) {
+        var uri = 'users?q=' + term + '&limit=' + limit;
+
+        return sendRequest(uri);
+    }
+
+    function getUserCommand(){
+        var term = args.username ? encodeURIComponent(args.username) : args.userid;
+
+        if (!term) {
+            throw "You must supply either 'username' or 'userid'";
+        }
+
+        var res = getUser(term);
+
+        var md = '### Okta user:\n';
+        md += usersToMarkdown(res,args.verbose);
+        var ec = usersToEntryContext(res);
+        return {
+            Type: entryTypes.note,
+            EntryContext: ec,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function getUser(term){
+        var uri = 'users/' + term;
+
+        return sendRequest(uri);
+    }
+
+    function createUserCommand(){
+        var cred = buildCredentials(args);
+        var profile = buildProfile(args);
+        var groupIds = args.groupIds;
+        if (groupIds) {
+            groupIds = groupIds.split(',');
+        }
+
+        var activate = false;
+        if (args.activate) {
+            activate = args.activate.toLowerCase() === 'true';
+        }
+
+        var res = createUser(cred, profile, groupIds, activate);
+
+        var md = "### Okta user created: " + args.login + '\n';
+        md += profileToMd(res.profile);
+        var ec = usersToEntryContext(res);
+        return {
+            Type: entryTypes.note,
+            EntryContext: ec,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function createUser(cred, profile, groupIds, activate) {
+        var body = {
+            profile: profile,
+            groupIds: groupIds,
+            credentials: cred
+        };
+
+        var uri = 'users?activate=' + activate;
+        if (cred && cred.provider) {
+            uri += '&provider=true';
+        }
+
+        return sendRequest(uri, 'POST','', body);
+    }
+
+    function updateUserCommand() {
+        var userId = getUserId(args.username);
+        var cred = buildCredentials(args);
+        var profile = buildProfile(args);
+        profile.login = args.username;
+
+        var res = updateUser(userId, profile, cred);
+        var md = "### Okta user updated: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        md += profileToMd(res.profile);
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function updateUser(userId, profile, cred){
+        var body = {
+            profile: profile,
+            credentials: cred
+        };
+
+        var uri = 'users/' + userId;
+
+        return sendRequest(uri, 'POST', '', body);
+    }
+
+    function getLogs(filter, query, since, until, sortOrder, limit)
+    {
+        var queryParams = {};
+
+        if(filter){
+            queryParams.filter =  encodeURIComponent(filter);
+        }
+
+        if(query){
+            queryParams.q = encodeURIComponent(query);
+        }
+
+        if(since){
+            queryParams.since = since;
+        }
+
+        if(until){
+            queryParams.until = until;
+        }
+
+        if(sortOrder){
+            queryParams.sortOrder = sortOrder;
+        }
+
+        if(limit){
+            queryParams.limit = limit;
+        }
+
+        return getPagedResults('logs', queryParams)
+    }
+
+    function getFailedLoginsCommand(){
+        var readableLogs = [];
+        var filter = 'eventType eq "user.session.start" and outcome.result eq "FAILURE"';
+        var logs = getLogs(filter, args.query, args.since, args.until, args.sortOrder, args.limit);
+
+        if(!logs || logs.length === 0){
+            return 'No events found';
+        }
+
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
+        }
+
+        var md = tableToMarkdown("Failed Login events", readableLogs);
+
+        return {
+            Type: entryTypes.note,
+            Contents: logs,
+            ContentsFormat: formats.json,
+            EntryContext: {
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+            },
+            HumanReadable: md
+        };
+    }
+
+    function getGroupAssignmentsCommand(){
+        var readableLogs = [];
+        var filter = 'eventType eq "group.user_membership.add"';
+        var logs = getLogs(filter, args.query, args.since, args.until, args.sortOrder, args.limit);
+
+        if(!logs || logs.length === 0){
+            return 'No events found';
+        }
+
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
+        }
+
+        var md = tableToMarkdown("Group assignment events", readableLogs);
+
+        return {
+            Type: entryTypes.note,
+            Contents: logs,
+            ContentsFormat: formats.json,
+            EntryContext: {
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+            },
+            HumanReadable: md
+        };
+    }
+
+    function getApplicationAssignmentsCommand(){
+        var readableLogs = [];
+        var filter = 'eventType eq "application.user_membership.add"';
+        var logs = getLogs(filter, args.query, args.since, args.until, args.sortOrder, args.limit);
+
+        if(!logs || logs.length === 0){
+            return 'No events found';
+        }
+
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
+        }
+
+        var md = tableToMarkdown("Application assignment events", readableLogs);
+
+        return {
+            Type: entryTypes.note,
+            Contents: logs,
+            ContentsFormat: formats.json,
+            EntryContext: {
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+            },
+            HumanReadable: md
+        };
+    }
+
+    function getApplicationAuthenticationCommand(){
+        var readableLogs = [];
+        var filter = 'eventType eq "user.authentication.sso"';
+        var logs = getLogs(filter, args.query, args.since, args.until, args.sortOrder, args.limit);
+
+        if(!logs || logs.length === 0){
+            return 'No events found';
+        }
+
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
+        }
+
+        var md = tableToMarkdown("Application authentication events", readableLogs);
+
+        return {
+            Type: entryTypes.note,
+            Contents: logs,
+            ContentsFormat: formats.json,
+            EntryContext: {
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+            },
+            HumanReadable: md
+        };
+    }
+
+    function getLogsCommand(){
+        var readableLogs = [];
+        var logs = getLogs(args.filter, args.query, args.since, args.until, args.sortOrder, args.limit);
+
+        if(!logs || logs.length === 0){
+            return 'No events found';
+        }
+
+        for(var i = 0; i < logs.length; i++){
+            readableLogs.push(createReadableLog(logs[i]));
+        }
+
+        var md = tableToMarkdown("Okta events", readableLogs);
+
+        return {
+            Type: entryTypes.note,
+            Contents: logs,
+            ContentsFormat: formats.json,
+            EntryContext: {
+                'Okta.Logs.Events(val.uuid==obj.uuid)' : logs
+            },
+            HumanReadable: md
+        };
+    }
+
+
+    function test() {
+        var uri = 'users/me';
+        var res = sendRequest(uri);
+
+        return res ? 'ok' : 'not ok';
+    }
+
+    var entry;
+    switch (command){
+        case 'test-module':
+            return test();
+        case 'okta-unlock-user':
+            entry = unlockUserCommand();
+            break;
+        case 'okta-deactivate-user':
+            entry = deactivateUserCommand();
+            break;
+        case 'okta-activate-user':
+            entry = activateUserCommand();
+            break;
+        case 'okta-get-groups':
+            entry = getGroupsCommand();
+            break;
+        case 'okta-set-password':
+            entry = setPasswordCommand();
+            break;
+        case 'okta-search':
+            entry = searchCommand();
+            break;
+        case 'okta-get-user':
+            entry = getUserCommand();
+            break;
+        case 'okta-create-user':
+            entry = createUserCommand();
+            break;
+        case 'okta-update-user':
+            entry = updateUserCommand();
+            break;
+        case 'okta-get-failed-logins':
+            entry = getFailedLoginsCommand();
+            break;
+        case 'okta-get-group-assignments':
+            entry = getGroupAssignmentsCommand();
+            break;
+        case 'okta-get-application-assignments':
+            entry = getApplicationAssignmentsCommand();
+            break;
+        case 'okta-get-application-authentication':
+            entry = getApplicationAuthenticationCommand();
+            break;
+        case 'okta-add-to-group':
+            entry = addUserToGroupCommand();
+            break;
+        case 'okta-remove-from-group':
+            entry = removeUserFromGroupCommand();
+            break;
+        case 'okta-get-logs':
+            entry = getLogsCommand();
+            break;
+        case 'okta-list-groups':
+            entry = listGroupsCommand();
+            break;
+        case 'okta-get-group-members':
+            entry = getGroupMembersCommand();
+            break;
+        case 'okta-suspend-user':
+            entry = suspendUserCommand();
+            break;
+        case 'okta-unsuspend-user':
+            entry = unSuspendUserCommand();
+            break;
+    }
+
+
+    return entry;
   type: javascript
   commands:
   - name: okta-unlock-user
@@ -420,7 +1053,7 @@ script:
       required: true
       default: true
       description: Username in Okta to unlock
-    description: 'Unlock user'
+    description: Unlock user
     execution: true
   - name: okta-deactivate-user
     arguments:
@@ -428,7 +1061,7 @@ script:
       required: true
       default: true
       description: Username in Okta to deactivate
-    description: 'Deactivate user'
+    description: Deactivate user
     execution: true
   - name: okta-activate-user
     arguments:
@@ -438,6 +1071,24 @@ script:
       description: Username in Okta to activate
     description: Activate user
     execution: true
+  - name: okta-suspend-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Username in Okta to suspend
+    description: Suspends a user.  This operation can only be performed on users with
+      an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
+    execution: true
+  - name: okta-unsuspend-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Username in Okta to unsuspend
+    description: Unsuspends a user and returns them to the ACTIVE state.  This operation
+      can only be performed on users that have a SUSPENDED status.
+    execution: true
   - name: okta-get-groups
     arguments:
     - name: username
@@ -445,23 +1096,51 @@ script:
       default: true
       description: Username in Okta to get groups for
     outputs:
-    - contextPath: Account.Groups
+    - contextPath: Account.Group
       description: Okta groups the account is associated with
     - contextPath: Account.ID
       description: Okta account ID
+      type: string
     - contextPath: Account.Type
       description: Account type - Okta
+      type: string
+    - contextPath: Account.Group.ID
+      description: Unique key for group
+      type: string
+    - contextPath: Account.Group.Created
+      description: Timestamp when group was created
+      type: date
+    - contextPath: Account.Group.ObjectClass
+      description: Determines the group’s profile
+      type: string
+    - contextPath: Account.Group.LastUpdated
+      description: Timestamp when group’s profile was last updated
+      type: date
+    - contextPath: Account.Group.LastMembershipUpdated
+      description: Timestamp when group’s memberships were last updated
+      type: date
+    - contextPath: Account.Group.Type
+      description: Determines how a group’s profile and memberships are managed
+      type: string
+    - contextPath: Account.Group.Name
+      description: Name of the group
+      type: string
+    - contextPath: Account.Group.Description
+      description: Description of the group
+      type: string
     description: Get all user groups
   - name: okta-set-password
     arguments:
     - name: username
       required: true
       default: true
-      description: Username in Okta to get groups for
+      description: Username in Okta to set the password for
     - name: password
       required: true
       description: The new password to set for the user
-    description: Set a new password for user
+    description: Creates a user without a recovery question & answer  The new user
+      is able to login immediately after activation with the assigned password. This
+      flow is common when developing a custom user registration experience.
     execution: true
   - name: okta-search
     arguments:
@@ -480,14 +1159,19 @@ script:
     outputs:
     - contextPath: Account.ID
       description: Okta account IDs returned by search
+      type: string
     - contextPath: Account.Username
       description: Okta account usernames returned by search
+      type: string
     - contextPath: Account.Email
       description: Okta account emails returned by search
+      type: string
     - contextPath: Accout.DisplayName
       description: Okta account display names returned by search
+      type: string
     - contextPath: Account.Type
       description: Account type returned by search - Okta
+      type: string
     description: Search for Okta users
   - name: okta-get-user
     arguments:
@@ -505,15 +1189,20 @@ script:
     outputs:
     - contextPath: Account.ID
       description: Okta account ID
+      type: string
     - contextPath: Account.Email
       description: Okta account email
+      type: string
     - contextPath: Account.Username
       description: Okta account username
+      type: string
     - contextPath: Account.DisplayName
       description: Okta account display name
+      type: string
     - contextPath: Account.Type
       description: Account type - Okta
-    description: Fetches a specific user when you know the user’s login, please note
+      type: string
+    description: Fetches a specific user given you know the user’s login, please note
       that one of the parameters bellow is mandatory.
   - name: okta-create-user
     arguments:
@@ -524,6 +1213,7 @@ script:
       required: true
       description: Family name of the user (familyName)
     - name: email
+      required: true
       description: primary email address of user
     - name: login
       required: true
@@ -609,18 +1299,23 @@ script:
     outputs:
     - contextPath: Account.ID
       description: Created okta account ID
+      type: string
     - contextPath: Account.Email
       description: Created okta account email
+      type: string
     - contextPath: Account.Username
       description: Created okta account username
+      type: string
     - contextPath: Account.DisplayName
       description: Created okta account display name
+      type: string
     - contextPath: Account.Type
       description: Type of create account - Okta
+      type: string
     description: Creates a new user with an option of setting password, recovery question
-      and answer. The new user will immediately be able to login after activation with
-      the assigned password. This flow is common when developing a custom user registration
-      experience.
+      and answer. The new user will immediately be able to login after activation
+      with the assigned password. This flow is common when developing a custom user
+      registration experience.
     execution: true
   - name: okta-update-user
     arguments:
@@ -709,4 +1404,760 @@ script:
     description: Update user with a given login, all fields are optional, fields which
       are not set will not be overriden
     execution: true
-hidden: false
+  - name: okta-get-failed-logins
+    arguments:
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System the client runs on (e.g. Windows 10)
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: If the client is a web browser, this field identifies the type
+        of web browser (e.g. CHROME, FIREFOX)
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer)
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests this is the id of the OAuth client making the
+        request. For SSWS token requests, this is the id of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: Ip address that the client made its request from
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Get events for when Okta issued a session to a user who is authenticating
+      and the user failed to log-in
+  - name: okta-get-group-assignments
+    arguments:
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System the client runs on (e.g. Windows 10)
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: If the client is a web browser, this field identifies the type
+        of web browser (e.g. CHROME, FIREFOX)
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer)
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests this is the id of the OAuth client making the
+        request. For SSWS token requests, this is the id of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: Ip address that the client made its request from
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Get events for when a user was added to a group.
+  - name: okta-get-application-assignments
+    arguments:
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System the client runs on (e.g. Windows 10)
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: If the client is a web browser, this field identifies the type
+        of web browser (e.g. CHROME, FIREFOX)
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer)
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests this is the id of the OAuth client making the
+        request. For SSWS token requests, this is the id of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: Ip address that the client made its request from
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Get events for when a user was assigned to an application.
+  - name: okta-get-application-authentication
+    arguments:
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System the client runs on (e.g. Windows 10)
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: If the client is a web browser, this field identifies the type
+        of web browser (e.g. CHROME, FIREFOX)
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer)
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests this is the id of the OAuth client making the
+        request. For SSWS token requests, this is the id of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: Ip address that the client made its request from
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Get events for when a user attempted to SSO to an application managed
+      in Okta
+  - name: okta-get-logs
+    arguments:
+    - name: filter
+      description: "An expression filter is useful for performing structured queries
+        where constraints on LogEvent attribute values can be explicitly targeted.
+        \ The following expressions are supported for events with the filter query
+        parameter: eventType eq \":eventType\" -\tEvents that have a specific action;
+        eventType target.id eq \":id\" - Events published with a specific target id;
+        actor.id eq \":id\" - Events published with a specific actor id. For more
+        information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+    - name: query
+      description: 'The query parameter can be used to perform keyword matching against
+        a LogEvents object’s attribute values. In order to satisfy the constraint,
+        all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The
+        following are some examples of common keyword filtering: Events that mention
+        a specific city: query=San Francisco; Events that mention a specific url:
+        query=interestingURI.com; Events that mention a specific person: query=firstName
+        lastName.'
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System the client runs on (e.g. Windows 10)
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: If the client is a web browser, this field identifies the type
+        of web browser (e.g. CHROME, FIREFOX)
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer)
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests this is the id of the OAuth client making the
+        request. For SSWS token requests, this is the id of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: Ip address that the client made its request from
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Get logs by providing optional filters
+  - name: okta-add-to-group
+    arguments:
+    - name: userId
+      description: ID of the user to add
+    - name: groupId
+      description: ID of the group to add the user to
+    - name: username
+      description: Name of the user to add
+    - name: groupName
+      description: Name of the group to add the user to
+    description: Adds a user to a group with OKTA_GROUP type.
+  - name: okta-remove-from-group
+    arguments:
+    - name: userId
+      description: ID of the user to remove
+    - name: groupId
+      description: ID of the group to remove the user from
+    - name: username
+      description: Name of the user to add
+    - name: groupName
+      description: Name of the group to add the user to
+    description: Removes a user from a group with OKTA_GROUP type.
+  - name: okta-list-groups
+    arguments:
+    - name: query
+      description: Searches the name property of groups for matching value
+    - name: filter
+      description: 'An expression filter is useful for performing structured queries
+        where constraints on group attribute values can be explicitly targeted. The
+        following expressions are supported(among others) for groups with the filter
+        query parameter: type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP;
+        lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated
+        before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ"
+        - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK"
+        - Group with a specified id. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering'
+    - name: limit
+      description: Sets the number of results returned in the response.
+      defaultValue: "200"
+    outputs:
+    - contextPath: Okta.Group.ID
+      description: Unique key for the group
+      type: string
+    - contextPath: Okta.Group.Created
+      description: Timestamp for when the group was created
+      type: date
+    - contextPath: Okta.Group.ObjectClass
+      description: The group’s profile
+      type: unknown
+    - contextPath: Okta.Group.LastUpdated
+      description: Timestamp for when the group’s profile was last updated
+      type: date
+    - contextPath: Okta.Group.LastMembershipUpdated
+      description: Timestamp for when the group’s memberships were last updated
+      type: date
+    - contextPath: Okta.Group.Type
+      description: Determines how a group’s profile and memberships are managed -
+        OKTA_GROUP, APP_GROUP and BUILT_IN
+      type: string
+    - contextPath: Okta.Group.Name
+      description: Name of the group
+      type: string
+    - contextPath: Okta.Group.Description
+      description: Description of the group
+      type: string
+    description: Enumerates groups in your organization. A subset of groups can be
+      returned that match a supported filter expression or query.
+  - name: okta-get-group-members
+    arguments:
+    - name: groupId
+      description: Id of the group
+    - name: limit
+      description: Specifies the number of user results
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Print all details of user
+    - name: groupName
+      description: Name of the group
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID
+      type: string
+    - contextPath: Account.Email
+      description: Okta account email
+      type: string
+    - contextPath: Account.Username
+      description: Okta account username
+      type: string
+    - contextPath: Account.DisplayName
+      description: Okta account display name
+      type: string
+    - contextPath: Account.Type
+      description: Account type - Okta
+      type: string
+    description: Enumerates all users that are members of a group
+  runonce: false
+fromversion: 3.6.0

@@ -1,0 +1,489 @@
+commonfields:
+  id: Proofpoint TAP
+  version: -1
+name: Proofpoint TAP
+display: Proofpoint TAP
+category: Email Gateway
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAACHtJREFUeAHtmHls1UUQxx8KyI1AiiCHpoIkRA0QowSiIRKJyB+igChqMJEoGiNi8IBIsEgUEoxBSRS8SBQFBbWGwwO8QhBNOAppidJCoVQoFChHC6XS+vludx/Lj0d9fbYEyk74vpmdmZ3Znd3f7pZYLFCoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQKhAqECoQEOsQKOGOKnInJrSHn5ZLNYf3qIyFlsPfy/iUx/N0eTsrcDkXAzLqY8kl3rMRhR57uWxWJUDO/qn81EU8ix3Ock3OsWc9zL+hQL9h6cSo3EqnS6iPh0Z6xiNtyoWOwl+Az+ej/GzwCXkKrW5TqSYsx9xzPjpnwu+rm2culhgNmqsGxAvBMlMphN+xyxghprx2xk0B0fB3+AUOBddgeFqIH/Fkv8/wCfZ5KcF3goGSa6BumOTv2K5xUnkrmNfuVtYP/lXgDhxLE+g8ZJVFMcNZwutULUGynckYi732r7sqetW7MKOWgFWE3YGGIC8hiPkKCgFW9A97qXshH2Z9Z+GvhfySvwOII+1fm3hr6DLBopTDkrw+wP9eBDdhCrIy/hs8fwP46+79Rmg4osy0K3FpwJUAsXUuDNAS+Qltj2Xdl/k7/E5DDSPv9C9AKK5taAv4puFzxGgsSr3RvTPAW1SR1PRfyegGGiV82mvBpm0+9L3bbAdHAD54H30aaA58mL88uAaeyVyrvpiuxHUG11PslO6W+CFoNjdMz4nu9u56ficlI3BrUfe7PzwGQfaoP/V6RJx+nyEXxMgaov/qkR+Tof/Z/g1xs/cgbRNgZwd/UrFQV8iHbwYFDq7z9G/qaSWWtN3hW+PytiX4qtTI4b8jbPTHGl1OdIRV2NKmBP75/hqfIc830ov1iDFqi/qSeIylwx5D4kmgYeQPwVmIHAdmT1AV+SjbqCWFzD5LGxDsc30YhWg0xc4DH2G6yc7usdADN3rnr+OxYlgGJiKzSyY9X8K3Q3gEfTHpSNnHu0h4CbQAf0+L1YJuqlgDPp5oEI2uI589/VN8/z3oX8eKPdk/A46G23VQwu8xNPdZ3WbnI4+Oo6nA+VcAPza9UQ/UHrP/0N0g8GVoN4ovsAk151zl5+JSWW6AaFXATriZxZYeuTZ6NoDmsZWZPW6X+4APk10sYi7BkN7+u+y/sqt4vo03vPXkSnqQp9j0hNjU7XK/KahNwsM57qMXxfGiG6+i4U8B2VTeJ7NfYr2CON4+udRxbH2bNQ6Qb5wMWiftcDodP04akb/7V78m61hihfDnYquT1KcuClTPj1/9nvzqel4MUTgPgiMr5qwFVPJmbQOAhWpB0XQK1efqO68XyR79BV6nQT6GtJh/UEntaEdYJWRTv9k4n9ITevfGdG/Q1Gf0ZarSO+BFUayP4xzkWsTszfydaCr1RXAv7WyY8sQim3jWrjeHppjQiKmbGs94wl0rr/UGqvIH78vV1uT+E15gRmQCnMikqPItbG3Rvbj60g67uxw/6jR5KIFkb9ZYLhetlows2GIrU2ir94n+aqPqBloBXD9TzqMR2nEq5iObjwtsbUH5h1gc/vzUFf1VxyRxqq515RbNreIiEb229LVCfkLUKuAjKYtHdzjx/Sl+u1cEOz6U0fHnyNNwJ+E7I7ULzoWFVYQnQS690w8gmhzNAU+taChwoq0+GXAzyd9ItJG0IbwSXNz49Hi6WTQfayAyh3118PK5dZYtdmSyY1b/ZKbRCpZ0unkHiCmP9syfjexElko3VeQKP42/A/IQCV6wW6JOA1Fb4qG305s64AWWaTcA4x0+mcI/vrSRPlAp4n54uE1ka6JO30HijKCWPwzP1theWCP2lA3cLuR7A9JBiMqjqgA7GXMyeQ2HZL8MRssSd+4W8oLzOz18FhApCfA3cjvwEcBnU06wjJB9CuT2dFehC/VIJYeGQsQHwS3gqdpvwY3RLxPEPaDJVLg3wT7B4gPA/mPpz0bbojN9TGCCmIWqVqb+BcH89+ZWJ8FetnPgj8pb/JWEWspok6ERdLh3xifdxHHAuUeh98cxUHWEbMQpkcgbv+b4h8Iu6Uf0W4DbWzULvAOVq4z5r+iDzID8zcuyeP/1ysZ/XSbUX8Hn7C6AnQ6Dn3qTFU2RPv7bewqsDsS02iv8+1RGfty/N3R3oP85fJBn4PePVT8V7T+w6I0Gkdt9PPoQ1dD7RBq/Jsd+w94mlMH2f+LYqQioMt2eWj2kc5SI2wbPZs7zUY6neP46+RKB6+CSUDXyTmJOaRG7NpsdusD8BxwClSB3Wy5yegzbNRydBtoZ8E3o0M8g/agHwreAgXAHENw9fuTWFPg+krdY24/7WHgDbAT6EvRl6b/Z96G/zT4/ah0b4ri+ZGzAeazqJBBjQLrMVYAzaMIzEQ3wetzCN09YBbYAfzcebRnAF1R5m3BguXSP0tApztcn7RqJt0GmmXSOcI/x9o2oXPjX0HMuUDxdezvxqbTEdFwppxwTqiribi1In3BWXRqzmB+J0t/eutr6QmagO3gAPCJzRcnDehcpIdWd6AHyxGQD84oAm2ftHOvAXpcqaj5wBUGMU6J8usLzmYeacwhj7n0wlt+4sq/ExSBc5GOSeXW3PWgkr9ZWLgjfTykMEQKsxD+WJzOupgjPervbJqjTjHVT/nErwK6OkpAnVH8iGYk6+os6vkP5B/RuaRXARskaZfVltwuc7y2/S8Ufzd+xy+UcdXpONyjI9mgnGixMn7E3b2YbN8Lyc/NQ/eZ0GCptrtX92w3oC9fC6xL/2Ik3YW678X1WNoFtOiBQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgVCBUIFQgUuoQr8C4/kmRLXPZUVAAAAAElFTkSuQmCC
+description: Proofpoint's Targeted Attack Protection (TAP) helps protect against and
+  provide additional visibility into phishing and other malicious email attacks.
+configuration:
+- display: 'Server URL (e.g: https://tap-api-v2.proofpoint.com)'
+  name: url
+  defaultvalue: https://tap-api-v2.proofpoint.com
+  type: 0
+  required: true
+- display: API Version (v1, v2)
+  name: apiVersion
+  defaultvalue: v2
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: 'A string specifying which threat type will be returned in the data. If
+    no value is specified, all threat types are returned. The following values are
+    accepted: url, attachment, messageText'
+  name: threatType
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: 'A string specifying which threat statuses will be returned in the data.
+    If no value is specified, active and cleared threats are returned. The following
+    values are accepted: active, cleared, falsePositive'
+  name: threatStatus
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Events to fetch (All, Issues, Blocked Clicks,  Permitted Clicks,  Blocked
+    Messages, Delivered Messages)
+  name: eventTypes
+  defaultvalue: All
+  type: 0
+  required: false
+script:
+  script: |-
+    /**
+     * Returns true if string starts with search string
+     * @param {String} search - string to check
+     * @return {Boolean} true if string starts with <search> string
+     */
+    if (!String.prototype.startsWith) {
+        String.prototype.startsWith = function(search, pos) {
+            return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+        };
+    }
+
+    /**
+     * Returns true if string ends with search string
+     * @param {String} search - string to check
+     * @return {Boolean} true if string ends with <search> string
+     */
+    if (!String.prototype.endsWith) {
+        String.prototype.endsWith = function(search, this_len) {
+            if (this_len === undefined || this_len > this.length) {
+                this_len = this.length;
+            }
+            return this.substring(this_len - search.length, this_len) === search;
+        };
+    }
+
+    /**
+     * Returns true if the object is in the array
+     * @param {searchElement} element to search for
+     * @param {fromIndex} starting indext in the array to start the search from
+     * @return {Boolean} true if object is in the array
+     * Source: https://tc39.github.io/ecma262/#sec-array.prototype.includes
+     */
+    if (!Array.prototype.includes) {
+      Object.defineProperty(Array.prototype, 'includes', {
+        value: function(searchElement, fromIndex) {
+
+          if (this == null) {
+            throw new TypeError('"this" is null or not defined');
+          }
+
+          // 1. Let O be ? ToObject(this value).
+          var o = Object(this);
+
+          // 2. Let len be ? ToLength(? Get(O, "length")).
+          var len = o.length >>> 0;
+
+          // 3. If len is 0, return false.
+          if (len === 0) {
+            return false;
+          }
+
+          // 4. Let n be ? ToInteger(fromIndex).
+          //    (If fromIndex is undefined, this step produces the value 0.)
+          var n = fromIndex | 0;
+
+          // 5. If n ≥ 0, then
+          //  a. Let k be n.
+          // 6. Else n < 0,
+          //  a. Let k be len + n.
+          //  b. If k < 0, let k be 0.
+          var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+          function sameValueZero(x, y) {
+            return x === y || (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y));
+          }
+
+          // 7. Repeat, while k < len
+          while (k < len) {
+            // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+            // b. If SameValueZero(searchElement, elementK) is true, return true.
+            if (sameValueZero(o[k], searchElement)) {
+              return true;
+            }
+            // c. Increase k by 1.
+            k++;
+          }
+
+          // 8. Return false
+          return false;
+        }
+      });
+    }
+
+    var FILTER_ARGS_LIST = Object.freeze(["all", "issues", "blockedclicks", "permittedclicks", "blockedmessages", "deliveredmessages"]);
+    var ISSUES = Object.freeze(["permittedclicks", "deliveredmessages"]);
+
+    function fixUrl(url) {
+        if (url.endsWith('/')) {
+            return url.slice(0, -1);
+        }
+
+        return url;
+    }
+    var SERVER_URL = fixUrl(params.url) + '/' + params.apiVersion + '/siem';
+
+
+    function httpGet(path) {
+        var requestUrl = SERVER_URL + path;
+
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Username: params.credentials.identifier,
+                Password: params.credentials.password
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nRequest URL: ' + requestUrl +'\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return JSON.parse(res.Body);
+    }
+
+
+    function parseFilterElement(e) {
+        clean = e.toLowerCase().replace(/\s/g, '');
+        if (!FILTER_ARGS_LIST.includes(clean)) {
+            throw "Invalid event type: " + e;
+        }
+        return clean;
+    }
+
+
+    function parseFilter(filter) {
+        var filterList = [];
+        var rawFilterList = filter.split(",");
+        if (rawFilterList.length === 1 && filterList[0] === '') {
+            return ["all"];
+        }
+
+        return rawFilterList.map(parseFilterElement);
+    }
+
+    function shouldGetEvent(eventType, filter) {
+        return filter.includes("all") || (filter.includes("issues") && ISSUES.includes(eventType)) || filter.includes(eventType);
+    }
+
+    function getEvents() {
+        var filter = parseFilter(args.eventTypes);
+        var events = getEventsRequest(args.interval, args.sinceTime, args.sinceSeconds, args.threatType, args.threatStatus);
+
+        // human readable
+        var hrEvents = {};
+        var messagesDeliveredOutput = [];
+        var messagesBlockedOutput = [];
+        var clicksPermittedOutput = [];
+        var clicksBlockedOutput = [];
+
+        // output to context
+        var eventsMarkdownString = '';
+        if (events) {
+            // convert events to demisto incidents
+            if (shouldGetEvent("deliveredmessages", filter) && events.messagesDelivered && events.messagesDelivered.length > 0) {
+                for (var i = 0; i < events.messagesDelivered.length; i++) {
+                    var event = events.messagesDelivered[i];
+                    messagesDeliveredOutput.push(event);
+                }
+
+                eventsMarkdownString += tableToMarkdown('Messages Delivered', messagesDeliveredOutput, [
+                  'GUID',
+                  'ccAddresses',
+                  'fromAddress',
+                  'impostorScore',
+                  'malwareScore',
+                  'messageID',
+                  'messageTime',
+                  'sender',
+                  'senderIP',
+                  'spamScore',
+                  'subject'
+
+                ]);
+            }
+
+            if (shouldGetEvent("blockedmessages", filter) && events.messagesBlocked && events.messagesBlocked.length > 0) {
+                for (var i = 0; i < events.messagesBlocked.length; i++) {
+                    var event = events.messagesBlocked[i];
+                    messagesBlockedOutput.push(event);
+                }
+
+                eventsMarkdownString += tableToMarkdown('Messages Blocked', messagesBlockedOutput, [
+                  'GUID',
+                  'ccAddresses',
+                  'fromAddress',
+                  'impostorScore',
+                  'malwareScore',
+                  'messageID',
+                  'messageTime',
+                  'sender',
+                  'senderIP',
+                  'spamScore',
+                  'subject'
+                ]);
+            }
+
+            if (shouldGetEvent("permittedclicks", filter) && events.clicksPermitted && events.clicksPermitted.length > 0) {
+                for (var i = 0; i < events.clicksPermitted.length; i++) {
+                    var event = events.clicksPermitted[i];
+                    clicksPermittedOutput.push(event);
+                }
+
+                eventsMarkdownString += tableToMarkdown('Clicks Permitted', clicksPermittedOutput);
+            }
+
+            if (shouldGetEvent("blockedclicks", filter) && events.clicksBlocked && events.clicksBlocked.length > 0) {
+                for (var i = 0; i < events.clicksBlocked.length; i++) {
+                    var event = events.clicksBlocked[i];
+                    clicksBlockedOutput.push(event);
+                }
+
+                eventsMarkdownString += tableToMarkdown('Clicks Blocked', clicksBlockedOutput);
+            }
+        }
+
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: events,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: eventsMarkdownString,
+            EntryContext: {
+                'Proofpoint.MessagesDelivered': messagesDeliveredOutput,
+                'Proofpoint.MessagesBlocked': messagesBlockedOutput,
+                'Proofpoint.ClicksPermitted': clicksPermittedOutput,
+                'Proofpoint.ClicksBlocked': clicksBlockedOutput
+            }
+        };
+    }
+
+    function getEventsRequest(interval, sinceTime, sinceSeconds, threatType, threatStatus) {
+        if (!interval && !sinceTime && !sinceSeconds) {
+            throw 'Required to pass interval or sinceTime or sinceSeconds.';
+        }
+
+        var queryParams = {
+            format: 'json'
+        };
+
+        if (interval) {
+            queryParams.interval = interval;
+        }
+        if (sinceTime) {
+            queryParams.sinceTime = sinceTime;
+        }
+        if (sinceSeconds) {
+            queryParams.sinceSeconds = sinceSeconds;
+        }
+        if (threatType) {
+            queryParams.threatType = threatType;
+        }
+        if (threatStatus) {
+            queryParams.threatStatus = threatStatus;
+        }
+
+        var events = httpGet('/all' + encodeToURLQuery(queryParams));
+        return events;
+    }
+
+    function dateToISO8601(date) {
+        return date.toISOString().replace(/\.\d{3}/,'');
+    }
+
+    var results;
+    var globalFilter = parseFilter(params.eventTypes);
+    switch(command) {
+        case 'test-module':
+            // the test will get the last 10 minutes events
+            // we just make sure the response is 200 and the username password are valid.
+            var last10minutes = 10 * 60;
+            try {
+                getEventsRequest(null, null, last10minutes, null, null);
+            } catch (err) {
+                throw 'Test failed. Failed to fetch last 10 minutes events. Original error: ' + err;
+            }
+
+            return 'ok';
+        case 'fetch-incidents':
+            var now = new Date();
+            var lastRun = getLastRun();
+
+            var events;
+            if (lastRun && lastRun.notFirstTimeRun) {
+                 // if fetch run for the first time, we fetch the events in last half an hour
+                 var last1minute = 1 * 60;
+                 events = getEventsRequest(null, null, last1minute, params.threatType, params.threatStatus);
+            } else {
+                // if fetch run for the first time, we fetch the events in last half an hour
+                var last30minutes = 30 * 60;
+                events = getEventsRequest(null, null, last30minutes, params.threatType, params.threatStatus);
+            }
+
+            var incidents = [];
+            if (events) {
+                // convert events to demisto incidents
+                if (shouldGetEvent("deliveredmessages", globalFilter) && events.messagesDelivered && events.messagesDelivered.length > 0) {
+                    for (var i = 0; i < events.messagesDelivered.length; i++) {
+                        var event = events.messagesDelivered[i];
+                        event.type = 'messages delivered';
+                        var incident = {
+                            name: 'Proofpoint - Message Delivered - ' + event.GUID,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                    }
+                }
+
+                if (shouldGetEvent("blockedmessages", globalFilter) && events.messagesBlocked && events.messagesBlocked.length > 0) {
+                    for (var i = 0; i < events.messagesBlocked.length; i++) {
+                        var event = events.messagesBlocked[i];
+                        event.type = 'messages blocked';
+                        var incident = {
+                            name: 'Proofpoint - Message Blocked - ' + event.GUID,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                    }
+                }
+
+                if (shouldGetEvent("permittedclicks", globalFilter) && events.clicksPermitted && events.clicksPermitted.length > 0) {
+                    for (var i = 0; i < events.clicksPermitted.length; i++) {
+                        var event = events.clicksPermitted[i];
+                        event.type = 'clicks permitted';
+                        var incident = {
+                            name: 'Proofpoint - Click Permitted - '  + event.GUID,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                    }
+                }
+
+                if (shouldGetEvent("blockedclicks", globalFilter) && events.clicksBlocked && events.clicksBlocked.length > 0) {
+                    for (var i = 0; i < events.clicksBlocked.length; i++) {
+                        var event = events.clicksBlocked[i];
+                        event.type = 'clicks blocked';
+                        var incident = {
+                            name: 'Proofpoint - Click Blocked - '  + event.GUID,
+                            rawJSON: JSON.stringify(event)
+                        };
+
+                        incidents.push(incident);
+                    }
+                }
+
+            }
+
+            // set the next run time
+            setLastRun({
+                notFirstTimeRun: true
+            });
+
+            return JSON.stringify(incidents);
+        case 'proofpoint-get-events':
+            results = getEvents();
+            break;
+    }
+
+    return results;
+  type: javascript
+  commands:
+  - name: proofpoint-get-events
+    arguments:
+    - name: interval
+      description: 'A string containing an ISO8601-formatted interval. If this interval
+        overlaps with previous requests for data, records from the previous request
+        may be duplicated. The minimum interval is thirty seconds. The maximum interval
+        is one hour. Examples:  2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour
+        interval, beginning at noon UTC on 05-01-2016 PT30M/2016-05-01T12:30:00Z -
+        the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm
+        UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using
+        -0700 as the time zone'
+    - name: threatType
+      auto: PREDEFINED
+      predefined:
+      - url
+      - attachment
+      - messageText
+      description: 'A string specifying which threat type will be returned in the
+        data. If no value is specified, all threat types are returned. The following
+        values are accepted: url,attachment, messageText'
+    - name: threatStatus
+      auto: PREDEFINED
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      description: 'A string specifying which threat statuses will be returned in
+        the data. If no value is specified, active and cleared threats are returned.
+        The following values are accepted:  active, cleared, falsePositive'
+    - name: sinceTime
+      description: 'A string containing an ISO8601 date. It represents the start of
+        the data retrieval period. The end of the period is determined by current
+        API server time rounded to the nearest minute. If JSON output is selected,
+        the end time is included in the returned result. Example: 2016-05-01T12:00:00Z'
+    - name: sinceSeconds
+      description: 'An integer representing a time window in seconds from the current
+        API server time. The start of the window is the current API server time, rounded
+        to the nearest minute, less the number of seconds provided. The end of the
+        window is the current API server time rounded to the nearest minute. If JSON
+        output is selected, the end time is included in the returned result.'
+    - name: eventTypes
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Issues
+      - DeliveredMessages
+      - BlockedMessages
+      - PermittedClicks
+      - BlockedClicks
+      description: Type of events to get
+      defaultValue: All
+    description: Fetch events for all click and message relating to known threats
+      within the specified time period. Details as per clicks/blocked.
+  isfetch: true
+  runonce: false

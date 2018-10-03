@@ -1,0 +1,464 @@
+id: nexpose_test
+version: -1
+name: Nexpose test
+description: Playbook test for Nexpose integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98ddf65c-717d-4749-8599-124c1edc125d
+    type: start
+    task:
+      id: 98ddf65c-717d-4749-8599-124c1edc125d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 2e5c1e1f-bdd0-42d8-8c44-1c4f52e0044e
+    type: regular
+    task:
+      id: 2e5c1e1f-bdd0-42d8-8c44-1c4f52e0044e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: ace4cdd2-76a7-4335-8bf8-f67ed1747eaa
+    type: regular
+    task:
+      id: ace4cdd2-76a7-4335-8bf8-f67ed1747eaa
+      version: -1
+      name: nexpose-get-assets
+      description: Returns all assets for which you have access.
+      script: Rapid7 Nexpose|||nexpose-get-assets
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 9231d489-297d-4823-86e2-95c1a28c886e
+    type: regular
+    task:
+      id: 9231d489-297d-4823-86e2-95c1a28c886e
+      version: -1
+      name: nexpose-search-assets
+      description: Returns all assets for which you have access that match the given
+        search criteria.
+      script: Rapid7 Nexpose|||nexpose-search-assets
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      hostNameIs:
+        simple: ${Nexpose.Asset.Name}
+      ipAddressIs: {}
+      limit: {}
+      match: {}
+      query: {}
+      riskScoreHigherThan: {}
+      siteIdIn: {}
+      sort: {}
+      vulnerabilityTitleContains: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 15446f3f-d228-4225-8a51-ad679d88bfe0
+    type: regular
+    task:
+      id: 15446f3f-d228-4225-8a51-ad679d88bfe0
+      version: -1
+      name: nexpose-get-asset
+      description: Returns the specified asset.
+      script: Rapid7 Nexpose|||nexpose-get-asset
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Asset.AssetId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 01069902-746c-4b83-83a4-223c1116b7f5
+    type: regular
+    task:
+      id: 01069902-746c-4b83-83a4-223c1116b7f5
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: IP, OS, HostName
+      path:
+        simple: Endpoint
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: ac909c39-cb29-4bf6-854a-9161b2be572a
+    type: regular
+    task:
+      id: ac909c39-cb29-4bf6-854a-9161b2be572a
+      version: -1
+      name: nexpose-create-assets-report
+      description: Generates a new report on given assets according to a template
+        and arguments.
+      script: Rapid7 Nexpose|||nexpose-create-assets-report
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      assets:
+        simple: ${Nexpose.Asset.AssetId}
+      format: {}
+      name: {}
+      template: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 0331bfef-4f75-4571-800d-85b210e4681e
+    type: regular
+    task:
+      id: 0331bfef-4f75-4571-800d-85b210e4681e
+      version: -1
+      name: nexpose-get-asset-vulnerability
+      description: Returns the details and possible remediations for an asset's given
+        vulnerability.
+      script: Rapid7 Nexpose|||nexpose-get-asset-vulnerability
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Asset.AssetId}
+      vulnerabilityId:
+        simple: ${Nexpose.Asset.Vulnerability.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 3a8e6d0f-d76f-4f5a-8438-acc561205d5a
+    type: regular
+    task:
+      id: 3a8e6d0f-d76f-4f5a-8438-acc561205d5a
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Type
+      path:
+        simple: Nexpose.Asset.Vulnerability.Solution
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: b7cfb3fa-f4dd-47bd-88a5-3e13492ff37d
+    type: regular
+    task:
+      id: b7cfb3fa-f4dd-47bd-88a5-3e13492ff37d
+      version: -1
+      name: nexpose-search-assets
+      description: Returns all assets for which you have access that match the given
+        search criteria.
+      script: Rapid7 Nexpose|||nexpose-search-assets
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      hostNameIs: {}
+      ipAddressIs: {}
+      limit: {}
+      match: {}
+      query:
+        simple: host-name is ${Nexpose.Asset.Name}
+      riskScoreHigherThan: {}
+      siteIdIn: {}
+      sort: {}
+      vulnerabilityTitleContains: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 57398db9-47fd-485b-8226-e28641d73a4e
+    type: regular
+    task:
+      id: 57398db9-47fd-485b-8226-e28641d73a4e
+      version: -1
+      name: nexpose-create-assets-report-xml
+      description: Generates a new report on given assets according to a template
+        and arguments.
+      script: Rapid7 Nexpose|||nexpose-create-assets-report
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      assets:
+        simple: ${Nexpose.Asset.AssetId}
+      format:
+        simple: xml
+      name: {}
+      template: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: a548d7a3-9758-4a39-8302-05f609568e8a
+    type: regular
+    task:
+      id: a548d7a3-9758-4a39-8302-05f609568e8a
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      expectedValue:
+        simple: '["pdf","xml"]'
+      fields: {}
+      path:
+        simple: InfoFile.Extension
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 0b21d1e7-ee8f-45ca-8ef4-92f185737153
+    type: regular
+    task:
+      id: 0b21d1e7-ee8f-45ca-8ef4-92f185737153
+      version: -1
+      name: nexpose-create-site
+      description: Creates a new site with the specified configuration.
+      script: Rapid7 Nexpose|||nexpose-create-site
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      assets:
+        simple: ${Endpoint.IP}
+      description: {}
+      importance: {}
+      name:
+        simple: test_playbook_site
+      scanTemplateId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: bc8aa772-137e-43de-8534-7acda0ab56f6
+    type: regular
+    task:
+      id: bc8aa772-137e-43de-8534-7acda0ab56f6
+      version: -1
+      name: nexpose-delete-site
+      description: Delete a site
+      script: Rapid7 Nexpose|||nexpose-delete-site
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Site.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2340,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

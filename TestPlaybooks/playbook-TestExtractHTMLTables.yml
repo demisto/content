@@ -1,0 +1,448 @@
+id: TestExtractHTMLTables
+version: -1
+name: TestExtractHTMLTables
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 27097a72-8399-4e27-85f5-897c27106ce3
+    type: start
+    task:
+      id: 27097a72-8399-4e27-85f5-897c27106ce3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 4447dd62-1e51-483b-802f-202205b781f4
+    type: regular
+    task:
+      id: 4447dd62-1e51-483b-802f-202205b781f4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 6cc1640f-24df-4b6a-8cf2-5d2daaac5c57
+    type: regular
+    task:
+      id: 6cc1640f-24df-4b6a-8cf2-5d2daaac5c57
+      version: -1
+      name: ExtractHTMLTables with single one column table with header
+      description: |-
+        Find tables inside HTML and extract the contents into objects using the following logic:
+        - If table has a single column, just create an array of strings from the values
+        - If table has 2 columns and has no header row, treat the first column as key and second as value and create a table of key/value
+        - If table has a header row, create a table of objects where attribute names are the headers
+        - If table does not have a header row, create table of objects where attribute names are cell1, cell2, cell3...
+      scriptName: ExtractHTMLTables
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      html:
+        simple: <html><body><table><tr><th>kuku</th></tr><tr><td>a</td></tr><tr><td>1</td></tr></table></body></html>
+      indexes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 9f902e22-b34e-4559-8238-8752c1afda3e
+    type: condition
+    task:
+      id: 9f902e22-b34e-4559-8238-8752c1afda3e
+      version: -1
+      name: Both values exist in array
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        simple: '${HTMLTables=>val[0] == ''a'' && val[1] == ''1'' ? ''x'' : ''''}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 4861114d-746b-4d17-8a2f-3a730474a3eb
+    type: regular
+    task:
+      id: 4861114d-746b-4d17-8a2f-3a730474a3eb
+      version: -1
+      name: Close
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes:
+        simple: All good
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2295
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 50da60bb-61ac-4ad6-8f89-8f43eb32cb9f
+    type: regular
+    task:
+      id: 50da60bb-61ac-4ad6-8f89-8f43eb32cb9f
+      version: -1
+      name: Bad
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "6":
+    id: "6"
+    taskid: f3996270-b954-45af-8c5a-2aa642158c5d
+    type: regular
+    task:
+      id: f3996270-b954-45af-8c5a-2aa642158c5d
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 6c97d562-b5ba-4ae3-8247-dff72f8e60f4
+    type: regular
+    task:
+      id: 6c97d562-b5ba-4ae3-8247-dff72f8e60f4
+      version: -1
+      name: ExtractHTMLTables with single one column table without header
+      description: |-
+        Find tables inside HTML and extract the contents into objects using the following logic:
+        - If table has a single column, just create an array of strings from the values
+        - If table has 2 columns and has no header row, treat the first column as key and second as value and create a table of key/value
+        - If table has a header row, create a table of objects where attribute names are the headers
+        - If table does not have a header row, create table of objects where attribute names are cell1, cell2, cell3...
+      scriptName: ExtractHTMLTables
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      html:
+        simple: <html><body><table><tr><td>a</td></tr><tr><td>1</td></tr></table></body></html>
+      indexes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 895
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 5b223b46-ef77-4705-8235-ed9f1914284b
+    type: condition
+    task:
+      id: 5b223b46-ef77-4705-8235-ed9f1914284b
+      version: -1
+      name: Both values exist in array
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        simple: '${HTMLTables=>val[0] == ''a'' && val[1] == ''1'' ? ''x'' : ''''}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 1070
+        }
+      }
+  "9":
+    id: "9"
+    taskid: b00906ec-8c99-4640-8e94-b27ab0d4d6ad
+    type: regular
+    task:
+      id: b00906ec-8c99-4640-8e94-b27ab0d4d6ad
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1245
+        }
+      }
+  "10":
+    id: "10"
+    taskid: b8d9b854-ff36-42b8-8b13-a246e05eb894
+    type: regular
+    task:
+      id: b8d9b854-ff36-42b8-8b13-a246e05eb894
+      version: -1
+      name: ExtractHTMLTables with two columns and no headers
+      description: |-
+        Find tables inside HTML and extract the contents into objects using the following logic:
+        - If table has a single column, just create an array of strings from the values
+        - If table has 2 columns and has no header row, treat the first column as key and second as value and create a table of key/value
+        - If table has a header row, create a table of objects where attribute names are the headers
+        - If table does not have a header row, create table of objects where attribute names are cell1, cell2, cell3...
+      scriptName: ExtractHTMLTables
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      html:
+        simple: <html><body><table><tr><td>a</td><td>1</td></tr><tr><td>b</td><td>2</td></tr></table></body></html>
+      indexes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1420
+        }
+      }
+  "11":
+    id: "11"
+    taskid: f84d4e7d-ba50-4356-84a5-2b1d6bfe975b
+    type: condition
+    task:
+      id: f84d4e7d-ba50-4356-84a5-2b1d6bfe975b
+      version: -1
+      name: Both objects exist
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    scriptarguments:
+      value:
+        simple: ${HTMLTables(val.a == '1' && val.b == '2')}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1595
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 1d36419e-6dec-413b-8a0c-1cfe0821c9be
+    type: regular
+    task:
+      id: 1d36419e-6dec-413b-8a0c-1cfe0821c9be
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1770
+        }
+      }
+  "13":
+    id: "13"
+    taskid: e2a761e1-7877-458f-8efd-a1387983208b
+    type: regular
+    task:
+      id: e2a761e1-7877-458f-8efd-a1387983208b
+      version: -1
+      name: ExtractHTMLTables with two columns and headers
+      description: |-
+        Find tables inside HTML and extract the contents into objects using the following logic:
+        - If table has a single column, just create an array of strings from the values
+        - If table has 2 columns and has no header row, treat the first column as key and second as value and create a table of key/value
+        - If table has a header row, create a table of objects where attribute names are the headers
+        - If table does not have a header row, create table of objects where attribute names are cell1, cell2, cell3...
+      scriptName: ExtractHTMLTables
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      html:
+        simple: <html><body><table><tr><th>kuku</th><th>kaka</th></tr><tr><td>a</td><td>1</td></tr><tr><td>b</td><td>2</td></tr></table></body></html>
+      indexes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1945
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 2d78f082-e841-47f2-86e1-0e6d59f8d90f
+    type: condition
+    task:
+      id: 2d78f082-e841-47f2-86e1-0e6d59f8d90f
+      version: -1
+      name: All objects exist
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${HTMLTables(val.kuku == 'a' && val.kaka == '1' || val.kuku == 'b'
+          && val.kaka == '2')}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 2120
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2340,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

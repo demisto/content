@@ -1,0 +1,411 @@
+commonfields:
+  id: WildFire
+  version: -1
+name: WildFire
+fromversion: 2.5.0
+toversion: 3.1.0
+display: Palo Alto WildFire
+category: Forensics & Malware Analysis
+image: data:image/png;base64,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
+description: Perform malware dynamic analysis
+detaileddescription: |-
+  Don’t have a WildFire API key?
+  Go to your WildFire account,
+  Login to: https://wildfire.paloaltonetworks.com/wildfire/account
+  Select the “Account” tab
+  Copy your API Key
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
+  type: 0
+  required: true
+- display: API Key
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |+
+    var urlDict = {
+        upload: '/submit/file',
+        report: '/get/report',
+        remoteFile: '/submit/url'
+      };
+
+    var errorDict = {
+        401 : 'Unauthorized API key invalid',
+        404 : 'Not Found The report was not found',
+        405 : 'Method Not Allowed Method other than POST used',
+        413 : 'Request Entity Too Large Sample file size over max limit',
+        418 : 'Unsupported File Type Sample file type is not supported',
+        419 : 'Request quota exceeded',
+        420 : 'Insufficient arguments',
+        421 : 'Invalid arguments',
+        500 : 'Internal error',
+        513 : 'File upload failed'
+
+      };
+
+    function sendRequest(url, body, headers) {
+        url.replace(/[\/]+$/, '');
+        var res = http(
+            url,
+            {
+                Method: 'POST',
+                Body: body,
+                Headers: headers
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode !==200) {
+          if(res.StatusCode === 404){
+            return undefined;
+          }
+          else{
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
+          }
+        }
+
+        return res.Body;
+    }
+
+    var sendMultipartRequest = function(url, headers, file, body) {
+        var res = httpMultipart(
+          url,
+          file,
+          {
+            Method: 'POST',
+            Headers: headers,
+          },
+          body,
+          params.insecure,
+          params.proxy
+        );
+
+        if (res.StatusCode !==200) {
+          throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return JSON.parse(x2j(res.Body));
+    };
+
+    function createEntry(body, title, result, verbose, report) {
+        var md = tableToMarkdown(title, body, Object.keys(body));
+        if (verbose) {
+            for (var i = 0; i < report.length; i++) {
+                md += tableToMarkdown('Report ' + i, report[i], Object.keys(report[i]));
+            }
+        }
+        return {Type: entryTypes.note,
+                Contents: result,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                ReadableContentsFormat : formats.markdown
+        };
+    }
+
+    function uploadFile(upload) {
+        uploadUrl = URL + urlDict.upload;
+        var body = {
+            'apikey': TOKEN,
+            'file' : upload
+        };
+        var result = sendMultipartRequest(uploadUrl, DEFAULT_HEADERS, upload, body);
+        var uploadData = dq(result, 'wildfire.upload-file-info');
+        var returnObj = {
+            res: result,
+            data: uploadData
+        };
+        return returnObj;
+    }
+
+    function uploadFileRemote(upload) {
+        linkUrl = URL + urlDict.remoteFile;
+        var body = {
+            apikey: TOKEN,
+            url: upload
+        };
+        var result = sendMultipartRequest(linkUrl, DEFAULT_HEADERS, '', body);
+        var uploadData = dq(result, 'wildfire.upload-file-info');
+        var returnObj = {
+            res: result,
+            data: uploadData
+        };
+        return returnObj;
+    }
+
+    function getReport(md5, argHash, file) {
+        var reportUrl = URL + urlDict.report;
+        var hash = md5 || argHash || file;
+        if(!hash)
+            throw 'Missing md5/hash argument.';
+        if (hash.length === 40) {
+            // SHA1 not supported.
+            return 'No results';
+        }
+        var bodyXML = 'apikey='+TOKEN+'&format=xml&hash='+hash;
+        var resXML = sendRequest(reportUrl, bodyXML, DEFAULT_HEADERS);
+        if(!resXML){
+          return 'No results yet';
+        }
+        var result = JSON.parse(x2j(resXML));
+        var report =  dq(result, 'wildfire.task_info.report');
+        var file_info = dq(result, 'wildfire.file_info');
+        var returnObj = {
+            hash: hash,
+            result: result,
+            report: report,
+            info: file_info
+        };
+        return returnObj;
+
+    }
+
+    function createReport(reportResponse, format, verbose) {
+        var reportUrl = URL + urlDict.report;
+        var result = reportResponse.result;
+        var report = reportResponse.report;
+        var file_info = reportResponse.info;
+        var hash = reportResponse.hash;
+        var context = { DBotScore: {Indicator: hash, Type: 'hash', Vendor: 'WildFire', Score: 0 }};
+        if (file_info) {
+            if (file_info.malware === 'yes') {
+                context.DBotScore.Score = 3;
+                addMalicious(context, outputPaths.file, {
+                    Type : file_info.filetype,
+                    MD5 : file_info.md5,
+                    SHA1 : file_info.sha1,
+                    SHA256 : file_info.sha256,
+                    Size : file_info.size,
+                    Name : file_info.filename,
+                    Malicious: {Vendor: 'WildFire'}
+                });
+            } else {
+                context.DBotScore.Score = 1;
+            }
+        }
+        if(format === 'pdf'){
+          var bodyPDF = 'apikey='+TOKEN+'&format=pdf&hash='+hash;
+          var resPDF = sendRequest(reportUrl, bodyPDF, DEFAULT_HEADERS);
+          var currentTime = new Date();
+          var fileName = command + '_at_' + currentTime.getTime();
+          return {Type: 3,
+                  FileID: saveFile(resPDF),
+                  File: fileName,
+                  Contents: fileName,
+                  EntryContext: context
+          };
+        }
+        else{ /* default format is xml*/
+          return createEntry(file_info, 'WildFire Report', result, verbose, report);
+        }
+    }
+
+    function detonate(type, upload, format, delay, timeout, verbose) {
+        if (type === 'file') {
+            var uploadData = uploadFile(upload).data;
+        } else { //type is remote file
+            var uploadData = uploadFileRemote(upload).data;
+        }
+        var sha = uploadData.sha256;
+        delayTime = parseInt(delay);
+        timeOut = parseInt(timeout);
+        var waitTime = delayTime;
+        wait(delayTime);
+
+        while (waitTime<timeOut) {
+            var reportResponse = getReport(undefined, sha);
+            if (reportResponse.result) {
+                return createReport(reportResponse, format, verbose);
+            } else {
+                waitTime = waitTime + delayTime;
+                wait(delayTime);
+            }
+        }
+        throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
+    }
+
+    var URL = params.server.replace(/[\/]+$/, '');
+    var DEFAULT_HEADERS = {'Content-Type': ['application/x-www-form-urlencoded']};
+    var TOKEN = params.token;
+
+    switch (command) {
+      case 'test-module':
+          testUrl = URL + urlDict.report;
+          var res = http(
+              testUrl,
+              {
+                  Method: 'POST',
+                  Body: 'apikey='+TOKEN+'&format=xml&hash=7f638f13d0797ef9b1a393808dc93b94',
+                  Headers: DEFAULT_HEADERS
+              },
+              params.insecure,
+              params.proxy
+          );
+
+          if(res.StatusCode===200)
+              return 'ok';
+          else
+              return 'Something went wrong.\n Status code: ' + res.StatusCode + '\nBody: '+ JSON.stringify(res) + '.';
+          break;
+      case 'file':
+      case 'wildfire-report':
+        var reportResponse = getReport(args.md5, args.hash, args.file);
+        return createReport(reportResponse, args.format, args.verbose);
+      case 'wildfire-upload':
+          var response = uploadFile(args.upload);
+          var uploadData = response.data;
+          var result = response.res;
+          return createEntry(uploadData,'WildFire Report', result);
+      case 'detonate-file':
+          return detonate('file', args.upload, args.format, args.delay, args.timeout, args.verbose);
+      case 'detonate-file-remote':
+          return detonate('remoteFile', args.upload, args.format, args.delay, args.timeout);
+    }
+
+  type: javascript
+  commands:
+  - name: wildfire-report
+    arguments:
+    - name: md5
+      description: MD5 hash to check
+    - name: hash
+      description: SHA256 hash to check
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - xml
+      - pdf
+      description: Optional - request a structured report (formatted as XML/PDF)
+    - name: verbose
+      description: Receive extended information from WildFire
+    outputs:
+    - contextPath: File.Name
+      description: Filename
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+    - contextPath: File.Size
+      description: File size
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Retrieve results for a file hash using WildFire
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: file hash to check
+    outputs:
+    - contextPath: File.Name
+      description: Filename
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+    - contextPath: File.Size
+      description: File size
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Retrieve results for a file hash using WildFire
+  - name: wildfire-upload
+    arguments:
+    - name: upload
+      required: true
+      description: ID of the entry containing the file to upload
+    description: Upload file to WildFire for analysis.
+  - name: detonate-file
+    arguments:
+    - name: upload
+      required: true
+      description: ID of the entry containing the file to upload
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "7"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - xml
+      - pdf
+      description: Optional - request a structured report (formatted as XML/PDF)
+    outputs:
+    - contextPath: File.Name
+      description: Filename
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+    - contextPath: File.Size
+      description: File size
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Detonate file through WildFire
+  - name: detonate-file-remote
+    arguments:
+    - name: upload
+      required: true
+      description: URL of remote file to be uploaded
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "7"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - xml
+      - pdf
+      description: Optional - request a structured report (formatted as XML/PDF)
+    description: Detonate file hosted on a website through WildFire
+hidden: false

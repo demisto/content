@@ -1,0 +1,183 @@
+commonfields:
+  id: Remedy AR
+  version: -1
+name: Remedy AR
+display: Remedy AR
+category: Case Management
+image: data:image/png;base64,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
+description: BMC Remedy AR System is a professional development environment that leverages
+  the recommendations of the IT Infrastructure Library (ITIL) and provides a foundation
+  for Business Service Management (BSM) solutions. For incident management (i.e. create, fetch, update),
+  please refer to Remedy On-Demand integration.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+    import requests
+    import json
+    import urllib
+    import os
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' HELPER FUNCTIONS '''
+    def http_request(method, url_suffix, data, headers):
+        data = {} if data is None else data
+        LOG('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
+            data, headers))
+        try:
+            res = requests.request(method,
+                BASE_URL + url_suffix,
+                verify=USE_SSL,
+                data=data,
+                headers=headers
+            )
+            if res.status_code not in (200, 204):
+                raise Exception('Your request failed with the following error: ' + res.reason)
+        except Exception, e:
+            raise
+        return res
+
+    ''' GLOBAL VARS '''
+    SERVER_URL=demisto.params()['server']
+    USERNAME=demisto.params()['credentials']['identifier']
+    PASSWORD=demisto.params()['credentials']['password']
+    BASE_URL=SERVER_URL + '/api'
+    USE_SSL = not demisto.params().get('insecure', False)
+    DEFAULT_HEADERS = {
+        'Content-Type': 'application/json'
+    }
+
+    ''' FUNCTIONS '''
+    def login():
+        cmd_url = '/jwt/login'
+        data = {
+            'username': USERNAME,
+            'password': PASSWORD
+        }
+        login_headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        result = http_request('POST', cmd_url, data, login_headers)
+        return result
+
+    def logout():
+        cmd_url = '/jwt/logout'
+        http_request('POST', cmd_url, None, DEFAULT_HEADERS)
+
+    def get_server_details(qualification, fields):
+
+        # Adds fields to filter by
+        if isinstance(fields, list):
+            fields = ','.join(fields)
+        fields = 'fields=values(' + fields + ')'
+
+        # URL Encodes qualification
+        qualification = urllib.quote_plus(qualification)
+
+        cmd_url = '/arsys/v1/entry/AST:ComputerSystem/?q=' + qualification + '&' + fields
+        result = http_request('GET', cmd_url, None, DEFAULT_HEADERS).json()
+
+        entries = result['entries']
+        server_details=[]
+        for entry in entries:
+            # Context Standard
+            current_entry = entry['values']
+            if current_entry['NC_IOPs'] is None:
+                current_entry.pop('NC_IOPs', None)
+            else:
+                current_entry['IPAddress'] = current_entry.pop('NC_IOPs')
+            current_entry['Hostname'] = current_entry.pop('Name')
+
+            server_details.append(current_entry)
+
+        context = {
+            'Endpoint': server_details
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': json.dumps(server_details),
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Remedy AR Server Details', server_details),
+            'EntryContext': context
+        }
+
+        return entry
+
+    ''' EXECUTION CODE '''
+    auth = login()
+    token = auth.content
+    DEFAULT_HEADERS['Authorization'] = 'AR-JWT ' + token
+
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            # Login is made and tests connectivity and credentials
+            demisto.results('ok')
+        elif demisto.command() == 'remedy-get-server-details':
+            if 'qualification' in demisto.args():
+                qualification = demisto.args()['qualification']
+            else:
+                qualification = ''
+            demisto.results(get_server_details(qualification, demisto.args()['fields']))
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+    finally:
+        logout()
+  type: python
+  commands:
+  - name: remedy-get-server-details
+    arguments:
+    - name: qualification
+      description: 'Search qualification, given as: ''key1''="value1" AND ''key2''!="value2"'
+    - name: fields
+      description: Parts of the entry object to retrieve, given as CSV (i.e. Company,Name)
+      defaultValue: Name,Company,Short Description,NC_IOPs,Reconciliation Identity
+    outputs:
+    - contextPath: Remedy.ServerDetails.Reconciliation Identity
+      description: Server reconciliation Identity
+      type: string
+    - contextPath: Remedy.ServerDetails.Short Description
+      description: Server description
+      type: string
+    - contextPath: Remedy.ServerDetails.Company
+      description: Company name
+      type: string
+    - contextPath: Remedy.ServerDetails.NC_IOPs
+      description: Server NC IOPS
+      type: string
+    - contextPath: Remedy.ServerDetails.Name
+      description: Server name
+      type: string
+    description: Retrieves server details
+hidden: false

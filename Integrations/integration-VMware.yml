@@ -4,10 +4,10 @@ commonfields:
 name: VMware
 display: VMware
 category: IT Services
-image: data:image/png;base64,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
+image: data:image/png;base64,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
 description: VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.
 configuration:
-- display: Server URL (i.e. https://192.168.0.1:30022)
+- display: Server URL (i.e. 192.168.0.1:30022)
   name: url
   defaultvalue: ""
   type: 0
@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -51,7 +51,7 @@ script:
             si = SmartConnect(host=URL,
                               user=USERNAME,
                               pwd=PASSWORD,
-                              port=V)
+                              port=PORT)
         except:
             si = SmartConnect(host=URL,
                               user=USERNAME,
@@ -168,7 +168,20 @@ script:
         while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
             time.sleep(1)
         if task.info.state == 'success':
-            return 'Virtual Machine was suspended successfully.'
+            ec = {
+                'VMWare(val.UUID && val.UUID === obj.UUID)': {
+                    'UUID': uuid,
+                    'State': 'suspended'
+                }
+            }
+            return {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': ec,
+                'ReadableContentsFormat': formats['text'],
+                'HumanReadable': 'Virtual Machine was suspended successfully.',
+                'EntryContext': ec
+            }
         elif task.info.state == 'error':
             raise SystemExit('Error occured while trying to power on Virtual Machine.')
 
@@ -177,7 +190,20 @@ script:
         task = vm.ResetVM_Task()
         wait_for_tasks(si, [task])
         if task.info.state == 'success':
-            return 'Virtual Machine was rebooted successfully.'
+            ec = {
+                'VMWare(val.UUID && val.UUID === obj.UUID)': {
+                    'UUID': uuid,
+                    'State': 'HardRebooted'
+                }
+            }
+            return {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': ec,
+                'ReadableContentsFormat': formats['text'],
+                'HumanReadable': 'Virtual Machine was rebooted successfully.',
+                'EntryContext': ec
+            }
         elif task.info.state == 'error':
             raise SystemExit('Error occured while trying to reboot Virtual Machine.')
 
@@ -243,7 +269,20 @@ script:
         if len(snapObj) == 1:
             snapObj = snapObj[0].snapshot
             WaitForTask(snapObj.RevertToSnapshot_Task())
-            return 'Reverted to snapshot ' + name + ' successfully.'
+            ec = {
+                'VMWare(val.UUID && val.UUID === obj.UUID)': {
+                    'UUID': uuid,
+                    'Snapshot': 'Reverted to ' + name
+                }
+            }
+            return {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': ec,
+                'ReadableContentsFormat': formats['text'],
+                'HumanReadable': 'Reverted to snapshot ' + name + ' successfully.',
+                'EntryContext': ec
+            }
         else:
             return 'No snapshots found with name: ' + name + ' on VM: ' + uuid
 
@@ -256,14 +295,14 @@ script:
                 snapObj = snapObj + get_snapshots(snapshot.childSnapshotList, snapname)
         return snapObj
 
-    def get_events(uuid):
+    def get_events(uuid, event_type):
         vm = get_vm(uuid)
         hr = []
         content = si.RetrieveServiceContent()
         eventManager = content.eventManager
         filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")
         filterSpec = vim.event.EventFilterSpec()
-        ids = ['VmGuestRebootEvent', 'VmGuestShutdownEvent', 'VmPoweredOnEvent', 'VmPoweredOffEvent', 'VmSuspendedEvent']
+        ids = event_type.split(',')
         filterSpec.eventTypeId = ids
         filterSpec.entity = filter
         eventRes = eventManager.QueryEvents(filterSpec)
@@ -283,34 +322,42 @@ script:
     from cStringIO import StringIO
     sout = sys.stdout
     sys.stdout = StringIO()
+    res = []
+    si = None
+    try:
+        si = login()
 
-    si = login()
+        if demisto.command() == 'test-module':
+            result = 'ok'
+        if demisto.command() == 'vmware-get-vms':
+            result = get_vms()
+        if demisto.command() == 'vmware-poweron':
+            result = power_on(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-poweroff':
+            result = power_off(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-hard-reboot':
+            result = hard_reboot(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-suspend':
+            result = suspend(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-soft-reboot':
+            result = soft_reboot(demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-create-snapshot':
+            result = create_snapshot(demisto.args())
+        if demisto.command() == 'vmware-revert-snapshot':
+            result = revert_snapshot(demisto.args()['snapshot-name'], demisto.args()['vm-uuid'])
+        if demisto.command() == 'vmware-get-events':
+            result = get_events(demisto.args()['vm-uuid'], demisto.args()['event-type'])
+        res.append(result)
+    except Exception as ex:
+        res.append({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : str(ex)})
 
-    if demisto.command() == 'test-module':
-        login()
-        result = 'ok'
-    if demisto.command() == 'vmware-get-vms':
-        result = get_vms()
-    if demisto.command() == 'vmware-poweron':
-        result = power_on(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-poweroff':
-        result = power_off(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-hard-reboot':
-        result = hard_reboot(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-suspend':
-        result = suspend(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-soft-reboot':
-        result = soft_reboot(demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-create-snapshot':
-        result = create_snapshot(demisto.args())
-    if demisto.command() == 'vmware-revert-snapshot':
-        result = revert_snapshot(demisto.args()['snapshot-name'], demisto.args()['vm-uuid'])
-    if demisto.command() == 'vmware-get-events':
-        result = get_events(demisto.args()['vm-uuid'])
+    try:
+        logout(si)
+    except Exception as ex:
+        res.append({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Logout failed. " + str(ex)})
 
-    logout(si)
     sys.stdout = sout
-    demisto.results(result)
+    demisto.results(res)
     sys.exit(0)
   type: python
   commands:
@@ -330,11 +377,18 @@ script:
     - contextPath: VMWare.IP
       description: VM IP address
     - contextPath: VMWare.State
-      description: VM State (i.e. poweredOn, poweredOff, suspended)
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
     - contextPath: VMWare.HostName
       description: Host name of VM
     - contextPath: VMWare.MACAddress
       description: MAC Address of VM
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Returns all virtual machines on a system.
   - name: vmware-poweron
     arguments:
@@ -345,8 +399,16 @@ script:
     - contextPath: VMWare.UUID
       description: VM instance UUID
     - contextPath: VMWare.State
-      description: VM State (i.e. poweredOn, poweredOff, suspended)
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Powers on a powered-off or suspended virtual machine.
+    execution: true
   - name: vmware-poweroff
     arguments:
     - name: vm-uuid
@@ -356,20 +418,54 @@ script:
     - contextPath: VMWare.UUID
       description: VM instance UUID
     - contextPath: VMWare.State
-      description: VM State (i.e. poweredOn, poweredOff, suspended)
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Powers off a powered-on or suspended virtual machine.
+    execution: true
   - name: vmware-hard-reboot
     arguments:
     - name: vm-uuid
       required: true
       description: VM UUID of virtual machine to reboot.
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Reboots a powered-on virtual machine.
+    execution: true
   - name: vmware-suspend
     arguments:
     - name: vm-uuid
       required: true
       description: VM UUID of virtual machine to be suspended.
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.State
+      description: VM State (i.e. poweredOn, poweredOff, suspended, HardRebooted)
+      related: ""
     description: Suspends a powered-on virtual machine.
+    execution: true
   - name: vmware-soft-reboot
     arguments:
     - name: vm-uuid
@@ -400,7 +496,7 @@ script:
       - "false"
       description: Quiesce guest file system (needs VMWare Tools installed).
       defaultValue: "False"
-    description: 'Creates VM snapshot'
+    description: Creates VM snapshot
   - name: vmware-revert-snapshot
     arguments:
     - name: snapshot-name
@@ -409,11 +505,27 @@ script:
     - name: vm-uuid
       required: true
       description: VM UUID of virtual machine to revert snapshot.
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+    - contextPath: VMWare.Snapshot
+      description: Name of the snapshot reverted to.
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID
+      related: ""
+    - contextPath: VMWare.Snapshot
+      description: Name of the snapshot reverted to.
+      related: ""
     description: Reverts VM to snapshot
+    execution: true
   - name: vmware-get-events
     arguments:
     - name: vm-uuid
       required: true
       description: VM UUID of virtual machine to get events of.
+    - name: event-type
+      description: Type of events to get, given in CSV (i.e.  VmGuestRebootEvent,VmGuestShutdownEvent).
+      defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
     description: Gets events of VM
   dockerimage: demisto/vmware:1.0-alpine

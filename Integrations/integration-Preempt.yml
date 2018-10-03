@@ -1,0 +1,501 @@
+commonfields:
+  id: Preempt
+  version: -1
+name: Preempt
+display: Preempt
+category: Network Security
+image: data:image/png;base64,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
+description: Preempt Behavioral Firewall - Detection and enforcement based on user
+  identity
+detaileddescription: |-
+  In order to allow the integration to work, the following configurations are required on the Preempt managemnet UI:
+  1) Login to the UI with an admin of the PBF system
+  2) Go to Administration -> System -> Settings -> API Keys
+  3) Verify API tokens are enabled
+  4) Create a token for demisto
+  5) Copy the API key to the clipboard by clicking the link icon on the right
+  6) Paste this value into the apiKey parameter on the integration
+configuration:
+- display: Address of Preempt server (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Days to look back
+  name: lookback
+  defaultvalue: "1"
+  type: 0
+  required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    import json
+    from dateutil.parser import parse as parse_date
+    from datetime import timedelta, datetime
+    import requests
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+    # Supress warning about unverified HTTPS
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+    if not demisto.params().get("proxy", True):
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
+
+    API_KEY = str(demisto.params()["apiKey"])
+    SERVER = str(demisto.params()["server"])
+    LOOKBACK = timedelta(days=int(demisto.params()["lookback"]))
+    PUBLIC_API_URL = "%s/api/public" % SERVER
+    GRAPHQL_URI = "%s/graphql" % PUBLIC_API_URL
+    ENTITIES_URI = "%s/entities" % PUBLIC_API_URL
+    AUTH_HEADER = {
+        "Authorization": "Bearer %s" % API_KEY
+    }
+    USE_SSL = not demisto.params().get("insecure", False)
+
+    ''' HELPER FUNCTIONS '''
+    def api_request(uri, data):
+        data = {} if data is None else data
+        LOG("running request with url=%s\tdata=%s" % (uri, data))
+        try:
+            res = requests.post(uri,
+                                verify=USE_SSL,
+                                json=data,
+                                headers=AUTH_HEADER)
+            if res.status_code not in (200, 204):
+                raise Exception('Your request failed with the following error: ' + res.reason)
+        except Exception, e:
+            raise
+        return res
+
+    TIMELINE_LIMIT = 1000
+
+    def datetime_to_iso(d):
+        return d.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+
+    def get_alerts(start_time=None, end_time=None, cursor=None, types=None, source_user_id=None):
+        query = """
+    query ($cursor: Cursor, $startTime: DateTimeInput, $endTime: DateTimeInput, $types: [String!], $sourceUserId: UUID) {
+      timeline(types: [ALERT], limit: %d, alertQuery: {types: $types}, sourceEntityQuery: {id: $sourceUserId}, startTime: $startTime, endTime: $endTime, after: $cursor) {
+        cursor
+        eventId
+        timestamp
+        ... on TimelineAlertEvent {
+          incident {
+            severity
+            _id
+            state {
+              lifeCycleStage
+            }
+          }
+          alertType
+          timestamp
+          startTime
+          endTime
+          eventLabel
+          userEntity {
+            _id
+            primaryDisplayName
+            primaryAccount {
+              samAccountName
+              domain
+              upn
+            }
+          }
+          endpointEntity {
+            _id
+            hostName
+          }
+        }
+        relatedEvents(startTime: $startTime, limit: 30, types: [SUCCESSFUL_AUTHENTICATION, SERVICE_ACCESS], open: true) {
+          eventType
+          timestamp
+          ... on TimelineAuthenticationEvent {
+            authenticationType
+            geoLocation {
+              cityCode
+              countryCode
+              latitude
+              longitude
+            }
+            ipAddress
+          }
+          ... on TimelineServiceAccessEvent {
+            geoLocation {
+              countryCode
+              country
+              latitude
+              longitude
+            }
+            ipAddress
+          }
+        }
+      }
+    }
+    """ % TIMELINE_LIMIT
+
+        variables = {
+            "cursor": cursor, "startTime": datetime_to_iso(start_time), "endTime": datetime_to_iso(end_time), "types": types, "sourceUserId": source_user_id
+        }
+        data = {
+            "query": query, "variables": variables
+        }
+
+        resp = api_request(GRAPHQL_URI, data)
+        alerts = resp.json()["data"]["timeline"]
+
+        return alerts
+
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == "test-module":
+        # This is the call made when pressing the integration test button.
+        query = "{ aomActivities(limit: 1) { _id } }"
+        variables = {}
+        data = {
+            "query": query, "variables": variables
+        }
+        res = api_request(GRAPHQL_URI, data)
+        demisto.results('ok')
+        sys.exit(0)
+
+    if demisto.command() == "fetch-incidents":
+        cursor = demisto.getLastRun().get("cursor")
+
+        alerts = get_alerts(cursor=cursor,
+                            start_time=datetime.utcnow() - LOOKBACK,
+                            end_time=datetime.utcnow(),
+                            types=["GeoLocationAnomalyAlert", "ForbiddenCountryAlert"])
+
+        fixed_alerts = []
+        # Retrieve geo-location data and external IP from the first relevant activity and put it on the alert JSON
+        for alert in alerts:
+            # Only interested in LOW or MEDIUM severity incidents
+            if alert["incident"]["severity"] not in ["LOW", "MEDIUM"] or alert["incident"]["state"]["lifeCycleStage"] != "NEW":
+                continue
+
+            alert_start_time = parse_date(alert["startTime"])
+            try:
+                access = next(event for event in alert["relatedEvents"] if parse_date(event["timestamp"]) >= alert_start_time and event["geoLocation"])
+                for field in ["geoLocation", "ipAddress"]:
+                    alert[field] = access[field]
+                fixed_alerts.append(alert)
+            except StopIteration, e:
+                pass
+
+        result = [{"Name": "Incident %s" % alert["eventId"], "rawJSON": json.dumps(alert)} for alert in fixed_alerts]
+
+        # Store the cursor
+        demisto.setLastRun({
+            "cursor": alerts[-1]["cursor"] if alerts else cursor
+        })
+
+        # lastRun is a dictionary, with value "now" for key "time".
+        # JSON of the incident type created by this integration
+        demisto.incidents(result)
+        sys.exit(0)
+
+    if demisto.command() == "preempt-add-to-watch-list":
+        # The Preempt API receives the same parameters as the command
+        args = {
+            "entityIds": [demisto.args()["accountObjectGuid"]]
+        }
+        resp = api_request("%s/watch" % ENTITIES_URI, args)
+        demisto.results("User added to watch list")
+        sys.exit(0)
+
+    if demisto.command() == "preempt-remove-from-watch-list":
+        # The Preempt API receives the same parameters as the command
+        args = {
+            "entityIds": [demisto.args()["accountObjectGuid"]]
+        }
+        resp = api_request("%s/unwatch" % ENTITIES_URI, args)
+        demisto.results("User removed from watch list")
+        sys.exit(0)
+
+    if demisto.command() == "preempt-get-activities":
+        query = """
+    query ($cursor: Cursor, $startTime: DateTimeInput,  $endTime: DateTimeInput, $types: [TimelineEventType!], $authTypes: [AuthenticationType!], $sourceUserId: UUID) {
+      timeline(limit: %d, types: $types, sourceEntityQuery: {id: $sourceUserId}, activityQuery: {authenticationTypes: $authTypes}, startTime: $startTime, endTime: $endTime, after: $cursor) {
+        cursor
+        timestamp
+        eventType
+        ... on TimelineSuccessfulAuthenticationEvent {
+          authenticationType
+          endpointEntity {
+            primaryDisplayName
+            hostName
+          }
+          userEntity {
+            _id
+            primaryDisplayName
+            primaryAccount {
+              samAccountName
+              domain
+              upn
+            }
+          }
+        }
+      }
+    }
+    """ % TIMELINE_LIMIT
+
+        types = []
+        auth_types = []
+        for t in demisto.args().get("types", "").split(","):
+            if t == "LOGIN":
+                types.append("SUCCESSFUL_AUTHENTICATION")
+                auth_types.append("DOMAIN_LOGIN")
+
+        end_time = demisto.args().get("endTime")
+        dt_end_time = parse_date(end_time) if end_time else datetime.utcnow()
+        last_hours = int(demisto.args().get("numOfHours"))
+
+        variables = dict({key: demisto.args().get(key) for key in ["sourceUserId"]},
+                         start_time=datetime_to_iso(dt_end_time - timedelta(hours=last_hours)),
+                         end_time=datetime_to_iso(dt_end_time),
+                         types=(types or None),
+                         authTypes=(auth_types or None))
+
+        variables["cursor"] = demisto.args().get("cursor")
+
+        data = {
+            "query": query, "variables": variables
+        }
+        resp = api_request(GRAPHQL_URI, data)
+
+        events = resp.json()["data"]["timeline"]
+
+        cursor = events[-1]["cursor"] if len(events) == TIMELINE_LIMIT else None
+
+        def prettyfy_result(res):
+            return {
+                "EventType": res["eventType"],
+                "AuthenticationType": res["authenticationType"],
+                "Timestamp": res["timestamp"],
+                "EndpointHostName": res["endpointEntity"]["hostName"]
+            }
+        pretty_results = map(prettyfy_result, events)
+
+        demisto.results({
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": json.dumps(events),
+            "HumanReadable": tableToMarkdown("Activities in time frame", pretty_results, ["Timestamp", "EndpointHostName"]),
+            "EntryContext": {
+                'Preempt.Activities': pretty_results,
+                'Preempt.Alerts.Cursor': cursor
+            }
+        })
+        sys.exit(0)
+
+    if demisto.command() == "preempt-get-user-endpoints":
+        query = """
+    query ($sourceUserId: UUID!) {
+      entities(id: $sourceUserId) {
+        associations(bindingTypes: [LOGIN, OWNERSHIP]) {
+          bindingType
+          ... on OriginAssociation {
+            entityId
+            entity {
+              primaryDisplayName
+              ... on EndpointEntity {
+                hostName
+                lastIpAddress
+                staticIpAddresses
+              }
+            }
+          }
+        }
+      }
+    }
+    """
+
+        variables = {
+            "sourceUserId": demisto.args()["sourceUserId"]
+        }
+        data = {
+            "query": query, "variables": variables
+        }
+
+        resp = api_request(GRAPHQL_URI, data)
+        # Only associations are necessary. Add a flag to mark if it is ownership
+        entities = resp.json()["data"]["entities"]
+        if entities:
+            entity = entities[0]
+            ownedEndpointsId = [assoc["entityId"] for assoc in entity["associations"] if assoc["bindingType"] == "OWNERSHIP"]
+            result = [dict(assoc, isOwned=(assoc["entityId"] in ownedEndpointsId)) for assoc in entity["associations"] if assoc["bindingType"] == "LOGIN"]
+        else:
+            result = []
+
+        def prettyfy_result(endpoint):
+            return {
+                "Id": endpoint["entityId"],
+                "HostName": endpoint["entity"]["hostName"],
+                "PrimaryDisplayName": endpoint["entity"]["primaryDisplayName"],
+                "IsOwnedByUser": endpoint["isOwned"],
+                "LastIpAddress": endpoint["entity"]["lastIpAddress"],
+                "StaticIpAddresses": endpoint["entity"]["staticIpAddresses"]
+            }
+
+        pretty_results = map(prettyfy_result, result)
+
+        demisto.results({
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": json.dumps(result),
+            "HumanReadable": tableToMarkdown("User's regular endpoints", pretty_results, ["HostName", "IsOwnedByUser"]),
+            "EntryContext": {
+                'Endpoint': pretty_results
+            }
+        })
+        sys.exit(0)
+
+    if demisto.command() == "preempt-get-alerts":
+        end_time = demisto.args().get("endTime")
+        dt_end_time = parse_date(end_time) if end_time else datetime.utcnow()
+        last_hours = int(demisto.args().get("numOfHours"))
+
+
+        alerts = get_alerts(cursor=demisto.args().get("cursor"),
+                            start_time=dt_end_time - timedelta(hours=last_hours),
+                            end_time=dt_end_time,
+                            source_user_id=demisto.args().get("sourceUserId"))
+
+        cursor = alerts[-1]["cursor"] if len(alerts) == TIMELINE_LIMIT else None
+
+        demisto.results({
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": json.dumps(alerts),
+            "HumanReadable": tableToMarkdown("User's last 48 hours alerts", alerts),
+            "EntryContext": {
+                'Preempt.Alerts': alerts,
+                'Preempt.Alerts.Cursor': cursor
+            }
+        })
+        sys.exit(0)
+  type: python
+  commands:
+  - name: preempt-add-to-watch-list
+    arguments:
+    - name: accountObjectGuid
+      description: Object GUID of the AD account
+    description: Adds requested user to Preempt's watch list
+  - name: preempt-remove-from-watch-list
+    arguments:
+    - name: accountObjectGuid
+      description: Object GUID of the AD account
+    description: Removes requested user from Preempt's watch list
+  - name: preempt-get-activities
+    arguments:
+    - name: sourceUserId
+      required: true
+      description: ID of a user whose activities to retrieve
+    - name: types
+      description: List of specific incident types (comma delimited)
+      defaultValue: LOGIN
+    - name: endTime
+      description: End of the timeframe to search in
+    - name: numOfHours
+      default: true
+      description: Number of hours to look back from end time
+      defaultValue: "48"
+    outputs:
+    - contextPath: Preempt.Activities.EndpointHostName
+      description: Hostname of the activity's endpoint
+      type: string
+    - contextPath: Preempt.Activities.EventType
+      description: Type of the activity
+      type: string
+    - contextPath: Preempt.Activities.AuthenticationType
+      description: For authentication, specific type
+      type: string
+    - contextPath: Preempt.Activities.Timestamp
+      description: Date/time of the activity
+      type: date
+    - contextPath: Preempt.Activities.Cursor
+      description: Cursor of last retrieved activity for pagination
+      type: string
+    description: Get activities from a time frame
+  - name: preempt-get-user-endpoints
+    arguments:
+    - name: sourceUserId
+      required: true
+      description: ID of the user
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Hostname of the endpoint
+      type: string
+    - contextPath: Endpoint.ID
+      description: Object GUID of the computer account
+      type: string
+    - contextPath: Endpoint.PrimaryDisplayName
+      description: The computer's display name in AD
+      type: string
+    - contextPath: Endpoint.IsOwnedByUser
+      description: True if the user owns this endpoint
+      type: boolean
+    - contextPath: Endpoint.IPAddress
+      description: The last IP address associated with this endpoint seen by the system
+      type: string
+    - contextPath: Endpoint.StaticIpAddresses
+      description: Static IP addresses which have been associated with the endpoint
+      type: string
+    description: Gets the endpoints regularly used by the user account
+  - name: preempt-get-alerts
+    arguments:
+    - name: sourceUserId
+      description: ID of the user associated with the alerts
+    - name: numOfHours
+      description: Number of hours to look back from end time
+      defaultValue: "48"
+    - name: endTime
+      description: End of time frame to look in
+    outputs:
+    - contextPath: Preempt.Alerts.AlertType
+      description: Type of the Alert
+      type: string
+    - contextPath: Preempt.Alerts.timestamp
+      description: Date/time of the activity
+      type: date
+    - contextPath: Preempt.Alerts.startTime
+      description: Date/time of beginning of the alert
+      type: date
+    - contextPath: Preempt.Alerts.EndTime
+      description: Date/time when the alert was ended
+      type: date
+    - contextPath: Preempt.Alerts.eventLabel
+      description: The label of the alert
+      type: string
+    - contextPath: Preempt.Alerts.Cursor
+      description: Cursor of last retrieved activity for pagination
+    description: Get the alerts generated according to given arguments
+  dockerimage: demisto/python
+  isfetch: true

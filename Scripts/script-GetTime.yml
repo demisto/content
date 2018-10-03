@@ -43,9 +43,17 @@ script: |-
               throw 'Unsupported date format: '+args.dateFormat
       }
   }
-  setContext(prefix+'TimeNowUnix',d.getTime());
-  setContext(prefix+'TimeNow', timeStr);
-  return timeStr;
+
+  context = {};
+  context[prefix+'TimeNowUnix'] = d.getTime();
+  context[prefix+'TimeNow'] = timeStr;
+  return {
+      Type : entryTypes.note,
+      Contents : timeStr,
+      ContentsFormat : formats.json,
+      HumanReadable : timeStr,
+      EntryContext : context
+  };
 type: javascript
 tags:
 - Utility
@@ -72,3 +80,4 @@ outputs:
 - contextPath: TimeNow
   description: current time in ISO format
 scripttarget: 0
+runonce: false

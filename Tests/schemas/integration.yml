@@ -21,8 +21,8 @@ mapping:
     enum: [
     'Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
     'Vulnerability Management', 'Case Management',
-    'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment', 'Threat Intelligence',
-     'Authentication', 'Database']
+    'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment & Threat Intelligence',
+     'Authentication', 'Database', 'Deception', 'Email Gateway']
     required: yes
   fromversion:
     type: str
@@ -30,7 +30,6 @@ mapping:
     type: str
   image:
     type: str
-    required: yes
   description:
     type: str
     required: yes
@@ -60,6 +59,8 @@ mapping:
         type: seq
         sequence:
         - include: command_schema
+      runonce:
+        type: bool
   system:
     type: bool
   hidden:
@@ -70,6 +71,12 @@ mapping:
     type: bool
   releaseNotes:
     type: str
+  tests:
+    type: seq
+    sequence:
+    - type: str
+  scriptNotVisible:
+    type: bool
 
 schema;commonfields_schema:
 
@@ -122,6 +129,8 @@ schema;command_schema:
       type: seq
       sequence:
       - include: important_schema
+    timeout:
+      type: int
 
 # int
 schema;argument_schema:

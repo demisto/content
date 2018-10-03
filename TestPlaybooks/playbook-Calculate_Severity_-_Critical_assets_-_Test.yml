@@ -1,0 +1,171 @@
+id: calculate_severity_-_critical_assets_-_test
+version: -1
+name: Calculate Severity - Critical assets - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d9768422-6f4e-470e-8d2a-33e202ca1b37
+    type: start
+    task:
+      id: d9768422-6f4e-470e-8d2a-33e202ca1b37
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 3d9f1530-4a65-46d2-84a0-ffafb4223042
+    type: playbook
+    task:
+      id: 3d9f1530-4a65-46d2-84a0-ffafb4223042
+      version: -1
+      name: Calculate Severity - Critical assets
+      playbookName: Calculate Severity - Critical assets
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+      CriticalEndpoints: {}
+      CriticalGroups:
+        simple: CN=Discovery Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int,
+          CN=Organization Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int
+      CriticalUsers: {}
+      Endpoint:
+        complex:
+          root: Endpoint
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 80e56848-2efb-43aa-8356-f86a57b91158
+    type: regular
+    task:
+      id: 80e56848-2efb-43aa-8356-f86a57b91158
+      version: -1
+      name: ADGetUser
+      description: |-
+        Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+        If no filter is provided, the result will show all users.
+      scriptName: ADGetUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      dn: {}
+      email: {}
+      headers: {}
+      limit: {}
+      name: {}
+      nestedSearch: {}
+      userAccountControlOut: {}
+      username:
+        simple: demistoadmin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 9c0f7e3f-c0b9-4a8e-8a31-5ee5caea8502
+    type: regular
+    task:
+      id: 9c0f7e3f-c0b9-4a8e-8a31-5ee5caea8502
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: critical
+      fields: {}
+      path:
+        simple: Severity
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 0687c44e-4c0f-420d-8067-e3c20966057a
+    type: title
+    task:
+      id: 0687c44e-4c0f-420d-8067-e3c20966057a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -129,12 +129,12 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 0eabfccb-851d-420f-8d00-f0b198a16ed4
+    taskid: 69aeb053-04ea-4853-872a-adf410c08c5e
     type: condition
     task:
-      id: 0eabfccb-851d-420f-8d00-f0b198a16ed4
+      id: 69aeb053-04ea-4853-872a-adf410c08c5e
       version: -1
-      name: Is there a file path?
+      name: Is there a file path and hostname?
       description: Checks if a file path exists in playbook inputs.
       type: condition
       iscommand: false
@@ -155,6 +155,11 @@ tasks:
           left:
             value:
               simple: inputs.Path
+            iscontext: true
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.Hostname
             iscontext: true
     view: |-
       {

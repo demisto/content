@@ -4,7 +4,7 @@ commonfields:
 name: Twilio
 display: Twilio
 category: Messaging
-image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2dpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTExIDc5LjE1ODMyNSwgMjAxNS8wOS8xMC0wMToxMDoyMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1REZEMzEzNzEwMjA2ODExODIyQUIxM0U1QzU4NUJFQSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoxRDA1MjM3QUY4QTAxMUU1QUZCRDk5MUZFNTQ3NUJEMiIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoxRDA1MjM3OUY4QTAxMUU1QUZCRDk5MUZFNTQ3NUJEMiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpFODREOEYyQjA2MjExMUU0QkY0N0U0MUMzMUQwQkY3OSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpFODREOEYyQzA2MjExMUU0QkY0N0U0MUMzMUQwQkY3OSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PvI3rDcAAAGAUExUReQpNfnO0fjKzepcZeUxPPjGyeU2QeEWI/729uIcKfKcou56geQtOPOgpeIaJ/GVm+tlbfnS1fzk5vra3OEYJfSprv77+++CifrW2PKZn+MnM++Ei+Y/Sfvh4/a9wPCIjuxudvSlq/fBxPzm6Pa6vva2uuIYJfrU1vWtsuxqcvCKkOpgaeY5RP74+P3w8fzq7Pzo6e1yeu11ffve4OEXJOlWX+hMVv3y8/vl5vOjqOhLVOdBS/Omq+lQWvGRl++Bh+EUIeU3QuIfLOdGUOMjL+IeKuMiLuMhLeIfK+IgLOMlMf/9/eIeK+IZJf/+/uY8R+MgLP719uIdKeIbJ/709etjbPGPlf3v8P3t7vSnrP/8/OdFT/73+P3u7+xmbvCMkuEZJf3x8uMjMOMiL+MiLfrZ2+MgLeMfK+dDTf3s7e12fu59hfWxteETIPvc3vzj5f3z9OdIUuhHUe1ze/fEx+MhLv75+uEVIuIhLfjIy+EaJu54f+hJU/Oeo////+MkMB0DFfQAAAOISURBVHja5JbpW9NKFMZLlwyhIbQSqaRFehWqVfTWckALspQ7k82GQgoKqJfivtxFrTva+dfNzARNS0X8qvPpdGZ+ec7ynjON0J9ekV8fMWxCLBMfF8EyqLqUm59SauDax0BMzZwbnxy+3H/nxdnEYCoO3g8QrOmt6I32t1X6/ESzj0Jsd/NUu2utjyrudxFH1ivtHmt4BnBvxGlI0YNbl4f7oulrq8GvS60wE0JkKXDq1vZmVbctrMxm0wGURL2QNb2Pn44MTIFrGRgbpoyM4jDfvJGCHoh7nR+OzbwjoZJCRGzfzcmHEHeTH52aAvrIs4TrpkewVdjlB2c83IU80LkHY1UVN+Mv67Ll0HtN5VWuRgw0xJmi1oVAmW2/9dNJstdGXpyPE9ooT4+sT9Q9k7xmZ2nD6EDumzz2QUSbWf7NBIU8Nx4qZuN2P7NiagcizzKV7E2RR/E/RVpTapDypEbRH8w4qXUgcIFvAvXmgvpllX5hVIA2+AfHImYYUSf4lwvUqt8RN8tmSRg3gRrGOd/YmZNDiMHztVe1/Gb5h198Ki2PCrH85asfuGf5QghZkfaY/HQ/J1ac5acUU9/rk0w8eRY0ZBiSgRBCcszxPtuvllOjm0utqn/RXokt7ee48N0idxGFkXkWQVQUHdTIg2UWqVuI0GXbYVaKIYthpFbf8LfOYd8x3Minr/4/qq9R9WL0aqkSZ4rTeKEvhJE1haXnrOJ/u9niUU/a7sUdZkRZgEIzyXAsuMaaa2dWpqZyQuQ2poleaLf8CqqnQ+U/KCXv4HFEvU9fS7kujEGglnSLdWr1cRhp/s2Vbxhk/m2gE/pUGEOIon0uO4LDyFqcXyiie4T70N7I/St6a3VBNp2HzFqCLvEPst3/Io9JnclxI9+04x9YW2dUujzeDvn1FfGecG1tF+7LSvLz7quP1CH6lYHFBZXCAhfoAHQ3MgxwP3aRaWogpqrhGzKF+RNCdKQbsZVpES1pdIzodwsi68/g8IRpzohcnbmNGkHLUgs5WdE251XcY/QhUfd2f2XWAHBdDanSs6A1E7rdcyZDMpj5q+lKppgqD01sBcMyoXi9xziG1FavMd4+qXvO9x4LyJ0+DJTKjZUjniSZFPs6ga1RCfCRDx/WjNj29ME7djfxvAq1Hz6vhupG5vKZm4vj+zGJgHW8R/yN7AJCoKkr+Pf8D3PU+iLAALieDQsdtR8oAAAAAElFTkSuQmCC
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAABgFBMVEXjJDDjIi7iICziHiriHyvjIS3jIy/iHCnhFyTiGifjJzPlNkHmP0nnQUvmOUTkLTjiHiviGSXhGCXoS1TwiI72trr62tz98PH+9vb+9/j98/T85uj4xsnzoKXrZW3lMTziHSntc3v4ys3//f3////86OnznqPnQ03rY2z61tj+9fbymZ/jJTHzo6jpVl/iGyf5ztH50tX75eb//v7++Pj97/D0p6zlN0LoTFbvhIvueoHhFiPjICz++/vynKLsanLzpqv74ePhFSLkKTX97u/jIC3iGCXwjJL3wcTjIi3hGSXnSFLmPEfjIzDoR1HxlZvtdX3++fr1rbL73uD2ur73xMfjIi/sbnb62dvnRU/qXGX98fL86uz0pav0qa7wipDxj5X61Nb//Pz1sbX97O3hFCHnRlDiHyziIS3vgonvgYfueH/xkZf+9PX98vP84+XqYGn85Ob2vcDoSVPjHyvsZm7hEyDpUFr73N74yMvhGibtcnrtdn797e7ufYXjIS7NVOWBAAADWElEQVR4Ae2VhXbrRhCGRzySnchSGA2Rg8ZLBoWZmZmZmfPqza58Wpma+wD5Ds3Crx204ZscMCzH8YIIf4kooaw4nAWFqgs1Fr5G0IWi4pLSsvKKyqrqmlo3er56QVe8vjrjP/z1Dfr/vsRqjU1GBs0tqgb5CEhK0MhBaQjFPIqww2ekKCuN+KI/fhoWv7x5NJIj5dTvP40xheVFNZ6IpkRJE3LQqkToaVt7IWo8I4qMIJlMRyndrKtFyEbrpIddoW7OVlLssbZ7nVK2opEeNRUi9Hl4y3XBw4l8/wA9GPRkhjOkUA+6YrI47B4ZlfgAjA2r404Xx5gTVNOhZ0hwkmxPhVDkEj/aKqfdHIQnZ9qaZ0c9AjdHzqIMA3bmBRp7jQnDCYNQDbhAjUVVCC+VE2tZBjtSnHTJSiHX5141KLVyKuVJHcw1Yqyne4YbdBPBU5SqX0Itt4wgQph+sKtHABvyLP1yP/CjFQZlUvBbxiYCw2x9GttF9jwzNF8rMR5Eaccg7Dr2Wqxm2fcAIPVsod8mOXCskPZTGADeTfLjX5YPlRLSPAskaDwikiO0STgncTzCigABFzQee2MyAHuwfHzi1GidO6iLpl1SQCLwWUVHuWdoTyAX+3tgjw0Qq5ZITu0S1+jZ59aWyACI4YXo+UWL0grype/cH3STjtNpoTfsklaVpKdKFQCGvQahhNUut4nhIwFaPZO0xyK6fCSLcQkE9cqgLOsRy/DqAPJ1dvmRTnCxCZ6bf0vZbBk1CLzjN5nU2C3YGL6jnc8wXMFUqk9g1zImTDBPaNtxYtpIuumFDnOMoz4YZ857a7Z+PkhCYJFYxwhpYA3Zfey55UabiGJhmHU/kbE+kmGv2Mjwi+JpoL31p39eUpP1A+PPEOCUl/bTBxnwgTZoO0IG2G4QBkxB0NH6VWU+DQmw4MpqOg4yYNUZK1ouDDaE7gcr668IWQyHrFwNLplhBix4M5CwxmZaFiEb02tQyoNxBlHTdFN2vKZGs1phIReYrDMoP6PBo47ayYnZNyOlUD2QExFr6Z0s1hVPAPKAzutsgX8yfAD5kbiOSLrgrcWB4hd/Y8zynxkSE6G3+j2GLvgKRtZ6ihaONk+LT5YdHPLwV3xIGpom6vJBlkvf/AMgDbB4G0xauQAAAABJRU5ErkJggg==
 description: Send SMS notifications
 detaileddescription: "To use Twilio:\n1.\tRegister to Twilio at: https://www.twilio.com/try-twilio\n2.\tAfter
   completing the registration go to: https://www.twilio.com/user/account/messaging/getting-started\n3.\tSelect
@@ -33,7 +33,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -45,11 +45,11 @@ configuration:
   required: false
 script:
   script: |+
-    var sendRequest = function(body) {
+    var sendRequest = function(method, url, body) {
         var res = http(
             params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json',
             {
-                Method: 'POST',
+                Method: method,
                 Body: body,
                 Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
                 Username: params.sid,
@@ -71,11 +71,14 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            sendRequest(encodeToURLQuery(params.from,params.from,'Test'));
+            // from Twilio instructions, in order to ger the list of accounts, the below curl command should be used.
+            // using this as a method to test tht the credentails and connectivity are good, without using sms buckets
+            // curl -G https://api.twilio.com/2010-04-01/Accounts -u '[YOUR ACCOUNT SID]:[YOUR AUTH TOKEN]'
+            sendRequest('GET', params.server.replace(/[\/]+$/, ''), "");
             return 'ok';
         default:
-           sendRequest(encodeToURLQuery(args.to, (args.from ? args.from : params.from), args.body));
-           return 'Message sent successfully!';
+            sendRequest('POST', params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json', encodeToURLQuery(args.to, (args.from ? args.from : params.from), args.body));
+            return 'Message sent successfully!';
     }
 
   type: javascript

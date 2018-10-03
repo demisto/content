@@ -3,13 +3,13 @@ commonfields:
   version: -1
 name: iDefense
 display: iDefense
-category: Authentication
-image: data:image/png;base64,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
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
 description: Accenture Security
 configuration:
 - display: URL
   name: url
-  defaultvalue: https://api.intelgraph.verisign.com/
+  defaultvalue: https://api.intelgraph.idefense.com/
   type: 0
   required: true
 - display: API Token
@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -207,6 +207,10 @@ script:
 
     function get_domain(domain) {
         var threats_info = check_threats('Domain', domain, 'Name');
+        if (threats_info.results.length === 0) {
+            return 'No result was found.';
+        }
+
         return {
             Type : entryTypes.note,
             Contents : threats_info.results,
@@ -222,6 +226,10 @@ script:
         }
 
         var threats_info = check_threats('IP', ip, 'Address');
+        if (threats_info.results.length === 0) {
+            return 'No result was found.';
+        }
+
         return {
             Type : entryTypes.note,
             Contents : threats_info.results,
@@ -234,6 +242,10 @@ script:
 
     function get_url(url) {
         var threats_info = check_threats('URL', url, 'Data');
+        if (threats_info.results.length === 0) {
+            return 'No result was found.';
+        }
+
         return {
             Type : entryTypes.note,
             Contents : threats_info.results,
@@ -252,7 +264,7 @@ script:
     }
 
     // The command input arg holds the command sent from the user.
-    logDebug('entering with command: ' + command)
+    logDebug('entering with command: ' + command);
     switch (command) {
         case 'idefense-general':
             // still having issues with this command.
@@ -343,7 +355,6 @@ script:
       description: The actual score
     description: Check URL reputation
   - name: idefense-general
-    description: Get threats from iDefense database. Returns all records of ip/url/domain
     arguments:
     - name: max_result
       default: true
@@ -376,8 +387,8 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    description: Get threats from iDefense database. Returns all records of ip/url/domain
   - name: uuid
-    description: Get specific indicator reputation
     arguments:
     - name: uuid
       required: true
@@ -410,3 +421,5 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    description: Get specific indicator reputation
+  runonce: false

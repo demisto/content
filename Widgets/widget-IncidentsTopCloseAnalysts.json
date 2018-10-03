@@ -20,7 +20,8 @@
   },
   "params": {
     "groupBy": [
-      "ClosingUserID"
+      "closingUserId"
     ]
-  }
+  },
+  "description": ""
 }
