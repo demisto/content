@@ -208,9 +208,6 @@
             "timeout": 240
         },
         {
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test"
         },
@@ -221,13 +218,6 @@
         {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
-        },
-        {
-            "integrations": [
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
         },
         {
             "integrations": {
@@ -641,7 +631,7 @@
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
+            "timeout": 500
         },
         {
             "integrations": [
