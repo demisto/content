@@ -76,7 +76,7 @@
         {
             "integrations": "VirusTotal",
             "playbookID": "virusTotal-test-playbook",
-            "nightly": true,
+            "nightly": false,
             "timeout": 1400
         },
         {
