@@ -12,7 +12,7 @@
         },
         {
             "integrations": "epo",
-            "playbookID": "Test Playbook Mcafee ePO"
+            "playbookID": "Test Playbook McAfee ePO"
         },
         {
             "integrations": {
@@ -685,7 +685,6 @@
     "skipped_integrations": [
         "RedLock",
         "Symantec Messaging Gateway",
-        "ThreatConnect",
         "Cylance Protect",
         "QRadar",
         "VMware",
