@@ -3,6 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
+            "integrations": "epo",
+            "playbookID": "Test Playbook Mcafee ePO"
+        },
+        {
             "integrations": {
                 "name": "activedir",
                 "byoi": false
@@ -11,6 +19,9 @@
         },
         {
             "playbookID": "TextFromHTML_test_playbook"
+        },
+        {
+            "playbookID": "PortListenCheck-test"
         },
         {
             "integrations": "ThreatExchange",
@@ -37,12 +48,30 @@
             "nightly": true
         },
         {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
+            "playbookID": "Phishing test - attachment",
+            "timeout": 500,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ],
+            "nightly": true
         },
         {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
+            "playbookID": "Phishing test - Inline",
+            "timeout": 500,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ],
+            "nightly": true
+        },
+        {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
         },
         {
             "integrations": "VirusTotal",
@@ -100,10 +129,6 @@
         },
         {
             "playbookID": "Extract Indicators From File - test"
-        },
-        {
-            "integrations": "Jask",
-            "playbookID": "Jask_Test"
         },
         {
             "playbookID": "dedup_-_generic_-_test"
@@ -454,15 +479,17 @@
             "playbookID": "RTIR Test"
         },
         {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
-        }
-    ],
-    "skipped": [
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Test"
+        },
         {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
         },
         {
             "integrations": "ThreatConnect",
@@ -502,7 +529,6 @@
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-
             "integrations": "Farsight DNSDB",
             "playbookID": "DNSDBTest"
         },
@@ -525,25 +551,6 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
-        },
-        {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io",
-                {
-                    "name": "activedir",
-                    "byoi": false
-                }],
-            "playbookID": "entity_enrichment_generic_test",
-            "timeout": 240
-        },
-        {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
         },
         {
             "integrations": "Remedy AR",
@@ -572,22 +579,6 @@
                 "VirusTotal"
             ],
             "playbookID": "File Enrichment - Generic Test"
-        },
-        {
-            "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                {
-                    "name": "carbonblackprotection",
-                    "byoi": false
-                },
-                {
-                    "name": "carbonblack",
-                    "byoi": false
-                }
-            ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
@@ -625,9 +616,95 @@
             "playbookID": "AlphaSOC-Wisdom-Test"
         },
         {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
+        },
+        {
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
+        },
+        {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io",
+                {
+                    "name": "activedir",
+                    "byoi": false
+                }],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 400
+        },
+        {
+            "integrations": [
+                "FalconHost",
+                "McAfee Threat Intelligence Exchange",
+                {
+                    "name": "carbonblackprotection",
+                    "byoi": false
+                },
+                {
+                    "name": "carbonblack",
+                    "byoi": false
+                }
+            ],
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "timeout": 500
+        },
+        {
+            "integrations": "RSA NetWitness Endpoint",
+            "playbookID": "NetWitness Endpoint Test"
         }
+    ],
+    "skipped_tests": [
+        "block_endpoint_-_carbon_black_response_-_test",
+        "VxStream Test",
+        "File Enrichment - Generic Test",
+        "entity_enrichment_generic_test",
+        "url_enrichment_-_generic_test",
+        "search_endpoints_by_hash_-_generic_-_test",
+        "Intezer Testing",
+        "Jira-Test",
+        "VerifyHumanReadableFormat",
+        "Cybereason Test",
+        "McAfee ATD",
+        "RTIR Test",
+        "NetWitness Endpoint Test"
+    ],
+    "skipped_integrations": [
+        "RedLock",
+        "Symantec Messaging Gateway",
+        "ThreatConnect",
+        "Cylance Protect",
+        "QRadar",
+        "VMware",
+        "Anomali ThreatStream",
+        "Farsight DNSDB",
+        "carbonblack-v2",
+        "Cisco Umbrella Investigate",
+        "icebrg",
+        "Symantec MSS",
+        "Remedy AR",
+        "McAfee Active Response",
+        "McAfee Threat Intelligence Exchange",
+        "ArcSight Logger",
+        "XFE",
+        "iDefense",
+        "LogRhythm",
+        "FireEye HX",
+        "Phish.AI",
+        "Centreon",
+        "TruSTAR",
+        "AlphaSOC Wisdom",
+        "Jask",
+        "Qualys"
     ]
 }

@@ -3,10 +3,10 @@ SERVER_API_URI="https://circleci.com/api/v1/project/demisto/server"
 TOKEN_ATTR="circle-token=$1"
 
 echo "Getting latest build num"
-TEMP=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=5&filter=successful&$TOKEN_ATTR")
+TEMP=$(curl -s -H "$ACCEPT_TYPE" "$SERVER_API_URI/tree/master?limit=10&filter=successful&$TOKEN_ATTR")
 
 ARTIFACT_BUILD_NUM=
-for i in `seq 0 4`; do
+for i in `seq 0 9`; do
     if [[ $(echo "$TEMP" | jq ".[$i].build_parameters") == "null" ]]; then
         ARTIFACT_BUILD_NUM=$(echo "$TEMP" | jq ".[$i].build_num")
         break

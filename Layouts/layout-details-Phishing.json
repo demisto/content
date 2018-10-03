@@ -1,5 +1,4 @@
 {
-	"releaseNotes": "Replace HTML Image field with HTML Image section (since it can be huge and affect system performance)",
 	"typeId": "Phishing",
 	"kind": "details",
 	"layout": {
