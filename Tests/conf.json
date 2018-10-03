@@ -681,7 +681,6 @@
     "skipped_integrations": [
         "RedLock",
         "Symantec Messaging Gateway",
-        "ThreatConnect",
         "Cylance Protect",
         "QRadar",
         "VMware",
