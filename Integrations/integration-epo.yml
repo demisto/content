@@ -252,7 +252,7 @@ script:
               return result.objectId;
             }
              // If reached here then the response is an empty "OK:", which means VSEContentUpdateDemisto was not found in the server
-            throw 'Error getting DAT update task. It seems the command "VSEContentUpdateDemisto" is missing from the EPO server. Please contact support for more details';
+            throw 'Error getting DAT update task. It seems the task "VSEContentUpdateDemisto" is missing from the EPO server. Please contact support for more details';
     }
 
     function epoUpdateClientDat() {
@@ -389,17 +389,16 @@ script:
         }
     }
 
-    function parseCommandArgs(command, CommandArgs) {
+    function parseCommandArgs(command, commandArgs) {
         //commandArgs should be in the format of:  keyName1:keyValue1, keyName2:KeyValue2
-        if (!CommandArgs) {
+        if (!commandArgs) {
             return null;
         }
         var commandArgsDict = {};
         commandArgsDict["command"] = command;
-        var commandArgsList = CommandArgs.split(',');
+        var commandArgsList = commandArgs.split(',');
         var temp;
         for (i=0; i < commandArgsList.length; i++) {
-            //commandArgsVal in CommandArgsList:
             temp = commandArgsList[i].split(':');
             commandArgsDict[temp[0]] = temp[1];
         }
