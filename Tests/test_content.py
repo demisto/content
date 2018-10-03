@@ -44,7 +44,7 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
 
-    if len(skipped_integration) > 0"
+    if len(skipped_integration) > 0:
         print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
         for playbook_id in skipped_integration:
             print_warning('\t - ' + playbook_id)
