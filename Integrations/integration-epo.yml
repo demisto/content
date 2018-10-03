@@ -626,3 +626,5 @@ script:
       command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
   runonce: false
 releaseNotes: "Added outputs and error messages. update epo-command"
+tests:
+- "Test Playbook Mcafee ePO"
