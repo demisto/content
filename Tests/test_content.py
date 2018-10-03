@@ -98,6 +98,9 @@ def main():
         filterd_tests = [line.strip('\n') for line in filterd_tests]
         is_filter_configured = True if filterd_tests else False
 
+    if is_filter_configured:
+        is_nightly = True
+
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
         return
@@ -113,7 +116,7 @@ def main():
             skipped_tests.append(playbook_id)
             continue
 
-        if is_filter_configured and not is_nightly and playbook_id not in filterd_tests:
+        if is_filter_configured and playbook_id not in filterd_tests:
             continue
 
         test_options = {
