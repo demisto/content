@@ -1038,6 +1038,6 @@ script:
   runonce: false
 releaseNotes: "New integration"
 tests:
-- "Test Playbook TrendMicroDDA"
-- "detonate_file_-_generic_test"
-- "detonate_url_-_generic_test"
+- Test Playbook TrendMicroDDA
+- detonate_file_-_generic_test
+- detonate_url_-_generic_test
