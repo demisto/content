@@ -51,4 +51,3 @@ dependson:
   - googleapps-get-user
 timeout: 0s
 deprecated: true
-releaseNotes: "deprecated script"

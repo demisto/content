@@ -1,0 +1,164 @@
+id: domain_enrichment_generic
+version: -1
+fromversion: 3.5.0
+toversion: 3.5.1
+name: Domain Enrichment - Generic
+description: Enrich Domain using one or more integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    type: start
+    task:
+      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 55a34733-b900-4566-88d7-30365d4e3866
+    type: condition
+    task:
+      id: 55a34733-b900-4566-88d7-30365d4e3866
+      version: -1
+      name: Are there Domains to check?
+      description: Determines whether the playbook's input contains a domain name.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.commands.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: domain
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "20":
+    id: "20"
+    taskid: eb63c499-8a19-481b-8140-aa34e63342b0
+    type: regular
+    task:
+      id: eb63c499-8a19-481b-8140-aa34e63342b0
+      version: -1
+      name: Get Domain Reputation
+      description: Gets domain reputation by invoking domain related engines. Returns
+        the domain score according to the engines.
+      scriptName: DomainReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 179,
+          "y": 368
+        }
+      }
+  "24":
+    id: "24"
+    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    type: title
+    task:
+      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_20_yes": 0.79
+    },
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 509,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    simple: ${Domain.Name}
+  required: false
+  description: The domain name to enrich
+outputs:
+- contextPath: Domain
+  description: The domain objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown

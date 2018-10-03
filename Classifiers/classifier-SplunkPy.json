@@ -28,6 +28,19 @@
 				}
 			},
 			"dontMapEventToLabels": false
+		},
+		"Malware": {
+			"internalMapping": {
+				"Dest": {
+					"simple": "dest",
+					"complex": null
+				},
+				"Signature": {
+					"simple": "signature",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
 		}
 	},
 	"custom": true,
@@ -43,6 +56,5 @@
 		"Access - High or Critical Priority Individual Logging into Infected Machine - Rule": "Access",
 		"Endpoint - High Or Critical Priority Host With Malware - Rule": "Malware"
 	},
-	"brandName": "SplunkPy",
-    "releaseNotes": "-"
+	"brandName": "SplunkPy"
 }

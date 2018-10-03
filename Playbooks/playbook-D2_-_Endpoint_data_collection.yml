@@ -1,6 +1,7 @@
 id: D2 - Endpoint data collection
 version: -1
 name: D2 - Endpoint data collection
+fromversion: ""
 description: |-
   Uses Demisto's d2 agent to collect data from an endpoint for IR purposes.
 

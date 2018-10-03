@@ -38,4 +38,3 @@ dependson:
   - googleapps-get-user-roles
 timeout: 0s
 deprecated: true
-releaseNotes: "deprecated script"

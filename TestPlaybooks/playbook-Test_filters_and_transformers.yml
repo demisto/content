@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6236667c-cbd9-4e01-8fc8-82172adc411c
+    taskid: 7860632a-2b61-4233-850c-a0841edf13c0
     type: start
     task:
-      id: 6236667c-cbd9-4e01-8fc8-82172adc411c
+      id: 7860632a-2b61-4233-850c-a0841edf13c0
       version: -1
       name: ""
       iscommand: false
@@ -26,10 +26,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: bfa8ccb3-3144-43fe-807f-567a59712ea2
+    taskid: cf6874ec-c75f-4905-8580-eafc118332f8
     type: title
     task:
-      id: bfa8ccb3-3144-43fe-807f-567a59712ea2
+      id: cf6874ec-c75f-4905-8580-eafc118332f8
       version: -1
       name: Test In Range
       type: title
@@ -52,10 +52,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: aeb5dd3a-f10b-47cc-8aee-4eb08dbeddd8
+    taskid: cc329af9-e4f6-45d0-8231-2c934902668e
     type: condition
     task:
-      id: aeb5dd3a-f10b-47cc-8aee-4eb08dbeddd8
+      id: cc329af9-e4f6-45d0-8231-2c934902668e
       version: -1
       name: 4 In range [2,8]
       type: condition
@@ -86,10 +86,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: b40c44ed-1588-44dc-8d6c-038bc257dc21
+    taskid: 816a4ddb-6cac-4f85-8048-76dd852aea63
     type: title
     task:
-      id: b40c44ed-1588-44dc-8d6c-038bc257dc21
+      id: 816a4ddb-6cac-4f85-8048-76dd852aea63
       version: -1
       name: Test Strip charecter
       type: title
@@ -108,10 +108,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 79d58da4-dc70-40c1-8b60-01e660370e47
+    taskid: b6135abd-3cda-4f9e-8936-118d3de21db4
     type: condition
     task:
-      id: 79d58da4-dc70-40c1-8b60-01e660370e47
+      id: b6135abd-3cda-4f9e-8936-118d3de21db4
       version: -1
       name: -4 In range [-2, -8]
       type: condition
@@ -142,10 +142,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: f47e54eb-68fc-4bc5-86a6-3483dc983980
+    taskid: 622a3dec-eed1-4e71-82ca-899ff815aed5
     type: condition
     task:
-      id: f47e54eb-68fc-4bc5-86a6-3483dc983980
+      id: 622a3dec-eed1-4e71-82ca-899ff815aed5
       version: -1
       name: 1 In range [2,8]
       type: condition
@@ -176,10 +176,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 53473f00-a145-47ac-88f7-82ef2478c3c4
+    taskid: 31c1a861-752f-429b-89f0-da637e1a5010
     type: condition
     task:
-      id: 53473f00-a145-47ac-88f7-82ef2478c3c4
+      id: 31c1a861-752f-429b-89f0-da637e1a5010
       version: -1
       name: panda In range [2, 8]
       type: condition
@@ -210,10 +210,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: b4a0acf3-3d2f-4348-8730-d2b49341d1dd
+    taskid: e375f111-3f2d-4d75-8608-b7cbbbe77265
     type: condition
     task:
-      id: b4a0acf3-3d2f-4348-8730-d2b49341d1dd
+      id: e375f111-3f2d-4d75-8608-b7cbbbe77265
       version: -1
       name: 1 In range [28]
       type: condition
@@ -244,10 +244,10 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 1b1bc9c3-4020-4590-81a4-c7ebebaaf9e2
+    taskid: bd8a19ed-56b2-4aca-846f-ba2eafeef1f4
     type: regular
     task:
-      id: 1b1bc9c3-4020-4590-81a4-c7ebebaaf9e2
+      id: bd8a19ed-56b2-4aca-846f-ba2eafeef1f4
       version: -1
       name: 'FAILED: 1 In range [2,8]'
       scriptName: RaiseError
@@ -267,10 +267,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 5f27d3a3-ff9d-47b4-8fe9-b19fb96bfb43
+    taskid: cd4eea3a-ad1d-4529-8a0e-212bf04d0a96
     type: regular
     task:
-      id: 5f27d3a3-ff9d-47b4-8fe9-b19fb96bfb43
+      id: cd4eea3a-ad1d-4529-8a0e-212bf04d0a96
       version: -1
       name: 'FAILED: 1 In range [28]'
       scriptName: RaiseError
@@ -290,10 +290,10 @@ tasks:
       }
   "10":
     id: "10"
-    taskid: ab6570a0-4d89-4193-8378-9aeb51f7c6cf
+    taskid: 6ed78687-4ca1-4286-8e96-ff0bde269648
     type: regular
     task:
-      id: ab6570a0-4d89-4193-8378-9aeb51f7c6cf
+      id: 6ed78687-4ca1-4286-8e96-ff0bde269648
       version: -1
       name: 'FAILED: panda In range [2, 8]'
       scriptName: RaiseError
@@ -313,10 +313,10 @@ tasks:
       }
   "11":
     id: "11"
-    taskid: d3e873f3-ffb9-43ac-8f3a-d5bd5254a8bb
+    taskid: da1fdcd3-2fc4-4a27-81f6-f14e1da5f3b0
     type: regular
     task:
-      id: d3e873f3-ffb9-43ac-8f3a-d5bd5254a8bb
+      id: da1fdcd3-2fc4-4a27-81f6-f14e1da5f3b0
       version: -1
       name: 'FAILED: -4 In range [-2, -8]'
       scriptName: RaiseError
@@ -336,10 +336,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: e0d4e65a-f9b7-4969-8caf-51ca97dd7d97
+    taskid: fc4bbda3-470f-4762-8793-9f1c03e6c8dc
     type: regular
     task:
-      id: e0d4e65a-f9b7-4969-8caf-51ca97dd7d97
+      id: fc4bbda3-470f-4762-8793-9f1c03e6c8dc
       version: -1
       name: 'FAILED: 4 In range [2,8]'
       scriptName: RaiseError
@@ -359,10 +359,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: cd89a4b9-56a2-4e96-8828-186eec705b2d
+    taskid: 8d155212-2e9c-4afb-82a6-bc83f7f4e0ce
     type: condition
     task:
-      id: cd89a4b9-56a2-4e96-8828-186eec705b2d
+      id: 8d155212-2e9c-4afb-82a6-bc83f7f4e0ce
       version: -1
       name: Test Strip Char
       type: condition
@@ -401,10 +401,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: 01c792af-8044-46ec-8914-5961a0ef05ea
+    taskid: e5b39232-cce6-406a-8518-9cf371cd31ad
     type: regular
     task:
-      id: 01c792af-8044-46ec-8914-5961a0ef05ea
+      id: e5b39232-cce6-406a-8518-9cf371cd31ad
       version: -1
       name: Set arg1
       scriptName: Set
@@ -430,10 +430,10 @@ tasks:
       }
   "15":
     id: "15"
-    taskid: ab12f861-596b-4cf2-88bb-fdd23a7ee050
+    taskid: cd453ae7-708d-4427-8cea-865f85446571
     type: title
     task:
-      id: ab12f861-596b-4cf2-88bb-fdd23a7ee050
+      id: cd453ae7-708d-4427-8cea-865f85446571
       version: -1
       name: Test Reverse
       type: title
@@ -452,10 +452,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 03541a83-c468-4ca2-8a4e-64de52638d2a
+    taskid: 88d0870e-67bf-4422-8fa1-40aae28e19f2
     type: regular
     task:
-      id: 03541a83-c468-4ca2-8a4e-64de52638d2a
+      id: 88d0870e-67bf-4422-8fa1-40aae28e19f2
       version: -1
       name: 'FAILED: Split char'
       scriptName: RaiseError
@@ -463,8 +463,22 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
+      actual:
+        complex:
+          root: arg1
+          transformers:
+          - operator: string.StripChars
+            args:
+              chars:
+                value:
+                  simple: '!~'
+      arg2: {}
+      arg3: {}
+      details: {}
       error:
         simple: 'FAILED: split char'
+      expected:
+        simple: www.somedomain.com
     separatecontext: false
     view: |-
       {
@@ -475,10 +489,10 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: b4728f45-3852-44ea-8ad5-a6c36a3daa1b
+    taskid: 8d9a27db-a5e4-4302-8d5b-68be96490470
     type: regular
     task:
-      id: b4728f45-3852-44ea-8ad5-a6c36a3daa1b
+      id: 8d9a27db-a5e4-4302-8d5b-68be96490470
       version: -1
       name: Set arg2 (multiple items)
       scriptName: Set
@@ -504,10 +518,10 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: d9308204-3a0b-4b11-83de-2acc50dce4a8
+    taskid: 9ceb246b-c497-46e3-8724-22430215b45c
     type: condition
     task:
-      id: d9308204-3a0b-4b11-83de-2acc50dce4a8
+      id: 9ceb246b-c497-46e3-8724-22430215b45c
       version: -1
       name: Test Reverse List (multiple items)
       type: condition
@@ -550,10 +564,10 @@ tasks:
       }
   "19":
     id: "19"
-    taskid: 3e882b4c-e64c-4dc7-87df-41e512985442
+    taskid: 04336b33-bb87-427b-8ffb-b844401f97a4
     type: regular
     task:
-      id: 3e882b4c-e64c-4dc7-87df-41e512985442
+      id: 04336b33-bb87-427b-8ffb-b844401f97a4
       version: -1
       name: Finished
       scriptName: Print
@@ -573,10 +587,10 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: 278873a8-7654-4765-8e53-6dce9aa5b6c0
+    taskid: f9c4d17e-e502-4429-8a77-3e4c08069a42
     type: regular
     task:
-      id: 278873a8-7654-4765-8e53-6dce9aa5b6c0
+      id: f9c4d17e-e502-4429-8a77-3e4c08069a42
       version: -1
       name: 'FAILED: Reverse List  (multiple items)'
       scriptName: RaiseError
@@ -584,8 +598,21 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
+      actual:
+        complex:
+          root: arg2
+          transformers:
+          - operator: general.ReverseList
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ','
+      details: {}
       error:
-        simple: 'FAILED: Reverse List - expected saturn,jupiter,mars'
+        simple: 'FAILED: Reverse List'
+      expected:
+        simple: saturn,jupiter,mars
     separatecontext: false
     view: |-
       {
@@ -596,10 +623,10 @@ tasks:
       }
   "21":
     id: "21"
-    taskid: 535713e5-58ed-4538-8363-61472de17e20
+    taskid: c48b094e-5950-47cd-8787-a713dacebfb8
     type: regular
     task:
-      id: 535713e5-58ed-4538-8363-61472de17e20
+      id: c48b094e-5950-47cd-8787-a713dacebfb8
       version: -1
       name: Set arg3 (single item)
       scriptName: Set
@@ -625,10 +652,10 @@ tasks:
       }
   "22":
     id: "22"
-    taskid: 61137620-f18a-4eb9-84c3-6110038dd828
+    taskid: d51e6763-b0f2-4db4-84d2-0bf1824039ec
     type: condition
     task:
-      id: 61137620-f18a-4eb9-84c3-6110038dd828
+      id: d51e6763-b0f2-4db4-84d2-0bf1824039ec
       version: -1
       name: Test Reverse List  (single item)
       type: condition
@@ -636,7 +663,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "23"
+      - "34"
       "yes":
       - "27"
     scriptarguments:
@@ -664,35 +691,12 @@ tasks:
           "y": 1738
         }
       }
-  "23":
-    id: "23"
-    taskid: 331b3479-725b-4a4d-8562-bfc8ecfe1580
-    type: regular
-    task:
-      id: 331b3479-725b-4a4d-8562-bfc8ecfe1580
-      version: -1
-      name: 'FAILED: Reverse List (single item)'
-      scriptName: RaiseError
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      error:
-        simple: 'FAILED: Reverse List - expected neptune'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1915
-        }
-      }
   "24":
     id: "24"
-    taskid: a6e5b44f-949e-46e4-8468-e3740b1ed33f
+    taskid: 96d3619f-0483-4ed8-83e1-cbbb0d792008
     type: regular
     task:
-      id: a6e5b44f-949e-46e4-8468-e3740b1ed33f
+      id: 96d3619f-0483-4ed8-83e1-cbbb0d792008
       version: -1
       name: Set arg4 (timestamp)
       scriptName: Set
@@ -718,10 +722,10 @@ tasks:
       }
   "25":
     id: "25"
-    taskid: ee885e97-6712-442e-8385-560c80442eec
+    taskid: 67bf2bce-5944-4c51-89a7-439e4e938efd
     type: condition
     task:
-      id: ee885e97-6712-442e-8385-560c80442eec
+      id: 67bf2bce-5944-4c51-89a7-439e4e938efd
       version: -1
       name: Test Time Stamp To Date
       type: condition
@@ -759,10 +763,10 @@ tasks:
       }
   "26":
     id: "26"
-    taskid: 7840e4ae-bff1-44b5-8375-dab8d5ca960d
+    taskid: f78d0eb4-9ecc-412e-8e9f-f30111c6596e
     type: regular
     task:
-      id: 7840e4ae-bff1-44b5-8375-dab8d5ca960d
+      id: f78d0eb4-9ecc-412e-8e9f-f30111c6596e
       version: -1
       name: 'FAILED: Time Stamp To Date'
       scriptName: RaiseError
@@ -770,8 +774,16 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
+      actual:
+        complex:
+          root: arg4
+          transformers:
+          - operator: number.TimeStampToDate
+      details: {}
       error:
-        simple: 'FAILED: TimeStampToDate - expected ''2018-04-29T13:02:19.000Z'''
+        simple: 'FAILED: TimeStampToDate'
+      expected:
+        simple: 2018-04-29T13:02:19.000Z
     separatecontext: false
     view: |-
       {
@@ -782,10 +794,10 @@ tasks:
       }
   "27":
     id: "27"
-    taskid: 8426b311-470b-4036-8ea9-2d773748ac47
+    taskid: d50e9a11-68cc-475e-8437-eaaaade80b37
     type: title
     task:
-      id: 8426b311-470b-4036-8ea9-2d773748ac47
+      id: d50e9a11-68cc-475e-8437-eaaaade80b37
       version: -1
       name: Test Time Stamp To Date
       type: title
@@ -804,10 +816,10 @@ tasks:
       }
   "28":
     id: "28"
-    taskid: 1f277511-70ec-4038-8e26-4813e222f98c
+    taskid: c27d9ab9-c1d6-4b76-8b1a-bf2226749360
     type: title
     task:
-      id: 1f277511-70ec-4038-8e26-4813e222f98c
+      id: c27d9ab9-c1d6-4b76-8b1a-bf2226749360
       version: -1
       name: Test Where Field Equals
       type: title
@@ -826,10 +838,10 @@ tasks:
       }
   "29":
     id: "29"
-    taskid: 0867991e-7c19-4ec2-8f84-33c9585c13b6
+    taskid: aad1ce62-a8d8-42e9-87f4-a4dc29479260
     type: regular
     task:
-      id: 0867991e-7c19-4ec2-8f84-33c9585c13b6
+      id: aad1ce62-a8d8-42e9-87f4-a4dc29479260
       version: -1
       name: Set arg5 (collection)
       scriptName: Set
@@ -856,10 +868,10 @@ tasks:
       }
   "30":
     id: "30"
-    taskid: 86786343-f17e-4fd1-85dd-18713b1de823
+    taskid: 89bfd6ad-31d0-4d2d-8f6d-47a0ae2615b2
     type: condition
     task:
-      id: 86786343-f17e-4fd1-85dd-18713b1de823
+      id: 89bfd6ad-31d0-4d2d-8f6d-47a0ae2615b2
       version: -1
       name: Test Where Field Equals without 'getField'
       type: condition
@@ -903,10 +915,10 @@ tasks:
       }
   "31":
     id: "31"
-    taskid: b38d8394-1b10-49f3-80e1-100be3c83899
+    taskid: d31b58c0-3dc0-450e-8fce-49d9ffdd5867
     type: regular
     task:
-      id: b38d8394-1b10-49f3-80e1-100be3c83899
+      id: d31b58c0-3dc0-450e-8fce-49d9ffdd5867
       version: -1
       name: 'FAILED: Where Field Equals'
       scriptName: RaiseError
@@ -914,8 +926,25 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
+      actual:
+        complex:
+          root: arg5
+          transformers:
+          - operator: general.WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: IP
+              field:
+                value:
+                  simple: type
+              getField: {}
+          - operator: general.Stringify
+      details: {}
       error:
-        simple: 'FAILED: WhereFieldEquals - expected {"name":"192.0.1.82","type":"IP"}'
+        simple: 'FAILED: WhereFieldEquals'
+      expected:
+        simple: '{"name":"192.0.1.82","type":"IP"}'
     separatecontext: false
     view: |-
       {
@@ -926,10 +955,10 @@ tasks:
       }
   "32":
     id: "32"
-    taskid: 0c6cda37-940b-4f32-8b03-9f5c6e8c5abd
+    taskid: e66193a4-51da-4230-8f23-2b300a3eb2cb
     type: condition
     task:
-      id: 0c6cda37-940b-4f32-8b03-9f5c6e8c5abd
+      id: e66193a4-51da-4230-8f23-2b300a3eb2cb
       version: -1
       name: Test Where Field Equals with 'getField'
       type: condition
@@ -968,16 +997,16 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1619,
+          "x": 1620,
           "y": 3031
         }
       }
   "33":
     id: "33"
-    taskid: 2dd5b233-be3c-40e2-85b6-a6ef1b5e3fa0
+    taskid: aa906404-f7a2-444f-8647-dc0bc43d159f
     type: regular
     task:
-      id: 2dd5b233-be3c-40e2-85b6-a6ef1b5e3fa0
+      id: aa906404-f7a2-444f-8647-dc0bc43d159f
       version: -1
       name: 'FAILED: Where Field Equals with'
       scriptName: RaiseError
@@ -985,14 +1014,63 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
+      actual:
+        complex:
+          root: arg5
+          transformers:
+          - operator: general.WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: IP
+              field:
+                value:
+                  simple: type
+              getField:
+                value:
+                  simple: name
+      details: {}
       error:
-        simple: 'FAILED: WhereFieldEquals with ''getField'' - expected 92.0.1.82'
+        simple: 'FAILED: WhereFieldEquals with ''getField'''
+      expected:
+        simple: 92.0.1.82
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1422,
+          "x": 1421,
           "y": 3259
+        }
+      }
+  "34":
+    id: "34"
+    taskid: a2ddf79f-7f35-4f59-8f63-7308e5d2e10e
+    type: regular
+    task:
+      id: a2ddf79f-7f35-4f59-8f63-7308e5d2e10e
+      version: -1
+      name: 'FAILED: Reverse List (single item)'
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        complex:
+          root: arg3
+          transformers:
+          - operator: general.ReverseList
+      details: {}
+      error:
+        simple: 'FAILED: Reverse List'
+      expected:
+        simple: neptune
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 663,
+          "y": 1915
         }
       }
 view: |-

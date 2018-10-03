@@ -6,8 +6,8 @@ script: |-
   value = demisto.args()["value"]
 
   if isinstance(value, list):
-      res = value[::-1]
-
+      res = value
+      res.reverse()
   else:
       res = value
 

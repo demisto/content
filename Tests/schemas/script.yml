@@ -63,6 +63,12 @@ mapping:
     type: bool
   releaseNotes:
     type: str
+  tests:
+    type: seq
+    sequence:
+    - type: str
+  sensitive:
+    type: bool
 
 # script->args
 schema;argument_schema:

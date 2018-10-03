@@ -710,6 +710,5 @@ script:
       are not set will not be overriden
     execution: true
 hidden: false
-releaseNotes: "-"
 fromversion: 3.1.0
 toversion: 3.5.1

@@ -56,4 +56,3 @@ dependson:
   - googleapps-gmail-search
 timeout: 0s
 deprecated: true
-releaseNotes: "deprecated script"

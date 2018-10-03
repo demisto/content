@@ -1,0 +1,1405 @@
+commonfields:
+  id: IBM Resilient Systems
+  version: -1
+name: IBM Resilient Systems
+display: IBM Resilient Systems
+category: Case Management
+image: data:image/png;base64,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
+description: Case management that enables visibility across your tools for continual
+  IR improvement
+configuration:
+- display: Server URL (e.g. 192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Organization name
+  name: org
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+    import resilient
+    import datetime
+    import logging
+    import requests
+    import time
+    import json
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARS '''
+    SERVER=demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+    ORG_NAME=demisto.params()['org']
+    USERNAME=demisto.params()['credentials']['identifier']
+    PASSWORD=demisto.params()['credentials']['password']
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    INCIDENT_TYPE_DICT = {
+        'CommunicationError': 17,
+        'DenialOfService': 21,
+        'ImproperDisposal:DigitalAsset': 6,
+        'ImproperDisposal:documents/files': 7,
+        'LostDocuments/files/records': 4,
+        'LostPC/laptop/tablet': 3,
+        'LostPDA/smartphone': 1,
+        'LostStorageDevice/media': 8,
+        'Malware': 19,
+        'NotAnIssue': 23,
+        'Other': 18,
+        'Phishing': 22,
+        'StolenDocuments/files/records': 11,
+        'StolenPC/laptop/tablet': 12,
+        'StolenPDA/Smartphone': 13,
+        'StolenStorageDevice/media': 14,
+        'SystemIntrusion': 20,
+        'TBD/Unknown': 16,
+        'Vendor/3rdPartyError': 15
+    }
+
+    NIST_DICT = {
+        'Attrition': 2,
+        'E-mail': 4,
+        'External/RemovableMedia': 1,
+        'Impersonation': 5,
+        'ImproperUsage': 6,
+        'Loss/TheftOfEquipment': 7,
+        'Other': 8,
+        'Web': 3
+    }
+
+    NIST_ID_DICT = {
+        2: 'Attrition',
+        4: 'E-mail',
+        1: 'External/RemovableMedia',
+        5: 'Impersonation',
+        6: 'ImproperUsage',
+        7: 'Loss/TheftOfEquipment',
+        8: 'Other',
+        3: 'Web'
+    }
+
+    SEVERITY_CODE_DICT = {
+        50: 'Low',
+        51: 'Medium',
+        52: 'High'
+    }
+
+    RESOLUTION_DICT = {
+        53: 'Unresolved',
+        54: 'Duplicate',
+        55: 'Not an Issue',
+        56: 'Resolved'
+    }
+
+    EXP_TYPE_ID_DICT = {
+        1: 'Unknown',
+        2: 'ExternalParty',
+        3: 'Individual'
+    }
+
+    ''' HELPER FUNCTIONS '''
+    def normalize_timestamp(timestamp):
+        ''' Converts epoch timestamp to human readable timestamp '''
+        return datetime.datetime.fromtimestamp(timestamp/1000.0).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    def date_to_timestamp(date):
+        return int(time.mktime(time.strptime(date, '%Y-%m-%dT%H:%M:%SZ'))*1000)
+
+    def prettify_incidents(incidents):
+        users = get_users()
+        phases = get_phases()['entities']
+        for incident in incidents:
+            incident['id'] = str(incident['id'])
+            if isinstance(incident['description'], unicode):
+                incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
+            incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
+            incident['created_date'] = normalize_timestamp(incident['create_date'])
+            incident.pop('create_date', None)
+            incident.pop('inc_training', None)
+            incident.pop('plan_status', None)
+            for user in users:
+                if incident['owner_id'] == user['id']:
+                    incident['owner'] = user['fname'] + ' ' + user['lname']
+                    incident.pop('owner_id', None)
+                    break
+            for phase in phases:
+                if incident['phase_id'] == phase['id']:
+                    incident['phase'] = phase['name']
+                    incident.pop('phase_id', None)
+                    break
+            if incident['severity_code']:
+                incident['severity'] = SEVERITY_CODE_DICT[incident['severity_code']]
+                incident.pop('severity_code', None)
+            start_date = incident.get('start_date')
+            if start_date:
+                incident['date_occurred'] = normalize_timestamp(start_date)
+                incident.pop('start_date', None)
+            due_date = incident.get('due_date')
+            if due_date:
+                incident['due_date'] = normalize_timestamp(due_date)
+            negative_pr = incident.get('negative_pr_likely')
+            if negative_pr:
+                incident['negative_pr'] = negative_pr
+                incident.pop('negative_pr_likely', None)
+            exposure_type_id = incident.get('exposure_type_id')
+            if exposure_type_id:
+                incident['exposure_type'] = EXP_TYPE_ID_DICT[exposure_type_id]
+                incident.pop('exposure_type_id', None)
+            nist_attack_vectors = incident.get('nist_attack_vectors')
+            if nist_attack_vectors:
+                translated_nist = []
+                for vector in nist_attack_vectors:
+                    translated_nist.append(NIST_ID_DICT[vector])
+                incident['nist_attack_vectors'] = translated_nist
+        return incidents
+
+
+    ''' FUNCTIONS '''
+    def search_incidents_command(args):
+        incidents = search_incidents(args)
+        if incidents:
+            pretty_incidents = prettify_incidents(incidents)
+            result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
+            ec = {
+                'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
+            }
+            title = 'Resilient Systems Incidents'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': incidents,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, result_incidents, headers=['Id', 'Name', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'], removeNull=True),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No results found.'
+        return entry
+
+    def search_incidents(args):
+        conditions = []
+        if 'severity' in args:
+            value = []
+            severity = args['severity'].split(',')
+            if 'Low' in severity:
+                value.append(50)
+            if 'Medium' in severity:
+                value.append(51)
+            if 'High' in severity:
+                value.append(52)
+            if not value:
+                raise Exception('Severity should be given in capital case and comma separated, e.g. Low,Medium,High')
+            conditions.append({
+                'field_name': 'severity_code',
+                'method': 'in',
+                'value': value
+            })
+        if 'date-created-before' in args:
+            value = date_to_timestamp(args['date-created-before'])
+            conditions.append({
+                'field_name': 'create_date',
+                'method': 'lte',
+                'value': value
+            })
+        elif 'date-created-after' in args:
+            value = date_to_timestamp(args['date-created-after'])
+            conditions.append({
+                'field_name': 'create_date',
+                'method': 'gte',
+                'value': value
+            })
+        elif 'date-created-within-the-last' in args:
+            if not 'timeframe' in args:
+                raise Exception('Timeframe was not given.')
+            within_the_last = int(args['date-created-within-the-last'])
+            now = int(time.time())
+            timeframe = args['timeframe']
+            if timeframe == 'days':
+                from_time = now - (60 * 60 * 24 * within_the_last)
+            elif timeframe == 'hours':
+                from_time = now - (60 * 60 * within_the_last)
+            elif timeframe == 'minutes':
+                from_time = now - (60 * within_the_last)
+            conditions.extend(({
+                'field_name': 'create_date',
+                'method': 'lte',
+                'value': now*1000
+            },
+            {
+                'field_name': 'create_date',
+                'method': 'gte',
+                'value': from_time*1000
+            }))
+        if 'date-occurred-before' in args:
+            value = date_to_timestamp(args['date-occurred-before'])
+            conditions.append({
+                'field_name': 'start_date',
+                'method': 'lte',
+                'value': value
+            })
+        elif 'date-occurred-after' in args:
+            value = date_to_timestamp(args['date-occurred-after'])
+            conditions.append({
+                'field_name': 'start_date',
+                'method': 'gte',
+                'value': value
+            })
+        elif 'date-occurred-within-the-last' in args:
+            if not 'timeframe' in args:
+                raise Exception('Timeframe was not given.')
+            within_the_last = int(args['date-occurred-within-the-last'])
+            now = int(time.time())
+            timeframe = args['timeframe']
+            if timeframe == 'days':
+                from_time = now - (60 * 60 * 24 * within_the_last)
+            elif timeframe == 'hours':
+                from_time = now - (60 * 60 * within_the_last)
+            elif timeframe == 'minutes':
+                from_time = now - (60 * within_the_last)
+            conditions.extend(({
+                'field_name': 'start_date',
+                'method': 'lte',
+                'value': now*1000
+            },
+            {
+                'field_name': 'start_date',
+                'method': 'gte',
+                'value': from_time*1000
+            }))
+        if 'incident-type' in args:
+            type_id = INCIDENT_TYPE_DICT[args['incident-type']]
+            conditions.append({
+                'field_name': 'incident_type_ids',
+                'method': 'contains',
+                'value': [type_id]
+            })
+        if 'nist' in args:
+            nist = NIST_DICT[args['nist']]
+            conditions.append({
+                'field_name': 'nist_attack_vectors',
+                'method': 'contains',
+                'value': [nist]
+            })
+        if 'status' in args:
+            status = 'A' if args['status'] == 'Active' else 'C'
+            conditions.append({
+                'field_name': 'plan_status',
+                'method': 'in',
+                'value': [status]
+            })
+        if 'due-in' in args:
+            if not 'timeframe' in args:
+                raise Exception('Timeframe was not given.')
+            within_the_last = int(args['due-in'])
+            now = int(time.time())
+            timeframe = args['timeframe']
+            if timeframe == 'days':
+                to_time = now + (60 * 60 * 24 * within_the_last)
+            elif timeframe == 'hours':
+                to_time = now + (60 * 60 * within_the_last)
+            elif timeframe == 'minutes':
+                to_time = now + (60 * within_the_last)
+            conditions.extend(({
+                'field_name': 'due_date',
+                'method': 'lte',
+                'value': to_time*1000
+            },
+            {
+                'field_name': 'due_date',
+                'method': 'gte',
+                'value': now*1000
+            }))
+        data = {
+            'filters': [{
+                'conditions': conditions
+            }]
+        }
+        response = client.post('/incidents/query', data)
+        return response
+
+    def update_incident_command(args):
+        if len(args.keys()) == 1:
+            raise Exception('No fields to update were given')
+        incident_id = args['incident-id']
+        incident = get_incident(incident_id)
+        changes = []
+        if 'severity' in args:
+            old_value = incident['severity_code']
+            severity = args['severity']
+            if severity == 'Low':
+                new_value = 50
+            elif severity == 'Medium':
+                new_value = 51
+            elif severity == 'High':
+                new_value = 52
+            changes.append({
+                'field': 'severity_code',
+                'old_value': {
+                    'id': old_value
+                },
+                'new_value': {
+                    'id': new_value
+                }
+            })
+        if 'owner' in args:
+            users = get_users()
+            old_value = incident['owner_id']
+            full_name = args['owner'].split(' ')
+            first_name, last_name = full_name[0], full_name[1]
+            new_value = -1
+            for user in users:
+                if first_name == user['fname'] and last_name == user['lname']:
+                    new_value = user['id']
+                    break
+            if new_value == -1:
+                raise Exception('User was not found')
+            changes.append({
+                'field': 'owner_id',
+                'old_value': {
+                    'id': old_value
+                },
+                'new_value': {
+                    'id': new_value
+                }
+            })
+        if 'incident-type' in args:
+            old_value = incident['incident_type_ids']
+            type_id = INCIDENT_TYPE_DICT[args['incident-type']]
+            new_value = old_value[:]
+            new_value.append(type_id)
+            changes.append({
+                'field': 'incident_type_ids',
+                'old_value': {
+                    'ids': old_value
+                },
+                'new_value': {
+                    'ids': new_value
+                }
+            })
+        if 'nist' in args:
+            old_value = incident['nist_attack_vectors']
+            nist_id = nist_to_id(args['nist'])
+            new_value = old_value[:]
+            new_value.append(nist_id)
+            changes.append({
+                'field': 'nist_attack_vectors',
+                'old_value': {
+                    'ids': old_value
+                },
+                'new_value': {
+                    'ids': new_value
+                }
+            })
+        if 'resolution' in args:
+            old_value = incident['resolution_id']
+            new_value = resolution_to_id(args['resolution'])
+            changes.append({
+                'field': 'resolution_id',
+                'old_value': {
+                    'id': old_value
+                },
+                'new_value': {
+                    'id': new_value
+                }
+            })
+        if 'resolution-summary' in args:
+            old_summary = incident['resolution_summary']
+            new_summary = args['resolution-summary']
+            changes.append({
+                'field': 'resolution_summary',
+                'old_value': {
+                    'textarea': {
+                        'format': 'html',
+                        'content': old_summary
+                    }
+                },
+                'new_value': {
+                    'textarea': {
+                        'format': 'html',
+                        'content': new_summary
+                    }
+                }
+            })
+        if 'description' in args:
+            old_description = incident['description']
+            new_description = args['description']
+            changes.append({
+                'field': 'description',
+                'old_value': {
+                    'textarea': {
+                        'format': 'html',
+                        'content': old_description
+                    }
+                },
+                'new_value': {
+                    'textarea': {
+                        'format': 'html',
+                        'content': new_description
+                    }
+                }
+            })
+        if 'name' in args:
+            old_name = incident['name']
+            new_name = args['name']
+            changes.append({
+                'field': 'name',
+                'old_value': {
+                    'text': old_name
+                },
+                'new_value': {
+                    'text': new_name
+                }
+            })
+        data = {
+            'changes': changes
+        }
+        response = update_incident(incident_id, data)
+        if response.status_code == 200:
+            return 'Incident ' + args['incident-id'] + ' was updated successfully.'
+
+    def update_incident(incident_id, data):
+        response = client.patch('/incidents/' + incident_id, data)
+        return response
+
+    def get_incident_command(incident_id):
+        incident = get_incident(incident_id)
+        wanted_keys = ['create_date', 'discovered_date', 'description', 'due_date', 'id', 'name', 'owner_id',
+                       'phase_id', 'severity_code', 'confirmed', 'employee_involved', 'negative_pr_likely',
+                       'confirmed', 'start_date', 'due_date', 'negative_pr_likely', 'reporter', 'exposure_type_id',
+                       'nist_attack_vectors']
+        pretty_incident = dict((k, incident[k]) for k in wanted_keys if k in incident)
+        if incident['resolution_id']:
+            pretty_incident['resolution'] = RESOLUTION_DICT[incident['resolution_id']]
+        if incident['resolution_summary']:
+            pretty_incident['resolution_summary'] = incident['resolution_summary'].replace('<div>', '').replace('</div>', '')
+        pretty_incident = prettify_incidents([pretty_incident])
+        result_incident = createContext(pretty_incident, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incident
+        }
+        hr_incident = result_incident[:]
+        if hr_incident[0]['NistAttackVectors']:
+            nist_vectors_str = ''
+            for vector in hr_incident[0]['NistAttackVectors']:
+                nist_vectors_str += vector + '\n'
+            hr_incident[0]['NistAttackVectors'] = nist_vectors_str
+        title = 'IBM Resilient Systems incident ID ' + incident_id
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': incident,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, hr_incident, headers = ['Id', 'Name', 'Description', 'NistAttackVectors', 'Phase', 'Resolution', 'ResolutionSummary', 'Owner',
+                                                                            'CreatedDate', 'DateOccurred', 'DiscoveredDate', 'DueDate', 'NegativePr', 'Confirmed', 'ExposureType',
+                                                                            'Severity', 'Reporter']),
+            'EntryContext': ec
+        }
+        return entry
+
+    def get_incident(incident_id):
+        response = client.get('/incidents/' + incident_id)
+        return response
+
+    def list_open_incidents():
+        response = client.get('/incidents/open')
+        return response
+
+    def get_members_command(incident_id):
+        response = get_members(incident_id)['members']
+        incident = get_incident(incident_id)
+        response.append(incident['owner_id'])
+        users = get_users()
+        members = []
+        for user in users:
+            if user['id'] in response:
+                members.append({
+                    'FirstName': user['fname'],
+                    'LastName': user['lname'],
+                    'ID': user['id'],
+                    'Email': user['email']
+                })
+
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
+                'Id': incident_id,
+                'Members': members
+            }
+        }
+        title = 'Members of incident ' + incident_id
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': members,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, members, ['ID', 'LastName', 'FirstName', 'Email']),
+            'EntryContext': ec
+        }
+        return entry
+
+    def get_members(incident_id):
+        response = client.get('/incidents/' + incident_id + '/members')
+        return response
+
+    def get_users_command():
+        response = get_users()
+        users = []
+        for user in response:
+            users.append({
+                'FirstName': user['fname'],
+                'LastName': user['lname'],
+                'ID': user['id'],
+                'Email': user['email']
+            })
+
+        title = 'IBM Resilient Systems Users'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': users,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, users, ['ID', 'LastName', 'FirstName', 'Email'])
+        }
+        return entry
+
+    def get_users():
+        response = client.get('/users')
+        return response
+
+    def get_phases():
+        response = client.get('/phases')
+        return response
+
+    def get_tasks_command(incident_id):
+        response = get_tasks(incident_id)
+        if response:
+            tasks = []
+            for task in response:
+                task_object = {}
+                incident_name = task['inc_name']
+                task_object['ID'] = task['id']
+                task_object['Name'] = task['name']
+                if task['due_date']:
+                    task_object['DueDate'] = normalize_timestamp(task['due_date'])
+                task_object['Status'] = 'Open' if task['status'] == 'O' else 'Closed'
+                task_object['Required'] = task['required']
+                if task['form']:
+                    task_object['Form'] = task['form']
+                if task['user_notes']:
+                    task_object['UserNotes'] = task['user_notes']
+                task_object['Creator'] = task['creator']['fname'] + ' ' + task['creator']['lname']
+                task_object['Category'] = task['cat_name']
+                if task['instr_text']:
+                    task_object['Instructions'] = task['instr_text']
+                tasks.append(task_object)
+            ec = {
+                'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
+                    'Id': incident_id,
+                    'Name': incident_name,
+                    'Tasks': tasks
+                }
+            }
+            title = 'Incident ' + incident_id + ' tasks'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, tasks, ['ID', 'Name', 'Category', 'Form', 'Status', 'DueDate', 'Instructions', 'UserNotes', 'Required', 'Creator']),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No tasks found for this incident.'
+        return entry
+
+    def get_tasks(incident_id):
+        response = client.get('/incidents/' + incident_id + '/tasks')
+        return response
+
+    def set_member_command(incident_id, members):
+        members = [int(x) for x in members.split(',')]
+        incident = get_incident(incident_id)
+        incident_version = incident['vers']
+        data = {
+            'vers': incident_version,
+            'members': members
+        }
+        response = set_member(incident_id, data)
+        users = get_users()
+        response = []
+        for user in users:
+            if user['id'] in members:
+                response.append({
+                    'FirstName': user['fname'],
+                    'LastName': user['lname'],
+                    'ID': user['id'],
+                    'Email': user['email']
+                })
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
+                'Id': incident_id,
+                'Members': response
+            }
+        }
+        title = 'Members of incident ' + incident_id
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, response),
+            'EntryContext': ec
+        }
+        return entry
+
+    def set_member(incident_id, data):
+        response = client.put('/incidents/' + incident_id + '/members', data)
+        return response
+
+    def close_incident_command(incident_id):
+        incident = get_incident(incident_id)
+        if not incident['resolution_id'] or not incident['resolution_summary']:
+            return 'Resolution and resolution summary of the incident should be updated before closing an incident.'
+        response = close_incident(incident_id, incident)
+        if response.status_code == 200:
+            return 'Incident ' + incident_id + ' was closed.'
+
+    def close_incident(incident_id, incident):
+        old_status = incident['plan_status']
+        data = {
+            'changes': [{
+                'field': 'plan_status',
+                'old_value': {
+                    'text': old_status
+                },
+                'new_value': {
+                    'text': 'C'
+                }
+            }]
+        }
+        return update_incident(incident_id, data)
+
+    def create_incident_command(args):
+        incident_name = args['name']
+        data = {
+            "name": incident_name,
+            "discovered_date": 0
+        }
+        response = create_incident(data)
+        hr = {
+            'ID': response['id'],
+            'Name': incident_name
+        }
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
+                'Id': response['id'],
+                'Name': incident_name
+            }
+        }
+        title = 'Incident ' + incident_name + ' was created'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, hr),
+            'EntryContext': ec
+        }
+        return entry
+
+    def create_incident(data):
+        response = client.post('/incidents', data)
+        return response
+
+    def incident_artifacts_command(incident_id):
+        response = incident_artifacts(incident_id)
+        if response:
+            users = get_users()
+            ec_artifacts = []
+            hr_artifacts = []
+            for artifact in response:
+                incident_name = artifact['inc_name']
+                artifact_object = {
+                    'ID': artifact['id'],
+                    'Type': get_artifact_type(artifact['type']),
+                    'Value': artifact['value'],
+                    'CreatedDate': normalize_timestamp(artifact['created']),
+                    'Creator': artifact['creator']['fname'] + artifact['creator']['lname']
+                }
+                if artifact['description']:
+                    artifact_object['Description'] = artifact['description']
+                hr_artifact = dict(artifact_object)
+                if artifact['attachment']:
+                    artifact_object['Attachments'] = {}
+                    attachment_string = ''
+                    artifact_object['Attachments']['ID'] = artifact['attachment']['id']
+                    attachment_string += 'ID: ' + str(artifact_object['Attachments']['ID']) + '\n'
+                    artifact_object['Attachments']['Name'] = artifact['attachment']['name']
+                    attachment_string += 'Name: ' + artifact_object['Attachments']['Name'] + '\n'
+                    artifact_object['Attachments']['CreatedDate'] = normalize_timestamp(artifact['attachment']['created'])
+                    attachment_string += 'Created Date: ' + artifact_object['Attachments']['CreatedDate'] + '\n'
+                    artifact_object['Attachments']['ContentType'] = artifact['attachment']['content_type']
+                    attachment_string += 'Content Type : ' + artifact_object['Attachments']['ContentType'] + '\n'
+                    artifact_object['Attachments']['Size'] = artifact['attachment']['size']
+                    attachment_string += 'Size: ' + str(artifact_object['Attachments']['Size']) + '\n'
+                    creator_id = artifact['attachment']['creator_id']
+                    for user in users:
+                        if creator_id == user['id']:
+                            artifact_object['Attachments']['Creator'] = user['fname'] + ' ' + user['lname']
+                            attachment_string += 'Creator: ' + artifact_object['Attachments']['Creator']
+                            break
+                    hr_artifact['Attachments'] = attachment_string
+                hr_artifacts.append(hr_artifact)
+                ec_artifacts.append(artifact_object)
+            ec = {
+                'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
+                    'Id': incident_id,
+                    'Name': incident_name,
+                    'Artifacts': ec_artifacts
+                }
+            }
+            title = 'Incident ' + incident_id + ' artifacts'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, hr_artifacts, headers=['ID', 'Value', 'Description', 'CreatedDate', 'Creator']),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No artifacts found.'
+        return entry
+
+    def incident_artifacts(incident_id):
+        response = client.get('/incidents/' + incident_id + '/artifacts')
+        return response
+
+    def get_artifact_type(artifact_id):
+        response = client.get('/artifact_types/' + str(artifact_id))
+        return response['name']
+
+    def incident_attachments_command(incident_id):
+        response = incident_attachments(incident_id)
+        if response:
+            attachments = []
+            users = get_users()
+            for attachment in response:
+                incident_name = attachment['inc_name']
+                attachment_object = {}
+                attachment_object['ID'] = attachment['id']
+                attachment_object['Name'] = attachment['name']
+                attachment_object['CreatedDate'] = normalize_timestamp(attachment['created'])
+                attachment_object['Size'] = attachment['size']
+                attachment_object['ContentType'] = attachment['content_type']
+                attachment_object['Name'] = attachment['name']
+                for user in users:
+                    if attachment['creator_id'] == user['id']:
+                        attachment_object['Creator'] = user['fname'] + ' ' + user['lname']
+                    if attachment['inc_owner'] == user['id']:
+                        incident_owner = user['fname'] + ' ' + user['lname']
+                attachments.append(attachment_object)
+            ec = {
+                'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
+                    'Id': incident_id,
+                    'Name': incident_name,
+                    'Owner': incident_owner,
+                    'Attachments': attachments
+                }
+            }
+            title = 'Incident ' + incident_id + ' attachments'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, attachments),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No attachments found.'
+        return entry
+
+    def incident_attachments(incident_id):
+        response = client.get('/incidents/' + incident_id + '/attachments')
+        return response
+
+    def related_incidents_command(incident_id):
+        response = related_incidents(incident_id)['incidents']
+        if response:
+            ec_incidents = []
+            hr_incidents = []
+            for incident in response:
+                incident_object = {
+                    'ID': incident['id'],
+                    'Name': incident['name'],
+                    'Status': 'Active' if incident['plan_status'] == 'A' else 'Closed',
+                    'CreatedDate': normalize_timestamp(incident['create_date']),
+                }
+                hr_incident = dict(incident_object)
+                if incident['artifacts']:
+                    hr_incident['Artifacts'] = ''
+                    artifacts = []
+                    for artifact in incident['artifacts']:
+                        artifact_object = {}
+                        artifact_string = ''
+                        artifact_object['ID'] = artifact['id']
+                        artifact_string += 'ID: ' + str(artifact_object['ID']) + '\n'
+                        artifact_object['CreatedDate'] = normalize_timestamp(artifact['created'])
+                        artifact_string += 'Created Date: ' + artifact_object['CreatedDate'] + '\n'
+                        if artifact['description']:
+                            artifact_object['Description'] = artifact['description']
+                            artifact_string += 'Description: ' + artifact_object['Description'] + '\n'
+                        artifact_object['Creator'] = artifact['creator']['fname'] + ' ' + artifact['creator']['lname']
+                        artifact_string += 'Creator: ' + artifact_object['Creator'] + '\n'
+                        hr_incident['Artifacts'] += artifact_string
+                        artifacts.append(artifact_object)
+                    incident_object['Artifacts'] = artifacts
+                hr_incidents.append(hr_incident)
+                ec_incidents.append(incident_object)
+            ec = {
+                'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
+                    'Id': incident_id,
+                    'Related': ec_incidents
+                }
+            }
+            title = 'Incident ' + incident_id + ' related incidents'
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(title, hr_incidents),
+                'EntryContext': ec
+            }
+        else:
+            entry = 'No related incidents found.'
+        return entry
+
+    def related_incidents(incident_id):
+        response = client.get('/incidents/' + incident_id + '/related_ex?want_artifacts=true')
+        return response
+
+    def fetch_incidents():
+        now = int(time.time())
+        last_run = demisto.getLastRun() and demisto.getLastRun()['time']
+        if not last_run:
+            now -= 600 # In the first run, fetch incidents from the last 10 minutes
+            last_run = now
+        args = {'date-created-after': normalize_timestamp(last_run*1000)}
+        resilient_incidents = search_incidents(args)
+        incidents = []
+        for incident in resilient_incidents:
+            artifacts = incident_artifacts(str(incident['id']))
+            if artifacts:
+                incident['artifacts'] = artifacts
+            attachments = incident_attachments(str(incident['id']))
+            if attachments:
+                incident['attachments'] = attachments
+            demisto_incident = {}
+            if isinstance(incident['description'], unicode):
+                incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
+            incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
+            incident['create_date'] = normalize_timestamp(incident['create_date'])
+            demisto_incident['name'] = 'IBM Resilient Systems incident ID ' + str(incident['id'])
+            demisto_incident['occurred'] = incident['create_date']
+            demisto_incident['rawJSON'] = json.dumps(incident)
+            incidents.append(demisto_incident)
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': now})
+
+    ''' EXECUTION CODE '''
+    client = resilient.get_client({
+        'email': USERNAME,
+        'password': PASSWORD,
+        'host': SERVER,
+        'cafile': 'true' if USE_SSL else 'false',
+        'org': ORG_NAME
+        })
+
+    # Disable SDK logging warning messages
+    logger = logging.getLogger('resilient')
+    logger.propagate = False
+
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            # Checks if there is an authenticated session
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'rs-search-incidents':
+            demisto.results(search_incidents_command(demisto.args()))
+        elif demisto.command() == 'rs-update-incident':
+            demisto.results(update_incident_command(demisto.args()))
+        elif demisto.command() == 'rs-incidents-get-members':
+            demisto.results(get_members_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-get-incident':
+            demisto.results(get_incident_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-incidents-update-member':
+            demisto.results(set_member_command(demisto.args()['incident-id'], demisto.args()['members']))
+        elif demisto.command() == 'rs-incidents-get-tasks':
+            demisto.results(get_tasks_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-get-users':
+            demisto.results(get_users_command())
+        elif demisto.command() == 'rs-close-incident':
+            demisto.results(close_incident_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-create-incident':
+            demisto.results(create_incident_command(demisto.args()))
+        elif demisto.command() == 'rs-incident-artifacts':
+            demisto.results(incident_artifacts_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-incident-attachments':
+            demisto.results(incident_attachments_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-related-incidents':
+            demisto.results(related_incidents_command(demisto.args()['incident-id']))
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: rs-search-incidents
+    arguments:
+    - name: severity
+      description: Incident severity comma separated, e.g. Low,Medium,High
+    - name: date-created-before
+      description: Created date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ,
+        e.g. 2018-05-07T10:59:07Z
+    - name: date-created-after
+      description: Created date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ,
+        e.g. 2018-05-07T10:59:07Z
+    - name: date-created-within-the-last
+      description: Created date of the incident within the last time frame (days/hours/minutes).
+        Should be given a number, along with with the timeframe argument.
+    - name: timeframe
+      auto: PREDEFINED
+      predefined:
+      - days
+      - hours
+      - minutes
+      description: 'Time frame to search within for incident. Should be given with
+        within-the-last/due-in argument. '
+    - name: date-occurred-within-the-last
+      description: Occurred date of the incident within the last time frame (days/hours/minutes).
+        Should be given a number, along with with the timeframe argument.
+    - name: date-occurred-before
+      description: Occurred date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ,
+        e.g. 2018-05-07T10:59:07Z
+    - name: date-occurred-after
+      description: Occurred date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ,
+        e.g. 2018-05-07T10:59:07Z
+    - name: incident-type
+      auto: PREDEFINED
+      predefined:
+      - CommunicationError
+      - DenialOfService
+      - ImproperDisposal:DigitalAsset
+      - ImproperDisposal:documents/files
+      - LostDocuments/files/records
+      - LostPC/laptop/tablet
+      - LostPDA/smartphone
+      - LostStorageDevice/media
+      - Malware
+      - NotAnIssue
+      - Other
+      - Phishing
+      - StolenDocuments/files/records
+      - StolenPC/laptop/tablet
+      - StolenPDA/Smartphone
+      - StolenStorageDevice/media
+      - SystemIntrusion
+      - TBD/Unknown
+      - Vendor/3rdPartyError
+      description: Incident type
+    - name: nist
+      auto: PREDEFINED
+      predefined:
+      - Attrition
+      - E-mail
+      - External/RemovableMedia
+      - Impersonation
+      - ImproperUsage
+      - Loss/TheftOfEquipment
+      - Other
+      - Web
+      description: NIST Attack Vectors
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - Active
+      - Closed
+      description: Incident status
+    - name: due-in
+      description: Due date of the incident in given timeframe (days/hours/minutes).
+        Should be given a number, along with with the timeframe argument.
+    outputs:
+    - contextPath: Resilient.Incidents.CreateDate
+      description: Created date of the incident
+      type: string
+    - contextPath: Resilient.Incidents.Name
+      description: Incident name
+      type: string
+    - contextPath: Resilient.Incidents.DiscoveredDate
+      description: Discovered date of the incident
+      type: string
+    - contextPath: Resilient.Incidents.Id
+      description: Incident ID
+      type: string
+    - contextPath: Resilient.Incidents.Phase
+      description: Incident Phase
+      type: string
+    - contextPath: Resilient.Incidents.Severity
+      description: Incident severity
+      type: string
+    - contextPath: Resilient.Incidents.Description
+      description: Incident description
+      type: string
+    description: Query for incidents
+  - name: rs-update-incident
+    arguments:
+    - name: incident-id
+      required: true
+      description: Incident ID to update
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Severity to update
+    - name: owner
+      description: User full name to set as incident owner, e.g. Steve Jobs
+    - name: incident-type
+      auto: PREDEFINED
+      predefined:
+      - CommunicationError
+      - DenialOfService
+      - ImproperDisposal:DigitalAsset
+      - ImproperDisposal:documents/files
+      - LostDocuments/files/records
+      - LostPC/laptop/tablet
+      - LostPDA/smartphone
+      - LostStorageDevice/media
+      - Malware
+      - NotAnIssue
+      - Other
+      - Phishing
+      - StolenDocuments/files/records
+      - StolenPC/laptop/tablet
+      - StolenPDA/Smartphone
+      - StolenStorageDevice/media
+      - SystemIntrusion
+      - TBD/Unknown
+      - Vendor/3rdPartyError
+      description: Incident type (added to the current incident types list)
+    - name: resolution
+      auto: PREDEFINED
+      predefined:
+      - Unresolved
+      - Duplicate
+      - NotAnIssue
+      - Resolved
+      description: Incident resolution
+    - name: resolution-summary
+      description: Incident resolution summary
+    - name: description
+      description: Incident description
+    - name: name
+      description: Incident name
+    - name: nist
+      auto: PREDEFINED
+      predefined:
+      - Attrition
+      - E-mail
+      - External/RemovableMedia
+      - Impersonation
+      - ImproperUsage
+      - Loss/TheftOfEquipment
+      - Other
+      - Web
+      description: NIST Attack Vectors (added to the current list of NIST attack vectors)
+    description: Updates incidents.
+  - name: rs-incidents-get-members
+    arguments:
+    - name: incident-id
+      required: true
+      description: Incident ID to get members of
+    outputs:
+    - contextPath: Resilient.Incidents.ID
+      description: Incident ID
+      type: string
+    - contextPath: Resilient.Incidents.Members.FirstName
+      description: Member's first name
+      type: string
+    - contextPath: Resilient.Incidents.Members.LastName
+      description: Member's last name
+      type: string
+    - contextPath: Resilient.Incidents.Members.ID
+      description: Member's ID
+      type: number
+    - contextPath: Resilient.Incidents.Members.Email
+      description: Member's email address
+      type: string
+    description: Gets members of the incident.
+  - name: rs-get-incident
+    arguments:
+    - name: incident-id
+      required: true
+      description: ID of incident to get
+    outputs:
+    - contextPath: Resilient.Incidents.CreateDate
+      description: Created date of the incident
+      type: string
+    - contextPath: Resilient.Incidents.Name
+      description: Incident name
+      type: string
+    - contextPath: Resilient.Incidents.Resolution
+      description: Incident resolution
+      type: string
+    - contextPath: Resilient.Incidents.DiscoveredDate
+      description: Discovered date of the incident
+      type: string
+    - contextPath: Resilient.Incidents.ResolutionSummary
+      description: Incident resolution summary
+      type: string
+    - contextPath: Resilient.Incidents.Id
+      description: Incident ID
+      type: string
+    - contextPath: Resilient.Incidents.Phase
+      description: Incident Phase
+      type: string
+    - contextPath: Resilient.Incidents.Severity
+      description: Incident severity
+      type: string
+    - contextPath: Resilient.Incidents.Description
+      description: Incident description
+      type: string
+    - contextPath: Resilient.Incidents.Confirmed
+      description: Incident cofirmation
+      type: boolean
+    - contextPath: Resilient.Incidents.NegativePr
+      description: Negative PR likely
+      type: boolean
+    - contextPath: Resilient.Incidents.DateOccurred
+      description: Date occurred of incident
+      type: string
+    - contextPath: Resilient.Incidents.Reporter
+      description: Name of reporting individual
+      type: string
+    - contextPath: Resilient.Incidents.NistAttackVectors
+      description: Incident NIST attack vectors
+    description: Gets an individual incident by ID
+  - name: rs-incidents-update-member
+    arguments:
+    - name: incident-id
+      required: true
+      description: 'Incident ID to set its members '
+    - name: members
+      required: true
+      description: Members IDs to set comma separated, e.g. 1,2,3
+    description: Updates the incident's members.
+  - name: rs-get-users
+    arguments: []
+    description: Gets a list of all users in the system.
+  - name: rs-close-incident
+    arguments:
+    - name: incident-id
+      required: true
+      default: true
+      description: ID of incident to close
+    description: Closes an incident
+  - name: rs-create-incident
+    arguments:
+    - name: name
+      required: true
+      description: Incident name
+    description: Creates an incident
+  - name: rs-incident-artifacts
+    arguments:
+    - name: incident-id
+      required: true
+      description: Incident ID to get artifacts of
+    outputs:
+    - contextPath: Resilient.Incidents.Id
+      description: Incident ID
+      type: string
+    - contextPath: Resilient.Incidents.Name
+      description: Incident name
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.CreatedDate
+      description: Artifact created date
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.Creator
+      description: Artifact creator
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.Description
+      description: Artifact description
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.ID
+      description: Artifact ID
+      type: number
+    - contextPath: Resilient.Incidents.Artifacts.Type
+      description: Artifact type
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.Value
+      description: Artifact value
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.Attachments.ContentType
+      description: Attachment content type
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.Attachments.CreatedDate
+      description: Attachment created date
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.Attachments.Creator
+      description: Attachment creator
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.Attachments.ID
+      description: Attachment ID
+      type: number
+    - contextPath: Resilient.Incidents.Artifacts.Attachments.Name
+      description: Attachment name
+      type: string
+    - contextPath: Resilient.Incidents.Artifacts.Attachments.Size
+      description: Attachment size
+      type: number
+    description: Gets incident artifacts
+  - name: rs-incident-attachments
+    arguments:
+    - name: incident-id
+      required: true
+      description: Incident ID to get attachments of
+    outputs:
+    - contextPath: Resilient.Incidents.Id
+      description: Incident ID
+      type: string
+    - contextPath: Resilient.Incidents.Name
+      description: Incident name
+      type: string
+    - contextPath: Resilient.Incidents.Owner
+      description: Incident owner
+      type: string
+    - contextPath: Resilient.Incidents.Attachments.ContentType
+      description: Attachment content type
+      type: string
+    - contextPath: Resilient.Incidents.Attachments.CreatedDate
+      description: Attachment created date
+      type: string
+    - contextPath: Resilient.Incidents.Attachments.Creator
+      description: Attachment creator
+      type: string
+    - contextPath: Resilient.Incidents.Attachments.ID
+      description: Attachment ID
+      type: number
+    - contextPath: Resilient.Incidents.Attachments.Name
+      description: Attachment name
+      type: string
+    - contextPath: Resilient.Incidents.Attachments.Size
+      description: Attachment size
+      type: number
+    description: Gets incident attachments
+  - name: rs-related-incidents
+    arguments:
+    - name: incident-id
+      required: true
+      description: Incident ID to get related incidents of
+    outputs:
+    - contextPath: Resilient.Incidents.Id
+      description: Incident ID
+      type: string
+    - contextPath: Resilient.Incidents.Related.CreatedDate
+      description: Created date of related incident
+      type: string
+    - contextPath: Resilient.Incidents.Related.Name
+      description: Name of related incident
+      type: string
+    - contextPath: Resilient.Incidents.Related.ID
+      description: ID of related incident
+      type: number
+    - contextPath: Resilient.Incidents.Related.Status
+      description: Status (Active/Closed) of related incident
+      type: string
+    - contextPath: Resilient.Incidents.Related.Artifacts.CreatedDate
+      description: Created date of artifact
+      type: string
+    - contextPath: Resilient.Incidents.Related.Artifacts.ID
+      description: ID of artifact
+      type: number
+    - contextPath: Resilient.Incidents.Related.Artifacts.Creator
+      description: Creator of artifact
+      type: string
+    description: Gets related incidents
+  - name: rs-incidents-get-tasks
+    arguments:
+    - name: incident-id
+      required: true
+      description: Incident ID to get tasks of
+    outputs:
+    - contextPath: Resilient.Incidents.Id
+      description: Incident ID
+      type: string
+    - contextPath: Resilient.Incidents.Name
+      description: Incident name
+      type: string
+    - contextPath: Resilient.Incidents.Tasks.Category
+      description: Task category
+      type: string
+    - contextPath: Resilient.Incidents.Tasks.Creator
+      description: Task creator
+      type: string
+    - contextPath: Resilient.Incidents.Tasks.DueDate
+      description: Task due date
+      type: string
+    - contextPath: Resilient.Incidents.Tasks.Form
+      description: Task form
+      type: string
+    - contextPath: Resilient.Incidents.Tasks.ID
+      description: Task ID
+      type: string
+    - contextPath: Resilient.Incidents.Tasks.Name
+      description: Task name
+      type: string
+    - contextPath: Resilient.Incidents.Tasks.Required
+      description: Task required
+      type: boolean
+    - contextPath: Resilient.Incidents.Tasks.Status
+      description: Task status (Open/Closed)
+      type: string
+    description: Gets tasks of incidents
+  dockerimage: demisto/resilient
+  isfetch: true
+  runonce: false

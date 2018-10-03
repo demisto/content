@@ -27,12 +27,13 @@ script: |-
   import os
   import sys
   import glob
+  import string
+  import random
   import traceback
-  from email.parser import Parser as EmailParser
   import email.utils
   import olefile as OleFile
-  import random
-  import string
+  from email.parser import HeaderParser
+  from email.parser import Parser as EmailParser
 
   reload(sys)
   sys.setdefaultencoding('utf8')
@@ -435,7 +436,7 @@ script: |-
                   print("Directory: " + str(dir))
                   print("Contents: " + self._getStream(dir))
   ########################################################################################################################
-  REGEX_EXTRACT_EMAIL = '.*<([^>]*)>.*'
+  REGEX_EXTRACT_EMAIL = '[\s\S]*<([^>]*)>.*'
 
 
 
@@ -455,7 +456,10 @@ script: |-
       md += "* {0}:\t{1}\n".format('To',emailData['To'])
       md += "* {0}:\t{1}\n".format('CC', emailData['CC'])
       md += u"* {0}:\t{1}\n".format('Subject', emailData['Subject'])
-      md += u"* {0}:\t{1}\n".format('Body', emailData['Text'])
+      if emailData['Text']:
+          md += u"* {0}:\t{1}\n".format('Body/Text', emailData['Text'])
+      if emailData['HTML']:
+          md += u"* {0}:\t{1}\n".format('Body/HTML', emailData['HTML'])
       md += "* {0}:\t{1}\n".format('Attachments', emailData['Attachments'])
       md += "* {0}:\t{1}\n".format('Headers', emailData['Headers'])
       return md
@@ -498,6 +502,8 @@ script: |-
           'EntryContext': {'Email': emailData}}]
 
   def getUtfString(text, field):
+      if text is None:
+        text = ''
       try:
           utfString = text.encode('utf-8')
       except Exception as ex:
@@ -515,7 +521,18 @@ script: |-
           fileData = emlFile.read()
           if b64:
               fileData = b64decode(fileData)
-          headers = fileData.split('\r\n\r\n')[0]
+
+          parser = HeaderParser()
+          headers = parser.parsestr(fileData)
+
+          header_list = []
+          for item in headers.items():
+              item_dict = {}
+              item_dict['name'] = item[0]
+              item_dict['value'] = item[1]
+
+              header_list.append(item_dict)
+
           eml = message_from_string(fileData)
           if not eml:
               r += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Could not parse eml file!"}]
@@ -533,9 +550,9 @@ script: |-
                   demisto.setContext('AttachmentName', part.get_filename())
                   r.append(fileResult(part.get_filename(), part.get_payload(decode=True)))
               elif part.get_content_type() == 'text/html':
-                  html = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
+                  html = getUtfString(part.get_payload(decode=True),'HTML')
               elif part.get_content_type() == 'text/plain':
-                  text = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
+                  text = getUtfString(part.get_payload(decode=True),'TEXT')
 
 
           try:
@@ -552,7 +569,7 @@ script: |-
               'Subject': subj,
               'HTML': html,
               'Text': text,
-              'Headers': headers,
+              'Headers': header_list,
               'Attachments': '' if not attachments else ','.join(attachments),
               'Format': eml.get_content_type()
           }
@@ -567,15 +584,15 @@ script: |-
   except Exception, ex:
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)}]
 
-  if 'Composite Document File V2 Document'.lower() in fileType.lower():
-      temp1, temp2 =  handleMsg(filePath)
+  if 'Composite Document File V2 Document'.lower() in fileType.lower() or 'CDFV2 Microsoft Outlook Message'.lower() in fileType.lower():
+      temp1, temp2 = handleMsg(filePath)
       res += temp1
       res += temp2
   elif 'rfc 822 mail' in fileType.lower():
       temp1, temp2 = handleEml(filePath)
       res += temp1
       res += temp2
-  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType or 'ASCII text, with CRLF, LF line terminators' in fileType:
+  elif 'ASCII text' in fileType:
       try:
           # Try to open the email as-is
           with open(filePath, 'rb') as f:
@@ -637,3 +654,4 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
+runonce: false

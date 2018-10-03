@@ -48,7 +48,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -483,6 +483,7 @@ script:
                             { to: 'Events.ParentHash', from: 'events.parentHash'},
                             { to: 'Events.PolicyState', from: 'events.policyState'},
                             { to: 'Events.LongDescription', from: 'events.longDescription'},
+                            { to: 'Events.CommandLine', from: 'events.commandLine'},
                             { to: 'Events.ParentPid', from: 'events.parentPid'},
                             { to: 'Events.ProcessId', from: 'events.processId'},
                             { to: 'Events.ThreatIndicators', from: 'events.threatIndicators'},
@@ -1365,6 +1366,8 @@ script:
       description: Policy State
     - contextPath: CarbonBlackDefense.GetAlertDetails.Events.LongDescription
       description: Long Description
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.CommandLine
+      description: Command Line
     - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentPid
       description: Parent Pid
     - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessId
@@ -1391,21 +1394,21 @@ script:
       description: ParentP Pid
     - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessPPid
       description: ProcessP Pid
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ThreatInfo.IncidentId
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.IncidentId
       description: Incident Id
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ThreatInfo.Indicators.ApplicationName
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.ApplicationName
       description: Application Name
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ThreatInfo.Indicators.IndicatorName
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.IndicatorName
       description: Indicator Name
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ThreatInfo.Indicators.Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.Sha256Hash
       description: Sha256Hash
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ThreatInfo.Summary
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Summary
       description: Summary
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ThreatInfo.ThreatId
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.ThreatId
       description: Threat Id
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ThreatInfo.ThreatScore
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.ThreatScore
       description: Threat Score
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ThreatInfo.Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Time
       description: Time
     description: Get details on the events that led to an alert. This includes retrieving
       metadata around the alert as well as a list of all the events associated with
@@ -1585,3 +1588,4 @@ script:
       description: The modified policy
     description: Re-set policy fields.
   isfetch: true
+  runonce: false

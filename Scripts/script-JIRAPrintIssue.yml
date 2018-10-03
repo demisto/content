@@ -83,3 +83,6 @@ args:
   default: true
   description: JIRA issue ID (e.g. SOC-24)
 scripttarget: 0
+dependson:
+  must:
+  - jira-get-issue

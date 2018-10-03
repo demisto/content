@@ -1,24 +1,23 @@
-id: crowdstrike_endpoint_enrichment_-_test
+id: CrowdStrike Endpoint Enrichment - Test
 version: -1
 name: CrowdStrike Endpoint Enrichment - Test
 description: ""
-fromversion: "3.5.0"
+fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c1b2203d-9117-4a02-8a65-35e2ff8a3148
+    taskid: 20f4e6ab-5adb-4f41-8b6a-ef9b4ccb56da
     type: start
     task:
-      id: c1b2203d-9117-4a02-8a65-35e2ff8a3148
+      id: 20f4e6ab-5adb-4f41-8b6a-ef9b4ccb56da
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -27,22 +26,54 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
-    taskid: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
+    note: false
+  "7":
+    id: "7"
+    taskid: 1cc3172e-272c-4dc7-8c67-528f35f06d29
     type: regular
     task:
-      id: d7d6fd0d-c29b-480e-84ef-4e66dc5272cc
+      id: 1cc3172e-272c-4dc7-8c67-528f35f06d29
       version: -1
-      description: ""
-      name: Delete context
+      name: cs-device-search
+      description: Search for devices in your environment by platform, host name,
+        IP, or a number of other parameters
+      script: FalconHost|||cs-device-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      offset: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: b2abb242-53e3-4029-8c51-f6f74ce18f14
+    type: regular
+    task:
+      id: b2abb242-53e3-4029-8c51-f6f74ce18f14
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       all:
         simple: "yes"
@@ -55,87 +86,23 @@ tasks:
           "y": 195
         }
       }
-  "3":
-    id: "3"
-    taskid: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
-    type: regular
+    note: false
+  "9":
+    id: "9"
+    taskid: be3de74a-1573-41ad-89f9-2c99ad19f088
+    type: playbook
     task:
-      id: 02dbcc0f-1285-4607-86b7-af0e4bff30d4
+      id: be3de74a-1573-41ad-89f9-2c99ad19f088
       version: -1
-      description: ""
-      name: Verify context
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: FalconHostDevices
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
-    type: regular
-    task:
-      id: 58a4242c-00f0-41ac-8ae0-a5a0a9f89d99
-      version: -1
-      description: ""
-      name: 'Add hostname #1'
-      scriptName: Set
-      type: regular
+      name: CrowdStrike Endpoint Enrichment
+      playbookName: CrowdStrike Endpoint Enrichment
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: Endpoint.Hostname
-      value:
-        simple: CentOS70
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 759fe9ee-1d3b-4e02-844d-2207862d71c3
-    type: regular
-    task:
-      id: 759fe9ee-1d3b-4e02-844d-2207862d71c3
-      version: -1
-      description: ""
-      name: 'Add hostname #2'
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: Endpoint.Hostname
-      value:
-        simple: CYPHORT-CS-PC
-    separatecontext: false
+      - "11"
+    separatecontext: true
     view: |-
       {
         "position": {
@@ -143,30 +110,26 @@ tasks:
           "y": 545
         }
       }
-  "6":
-    id: "6"
-    taskid: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
-    type: playbook
+    note: false
+  "11":
+    id: "11"
+    taskid: 03223a48-5350-4558-87d2-1a79f700d052
+    type: regular
     task:
-      id: 0bae3a9d-895b-4b45-8862-23dc80d4aac9
+      id: 03223a48-5350-4558-87d2-1a79f700d052
       version: -1
-      name: CrowdStrike Endpoint Enrichment
-      description: Enrich Endpoint with CrowdStrike
-      playbookName: CrowdStrike Endpoint Enrichment
-      type: playbook
+      name: ContextContains
+      description: This script searches for a value in a context path.
+      scriptName: ContextContains
+      type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
     scriptarguments:
-      Hostname:
-        simple: ${Endpoint.Hostname}
+      path:
+        simple: ${Endpoint.OS}
+      value:
+        simple: Windows
     separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
     view: |-
       {
         "position": {
@@ -174,12 +137,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50
