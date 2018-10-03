@@ -690,5 +690,5 @@ script:
     description: Get incidents that are related to a specific indicator
   dockerimage: demisto/threatconnect-sdk
 tests:
-  - test-ThreatConnect
+  - "test-ThreatConnect"
 releaseNotes: "-"
