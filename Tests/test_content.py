@@ -141,7 +141,7 @@ def main():
             if type(integration) is dict:
                 name = integration.get('name')
                 if name in skipped_integrations_conf:
-                    if name not in skipped_integration
+                    if name not in skipped_integration:
                         skipped_integration.append(name)
 
                     has_skipped_integration = True
@@ -156,7 +156,7 @@ def main():
             else:
                 if integration in skipped_integrations_conf:
                     has_skipped_integration = True
-                    if name not in skipped_integration
+                    if name not in skipped_integration:
                         skipped_integration.append(name)
 
                     break
