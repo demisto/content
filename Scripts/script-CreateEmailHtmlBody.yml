@@ -55,7 +55,7 @@ script: |
       // if value found replace. Otherwise will leave placeholder
       if (map[path]) {
           html = html.replaceAll('${' + path + '}', map[path]);
-      } else if (args.replaceNotFound === 'yes') {
+      } else if (args.removeNotFound === 'yes') {
           html = html.replaceAll('${' + path + '}', '');
       }
   }
@@ -95,7 +95,7 @@ args:
 - name: object
   description: Values object provided as stringified JSON
   isArray: true
-- name: replaceNotFound
+- name: removeNotFound
   auto: PREDEFINED
   predefined:
   - "yes"
@@ -108,4 +108,4 @@ outputs:
   description: HTML Body
 scripttarget: 0
 runonce: false
-releaseNotes: added ability to get custom fileds when the path is incident.<customFieldName>, and added an arugment to replace not found values with empty string
+releaseNotes: Added the ability to have custom fields in the template in both .incident.CustomFields. and incident. formats. Also, added the option to replace non-found placeholder values with empty string
