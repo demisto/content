@@ -674,7 +674,6 @@
         "Intezer Testing",
         "Cybereason Test",
         "McAfee ATD",
-        "RTIR Test",
         "NetWitness Endpoint Test"
     ],
     "skipped_integrations": [
