@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
@@ -473,10 +477,6 @@
             "integrations": "Recorded Future",
             "playbookID": "Recorded Future Test",
             "nightly": true
-        },
-        {
-            "integrations": "RTIR",
-            "playbookID": "RTIR Test"
         },
         {
             "integrations": "Microsoft Graph",
