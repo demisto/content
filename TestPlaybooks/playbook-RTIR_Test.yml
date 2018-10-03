@@ -1,5 +1,5 @@
 id: RTIR Test
-version: 6
+version: 8
 name: RTIR Test
 starttaskid: "0"
 tasks:
@@ -288,10 +288,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: ea510656-fe00-43ca-8765-91cfecc37acf
+    taskid: e70b9cbb-3e47-4c91-8819-054fa3e6edfc
     type: regular
     task:
-      id: ea510656-fe00-43ca-8765-91cfecc37acf
+      id: e70b9cbb-3e47-4c91-8819-054fa3e6edfc
       version: -1
       name: Sleep
       scriptName: Sleep
@@ -303,7 +303,7 @@ tasks:
       - "2"
     scriptarguments:
       seconds:
-        simple: "540"
+        simple: "280"
     separatecontext: false
     view: |-
       {
