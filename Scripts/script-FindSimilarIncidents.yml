@@ -236,7 +236,7 @@ script: |-
                        'Type': entryTypes['note'],
                        'Contents': 'No duplicate incidents has been found.',
                        'EntryContext': context})
-      exit(0)
+      sys.exit(0)
 
   def merge_incident_fields(incident):
       custom_fields = incident.get('CustomFields', {}) or {}
