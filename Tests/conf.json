@@ -630,6 +630,9 @@
         {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
+        },
+        {
+            "playbookID": "TestMatchRegex"            
         }
     ],
     "skipped_tests": [
