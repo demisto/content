@@ -21,7 +21,7 @@ script: |-
           }
           vals.push(val);
 
-          if (flags.indexOf('g') == -1) {
+          if (flags.indexOf('g') === -1) {
             break;
           }
       }
