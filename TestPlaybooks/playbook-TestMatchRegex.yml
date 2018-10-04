@@ -552,7 +552,7 @@ tasks:
       id: 585e0e22-54cf-4d75-81d2-69e24c0c2b8a
       version: -1
       name: Match
-      scriptName: MatchRegexV2
+      scriptName: MatchRegex
       type: regular
       iscommand: false
       brand: ""
