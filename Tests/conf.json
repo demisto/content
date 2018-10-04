@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
@@ -475,10 +479,6 @@
             "nightly": true
         },
         {
-            "integrations": "RTIR",
-            "playbookID": "RTIR Test"
-        },
-        {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Test"
         },
@@ -671,10 +671,7 @@
         "entity_enrichment_generic_test",
         "url_enrichment_-_generic_test",
         "search_endpoints_by_hash_-_generic_-_test",
-        "Jira-Test",
-        "VerifyHumanReadableFormat",
         "McAfee ATD",
-        "RTIR Test",
         "NetWitness Endpoint Test"
     ],
     "skipped_integrations": [
