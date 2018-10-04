@@ -101,7 +101,7 @@ tasks:
       brand: VxStream
     nexttasks:
       '#none#':
-      - "4"
+      - "12"
     scriptarguments:
       authentihash: {}
       av_detect: {}
@@ -132,48 +132,12 @@ tasks:
         }
       }
     note: false
-  "4":
-    id: "4"
-    taskid: a45a9b65-f940-4951-84ab-1f7be43b94d8
-    type: regular
-    task:
-      id: a45a9b65-f940-4951-84ab-1f7be43b94d8
-      version: -1
-      name: Verify Context search
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: SHA256,environmentId,start_time,threatscore,verdict,environmentDescription,submitname,size
-      path:
-        simple: VX.Search
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
   "5":
     id: "5"
-    taskid: d3695c38-6e25-42e5-8f7b-8623aec276cc
+    taskid: 5d0c7a0e-5198-4ea8-8527-6c40daa6817d
     type: regular
     task:
-      id: d3695c38-6e25-42e5-8f7b-8623aec276cc
+      id: 5d0c7a0e-5198-4ea8-8527-6c40daa6817d
       version: -1
       name: Scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
@@ -187,7 +151,7 @@ tasks:
       - "6"
     scriptarguments:
       file:
-        simple: ${VX.Search.SHA256}
+        simple: 30d68d5f036e3edda345a0be211a14145fa763372620648d3dc2f8f7dbdf43c4
     separatecontext: false
     view: |-
       {
@@ -360,6 +324,35 @@ tasks:
         "position": {
           "x": 50,
           "y": 195
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: b7110290-7b3e-4687-84c6-e66a1efe31c6
+    type: regular
+    task:
+      id: b7110290-7b3e-4687-84c6-e66a1efe31c6
+      version: -1
+      name: crowdstrike-submit-url
+      description: Submit a URL for analysis (Supported only in v2)
+      script: VxStream|||crowdstrike-submit-url
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      environmentID: {}
+      url:
+        simple: www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
         }
       }
     note: false
