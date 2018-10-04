@@ -174,7 +174,7 @@ script: |-
                   doc += '| ' + dataMap['script']['commands'][i]['outputs'][k]['contextPath'] + ' | '
                   doc += str(dataMap['script']['commands'][i]['outputs'][k].get('type', 'unknown')) + ' | '
                   if not (dataMap['script']['commands'][i]['outputs'][k].get('description', False)):
-                      demisto.results("Error! You are missing description in input " + dataMap['script']['commands'][i]['outputs'][j]['name'] + \
+                      demisto.results("Error! You are missing description in output " + dataMap['script']['commands'][i]['outputs'][j]['name'] + \
                       " of command " + dataMap['script']['commands'][i]['name'])
                       sys.exit(0)
                   doc += dataMap['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
