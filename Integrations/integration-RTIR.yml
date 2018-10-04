@@ -940,3 +940,6 @@ script:
   dockerimage: demisto/rt-ir
   isfetch: true
   runonce: false
+releaseNotes: "-"
+tests:
+  - RTIR Test
