@@ -247,21 +247,6 @@
         },
         {
             "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
-        },
-        {
-            "integrations": {
                 "name": "activedir",
                 "byoi": false
             },
@@ -665,14 +650,10 @@
         }
     ],
     "skipped_tests": [
-        "block_endpoint_-_carbon_black_response_-_test",
-        "VxStream Test",
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
         "url_enrichment_-_generic_test",
-        "search_endpoints_by_hash_-_generic_-_test",
-        "McAfee ATD",
-        "NetWitness Endpoint Test"
+        "search_endpoints_by_hash_-_generic_-_test"
     ],
     "skipped_integrations": [
         "Symantec Endpoint Protection",
