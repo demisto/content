@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
@@ -6,6 +6,11 @@ jobs:
     environment:
       CONTENT_VERSION: "18.9.2"
       GIT_SHA1: "5c5e8ac47db85abc2134f87f7d0f4fdbc8de272f"
+    parameters:
+      is_master:
+        description: Check if the current branch is master
+        type: boolean
+        default: false
     steps:
       - checkout
       - run:
@@ -71,6 +76,9 @@ jobs:
           shell: /bin/bash
           command: ./Tests/scripts/run_tests.sh
       - run:
+          name: Slack Notifier
+          command: python ./Tests/slack_notifier.py -n $IS_NIGHTLY -l $CIRCLE_BUILD_URL
+      - run:
           name: Destroy Instances
           command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
           when: always
@@ -78,3 +86,5 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
+      - when:
+          condition:
