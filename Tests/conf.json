@@ -8,7 +8,7 @@
         },
         {
             "integrations": "epo",
-            "playbookID": "Test Playbook Mcafee ePO"
+            "playbookID": "Test Playbook McAfee ePO"
         },
         {
             "integrations": {
@@ -673,21 +673,19 @@
         "search_endpoints_by_hash_-_generic_-_test",
         "Jira-Test",
         "VerifyHumanReadableFormat",
-        "Cybereason Test",
         "McAfee ATD",
         "RTIR Test",
         "NetWitness Endpoint Test"
     ],
     "skipped_integrations": [
+        "Symantec Endpoint Protection",
         "RedLock",
         "Symantec Messaging Gateway",
-        "ThreatConnect",
         "Cylance Protect",
         "QRadar",
         "VMware",
         "Anomali ThreatStream",
         "Farsight DNSDB",
-        "carbonblack-v2",
         "Cisco Umbrella Investigate",
         "icebrg",
         "Symantec MSS",
