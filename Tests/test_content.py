@@ -197,7 +197,7 @@ def main():
             print 'Skip test'
         else:
             # run test
-            succeed = True
+            succeed = test_integration(c, integrations, playbook_id, test_options)
 
             # use results
             if succeed:
