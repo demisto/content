@@ -1582,3 +1582,5 @@ script:
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
 releaseNotes: "-"
+tests:
+  - Cylance Protect v2 Test
