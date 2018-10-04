@@ -1,6 +1,6 @@
 id: Test Playbook TrendMicroDDA
-version: 38
-name:-1est Playbook TrendMicroDDA
+version: -1
+name: Test Playbook TrendMicroDDA
 description: Test playbook for Trend Micro DDA integration, including the detonate
   File/URL playbooks.
 starttaskid: "0"
