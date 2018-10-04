@@ -9,6 +9,7 @@ CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'W
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
 TEST_DIR = 'TestPlaybooks'
+FILTER_CONF = "./Tests/filter_file.txt"
 
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
@@ -136,6 +137,7 @@ def main(circle_artifacts):
     shutil.copyfile(ZIP_TEST + '.zip', os.path.join(circle_artifacts, ZIP_TEST + '.zip'))
 
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
+    shutil.copyfile(FILTER_CONF, os.path.join(circle_artifacts, 'filter_file.txt'))
 
     print 'finished create content artifact at %s' % (circle_artifacts, )
 

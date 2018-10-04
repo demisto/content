@@ -72,4 +72,3 @@ args:
   description: time to sleep/wait between iterations in seconds (default is 10)
 scripttarget: 0
 timeout: 900ns
-releaseNotes: deprecate the script. please use native loops.
