@@ -783,7 +783,7 @@ script:
                 'GET',
                 url,
                 headers=GET_HEADERS,
-                verify=USE_SSL
+                verify=USE_SSL,
                 proxies=PROXIES,
                 auth=(USERNAME,PASSWORD)
             )
