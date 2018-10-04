@@ -671,11 +671,11 @@
         "entity_enrichment_generic_test",
         "url_enrichment_-_generic_test",
         "search_endpoints_by_hash_-_generic_-_test",
-        "Cybereason Test",
         "McAfee ATD",
         "NetWitness Endpoint Test"
     ],
     "skipped_integrations": [
+        "Symantec Endpoint Protection",
         "RedLock",
         "Symantec Messaging Gateway",
         "Cylance Protect",
