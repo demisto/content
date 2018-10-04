@@ -802,3 +802,5 @@ script:
     description: Get analysis report
   runonce: false
 releaseNotes: added outputs, support multiple inputs for get-report, handle errors gracefully, code readability
+tests:
+- Lastline - testplaybook

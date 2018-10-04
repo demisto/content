@@ -326,3 +326,6 @@ outputs:
   description: For malicious files, the reason for the vendor to make the decision
   type: string
 releaseNotes: new detonate playbook using the pooling mechanism.
+tests:
+- Lastline - testplaybook
+- detonate_url_-_generic_test
