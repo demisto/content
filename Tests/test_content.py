@@ -112,6 +112,16 @@ def main():
         playbook_id = t['playbookID']
         integrations_conf = t.get('integrations', [])
 
+        nightly_test = t.get('nightly', False)
+        skip_test = True if nightly_test and not is_nightly else False
+
+        if skip_test:
+            print '------ Test %s start ------' % (test_message, )
+            print 'Skip test'
+            print '------ Test %s end ------' % (test_message,)
+
+            continue
+
         if playbook_id in skipped_tests_conf:
             skipped_tests.append(playbook_id)
             continue
@@ -174,23 +184,16 @@ def main():
 
         print '------ Test %s start ------' % (test_message, )
 
-        nightly_test = t.get('nightly', False)
+        # run test
+        succeed = test_integration(c, integrations, playbook_id, test_options)
 
-        skip_test = True if nightly_test and not is_nightly else False
-
-        if skip_test:
-            print 'Skip test'
+        # use results
+        if succeed:
+            print 'PASS: %s succeed' % (test_message,)
+            succeed_playbooks.append(playbook_id)
         else:
-            # run test
-            succeed = test_integration(c, integrations, playbook_id, test_options)
-
-            # use results
-            if succeed:
-                print 'PASS: %s succeed' % (test_message,)
-                succeed_playbooks.append(playbook_id)
-            else:
-                print 'Failed: %s failed' % (test_message,)
-                failed_playbooks.append(playbook_id)
+            print 'Failed: %s failed' % (test_message,)
+            failed_playbooks.append(playbook_id)
 
         print '------ Test %s end ------' % (test_message,)
 

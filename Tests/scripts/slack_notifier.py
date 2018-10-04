@@ -1,16 +1,11 @@
-#!/usr/bin/env bash
-
-echo "Start Slack notifier"
-
-python ./Tests/slack_notifier.py -n $IS_NIGHTLY -l $CIRCLE_BUILD_URL
 import re
 import sys
+import json
 import argparse
+import requests
 from subprocess import Popen, PIPE
 
 from slackclient import SlackClient
-
-TOKEN = "xoxp-3435591503-412013996354-447855140609-ad8718a9a223692d0c92a6365a115d37"
 
 
 class LOG_COLORS:
@@ -26,6 +21,21 @@ def print_error(error_str):
 # print srt in the given color
 def print_color(msg, color):
     print(str(color) + str(msg) + LOG_COLORS.NATIVE)
+
+
+def http_request(url, params_dict=None):
+    try:
+        res = requests.request("GET",
+                               url,
+                               verify=True,
+                               params=params_dict,
+                               )
+        res.raise_for_status()
+
+        return res.json()
+
+    except Exception, e:
+        raise e
 
 
 def run_git_command(command):
@@ -47,33 +57,90 @@ def str2bool(v):
 
 
 def options_handler():
-    parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
-    parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
+    parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
+    parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?')
+    parser.add_argument('-u', '--url', help='The url of the current build', required=True)
+    parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
+    parser.add_argument('-i', '--userName', help='The name of the user triggered the build', required=True)
+    parser.add_argument('-s', '--privateConf', help='The private conf file', required=True)
     options = parser.parse_args()
 
     return options
 
 
-def slack_notifier():
+def extract_build_info(build_number, circleci_token):
+    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number, circleci_token)
+    res = http_request(url)
+
+    subject = res.get('subject', 'unknown')
+
+    status = 'success'
+    steps = res.get('steps', [])
+    for step in steps:
+        action = step.get('actions', [{}])[0]
+        if action.get('status', 'failed') == 'failed':
+            status = 'failed'
+
+    return status, subject
+
+
+def get_attachments(build_url, build_st, user_name, subject):
+    fallback = 'Build failed' if build_st is 'failed' else 'Build succeeded'
+    color = 'good' if build_st is 'success' else 'danger'
+    fields = get_fields(user_name, subject)
+
+    attachment = [{
+        'fallback': fallback,
+        'color': color,
+        'title': 'Content Build',
+        'title_link': build_url,
+        'fields': fields
+    }]
+
+    return attachment
+
+
+def get_fields(user_name, subject):
+    fields = [
+        {
+            "title": "Author",
+            "value": user_name,
+            "short": True
+        },
+        {
+            "title": "Commit Message",
+            "value": subject,
+            "short": True
+        }
+    ]
+
+    return fields
+
+
+def slack_notifier(build_url, build_number, user_name, conf_path):
     branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
-        sc = SlackClient(TOKEN)
-        sc.api_call(
-            "chat.postMessage",
-            channel="test_slack",
-            username="circleci",
-            text="hellosadfasdfa",
-            as_user="False"
-        )
+    # if branch_name == 'master':
+    with open(conf_path) as data_file:
+        conf = json.load(data_file)
+
+    slack_token, circleci_token = conf['slack'], conf['circleci']
+    build_st, subject = extract_build_info(build_url, build_number, circleci_token)
+    attachments = get_attachments(build_url, build_st, user_name, subject)
+
+    sc = SlackClient(slack_token)
+    sc.api_call(
+        "chat.postMessage",
+        channel="test_slack",
+        username="CircleCi",
+        as_user="False",
+        attachments=attachments
+    )
 
 
 if __name__ == "__main__":
     options = options_handler()
-    if options.nightly:
-        slack_notifier()
-
-
-$CIRCLE_BUILD_URL
+    # if options.nightly:
+    slack_notifier(options.url, options.buildNumber, options.userName, options.privateConf)
