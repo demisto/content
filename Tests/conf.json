@@ -679,6 +679,7 @@
         "NetWitness Endpoint Test"
     ],
     "skipped_integrations": [
+        "Symantec Endpoint Protection",
         "RedLock",
         "Symantec Messaging Gateway",
         "Cylance Protect",
