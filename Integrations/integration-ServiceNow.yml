@@ -371,7 +371,6 @@ script:
 
         return entries
 
-
     def update_command():
         custom_fields = demisto.args().get('custom_fields')
         template = demisto.args().get('template')
@@ -793,14 +792,14 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: number
       description: Ticket number to retrieve
     - name: get_attachments
       description: Wether to retrieve ticket attachments, default false
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -815,6 +814,8 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
     - contextPath: File.Info
       description: Attachment file info
     - contextPath: File.Name
@@ -844,14 +845,12 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: number
       description: Ticket number to retrieve
-    - name: get_attachments
-      description: Wether to retrieve ticket attachments, default false
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -878,7 +877,7 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1035,7 +1034,7 @@ script:
     - name: state
       description: State of the ticket (an integer)
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -1050,6 +1049,8 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
     description: Create new ServiceNow ticket
   - name: servicenow-incident-create
     deprecated: true
@@ -1062,7 +1063,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1207,7 +1208,7 @@ script:
     - name: template
       description: Template name to use as a base to create new tickets.
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -1222,6 +1223,8 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
     description: Create new ServiceNow ticket
   - name: servicenow-update
     arguments:
@@ -1234,7 +1237,7 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1403,7 +1406,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1561,7 +1564,7 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: link
       required: true
@@ -1585,7 +1588,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: link
       required: true
@@ -1609,7 +1612,7 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: comment
       required: true
@@ -1630,7 +1633,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: comment
       required: true
@@ -1654,12 +1657,12 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: query
       description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -1674,6 +1677,8 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
     description: Retrieve ticket info with query
   - name: servicenow-incidents-query
     deprecated: true
@@ -1689,10 +1694,10 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -1707,6 +1712,8 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
     description: Retrieve ticket info with query
   - name: servicenow-upload-file
     arguments:
@@ -1720,7 +1727,7 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: file_id
       required: true
@@ -1751,7 +1758,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: file_id
       required: true
@@ -1806,4 +1813,4 @@ script:
       type: string
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
-releaseNotes: "Added option to get ticket attachments(get command, fetch incidents) and additional outputs"
+releaseNotes: "Fixed outputs"
