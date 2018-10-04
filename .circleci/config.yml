@@ -84,5 +84,3 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
-      - when:
-          condition:

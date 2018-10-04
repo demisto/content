@@ -1,6 +1,7 @@
 import re
 import sys
 import json
+import base64
 import argparse
 import requests
 from subprocess import Popen, PIPE
@@ -130,6 +131,7 @@ def slack_notifier(build_url, build_number, user_name, conf_path):
     build_st, subject = extract_build_info(build_url, build_number, circleci_token)
     attachments = get_attachments(build_url, build_st, user_name, subject)
 
+    slack_token = base64.b64decode(slack_token)
     sc = SlackClient(slack_token)
     sc.api_call(
         "chat.postMessage",
