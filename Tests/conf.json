@@ -471,13 +471,6 @@
             "playbookID": "test-ThreatConnect"
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
-        },
-        {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
             "nightly": true
