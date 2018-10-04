@@ -665,12 +665,12 @@ script:
     function getTicketsIdsCommand() {
             var response = getTicketsIds(args.ticketType, args.limit, args.groupingType);
 
-            if(!response || !response.ticketIds){
+            if(!response || !response.ticketIds || response.ticketIds.length === 0){
                 return 'No ids returned';
             }
 
             var translator = [
-                {to: 'ticketIds', from: 'ticketIds'}
+                {to: 'IDs', from: 'ticketIds'}
             ];
 
             var entry = {
@@ -683,7 +683,7 @@ script:
             entry.ReadableContentsFormat = formats.markdown;
             entry.HumanReadable = tableToMarkdown('Secure works get tickets ids response' , translated);
             entry.EntryContext = {
-              'SecureWorks.ticketIds': response.ticketIds
+              'SecureWorks.IDs': response.ticketIds
             };
 
             return entry;
@@ -1442,7 +1442,7 @@ script:
       description: If provided, limit response to tickets matching the grouping type(s)
         identified
     outputs:
-    - contextPath: SecureWorks.ticketIds
+    - contextPath: SecureWorks.IDs
       description: The ticket IDs
     description: Get a list of ticket IDs in the same order as the tickets returned
       by the GET /tickets/updates command.
