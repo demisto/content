@@ -131,11 +131,12 @@ script:
 
         limit = demisto.args().get('limit')
         results_limit = int(limit) if limit else 10000
+        group_limit = int(limit) if limit else 100
 
         query = {
             'customFields': query_fields,
             'perFeatureLimit': 100,
-            'perGroupLimit': 100,
+            'perGroupLimit': group_limit,
             'queryPath': path,
             'queryTimeout': 120000,
             'templateContext': 'SPECIFIC',
@@ -1161,4 +1162,6 @@ script:
     description: Updates malop status
   isfetch: true
   runonce: false
-releaseNotes: "Improved fetch incidents implementation"
+tests:
+  - Cybereason Test
+releaseNotes: "-"

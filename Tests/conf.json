@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
@@ -243,21 +247,6 @@
         },
         {
             "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
-        },
-        {
-            "integrations": {
                 "name": "activedir",
                 "byoi": false
             },
@@ -475,10 +464,6 @@
             "nightly": true
         },
         {
-            "integrations": "RTIR",
-            "playbookID": "RTIR Test"
-        },
-        {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Test"
         },
@@ -665,17 +650,10 @@
         }
     ],
     "skipped_tests": [
-        "block_endpoint_-_carbon_black_response_-_test",
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
         "url_enrichment_-_generic_test",
-        "search_endpoints_by_hash_-_generic_-_test",
-        "Jira-Test",
-        "VerifyHumanReadableFormat",
-        "Cybereason Test",
-        "McAfee ATD",
-        "RTIR Test",
-        "NetWitness Endpoint Test"
+        "search_endpoints_by_hash_-_generic_-_test"
     ],
     "skipped_integrations": [
         "Symantec Endpoint Protection",
@@ -687,7 +665,6 @@
         "Anomali ThreatStream",
         "Farsight DNSDB",
         "Cisco Umbrella Investigate",
-        "icebrg",
         "Symantec MSS",
         "Remedy AR",
         "McAfee Active Response",
@@ -702,6 +679,7 @@
         "TruSTAR",
         "AlphaSOC Wisdom",
         "Jask",
-        "Qualys"
+        "Qualys",
+        "Dell Secureworks"
     ]
 }
