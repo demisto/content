@@ -62,11 +62,6 @@ jobs:
           command: |
               ./Tests/scripts/create_instance.sh instance.json
       - run:
-          name: Setup Instance
-          command: |
-              ./Tests/scripts/run_installer_on_instance.sh
-              ./Tests/scripts/wait_until_server_ready.sh
-      - run:
           name: Run Tests
           shell: /bin/bash
           command: ./Tests/scripts/run_tests.sh
