@@ -816,6 +816,7 @@ script:
       type: string
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
+      type: string
     - contextPath: File.Info
       description: Attachment file info
     - contextPath: File.Name
@@ -864,6 +865,9 @@ script:
       type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
       type: string
     description: Retrieve ticket information by specific ticket ID
   - name: servicenow-create
@@ -1051,6 +1055,7 @@ script:
       type: string
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
+      type: string
     description: Create new ServiceNow ticket
   - name: servicenow-incident-create
     deprecated: true
@@ -1225,6 +1230,7 @@ script:
       type: string
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
+      type: string
     description: Create new ServiceNow ticket
   - name: servicenow-update
     arguments:
@@ -1679,6 +1685,7 @@ script:
       type: string
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
+      type: string
     description: Retrieve ticket info with query
   - name: servicenow-incidents-query
     deprecated: true
@@ -1714,6 +1721,7 @@ script:
       type: string
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
+      type: string
     description: Retrieve ticket info with query
   - name: servicenow-upload-file
     arguments:
