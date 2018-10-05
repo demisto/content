@@ -135,7 +135,7 @@ def slack_notifier(build_url, build_number, user_name, conf_path):
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="test_slack",
+            channel="content-team",
             username="CircleCi",
             as_user="False",
             attachments=attachments
