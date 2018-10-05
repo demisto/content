@@ -20,7 +20,7 @@ curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: 
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o "$SECRET_CONF_PATH"
 
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/private_conf.json?ref=$CIRCLE_BRANCH" -o "$PRIVATE_CONF_PATH"
+      --location "https://api.github.com/repos/demisto/content-test-conf/contents/private_conf.json" -o "$PRIVATE_CONF_PATH"
 
 NOT_FOUND_MESSAGE=$(cat $SECRET_CONF_PATH | jq '.message')
 
