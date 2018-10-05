@@ -59,7 +59,7 @@ def str2bool(v):
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
-    parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?')
+    parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?', required=True)
     parser.add_argument('-u', '--url', help='The url of the current build', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-i', '--userName', help='The name of the user triggered the build', required=True)
