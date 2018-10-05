@@ -76,7 +76,8 @@ jobs:
           command: ./Tests/scripts/run_tests.sh
       - run:
           name: Slack Notifier
-          command: python ./Tests/scripts/slack_notifier.py -n $IS_NIGHTLY -l $CIRCLE_BUILD_URL -b $CIRCLE_BUILD_NUM -i $CIRCLE_USERNAME -s $(private_conf_path)
+          shell: /bin/bash
+          command: ./Tests/scripts/slack_notifier.sh
           when: always
       - run:
           name: Destroy Instances
