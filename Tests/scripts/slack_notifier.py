@@ -128,7 +128,7 @@ def slack_notifier(build_url, build_number, user_name, conf_path):
         conf = json.load(data_file)
 
     slack_token, circleci_token = conf['slack'], conf['circleci']
-    build_st, subject = extract_build_info(build_url, build_number, circleci_token)
+    build_st, subject = extract_build_info(build_number, circleci_token)
     attachments = get_attachments(build_url, build_st, user_name, subject)
 
     slack_token = base64.b64decode(slack_token)
