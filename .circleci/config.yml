@@ -23,6 +23,7 @@ jobs:
               sudo pip install pykwalify
               sudo pip install awscli
               sudo pip install requests
+              sudo pip install slackclient
               sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
               sudo npm install -g jsdoc-to-markdown
               sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
