@@ -86,14 +86,14 @@ def extract_build_info(build_number, circleci_token):
 
 
 def get_attachments(build_url, build_st, user_name, subject):
-    fallback = 'Build failed' if build_st is 'failed' else 'Build succeeded'
     color = 'good' if build_st is 'success' else 'danger'
+    title = 'Content Build - Success' if build_st is 'success' else 'Content Build - Failure'
     fields = get_fields(user_name, subject)
 
     attachment = [{
-        'fallback': fallback,
+        'fallback': title,
         'color': color,
-        'title': 'Content Build',
+        'title': title,
         'title_link': build_url,
         'fields': fields
     }]
