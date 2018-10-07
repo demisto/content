@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1770
         }
       }
     note: false
@@ -129,7 +129,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1945
         }
       }
     note: false
@@ -159,7 +159,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 2120
         }
       }
     note: false
@@ -195,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 2470
         }
       }
     note: false
@@ -225,7 +225,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 2645
         }
       }
     note: false
@@ -259,7 +259,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 2295
         }
       }
     note: false
@@ -291,7 +291,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2995
         }
       }
     note: false
@@ -327,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 3170
         }
       }
     note: false
@@ -357,7 +357,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 3345
         }
       }
     note: false
@@ -391,7 +391,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 7195
         }
       }
     note: false
@@ -427,7 +427,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 7370
         }
       }
     note: false
@@ -457,7 +457,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 7545
         }
       }
     note: false
@@ -490,7 +490,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 5270
         }
       }
     note: false
@@ -556,7 +556,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 4045
         }
       }
     note: false
@@ -588,7 +588,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 4220
         }
       }
     note: false
@@ -624,7 +624,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 4395
         }
       }
     note: false
@@ -654,7 +654,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 4570
         }
       }
     note: false
@@ -687,7 +687,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 4745
         }
       }
     note: false
@@ -717,7 +717,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 5095
         }
       }
     note: false
@@ -753,7 +753,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 4920
         }
       }
     note: false
@@ -786,7 +786,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2820
         }
       }
     note: false
@@ -819,7 +819,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 3520
         }
       }
     note: false
@@ -855,7 +855,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3695
         }
       }
     note: false
@@ -885,7 +885,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3870
         }
       }
     note: false
@@ -920,7 +920,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 5445
         }
       }
     note: false
@@ -956,7 +956,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 5620
         }
       }
     note: false
@@ -986,7 +986,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 5795
         }
       }
     note: false
@@ -1022,7 +1022,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 5970
         }
       }
     note: false
@@ -1058,7 +1058,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 6320
         }
       }
     note: false
@@ -1088,7 +1088,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 6495
         }
       }
     note: false
@@ -1123,7 +1123,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 6670
         }
       }
     note: false
@@ -1159,7 +1159,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 6845
         }
       }
     note: false
@@ -1189,7 +1189,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 7020
         }
       }
     note: false
@@ -1224,7 +1224,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 7895
         }
       }
     note: false
@@ -1260,7 +1260,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 8070
         }
       }
     note: false
@@ -1290,7 +1290,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7020
+          "y": 8245
         }
       }
     note: false
@@ -1325,7 +1325,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7195
+          "y": 8420
         }
       }
     note: false
@@ -1361,7 +1361,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 8595
         }
       }
     note: false
@@ -1391,7 +1391,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7545
+          "y": 8770
         }
       }
     note: false
@@ -1424,7 +1424,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7720
+          "y": 8945
         }
       }
     note: false
@@ -1457,7 +1457,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 7720
         }
       }
     note: false
@@ -1492,7 +1492,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7895
+          "y": 9120
         }
       }
     note: false
@@ -1528,7 +1528,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8070
+          "y": 9295
         }
       }
     note: false
@@ -1555,7 +1555,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8245
+          "y": 9470
         }
       }
     note: false
@@ -1588,7 +1588,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 6145
         }
       }
     note: false
@@ -1618,8 +1618,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 160
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -1650,17 +1650,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 340
+          "x": 50,
+          "y": 720
         }
       }
     note: false
   "53":
     id: "53"
-    taskid: f85b0203-7b7d-43f2-8228-617cec132061
+    taskid: 24529095-6330-444b-8347-fd45e0c93bc7
     type: regular
     task:
-      id: f85b0203-7b7d-43f2-8228-617cec132061
+      id: 24529095-6330-444b-8347-fd45e0c93bc7
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -1674,7 +1674,9 @@ tasks:
     scriptarguments:
       confidenceThreshold: {}
       file:
-        simple: File.SHA1
+        complex:
+          root: File
+          accessor: SHA1
       long: {}
       owners: {}
       ratingThreshold: {}
@@ -1686,8 +1688,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 545
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -1718,8 +1720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 725
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -1746,8 +1748,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 905
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -1785,17 +1787,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 800
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
   "57":
     id: "57"
-    taskid: 500927df-379c-471e-8d7a-4da563a0b2fa
+    taskid: 76204030-571d-4760-8f6b-a0ebae01c368
     type: condition
     task:
-      id: 500927df-379c-471e-8d7a-4da563a0b2fa
+      id: 76204030-571d-4760-8f6b-a0ebae01c368
       version: -1
       name: Exists2
       description: Check if a given value exists in the context. Will return 'no'
@@ -1824,8 +1826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 980
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -1834,8 +1836,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8290,
-        "width": 1400,
+        "height": 9515,
+        "width": 380,
         "x": 50,
         "y": 50
       }
