@@ -37,7 +37,6 @@ jobs:
               chmod +x ./Tests/yamlvalidator
               ./Tests/yamlvalidator
               python ./Tests/scripts/validate_files_structure.py
-              python ./Tests/scripts/configure_tests.py
       - run:
           name: Configure Test Filter
           command: python ./Tests/scripts/configure_tests.py
