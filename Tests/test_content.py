@@ -214,6 +214,11 @@ def main():
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
     os.remove(FILTER_CONF)
+
+    with open("./Tests/failed_tests.txt", "w") as failed_tests:
+        failed_tests = '\n'.join(failed_playbooks)
+        failed_tests.write(failed_tests)
+
     if len(failed_playbooks):
         sys.exit(1)
 

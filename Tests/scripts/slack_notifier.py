@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 import json
@@ -102,6 +103,10 @@ def get_attachments(build_url, build_st, user_name, subject):
 
 
 def get_fields(user_name, subject):
+    with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
+        failed_tests = failed_tests_file.readlines()
+        failed_tests = [line.strip('\n') for line in failed_tests]
+
     fields = [
         {
             "title": "Author",
@@ -114,6 +119,14 @@ def get_fields(user_name, subject):
             "short": True
         }
     ]
+
+    if failed_tests:
+        field_failed_tests = {
+            "title": "Failed tests",
+            "value": '\n'.join(failed_tests),
+            "short": False
+        }
+        fields.append(field_failed_tests)
 
     return fields
 
@@ -135,7 +148,7 @@ def slack_notifier(build_url, build_number, user_name, conf_path):
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="content-team",
+            channel="test_slack",
             username="CircleCi",
             as_user="False",
             attachments=attachments
@@ -146,3 +159,5 @@ if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
         slack_notifier(options.url, options.buildNumber, options.userName, options.privateConf)
+
+    os.remove("./Tests/failed_tests.txt")
