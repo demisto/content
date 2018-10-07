@@ -136,28 +136,36 @@ def slack_notifier(build_url, build_number, user_name, conf_path):
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    # if branch_name == 'master':
-    with open(conf_path) as data_file:
-        conf = json.load(data_file)
+    if branch_name == 'master':
+        with open(conf_path) as data_file:
+            conf = json.load(data_file)
 
-    slack_token, circleci_token = conf['slack'], conf['circleci']
-    build_st, subject = extract_build_info(build_number, circleci_token)
-    attachments = get_attachments(build_url, build_st, user_name, subject)
+        slack_token, circleci_token = conf['slack'], conf['circleci']
+        build_st, subject = extract_build_info(build_number, circleci_token)
+        attachments = get_attachments(build_url, build_st, user_name, subject)
 
-    slack_token = base64.b64decode(slack_token)
-    sc = SlackClient(slack_token)
-    sc.api_call(
-        "chat.postMessage",
-        channel="test_slack",
-        username="CircleCi",
-        as_user="False",
-        attachments=attachments
-    )
+        slack_token = base64.b64decode(slack_token)
+        sc = SlackClient(slack_token)
+        sc.api_call(
+            "chat.postMessage",
+            channel="content-team",
+            username="Content CircleCI",
+            as_user="False",
+            attachments=attachments
+        )
+
+        sc.api_call(
+            "chat.postMessage",
+            channel="content",
+            username="Content CircleCI",
+            as_user="False",
+            attachments=attachments
+        )
 
 
 if __name__ == "__main__":
     options = options_handler()
-    # if options.nightly:
-    slack_notifier(options.url, options.buildNumber, options.userName, options.privateConf)
+    if options.nightly:
+        slack_notifier(options.url, options.buildNumber, options.userName, options.privateConf)
 
     os.remove("./Tests/failed_tests.txt")
