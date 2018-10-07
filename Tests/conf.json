@@ -212,9 +212,6 @@
             "timeout": 240
         },
         {
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test"
         },
@@ -227,13 +224,6 @@
             "playbookID": "sep_-_test_endpoint_search"
         },
         {
-            "integrations": [
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
-        },
-        {
             "integrations": {
                 "name": "carbonblackprotection",
                 "byoi": false
@@ -244,21 +234,6 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "timeout": 240
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
         },
         {
             "integrations": {
@@ -496,13 +471,6 @@
             "playbookID": "test-ThreatConnect"
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
-        },
-        {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
             "nightly": true
@@ -641,7 +609,7 @@
                 "urlscan.io"
             ],
             "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
+            "timeout": 500
         },
         {
             "integrations": [
@@ -665,14 +633,10 @@
         }
     ],
     "skipped_tests": [
-        "block_endpoint_-_carbon_black_response_-_test",
-        "VxStream Test",
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
         "url_enrichment_-_generic_test",
-        "search_endpoints_by_hash_-_generic_-_test",
-        "McAfee ATD",
-        "NetWitness Endpoint Test"
+        "search_endpoints_by_hash_-_generic_-_test"
     ],
     "skipped_integrations": [
         "Symantec Endpoint Protection",
@@ -684,7 +648,6 @@
         "Anomali ThreatStream",
         "Farsight DNSDB",
         "Cisco Umbrella Investigate",
-        "icebrg",
         "Symantec MSS",
         "Remedy AR",
         "McAfee Active Response",
@@ -698,6 +661,7 @@
         "TruSTAR",
         "AlphaSOC Wisdom",
         "Jask",
-        "Qualys"
+        "Qualys",
+        "Dell Secureworks"
     ]
 }
