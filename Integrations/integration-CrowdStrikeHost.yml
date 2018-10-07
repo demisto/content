@@ -383,6 +383,67 @@ script:
         };
     }
 
+    function detectionSearch() {
+        var ec = {};
+        var res = doReq('GET', 'detects/queries/detects/v1', {'q': args.query});
+        var md = '## Falcon Host List of Detections\n';
+        if (res.obj.resources && res.obj.resources.length > 0) {
+            ec.FalconHostDetections = res.obj.resources;
+            md += '### Detections\n';
+            for (var i=0; i<res.obj.resources.length; i++) {
+                md += res.obj.resources[i] + '\n';
+            }
+        } else {
+            md += 'No result found';
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: res.obj,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
+
+    function prettifyDetections(detections) {
+        var prettyDetections = [];
+        for (var i=0; i<detections.length; i++) {
+            var detection = detections[i];
+            prettyDetections[i] = {
+                'Detection ID': detection.detection_id,
+                'Device ID': detection.behaviors[0].device_id,
+                'Filename': detection.behaviors[0].filename,
+            };
+        }
+        return prettyDetections;
+    }
+
+    function detectionDetails() {
+        var ids = argToList(args.detectionIDs);
+        var res = doReq('POST', 'detects/entities/summaries/GET/v1', {}, {ids: ids});
+        var md = '## Falcon Host Detection Details\n';
+        var ec = {};
+        log('res keys:');
+        log(Object.keys(res.obj.resources[0]));
+        log('behaviors keys:');
+        log(Object.keys(res.obj.resources[0].behaviors[0]));
+        log('behaviors keys:');
+        log(Object.keys(res.obj.resources[0].device));
+        if (res.obj.resources && res.obj.resources.length > 0) {
+            ec.FalconHostDetectionDetails = res.obj.resources;
+            md += arrToMd(prettifyDetections(res.obj.resources));
+        } else {
+            md += 'No result found';
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: res.obj,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
+
     switch (command) {
         case 'test-module':
             args = {filter: "platform_name:'Windows'"};
@@ -412,6 +473,10 @@ script:
             return processDetails();
         case 'cs-resolve-detection':
             return resolveDetection();
+        case 'cs-detection-search':
+            return detectionSearch();
+        case 'cs-detection-details':
+            return detectionDetails();
         default:
             throw 'Unknown command - ' + command;
     }
@@ -720,5 +785,24 @@ script:
     description: Sets the state of a detection in Falcon Host. You can obtain detection
       IDs from the Falcon Host UI or from the Falcon Streaming API.
     execution: true
+  - name: cs-detection-search
+    arguments:
+    - name: query
+      required: true
+      description: Free text search filter
+    outputs:
+    - contextPath: FalconHostDetections
+      description: List of detections of the searched command
+      type: string
+    description: String search through all Crowdstrike Detection fields.  For example,
+      provide a sensor ID to search for all detections that contain that sensor ID
+      (and any other fields that would happen to contain it)
+  - name: cs-detection-details
+    arguments:
+    - name: detectionIDs
+      required: true
+      description: ID of the detections
+      isArray: true
+    description: Fetch details of a Crowdstrike Detection using the detection ID
   runonce: false
-releaseNotes: "Fixed support for \"Trust any certificate\" checkbox"
+releaseNotes: "Added new commands cs-detection-search, cs-detection-details"
