@@ -241,3 +241,5 @@ script:
     description: Perform a query.
   runonce: false
 releaseNotes: "Added Devo integration"
+tests:
+    - devo_test_playbook
