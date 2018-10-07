@@ -2247,14 +2247,6 @@ script:
         except Exception as e:
             return ''
 
-    def return_error_entry(message):
-        error_entry = {
-            'Type': entryTypes['error'],
-            'Contents': message,
-            'ContentsFormat': formats['text']
-        }
-        demisto.results(error_entry)
-
     """
 
     EXECUTION
@@ -2303,13 +2295,12 @@ script:
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
-        return_error_entry(e.message)
-        sys.exit(1)
+        return_error(e.message)
     finally:
         logout()
   type: python
   commands:
-  - name: fireeye-hx-host-containment
+  - name: fireeye-hx-host-containmentn
     arguments:
     - name: hostName
       description: The host name to be contained. If the hostName is not specified,
