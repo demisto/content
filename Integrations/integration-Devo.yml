@@ -82,6 +82,7 @@ script:
 
         return sign.hexdigest()
 
+
     def get_headers(body = ''):
         headers = {
             'Content-Type': 'application/json'
@@ -93,6 +94,7 @@ script:
         headers['x-logtrust-sign'] = get_api_sign(timestamp, body)
 
         return headers
+
 
     def send_request(path, headers = get_headers(), method = 'get', body = {}, params = {}):
         url = '{}/{}'.format(SERVER_URL, path)
@@ -106,6 +108,7 @@ script:
             return res.json()
         except:
             return res.content
+
 
     def get_timestamp_in_seconds(timestamp):
         dt = datetime.strptime(timestamp,'%Y-%m-%dT%H:%M:%SZ').timetuple()
@@ -145,9 +148,12 @@ script:
                 result['eventdate'] = datetime.fromtimestamp(result['eventdate'] / 1000).strftime('%Y-%m-%dT%H:%M:%SZ')
             # temporary
             if 'srcIp' in result:
-                decimal_ip = result['srcIp']
-                # Convert decimal IP to IP
-                result['srcIp'] = socket.inet_ntoa(struct.pack('!L', int(decimal_ip))) if decimal_ip else ''
+                try:
+                    decimal_ip = int(result['srcIp'])
+                    # Convert decimal IP to IP
+                    result['srcIp'] = socket.inet_ntoa(struct.pack('!L', int(decimal_ip))) if decimal_ip else ''
+                except:
+                    pass
             results.append(result)
 
         # remove duplicates and add a count of them instead
@@ -161,14 +167,12 @@ script:
         if 'eventcount' not in headers:
             headers.append('eventcount')
 
-
         md = tableToMarkdown('Devo query results', unique_results, headers, removeNull=True)
-        context = createContext(unique_results, removeNull=True)
 
         entry['HumanReadable'] = md
         if write_context == 'true':
             entry['EntryContext'] = {
-                'Devo.Results' : createContext(context)
+                'Devo.Results' : createContext(unique_results, removeNull=True)
             }
 
         return entry
@@ -206,7 +210,6 @@ script:
         elif demisto.command() == 'devo-query':
             demisto.results(query_command())
     except Exception as e:
-        raise
         LOG(e)
         LOG.print_log(False)
         return_error(e)
@@ -231,10 +234,10 @@ script:
         the first X elements of the query or reaching its end.
     - name: writeToContext
       description: Wether to write results to context or not
-      defaultValue: "false"
+      defaultValue: "true"
     outputs:
     - contextPath: Devo.Results
       description: The query results
     description: Perform a query.
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Added Devo integration"

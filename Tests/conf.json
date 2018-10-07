@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+          "integrations": "Devo",
+          "playbookID": "devo_test_playbook"
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
