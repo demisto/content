@@ -35,7 +35,7 @@ def options_handler():
     return options
 
 
-def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests):
+def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
@@ -43,14 +43,21 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests):
     print('\nTEST RESULTS:')
     print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
     print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
-    if failed_count > 0:
-        print_error('\t Number of failed tests - ' + str(failed_count) + ':')
-        for playbook_id in failed_playbooks:
-            print_error('\t - ' + playbook_id)
+
+    if len(skipped_integration) > 0:
+        print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
+        for playbook_id in skipped_integration:
+            print_warning('\t - ' + playbook_id)
+
     if skipped_count > 0:
         print_warning('\t Number of skipped tests - ' + str(skipped_count) + ':')
         for playbook_id in skipped_tests:
             print_warning('\t - ' + playbook_id)
+
+    if failed_count > 0:
+        print_error('\t Number of failed tests - ' + str(failed_count) + ':')
+        for playbook_id in failed_playbooks:
+            print_error('\t - ' + playbook_id)
 
 
 def main():
@@ -105,6 +112,7 @@ def main():
         print('no integrations are configured for test')
         return
 
+    skipped_integration = []
     succeed_playbooks = []
     failed_playbooks = []
     skipped_tests = []
@@ -131,7 +139,11 @@ def main():
         has_skipped_integration = False
         for integration in integrations_conf:
             if type(integration) is dict:
-                if integration.get('name') in skipped_integrations_conf:
+                name = integration.get('name')
+                if name in skipped_integrations_conf:
+                    if name not in skipped_integration:
+                        skipped_integration.append(name)
+
                     has_skipped_integration = True
                     break
 
@@ -143,6 +155,9 @@ def main():
                 })
             else:
                 if integration in skipped_integrations_conf:
+                    if integration not in skipped_integration:
+                        skipped_integration.append(integration)
+
                     has_skipped_integration = True
                     break
 
@@ -194,7 +209,7 @@ def main():
 
         print '------ Test %s end ------' % (test_message,)
 
-    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests)
+    print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
     os.remove(FILTER_CONF)
     if len(failed_playbooks):
         sys.exit(1)
