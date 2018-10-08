@@ -640,7 +640,8 @@
         "entity_enrichment_generic_test",
         "url_enrichment_-_generic_test",
         "search_endpoints_by_hash_-_generic_-_test",
-        "SCADAfence_test"
+        "SCADAfence_test",
+        "test-ThreatConnect"
     ],
     "skipped_integrations": [
         "Symantec Endpoint Protection",
