@@ -216,8 +216,13 @@ def main():
     os.remove(FILTER_CONF)
 
     with open("./Tests/failed_tests.txt", "w") as failed_tests_file:
-        failed_tests = '\n'.join(failed_playbooks)
-        failed_tests_file.write(failed_tests)
+        failed_tests_file.write('\n'.join(failed_playbooks))
+
+    with open('./Tests/skipped_tests.txt', "w") as skipped_tests_file:
+        skipped_tests_file.write('\n'.join(skipped_tests))
+
+    with open('./Tests/skipped_integrations.txt', "w") as skipped_integrations_file:
+        skipped_integrations_file.write('\n'.join(skipped_integration))
 
     if len(failed_playbooks):
         sys.exit(1)
