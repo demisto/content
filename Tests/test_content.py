@@ -120,7 +120,17 @@ def main():
         playbook_id = t['playbookID']
         integrations_conf = t.get('integrations', [])
 
-        if playbook_id in skipped_tests_conf:
+        nightly_test = t.get('nightly', False)
+        skip_test = True if nightly_test and not is_nightly else False
+
+        if skip_test:
+            print '------ Test %s start ------' % (test_message, )
+            print 'Skip test'
+            print '------ Test %s end ------' % (test_message,)
+
+            continue
+
+        if not is_filter_configured and playbook_id in skipped_tests_conf:
             skipped_tests.append(playbook_id)
             continue
 
@@ -141,7 +151,7 @@ def main():
             if type(integration) is dict:
                 name = integration.get('name')
                 if name in skipped_integrations_conf:
-                    if name not in skipped_integration:
+                    if not is_filter_configured and name not in skipped_integration:
                         skipped_integration.append(name)
 
                     has_skipped_integration = True
@@ -155,7 +165,7 @@ def main():
                 })
             else:
                 if integration in skipped_integrations_conf:
-                    if integration not in skipped_integration:
+                    if not is_filter_configured and integration not in skipped_integration:
                         skipped_integration.append(integration)
 
                     has_skipped_integration = True
@@ -189,28 +199,31 @@ def main():
 
         print '------ Test %s start ------' % (test_message, )
 
-        nightly_test = t.get('nightly', False)
+        # run test
+        succeed = test_integration(c, integrations, playbook_id, test_options)
 
-        skip_test = True if nightly_test and not is_nightly else False
-
-        if skip_test:
-            print 'Skip test'
+        # use results
+        if succeed:
+            print 'PASS: %s succeed' % (test_message,)
+            succeed_playbooks.append(playbook_id)
         else:
-            # run test
-            succeed = test_integration(c, integrations, playbook_id, test_options)
-
-            # use results
-            if succeed:
-                print 'PASS: %s succeed' % (test_message,)
-                succeed_playbooks.append(playbook_id)
-            else:
-                print 'Failed: %s failed' % (test_message,)
-                failed_playbooks.append(playbook_id)
+            print 'Failed: %s failed' % (test_message,)
+            failed_playbooks.append(playbook_id)
 
         print '------ Test %s end ------' % (test_message,)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
     os.remove(FILTER_CONF)
+
+    with open("./Tests/failed_tests.txt", "w") as failed_tests_file:
+        failed_tests_file.write('\n'.join(failed_playbooks))
+
+    with open('./Tests/skipped_tests.txt', "w") as skipped_tests_file:
+        skipped_tests_file.write('\n'.join(skipped_tests))
+
+    with open('./Tests/skipped_integrations.txt', "w") as skipped_integrations_file:
+        skipped_integrations_file.write('\n'.join(skipped_integration))
+
     if len(failed_playbooks):
         sys.exit(1)
 
