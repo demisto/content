@@ -157,7 +157,7 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
         channel="test_slack",
         username="Content CircleCI",
         as_user="False",
-        attachments=attachment
+        attachments=attachments
     )
 
     #    sc.api_call(
