@@ -632,7 +632,11 @@
             "playbookID": "NetWitness Endpoint Test"
         },
         {
-            "playbookID": "TestMatchRegex"            
+            "playbookID": "TestMatchRegex"
+        },
+        {
+            "integrations": "Signal Sciences WAF",
+            "playbookID": "SignalSciences Test"
         }
     ],
     "skipped_tests": [
