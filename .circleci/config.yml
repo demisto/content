@@ -5,7 +5,7 @@ jobs:
       - image: circleci/node:9.11
     environment:
       CONTENT_VERSION: "18.10.0"
-      GIT_SHA1: "e5913f2f438c05a325ed88f6ab8a10864b9029d6"
+      GIT_SHA1: "3e41cb6ae5be2505b12055ceb31a043538c49823"
     steps:
       - checkout
       - run:
