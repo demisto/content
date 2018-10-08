@@ -1851,7 +1851,6 @@ script:
   type: python
   commands:
   - name: umbrella-domain-categorization
-    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -1872,6 +1871,7 @@ script:
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
   - name: investigate-umbrella-domain-categorization
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -1892,7 +1892,6 @@ script:
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
   - name: umbrella-domain-co-occurrences
-    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -1910,6 +1909,7 @@ script:
       a part of normal web activity. However, unusual or suspicious co-occurence can
       provide additional information regarding attacks
   - name: investigate-umbrella-domain-co-occurrences
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -1927,7 +1927,6 @@ script:
       a part of normal web activity. However, unusual or suspicious co-occurence can
       provide additional information regarding attacks
   - name: umbrella-domain-related
-    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -1944,6 +1943,7 @@ script:
       the given domain name, but that are not frequently associated with other domain
       names.
   - name: investigate-umbrella-domain-related
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -1960,7 +1960,6 @@ script:
       the given domain name, but that are not frequently associated with other domain
       names.
   - name: umbrella-domain-security
-    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -2013,6 +2012,7 @@ script:
       or security risk posed by the site. See security information about this specific
       domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
   - name: investigate-umbrella-domain-security
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -2065,7 +2065,6 @@ script:
       or security risk posed by the site. See security information about this specific
       domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
   - name: umbrella-domain-dns-history
-    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -2133,6 +2132,7 @@ script:
       Record) history for a given domain, passing in the record query type as a parameter,
       to help build intelligence around an domain. '
   - name: investigate-umbrella-domain-dns-history
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -2200,7 +2200,6 @@ script:
       Record) history for a given domain, passing in the record query type as a parameter,
       to help build intelligence around an domain. '
   - name: umbrella-ip-dns-history
-    deprecated: true
     arguments:
     - name: ip
       required: true
@@ -2245,6 +2244,7 @@ script:
       to help build intelligence around an IP or a range of IPs. The information provided
       is from within the last 90 days.
   - name: investigate-umbrella-ip-dns-history
+    deprecated: true
     arguments:
     - name: ip
       required: true
@@ -2289,6 +2289,7 @@ script:
       to help build intelligence around an IP or a range of IPs. The information provided
       is from within the last 90 days.
   - name: investigate-umbrella-ip-malicious-domains
+    deprecated: true
     arguments:
     - name: ip
       required: true
@@ -2307,7 +2308,6 @@ script:
       list. This endpoint will return an array with a single domain name for each
       domain associated with the IP, along with an id number that can be ignored.
   - name: umbrella-ip-malicious-domains
-    deprecated: true
     arguments:
     - name: ip
       required: true
@@ -2326,7 +2326,6 @@ script:
       list. This endpoint will return an array with a single domain name for each
       domain associated with the IP, along with an id number that can be ignored.
   - name: umbrella-domain-search
-    deprecated: true
     arguments:
     - name: regex
       required: true
@@ -2350,6 +2349,7 @@ script:
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
   - name: investigate-umbrella-domain-search
+    deprecated: true
     arguments:
     - name: regex
       required: true
@@ -2860,4 +2860,4 @@ script:
     description: The timeline command shows when a URL was given attribution of a
       particular security categorization or threat type (indicators of compromise).
   runonce: false
-releaseNotes: "Modified integration to python, added new commands."
+releaseNotes: "Deprecated old prefix commands in favor of new prefix commands"
