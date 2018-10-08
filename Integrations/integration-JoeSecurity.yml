@@ -113,7 +113,7 @@ script:
                 malicious = {
                     'Vendor' : 'JoeSecurity',
                     'Detections' : ', '.join(set([run['detection'] for run in analysis['runs']])),
-                    'SHA1' : analysis_info['sha1'],
+                    'SHA1' : analysis_info['SHA1'],
                 }
             elif 'suspicious' in analysis_info['Result']:
                 dbot_score = 2
