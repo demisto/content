@@ -12,8 +12,8 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Password
-  name: Password
+- display: Token
+  name: Token
   defaultvalue: ""
   type: 4
   required: true
@@ -34,7 +34,7 @@ script:
     USE_SSL = True
 
     EMAIL = demisto.params()['Email']
-    PASSWORD = demisto.params()['Password']
+    TOKEN = demisto.params()['Token']
     CORPNAME = demisto.params()['corpName']
 
     SERVER_URL = 'https://dashboard.signalsciences.net/api/v0/'
@@ -51,24 +51,20 @@ script:
     BLACKLIST_TITLE = 'Signal Sciences - Blacklist'
     ADD_IP_TO_WHITELIST_TITLE = 'Signal Sciences - Adding an IP to Whitelist'
     ADD_IP_TO_BLACKLIST_TITLE = 'Signal Sciences - Adding an IP to Blacklist'
-    REMOVE_IP_FROM_WHITELIST_TITLE = 'Signal Sciences - Removing an IP from Whitelist'
-    REMOVE_IP_FROM_BLACKLIST_TITLE = 'Signal Sciences - Removing an IP from Blacklist'
 
     '''TABLE HEADERS'''
     ADD_IP_TO_LIST = ['Source', 'Note']
     WHITELIST_HEADERS = ['ID', 'Source', 'ExpiryDate', 'Note', 'CreatedDate', 'CreatedBy']
 
     ''' HELPER FUNCTIONS '''
-    def http_request(method, url, token=None, params_dict=None, data=None):
+    def http_request(method, url, params_dict=None, data=None):
         LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
 
-        if token:
-            headers = {
-                          'Content-Type': 'application/json',
-                          'Authorization': 'Bearer ' + token
-                      }
-        else:
-            headers = None
+        headers = {
+                      'Content-Type': 'application/json',
+                      'x-api-user': EMAIL,
+                      'x-api-token': TOKEN
+                  }
 
         try:
             res = requests.request(method,
@@ -89,31 +85,22 @@ script:
             LOG(e)
             raise(e)
 
-    def login():
-        url = SERVER_URL + LOGIN_SUFFIX
-        data = {
-            "email": EMAIL,
-            "password": PASSWORD
-        }
-
-        res = http_request('POST', url, data=data)
-        return res.get('token')
-
 
     '''COMMANDS'''
     def test_module():
         try:
-            login()
+            url = SERVER_URL + 'corps'
+            res = http_request('GET', url)
         except Exception, e:
             raise Exception(e.message)
 
         demisto.results('ok')
 
+
     def get_whitelist(siteName):
         """Get the whitelist data for siteName"""
-        token = login()
         url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
-        site_whitelist = http_request('GET', url, token)
+        site_whitelist = http_request('GET', url)
         data = site_whitelist.get('data', [])
 
         outputs = []
@@ -143,9 +130,8 @@ script:
 
     def get_blacklist(siteName):
         """Get blacklist data for siteName"""
-        token = login()
         url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
-        site_blacklist = http_request('GET', url, token)
+        site_blacklist = http_request('GET', url)
         data = site_blacklist.get('data', [])
 
         outputs = []
@@ -175,13 +161,12 @@ script:
 
     def add_ip_to_whitelist(siteName, ip, note):
         """Add an ip to the whitelist"""
-        token = login()
         url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
         data = {
             'source': ip,
             'note': note
         }
-        res = http_request('PUT', url, token, data=json.dumps(data))
+        res = http_request('PUT', url, data=json.dumps(data))
 
         output = {}
         output['Source'] = res.get('source', '')
@@ -203,13 +188,12 @@ script:
 
     def add_ip_to_blacklist(siteName, ip, note):
         """Add an ip to the blacklist"""
-        token = login()
         url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
         data = {
                   'source': ip,
                   'note': note
                }
-        res = http_request('PUT', url, token, data=json.dumps(data))
+        res = http_request('PUT', url, data=json.dumps(data))
 
         output = {}
         output['Source'] = res.get('source', '')
@@ -231,9 +215,8 @@ script:
 
     def whitelist_remove_ip(siteName, ID):
         """Remove an ip from the blacklist"""
-        token = login()
         url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, siteName, ID)
-        res = http_request('DELETE', url, token)
+        res = http_request('DELETE', url)
 
         human_readable = '### Signal Sciences - Removing an IP from Whitelist \n\n The IP has been successfully removed from Whitelist.'
 
@@ -251,11 +234,10 @@ script:
 
     def blacklist_remove_ip(siteName, ID):
         """Remove an ip from the blacklist"""
-        token = login()
         url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, siteName, ID)
-        res = http_request('DELETE', url, token)
+        res = http_request('DELETE', url)
 
-        human_readable = '### {0} \n\n The IP has been successfully removed from Blacklist.'.format(REMOVE_IP_FROM_BLACKLIST_TITLE)
+        human_readable = '### Signal Sciences - Removing an IP from Blacklist \n\n The IP has been successfully removed from Blacklist.'
 
         return {
             'Type': entryTypes['note'],
@@ -298,8 +280,6 @@ script:
   commands:
   - name: sigsci-get-whitelist
     arguments:
-    - name: corpName
-      description: 'Please input the corpName you are connected to. e.g : corpName='
     - name: siteName
       required: true
       description: 'Please input the siteName you want see whitelist for. e.g : siteName='
@@ -406,3 +386,5 @@ script:
     description: Remove an IP from blacklist residing on Signal Sciences' Platform.
   runonce: false
 releaseNotes: "New integration with SignalSciences."
+tests:
+  - SignalSciences Test

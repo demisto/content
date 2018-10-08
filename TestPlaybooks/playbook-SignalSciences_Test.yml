@@ -1,0 +1,257 @@
+id: SignalSciences Test
+version: -1
+name: SignalSciences Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 04e7eef2-574f-47b8-8d53-f009045ac787
+    type: start
+    task:
+      id: 04e7eef2-574f-47b8-8d53-f009045ac787
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: fb27db04-5170-4e3a-8b03-72e230d392b9
+    type: title
+    task:
+      id: fb27db04-5170-4e3a-8b03-72e230d392b9
+      version: -1
+      name: Blacklist testing
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 0e0d5829-b41d-44a6-8c36-dfc542b52fd3
+    type: title
+    task:
+      id: 0e0d5829-b41d-44a6-8c36-dfc542b52fd3
+      version: -1
+      name: Whitelist testing
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 7818bb7f-5985-40aa-8349-9e011e5bfe59
+    type: regular
+    task:
+      id: 7818bb7f-5985-40aa-8349-9e011e5bfe59
+      version: -1
+      name: Add ip to blacklist
+      script: '|||sigsci-blacklist-add-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ip:
+        simple: 8.3.3.3
+      note:
+        simple: test blacklist
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 65d9114f-119e-4fb7-81dd-949749e8330f
+    type: regular
+    task:
+      id: 65d9114f-119e-4fb7-81dd-949749e8330f
+      version: -1
+      name: Get blacklist
+      script: '|||sigsci-get-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: fbc3aa68-1ca2-47ed-8861-db244845fb24
+    type: regular
+    task:
+      id: fbc3aa68-1ca2-47ed-8861-db244845fb24
+      version: -1
+      name: Remove IP from blacklist
+      script: '|||sigsci-blacklist-remove-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      ID:
+        simple: ${SigSciences.Blacklist.ID}
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: ac885648-42f8-4011-8201-87f27fc71e14
+    type: regular
+    task:
+      id: ac885648-42f8-4011-8201-87f27fc71e14
+      version: -1
+      name: Add ip to whitelist
+      script: '|||sigsci-whitelist-add-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ip:
+        simple: 8.3.3.3
+      note:
+        simple: test adding ip to whitelist
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 1da94384-7045-4c17-8b09-7785d0f20b31
+    type: regular
+    task:
+      id: 1da94384-7045-4c17-8b09-7785d0f20b31
+      version: -1
+      name: Get whitelist
+      script: '|||sigsci-get-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      corpName: {}
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: da4162c4-0ccd-4fc6-8b8a-c20f18b8321a
+    type: regular
+    task:
+      id: da4162c4-0ccd-4fc6-8b8a-c20f18b8321a
+      version: -1
+      name: Remove IP from whitelist
+      script: '|||sigsci-whitelist-remove-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      ID:
+        simple: ${SigSciences.Whitelist.ID}
+      siteName:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
