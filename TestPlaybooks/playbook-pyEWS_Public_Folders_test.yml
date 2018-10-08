@@ -1,0 +1,167 @@
+id: pyEWS Public Folders test
+version: -1
+name: pyEWS Public Folders test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f677a32f-acf8-4802-82fd-31d6a05c5c75
+    type: start
+    task:
+      id: f677a32f-acf8-4802-82fd-31d6a05c5c75
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: a36daf27-b335-44ee-8dcc-292687c98000
+    type: regular
+    task:
+      id: a36daf27-b335-44ee-8dcc-292687c98000
+      version: -1
+      name: ews-find-folders
+      script: '|||ews-find-folders'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      is-public:
+        simple: "True"
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 9b17011c-a00e-42a8-8f8f-68164a2d67c0
+    type: regular
+    task:
+      id: 9b17011c-a00e-42a8-8f8f-68164a2d67c0
+      version: -1
+      name: ews-get-folder
+      script: '|||ews-get-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      folder-path:
+        simple: pub/sub2
+      is-public:
+        simple: "True"
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: cf692051-65c7-4eaf-85c0-871f46c17bfa
+    type: regular
+    task:
+      id: cf692051-65c7-4eaf-85c0-871f46c17bfa
+      version: -1
+      name: ews-get-items-from-folder
+      description: Get items from a specific folder in a mailbox. The items will return
+        order by created time, first item is the most recent item.
+      script: EWS v2_public_folders|||ews-get-items-from-folder
+      type: regular
+      iscommand: true
+      brand: EWS v2_public_folders
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      folder-path:
+        simple: pub/sub
+      is-public:
+        simple: "True"
+      limit: {}
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: d66d9867-3e18-4d1b-8767-a7e7950ed05c
+    type: regular
+    task:
+      id: d66d9867-3e18-4d1b-8767-a7e7950ed05c
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: "true"
+      fields: {}
+      path:
+        simple: EWS.Folders=>val.length == 4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
