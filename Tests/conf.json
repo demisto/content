@@ -630,13 +630,17 @@
         {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
+        },
+        {
+            "playbookID": "TestMatchRegex"            
         }
     ],
     "skipped_tests": [
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
         "url_enrichment_-_generic_test",
-        "search_endpoints_by_hash_-_generic_-_test"
+        "search_endpoints_by_hash_-_generic_-_test",
+        "SCADAfence_test"
     ],
     "skipped_integrations": [
         "Symantec Endpoint Protection",
@@ -656,7 +660,6 @@
         "XFE",
         "iDefense",
         "LogRhythm",
-        "FireEye HX",
         "Phish.AI",
         "Centreon",
         "TruSTAR",
