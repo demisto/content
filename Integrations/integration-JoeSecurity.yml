@@ -980,3 +980,6 @@ script:
       extension will be "dontrun"
   runonce: false
 releaseNotes: Added url parameter
+tests:
+  - JoeSecurityTestPlaybook
+  - JoeSecurityTestDetonation
