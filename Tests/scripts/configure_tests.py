@@ -135,7 +135,10 @@ def create_test_file():
 
         tests = get_test_list(modified_files, modified_tests_list)
         tests_string = '\n'.join(tests)
-        print('Collected the following tests:\n{0}'.format(tests_string))
+        if tests_string:
+            print('Collected the following tests:\n{0}'.format(tests_string))
+        else:
+            print('No filter configured, running all tests')
 
     print("Creating filter_file.txt")
     with open("./Tests/filter_file.txt", "w") as filter_file:
