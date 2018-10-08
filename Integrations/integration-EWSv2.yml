@@ -1249,6 +1249,7 @@ script:
     try:
         config = prepare()
         args = prepare_args(demisto.args())
+        fix_unread_count()
 
         if demisto.command() == 'test-module':
             test_module()
