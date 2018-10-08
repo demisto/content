@@ -64,7 +64,8 @@ def options_handler():
     parser.add_argument('-u', '--url', help='The url of the current build', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-i', '--userName', help='The name of the user triggered the build', required=True)
-    parser.add_argument('-s', '--privateConf', help='The private conf file', required=True)
+    parser.add_argument('-s', '--slack', help='The token for slack', required=True)
+    parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
     options = parser.parse_args()
 
     return options
@@ -131,41 +132,36 @@ def get_fields(user_name, subject):
     return fields
 
 
-def slack_notifier(build_url, build_number, user_name, conf_path):
+def slack_notifier(build_url, build_number, user_name, slack_token, circleci_token):
     branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
-        with open(conf_path) as data_file:
-            conf = json.load(data_file)
+    # if branch_name == 'master':
+    build_st, subject = extract_build_info(build_number, circleci_token)
+    attachments = get_attachments(build_url, build_st, user_name, subject)
 
-        slack_token, circleci_token = conf['slack'], conf['circleci']
-        build_st, subject = extract_build_info(build_number, circleci_token)
-        attachments = get_attachments(build_url, build_st, user_name, subject)
+    sc = SlackClient(slack_token)
+    sc.api_call(
+        "chat.postMessage",
+        channel="test_slack",
+        username="Content CircleCI",
+        as_user="False",
+        attachments=attachments
+    )
 
-        slack_token = base64.b64decode(slack_token)
-        sc = SlackClient(slack_token)
-        sc.api_call(
-            "chat.postMessage",
-            channel="content-team",
-            username="Content CircleCI",
-            as_user="False",
-            attachments=attachments
-        )
-
-        sc.api_call(
-            "chat.postMessage",
-            channel="content",
-            username="Content CircleCI",
-            as_user="False",
-            attachments=attachments
-        )
+    # sc.api_call(
+    #     "chat.postMessage",
+    #     channel="content",
+    #     username="Content CircleCI",
+    #     as_user="False",
+    #     attachments=attachments
+    # )
 
 
 if __name__ == "__main__":
     options = options_handler()
-    if options.nightly:
-        slack_notifier(options.url, options.buildNumber, options.userName, options.privateConf)
+    # if options.nightly:
+    slack_notifier(options.url, options.buildNumber, options.userName, options.slack, options.circleci)
 
     os.remove("./Tests/failed_tests.txt")
