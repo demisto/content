@@ -137,31 +137,31 @@ def slack_notifier(build_url, build_number, user_name, slack_token, circleci_tok
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    # if branch_name == 'master':
-    build_st, subject = extract_build_info(build_number, circleci_token)
-    attachments = get_attachments(build_url, build_st, user_name, subject)
+    if branch_name == 'master':
+        build_st, subject = extract_build_info(build_number, circleci_token)
+        attachments = get_attachments(build_url, build_st, user_name, subject)
 
-    sc = SlackClient(slack_token)
-    sc.api_call(
-        "chat.postMessage",
-        channel="test_slack",
-        username="Content CircleCI",
-        as_user="False",
-        attachments=attachments
-    )
+        sc = SlackClient(slack_token)
+        sc.api_call(
+            "chat.postMessage",
+            channel="content-team",
+            username="Content CircleCI",
+            as_user="False",
+            attachments=attachments
+        )
 
-    # sc.api_call(
-    #     "chat.postMessage",
-    #     channel="content",
-    #     username="Content CircleCI",
-    #     as_user="False",
-    #     attachments=attachments
-    # )
+        sc.api_call(
+            "chat.postMessage",
+            channel="content",
+            username="Content CircleCI",
+            as_user="False",
+            attachments=attachments
+        )
 
 
 if __name__ == "__main__":
     options = options_handler()
-    # if options.nightly:
-    slack_notifier(options.url, options.buildNumber, options.userName, options.slack, options.circleci)
+    if options.nightly:
+        slack_notifier(options.url, options.buildNumber, options.userName, options.slack, options.circleci)
 
     os.remove("./Tests/failed_tests.txt")
