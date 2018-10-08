@@ -92,13 +92,13 @@ tasks:
     task:
       id: cf692051-65c7-4eaf-85c0-871f46c17bfa
       version: -1
-      name: ews-get-items-from-folder
+      name: '|||ews-get-items-from-folder'
       description: Get items from a specific folder in a mailbox. The items will return
         order by created time, first item is the most recent item.
       script: EWS v2_public_folders|||ews-get-items-from-folder
       type: regular
       iscommand: true
-      brand: EWS v2_public_folders
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
