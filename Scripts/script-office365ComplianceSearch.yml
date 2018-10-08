@@ -1,0 +1,60 @@
+commonfields:
+  id: office365compliancesearch
+  version: -1
+name: office365compliancesearch
+script: |-
+  import subprocess
+  import json
+
+  output = subprocess.Popen(["pwsh","/usr/local/office365compliancesearch.ps1",demisto.args()['userName'],demisto.args()['password'],demisto.args()['query']],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  stdout, stderr = output.communicate()
+
+  if (stderr):
+      demisto.results(stderr)
+  else:
+      #handle string response
+      res = stdout.split('remaining.')[-1]
+      res = res.split("\"{")[1]
+      res = res[:-3]
+      result = res.split('\\r\\n')
+
+      #list representaion of strings --> list representation of dicts
+      list_of_dict = [];
+      for item in result:
+          if item[-1] == ',':
+              item = item[:-1]
+          list_of_dict.append(dict(x.split(': ') for x in item.split(', ')))
+
+      demisto.results({
+          'Type': entryTypes['note'],
+          'ContentsFormat': formats['text'],
+          'Contents': stdout,
+          'ReadableContentsFormat': formats['markdown'],
+          'HumanReadable': tableToMarkdown('Office 365 Compliance search results', list_of_dict, ['Location', 'Item count', 'Total size'])
+      })
+type: python
+tags:
+- email
+- office365
+comment: Assign a 'Mailbox Import Export' management role to a user. This script runs
+  through docker image on a Windows machine, pulls and executes a PowerShell script
+  - which talks to the Exchange server.
+enabled: true
+args:
+- name: userName
+  required: true
+  description: Admin user to use for compliance search
+- name: password
+  required: true
+  secret: true
+  description: Password for the specified user
+- name: query
+  required: true
+  description: Query to use for finding mails
+- name: timeout
+  description: in seconds. Default is 5 mins. Max is 2 hours.
+scripttarget: 0
+timeout: 900ns
+runonce: false
+dockerimage: pwsh
+releaseNotes: "Runs compliance search through docker image to allow many mailboxes"
