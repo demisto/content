@@ -32,6 +32,7 @@ script: |-
       """
           Will join url and its suffix
 
+          Example:
           "https://google.com/", "/"   => "https://google.com/"
           "https://google.com", "/"   => "https://google.com/"
           "https://google.com", "api"   => "https://google.com/api"
