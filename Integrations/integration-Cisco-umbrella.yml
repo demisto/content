@@ -2861,3 +2861,5 @@ script:
       particular security categorization or threat type (indicators of compromise).
   runonce: false
 releaseNotes: "Deprecated old prefix commands in favor of new prefix commands."
+tests:
+  - None
