@@ -778,14 +778,18 @@ script:
         url = '{}/token'.format(BASE_PATH)
 
         #basic authentication
-        response = requests.request(
-            'GET',
-            url,
-            headers=GET_HEADERS,
-            verify=USE_SSL,
-            proxies=PROXIES,
-            auth=(USERNAME,PASSWORD)
-        )
+        try:
+            response = requests.request(
+                'GET',
+                url,
+                headers=GET_HEADERS,
+                verify=USE_SSL,
+                proxies=PROXIES,
+                auth=(USERNAME,PASSWORD)
+            )
+        except requests.exceptions.SSLError as e:
+            LOG(e.message)
+            raise ValueError('An SSL error occurred when trying to connect to the server. Consider configuring unsecure connection in the integration settings')
 
         #handle request failure
         if response.status_code not in range(200,205):
@@ -2207,11 +2211,15 @@ script:
             request_kwargs['params'] = url_params
 
         LOG('attempting {} request sent to {} with arguments:\n{}'.format(method, url, json.dumps(request_kwargs, indent=4)))
-        response = requests.request(
+        try:
+            response = requests.request(
             method,
             url,
             **request_kwargs
         )
+        except requests.exceptions.SSLError as e:
+            LOG(e.message)
+            raise ValueError('An SSL error occurred when trying to connect to the server. Consider configuring unsecure connection in the integration settings.')
 
         #handle request failure
         if response.status_code not in range(200,205):
@@ -2238,14 +2246,6 @@ script:
             return response.json().get('message')
         except Exception as e:
             return ''
-
-    def return_error_entry(message):
-        error_entry = {
-            'Type': entryTypes['error'],
-            'Contents': message,
-            'ContentsFormat': formats['text']
-        }
-        demisto.results(error_entry)
 
     """
 
@@ -2295,13 +2295,12 @@ script:
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
-        return_error_entry(e.message)
-        sys.exit(1)
+        return_error(e.message)
     finally:
         logout()
   type: python
   commands:
-  - name: fireeye-hx-host-containment
+  - name: fireeye-hx-host-containmentn
     arguments:
     - name: hostName
       description: The host name to be contained. If the hostName is not specified,
@@ -2774,3 +2773,5 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
+tests:
+  - FireEye HX Test
