@@ -119,7 +119,7 @@ def get_fields():
         field_failed_tests = {
             "title": "Failed tests",
             "value": '\n'.join(failed_tests),
-            "short": True
+            "short": False
         }
         fields.append(field_failed_tests)
 
@@ -157,7 +157,7 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
         channel="test_slack",
         username="Content CircleCI",
         as_user="False",
-        attachments=attachments
+        attachments=attachment
     )
 
     #    sc.api_call(
