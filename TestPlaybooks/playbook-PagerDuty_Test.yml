@@ -33,7 +33,7 @@ tasks:
       id: 17bdd88c-b6ef-401b-8e13-7b5fd0a6ec76
       version: -1
       name: Get on call users
-      script: '|||PagerDutyGetUsersOnCallNow'
+      script: '|||PagerDuty-get-users-on-call-now'
       type: regular
       iscommand: true
       brand: ""
@@ -85,7 +85,7 @@ tasks:
       id: fb9acaf6-e92d-4cc5-892d-6a460a572c10
       version: -1
       name: Get schedules
-      script: '|||PagerDutyGetAllSchedules'
+      script: '|||PagerDuty-get-all-schedules'
       type: regular
       iscommand: true
       brand: ""
@@ -138,7 +138,7 @@ tasks:
       id: 530b5c9c-731e-4818-89bd-c48ce52c28e1
       version: -1
       name: 'Get Incidents '
-      script: '|||PagerDutyIncidents'
+      script: '|||PagerDuty-incidents'
       type: regular
       iscommand: true
       brand: ""
