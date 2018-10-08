@@ -386,8 +386,12 @@ script:
     function detectionSearch() {
         var headers = {};
 
-        if ( (!args.query && !args.first_behavior)){
-                throw 'You must specify at least one of the following: query, first_behavior.';
+        if ((!args.query && !args.first_behavior)) {
+                return {
+                    Type: entryTypes.error,
+                    Contents: 'You must specify at least one of the following: query, first_behavior',
+                    ContentsFormat: formats.text,
+                };
         }
         if (args.query) {
             headers.q = args.query;
@@ -397,13 +401,16 @@ script:
         }
 
         var res = doReq('GET', 'detects/queries/detects/v1', headers);
-        var ec = {};
+        var ec = [];
         var md = '## Falcon Host List of Detections\n';
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec.FalconHostDetections = res.obj.resources;
+            //ec.detectionID = res.obj.resources;
             md += '### Detections\n';
             for (var i=0; i<res.obj.resources.length; i++) {
                 md += res.obj.resources[i] + '\n';
+                ec.push({
+                   'detectionID': res.obj.resources[i]
+                });
             }
         } else {
             md += 'No result found';
@@ -413,7 +420,9 @@ script:
             Contents: res.obj,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: ec
+            EntryContext: {
+                "CrowdStrikeHost.Detections(val.detectionID==obj.detectionID)": ec
+            }
         };
     }
 
@@ -426,10 +435,10 @@ script:
                 'Max Severity Display Name': detection.max_severity_displayname,
                 'Detection ID': detection.detection_id,
                 'Device Hostname': detection.device.hostname,
+                'Technique': detection.behaviors[0].technique,
                 'Filename': detection.behaviors[0].filename,
                 'Commandline': detection.behaviors[0].cmdline,
                 'Device ID': detection.behaviors[0].device_id,
-
             };
         }
         return prettyDetections;
@@ -447,6 +456,7 @@ script:
                 "maxConfidence": o.max_confidence,
                 "maxSeverity": o.max_severity,
                 "maxSeverityDisplayname":o.max_severity_displayname,
+                'technique': o.behaviors[0].technique,
                 "allegedFiletype":  o.behaviors[0].alleged_filetype,
                 "behviorID":  o.behaviors[0].behavior_id,
                 "deviceID": o.behaviors[0].device_id,
@@ -485,8 +495,9 @@ script:
         var md = '## Falcon Host Detection Details\n';
         var ec = {};
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec.FalconHostDetectionDetails = contextDetectionsDetails(res.obj.resources);
-            md += arrToMd(prettifyDetectionsDetails(res.obj.resources));
+            ec = contextDetectionsDetails(res.obj.resources);
+            md += tableToMarkdown('', prettifyDetectionsDetails(res.obj.resources),
+                ['First Behavior', 'Device Hostname', 'Max Severity Display Name', 'Technique', 'Filename', 'Commandline', 'Detection ID', 'Device ID']);
         } else {
             md += 'No result found';
         }
@@ -495,7 +506,9 @@ script:
             Contents: res.obj,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: ec
+            EntryContext: {
+                "CrowdStrikeHost.Detections(val.detectionID==obj.detectionID)": ec
+            }
         };
     }
 
@@ -847,8 +860,8 @@ script:
     - name: first_behavior
       description: 'First Behavior of the detection. Example: 2017-01-31T22:36:11Z'
     outputs:
-    - contextPath: FalconHostDetections
-      description: List of detections of the searched command
+    - contextPath: CrowdStrikeHost.Detections.detectionID
+      description: IDs of the related detections
       type: string
     description: String search through all Crowdstrike Detection fields.  For example,
       provide a sensor ID to search for all detections that contain that sensor ID
@@ -860,107 +873,110 @@ script:
       description: ID of the detections
       isArray: true
     outputs:
-    - contextPath: FalconHostDetectionDetails.cid
+    - contextPath: CrowdStrikeHost.Detections.cid
       description: cid of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.detectionID
+    - contextPath: CrowdStrikeHost.Detections.detectionID
       description: ID of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.firstBehavior
+    - contextPath: CrowdStrikeHost.Detections.firstBehavior
       description: First behavior of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.lastBehavior
+    - contextPath: CrowdStrikeHost.Detections.lastBehavior
       description: Last behavior of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.maxConfidence
+    - contextPath: CrowdStrikeHost.Detections.maxConfidence
       description: Max confidence of the detection
       type: number
-    - contextPath: FalconHostDetectionDetails.maxSeverity
+    - contextPath: CrowdStrikeHost.Detections.maxSeverity
       description: Max severity of the detection
       type: number
-    - contextPath: FalconHostDetectionDetails.maxSeverityDisplayname
+    - contextPath: CrowdStrikeHost.Detections.maxSeverityDisplayname
       description: Displayname of the max severity
       type: string
-    - contextPath: FalconHostDetectionDetails.allegedFiletype
+    - contextPath: CrowdStrikeHost.Detections.allegedFiletype
       description: Alleged filetype of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.behaviorID
+    - contextPath: CrowdStrikeHost.Detections.behaviorID
       description: ID of the behavior
       type: string
-    - contextPath: FalconHostDetectionDetails.deviceID
+    - contextPath: CrowdStrikeHost.Detections.deviceID
       description: ID of the device
       type: string
-    - contextPath: FalconHostDetectionDetails.userID
+    - contextPath: CrowdStrikeHost.Detections.userID
       description: ID of the user
       type: string
-    - contextPath: FalconHostDetectionDetails.controlGraphID
+    - contextPath: CrowdStrikeHost.Detections.controlGraphID
       description: ID of the control graph
       type: string
-    - contextPath: FalconHostDetectionDetails.cmdline
+    - contextPath: CrowdStrikeHost.Detections.cmdline
       description: Commandline of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.confidence
+    - contextPath: CrowdStrikeHost.Detections.confidence
       description: Confidence of the detection
       type: number
-    - contextPath: FalconHostDetectionDetails.severity
+    - contextPath: CrowdStrikeHost.Detections.severity
       description: Severity of the detection
       type: number
-    - contextPath: FalconHostDetectionDetails.filename
+    - contextPath: CrowdStrikeHost.Detections.filename
       description: Filename of the detection
       type: number
-    - contextPath: FalconHostDetectionDetails.iocDescription
+    - contextPath: CrowdStrikeHost.Detections.iocDescription
       description: IOC description of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.iocSource
+    - contextPath: CrowdStrikeHost.Detections.iocSource
       description: IOC source of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.iocType
+    - contextPath: CrowdStrikeHost.Detections.iocType
       description: IOC type of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.iocValue
+    - contextPath: CrowdStrikeHost.Detections.iocValue
       description: IOC value of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.MD5
+    - contextPath: CrowdStrikeHost.Detections.MD5
       description: MD5 of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.SHA256
+    - contextPath: CrowdStrikeHost.Detections.SHA256
       description: SHA256 of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.timestamp
+    - contextPath: CrowdStrikeHost.Detections.timestamp
       description: Timestamp of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.parentCmdline
+    - contextPath: CrowdStrikeHost.Detections.parentCmdline
       description: Commandline of the parent of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.parentMD5
+    - contextPath: CrowdStrikeHost.Detections.parentMD5
       description: MD5 of the parent of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.parentSHA256
+    - contextPath: CrowdStrikeHost.Detections.parentSHA256
       description: SHA256 of the parent of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.parentControlGraphID
+    - contextPath: CrowdStrikeHost.Detections.parentControlGraphID
       description: Control graph ID of the parent of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.agentVersion
+    - contextPath: CrowdStrikeHost.Detections.agentVersion
       description: Agent version of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.biosVersion
+    - contextPath: CrowdStrikeHost.Detections.biosVersion
       description: Bios version of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.osVersion
+    - contextPath: CrowdStrikeHost.Detections.osVersion
       description: OS version of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.MACAddress
+    - contextPath: CrowdStrikeHost.Detections.MACAddress
       description: MACAddress of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.localIP
+    - contextPath: CrowdStrikeHost.Detections.localIP
       description: Local IP of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.externalIP
+    - contextPath: CrowdStrikeHost.Detections.externalIP
       description: External IP of the detection
       type: string
-    - contextPath: FalconHostDetectionDetails.hostname
+    - contextPath: CrowdStrikeHost.Detections.hostname
       description: Hostname of the detection
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.technique
+      description: Technique of the detection
       type: string
     description: Fetch details of a Crowdstrike Detection using the detection ID
   runonce: false
