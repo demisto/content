@@ -1806,4 +1806,3 @@ script:
       type: string
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
-releaseNotes: "Added option to get ticket attachments(get command, fetch incidents) and additional outputs"

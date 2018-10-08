@@ -2774,4 +2774,3 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
-releaseNotes: "Fix fetch events to handle empty results"

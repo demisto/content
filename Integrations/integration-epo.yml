@@ -579,4 +579,3 @@ script:
       commands. You can also specify 'headers' argument  to filter tables headers.
       e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
   runonce: false
-releaseNotes: "Added outputs and error messages."

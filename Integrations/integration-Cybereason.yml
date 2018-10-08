@@ -1161,4 +1161,3 @@ script:
     description: Updates malop status
   isfetch: true
   runonce: false
-releaseNotes: "Improved fetch incidents implementation"
