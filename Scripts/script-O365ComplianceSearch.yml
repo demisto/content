@@ -1,7 +1,7 @@
 commonfields:
-  id: office365compliancesearch
+  id: O365ComplianceSearch
   version: -1
-name: office365compliancesearch
+name: O365ComplianceSearch
 script: |-
   import subprocess
   import json
