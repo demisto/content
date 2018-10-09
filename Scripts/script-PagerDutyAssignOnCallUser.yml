@@ -31,4 +31,3 @@ dependson:
   must:
   - PagerDuty-get-users-on-call-now
 timeout: 0s
-releaseNotes: "-"
