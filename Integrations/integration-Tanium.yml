@@ -673,6 +673,7 @@ script:
     try:
         handler = getHandler()
         response = ''
+        d_args = demisto.args()
 
         if demisto.command() == 'test-module':
             final_result = getAllPackages(handler)
@@ -1358,7 +1359,7 @@ script:
       description: Unique Tanium file ID
       type: string
   - name: tn-trace-get-file
-    description: Get file from a Tanium endpoint
+    description: Get a file from a Tanium endpoint and add it to Tanium evidence. Note that the file is compressed within a password protected Zip file (decrypt the file using the password 'infected').
     arguments:
     - name: host_name
       description: Name of computer on which the file is located
