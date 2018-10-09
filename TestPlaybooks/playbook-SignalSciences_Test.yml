@@ -1,5 +1,5 @@
 id: SignalSciences Test
-version: -1
+version: 10
 name: SignalSciences Test
 starttaskid: "0"
 tasks:
@@ -133,10 +133,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 2df2a2fd-a58b-42d9-864a-1bec266fb168
+    taskid: 072cea40-85a1-4db1-89d2-9d42706d21c0
     type: regular
     task:
-      id: 2df2a2fd-a58b-42d9-864a-1bec266fb168
+      id: 072cea40-85a1-4db1-89d2-9d42706d21c0
       version: -1
       name: Remove IP from blacklist
       script: Signal Sciences WAF|||sigsci-blacklist-remove-ip
@@ -144,7 +144,8 @@ tasks:
       iscommand: true
       brand: Signal Sciences WAF
     scriptarguments:
-      IP: {}
+      IP:
+        simple: ${SigSciences.Blacklist.Source}
       siteName:
         simple: demisto
     separatecontext: false
@@ -217,10 +218,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: cac0a4df-2649-4fef-8fe8-f71631694060
+    taskid: 5c477ce1-3f75-4857-83ee-df071f9d8a08
     type: regular
     task:
-      id: cac0a4df-2649-4fef-8fe8-f71631694060
+      id: 5c477ce1-3f75-4857-83ee-df071f9d8a08
       version: -1
       name: Remove IP from whitelist
       script: Signal Sciences WAF|||sigsci-whitelist-remove-ip
@@ -228,7 +229,8 @@ tasks:
       iscommand: true
       brand: Signal Sciences WAF
     scriptarguments:
-      IP: {}
+      IP:
+        simple: ${SigSciences.Whitelist.Source}
       siteName:
         simple: demisto
     separatecontext: false
