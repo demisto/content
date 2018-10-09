@@ -45,14 +45,35 @@ configuration:
   defaultvalue: "1"
   type: 0
   required: false
-- display: Topic Name
+- display: Topic Name (for subscription)
   name: topic-name
   defaultvalue: ""
   type: 0
   required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
+    ''' IMPORTS '''
+
     import stomp
+    import os
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARS '''
+
+    HOSTNAME = demisto.params()['hostname']
+    PORT = int(demisto.params()['port'])
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
 
     class MsgListener(stomp.ConnectionListener):
         def __init__(self):
@@ -65,113 +86,130 @@ script:
             self.result_arr.append(message)
             self.msg_ids.append(headers['message-id'])
 
+    ''' HELPER FUNCTIONS '''
 
     def create_connection():
-        hostname = demisto.params()['hostname']
-        port = int(demisto.params()['port'])
-        conn = stomp.Connection([(hostname, port)])
+        conn = stomp.Connection([(HOSTNAME, PORT)])
         return conn
 
     def connect(conn, client_id=None):
         conn.start()
-        username = demisto.params()['credentials']['identifier']
-        password = demisto.params()['credentials']['password']
-
         if client_id and len(client_id) > 0:
-            conn.connect(username, password, wait=True, headers = {'client-id': client_id })
+            conn.connect(USERNAME, PASSWORD, wait=True, headers = {'client-id': client_id })
         else:
-            conn.connect(username, password, wait=True)
+            conn.connect(USERNAME, PASSWORD, wait=True)
         return conn
 
-    client = 'Demisto'
-    if demisto.get(demisto.params(),'client-id'):
-        client = demisto.params()['client-id']
-    conn = create_connection()
+    ''' FUNCTIONS '''
 
-    # The command demisto.command() holds the command sent from the user.
-    if demisto.command() == 'test-module':
-        connect(conn)
-        conn.disconnect()
-        demisto.results('ok')
-        sys.exit(0)
-    if demisto.command() == 'activemq-send':
-        connect(conn)
+    def send_message():
+
         txid = conn.begin()
         dest = demisto.args()['destination']
         body = demisto.args()['body']
         conn.send(dest, body, transaction=txid)
         conn.commit(txid)
-        demisto.results('Msg sent to ActiveMQ destination: '+dest+' with transaction ID: '+txid)
-        conn.disconnect()
-        sys.exit(0)
-    if demisto.command() == 'activemq-subscribe':
+        demisto.results('Message sent to ActiveMQ destination: ' + dest + ' with transaction ID: ' + txid)
+
+    def subscribe():
+
         listener = MsgListener()
         if client and len(client) > 0:
             conn.set_listener('Demisto', listener)
         subscription_id = demisto.args()['subscription-id']
-        conn = connect(conn, client)
         topic_name = demisto.args()['topic-name']
-        conn.subscribe('/topic/'+topic_name, subscription_id, ack='client-individual', headers = {'activemq.subscriptionName': client })
+        conn.subscribe('/topic/'+topic_name, subscription_id, ack='client-individual', headers={'activemq.subscriptionName': client})
         time.sleep(1)
         for msg in listener.result_arr:
             demisto.results(msg)
         for msg_id in listener.msg_ids:
             conn.ack(msg_id, subscription_id)
-        conn.disconnect()
-        sys.exit(0)
-    if demisto.command() == 'fetch-incidents':
-        #lastRun = demisto.getLastRun()
+
+    def fetch_incidents():
+
         subscription_id = demisto.params()['subscription-id']
-        #demisto.debug('before ActiveMQ subscribe'+str(lastRun))
         listener = MsgListener()
         if client and len(client) > 0:
             conn.set_listener('Demisto', listener)
-        conn = connect(conn, client)
-        demisto.debug('in ActiveMQ subscribe')
         topic_name = demisto.params()['topic-name']
-        conn.subscribe('/topic/'+topic_name, subscription_id, ack='client-individual', headers = {'activemq.subscriptionName': client })
-        demisto.debug('ActiveMQ subscribed: '+str(subscription_id))
-
+        conn.subscribe(
+            '/topic/' + topic_name,
+            subscription_id,
+            ack='client-individual',
+            headers={'activemq.subscriptionName': client}
+        )
         incidents = []
         time.sleep(3)
-        demisto.debug('in ActiveMQ len='+str(len(listener.result_arr)))
         for i in range(len(listener.result_arr)):
             msg = listener.result_arr[i]
             msg_id = listener.msg_ids[i]
-            incidents.append({"Name":"ActiveMQ incident:"+msg_id,"rawJSON":msg, "details":msg})
+            incidents.append({
+                'Name': 'ActiveMQ incident:' + msg_id,
+                'rawJSON': msg,
+                'details': msg
+            })
         demisto.incidents(incidents)
         last_msg_id = ""
         for msg_id in listener.msg_ids:
             conn.ack(msg_id, subscription_id)
             last_msg_id = msg_id
-        lastRun = {'subscribe': str(subscription_id)}
-        if len(last_msg_id)>0:
-            lastRun['last_msg_id'] = last_msg_id
-        demisto.setLastRun(lastRun)
+
+    ''' EXECUTION CODE '''
+
+    if demisto.get(demisto.params(),'client-id'):
+        client = demisto.params()['client-id']
+    else:
+        client = 'Demisto'
+    conn = create_connection()
+    connect(conn, client)
+
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        if demisto.command() == 'test-module':
+            # Test connectivity
+            demisto.results('ok')
+
+        elif demisto.command() == 'activemq-send':
+            send_message()
+
+        elif demisto.command() == 'activemq-subscribe':
+            subscribe()
+
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+    finally:
         conn.disconnect()
-        sys.exit(0)
   type: python
   commands:
   - name: activemq-send
     arguments:
     - name: destination
       required: true
-      description: the destination (such as a message queue - for example ‘/queue/test’
-        - or a message topic)
+      description: The message destination (such as a message queue - for example
+        ‘/queue/test’ - or a message topic)
     - name: body
       required: true
-      description: the content of the message
-    description: Send msg to topic or queue
+      description: The content of the message to be sent
+    description: Send messag to topic or queue
   - name: activemq-subscribe
     arguments:
     - name: subscription-id
       required: true
-      description: the identifier to uniquely identify the subscription
+      description: The identifier to uniquely identify the subscription
       defaultValue: "1"
     - name: topic-name
       required: true
-      description: the topic to subscribe to
-    description: 'subscribe and read messages from topic '
+      description: The topic to subscribe to
+    description: Subscribe and read messages from topic
   dockerimage: demisto/stomp
   isfetch: true
   runonce: false
+tests:
+  - Test-ActiveMQ
