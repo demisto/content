@@ -81,7 +81,7 @@ jobs:
       - run:
           name: Destroy Instances
           command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
-          when: always
+          when: on_success
       - store_artifacts:
           path: artifacts
           destination: artifacts
