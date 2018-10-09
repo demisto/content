@@ -633,6 +633,10 @@
         },
         {
             "playbookID": "TestMatchRegex"            
+        },
+        {
+            "integrations": "ActiveMQ",
+            "playbookID": "ActiveMQ Test"
         }
     ],
     "skipped_tests": [
