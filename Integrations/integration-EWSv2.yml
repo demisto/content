@@ -351,6 +351,8 @@ script:
 
 
     def fallback_get_folder_by_path(mailbox, path):
+        if len(path) == 120:
+            return path, None
         folder_id, change_key = get_top_folder_id(mailbox)
         path = path.replace("/", "\\").split('\\')
         for sf in path:
@@ -840,6 +842,8 @@ script:
     def fallback_fetch_emails_as_incidents():
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
+        last_run_time = last_run[LAST_RUN_TIME] if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] else (start_time - timedelta(minutes=10)).ewsformat()
+        last_run_ids = last_run[LAST_RUN_IDS] if LAST_RUN_IDS in last_run and last_run[LAST_RUN_IDS] else []
 
         folder_id, change_key = fallback_get_folder_by_path(ACCOUNT_EMAIL, FOLDER_NAME)
 
@@ -866,7 +870,7 @@ script:
                                 <t:FieldURIOrConstant>
                                     <t:Constant Value="{}"/>
                                 </t:FieldURIOrConstant>
-                            </t:IsGreaterThan>'''.format(last_run[LAST_RUN_TIME])
+                            </t:IsGreaterThan>'''.format(last_run_time)
         if LAST_RUN_IDS in last_run and last_run[LAST_RUN_IDS]:
             for last_id in last_run[LAST_RUN_IDS]:
                 payload += '''<t:IsNotEqualTo>
@@ -883,8 +887,10 @@ script:
                 </t:FieldOrder>
             </m:SortOrder>
             <m:ParentFolderIds>'''
-        if folder_id:
+        if change_key:
             payload += '<t:FolderId Id="{}" ChangeKey="{}"></t:FolderId>'.format(folder_id, change_key)
+        elif folder_id:
+            '<t:FolderId Id="{}"></t:FolderId>'.format(folder_id)
         else:
             payload += '''<t:DistinguishedFolderId Id="inbox">
                 <t:Mailbox>
@@ -898,140 +904,155 @@ script:
 
         raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
         raw.raise_for_status()
-        demisto.results(raw.content)
-        sys.exit(0)
-        # 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass'
-        # Now iterate on email ids, and do get items one by one
-        '''var itemIdPath = "Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message.ItemId.-Id";
-        var itemIds = dq(raw, itemIdPath);
-        if (itemIds && !Array.isArray(itemIds)) {
-            itemIds = [itemIds];
-        }
-        incidents = [];
-        if (itemIds) {
-            itemArgs = {};
-            itemArgs['item-ids'] = '';
-            for (var i = 0 ; i < itemIds.length; i++) {
-                itemArgs['item-ids'] += '<t:ItemId Id="' + itemIds[i] + '" />'
+        #demisto.results(raw.content)   ## DEBUG
+        #sys.exit(0)                    ## DEBUG
+
+        # Parse response to last emails request
+        raw = ET.fromstring(raw.content)
+        messages = raw.findall(".//t:Message", FALLBACK_NS)
+        if not messages:
+            demisto.results('no incidents')    ## DEBUG
+            return []
+        demisto.results('{} incident{}'.format(len(messages), 's' if len(messages) > 1 else ''))
+        item_ids = map(lambda x: x.find("./t:ItemId", FALLBACK_NS).attrib['Id'], messages)
+        item_ids = filter(lambda y: y not in last_run_ids, item_ids)
+
+        # Send GetItem request for the returned IDs
+        payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+        <soap:Header>
+            <t:RequestServerVersion Version="{}" />'''.format(fallback_get_version())
+        if demisto.params()['impersonation']:
+            payload += '''<t:ExchangeImpersonation>
+                        <t:ConnectingSID>
+                        <t:PrimarySmtpAddress>{}</t:PrimarySmtpAddress>
+                        </t:ConnectingSID>
+                        </t:ExchangeImpersonation>'''.format(ACCOUNT_EMAIL)
+        payload += '''</soap:Header>
+        <soap:Body>
+            <GetItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+                <ItemShape>
+                    <t:BaseShape>AllProperties</t:BaseShape>
+                    <t:AdditionalProperties><t:ExtendedFieldURI DistinguishedPropertySetId="InternetHeaders" PropertyName="From" PropertyType="String" /></t:AdditionalProperties>
+                </ItemShape>
+                <ItemIds>'''
+        for item_id in item_ids:
+            payload += '<t:ItemId Id="{}" />'.format(item_id)
+        payload += '''</ItemIds>
+            </GetItem>
+        </soap:Body>
+    </soap:Envelope>'''
+        raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
+        raw.raise_for_status()
+        raw = ET.fromstring(raw.content)
+
+        #demisto.results('test1')        ## DEBUG
+        #demisto.results(ET.tostring(raw))    ## DEBUG
+        #sys.exit(0)                     ## DEBUG
+
+
+        messages = raw.findall(".//t:Message", FALLBACK_NS)
+        if len(messages) != len(item_ids):
+            raise Exception("Not all items could be retrieved")
+
+        # Create an incident for each message
+        incidents = []
+        for m in messages:
+            incident = {}
+            labels = []
+
+            # Get message bodis
+            bodies = {
+                'text': m.find(".//t:Body[@BodyType='Text']", FALLBACK_NS),
+                'HTML': m.find(".//t:Body[@BodyType='HTML']", FALLBACK_NS)
             }
-            itemArgs['target-mailbox'] = getDefaultTargetMailbox();
-            itemArgs.version = params.defaultServerVersion;
-            itemArgs['include-mime-content'] = "false";
-            setImpersonation(itemArgs);
-            rawItem = sendRequest(commandsDictionary['ews-get-items'].template, itemArgs, commandsDictionary['ews-get-items'].resStatus);
-            actualMessages = rawItem.Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage;
-            if (actualMessages && !Array.isArray(actualMessages)) {
-                actualMessages = [actualMessages];
+
+            # handle general info
+            incident['details'] = bodies['text'].text if bodies['text'] else bodies['HTML'].text
+            incident['name'] = m.find('./t:Subject', FALLBACK_NS).text
+            labels.append({'type': 'Email/subject', 'value': incident['name']})
+            incident['occured'] = m.find('./t:DateTimeCreated', FALLBACK_NS).text
+
+            # handle to
+            recipients = m.findall("./t:ToRecepients/t:Mailbox/t:EmailAddress", FALLBACK_NS)
+            labels.extend([{'type': 'Email', 'value': r.text} for r in recipients])
+
+            # handle cc
+            ccs = m.findall("./t:CcRecepients/t:Mailbox/t:EmailAddress", FALLBACK_NS)
+            labels.extend([{'type': 'Email/cc', 'value': c.text} for c in ccs])
+
+            # handle from
+            sender = m.find("./t:Sender/t:Mailbox/t:EmailAddress", FALLBACK_NS)
+            if sender:
+                labels.push({'type': 'Email/from', 'value': sender.text})
+
+            # Email format
+            for email_format in ('text', 'HTML'):
+                if bodies[email_format]:
+                    labels.append({'type': 'Email/{}'.format(email_format.lower()), 'value': bodies[email_format]})
+            labels.append({'type': 'Email/format', 'value': email_format})
+
+        # FOR DEBUG
+        incident['labels'] = labels
+        incidents.append(incident)
+        demisto.results('test2')
+        demisto.results(str(incidents))
+
+            ### CONTINUE
+    '''
+            # Handle attachment - file name
+            attachments = message.Items.Message.Attachments;
+            attachments = attachments ? attachments.FileAttachment : null;
+            if (attachments && !Array.isArray(attachments)) {
+                attachments = [attachments];
             }
-            if (actualMessages) {
-                //Now create an incident from each item
-                for (var i = 0 ; i < actualMessages.length; i++) {
-                    // if fetched incident is the same as the one in lastRun - ignore it
-                    if (lastRun.lastId == actualMessages[i].Items.Message.ItemId["-Id"]) {
-                      continue;
-                    }
-
-                    message = actualMessages[i];
-                    if (message['-ResponseClass'] === 'Success') {
-                        //There is a reall item here, lets start to create the incident
-                        incident = {};
-                        incident.details = message.Items.Message.Body['#text'];
-                        incident.name = message.Items.Message.Subject;
-                        incident.occurred = new Date(Date.parse(message.Items.Message.DateTimeReceived));
-                        if (lastRun.lastTime < incident.occurred.getTime()) {
-                            lastRun.lastTime = incident.occurred.getTime();
-                            lastRun.lastId = message.Items.Message.ItemId["-Id"];
-                            setLastRun(lastRun);
-                        }
-                        labels = [];
-                        //handle  recipients
-                        recipients = message.Items.Message.ToRecipients;
-                        recipients = recipients ? recipients.Mailbox : null;
-                        if (recipients && !Array.isArray(recipients)) {
-                            recipients = [recipients];
-                        }
-                        if (recipients) {
-                            for (j = 0 ; j < recipients.length; j++) {
-                                labels.push({type: 'Email', value: recipients[j].EmailAddress})
-                            }
-                        }
-                        //handle cc
-                        recipients = message.Items.Message.CcRecipients;
-                        recipients = recipients ? recipients.Mailbox : null;
-                        if (recipients && !Array.isArray(recipients)) {
-                            recipients = [recipients];
-                        }
-                        if (recipients) {
-                            for (j = 0 ; j < recipients.length; j++) {
-                                labels.push({type: 'Email/cc', value: recipients[j].EmailAddress})
-                            }
-                        }
-                        //handle Email/from
-                        sender = message.Items.Message.From.Mailbox;
-                        if (sender) {
-                            labels.push({type: 'Email/from', value: sender.EmailAddress})
-                        }
-                        //Email format
-                        format = message.Items.Message.Body;
-                        bodyFormatLabel = 'Email/text';
-                        if (format) {
-                            labels.push({type: 'Email/format', value: format['-BodyType']})
-                            if (format['-BodyType'] === 'HTML') {
-                                bodyFormatLabel = 'Email/html';
-                            }
-                        }
-                        labels.push({type: bodyFormatLabel, value: format['#text'] });
-                        labels.push({type: 'Email/subject', value: incident.name });
-
-                        //Handle attachment - file name
-                        attachments = message.Items.Message.Attachments;
-                        attachments = attachments ? attachments.FileAttachment : null;
-                        if (attachments && !Array.isArray(attachments)) {
-                            attachments = [attachments];
-                        }
-                        if (attachments) {
-                            for (j = 0; j < attachments.length; j++ ) {
-                                labels.push({type: 'Email/attachments', value: attachments[j].Name});
-                                labels.push({type: 'Email/attachmentId', value: attachments[j].AttachmentId['-Id']});
-                            }
-                        }
-
-                        //Handle item attachment
-                        attachments = message.Items.Message.Attachments;
-                        attachments = attachments ? attachments.ItemAttachment : null;
-                        if (attachments && !Array.isArray(attachments)) {
-                            attachments = [attachments];
-                        }
-                        if (attachments) {
-                            for (j = 0; j < attachments.length; j++ ) {
-                                labels.push({type: 'Email/attachmentItems', value: attachments[j].Name});
-                                labels.push({type: 'Email/attachmentItemsId', value: attachments[j].AttachmentId['-Id']});
-                            }
-                        }
-
-                        //Handle headers
-                        headers = message.Items.Message.InternetMessageHeaders.InternetMessageHeader;
-                        if (headers && !Array.isArray(headers)) {
-                            headers = [headers];
-                        }
-                        if (headers) {
-                            for (j = 0; j < headers.length; j++ ) {
-                                labels.push({type: 'Email/Header/'+headers[j]['-HeaderName'], value: headers[j]['#text']});
-                            }
-                        }
-
-                        //Add item ID
-                        labels.push({type: 'Email/ID', value: message.Items.Message.ItemId['-Id']})
-
-                        incident.labels = labels;
-                        incident.rawJSON = JSON.stringify(message.Items.Message);
-                        incidents.push(incident);
-                    }
+            if (attachments) {
+                for (j = 0; j < attachments.length; j++ ) {
+                    labels.push({type: 'Email/attachments', value: attachments[j].Name});
+                    labels.push({type: 'Email/attachmentId', value: attachments[j].AttachmentId['-Id']});
                 }
             }
-        }
-        return JSON.stringify(incidents);'''
 
+            # Handle item attachment
+            attachments = message.Items.Message.Attachments;
+            attachments = attachments ? attachments.ItemAttachment : null;
+            if (attachments && !Array.isArray(attachments)) {
+                attachments = [attachments];
+            }
+            if (attachments) {
+                for (j = 0; j < attachments.length; j++ ) {
+                    labels.push({type: 'Email/attachmentItems', value: attachments[j].Name});
+                    labels.push({type: 'Email/attachmentItemsId', value: attachments[j].AttachmentId['-Id']});
+                }
+            }
+
+            # Handle headers
+            headers = message.Items.Message.InternetMessageHeaders.InternetMessageHeader;
+            if (headers && !Array.isArray(headers)) {
+                headers = [headers];
+            }
+            if (headers) {
+                for (j = 0; j < headers.length; j++ ) {
+                    labels.push({type: 'Email/Header/'+headers[j]['-HeaderName'], value: headers[j]['#text']});
+                }
+            }
+
+            # Add item ID
+            labels.push({type: 'Email/ID', value: message.Items.Message.ItemId['-Id']})
+
+            incident.labels = labels;
+            incident.rawJSON = JSON.stringify(message.Items.Message);
+        incidents.push(incident);
+        }
+
+        demisto.setLastRun({
+            LAST_RUN_TIME: start_time.ewsformat(),
+            LAST_RUN_FOLDER: folder_name,
+            LAST_RUN_IDS: item_ids,
+            ERROR_COUNTER: 0
+        })
+
+        return incidents;
+    '''
 
     def get_entry_for_file_attachment(item_id, attachment):
         entry = fileResult(get_attachment_name(attachment.name), attachment.content)
@@ -2156,11 +2177,11 @@ script:
       description: Total count of emails in the folder.
       type: number
     - contextPath: EWS.Folders.childrenFolderCount
-      type: number
       description: Number of sub-folders.
-    - contextPath: EWS.Folders.unreadCount
       type: number
+    - contextPath: EWS.Folders.unreadCount
       description: Unread emails in the folder.
+      type: number
     description: Get a single specific folder.
   - name: ews-fb-fetch-incidents
     arguments: []
