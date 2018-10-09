@@ -74,20 +74,21 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 7818bb7f-5985-40aa-8349-9e011e5bfe59
+    taskid: 4d03bb0a-9b79-4106-8b31-10bf187f6c30
     type: regular
     task:
-      id: 7818bb7f-5985-40aa-8349-9e011e5bfe59
+      id: 4d03bb0a-9b79-4106-8b31-10bf187f6c30
       version: -1
       name: Add ip to blacklist
-      script: '|||sigsci-blacklist-add-ip'
+      script: Signal Sciences WAF|||sigsci-blacklist-add-ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: Signal Sciences WAF
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
+      expires: {}
       ip:
         simple: 8.3.3.3
       note:
@@ -105,16 +106,16 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 65d9114f-119e-4fb7-81dd-949749e8330f
+    taskid: a4f6fda4-23d0-4fd3-85ed-70d2beb4df2f
     type: regular
     task:
-      id: 65d9114f-119e-4fb7-81dd-949749e8330f
+      id: a4f6fda4-23d0-4fd3-85ed-70d2beb4df2f
       version: -1
       name: Get blacklist
-      script: '|||sigsci-get-blacklist'
+      script: Signal Sciences WAF|||sigsci-get-blacklist
       type: regular
       iscommand: true
-      brand: ""
+      brand: Signal Sciences WAF
     nexttasks:
       '#none#':
       - "5"
@@ -132,19 +133,18 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: fbc3aa68-1ca2-47ed-8861-db244845fb24
+    taskid: 2df2a2fd-a58b-42d9-864a-1bec266fb168
     type: regular
     task:
-      id: fbc3aa68-1ca2-47ed-8861-db244845fb24
+      id: 2df2a2fd-a58b-42d9-864a-1bec266fb168
       version: -1
       name: Remove IP from blacklist
-      script: '|||sigsci-blacklist-remove-ip'
+      script: Signal Sciences WAF|||sigsci-blacklist-remove-ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: Signal Sciences WAF
     scriptarguments:
-      ID:
-        simple: ${SigSciences.Blacklist.ID}
+      IP: {}
       siteName:
         simple: demisto
     separatecontext: false
@@ -158,20 +158,21 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: ac885648-42f8-4011-8201-87f27fc71e14
+    taskid: bdad9a5b-fe13-4b50-8681-b781980426d6
     type: regular
     task:
-      id: ac885648-42f8-4011-8201-87f27fc71e14
+      id: bdad9a5b-fe13-4b50-8681-b781980426d6
       version: -1
       name: Add ip to whitelist
-      script: '|||sigsci-whitelist-add-ip'
+      script: Signal Sciences WAF|||sigsci-whitelist-add-ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: Signal Sciences WAF
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
+      expires: {}
       ip:
         simple: 8.3.3.3
       note:
@@ -189,21 +190,20 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 1da94384-7045-4c17-8b09-7785d0f20b31
+    taskid: 6c6e7129-3d43-4944-8bbb-cce44c6a15ea
     type: regular
     task:
-      id: 1da94384-7045-4c17-8b09-7785d0f20b31
+      id: 6c6e7129-3d43-4944-8bbb-cce44c6a15ea
       version: -1
       name: Get whitelist
-      script: '|||sigsci-get-whitelist'
+      script: Signal Sciences WAF|||sigsci-get-whitelist
       type: regular
       iscommand: true
-      brand: ""
+      brand: Signal Sciences WAF
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      corpName: {}
       siteName:
         simple: demisto
     separatecontext: false
@@ -217,19 +217,18 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: da4162c4-0ccd-4fc6-8b8a-c20f18b8321a
+    taskid: cac0a4df-2649-4fef-8fe8-f71631694060
     type: regular
     task:
-      id: da4162c4-0ccd-4fc6-8b8a-c20f18b8321a
+      id: cac0a4df-2649-4fef-8fe8-f71631694060
       version: -1
       name: Remove IP from whitelist
-      script: '|||sigsci-whitelist-remove-ip'
+      script: Signal Sciences WAF|||sigsci-whitelist-remove-ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: Signal Sciences WAF
     scriptarguments:
-      ID:
-        simple: ${SigSciences.Whitelist.ID}
+      IP: {}
       siteName:
         simple: demisto
     separatecontext: false

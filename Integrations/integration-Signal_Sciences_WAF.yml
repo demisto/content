@@ -116,12 +116,14 @@ script:
 
             outputs.append(output)
 
+        sidedata = "Number of IPs in the Whitelist {0}".format(len(data))
+
         return {
             'Type': entryTypes['note'],
             'Contents': site_whitelist,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(WHITELIST_TITLE, outputs, WHITELIST_HEADERS),
+            'HumanReadable': tableToMarkdown(WHITELIST_TITLE, outputs, WHITELIST_HEADERS, metaadata=sidedata),
             'EntryContext': {
                 'SigSciences.Whitelist(val.ID==obj.ID)': outputs,
             }
@@ -147,32 +149,42 @@ script:
 
             outputs.append(output)
 
+        sidedata = "Number of IPs in the Blacklist {0}".format(len(data))
+
         return {
             'Type': entryTypes['note'],
             'Contents': site_blacklist,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS),
+            'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS, metaadata=sidedata),
             'EntryContext': {
                 'SigSciences.Blacklist(val.ID==obj.ID)': outputs,
             }
         }
 
 
-    def add_ip_to_whitelist(siteName, ip, note):
+    def add_ip_to_whitelist(siteName, ip, note, expires=None):
         """Add an ip to the whitelist"""
         url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
         data = {
-            'source': ip,
-            'note': note
-        }
+                   'source': ip,
+                   'note': note
+               }
+        if expires is not None:
+            data['expires'] = expires
+
         res = http_request('PUT', url, data=json.dumps(data))
 
         output = {}
-        output['Source'] = res.get('source', '')
+        output['ID'] = res.get('id', '')
         output['Note'] = res.get('note', '')
+        output['Source'] = res.get('source', '')
+        output['CreatedBy'] = res.get('createdBy', '')
+        output['CreatedDate'] = res.get('created', '')
+        output['ExpiryDate'] = res.get('expires', '')
 
-        human_readable = '### {0} \n\n The IP has been successfully added to whitelist. \n Source - {1} \n Note - {2}'.format(ADD_IP_TO_WHITELIST_TITLE, output['Source'], output['Note'])
+        human_readable = '### {0} \n\n The IP has been successfully added to whitelist. \n Source - {1} \n Note - {2} \n Expiration data - {3}'.format(ADD_IP_TO_WHITELIST_TITLE,
+            output['Source'], output['Note'], output['ExpiryDate'])
 
         return {
             'Type': entryTypes['note'],
@@ -186,20 +198,28 @@ script:
         }
 
 
-    def add_ip_to_blacklist(siteName, ip, note):
+    def add_ip_to_blacklist(siteName, ip, note, expires=None):
         """Add an ip to the blacklist"""
         url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
         data = {
                   'source': ip,
                   'note': note
                }
+        if expires is not None:
+            data['expires'] = expires
+
         res = http_request('PUT', url, data=json.dumps(data))
 
         output = {}
-        output['Source'] = res.get('source', '')
+        output['ID'] = res.get('id', '')
         output['Note'] = res.get('note', '')
+        output['Source'] = res.get('source', '')
+        output['CreatedBy'] = res.get('createdBy', '')
+        output['CreatedDate'] = res.get('created', '')
+        output['ExpiryDate'] = res.get('expires', '')
 
-        human_readable = '### {0} \n\n The IP has been successfully added to blacklist. \n Source - {1} \n Note - {2}'.format(ADD_IP_TO_BLACKLIST_TITLE, output['Source'], output['Note'])
+        human_readable = '### {0} \n\n The IP has been successfully added to blacklist. \n Source - {1} \n Note - {2} \n Expiration data - {3}'.format(ADD_IP_TO_BLACKLIST_TITLE,
+            output['Source'], output['Note'], output['ExpiryDate'])
 
         return {
             'Type': entryTypes['note'],
@@ -214,9 +234,15 @@ script:
 
 
     def whitelist_remove_ip(siteName, ID):
-        """Remove an ip from the blacklist"""
-        url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, siteName, ID)
-        res = http_request('DELETE', url)
+        """Remove an ip from the whitelist"""
+        url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
+        site_whitelist = http_request('GET', url)
+        data = site_whitelist.get('data', [])
+
+        for item in data:
+            if item.get('source', '') == IP:
+                url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
+                res = http_request('DELETE', url)
 
         human_readable = '### Signal Sciences - Removing an IP from Whitelist \n\n The IP has been successfully removed from Whitelist.'
 
@@ -227,15 +253,21 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': human_readable,
             'EntryContext': {
-                'SigSciences.whitelist(val.ID==obj.ID)': {},
+                'SigSciences.Whitelist(val.ID==obj.ID)': {},
             }
         }
 
 
-    def blacklist_remove_ip(siteName, ID):
+    def blacklist_remove_ip(siteName, IP):
         """Remove an ip from the blacklist"""
-        url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, siteName, ID)
-        res = http_request('DELETE', url)
+        url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
+        site_blacklist = http_request('GET', url)
+        data = site_blacklist.get('data', [])
+
+        for item in data:
+            if item.get('source', '') == IP:
+                url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
+                res = http_request('DELETE', url)
 
         human_readable = '### Signal Sciences - Removing an IP from Blacklist \n\n The IP has been successfully removed from Blacklist.'
 
@@ -339,6 +371,9 @@ script:
     - name: note
       required: true
       description: Note associated with the tag.
+    - name: expires
+      description: Optional RFC3339-formatted datetime in the future. Omit this paramater
+        if it does not expire.
     outputs:
     - contextPath: SigSciences.Whitelist.Source
       description: IP Address present in the whitelist.
@@ -346,6 +381,18 @@ script:
     - contextPath: SigSciences.Whitelist.Note
       description: Note associated with the tag.
       type: string
+    - contextPath: SigSciences.Whitelist.ID
+      description: ID for this particular entry.
+      type: string
+    - contextPath: SigSciences.Whitelist.CreatedBy
+      description: User who added this source.
+      type: string
+    - contextPath: SigSciences.Whitelist.CreatedDate
+      description: Created Date Timestamp
+      type: date
+    - contextPath: SigSciences.Whitelist.ExpiryDate
+      description: Expiration Timestamp.
+      type: date
     description: Add an IP to the whitelist residing on Signal Sciences' Platform.
   - name: sigsci-blacklist-add-ip
     arguments:
@@ -358,6 +405,9 @@ script:
     - name: note
       required: true
       description: Note associated with the tag.
+    - name: expires
+      description: Optional RFC3339-formatted datetime in the future. Omit this paramater
+        if it does not expire.
     outputs:
     - contextPath: SigSciences.Blacklist.Source
       description: IP Address present in the Blacklist.
@@ -365,24 +415,36 @@ script:
     - contextPath: SigSciences.Blacklist.Note
       description: Note associated with the tag.
       type: string
+    - contextPath: SigSciences.Blacklist.ID
+      description: ID for this particular entry.
+      type: string
+    - contextPath: SigSciences.Blacklist.CreatedBy
+      description: User who added this source.
+      type: string
+    - contextPath: SigSciences.Blacklist.CreatedDate
+      description: Created Date Timestamp.
+      type: date
+    - contextPath: SigSciences.Blacklist.ExpiryDate
+      description: Expiration Timestamp.
+      type: date
     description: Add an IP to the blacklist residing on Signal Sciences' Platform.
   - name: sigsci-whitelist-remove-ip
     arguments:
     - name: siteName
       required: true
       description: 'Please input the siteName you want see whitelist for. e.g : siteName='
-    - name: ID
+    - name: IP
       required: true
-      description: ID of the IP Address entry to be removed.
+      description: IP Address entry to be removed.
     description: Removed an IP from whitelist residing on Signal Sciences' Platform.
   - name: sigsci-blacklist-remove-ip
     arguments:
     - name: siteName
       required: true
       description: 'Please input the siteName you want see blacklist for. e.g : siteName='
-    - name: ID
+    - name: IP
       required: true
-      description: ID of the IP Address entry to be removed.
+      description: IP Address entry to be removed.
     description: Remove an IP from blacklist residing on Signal Sciences' Platform.
   runonce: false
 releaseNotes: "New integration with SignalSciences."
