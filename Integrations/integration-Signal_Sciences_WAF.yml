@@ -233,7 +233,7 @@ script:
         }
 
 
-    def whitelist_remove_ip(siteName, ID):
+    def whitelist_remove_ip(siteName, IP):
         """Remove an ip from the whitelist"""
         url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
         site_whitelist = http_request('GET', url)
