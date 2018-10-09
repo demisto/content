@@ -1,0 +1,562 @@
+commonfields:
+  id: Awake Security
+  version: -1
+name: Awake Security
+display: Awake Security
+category: Network Security
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAACaCAYAAADl9acYAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAATz0lEQVR4Ae1dC5BVxZnuPufeecEob4TwGAkoOggmkCA6A95hkJRJDKvCapW6uiIwAYZaraXcym4VtZtyq7Ys46K4sK4ajBp3NNmtkBANA5eX5GFEGZgIQYZRCCsDgQSQmbn3nu79+obHzWQe9/Gfe8+95z9Vp+55dH/999f93z6nT/fXQvDGDDADzAAzwAwwA8wAM8AMMAPMADPADDADzAAzwAwwA8wAM8AMMAPMADPADDADzAAzwAwwA8wAM8AMMAPMADPADDADzAAzwAwwA8wAM8AMMAPMADPADDADzAAzwAwwA8wAM8AMMAPMQNIMyKRDckBXGJixa1fp2cj5KoAvEELiV4/GcQn2M9g/wt5oS/3GNcdPN72xYIGDc95yyAA7TA7Jv3HbzybEtLUSJtyJfVAPpmhc/wQF9WKRtp97LxQ62UM4vpwFBthhskByd0lUbm0Mgfzv4N6U7u53c01JIX+oZezRfbPmHunmPl/KAgPsMFkguWsSk8Phm5RUL+Hxa2LXe32do8DeFHbxor3V1af7Csv36Rmw6CEZsTcGvrB9+1DHUt9Ox1kMLp7P5gnVsVhozX92vRHt0j12GJeI7Qk2piN3Sq1n9XQ/iesB+MrSSVu3Tk0iLAchZoAdhpjQ3uAqw+H+Ssj5CBPoLVwS90YJ6SyvCIdNbxpvWWSAHSaLZEvbGYfWZRJRkvOusPRtRFgMkyQD7DBJEkUSTIoxwOmp+zjVJK7QWq2Y2Ng4ONWIHD59Bthh0ucu5ZhSiSsRyU45Yg8R0AFQHbTlvT3c5ssuMMAO4wKpPUFKKTpxD/WcbAtqqevwbjSeDJGBemWAHaZXemhvKi2PAfEcLaq4XlqxxfMbGshaLmL7CgqOHSabxRnVh5BcK3mSWt73m6uG3ESOy4B/wQA7zF9Q4t6FfbW1x/G58S0XUrhKOmr55Lff7ucCNkMmMMAOk0BGNg5tZb+CdFrI05Li66rE+io5LgP+GQPsMH9Gh/snTaHQPqTyX9gVcWplwKuf1Ng4nBiX4RIYYIdJICNbh9GAWi+lfpc8PS1vEra8nxyXAS8xwA5ziYrsHRyoug29ZfIZpNhOnKotpF40adum64hxGe4CA+wwOaoKEbvkR0jajQ6ACfjQ881bw+FMx6vliBlvJ8sOk6PyOVBVdVZa6t/R0pygNkFqec8J6VRT4zKeEOwwOawFg53gO5jX8poLJgwRUqy4dufOchewfQ3JDpPD4t8aCsWksNfChAPUZkgt5gZjnfOocf2Oxw6T4xqwNxTar4W1DmZQK8JgroxePmXz5s/lOIsFlTw7jAeK0w5GX8WL+i4XTJnqBMSDLuD6FpIdxgNF33TL3DaMYV4NU6gHZlpa64WVO7Ykq0zjATa8bQI7jEfK54risp9IoTdQmwOljArL0UsrmxuKqLH9iMcO45FS//nNN+MjZvxj5v9Rm6SFvttuG1RDjetHPHYYD5X63lmzf6mlfNkFkwZilPSKG8PhAS5g+wqSHcZLxS2lkjHxPFoaM0CTdEOnQo0S6m5SUB+CscN4rND3zZ6NSWbqOZgVJTatSEm9DK1MBTGur+DYYTxY3LrI+W+Ytc0F06ZAdfNhjC7gck+TXCYuTeLcjNZ881dOQVsG48zEH6nTQTfzQ5XbNrNqZprEssOkSZzb0TrORjbhveN/XEjnc+i+ZtXMNIllh0mTOLejfXT77Z2WbT2LdFxY2kLOK9d6rtt5KER8dhgPl+reqtBuTAh7ESaisSHdyrWlVkwNh4eQovoAjB3Gy4WMeczaFi/ia/0HLphZ3SljrJqZIrG8xkiKhK0+eLBYlljXWDExCX/7RnCiE6ONW4qkbFo0duynEpU8Rcg+g0/atuVvhY53NRf3GTi1AL9xpJr34azbDqYWzb+h2WGSLPsG/NefaGmZgQ7ZOpAWQrRh2I3apHGQDuwHcf11W9rfXVxRQTq8ZeqmTVd2FslXkRK9jJLUT153/PTjvOAsSjCJjR0mCZKeOnKktDgWWYKgZgHXq3qJYqST3sF7x+NLK8aTDteftLVxDrBfx06l/n8xG8e1su5qrql55+IF/u2ZAX6H6Zmb+J24szjRb+HkCey9OYsJb/jEXHq5/rmPD9WaC1Rbcf8BW+GIDVR4CTjDpaXrWTUzgZFeDtlheiFnFb6IlziROnwZfwzBkl/tS4vxWoln1n5yaFov8Cndem/atCgeB8yQmZaUIiYVWH+NVTOTIopFMHqjaejhw7Vai8cRJnlnuQw40VHiX59uaSFTotw7a85elJg7qplarmDVzMuF19MRtzA9MPM8KjrWc/kH3B7aQ5C+L2tRE5R6iWmp+g6cXAhHFH3XFdVMIaaLIv1Aclb4NxRZQRYahVFLPYCJVzMzzBf41YuGHz5M9mj24cyZpgfOTGemV81UYlHl9sbrM8xzQUdnh+mmeNe0tl6nhVyEWwT8yJHK0stfOnw4nce6bqzD4H8VgGqm/Gm3NzO6KMfjfa2OVTN7JpGgQvQMno93VulwQAuFF31BtwyeFt/4TMTIxm41h0Ln8LjolmrmvacslWnLmo9Fn5TN7DBdaBrWWnELBqTc0+VypqdQoLTqnz16dHCmQBfjD1bWLkzQfPXiOeHvYLM68/RfbLyCELNgoNhhEopyTVtzf7QuK3Ap/Rf9BLzEQwyYmSljnX+deC2T47hqpu2OaiYeR29r7wyyamY3BcQOk0CKPF9yB06/knCJ7lAKo6Zft/qTg5+nAm2qqjmgtVwLPHLVTCxgu3xyODyKytZCwWGHuVCS61pbR6DyLcNpqWuFq8Uk2wkspOxmtotir8FeN4a1TNW2fgidADx8KqFCsMNcICOm9f3oAp6ewI1Lh+pvhrS2fokK3KhmWpblhmqm1Eo9XLl1K6tmJhQWOwzIWPvxx9cLqR7BYTb4GIGauNyMUUsoh4wO+wVKNrqhmgmjxkrpsGpmQulko4IkJOe9QzweBRwdpe1G7iubUtxREqPrZjaqmVIHTCtDOq3gQjbutk4Mnt1Xlvxy3/cOM7y1tQofAam7kfuqP+Xojatfd+wA2RThplu3/Qqqmev7SjiN+wO01Ctu2LFjYBpxCy6Krx3mhf37y6EGuQIfKckqbgo1pMqJBMm6mYVcpSxLQzVT7E3BhuSCahFSTsfdyQUu7FC+dphISdB0I5N9gU+xqgShEVa35shHZCMK9lbXtghLmikA5KqZUsilrJqZnZfcFOtRdoKbbmSlxXKkRvbynYbllSImH6HsZtaBqJlktjUNW/qKMiVmxRaim9nXf7K+zbyj40PZybp3+6ptvdy/f1hr65d7uZ/SrbhqptKuqGYKLR/0u2qmLx3m2Y8PVmqpFqImeiH/+GCqllF2M3d0RBvxTemHKXlacoGhminqK8JhspHXySXrnVBeqDBZZSP++ONYkC0iHI2caQ7QzVzmREKZwlyMH1fNtNxSzRTfKBeOO8OHLmbAw7++c5jBR1sqMTR+vsfKpNzRYiFlK9NUXfO+kPIF5JNaJ63cLM7kV9VM3zmMdOTXUYlGe8xhTK2eVeY4N5LZFRcUjL0IvPfJMC8DVflVNdNXDmOG72OuS+3lcvfOEd4NBsWEInssMznbN2vuEXQHP4vDTuKcYuS1rJuyo/EaYlzPw/nKYcT5fqZl8Wwhw5mnGSlaylpTFFXm5X8TJeYFrOucmFg0v6HBqH/6ZvOVw1giNgIlO8jDpTs2UFRURmnfe3PmmEWZzDizU5S4cSwp7vvt0IEzyHE9DOgrh8FLcBleFoLeLQ9dGotE8LhDu8VVM4U0ywBSb8MdKX2lmukrh8HzfKeQIkZda+jwZDtaGHL7jGqmpS2XVDPFV1WJ/TU6DryN5CuHgdj+79DLSv9oQlXGUrQMOXfuMyq4RJymUGgfluL4T1xTidcJjk2rXV8ZDl9FgOV5CF85jAwGWzG8w41uVoqCVpCl3bKgsjJCAdYdRkwGX8b1X3V3L8Nr06Udw4zVwt985TCLR448L+34nBFX/sUzrC7vq6DakCFGr9GNaqYlpOkAaO81YOo3bbRbi6bs3FKZetT8iuErhzFF02EFf4xlI17CIfWjSSYl34ZVzP6lftSEo5mAJBPX0dYGPEJtTCZsamHkeBVVdVN//WsPd6qklqPuQvvOYR4dPbpdB0owpEz8Bwih/qftjuO+rrViqM7fnayocLV1uWiEUc204qqZou3iNapfDJm5J3r+VEGrZvrOYUzlWDZq1O+DJaUrLUsuRifAL3Cpg6rSJI0jxUn02L1iKzG/buy476+CjGXScTMMeG3bKahmaiPPRL0N1krWjy9g1UyMyPD3ZubVO51FmNevZqHGTgYhI8FIP+zmewgRP1heScgIwP6IMWMt+H1Xarm5BAvJPnT11dl3VmRs8pYt10Ik/X/xhzERp5RbJ1qwxU2zatdTgnoFi6hCeCU76duB6cLye8ePl51tby+3A6oc58Ux9MOmj3g5ZlApJ6qD7TIQOKPa28/VT5hAPbbrcmIpHE3a1mj0DJ5EFNqPpVK8Zyl7HrqyXX8nSyG7JEFpiSIxKTcgF5YLN71nZv80N1ZkN9WgLHotqiN3IlXa9w4tvgilGaOa+W2MrqCeXpBdkrqk5st3mC4c+Pb0/ZkzT6DH0ExnPkdMArykMFUz2WGIa0q+wZUH+/0Uav0/csHusVI4yyqbG4pcwM4ZJDtMzqj3RsJGNdO25Wq8rB0jt0iKu6yTQ2rJcXMIyA6TQ/K9knRT1fZ38aLhRq/WAKPwWUiqmewwXqm1ubQDqpnSji9n7oZqZo1Q0fm5zB5l2uwwlGzmMZZRzUQn+hpkgVo1EwqfaunkbW9fncf0XDKdHeYSFXwgrGK3VDMnK21DNXNV3te3vM8AV3M6BvZWV5+W0noaiGZaM+mGToUHp+yonkYKmgMwdpgckO7lJNs/69gM+35AbSM6FUY6jq6fsWtXLrWsM84WO0zGFBYWgFHNtKU20kyfkOcMCp9nI+15rZrJDkNeK/IfcM/M2g/wCPUCckI9rKUckPVf2L59aL6yxA6TryXnpt0Y/6Wl8xLGau92IZmqqIrc6wJuViDZYbJCc/4lElfNVG6pZool+aqaiZY3P7eG5uaittLSEdJSZgmGKzHfxF/OLyH/6si2omDw6MOjRqF3i35UsJkIVtJR9CpqCLmMEp71nrq+7dTKNxYscPKpBuadwxh9ZOt8yVxIrCzA8i7optRDQLiZR553ecmwojjIcTveMg5hCP3PbGm/vnjMmA+pHeeGcGMtph4bEcBBGdrbNXqbrfVde0Jzdna94eXzvKpkz7W0XIuFkP4ZvmEU+PO6e5K4UuAPWx6GIsy/lWBM2EOEsziNqEXnuT+YbzPfJLbZ/MO9KTudB5vmzjVzkPJiy5vHmDWHDn1JW/oVVAy0LOwsXWoX6p4ehxWhn2qX+p/WHTtW1uV+2qdGNdMOxFUzD6UN0kNEePntTqlt/vzyZssLh3mmtfVqLK73NB4/8v5Lscs1owxTqx91Iu1L4iutESW2p6qmGY96ZklzaqGOMkh/5JVqpucdxrzc29r5exTWzUTlX+gwJZCQWjnsyOFbKDOqlLUeeL+kxLyANd2W+aOa6XmHOdGv+BY03Xe5UFCFDDlcKPWI+bOhyiT0zD61dHzZDGotN0sJ64HKnZvGUNnqJo7nHQY9QOadZZibJBQiNqYdh0717z+eMm+OsH+Ml6WfUGL+CUtPlErSCnHQGxlH9L7DKFHtUt4LG1aLEY6K3kCZSaOaCYcx2szUqpkBoeSXKW11C8v7DiPFWLcyX+C4NtbDqaDOY1w1U0jzMZN0gyzTmPEbN5IuV0hq4AUw7zuM5i7kdAteS2kUPEk382XesvVadO/vpwRGy1UydMAAz9dHzxuIQjlHWTA+wyKfCGb421Nd+1tLGqchXM1NizMRF1Zfoy7vfHAY8g9m1CR6EQ89ixHoN7vGnQ3VTHTIvEOVd7SGh8xHUio8t3A87zD4YLYZmUf585YKAyjYI7Ydo1eBuWBEXDVTC6OaeTYVu3oIe15amsz5ekiD5LLnHQbDYd6Atxwhya2PQJQWbw0cPb7VzSyXF5W+hb8yCtXM3bFO8XM3baXC9rzDDB09brcl5cvIMLcySZY6XqAPBYR8foGUTpJR0gpmVDMtWz6FyC1pAfwp0jnLEmv219b+PgOMrEX1vMOYQo9FndVa6A1ZYyW/E/qDsOSqJePG7clGNppmzt6NYcdPIK10OmeimNq55oxjY52a/Ng87zCGRqynckIGxGNoY8xXZuoBgPlRUslZCTV+8S37xCkzfyVrmx5y6ntI9x+R4OkUEj2PR4ZnOks7n2gNhXKyqFQKtl4KitY7f7bnW1qGRy3xGEbkPgCrh+eP5a5banqX3oVy5RNDxo57y+1Hse5yc2s4HDhp6Tug2L8SrcYXEcZM6utuM4+JzfiO8yTegd40j3XdBfLqtbxyGEPiOkxoig4aNMO21H1KW7PxajMWl22vEuyyXaaH6gM8rr5pB4p/UDd69O9cTq9P+Mnh8CglY38Fh8AupmAfiN3UszPY4ShiA6ZWN+yrqWkptMWWkDfemAFmgBlgBpgBZoAZYAaYAWaAGWAGmAFmgBlgBpgBZoAZYAaYAWaAGWAGmAFmgBlgBpgBZoAZYAaYAWaAGWAGmAFmgBlgBpgBZoAZYAaYAWaAGWAGmAFmgBlgBpgBZoAZYAaYAWaAGWAGmAFmgBlgBpgBZoAZYAaYAWaAGWAGmAFmgBlgBpgBZoAZYAaYgTQZ+H/w3zeX7QN+AgAAAABJRU5ErkJggg==
+description: Network Traffic Analysis
+detaileddescription: 'All commands expect timestamps in the following format: "2000-01-01T00:00:00Z"'
+configuration:
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Awake Security server address
+  name: address
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Verify server certificate
+  name: verify
+  defaultvalue: "True"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Comma-separated threat behaviors to generate incidents for
+  name: threat_behaviors
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Period (in minutes) between incident reports
+  name: period
+  defaultvalue: "60"
+  type: 0
+  required: false
+script:
+  script: |-
+    import base64
+    import datetime
+    import re
+    import requests
+
+    params = demisto.params()
+
+    address = params["address"]
+    prefix = address + "/awakeapi/v1"
+
+    verify = params["verify"]
+
+    credentials = params["credentials"]
+    identifier = credentials["identifier"]
+    password = credentials["password"]
+    authTokenRequest = {
+      "loginUsername": identifier,
+      "loginPassword": password
+    }
+    authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest, verify=verify)
+    authToken = authTokenResponse.json()["token"]["value"]
+    headers = {
+        "Authentication": ("access " + authToken)
+    }
+
+    command = demisto.command()
+
+    args = demisto.args()
+
+    request = {}
+
+    # Convenient utility to marshal command arguments into the request body
+    def slurp(fields):
+        for field in fields:
+            if field in args:
+                request[field] = args[field]
+
+    # Render a subset of the fields of the Contents as a markdown table
+    def displayTable(contents, fields):
+        # We don't use a set() because we want to preserve field order
+        #
+        # The fields are ordered to put the most relevant information first
+        presentFields = []
+
+        # Omit table columns that are all empty
+        for content in contents:
+            for field in fields:
+                if field in content and content[field] and field not in presentFields:
+                    presentFields.append(field)
+
+        line0 = "| "
+        line1 = "| "
+        for field in presentFields:
+            # Translate camel-case field names to title-case space-separated words
+            tokens = re.findall("[a-zA-Z][A-Z]*[^A-Z]*", field)
+            name = " ".join(map(lambda token: token.title(), tokens))
+
+            line0 += name + " | "
+            line1 += "--- | "
+        line0 += "\n"
+        line1 += "\n"
+
+        body = ""
+        for content in contents:
+            body += "| "
+            for field in presentFields:
+                if field in content:
+                    value = json.dumps(content[field])
+                else:
+                    value = ""
+
+                body += value + " | "
+
+            body += "\n"
+
+        if presentFields:
+            return (line0 + line1 + body)
+        else:
+            return "Empty results"
+
+    def returnResults(contents, humanReadable):
+        demisto.results({
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": json.dumps({ "AwakeSecurity": contents }),
+            "HumanReadable": humanReadable,
+            "ReadableContentsFormat": "markdown",
+        })
+
+    def lookup(lookup_type, lookup_key, lookback_minutes):
+        path = "/lookup/" + lookup_type
+
+        request["lookup_key"] = lookup_key
+
+        request["lookback_minutes"] = lookback_minutes
+
+        response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+
+        return response.json()
+
+    def lookupDevice(lookup_key, lookback_minutes):
+        contents = lookup("device", lookup_key, lookback_minutes)
+
+        humanReadableFields = [
+            "deviceScore",
+            "deviceName",
+            "deviceType",
+            "os",
+            "osVersion",
+            "commonEmail",
+            "commonUsername",
+            "tags",
+            "recentIP",
+            "activeIP",
+            "nSimilarDevices",
+            "ipCount",
+            "applicationCount",
+            "protocols",
+            "firstSeen",
+            "lastSeen",
+        ]
+
+        humanReadable = displayTable([contents], humanReadableFields)
+
+        returnResults(contents, humanReadable)
+
+    def lookupDomain(lookup_key, lookback_minutes):
+        contents = lookup("domain", lookup_key, lookback_minutes)
+
+        humanReadableFields = [
+            "notability",
+            "isAlexaTopOneMillion",
+            "isDGA",
+            "intelSources",
+            "numAssociatedDevices",
+            "numAssociatedActivities",
+            "approxBytesTransferred",
+            "protocols",
+            "firstSeen",
+            "lastSeen",
+        ]
+
+        humanReadable = displayTable([contents], humanReadableFields)
+
+        returnResults(contents, humanReadable)
+
+    def lookupEmail(lookup_key, lookback_minutes):
+        contents = lookup("email", lookup_key, lookback_minutes)
+
+        humanReadableFields = [
+            "notabilityPercentile",
+            "deviceName",
+            "os",
+            "deviceType",
+            "application",
+            "numberSimilarDevices",
+            "numberSessions",
+            "firstSeen",
+            "lastSeen",
+            "duration",
+            "deviceId",
+        ]
+
+        humanReadable = displayTable(contents, humanReadableFields)
+
+        returnResults(contents, humanReadable)
+
+    def lookupIp(lookup_key, lookback_minutes):
+        contents = lookup("ip", lookup_key, lookback_minutes)
+
+        humanReadableFields = [
+            "deviceCount",
+            "activityCount",
+            "ipFirstSeen",
+            "ipLastSeen",
+        ]
+
+        humanReadable = displayTable([contents], humanReadableFields)
+
+        returnResults(contents, humanReadable)
+
+    def query(lookup_type):
+        # Default to an empty query if unset
+        request["queryExpression"] = ""
+
+        slurp(["queryExpression", "startTime", "endTime"])
+
+        nameMappings = [
+            ("ipAddress","device.ip == {}"),
+            ("deviceName","device.name like r/{}/"),
+            ("domainName", "domain.name like r/{}/"),
+            ("protocol", "activity.protocol == \"{}\""),
+            ("tags","\"{}\" in device.tags"),
+        ]
+
+        for (name, mapping) in nameMappings:
+            if name in args:
+                if "queryExpression" in request and request["queryExpression"]:
+                    request["queryExpression"] = request["queryExpression"] + " && " + mapping.format(args[name])
+                else:
+                    request["queryExpression"] = mapping.format(args[name])
+
+        path = "/query/" + lookup_type
+
+        response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+
+        contents = response.json()
+
+        return contents
+
+    def queryActivities():
+        contents = query("activities")
+
+        humanReadableFields = [
+            "sourceIP",
+            "sourceHost",
+            "sourcePort",
+            "destIP",
+            "destHost",
+            "destPort",
+            "activityDeviceName",
+            "activityStart",
+            "activityEnd",
+            "protocols",
+        ]
+
+        humanReadable = displayTable(contents, humanReadableFields)
+
+        returnResults(contents, humanReadable)
+
+    def queryDevices():
+        contents = query("devices")
+
+        humanReadableFields = [
+            "notabilityPercentile",
+            "deviceName",
+            "os",
+            "deviceType",
+            "application",
+            "numberSimilarDevices",
+            "numberSessions",
+            "firstSeen",
+            "lastSeen",
+            "duration",
+            "deviceId",
+        ]
+
+        humanReadable = displayTable(contents, humanReadableFields)
+
+        returnResults(contents, humanReadable)
+
+    def queryDomains():
+        contents = query("domains")
+
+        humanReadableFields = [
+            "name",
+            "notability",
+            "created",
+            "lastUpdated",
+            "expiration",
+            "registrantOrg",
+            "registrantCountry",
+            "registrarName",
+            "nameservers",
+            "deviceCount",
+            "intelCount",
+            "lastSeen",
+        ]
+
+        humanReadable = displayTable(contents, humanReadableFields)
+
+        returnResults(contents, humanReadable)
+
+    def pcapDownload():
+        slurp(["monitoringPointID"])
+
+        session = {}
+        for field in [ "hostA", "hostB", "startTimeRFC3339Nano", "endTimeRFC3339Nano" ]:
+            if field in args:
+                session[field] = args[field]
+
+        if "startTimeRFC3339Nano" in args:
+            session["startTimeRFC3339Nano"] = args["startTime"]
+        if "endTimeRFC3339Nano" in args:
+            session["endTimeRFC3339Nano"] = args["endTime"]
+
+        for field in [ "protocol", "portA", "portB" ]:
+            if field in args:
+                session[field] = int(args[field])
+
+        request["sessions"] = [ session ]
+
+        path = "/pcap/download"
+
+        response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+
+        b64 = response.json()["pcap"]
+
+        bytes = base64.b64decode(b64)
+
+        demisto.results(fileResult("download.pcap", bytes))
+
+    def fetchIncidents():
+        threatBehaviorsString = params.get("threat_behaviors") or ""
+        threatBehaviors = [ threatBehavior.strip() for threatBehavior in threatBehaviorsString.split(",")]
+        if threatBehaviors == [""]:
+            threatBehaviors = []
+
+        lastRun = demisto.getLastRun();
+
+        formatString = "%Y-%m-%d %H:%M:%S+0000"
+
+        earlyTimeString = "1970-01-01 00:00:00+0000"
+        startTimeString = lastRun.get("time") or earlyTimeString
+        startTime = datetime.datetime.strptime(startTimeString, formatString)
+
+        endTime = datetime.datetime.utcnow()
+        endTimeString = datetime.datetime.strftime(endTime, formatString)
+
+        if datetime.timedelta(minutes=int(params['period'])) <= endTime - startTime:
+            jsonRequest = {
+                "startTime": startTimeString,
+                "endTime": endTimeString,
+                "threatBehaviors": threatBehaviors
+            }
+
+            response = requests.post(prefix + "/threat-behavior/matches", json=jsonRequest, headers=headers, verify=verify)
+
+            jsonResponse = response.json()
+
+            matchingThreatBehaviors = jsonResponse.get("matchingThreatBehaviors", [])
+
+            def toIncident(matchingThreatBehavior):
+                # Currently the threat behavior API doesn't allow us to retrieve metadata for
+                # the behaviors that matched, which is why this incident record is so empty
+                return { "Name": matchingThreatBehavior }
+
+            demisto.incidents(map(toIncident, matchingThreatBehaviors))
+
+            # Don't increase the low-water-mark until we actually find incidents
+            #
+            # This is a precaution because incidents sometimes appear in an old time
+            # bucket after a delay
+            if 0 < len(matchingThreatBehaviors):
+                lastRun = { "time": endTimeString }
+        else:
+            demisto.incidents([])
+
+        demisto.setLastRun(lastRun)
+
+    if command == "test-module":
+        # If we got this far we already successfully authenticated against the server
+        demisto.results('ok')
+    elif command == "fetch-incidents":
+        fetchIncidents()
+    elif command == "awake-lookup-device":
+        lookupDevice(args["lookup_key"], int(args["lookback_minutes"]))
+    elif command == "awake-lookup-domain":
+        lookupDomain(args["lookup_key"], int(args["lookback_minutes"]))
+    elif command == "awake-lookup-email":
+        lookupEmail(args["lookup_key"], int(args["lookback_minutes"]))
+    elif command == "awake-lookup-ip":
+        lookupIp(args["lookup_key"], int(args["lookback_minutes"]))
+    elif command == "awake-query-devices":
+        queryDevices()
+    elif command == "awake-query-activities":
+        queryActivities()
+    elif command == "awake-query-domains":
+        queryDomains()
+    elif command == "awake-pcap-download":
+        pcapDownload()
+    elif command == "domain":
+        lookupDomain(args["domain"], 480)
+    elif command == "email":
+        lookupDomain(args["email"], 480)
+    elif command == "ip":
+        lookupIp(args["ip"], 480)
+
+    sys.exit(0)
+  type: python
+  commands:
+  - name: awake-query-devices
+    arguments:
+    - name: queryExpression
+      description: A query expression in the Awake Query Language
+    - name: startTime
+      required: true
+      description: Beginning of the time range to query
+    - name: endTime
+      required: true
+      description: End of the time range to query
+    - name: ipAddress
+      description: IP address (Exact match)
+    - name: deviceName
+      description: Name of the device (Regular expression)
+    - name: domainName
+      description: Name of the domain (Regular expression)
+    - name: protocol
+      description: Protocol (all uppercase, i.e. "TLS")
+    - name: tag
+      description: Tag to match (Regular expression)
+    description: Query devices
+  - name: awake-query-activities
+    arguments:
+    - name: queryExpression
+      description: A query expression in the Awake Query Language
+    - name: startTime
+      required: true
+      description: Beginning of the time range to query
+    - name: endTime
+      required: true
+      description: End of the time range to query
+    - name: ipAddress
+      description: IP address (Exact match)
+    - name: deviceName
+      description: Name of the device (Regular expression)
+    - name: domainName
+      description: Name of the domain (Regular expression)
+    - name: protocol
+      description: Protocol (all uppercase, i.e. "TLS")
+    - name: tag
+      description: Tag to match (Regular expression)
+    description: Query activities
+  - name: awake-query-domains
+    arguments:
+    - name: queryExpression
+      description: A query expression in the Awake Query Language
+    - name: startTime
+      required: true
+      description: Beginning of the time range to query
+    - name: endTime
+      required: true
+      description: End of the time range to query
+    - name: ipAddress
+      description: IP address (Exact match)
+    - name: deviceName
+      description: Name of the device (Regular expression)
+    - name: domainName
+      description: Name of the domain (Regular expression)
+    - name: protocol
+      description: Protocol (all uppercase, i.e. "TLS")
+    - name: tag
+      description: Tag to match (Regular expression)
+    description: Query domains
+  - name: awake-lookup-ip
+    arguments:
+    - name: lookup_key
+      required: true
+      description: The IP address (exact match)
+    - name: lookback_minutes
+      required: true
+      description: How many minutes of history to query
+    description: Lookup an IP address
+  - name: awake-lookup-email
+    arguments:
+    - name: lookup_key
+      required: true
+      description: The email address (Exact match)
+    - name: lookback_minutes
+      required: true
+      description: How many minutes of history to query
+    description: Lookup an email address
+  - name: awake-lookup-device
+    arguments:
+    - name: lookup_key
+      required: true
+      description: The device ID
+    - name: lookback_minutes
+      required: true
+      description: How many minutes of history to query
+    description: Lookup a device
+  - name: awake-lookup-domain
+    arguments:
+    - name: lookup_key
+      required: true
+      description: The domain name (Exact match)
+    - name: lookback_minutes
+      description: How many minutes of history to query
+    description: Lookup a domain
+  - name: awake-pcap-download
+    arguments:
+    - name: protocol
+      description: Protocol (all uppercase, i.e. "TLS")
+    - name: hostA
+      description: First host's address
+    - name: hostB
+      description: Second host's address
+    - name: portA
+      description: First host's port
+    - name: portB
+      description: Second host's port
+    - name: startTime
+      description: Beginning of the time range to query
+    - name: endTime
+      description: End of the time range to query
+    description: Download a PAP
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The domain name
+    description: Lookup a domain
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP address
+    description: Lookup an IP address
+  - name: email
+    arguments:
+    - name: email
+      description: The email address
+    description: Lookup an email address
+  isfetch: true
+  runonce: false
