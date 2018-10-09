@@ -26,4 +26,3 @@ args:
   description: The id of the incident
 scripttarget: 0
 runonce: false
-releaseNotes: "Added a script for closing manual task at the current investigation"
