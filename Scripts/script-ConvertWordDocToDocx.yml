@@ -1,6 +1,6 @@
 commonfields:
-  id: 1410b837-ecbc-4b52-8ac6-a58801da9a26
-  version: 7
+  id: ConvertWordDocToDocx
+  version: -1
 name: ConvertWordDocToDocx
 script: |+
   import subprocess
@@ -31,12 +31,7 @@ script: |+
       res = fileResult(output_file_name, a)
 
   demisto.results(res)
-
-
-
-
-
-
+  
 type: python
 tags:
 - word
