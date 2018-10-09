@@ -1,7 +1,7 @@
 commonfields:
-  id: Threat Grid
+  id: Threat Grid New
   version: -1
-name: Threat Grid
+name: Threat Grid New
 display: Cisco Threat Grid
 category: Forensics & Malware Analysis
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAAAyCAYAAAAQlvbeAAAGx0lEQVR42u1Za2xURRTeOzPbYikPeWgRWx7y8JXwQ/3HDw2JxldMBDXGBIhiFF+AihDFhJDwA8KjElhLd/c+lkIRQhtRjPKIKIokCshD9s7c3S0FSgVFnilQlPW77ez2lr3VLs0uNt6TnGxzz8ycc78558w3tz5PPPHEE0888cQTTzz5T4lini5jYb6IBPaPy4c/svz4WKYfWqys/mNYtwGJ1tRNZypPUt38nFRxJdf+WDCxnmlmkhqHZ3cbkFgoGmEaT0KPMNUsyKkvwyRMN0WrP3N99wFJM8MSpDhTo7kFSecEfn6R/tZ4IHU3kJSTF4uZJl6hmrgvG5AUPT6QRaJTybLfR2bVnCPx4SitqUr5uZJsQKJqbAyLiFd9FaJP/pvzuvgc9Bs7sDqqix6dBQnAaraNquL7rPxFxJbWwyBe3VmQaFXMz3TBW2xBMT//JRU2y2VgJxB8n86DxDdK28Gs/Kn8R9mcv+o0SCrviWdHbZtf4ytzWPOiyL3v8MUysEa8QO8sQKqVtn3u68aKO/C3S877otMgabwIz+olSAF3+mAWdY2kaYeegoMGqlobSDDuzzVIROfT7MwkRnRmzkHad4rSDXVrWMg8Tqri47uSRZp0ftFviJJcg0Q1sd22Uc36IdcgsUqzH1rGOTlP78JRzivlImcKInkASRWbZVPfnnOQNN4P+pucF+wC3Td1uUhTgSEGXWNbJm2nsCPZgLRJNuBoZibx1kwK8Z0uIO2xbSiPrVk0bhukxhaQVB5yAemsbUPFXH8m0W3HJiNLLlJd7FAisUKnjXzZ+BzAuUxXWZuU2nraWZBomM9kutlMVyYqM/yFjsxj4egVUlu/IMMWjn4Ef1fop/UfdhYkpcok1OA1eN5MDGtyO9ta4YdtK2yX6MfRKV3jQ4Y1mEbMm9zvaKKUVNcVuJDJVC9L4KUz7dW8jCw9QdyzN1rmSl6D+xVaaWbYALgN0iHpb23GYbDGAhhWqTtB5YXYtNt9+RbZgCta05gnsFsst5fpuMJUgUwy0csso/t8Tyo/PZyFogHyTeOj+fBHIsfHoa8ElKW7R/k88cST/7XQtYlCNOk7QBVGM8O6uf2lNKrYXAXaE3a/+5dFPhDz74IOw0lT9M+XXDGAaeJOrDWE6ryg43Exmx+NxPgRYO89bhg4RKvrhWa5iBnCZrR/Qq9CT0Ofd1CBUnkLP+nX+evtj/QDJZi/ATZ5NcB8jFUCP5W5nJYPws82x9hmALXbt1IUt4uppqE/C/EVsDdA/5JxHcXYxcRI9M7v6bWsaQBTrT0AwQ74Wp3hAGmYDDQJkGal56+wCA2LzY45l6EXoEkltHd0uxff1jCJhfnVDD8gub6KeN/0mocvDGZVsShT3WICPdCtvT7twoD8lZgki5LSJ1hEvI/fl1AKS/FsggOkoTajlSDNbCsxMVTudJIaYiPIXn/7mgBONUZZuCOdHUq4bjiuP02Ol11HVfNlAPQmSrgSmZQGiYVFbRogne/F70yMm50mmlDMieSnzEL8Njhskrt5hKjWIPeRHYMEBl8GptySYQDsAPrGw3RVLIPV09XxeekX1OILOy59MSoFOjZrD10dK3LY+lKNR+U6l4gaL805SHD0UDrwsFjig2QFkhQarF/NdEdp6LyRRsSsa75+bkyVI0Ac2pEfZNf4tmwTUzLt/N10zFXWI7kHaV18XNqhYS24XpCUJacLmWHOha3e0WeSxDj8hmNDPktlAPpShxlAdfOZdEy6mOTydWF62l6dyP0tgFYfHtLSaFUbpFiMVB/rkz1IzheI+QH2E/JkRPnxXY4MWJgCj0ZiczqMqfLg3ehHV5GNSYD5HQ1y0lZuvDD1mQXaTLTYsPw07gCvcZweaJJiMvQx/D0Lp8jj/wYSCe4rpmHzAezwLZhXzHTrXvSSRll236bHreT3sJB5JU0RjNhyNPonMW8C+th8X6h1g8iGOoWtsbY4Trav4fsFgD8R6+1s62uiJn8UYMeZUpxocTh2pwDtQWqWIL2Xeu7XrFFy7AXoqfRcvCSJ1L/Yrilv+nUGelPShQI0+SqsNgpQe34EaMkxaXfTuBL4uTS/TLs6VoLgNTg/4wjkCnSyA6Qh0n4RIM1oA0nY/On8NS/RQMOJd9x7jvU01tqbOsGkWuBJvdoBqteVoT99kuJcUs9CI0S3Snw3QgDSrfZ/cZnewnIrqc4/AIca4biW9EZfmQZ9G/b7HeD1sjMOWg4NQZeghJ4l4Xp/x9wsOhbj5kKDyKJyGrEm+gIxlkEHDA6gxFsYVwENUFW8hrgG+TzxxBNPPPHEE0888eRGyN8R98jGg6pa+wAAAABJRU5ErkJggg==
@@ -33,600 +33,875 @@ configuration:
   required: false
 script:
   script: |-
-    var v3Commands = [
-        'threat-grid-who-am-i',
-        'threat-grid-user-get-rate-limit',
-    ];
-    var TERSHOLD = 80;
+    import requests
+    import json
+    import urllib
+    import time
+    from datetime import datetime
 
-    var url = params.server.replace(/[\/]+$/, '') + '/api/' + (v3Commands.indexOf(command) === -1 ? 'v2' : 'v3') + '/';
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-    var mapObjFunction = function(mapFields) {
-        var transformSingleObj= function(obj) {
-            var res = {};
-            mapFields.forEach(function(f) {
-               res[f.to] = dq(obj, f.from);
-            });
-            return res;
-        };
-        return function(obj) {
-            if (obj instanceof Array) {
-                var res = [];
-                for (var j=0; j < obj.length; j++) {
-                    res.push(transformSingleObj(obj[j]));
-                }
-                return res;
+    if not demisto.getParam('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    URL = demisto.getParam('server')
+    if URL[-1] != '/':
+        URL += '/'
+
+    API_KEY = str(demisto.getParam('token'))
+    SUB_API = 'api/v2/'
+    USER_API = 'api/v3/'
+    VALIDATE_CERT = not demisto.params().get('insecure', True)
+
+
+    def return_error(data):
+        """
+        Return error as result and exit
+        """
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': data
+        })
+        sys.exit(0)
+
+
+    def req(method, path, params={'api_key': API_KEY}):
+        """
+        Send the request to ThreatGrid and return the JSON response
+        """
+        r = requests.request(method, URL + path, params=params, verify=VALIDATE_CERT)
+        if r.status_code != requests.codes.ok:
+            return_error('Error in API call to Threat Grid service %s - %s' % (path, r.text))
+        return r
+
+
+    def handle_filters():
+        """
+        Handle filters associated with samples
+        """
+        id_found = False
+        id_list = ['sha256', 'md5', 'sha1', 'id']
+        params = {'api_key': API_KEY}
+        for k in demisto.args():
+            if demisto.getArg(k):
+                if not id_found and k in id_list:
+                    params['q'] = demisto.getArg(k)
+                    id_found = True
+                else:
+                    params[k] = demisto.getArg(k)
+        return params
+
+
+    def sample_to_readable(k):
+        """
+        Convert sample request to data dictionary
+        """
+        return {
+            'ID': demisto.get(k, 'id'),
+            'Filename': demisto.get(k, 'filename'),
+            'State': demisto.get(k, 'state'),
+            'Status': demisto.get(k, 'status'),
+            'MD5': demisto.get(k, 'md5'),
+            'SHA1': demisto.get(k, 'sha1'),
+            'SHA256': demisto.get(k, 'sha256'),
+            'OS': demisto.get(k, 'os'),
+            'SubmittedAt': demisto.get(k, 'submitted_at'),
+            'StartedAt': demisto.get(k, 'started_at'),
+            'CompletedAt': demisto.get(k, 'completed_at')
+        }
+
+
+    def download_artifact():
+        """
+        Download an artifact given an artifact id.
+        """
+        aid = demisto.getArg('aid')
+        r = req('GET', SUB_API + 'artifacts/' + aid + '/download')
+        ec = {'ThreatGrid.Artifact.Id': aid}
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Artifact Download - \n' + 'Your download request has been completed successfully for ' + aid,
+                'Contents': ec,
+                'ContentsFormat': formats['json']
+            },
+            fileResult(aid + '-artifact', r.content)
+        ])
+
+
+    def download_sample():
+        """
+        Download a sample given the sample id
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id + '/sample.zip')
+        ec = {'ThreatGrid.DownloadedSamples.Id': sample_id}
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Sample Download - \n' + 'Your download request has been completed successfully for ' + sample_id,
+                'Contents': ec,
+                'ContentsFormat': formats['json']
+            },
+            fileResult(sample_id + '-sample.zip', r.content)
+        ])
+
+
+    def get_samples():
+        """
+        Get samples matching the provided filters.
+        """
+        r = req('GET', SUB_API + 'samples', params=handle_filters())
+        samples = []
+        for k in demisto.get(r.json(), 'data.items'):
+            samples.append(sample_to_readable(k))
+        md = tableToMarkdown('ThreatGrid - List of Samples', samples, [
+                'ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'OS', 'SubmittedAt', 'StartedAt', 'CompletedAt'
+        ])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': samples},
+            'HumanReadable': md,
+            'ContentsFormat': formats['json'],
+            'Contents': r.json()
+        })
+
+
+    def get_sample_by_id():
+        """
+        Get information about a sample given its id
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id)
+        sample = sample_to_readable(r.json().get('data'))
+        md = tableToMarkdown('ThreatGrid - Sample', [sample], [
+                'ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'OS', 'SubmittedAt', 'StartedAt', 'CompletedAt'
+        ])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': sample},
+            'HumanReadable': md,
+            'ContentsFormat': formats['json'],
+            'Contents': r.json()
+        })
+
+
+    def get_sample_state_helper(sample_ids):
+        """
+        Helper for getting sample state
+        """
+        samples = []
+        requests = []
+        for sample_id in sample_ids:
+            r = req('GET', SUB_API + 'samples/' + sample_id + '/state')
+            samples.append({
+                'ID': sample_id,
+                'State': demisto.get(r.json(), 'data.state')
+            })
+            requests.append(r.json())
+        return {'samples': samples, 'requests': requests}
+
+
+    def get_sample_state_by_id():
+        """
+        Get the state of a sample given its id
+        """
+        ids = []
+        if demisto.getArg('ids'):
+            ids += argToList(demisto.getArg('ids'))
+        if demisto.getArg('id'):
+            ids.append(demisto.getArg('id'))
+        response = get_sample_state_helper(ids)
+        md = tableToMarkdown('ThreatGrid - Sample state', response['samples'], ['ID', 'State'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': response['samples']},
+            'HumanReadable': md,
+            'ContentsFormat': formats['json'],
+            'Contents': response['requests']
+        })
+
+
+    def upload_sample():
+        """
+        Upload a sample
+        """
+        args = {}
+        for k in demisto.args():
+            if demisto.getArg(k) and k != 'file-id':
+                args[k] = demisto.getArg(k)
+        args['api_key'] = API_KEY
+        fileData = demisto.getFilePath(demisto.getArg('file-id'))
+        with open(fileData['path'], 'rb') as f:
+            r = requests.request('POST', URL + SUB_API + 'samples', files={'sample': (demisto.getArg('filename'), f)}, data=args)
+            if r.status_code != requests.codes.ok:
+                if r.status_code == 503:
+                    return_error('Sample upload failed. File was already uploaded.')
+                return_error('Error in API call to Threat Grid service %s - %s' % ('samples', r.text))
+            sample = sample_to_readable(r.json().get('data'))
+            md = tableToMarkdown('ThreatGrid - Sample Upload', [sample], [
+                'ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'OS', 'SubmittedAt', 'StartedAt', 'CompletedAt'
+            ])
+            demisto.results({
+                'Type': entryTypes['note'],
+                'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': sample},
+                'HumanReadable': md,
+                'ContentsFormat': formats['json'],
+                'Contents': r.json()
+            })
+            return sample.get('ID')
+
+
+    def get_html_report_by_id():
+        """
+        Download the html report for a sample given the id
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id + '/report.html')
+        ec = {'ThreatGrid.Sample.Id': sample_id}
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Sample Run HTML Report -\n' + 'Your sample run HTML report download request has been completed successfully for ' + sample_id,
+                'Contents': ec,
+                'ContentsFormat': formats['json']
+            },
+            fileResult(sample_id + '-report.html', r.content, file_type=entryTypes['entryInfoFile'])
+        ])
+
+
+    def get_pcap_by_id():
+        """
+        Download the pcap for a sample given the id
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id + '/network.pcap')
+        ec = {'ThreatGrid.Sample.Id': sample_id}
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Sample Run PCAP File -\n' + 'Your sample run PCAP file download request has been completed successfully for ' + sample_id,
+                'Contents': ec,
+                'ContentsFormat': formats['json']
+            },
+            fileResult(sample_id + '-pcap.json', r.content)
+        ])
+
+
+    def get_processes_by_id():
+        """
+        Download processes file for a sample given the id
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id +'/processes.json')
+        ec = {'ThreatGrid.Sample.Id': sample_id}
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Sample Run Processes File -\n' + 'Your sample run processes file download request has been completed successfully for ' + sample_id,
+                'Contents': ec,
+                'ContentsFormat': formats['json']
+            },
+            fileResult(sample_id + '-processes.json', r.content)
+        ])
+
+
+    def get_summary_by_id():
+        """
+        Get analysis summary information for a sample given the id
+        """
+        sample_id = demisto.getArg('id')
+        request = req('GET', SUB_API + 'samples/' + sample_id + '/summary')
+        r = request.json()
+        sample = {'ID': sample_id, 'AnalysisSummary': [], 'ArtifactsCount': []}
+        sample['AnalysisSummary'] = {
+            'RegistryCount': demisto.get(r, 'data.registry_count'),
+            'FileName': demisto.get(r, 'data.filename'),
+            'SHA256': demisto.get(r, 'data.sha256'),
+            'SampleType': demisto.get(r, 'data.sample'),
+            'FirstSeen': demisto.get(r, 'data.first_seen'),
+            'LastSeen': demisto.get(r, 'data.last_seen'),
+        }
+        sample['ArtifactsCount'] = {
+            'Network': demisto.get(r, 'data.artifacts.network'),
+            'Disk': demisto.get(r, 'data.artifacts.disk'),
+            'Memory': demisto.get(r, 'data.artifacts.memory'),
+            'Extracted': demisto.get(r, 'data.artifacts.extracted')
+        }
+        md = tableToMarkdown('ThreatGrid - Sample Summary for ' + sample_id, [sample['AnalysisSummary']], ['RegistryCount', 'FileName', 'SHA256', 'SampleType', 'FirstSeen', 'LastSeen'])
+        md += tableToMarkdown('ThreatGrid - Sample Artifacts', [sample['ArtifactsCount']], ['Network', 'Disk', 'Memory', 'Extracted'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': sample},
+            'HumanReadable': md,
+            'ContentsFormat': formats['json'],
+            'Contents': r
+        })
+
+
+    def calc_score(score):
+        """
+        Convert threatgrid score to dbot score
+        """
+        dbot_score = 1
+        if score >= 95:
+            dbot_score = 3
+        elif score >= 75:
+            dbot_score = 2
+        return dbot_score
+
+
+    def get_threat_summary_by_id():
+        """
+        Get threat summary information for a sample given the id
+        """
+        sample_id = demisto.getArg('id')
+        request = req('GET', SUB_API + 'samples/' + sample_id + '/threat')
+        r = request.json()
+        sample = {
+            'ID': sample_id,
+            'MaxSeverity': demisto.get(r, 'data.max-severity'),
+            'Score': demisto.get(r, 'data.score'),
+            'Count': demisto.get(r, 'data.count'),
+            'MaxConfidence': demisto.get(r, 'data.max-confidence'),
+            'ThreatFeeds': demisto.get(r, 'data.bis')
+        }
+        dbot = {
+            'Vendor': 'ThreatGrid',
+            'Type': 'Sample ID',
+            'Indicator': sample['ID'],
+            'Score': calc_score(sample['Score'])
+        }
+        md = tableToMarkdown('ThreatGrid - Threat Summary', [sample], ['ID', 'MaxSeverity', 'Score', 'Count', 'MaxConfidence'])
+        mdTableList = []
+        for threatfeed in sample['ThreatFeeds']:
+            mdTableList.append({'Threat Feed': threatfeed})
+        md += tableToMarkdown('Threat Feeds', mdTableList, ['Threat Feed'])
+        md += tableToMarkdown('DBot', [dbot], ['Indicator', 'Score', 'Type', 'Vendor'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': sample, 'DBotScore': dbot},
+            'HumanReadable': md,
+            'ContentsFormat': formats['json'],
+            'Contents': r
+        })
+
+
+    def get_video_by_id():
+        """
+        Download the video for a sample given the id
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id + '/video.webm')
+        ec = {'ThreatGrid.Sample.Id': sample_id}
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Sample Run Video File -\n' + 'Your sample run video file download request has been completed successfully for ' + sample_id,
+                'Contents': ec,
+                'ContentsFormat': formats['json']
+            },
+            fileResult(sample_id + '.webm', r.content)
+        ])
+
+
+    def get_warnings_by_id():
+        """
+        Download the warnings for a sample given the id
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id + '/warnings.json')
+        ec = {'ThreatGrid.Sample.Id': sample_id}
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Sample Run Warnings -\n' + 'Your sample run warnings file download request has been completed successfully for ' + sample_id,
+                'Contents': ec,
+                'ContentsFormat': formats['json']
+            },
+            fileResult(sample_id + '-warnings.json', r.content)
+        ])
+
+
+    def user_get_rate_limit():
+        """
+        Get rate limit for a specified user
+        """
+        login = demisto.getArg('login')
+        request = req('GET', USER_API + 'users/' + login + '/rate-limit')
+        r = request.json()
+        rate_limit = {
+            'Minutes': [demisto.get(rate_limit, 'minutes') for rate_limit in (demisto.get(r, 'data.user.submission-rate-limit') or [])],
+            'Samples': [demisto.get(rate_limit, 'samples') for rate_limit in (demisto.get(r, 'data.user.submission-rate-limit') or [])],
+            'SubmissionWaitSeconds': demisto.get(r, 'data.user.submission-wait-seconds'),
+            'SubmissionsAvailable': demisto.get(r, 'data.user.submissions-available')
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.User.RateLimit': rate_limit},
+            'HumanReadable': tableToMarkdown('ThreatGrid - User Rate Limit', [rate_limit], [
+                'Minutes', 'Samples', 'SubmissionWaitSeconds', 'SubmissionsAvailable'
+            ]),
+            'ContentsFormat': formats['json'],
+            'Contents': r
+        })
+
+
+    def organization_get_rate_limit():
+        """
+        Get rate limit for a specified organization
+        """
+        login = demisto.getArg('adminLogin')
+        request = req('GET', USER_API + 'users/' + login + '/rate-limit')
+        r = request.json()
+        rate_limits = [
+            {
+                'Minutes': demisto.get(rate_limit, 'minutes'),
+                'Samples': demisto.get(rate_limit, 'samples'),
+                'SubmissionWaitSeconds': demisto.get(rate_limit, 'submission-wait-seconds'),
+                'SubmissionsAvailable': demisto.get(rate_limit, 'submissions-available')
             }
-            return transformSingleObj(obj);
+            for rate_limit in demisto.get(r, 'data.organization.submission-rate-limit')
+        ]
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.User.RateLimit': rate_limits},
+            'HumanReadable': tableToMarkdown('ThreatGrid - Organization Rate Limit', rate_limits, [
+                'Minutes', 'Samples', 'SubmissionWaitSeconds', 'SubmissionsAvailable'
+            ]),
+            'ContentsFormat': formats['json'],
+            'Contents': r
+        })
+
+
+    def who_am_i():
+        """
+        Get information about the current session's user
+        """
+        request = req('GET', USER_API + 'session/whoami')
+        r = request.json()
+        user = {
+            'Email': demisto.get(r, 'data.email'),
+            'Login': demisto.get(r, 'data.login'),
+            'Name': demisto.get(r, 'data.name'),
+            'Organization': demisto.get(r, 'data.organization_id'),
+            'Role': demisto.get(r, 'data.role')
         }
-    }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.User': user},
+            'HumanReadable': tableToMarkdown('ThreatGrid - Current Session User', [user], [
+                'Email', 'Login', 'Name', 'Organization', 'Role'
+            ]),
+            'ContentsFormat': formats['json'],
+            'Contents': user
+        })
 
-    var sendRequest = function(method, path, args, filename) {
-        // add a token
-        args['api_key'] = params.token;
-        var res = http(
-                url + path + encodeToURLQuery(args),
-                {
-                    Method: method
-                },
-                params.insecure,
-                params.proxy
-            );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request to ThreatGrid ' + path + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        // If file name is provided, we should save to file
-        return filename ?
-            {Type: 9, FileID: saveFile(res.Bytes), File: filename, Contents: filename} :
-            JSON.parse(res.Body);
-    }
 
-    var objectDictionary = {
-        'threat-grid-get-sample-by-id': [
-                {to: 'ID', from: 'id'},
-                {to: 'Filename', from: 'filename'},
-                {to: 'State', from: 'state'},
-                {to: 'Status', from: 'status'},
-                {to: 'MD5', from: 'md5'},
-                {to: 'SHA1', from: 'sha1'},
-                {to: 'SHA256', from: 'sha256'},
-                {to: 'SubmittedAt', from: 'submitted_at'},
-                {to: 'StartedAt', from: 'started_at'},
-                {to: 'CompletedAt', from: 'completed_at'},
-            ],
-        'threat-grid-upload-sample': [
-                {to: 'ID', from: 'id'},
-                {to: 'Filename', from: 'filename'},
-                {to: 'State', from: 'state'},
-                {to: 'Status', from: 'status'},
-                {to: 'MD5', from: 'md5'},
-                {to: 'SHA1', from: 'sha1'},
-                {to: 'SHA256', from: 'sha256'},
-                {to: 'SubmittedAt', from: 'submitted_at'},
-            ],
-        'threat-grid-get-samples': [
-                {to: 'ID', from: 'id'},
-                {to: 'Filename', from: 'filename'},
-                {to: 'State', from: 'state'},
-                {to: 'Status', from: 'status'},
-                {to: 'MD5', from: 'md5'},
-                {to: 'SHA1', from: 'sha1'},
-                {to: 'SHA256', from: 'sha256'},
-                {to: 'SubmittedAt', from: 'submitted_at'},
-                {to: 'StartedAt', from: 'started_at'},
-                {to: 'CompletedAt', from: 'completed_at'},
-            ],
-        'threat-grid-get-sample-state-by-id': [
-                {to: 'State', from: 'state'},
-                {to: 'ID', from: 'id'},
-            ],
-        'threat-grid-get-threat-summary-by-id': [
-                {to: 'MaxConfidence', from: 'max-confidence'},
-                {to: 'MaxSeverity', from: 'max-severity'},
-                {to: 'Score', from: 'score'},
-                {to: 'Count', from: 'count'},
-                {to: 'ID', from: 'sample'},
-            ],
-        'threat-grid-get-samples-state': [
-                {to: 'ID', from: 'sample'},
-                {to: 'State', from: 'state'},
-                {to: 'Status', from: 'status'}
-            ]
-    }
+    def get_analysis_annotations():
+        """
+        Get analysis annotations for a given sample
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id + '/analysis/annotations')
 
-    var titleDictionary = {
-        'threat-grid-upload-sample': 'Threat grid upload sample',
-        'threat-grid-get-sample-state-by-id': 'Threat grid sample state',
-        'threat-grid-get-sample-by-id': 'Threat grid get sample',
-        'threat-grid-get-samples': 'Threat grid get samples',
-        'threat-grid-get-threat-summary-by-id': 'Threat grid get threat summary',
-        'threat-grid-get-samples-state': 'Threat grid get sample state'
-    }
+        annotations = []
+        context_path = 'ThreatGrid.AnalysisResults.Sample.Id.Annotations'
+        ec = {context_path: []}
+        ips = demisto.get(r.json(), 'data.items.network')
+        for k in ips:
+            annotation = {
+                'IP': k,
+                'IP.Asn': ips[k].get('asn'),
+                'IP.City': ips[k].get('city'),
+                'IP.Country': ips[k].get('country'),
+                'IP.Org': ips[k].get('org'),
+                'IP.Region': ips[k].get('region'),
+                'IP.Timestamp': ips[k].get('ts')
+            }
+            annotations.append(annotation)
+            ec[context_path].append(annotation)
 
-    var createHR = function(command, object) {
-        if (!object) {
-            return undefined;
-        }
-        if (titleDictionary[command]) {
-            return tableToMarkdown(titleDictionary[command], object);
-        }
-        return undefined;
-    }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': r.json(),
+            'EntryContext': ec,
+            'HumanReadable': tableToMarkdown('ThreatGrid - Analysis Annotations', annotations, [
+                'IP', 'IP.Asn', 'IP.City', 'IP.Country', 'IP.Org', 'IP.Region', 'IP.Timestamp'
+            ])
+        })
 
-    var contextDictionary = {
-        'threat-grid-upload-sample': {
-            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
-            ContentPath: 'data',
-        },
-        'threat-grid-get-sample-state-by-id': {
-            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
-            ContentPath: 'data',
-        },
-        'threat-grid-get-sample-by-id': {
-            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
-            ContentPath: 'data',
-        },
-        'threat-grid-get-samples': {
-            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
-            ContentPath: 'data.items',
-        },
-        'threat-grid-get-threat-summary-by-id': {
-            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
-            ContentPath: 'data',
-        },
-        "threat-grid-get-samples-state": {
-            ContextPath: 'ThreatGrid.Sample(val.ID == obj.ID)',
-            ContentPath: 'data',
-        }
-    }
 
-    var fileCommands = {
-        'threat-grid-get-video-by-id': '%id%.webm',
-        'threat-grid-get-processes-by-id': '%id%-processes.json',
-        'threat-grid-get-pcap-by-id': '%id%-pcap.json',
-        'threat-grid-get-warnings-by-id': '%id%-warnings.json',
-        'threat-grid-get-html-report-by-id': '%id%-report.html',
-        'threat-grid-download-sample-by-id': '%id%-sample.zip',
-        'threat-grid-download-artifact': '%aid%-artifact',
-        'threat-grid-get-specific-feed': '%feed-name%-%feed-period%.%output-type%',
-    };
+    def get_analysis_by_id():
+        """
+        Download the analysis for a given sample
+        """
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id +'/analysis.json')
+        ec = {'ThreatGrid.Sample.Id': sample_id}
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Sample Run Analysis JSON -\n' + 'Your sample run analysis download request has been completed successfully for ' + sample_id,
+                'Contents': ec,
+                'ContentsFormat': formats['json']
+            },
+            fileResult(sample_id + '-analysis.json', r.content, file_type=entryTypes['entryInfoFile'])
+        ])
 
-    var methodDictionary = {
-        'test-module': 'GET',
-        'threat-grid-download-artifact': 'GET',
-        'threat-grid-get-samples': 'GET',
-        'threat-grid-get-sample-by-id': 'GET',
-        'threat-grid-get-sample-state-by-id': 'GET',
-        'threat-grid-get-samples-state': 'GET',
-        'threat-grid-search-samples': 'GET',
-        'threat-grid-upload-sample': 'POST',
-        'threat-grid-search-submissions': 'GET',
-        'threat-grid-get-video-by-id': 'GET',
-        'threat-grid-get-analysis-by-id': 'GET',
-        'threat-grid-get-processes-by-id': 'GET',
-        'threat-grid-get-pcap-by-id': 'GET',
-        'threat-grid-get-summary-by-id': 'GET',
-        'threat-grid-get-threat-summary-by-id': 'GET',
-        'threat-grid-get-html-report-by-id': 'GET',
-        'threat-grid-download-sample-by-id': 'GET',
-        'threat-grid-get-analysis-iocs': 'GET',
-        'threat-grid-get-analysis-ioc': 'GET',
-        'threat-grid-get-analysis-network-streams': 'GET',
-        'threat-grid-get-analysis-network-stream': 'GET',
-        'threat-grid-get-analysis-artifacts': 'GET',
-        'threat-grid-get-analysis-artifact': 'GET',
-        'threat-grid-get-analysis-processes': 'GET',
-        'threat-grid-get-analysis-process': 'GET',
-        'threat-grid-get-analysis-annotations': 'GET',
-        'threat-grid-get-analysis-metadata': 'GET',
-        'threat-grid-feeds-ip': 'GET',
-        'threat-grid-feeds-domain': 'GET',
-        'threat-grid-feeds-url': 'GET',
-        'threat-grid-feeds-path': 'GET',
-        'threat-grid-feeds-artifacts': 'GET',
-        'threat-grid-feeds-network-stream': 'GET',
-        'threat-grid-feeds-registry-key': 'GET',
-        'threat-grid-who-am-i': 'GET',
-        'threat-grid-user-get-rate-limit': 'GET',
-        'threat-grid-get-specific-feed': 'GET',
-    };
 
-    var urlDict = {
-        'test-module': 'samples',
-        'threat-grid-get-samples': 'samples',
-        'threat-grid-get-sample-by-id': 'samples/%id%',
-        'threat-grid-get-sample-state-by-id': 'samples/%id%/state',
-        'threat-grid-get-samples-state': 'samples/state',
-        'threat-grid-search-samples': 'samples/search',
-        'threat-grid-upload-sample': 'samples',
-        'threat-grid-search-submissions': 'search/submissions',
-        'threat-grid-get-video-by-id': 'samples/%id%/video.webm',
-        'threat-grid-get-analysis-by-id': 'samples/%id%/analysis.json',
-        'threat-grid-get-processes-by-id': 'samples/%id%/processes.json',
-        'threat-grid-get-pcap-by-id': 'samples/%id%/network.pcap',
-        'threat-grid-get-warnings-by-id': 'samples/%id%/warnings.json',
-        'threat-grid-get-summary-by-id': 'samples/%id%/summary',
-        'threat-grid-get-threat-summary-by-id': 'samples/%id%/threat',
-        'threat-grid-get-html-report-by-id': 'samples/%id%/report.html',
-        'threat-grid-download-sample-by-id': 'samples/%id%/sample.zip',
-        'threat-grid-get-analysis-iocs': 'samples/%id%/analysis/iocs',
-        'threat-grid-get-analysis-ioc': 'samples/%id%/analysis/iocs/%ioc%',
-        'threat-grid-get-analysis-network-streams': 'samples/%id%/analysis/network_streams',
-        'threat-grid-get-analysis-network-stream': 'samples/%id%/analysis/network_streams/%nsid%',
-        'threat-grid-get-analysis-artifacts': 'samples/%id%/analysis/artifacts',
-        'threat-grid-get-analysis-artifact': 'samples/%id%/analysis/artifacts/%aid%',
-        'threat-grid-get-analysis-processes': 'samples/%id%/analysis/processes',
-        'threat-grid-get-analysis-process': 'samples/%id%/analysis/processes/%pid%',
-        'threat-grid-get-analysis-annotations': 'samples/%id%/analysis/annotations',
-        'threat-grid-get-analysis-metadata': 'samples/%id%/analysis/metadata',
-        'threat-grid-feeds-ip': 'iocs/feeds/ips',
-        'threat-grid-feeds-domain': 'iocs/feeds/domains',
-        'threat-grid-feeds-url': 'iocs/feeds/urls',
-        'threat-grid-feeds-path': 'iocs/feeds/paths',
-        'threat-grid-feeds-artifacts': 'iocs/feeds/artifacts',
-        'threat-grid-feeds-network-stream': 'iocs/feeds/network_streams',
-        'threat-grid-feeds-registry-key': 'iocs/feeds/registry_keys',
-        'threat-grid-download-artifact': 'artifacts/%aid%/download',
-        'threat-grid-who-am-i': 'session/whoami',
-        'threat-grid-user-get-rate-limit': 'users/%login%/rate-limit',
-        'threat-grid-get-specific-feed': 'feeds/%feed-name%-%feed-period%.%output-type%',
-    };
-
-    var SHORTCUT_DATA = "[InternetShortcut]\nURL=";
-
-    function calcScore(tg_score) {
-        if (tg_score >= 95) {
-            return 3;
-        }
-        if (tg_score >= 75) {
-            return 2;
-        }
-        if (tg_score > 0) {
-            return 1;
-        }
-        return 0;
-    }
-
-    function get_threat_summary(id) {
-        rawResponse = sendRequest(
-            'GET',
-            'samples/' + id + '/summary',
-            args,
-            null
-        );
-        var contextData = {
-            ContextPath: 'ThreatGrid.Sample',
-            ContentPath: 'data',
-        };
-        var ec = {};
-        var returnObject = mapObjFunction([
-                {to: 'MaxConfidence', from: 'max-confidence'},
-                {to: 'MaxSeverity', from: 'max-severity'},
-                {to: 'Score', from: 'score'},
-                {to: 'Count', from: 'count'},
-                {to: 'ID', from: 'sample'},
-            ])(dq(rawResponse, contextData.ContentPath));
-        ec[contextData.ContextPath] = returnObject;
-        returnObject.ID = id;
-        dbotScore = calcScore(returnObject.Score);
-        ec['DBotScore'] = {
-            'Indicator': returnObject.ID,
-            'Score': dbotScore,
-            'Type': 'Sample ID',
-            'Vendor': 'ThreatGrid'
-        };
+    def ioc_to_readable(k):
         return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.table,
-            Contents: [
-                {'key': 'Sample ID', 'value': returnObject.ID},
-                {'key': 'Threat Grid Score', 'value': returnObject.Score},
-                {'key': 'DBot Score', 'value': dbotScore}
-            ],
-            EntryContext: ec
-        }
-    }
-
-
-    var rawResponse;
-    var id = args.id;
-    switch (command) {
-      case 'test-module':
-        args.limit = 1;
-        sendRequest(methodDictionary['test-module'], urlDict['test-module'], args);
-        return 'ok';
-
-      case 'threat-grid-url-to-file':
-        var urls = argToList(args.urls);
-        var files = [];
-        for (i = 0; i < urls.length; i++) {
-            var url = urls[i];
-            var fileName = "url_" + (i+1);
-            var fileEntry = { Type: 3, FileID: saveFile(SHORTCUT_DATA + url.replace(/\s/g,'')), File: fileName, Contents: fileName };
-            files.push(fileEntry);
-        }
-        return files;
-
-      case 'threat-grid-upload-sample':
-        args['api_key'] = params.token;
-        var fileId = args['file-id'];
-        delete(args['file-id']);
-        var res = httpMultipart(
-                url + urlDict[command],
-                fileId,
-                {
-                    Method: methodDictionary[command],
-                },
-                args,
-                params.insecure,
-                params.proxy,
-                undefined,
-                'sample',
-                args.filename
-            );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request to ThreatGrid ' + urlDict[command] + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        rawResponse = JSON.parse(res.Body);
-        break;
-      case 'threat-grid-get-samples-state':
-          args.ids = JSON.stringify(args.ids.split(','));
-      default:
-        // Get file name if such exists
-        var filename = command in fileCommands && replaceInTemplates(fileCommands[command], args);
-        rawResponse = sendRequest(
-            methodDictionary[command],
-            replaceInTemplatesAndRemove(urlDict[command], args),
-            args,
-            filename
-        );
-
-        if (command === 'threat-grid-get-html-report-by-id') {
-            var fileId = rawResponse.FileID;
-            return ({Type: 9, FileID: fileId, File: 'ThreatGreadReport.html', Contents: 'ThreatGreadReport.html'});
+            'Title': demisto.get(k, 'title'),
+            'Confidence': demisto.get(k, 'confidence'),
+            'Severity': demisto.get(k, 'severity'),
+            'IOC': demisto.get(k, 'ioc'),
+            'Tags': demisto.get(k, 'tags'),
+            'IOCCategory': demisto.get(k, 'category'),
+            'Data.Path': [demisto.get(data, 'Path') for data in (demisto.get(k, 'data') or [])],
+            'Data.SHA256': [demisto.get(data, 'SHA256') for data in (demisto.get(k, 'data') or [])],
+            'Data.URL': [demisto.get(data, 'URL') for data in (demisto.get(k, 'data') or [])],
         }
 
-        if (filename){
-            return rawResponse;
-        }
-    }
 
-    var contextData = contextDictionary[command];
-    var ec = {};
-    var returnObject = objectDictionary[command] &&
-      mapObjFunction(objectDictionary[command])(dq(rawResponse, contextData.ContentPath));
-    if (contextData) {
-        ec[contextData.ContextPath] = returnObject;
-    }
-    if (returnObject && !returnObject.ID) {
-        returnObject.ID = id;
-    }
-    if (command === 'threat-grid-get-threat-summary-by-id') {
-        if ( returnObject.Score >= TERSHOLD) {
-            var md5 = dq(invContext, "ThreatGrid.Sample(val=val.ID=='" + returnObject.ID + "').MD5");
-            addMalicious(ec, outputPaths.file, {
-                MD5: Array.isArray(md5) ? md5[0] : md5,
-                Malicious: {Vendor: 'ThreatGrid', Description: 'Sample has score of ' + returnObject.Score + ' which is higher than treshold (80)'}
-            });
-        }
-        ec['DBotScore'] = {
-            'Indicator': returnObject.ID,
-            'Score': calcScore(returnObject.Score),
-            'Type': 'Sample ID',
-            'Vendor': 'ThreatGrid'
-        };
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.table,
-            Contents: [
-                {'key': 'Sample ID', 'value': rawResponse.data.sample},
-                {'key': 'Threat Grid Score', 'value': returnObject.Score},
-                {'key': 'DBot Score', 'value': calcScore(returnObject.Score)}
-            ],
-            EntryContext: ec
-        }
-    }
+    def get_analysis_iocs():
+        """
+        Get data about analysis iocs for a given sample or ioc
+        """
+        sample_id = demisto.getArg('id')
+        ioc = demisto.getArg('ioc')
+        url = SUB_API + 'samples/' + sample_id + '/analysis/iocs'
+        if ioc:
+            url += '/' + ioc
+        params = {'api_key': API_KEY}
+        if demisto.getArg('limit'):
+            params['limit'] = demisto.getArg('limit')
 
-    return {
-        Type: entryTypes.note,
-        ContentsFormat: formats.json,
-        Contents: rawResponse,
-        ReadableContentsFormat: formats.markdown,
-        HumanReadable: createHR(command, returnObject),
-        EntryContext: (contextData && returnObject && ec) ? ec : undefined
-    };
-  type: javascript
+        r = req('GET', url, params=params)
+        iocs = []
+        dbots = []
+        for k in demisto.get(r.json(), 'data.items'):
+            iocs.append(ioc_to_readable(k))
+            dbots.append({
+                'Vendor': 'ThreatGrid',
+                'Type': 'IOC',
+                'Indicator': ioc['IOC'],
+                'Score': calc_score(ioc['Severity'])
+            })
+        md = tableToMarkdown('ThreatGrid Behavioral Indicators for sample: ' + demisto.getArg('id'), iocs, ['Title', 'Confidence', 'Severity', 'IOC', 'Tags', 'IOCCategory', 'Data.Path', 'Data.SHA256', 'Data.URL'])
+        md += tableToMarkdown('DBot', dbots, ['Indicator', 'Score', 'Type', 'Vendor'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.IOCs': iocs, 'DBotScore': dbots},
+            'HumanReadable': md,
+            'ContentsFormat': formats['json'],
+            'Contents': r.json()
+        })
+
+
+    def apply_search_filters():
+        """
+        Helper for applying search filters
+        """
+        params = {'api_key': API_KEY}
+        for k in demisto.args():
+            if demisto.getArg(k):
+                params['term'] = k
+                params['query'] = demisto.getArg(k)
+                break
+        return params
+
+
+    def search_ips():
+        """
+        Search ips with the given filters
+        """
+        r = req('GET', SUB_API + 'search/ips', params=apply_search_filters())
+        ips = []
+        for ip in demisto.get(r.json(), 'data.items'):
+            ips.append({
+                'Result': demisto.get(ip, 'result'),
+                'Details': demisto.get(ip, 'details')
+            })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.IPs': ips},
+            'HumanReadable': tableToMarkdown('ThreatGrid - IP Search', ips, ['Result', 'Details']),
+            'ContentsFormat': formats['json'],
+            'Contents': r.json()
+        })
+
+
+    def search_urls():
+        """
+        Search urls with the given filters
+        """
+        r = req('GET', SUB_API + 'search/urls', params=apply_search_filters())
+        urls = []
+        for url in demisto.get(r.json(), 'data.items'):
+            urls.append({
+                'Result': demisto.get(url, 'result'),
+                'Details': demisto.get(url, 'details')
+            })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.URLs': urls},
+            'HumanReadable': tableToMarkdown('ThreatGrid - URL Search', urls, ['Result', 'Details']),
+            'ContentsFormat': formats['json'],
+            'Contents': r.json()
+        })
+
+
+    def search_samples():
+        """
+        Search samples with the given filters
+        """
+        r = req('GET', SUB_API + 'search/samples', params=apply_search_filters())
+        samples = []
+        for sample in demisto.get(r.json(), 'data.items'):
+            samples.append({
+                'Result': demisto.get(sample, 'result'),
+                'Details': demisto.get(sample, 'details')
+            })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': samples},
+            'HumanReadable': tableToMarkdown('ThreatGrid - Sample Search', samples, ['Result', 'Details']),
+            'ContentsFormat': formats['json'],
+            'Contents': r.json()
+        })
+
+
+    def search_submissions():
+        """
+        Search submissions with the given filters
+        """
+        r = req('GET', SUB_API + 'search/submissions', params=handle_filters())
+        submissions = []
+        for submission in demisto.get(r.json(), 'data.items'):
+            sample = sample_to_readable(demisto.get(submission, 'item'))
+            sample['ID'] = demisto.get(submission, 'item.sample')
+            sample['ThreatScore'] = demisto.get(submission, 'item.analysis.threat_score')
+            submissions.append(sample)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': submissions},
+            'HumanReadable': tableToMarkdown('ThreatGrid - Submission Search', submissions, ['ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'SubmittedAt', 'ThreatScore']),
+            'ContentsFormat': formats['json'],
+            'Contents': r.json()
+        })
+
+
+    def url_to_file():
+        """
+        Convert a url to file for detonation
+        """
+        urls = argToList(demisto.getArg('urls'))
+        files = []
+        for i in range(len(urls)):
+            fileEntry = fileResult('url_' + str(i + 1), '[InternetShortcut]\nURL=' + str(urls[i]))
+            files.append(fileEntry)
+        demisto.results(files)
+
+
+    def get_specific_feed():
+        """
+        Get specific feed
+        """
+        feed_name = demisto.getArg('feed-name')
+        feed_period = demisto.getArg('feed-period')
+        output_type = demisto.getArg('output-type')
+        r = req('GET', SUB_API + 'feeds/' + feed_name + '-' + feed_period + '.' + output_type)
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {},
+                'HumanReadable': '### ThreatGrid Specific Feed File -\n' + 'Your specific feed file download request has been completed successfully for ' + feed_name,
+                'Contents': {},
+                'ContentsFormat': formats['json']
+            },
+            fileResult(feed_name + output_type, r.content)
+        ])
+
+
+    def feeds_helper(name):
+        name_conversion = {
+            'domain': 'domains',
+            'ip': 'ips',
+            'network-stream': 'network_streams',
+            'registry-key': 'registry_keys',
+            'url': 'urls'
+        }
+        r = req('GET', SUB_API + 'iocs/feeds/' + (name_conversion[name] or name), params=handle_filters())
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {},
+                'HumanReadable': 'Your feeds ' + name + ' file download request has been completed successfully',
+                'Contents': {},
+                'ContentsFormat': formats['json']
+            },
+            fileResult(url, r.content)
+        ])
+
+
+    def get_analysis_artifact():
+        aid = demisto.getArg('aid')
+        sample_id = demisto.getArg('id')
+        url = SUB_API + 'samples/' + sample_id +'/analysis/artifacts'
+        if aid:
+            url += '/' + aid
+        r = req('GET', url)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {},
+            'HumanReadable': None,
+            'Contents': r.json(),
+            'ContentsFormat': formats['json']
+        })
+
+
+    def get_analysis_metadata():
+        sample_id = demisto.getArg('id')
+        r = req('GET', SUB_API + 'samples/' + sample_id + '/analysis/metadata')
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {},
+            'HumanReadable': None,
+            'Contents': r.json(),
+            'ContentsFormat': formats['json']
+        })
+
+
+    def get_analysis_network_stream():
+        sample_id = demisto.getArg('id')
+        nsid = demisto.getArg('nsid')
+        url = SUB_API + 'samples/' + sample_id +'/analysis/artifacts'
+        if nsid:
+            url += '/' + nsid
+        r = req('GET', url)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {},
+            'HumanReadable': None,
+            'Contents': r.json(),
+            'ContentsFormat': formats['json']
+        })
+
+
+    def get_analysis_process():
+        sample_id = demisto.getArg('id')
+        pid = demisto.getArg('pid')
+        url = SUB_API + 'samples/' + sample_id + '/analysis/processes'
+        if pid:
+            url += '/' + pid
+        r = req('GET', url)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {},
+            'HumanReadable': None,
+            'Contents': r.json(),
+            'ContentsFormat': formats['json']
+        })
+
+
+    def detonate_file():
+        demisto.args()['file-id'] = demisto.getArg('file-entry-id')
+        demisto.args()['filename'] = 'DetonatedFile-' + demisto.getArg('file-entry-id')
+        sample_id = upload_sample()
+        timer = 0
+        status = get_sample_state_helper([sample_id])['samples'][0]['State']
+        delay = float(demisto.getArg('delay'))
+        while status != 'succ' and timer < int(demisto.getArg('timeout')):
+            time.sleep(delay)
+            timer += delay
+            status = get_sample_state_helper([sample_id])['samples'][0]['State']
+        get_threat_summary_by_id()
+
+
+    if demisto.command() == 'test-module':
+        request = req('GET', USER_API + 'session/whoami')
+        demisto.results('ok')
+    elif demisto.command() == 'threat-grid-download-artifact':
+        download_artifact()
+    elif demisto.command() == 'threat-grid-download-sample-by-id':
+        download_sample()
+    elif demisto.command() == 'threat-grid-get-samples':
+        get_samples()
+    elif demisto.command() == 'threat-grid-get-sample-by-id' or demisto.command() == 'threat-grid-get-samples-state':
+        get_sample_by_id()
+    elif demisto.command() == 'threat-grid-get-sample-state-by-id':
+        get_sample_state_by_id()
+    elif demisto.command() == 'threat-grid-upload-sample':
+        upload_sample()
+    elif demisto.command() == 'threat-grid-get-html-report-by-id':
+        get_html_report_by_id()
+    elif demisto.command() == 'threat-grid-get-pcap-by-id':
+        get_pcap_by_id()
+    elif demisto.command() == 'threat-grid-get-processes-by-id':
+        get_processes_by_id()
+    elif demisto.command() == 'threat-grid-get-summary-by-id':
+        get_summary_by_id()
+    elif demisto.command() == 'threat-grid-get-threat-summary-by-id':
+        get_threat_summary_by_id()
+    elif demisto.command() == 'threat-grid-get-video-by-id':
+        get_video_by_id()
+    elif demisto.command() == 'threat-grid-get-warnings-by-id':
+        get_warnings_by_id()
+    elif demisto.command() == 'threat-grid-user-get-rate-limit':
+        user_get_rate_limit()
+    elif demisto.command() == 'threat-grid-organization-get-rate-limit':
+        organization_get_rate_limit()
+    elif demisto.command() == 'threat-grid-who-am-i':
+        who_am_i()
+    elif demisto.command() == 'threat-grid-get-analysis-annotations':
+        get_analysis_annotations()
+    elif demisto.command() == 'threat-grid-get-analysis-by-id':
+        get_analysis_by_id()
+    elif demisto.command() == 'threat-grid-get-analysis-iocs' or demisto.command() == 'threat-grid-get-analysis-ioc':
+        get_analysis_iocs()
+    elif demisto.command() == 'threat-grid-url-to-file':
+        url_to_file()
+    elif demisto.command() == 'threat-grid-detonate-file':
+        detonate_file()
+    elif demisto.command() == 'threat-grid-search-samples':
+        search_samples()
+    elif demisto.command() == 'threat-grid-search-ips':
+        search_ips()
+    elif demisto.command() == 'threat-grid-search-urls':
+        search_urls()
+    elif demisto.command() == 'threat-grid-search-submissions':
+        search_submissions()
+    elif demisto.command() == 'threat-grid-get-specific-feed':
+        get_specific_feed()
+    elif demisto.command() == 'threat-grid-feeds-artifacts' or demisto.command() == 'threat-grid-feeds-domain' or demisto.command() == 'threat-grid-feeds-ip' or demisto.command() == 'threat-grid-feeds-network-stream' or demisto.command() == 'threat-grid-feeds-registry-key' or demisto.command() == 'threat-grid-feeds-url':
+        feeds_helper(demisto.command()[18:])
+    elif demisto.command() == 'threat-grid-get-analysis-artifact' or demisto.command() == 'threat-grid-get-analysis-artifacts':
+        get_analysis_artifact()
+    elif demisto.command() == 'threat-grid-get-analysis-metadata':
+        get_analysis_metadata()
+    elif demisto.command() == 'threat-grid-get-analysis-network-stream' or demisto.command() == 'threat-grid-get-analysis-network-streams':
+        get_analysis_network_stream()
+    elif demisto.command() == 'threat-grid-get-analysis-process' or demisto.command() == 'threat-grid-get-analysis-processes':
+        get_analysis_process()
+    else:
+        return_error('Unrecognized command: ' + demisto.command())
+  type: python
   commands:
-  - name: threat-grid-feeds-ip
-    arguments:
-    - name: ip
-      description: Restrict returned records to this IP or CIDR block
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        after it
-    - name: confidence
-      description: Restrict to IOCs with this confidence score or higher, defaults
-        to 80
-    - name: severity
-      description: Restrict to IOCs with this severity score or higher, defaults to
-        80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org_only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user_only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these
-        samples.
-    description: Get ips threat feed
-  - name: threat-grid-feeds-domain
-    arguments:
-    - name: domain
-      description: Restrict returned records to this domain or hostname
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        after it
-    - name: confidence
-      description: Restrict to IOCs with this confidence score or higher, defaults
-        to 80
-    - name: severity
-      description: Restrict to IOCs with this severity score or higher, defaults to
-        80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org_only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user_only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these
-        samples.
-    description: Get domain threat feed
-  - name: threat-grid-feeds-url
-    arguments:
-    - name: url
-      description: Restrict returned records to this URL or URL fragment
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        after it
-    - name: confidence
-      description: Restrict to IOCs with this confidence score or higher, defaults
-        to 80
-    - name: severity
-      description: Restrict to IOCs with this severity score or higher, defaults to
-        80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org_only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user_only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these
-        samples.
-    description: Get url threat feed
-  - name: threat-grid-feeds-path
-    arguments:
-    - name: path
-      description: Restrict returned records to this path or path fragment
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        after it
-    - name: confidence
-      description: Restrict to IOCs with this confidence score or higher, defaults
-        to 80
-    - name: severity
-      description: Restrict to IOCs with this severity score or higher, defaults to
-        80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org_only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user_only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these
-        samples.
-    description: Get path threat feed
-  - name: threat-grid-feeds-artifacts
-    arguments:
-    - name: sha256
-      description: Restrict returned records with this sha256
-    - name: sha1
-      description: Restrict returned records with this sha1
-    - name: md5
-      description: Restrict returned records with this md5
-    - name: path
-      description: Restrict returned records to this path or path fragment.
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        after it
-    - name: confidence
-      description: Restrict to IOCs with this confidence score or higher, defaults
-        to 80
-    - name: severity
-      description: Restrict to IOCs with this severity score or higher, defaults to
-        80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org_only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user_only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these
-        samples.
-    description: Get artifacts threat feed
-  - name: threat-grid-feeds-network-stream
-    arguments:
-    - name: ip
-      description: Restrict returned records to this IP address
-    - name: port
-      description: Restrict returned records to this port number
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        after it
-    - name: confidence
-      description: Restrict to IOCs with this confidence score or higher, defaults
-        to 80
-    - name: severity
-      description: Restrict to IOCs with this severity score or higher, defaults to
-        80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org_only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user_only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these
-        samples.
-    description: Get network stream threat feed
-  - name: threat-grid-feeds-registry-key
-    arguments:
-    - name: registry_key
-      description: Restrict returned records to this registry_key
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        after it
-    - name: confidence
-      description: Restrict to IOCs with this confidence score or higher, defaults
-        to 80
-    - name: severity
-      description: Restrict to IOCs with this severity score or higher, defaults to
-        80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org_only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user_only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these
-        samples.
-    description: Get registry keys threat feed
   - name: threat-grid-get-samples
     arguments:
     - name: limit
@@ -634,11 +909,11 @@ script:
     - name: offset
       description: The number of records to skip
     - name: sha256
-      description: A sha256 of the submitted sample, only matches samples, not their
-        artifacts
+      description: An SHA256 of the submitted sample, only matches samples, not their
+        artifacts.
     - name: md5
-      description: A MD5 of the submitted sample, only matches samples, not their
-        artifacts
+      description: An MD5 checksum of the submitted sample, only matches samples,
+        not their artifacts.
     - name: sha1
       description: A sha1 of the submitted sample, only matches samples, not their
         artifacts
@@ -649,14 +924,16 @@ script:
     - name: ioc
       description: an IOC name
     - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        before it
+      description: '"A date/time (ISO 8601), restricting results to samples submitted
+        before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm
+        e.g. : 2012-04-19T04:00:55-0500"'
     - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted
-        after it
-    - name: org_only
+      description: '"A date/time (ISO 8601), restricting results to samples submitted
+        after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm
+        e.g. : 2012-04-19T04:00:55-0500"'
+    - name: org-only
       description: If “true”, will only match against samples submitted by your organization
-    - name: user_only
+    - name: user-only
       description: If “true”, will only match against samples you submitted
     outputs:
     - contextPath: ThreatGrid.Sample.ID
@@ -673,13 +950,19 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
+    - contextPath: ThreatGrid.Sample.OS
+      description: The sample os
+    - contextPath: ThreatGrid.Sample.OSVer
+      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     - contextPath: ThreatGrid.Sample.StartedAt
       description: The sample analysis starting time
     - contextPath: ThreatGrid.Sample.CompletedAt
       description: The sample completion time
-    description: Get samples from threat grid
+    description: Search samples on the Threat Grid platform. Input parameters are
+      ANDed together. Only finished samples can be searched (that is, the ones that
+      are having a status of succ or fail.)
   - name: threat-grid-get-sample-by-id
     arguments:
     - name: id
@@ -701,6 +984,10 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
+    - contextPath: ThreatGrid.Sample.OS
+      description: The sample os
+    - contextPath: ThreatGrid.Sample.OSVer
+      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     - contextPath: ThreatGrid.Sample.StartedAt
@@ -711,41 +998,28 @@ script:
   - name: threat-grid-get-sample-state-by-id
     arguments:
     - name: id
-      required: true
       default: true
       description: The sample ID
+    - name: ids
+      description: A comma-separated list of sample IDs.
     outputs:
     - contextPath: ThreatGrid.Sample.ID
-      description: The sample id
+      description: The sample ID, globally unique, and the canonical identifier of
+        this sample analysis
     - contextPath: ThreatGrid.Sample.State
-      description: The sample state
+      description: The state of the sample, one of a stable set of strings “wait,
+        prep, run, proc, succ, fail”
     description: Get threat grid sample state by id
-  - name: threat-grid-get-samples-state
-    arguments:
-    - name: ids
-      required: true
-      default: true
-      description: IDs to get state of, comma separated
-    outputs:
-    - contextPath: Sample.State
-      description: The sample state.
-      type: string
-    - contextPath: Sample.Status
-      description: A detailed status of the sample.
-      type: string
-    - contextPath: Sample.ID
-      description: The sample ID.
-      type: string
-    description: Get threat grid samples state
   - name: threat-grid-upload-sample
     arguments:
     - name: file-id
       required: true
       default: true
-      description: The sample file
+      description: The sample file. Click on the chain like icon after you upload
+        a file in Demisto to find the file-id. 
     - name: filename
       required: true
-      description: The real file name
+      description: The original filename of the sample, as a string
     - name: vm
       auto: PREDEFINED
       predefined:
@@ -754,8 +1028,18 @@ script:
       - win7-x64-jp
       - win7-x64-kr
       - win10
-      description: a string identifying a specific VM to use
-      defaultValue: win7-x64
+      description: 'a string identifying a specific VM to use. Options: win7-x64:
+        Windows 7 64bit, win7-x64-2: Windows 7 64bit Profile 2, win7-x64-jp: Windows
+        7 64bit Japanese (Not available on Threat Grid appliances), win7-x64-kr: Windows
+        7 64bit Korean (Only available on Threat Grid appliances licensed for this
+        VM), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The
+        standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese
+        character sets, such as S-JIS, submit to the appropriate VM.'
+    - name: private
+      description: if present, and set to any value but “false” the sample will be
+        marked private
+    - name: tags
+      description: A comma-separated list of tags applied to this sample
     - name: playbook
       auto: PREDEFINED
       predefined:
@@ -769,15 +1053,15 @@ script:
       - run_dialog_box_ie
       - open_attachment_msg
       - run_dialog_box_dde
-      description: Name of a Threat Grid playbook to apply to this sample run
-      defaultValue: default
-    - name: private
-      description: if present, and set to any value but “false” the sample will be
-        marked private
-    - name: source
-      description: a string identifying the source (user defined)
-    - name: tags
-      description: A comma-separated list of tags applied to this sample.
+      description: 'Name of a playbook to apply to this sample run. none: Explicitly
+        disables playbooks, default: Default Playbook, alt_tab_programs: Conduct Active
+        Window Change, open_word_embedded_object: Open Embedded Object in Word Document,
+        press_enter: Dialogue OK, visit_site: Visit Website Using Internet Explorer,
+        close_file: Close Active Window, run_dialog_box_ie: Click Run on Internet
+        Explorer Download Dialog Box, open_attachment_msg: Open Outlook Email Attachment,
+        run_dialog_box_dde: Accept Microsoft Office Dialog Boxes to Open Dynamic Data
+        Exchange Content. The current list of playbooks endpoints can be obtained
+        by querying /api/v3/configuration/playbooks.'
     outputs:
     - contextPath: ThreatGrid.Sample.ID
       description: The sample id
@@ -793,6 +1077,10 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
+    - contextPath: ThreatGrid.Sample.OS
+      description: The sample os
+    - contextPath: ThreatGrid.Sample.OSVer
+      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     description: Submits a sample to threat grid for analysis
@@ -800,10 +1088,10 @@ script:
     arguments:
     - name: q
       description: Query text.
-    - name: user_only
+    - name: user-only
       description: Only display submissions created by the current user, as determined
         by the value of api_key
-    - name: org_only
+    - name: org-only
       description: Only display submissions created by the current user's organization,
         as determined by the value of api_key.
     - name: term
@@ -835,6 +1123,25 @@ script:
     - name: highlight
       description: Provide a 'matches' field in results, indicating which fields were
         matched
+    outputs:
+    - contextPath: ThreatGrid.Sample.ID
+      description: The sample ID
+    - contextPath: ThreatGrid.Sample.Filename
+      description: The name of the sample file
+    - contextPath: ThreatGrid.Sample.State
+      description: The state of the sample
+    - contextPath: ThreatGrid.Sample.Status
+      description: The status of the sample
+    - contextPath: ThreatGrid.Sample.MD5
+      description: The MD5 id of the sample
+    - contextPath: ThreatGrid.Sample.SHA1
+      description: The SHA1 id of the sample
+    - contextPath: ThreatGrid.Sample.SHA256
+      description: The SHA256 id of the sample
+    - contextPath: ThreatGrid.Sample.SubmittedAt
+      description: Time of submission for the sample
+    - contextPath: ThreatGrid.Sample.ThreatScore
+      description: The threat score of the sample
     description: Search threat grid submissions
   - name: threat-grid-get-video-by-id
     arguments:
@@ -842,6 +1149,10 @@ script:
       required: true
       default: true
       description: The sample id
+    outputs:
+    - contextPath: ThreatGrid.Sample.Id
+      description: The sample Id
+      type: string
     description: Get the sample analysis video by id
   - name: threat-grid-get-analysis-by-id
     arguments:
@@ -849,6 +1160,9 @@ script:
       required: true
       default: true
       description: The sample id
+    outputs:
+    - contextPath: ThreatGrid.Sample.Id
+      description: The ID of the sample for which the report was downloaded.
     description: The detailed overview of dynamic and static analysis results for
       the sample
   - name: threat-grid-get-processes-by-id
@@ -857,22 +1171,34 @@ script:
       required: true
       default: true
       description: The sample id
-    description: A JSON object which contains a timeline of all process activity as
-      determined by the dynamic analysis engine
+    outputs:
+    - contextPath: ThreatGrid.Sample.Id
+      description: The ID of the sample for which the PCAP needs to be downloaded.
+      type: string
+    description: Get a JSON object which contains a timeline of all process activities
+      as determined by the dynamic analysis engine.
   - name: threat-grid-get-pcap-by-id
     arguments:
     - name: id
       required: true
       default: true
       description: The sample id
-    description: Gets the tcpdump PCAP file, with all the network activity of the
-      sample
+    outputs:
+    - contextPath: ThreatGrid.Sample.Id
+      description: The ID of the sample for which the PCAP needs to be downloaded.
+      type: string
+    description: Get the tcpdump PCAP file for a specific Sample ID, with all the
+      network activity of the sample
   - name: threat-grid-get-warnings-by-id
     arguments:
     - name: id
       required: true
       default: true
       description: The sample id
+    outputs:
+    - contextPath: ThreatGrid.Sample.Id
+      description: The sample ID
+      type: string
     description: Gets a JSON structure describing any warnings that occured during
       the analysis
   - name: threat-grid-get-summary-by-id
@@ -881,6 +1207,28 @@ script:
       required: true
       default: true
       description: The sample id
+    outputs:
+    - contextPath: ThreatGrid.Sample.ID
+      description: The sample ID.
+      type: string
+    - contextPath: ThreatGrid.Sample.AnalysisSummary.RegistryCount
+      description: The registry count of the sample.
+      type: number
+    - contextPath: ThreatGrid.Sample.AnalysisSummary.FileName
+      description: The Filename of the sample.
+      type: string
+    - contextPath: ThreatGrid.Sample.AnalysisSummary.SHA256
+      description: The SHA256 hash of the sample.
+      type: string
+    - contextPath: ThreatGrid.Sample.AnalysisSummary.SampleType
+      description: The sample type.
+      type: string
+    - contextPath: ThreatGrid.Sample.AnalysisSummary.FirstSeen
+      description: The timestamp when the sample was first seen.
+      type: date
+    - contextPath: ThreatGrid.Sample.AnalysisSummary.LastSeen
+      description: The timestamp when the sample was last seen.
+      type: date
     description: Returns summary analysis information
   - name: threat-grid-get-threat-summary-by-id
     arguments:
@@ -916,6 +1264,7 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator's type
       type: string
+    - contextPath: ThreatGrid.Sample.ThreatFeeds
     description: Returns a summary of the threats detected during analysis
   - name: threat-grid-get-html-report-by-id
     arguments:
@@ -923,108 +1272,79 @@ script:
       required: true
       default: true
       description: The sample id
-    description: Gets the report.html file is a stand-alone, complete report on the
-      sample run. It is designed to be emailed or printed
+    outputs:
+    - contextPath: ThreatGrid.Sample.Id
+      description: The ID of the sample for which the report was downloaded.
+      type: string
+    description: Get the report.html file for a specific Sample ID. This is a stand-alone
+      file with a complete report on the sample run. It is designed to be emailed
+      or printed.
   - name: threat-grid-download-sample-by-id
     arguments:
     - name: id
       required: true
       default: true
-      description: The sample id
-    description: Gets the sample.zip file is an archive of the sample itself, in a
-      zip format to as a form of quarantine
+      description: The ID of the sample to be downloaded.
+    outputs:
+    - contextPath: ThreatGrid.DownloadedSamples.Id
+      description: The ID of the downloaded sample
+      type: string
+    description: Download a sample by using its ID. The downloaded file is an archive
+      of the sample itself, in a zip format as a form of quarantine.
   - name: threat-grid-get-analysis-iocs
     arguments:
     - name: id
       required: true
       default: true
       description: The sample id
+    - name: ioc
+      description: The IOC name you want to fetch details for.
+    - name: limit
+      description: Limit the number of indicators you would like to see. The list
+        is sorted by indicator severity in descending order. 
+    outputs:
+    - contextPath: ThreatGrid.IOCs.Title
+    - contextPath: ThreatGrid.IOCs.Confidence
+    - contextPath: ThreatGrid.IOCs.Severity
+    - contextPath: ThreatGrid.IOCs.IOC
+    - contextPath: ThreatGrid.IOCs.IOCCategory
+    - contextPath: DBotScore.Indicator
+    - contextPath: DBotScore.Vendor
+    - contextPath: DBotScore.Type
+    - contextPath: DBotScore.Score
+    - contextPath: ThreatGrid.IOCs.Data.IP
+    - contextPath: ThreatGrid.IOCs.Data.URL
+    - contextPath: ThreatGrid.IOCs.Data.Domain
+    - contextPath: ThreatGrid.IOCs.Data.Path
+    - contextPath: ThreatGrid.IOCs.Data.SHA256
+    - contextPath: ThreatGrid.IOCs.Tags
     description: Returns a JSON list of the Indicators of Compromise identified in
       this sample run
-  - name: threat-grid-get-analysis-ioc
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    - name: ioc
-      required: true
-      description: The ioc requested
-    description: Returns data regarding the specified Indicator of Compromise
-  - name: threat-grid-get-analysis-network-streams
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    description: Returns the network stream analysis
-  - name: threat-grid-get-analysis-artifacts
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    description: Returns the sample id artifacts
-  - name: threat-grid-get-analysis-network-stream
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    - name: nsid
-      required: true
-      description: The network stream id
-    description: Returns data regarding a specific network stream
-  - name: threat-grid-get-analysis-artifact
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    - name: aid
-      required: true
-      description: The artificatd id requested
-    description: Returns the sample id artifact with artifact id
-  - name: threat-grid-get-analysis-processes
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    description: Returns data regarding the analysis processes
-  - name: threat-grid-get-analysis-process
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    - name: pid
-      required: true
-      description: The process id requested
-    description: Returns data regarding the specifiic process id in the analysis
-  - name: threat-grid-get-analysis-annotations
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    description: Returns data regarding the annotations of the anlysis
-  - name: threat-grid-get-analysis-metadata
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    description: Returns metadata about the analysis
   - name: threat-grid-download-artifact
     arguments:
     - name: aid
       required: true
       default: true
-      description: the artifact id (sha 256)
-    description: Download artifact
+      description: The ID of the artifact (SHA 256) to be downloaded. Only SHA-256
+        type of ID can be used.
+    outputs:
+    - contextPath: ThreatGrid.Artifact.Id
+      description: The ID of the downloaded artifact
+      type: string
+    description: Download an artifact by using its ID.
   - name: threat-grid-who-am-i
     arguments: []
+    outputs:
+    - contextPath: ThreatGrid.User.Email
+      description: The logged in user Email.
+    - contextPath: ThreatGrid.User.Login
+      description: The logged in user Login ID.
+    - contextPath: ThreatGrid.User.Name
+      description: The logged in user Name.
+    - contextPath: ThreatGrid.User.OrganizationId
+      description: The logged in user Organization ID.
+    - contextPath: ThreatGrid.User.Role
+      description: The logged in user Role
     description: Get logged in user
   - name: threat-grid-user-get-rate-limit
     arguments:
@@ -1032,7 +1352,29 @@ script:
       required: true
       default: true
       description: User login name
-    description: Get rate limit for user
+    outputs:
+    - contextPath: ThreatGrid.User.RateLimit.Minutes
+      description: 'Array of array(s) representing submission(s) per minute(s) or
+        the string"nil" to clear the value. Example: [[5, 1440]] which represents
+        5 samples per day. This field represent the minutes.'
+      type: number
+    - contextPath: ThreatGrid.User.RateLimit.Samples
+      description: 'Array of array(s) representing submission(s) per minute(s) or
+        the string"nil" to clear the value. Example: [[5, 1440]] which represents
+        5 samples per day. This field represent the number of samples allowed.'
+      type: number
+    - contextPath: ThreatGrid.User.RateLimit.SubmissionWaitSeconds
+      description: The number of seconds to wait for a submission to get uploaded
+        on the platform.
+      type: number
+    - contextPath: ThreatGrid.User.RateLimit.SubmissionsAvailable
+      description: The number of submissions available for the specified username
+      type: number
+    description: Get rate limit for a specific user name. ThreatGrid employs a simple
+      rate limiting method for sample submissions by specifying the number of samples
+      which can be submitted within some variable time period by a user. Multiple
+      rate limits can be employed to form overlapping submission limits. For example,
+      20 submissions per hour AND 400 per day.
   - name: threat-grid-get-specific-feed
     arguments:
     - name: feed-name
@@ -1050,43 +1392,452 @@ script:
       description: The output type
       defaultValue: json
     description: Gets a specific threat feed
+  - name: threat-grid-detonate-file
+    arguments:
+    - name: file-entry-id
+      required: true
+      default: true
+      description: Entry ID of the uploaded file (e.g. the message in the war room
+        with the uploaded file's details).
+    - name: delay
+      description: Time to wait between status checks (in seconds)
+      defaultValue: "20"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "300"
+    - name: report-file-type
+      auto: PREDEFINED
+      predefined:
+      - html
+      - json
+      description: File type of report to return
+      defaultValue: html
+    outputs:
+    - contextPath: ThreatGrid.Sample.ID
+      description: The sample id
+      type: string
+    - contextPath: ThreatGrid.Sample.MaxSeverity
+      description: The sample max severity
+      type: number
+    - contextPath: ThreatGrid.Sample.Score
+      description: The sample score
+      type: number
+    - contextPath: ThreatGrid.Sample.Count
+      description: The sample count
+      type: number
+    - contextPath: ThreatGrid.Sample.MaxConfidence
+      description: The sample max confidence
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator's type
+      type: string
+    description: Detonates URL address through Threat Grid
   - name: threat-grid-url-to-file
     arguments:
     - name: urls
       required: true
       default: true
-      description: The URLs to convert.
-      isArray: true
-    outputs:
-    - contextPath: File.EntryID
-      description: EntryID of the file upload message in the war room
-      type: string
-    - contextPath: File.Name
-      description: File Name
-      type: string
-    - contextPath: File.Extension
-      description: File Extension
-      type: string
-    - contextPath: File.Type
-      description: File Type
-      type: string
-    - contextPath: File.Info
-      description: File Info
-      type: string
-    - contextPath: File.MD5
-      description: MD5 checksum
-      type: string
-    - contextPath: File.SHA1
-      description: SHA1 checksum
-      type: string
-    - contextPath: File.SHA256
-      description: SHA256 checksum
-      type: string
-    - contextPath: File.SSDeep
-      description: SSDeep checksum
-      type: string
-    - contextPath: File.Size
-      description: File Size in bytes
-      type: int
+      description: Comma separated list of URLs to convert
     description: Convert a URL into a file for Threat Grid file detonation.
+  - name: threat-grid-organization-get-rate-limit
+    arguments:
+    - name: adminLogin
+      required: true
+      default: true
+      description: The admin user login name to be used for getting the rate limits.
+    outputs:
+    - contextPath: ThreatGrid.User.RateLimit.Minutes
+      description: 'Array of array(s) representing submission(s) per minute(s) or
+        the string"nil" to clear the value. Example: [[5, 1440]] which represents
+        5 samples per day. This field represent the minutes.'
+      type: number
+    - contextPath: ThreatGrid.User.RateLimit.Samples
+      description: 'Array of array(s) representing submission(s) per minute(s) or
+        the string"nil" to clear the value. Example: [[5, 1440]] which represents
+        5 samples per day. This field represent the number of samples allowed.'
+      type: number
+    - contextPath: ThreatGrid.User.RateLimit.SubmissionWaitSeconds
+      description: The number of seconds to wait for a submission to get uploaded
+        on the platform.
+      type: number
+    - contextPath: ThreatGrid.User.RateLimit.SubmissionsAvailable
+      description: The number of submissions available for the entire organization.
+      type: number
+    description: Get rate limits applied to an organization. ThreatGrid employs a
+      simple rate limiting method for sample submissions by specifying the number
+      of samples which can be submitted within some variable time period by an entire
+      organization and/or per a license basis. Multiple rate limits can be employed
+      to form overlapping submission limits. For example, 20 submissions per hour
+      AND 400 per day.
+  - name: threat-grid-search-ips
+    arguments:
+    - name: network_dst
+      description: search by destination IP
+    - name: network_src
+      description: search by source IP
+    - name: artifact
+      description: search by artifact SHA256
+    - name: domain
+      description: search by domain name
+    - name: url
+      description: search by url
+    - name: asn
+      description: search by IP asn
+    - name: geo_location
+      description: search by IP geo location information
+    - name: cidr
+      description: search by IP/CIDR
+    - name: ioc
+      description: search by IOC name
+    - name: tag
+      description: search by tag name
+    description: Search IPs
+  - name: threat-grid-get-analysis-annotations
+    arguments:
+    - name: id
+      description: The sample ID.
+    outputs:
+    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP
+      description: Ip address present in the annotation.
+    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Asn
+      description: Autonomous system number of the IP.
+    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.City
+      description: City of the IP found.
+    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Country
+      description: Country of the IP found
+    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Org
+      description: Org of the IP found
+    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Region
+      description: Region of the IP found.
+    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Timestamp
+      description: Timestamp of the IP found
+    description: Returns data regarding the annotations of the anlysis
+  - name: threat-grid-search-samples
+    arguments:
+    - name: ioc
+      description: search by IOC name
+    - name: checksum
+      description: search by checksum (sha256, md5 or sha1)
+    - name: checksum_sample
+      description: search by checksum of sample
+    - name: path
+      description: search by path name
+    - name: path_sample
+      description: search by sample path name
+    - name: path_artifact
+      description: search by artifact name
+    - name: path_deleted
+      description: search by path names that were deleted
+    - name: url
+      description: search by url
+    - name: registry_key
+      description: search by registry key accessed
+    - name: domain
+      description: search by domain name
+    - name: domain_dns_lookup
+      description: search by domain name used for DNS lookups
+    - name: domain_http_request
+      description: search by domain name used in HTTP request
+    - name: ip
+      description: search by ip address
+    - name: ip_dns_lookup
+      description: search by IP address returned in DNS lookup
+    - name: ip_src
+      description: search by network stream source IP address
+    - name: ip_dst
+      description: search by network stream destination IP address
+    - name: tag
+      description: search by sample tag
+    outputs:
+    - contextPath: ThreatGrid.Samples.Result
+      description: Result ID
+    - contextPath: ThreatGrid.Samples.Details
+      description: Detail of sample
+    description: Search Samples
+  - name: threat-grid-search-urls
+    arguments:
+    - name: url
+      description: search by URL pattern
+    - name: sibling
+      description: search by URL pattern prefix
+    - name: neighbor
+      description: search by hostname of URL
+    - name: sha256
+      description: search by SHA56 of URL
+    - name: md5
+      description: search by md5 of URL
+    - name: sha1
+      description: search by sha1 of URL
+    - name: protocol
+      description: search by protocol name
+    - name: host
+      description: search by hostname
+    - name: port
+      description: search by post number
+    - name: path
+      description: search by path name
+    - name: query
+      description: search by query
+    - name: reference
+      description: search by fragment identifier
+    - name: ip
+      description: search by IP address of network stream
+    - name: artifact
+      description: search by artifact downloaded
+    - name: tag
+      description: search by url tag
+    description: Search urls
+  - name: threat-grid-get-samples-state
+    arguments:
+    - name: ids
+      description: Comma separated list of sample ids
+    outputs:
+    - contextPath: ThreatGrid.Sample.ID
+      description: The sample ID, globally unique, and the canonical identifier of
+        this sample analysis
+    - contextPath: ThreatGrid.Sample.State
+      description: The state of the sample, one of a stable set of strings “wait,
+        prep, run, proc, succ, fail”
+    description: Get threat grid samples state
+  - name: threat-grid-feeds-artifacts
+    arguments:
+    - name: sha256
+      description: Restrict returned records with this sha256
+    - name: sha1
+      description: Restrict returned records with this sha1
+    - name: md5
+      description: Restrict returned records with this md5
+    - name: path
+      description: Restrict returned records to this path or path fragment.
+    - name: before
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        before it
+    - name: after
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        after it
+    - name: confidence
+      description: Restrict to IOCs with this confidence score or higher, defaults
+        to 80
+    - name: severity
+      description: Restrict to IOCs with this severity score or higher, defaults to
+        80
+    - name: ioc
+      description: Restrict returned records to events of this type
+    - name: org-only
+      description: If “true”, will only match against samples submitted by your organization
+    - name: user-only
+      description: ' If “true”, will only match against samples you submitted'
+    - name: sample
+      description: A comma-separated list of sample IDs. Restrict results to these
+        samples.
+    description: Get artifacts threat feed
+  - name: threat-grid-feeds-domain
+    arguments:
+    - name: domain
+      description: Restrict returned records to this domain or hostname
+    - name: before
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        before it
+    - name: after
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        after it
+    - name: confidence
+      description: Restrict to IOCs with this confidence score or higher, defaults
+        to 80
+    - name: severity
+      description: Restrict to IOCs with this severity score or higher, defaults to
+        80
+    - name: ioc
+      description: Restrict returned records to events of this type
+    - name: org-only
+      description: If “true”, will only match against samples submitted by your organization
+    - name: user-only
+      description: ' If “true”, will only match against samples you submitted'
+    - name: sample
+      description: A comma-separated list of sample IDs. Restrict results to these
+        samples.
+    description: Get domain threat feed
+  - name: threat-grid-feeds-ip
+    arguments:
+    - name: ip
+      description: Restrict returned records to this IP or CIDR block
+    - name: before
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        before it
+    - name: after
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        after it
+    - name: confidence
+      description: Restrict to IOCs with this confidence score or higher, defaults
+        to 80
+    - name: severity
+      description: Restrict to IOCs with this severity score or higher, defaults to
+        80
+    - name: ioc
+      description: Restrict returned records to events of this type
+    - name: org-only
+      description: If “true”, will only match against samples submitted by your organization
+    - name: user-only
+      description: ' If “true”, will only match against samples you submitted'
+    - name: sample
+      description: A comma-separated list of sample IDs. Restrict results to these
+        samples.
+    description: Get ips threat feed
+  - name: threat-grid-feeds-network-stream
+    arguments:
+    - name: ip
+      description: Restrict returned records to this IP address
+    - name: port
+      description: Restrict returned records to this port number
+    - name: before
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        before it
+    - name: after
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        after it
+    - name: confidence
+      description: Restrict to IOCs with this confidence score or higher, defaults
+        to 80
+    - name: severity
+      description: Restrict to IOCs with this severity score or higher, defaults to
+        80
+    - name: ioc
+      description: Restrict returned records to events of this type
+    - name: org-only
+      description: If “true”, will only match against samples submitted by your organization
+    - name: user-only
+      description: ' If “true”, will only match against samples you submitted'
+    - name: sample
+      description: A comma-separated list of sample IDs. Restrict results to these
+        samples.
+    description: Get network stream threat feed
+  - name: threat-grid-feeds-path
+    arguments:
+    - name: path
+      description: Restrict returned records to this path or path fragment
+    - name: before
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        before it
+    - name: after
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        after it
+    - name: confidence
+      description: Restrict to IOCs with this confidence score or higher, defaults
+        to 80
+    - name: severity
+      description: Restrict to IOCs with this severity score or higher, defaults to
+        80
+    - name: ioc
+      description: Restrict returned records to events of this type
+    - name: org-only
+      description: If “true”, will only match against samples submitted by your organization
+    - name: user-only
+      description: ' If “true”, will only match against samples you submitted'
+    - name: sample
+      description: A comma-separated list of sample IDs. Restrict results to these
+        samples.
+    description: Get path threat feed
+  - name: threat-grid-feeds-url
+    arguments:
+    - name: url
+      description: Restrict returned records to this URL or URL fragment
+    - name: before
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        before it
+    - name: after
+      description: A date/time (ISO 8601), restricting results to samples submitted
+        after it
+    - name: confidence
+      description: Restrict to IOCs with this confidence score or higher, defaults
+        to 80
+    - name: severity
+      description: Restrict to IOCs with this severity score or higher, defaults to
+        80
+    - name: ioc
+      description: Restrict returned records to events of this type
+    - name: org-only
+      description: If “true”, will only match against samples submitted by your organization
+    - name: user-only
+      description: ' If “true”, will only match against samples you submitted'
+    - name: sample
+      description: A comma-separated list of sample IDs. Restrict results to these
+        samples.
+    description: Get url threat feed
+  - name: threat-grid-get-analysis-artifact
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the sample id
+    - name: aid
+      required: true
+      description: The artificat id requested
+    description: Returns the sample id artifact with artifact id
+  - name: threat-grid-get-analysis-artifacts
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the sample id
+    description: Returns the sample id artifacts
+  - name: threat-grid-get-analysis-ioc
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the sample id
+    - name: ioc
+      required: true
+      description: the ioc requested
+    description: Returns data regarding the specified Indicator of Compromise
+  - name: threat-grid-get-analysis-metadata
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the sample id
+    description: Returns metadata about the analysis
+  - name: threat-grid-get-analysis-network-stream
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the sample id
+    - name: nsid
+      required: true
+      description: The network stream id
+    description: Returns data regarding a specific network stream
+  - name: threat-grid-get-analysis-network-streams
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the sample id
+    description: Returns the network stream analysis
+  - name: threat-grid-get-analysis-process
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the sample id
+    - name: pid
+      required: true
+      description: the process id requested
+    description: Returns data regarding the specifiic process id in the analysis
+  - name: threat-grid-get-analysis-processes
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: the sample id
+    description: Returns data regarding the analysis processes
   runonce: false
