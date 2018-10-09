@@ -482,3 +482,7 @@ view: |-
   }
 inputs: []
 outputs: []
+releaseNotes: "-"
+tests:
+  - Phishing test - attachment
+  - Phishing test - Inline
