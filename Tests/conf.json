@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+          "integrations": "Signal Sciences WAF",
+          "playbookID": "SignalSciences Test"
+        },
+        {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
         },
@@ -633,10 +637,6 @@
         },
         {
             "playbookID": "TestMatchRegex"
-        },
-        {
-            "integrations": "Signal Sciences WAF",
-            "playbookID": "SignalSciences Test"
         }
     ],
     "skipped_tests": [
