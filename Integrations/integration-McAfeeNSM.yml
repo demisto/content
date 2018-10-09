@@ -17,7 +17,12 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -28,6 +33,7 @@ script:
     var insecure = params.insecure;
     // handle '/' at the end of the url
     var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/sdkapi/';
+    var proxy = params.proxy;
 
     function sendRequest(method, url_suffix, headers, body) {
         // add default headers
@@ -48,7 +54,8 @@ script:
                 Headers: headers,
                 Body: body,
             },
-            insecure
+            insecure,
+            proxy
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -167,6 +174,7 @@ script:
                 {to : 'Attacker', from : 'summary.attacker', humanReadable : false},
                 {to : 'Target', from : 'summary.target', humanReadable : false},
                 {to : 'MalwareFile', from : 'details.malwareFile', humanReadable : false},
+                {to : 'Details', from : 'details', humanReadable : false},
             ],
         },
         undefined, pascalToSpace);
@@ -348,8 +356,6 @@ script:
 
     login();
     switch (command) {
-        case 'nsm-get-pcap':
-            return get_pcap_by_sensor(args.sensorID);
         case 'nsm-get-sensors':
             return get_sensors(args.domainID);
 
@@ -384,13 +390,6 @@ script:
     }
   type: javascript
   commands:
-  - name: nsm-get-pcap
-    arguments:
-    - name: sensorID
-      required: true
-      default: true
-      description: The sensor ID related to the pcap
-    description: Get a pcap file of given event
   - name: nsm-get-sensors
     arguments:
     - name: domainID
@@ -399,10 +398,13 @@ script:
     outputs:
     - contextPath: NSM.Sensors.ID
       description: Sensor ID
+      type: string
     - contextPath: NSM.Sensors.Description
       description: Sensor Description
+      type: string
     - contextPath: NSM.Sensors.DomainID
       description: Sensor's Domain ID
+      type: string
     description: get a sensor list of a given domain
   - name: nsm-get-domains
     arguments:
@@ -552,18 +554,25 @@ script:
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID
+      type: string
     - contextPath: NSM.Alerts.Name
       description: Alert Name
+      type: string
     - contextPath: NSM.Alerts.State
       description: Alert State (Acknowledged,Unacknowledged)
+      type: string
     - contextPath: NSM.Alerts.CreatedTime
       description: Alert Creation Time
+      type: date
     - contextPath: NSM.Alerts.Assignee
       description: Alert assignee
+      type: string
     - contextPath: NSM.Alerts.Description
-      description: Alert details
+      description: Alert Description
+      type: string
     - contextPath: NSM.Alerts.EventResult
       description: Event Result
+      type: string
     - contextPath: NSM.Alerts.Event
       description: Alert Event
     - contextPath: NSM.Alerts.Attack
@@ -574,6 +583,9 @@ script:
       description: The Attack's target
     - contextPath: NSM.Alerts.MalwareFile
       description: Malware File used in the attack
+      type: string
+    - contextPath: NSM.Alerts.Details
+      description: Extra details
     description: Get a single alert details
   - name: nsm-get-ips-policies
     arguments:

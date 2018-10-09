@@ -1,21 +1,22 @@
 id: VxStream Test
-version: 11
+version: -1
 name: VxStream Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0111aed1-2ea8-45c8-8403-af135fd0a68b
+    taskid: 0552ded5-b8a2-4777-879a-98b606a8b12a
     type: start
     task:
-      id: 0111aed1-2ea8-45c8-8403-af135fd0a68b
+      id: 0552ded5-b8a2-4777-879a-98b606a8b12a
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "11"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,35 +24,38 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: e625028b-1e53-4229-80f6-bf00c7c9ea10
+    taskid: 72762a77-d7db-4ccb-8f3f-d8a18f172077
     type: regular
     task:
-      id: e625028b-1e53-4229-80f6-bf00c7c9ea10
+      id: 72762a77-d7db-4ccb-8f3f-d8a18f172077
       version: -1
-      name: vx-get-environments
-      description: 'Get a list of all available environments '
-      script: VxStream|||vx-get-environments
+      name: Get Environments
+      description: Get a list of all available environments
+      script: VxStream|||crowdstrike-get-environments
       type: regular
       iscommand: true
       brand: VxStream
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 4968dff5-e289-4588-81d3-32ba018c29b6
+    taskid: 52d3d3fc-52a4-47f0-8f70-42ce0fa49f51
     type: regular
     task:
-      id: 4968dff5-e289-4588-81d3-32ba018c29b6
+      id: 52d3d3fc-52a4-47f0-8f70-42ce0fa49f51
       version: -1
       name: 'Verify Context get-environments '
       description: |-
@@ -68,34 +72,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      expectedValue: ""
-      fields: ID,description,architecture,VMs_total,VMs_busy,analysisMode,groupicon
-      path: VX.Environment
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 52037816-aedb-408d-8ead-b90942f991fb
-    type: regular
-    task:
-      id: 52037816-aedb-408d-8ead-b90942f991fb
-      version: -1
-      name: vx-search
-      description: Search the database using the VXStream search syntax
-      script: VxStream|||vx-search
-      type: regular
-      iscommand: true
-      brand: VxStream
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      query: url:google
+      expectedValue: {}
+      fields:
+        simple: ID,description,architecture,VMs_total,VMs_busy,analysisMode,groupicon
+      path:
+        simple: CrowdStrike.Environment
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -103,31 +85,45 @@ tasks:
           "y": 545
         }
       }
-  "4":
-    id: "4"
-    taskid: 96042103-dc37-4f07-871c-6dd406cdfd5b
+    note: false
+  "3":
+    id: "3"
+    taskid: c2f92980-0c48-4590-85aa-3b063c7102fd
     type: regular
     task:
-      id: 96042103-dc37-4f07-871c-6dd406cdfd5b
+      id: c2f92980-0c48-4590-85aa-3b063c7102fd
       version: -1
-      name: Verify Context search
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      name: Search
+      description: Search the database using the VXStream search syntax
+      script: VxStream|||crowdstrike-search
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: VxStream
     nexttasks:
       '#none#':
-      - "5"
+      - "12"
     scriptarguments:
-      expectedValue: ""
-      fields: SHA256,environmentId,start_time,threatscore,verdict,environmentDescription,submitname,type_short,size
-      path: VX.Search
+      authentihash: {}
+      av_detect: {}
+      context: {}
+      country: {}
+      domain: {}
+      env_id: {}
+      filename: {}
+      filetype: {}
+      filetype_desc: {}
+      host: {}
+      imp_hash: {}
+      port: {}
+      query:
+        simple: b2ac43820cdf8634e1a437b9723ec110513d3dd7a2f8d4fa3192babe3eaa4b8e
+      similar_to: {}
+      ssdeep: {}
+      tag: {}
+      url: {}
+      verdict: {}
+      vx_family: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -135,17 +131,18 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: 0bbe7af7-634a-40d8-8221-a86532112442
+    taskid: 5d0c7a0e-5198-4ea8-8527-6c40daa6817d
     type: regular
     task:
-      id: 0bbe7af7-634a-40d8-8221-a86532112442
+      id: 5d0c7a0e-5198-4ea8-8527-6c40daa6817d
       version: -1
-      name: vx-scan
+      name: Scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
         the reports generated for any environment ID
-      script: VxStream|||vx-scan
+      script: VxStream|||crowdstrike-scan
       type: regular
       iscommand: true
       brand: VxStream
@@ -153,36 +150,9 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      file: ${VX.Search.SHA256}
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "6":
-    id: "6"
-    taskid: 8074d29c-91b7-4f32-8697-fa8626b904df
-    type: regular
-    task:
-      id: 8074d29c-91b7-4f32-8697-fa8626b904df
-      version: -1
-      name: Verify Context scan
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: ""
-      fields: SHA256,environmentId,analysis_start_time,submitname,total_network_connections,total_processes,total_signatures,hosts,isinteresting,domains,isurlanalysis
-      path: File
+      file:
+        simple: 30d68d5f036e3edda345a0be211a14145fa763372620648d3dc2f8f7dbdf43c4
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -190,12 +160,208 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+  "6":
+    id: "6"
+    taskid: eb811650-9d9b-4ce0-864f-0f2a23721b4a
+    type: condition
+    task:
+      id: eb811650-9d9b-4ce0-864f-0f2a23721b4a
+      version: -1
+      name: Exists scan
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          accessor: environmentId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 736e0766-beff-4298-8f03-dbb7e0b2c084
+    type: regular
+    task:
+      id: 736e0766-beff-4298-8f03-dbb7e0b2c084
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: ca13da23-a154-42f5-836d-51e13b5abd91
+    type: regular
+    task:
+      id: ca13da23-a154-42f5-836d-51e13b5abd91
+      version: -1
+      name: Download PDF file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test.pdf
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: a3b98b59-2549-4a7c-8e8b-622fdde88d18
+    type: regular
+    task:
+      id: a3b98b59-2549-4a7c-8e8b-622fdde88d18
+      version: -1
+      name: crowdstrike-detonate-file
+      description: Detonate file through Falcon Sandbox
+      script: VxStream|||crowdstrike-detonate-file
+      type: regular
+      iscommand: true
+      brand: VxStream
+    scriptarguments:
+      delay: {}
+      entryId:
+        simple: ${File.EntryID}
+      environmentID:
+        simple: "100"
+      timeout:
+        simple: "300"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: bb464451-0a0d-45cf-8068-2a18b1820289
+    type: regular
+    task:
+      id: bb464451-0a0d-45cf-8068-2a18b1820289
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: b7110290-7b3e-4687-84c6-e66a1efe31c6
+    type: regular
+    task:
+      id: b7110290-7b3e-4687-84c6-e66a1efe31c6
+      version: -1
+      name: crowdstrike-submit-url
+      description: Submit a URL for analysis (Supported only in v2)
+      script: VxStream|||crowdstrike-submit-url
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      environmentID: {}
+      url:
+        simple: www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 1815,
         "width": 380,
         "x": 50,
         "y": 50
@@ -203,3 +369,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []

@@ -122,7 +122,7 @@ script: |
                   labels[EMAIL_SUBJECT_LABEL] = labels.pop(label)
               if not found_date and 'email' in label_lower and 'date' in label_lower:
                   labels[EMAIL_DATE_LABEL] = labels.pop(label)
-              if not found_sender and 'email' in label_lower and ('from' in label or 'sender' in label_lower):
+              if not found_sender and 'email' in label_lower and ('from' in label_lower or 'sender' in label_lower):
                   labels[EMAIL_SENDER_ADDRESS_LABEL] = labels.pop(label)
 
           return labels
@@ -578,5 +578,6 @@ outputs:
 - contextPath: duplicateCandidateList
   description: Duplicate incident candidates list.
 scripttarget: 0
-dockerimage: demisto/machine-learning:latest
+dockerimage: demisto/machine-learning
 fromversion: 3.5.0
+deprecated: true

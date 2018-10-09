@@ -1,3 +1,4 @@
+
 id: test_url_regex
 version: -1
 name: Test URL Regex
@@ -46,6 +47,7 @@ tasks:
     scriptarguments:
       value:
         simple: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-2540
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {

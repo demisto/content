@@ -34,3 +34,10 @@ Demisto Platform support flexible reports written in JSON. All of our standard r
 For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
 
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
+
+## Git configuration
+Copy the pre-commit hook from .hooks to .git/hooks. Run the following command from the repository root:
+
+```sh
+cp .hooks/* .git/hooks
+```

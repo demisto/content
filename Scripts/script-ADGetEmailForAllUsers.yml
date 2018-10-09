@@ -22,7 +22,7 @@ script: |
 type: python
 tags:
 - active directory
-comment: Use Active Directory to retrieve the email address associated with tall users.
+comment: Use Active Directory to retrieve the email address associated with all users.
 system: true
 scripttarget: 0
 deprecated: true
@@ -30,4 +30,3 @@ dependson:
   must:
   - ad-search
 timeout: 0s
-

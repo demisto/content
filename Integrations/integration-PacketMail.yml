@@ -2,7 +2,6 @@ commonfields:
   id: PacketMail
   version: -1
 name: PacketMail
-releaseNotes: "-"
 display: PacketMail.net
 category: Data Enrichment & Threat Intelligence
 description: Intel look up for IPS

@@ -35,3 +35,6 @@ args:
     IncidentIds="12345,67891" '
 scripttarget: 0
 runonce: false
+dependson:
+  must:
+  - archer-manually-fetch-incident

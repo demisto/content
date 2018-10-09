@@ -4,7 +4,7 @@
 	"layout": {
 		"id": "Phishing",
 		"version": -1,
-		"modified": "2018-04-08T19:57:25.247211344Z",
+		"modified": "2018-09-09T10:43:29.758272+03:00",
 		"name": "",
 		"sections": [
 			{
@@ -188,6 +188,23 @@
 				"description": "Email relevant Body fields",
 				"query": null,
 				"queryType": ""
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Email HTML Image",
+				"type": "invTimeline",
+				"isVisible": true,
+				"readOnly": true,
+				"fields": [],
+				"description": "",
+				"query": {
+					"tags": [
+						"email_html_image"
+					]
+				},
+				"queryType": "warRoomFilter"
 			},
 			{
 				"id": "",
@@ -564,7 +581,7 @@
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",
-				"name": "Child Investigation",
+				"name": "Child Incidents",
 				"type": "childInv",
 				"isVisible": true,
 				"readOnly": true,
