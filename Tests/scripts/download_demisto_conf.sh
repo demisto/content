@@ -44,6 +44,8 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
         curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
           --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json" -o "instance.json"
 
+    fi
+
   else
     echo "Downloading license file..."
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
@@ -62,6 +64,8 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
       else
         curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
           --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
+
+    fi
 
 fi
 echo "using instance:"
