@@ -409,7 +409,7 @@ script:
             for (var i=0; i<res.obj.resources.length; i++) {
                 md += res.obj.resources[i] + '\n';
                 ec.push({
-                   'detectionID': res.obj.resources[i]
+                   'detection_id': res.obj.resources[i]
                 });
             }
         } else {
@@ -421,7 +421,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: {
-                "CrowdStrikeHost.Detections(val.detectionID==obj.detectionID)": ec
+                "CrowdStrikeHost.Detections(val.detection_id == obj.detection_id)": ec
             }
         };
     }
@@ -444,58 +444,13 @@ script:
         return prettyDetections;
     }
 
-    function contextDetectionsDetails(detections) {
-        var detectionsDetails = []; //add Endpoint in context
-        for (var i=0; i<detections.length; i++) {
-            var o = detections[i];
-            detectionsDetails.push({
-                "cid": o.cid,
-                "detectionID": o.detection_id,
-                "firstBehavior": o.first_behavior,
-                "lastBehavior": o.last_behavior,
-                "maxConfidence": o.max_confidence,
-                "maxSeverity": o.max_severity,
-                "maxSeverityDisplayname":o.max_severity_displayname,
-                'technique': o.behaviors[0].technique,
-                "allegedFiletype":  o.behaviors[0].alleged_filetype,
-                "behviorID":  o.behaviors[0].behavior_id,
-                "deviceID": o.behaviors[0].device_id,
-                "userID": o.behaviors[0].user_id,
-                "controlGraphID": o.behaviors[0].control_graph_id,
-                "cmdline":  o.behaviors[0].cmdline,
-                "confidence":  o.behaviors[0].confidence,
-                "severity": o.behaviors[0].severity,
-                "filename": o.behaviors[0].filename,
-                "iocDescription": o.behaviors[0].ioc_description,
-                "iocSource": o.behaviors[0].ioc_source,
-                "iocType": o.behaviors[0].ioc_type,
-                "iocValue": o.behaviors[0].ioc_value,
-                "MD5": o.behaviors[0].md5,
-                "SHA256": o.behaviors[0].sha256,
-                "timestamp": o.behaviors[0].timestamp,
-                "parentCmdline": o.behaviors[0].parent_details.parent_cmdline,
-                "parentMD5": o.behaviors[0].parent_details.md5,
-                "parentSHA256": o.behaviors[0].parent_details.sha256,
-                "parentControlGraphID": o.behaviors[0].parent_details.control_graph_id,
-                "agentVersion": o.device.agent_version,
-                "biosVersion": o.device.bios_version,
-                "osVersion": o.device.os_version,
-                "MACAddress": o.device.mac_address,
-                "localIP": o.device.local_ip,
-                "externalIP": o.device.external_ip,
-                "hostname": o.device.hostname,
-            });
-        }
-        return detectionsDetails;
-    }
-
     function detectionDetails() {
-        var ids = argToList(args.detectionIDs);
+        var ids = argToList(args.detection_id);
         var res = doReq('POST', 'detects/entities/summaries/GET/v1', {}, {ids: ids});
         var md = '## Falcon Host Detection Details\n';
         var ec = {};
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec = contextDetectionsDetails(res.obj.resources);
+            ec = res.obj.resources;
             md += tableToMarkdown('', prettifyDetectionsDetails(res.obj.resources),
                 ['First Behavior', 'Device Hostname', 'Max Severity Display Name', 'Technique', 'Filename', 'Commandline', 'Detection ID', 'Device ID']);
         } else {
@@ -507,7 +462,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: {
-                "CrowdStrikeHost.Detections(val.detectionID==obj.detectionID)": ec
+                "CrowdStrikeHost.Detections(val.detection_id == obj.detection_id)": ec
             }
         };
     }
@@ -868,7 +823,7 @@ script:
       (and any other fields that would happen to contain it)
   - name: cs-detection-details
     arguments:
-    - name: detectionIDs
+    - name: detection_id
       required: true
       description: ID of the detections
       isArray: true
@@ -876,107 +831,107 @@ script:
     - contextPath: CrowdStrikeHost.Detections.cid
       description: cid of the detection
       type: string
-    - contextPath: CrowdStrikeHost.Detections.detectionID
+    - contextPath: CrowdStrikeHost.Detections.detection_id
       description: ID of the detection
       type: string
-    - contextPath: CrowdStrikeHost.Detections.firstBehavior
+    - contextPath: CrowdStrikeHost.Detections.first_behavior
       description: First behavior of the detection
       type: string
-    - contextPath: CrowdStrikeHost.Detections.lastBehavior
+    - contextPath: CrowdStrikeHost.Detections.last_behavior
       description: Last behavior of the detection
       type: string
-    - contextPath: CrowdStrikeHost.Detections.maxConfidence
+    - contextPath: CrowdStrikeHost.Detections.max_confidence
       description: Max confidence of the detection
       type: number
-    - contextPath: CrowdStrikeHost.Detections.maxSeverity
+    - contextPath: CrowdStrikeHost.Detections.max_severity
       description: Max severity of the detection
       type: number
-    - contextPath: CrowdStrikeHost.Detections.maxSeverityDisplayname
+    - contextPath: CrowdStrikeHost.Detections.max_severity_display_name
       description: Displayname of the max severity
       type: string
-    - contextPath: CrowdStrikeHost.Detections.allegedFiletype
-      description: Alleged filetype of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.alleged_file_type
+      description: Alleged filetype of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.behaviorID
+    - contextPath: CrowdStrikeHost.Detections.behaviors.behavior_id
       description: ID of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.deviceID
-      description: ID of the device
+    - contextPath: CrowdStrikeHost.Detections.behaviors.device_id
+      description: ID of the device of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.userID
-      description: ID of the user
+    - contextPath: CrowdStrikeHost.Detections.behaviors.user_id
+      description: ID of the user of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.controlGraphID
-      description: ID of the control graph
+    - contextPath: CrowdStrikeHost.Detections.behaviors.control_graph_id
+      description: ID of the control graph of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.cmdline
-      description: Commandline of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.cmdline
+      description: Commandline of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.confidence
-      description: Confidence of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.confidence
+      description: Confidence of the behavior
       type: number
-    - contextPath: CrowdStrikeHost.Detections.severity
-      description: Severity of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.severity
+      description: Severity of the behavior
       type: number
-    - contextPath: CrowdStrikeHost.Detections.filename
-      description: Filename of the detection
-      type: number
-    - contextPath: CrowdStrikeHost.Detections.iocDescription
-      description: IOC description of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.filename
+      description: Filename of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.iocSource
-      description: IOC source of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_description
+      description: IOC description of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.iocType
-      description: IOC type of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_source
+      description: IOC source of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.iocValue
-      description: IOC value of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_type
+      description: IOC type of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.MD5
-      description: MD5 of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.ioc_value
+      description: IOC value of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.SHA256
-      description: SHA256 of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.md5
+      description: MD5 of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.timestamp
-      description: Timestamp of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.sha256
+      description: SHA256 of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.parentCmdline
-      description: Commandline of the parent of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.timestamp
+      description: Timestamp of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.parentMD5
-      description: MD5 of the parent of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_cmdline
+      description: Commandline of the parent of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.parentSHA256
-      description: SHA256 of the parent of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_md5
+      description: MD5 of the parent of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.parentControlGraphID
-      description: Control graph ID of the parent of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_sha256
+      description: SHA256 of the parent of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.agentVersion
-      description: Agent version of the detection
+    - contextPath: CrowdStrikeHost.Detections.behaviors.parent_details.parent_control_graph_id
+      description: Control graph ID of the parent of the behavior
       type: string
-    - contextPath: CrowdStrikeHost.Detections.biosVersion
-      description: Bios version of the detection
+    - contextPath: CrowdStrikeHost.Detections.device.agent_version
+      description: Agent version of the device
       type: string
-    - contextPath: CrowdStrikeHost.Detections.osVersion
-      description: OS version of the detection
+    - contextPath: CrowdStrikeHost.Detections.device.bios_version
+      description: Bios version of the device
       type: string
-    - contextPath: CrowdStrikeHost.Detections.MACAddress
-      description: MACAddress of the detection
+    - contextPath: CrowdStrikeHost.Detections.device.os_version
+      description: OS version of the device
       type: string
-    - contextPath: CrowdStrikeHost.Detections.localIP
-      description: Local IP of the detection
+    - contextPath: CrowdStrikeHost.Detections.device.mac_address
+      description: MACAddress of the device
       type: string
-    - contextPath: CrowdStrikeHost.Detections.externalIP
-      description: External IP of the detection
+    - contextPath: CrowdStrikeHost.Detections.device.local_ip
+      description: Local IP of the device
       type: string
-    - contextPath: CrowdStrikeHost.Detections.hostname
-      description: Hostname of the detection
+    - contextPath: CrowdStrikeHost.Detections.device.external_ip
+      description: External IP of the device
       type: string
-    - contextPath: CrowdStrikeHost.Detections.technique
-      description: Technique of the detection
+    - contextPath: CrowdStrikeHost.Detections.device.hostname
+      description: Hostname of the device
+      type: string
+    - contextPath: CrowdStrikeHost.Detections.behaviors.technique
+      description: Technique of the behavior
       type: string
     description: Fetch details of a Crowdstrike Detection using the detection ID
   runonce: false
