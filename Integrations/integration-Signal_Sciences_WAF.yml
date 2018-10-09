@@ -239,6 +239,7 @@ script:
         site_whitelist = http_request('GET', url)
         data = site_whitelist.get('data', [])
 
+        res = {}
         for item in data:
             if item.get('source', '') == IP:
                 url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
@@ -264,6 +265,7 @@ script:
         site_blacklist = http_request('GET', url)
         data = site_blacklist.get('data', [])
 
+        res = {}
         for item in data:
             if item.get('source', '') == IP:
                 url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
