@@ -7,6 +7,13 @@
             "playbookID": "RTIR Test"
         },
         {
+            "playbookID": "url_enrichment_-_generic_test",
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
@@ -638,7 +645,6 @@
     "skipped_tests": [
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
-        "url_enrichment_-_generic_test",
         "search_endpoints_by_hash_-_generic_-_test",
         "SCADAfence_test",
         "test-ThreatConnect"
