@@ -1,0 +1,56 @@
+commonfields:
+  id: 1410b837-ecbc-4b52-8ac6-a58801da9a26
+  version: 7
+name: ConvertWordDocToDocx
+script: |+
+  import subprocess
+  import sys
+
+  res = []
+  errEntry = {
+      "Type": entryTypes["error"],
+      "ContentsFormat": formats["text"],
+      "Contents": ""
+  }
+
+  cmd_res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
+  file_res = cmd_res[0]
+  if isError(file_res):
+      file_res["Contents"] = "Error fetching entryID: " + file_res["Contents"]
+      res = file_res
+  else:
+      file_path = file_res['Contents']['path']
+      file_name = file_res['Contents']['name']
+      if not file_name.endswith('.doc'):
+          return_error("Input file is not a doc file.")
+      file_data = subprocess.check_output(['soffice', '--headless', '--convert-to', 'docx', file_path])
+      output_file_name = file_name[0:file_name.rfind('.')] + '.docx'
+      path = "/var/lib/demisto/"+file_path+".docx"
+      f = open(path, "r")
+      a = f.read()
+      res = fileResult(output_file_name, a)
+
+  demisto.results(res)
+
+
+
+
+
+
+type: python
+tags:
+- word
+- docx
+- doc
+- parser
+comment: Takes an input doc file (entryID) as an input and saves an output docx file
+  (file entry) with the original file's contents.
+enabled: true
+args:
+- name: entryID
+  required: true
+  default: true
+  description: Doc file to convert
+scripttarget: 0
+runonce: false
+dockerimage: demisto/libreoffice:2.0
