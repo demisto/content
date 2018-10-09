@@ -1938,4 +1938,3 @@ script:
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Fix site scanning - allow scanning of all assets within the site"

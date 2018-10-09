@@ -1219,4 +1219,3 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "Moved McAfee-Advanced-Threat-Defense integration to python"
