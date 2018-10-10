@@ -115,7 +115,7 @@ def get_user_name_from_circle(circleci_token, build_number):
     return user_details.get('name', '')
 
 
-def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id):
+def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url):
     circle_user_name = get_user_name_from_circle(CircleCI, build_number)
     sc = SlackClient(slack)
     user_id = retrieve_id(circle_user_name, sc)
