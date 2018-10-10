@@ -126,7 +126,7 @@ def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, serve
             channel=user_id,
             username="Content CircleCI",
             as_user="False",
-            text="{0} Failed\nhttps://{1}/#/WorkPlan/{2}".format(playbook_id, server_url, inc_id)
+            text="{0} Failed\n{1}/#/WorkPlan/{2}".format(playbook_id, server_url, inc_id)
         )
 
 
