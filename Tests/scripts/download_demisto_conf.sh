@@ -35,8 +35,16 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf" -o "$DEMISTO_SEVERCONF_PATH"
 
     echo "Downloading instance conf file..."
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json" -o "instance.json"
+    if [ -n "${NIGHTLY}" ]
+      then
+        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+          --location "https://api.github.com/repos/demisto/content-test-conf/contents/nightly_instance.json" -o "instance.json"
+
+      else
+        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+          --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json" -o "instance.json"
+
+    fi
 
   else
     echo "Downloading license file..."
@@ -48,8 +56,17 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf?ref=$CIRCLE_BRANCH" -o "$DEMISTO_SEVERCONF_PATH"
 
     echo "Downloading instance conf file..."
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
+    if [ -n "${NIGHTLY}" ]
+      then
+        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+          --location "https://api.github.com/repos/demisto/content-test-conf/contents/nightly_instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
+
+      else
+        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+          --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
+
+    fi
+
 fi
 echo "using instance:"
 cat instance.json

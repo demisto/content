@@ -500,4 +500,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: "support utf8 encoding for search"
