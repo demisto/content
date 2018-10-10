@@ -11,7 +11,6 @@ tasks:
       id: 72407b54-6e6d-4537-89b6-683d085faa74
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -97,10 +96,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 0a50fd22-9a65-43c5-89df-e130db76d00f
+    taskid: 65441542-2bc1-429a-83a8-de9e868b6da7
     type: regular
     task:
-      id: 0a50fd22-9a65-43c5-89df-e130db76d00f
+      id: 65441542-2bc1-429a-83a8-de9e868b6da7
       version: -1
       name: Query by Id
       description: Perform a query.
@@ -119,7 +118,8 @@ tasks:
       queryId:
         simple: a7561571-c786-4fb7-93d0-e2f2c74c190d
       skip: {}
-      to: {}
+      to:
+        simple: 2018-10-07T10:00:00Z
       writeToContext: {}
     separatecontext: false
     view: |-
