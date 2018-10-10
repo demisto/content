@@ -49,15 +49,19 @@ script:
     DAY_IN_MINUTES = 1440
     HOUR_IN_MINUTES = 60
 
-
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
 
 
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('unsecure', False)
-    TOKEN = demisto.params().get('token', None)
+    TOKEN = demisto.params().get('token')
 
     def get_server_url():
         url = demisto.params()['server']
@@ -66,16 +70,8 @@ script:
         return url
 
 
-    def load_proxy():
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
     BASE_URL = get_server_url()
     SERVER_URL = BASE_URL + '/api/3'
-    PROXY = load_proxy()
 
     def get_login_headers():
         headers = {
@@ -95,7 +91,7 @@ script:
             'nexposeccusername': USERNAME,
             'nexposeccpassword': PASSWORD
         }
-        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
             return ''
         body = res.json()
@@ -126,7 +122,7 @@ script:
     def get_site(asset_id):
         url = BASE_URL + '/data/assets/' + str(asset_id) + '/scans'
         headers = get_site_headers()
-        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
            return ''
         response = res.json()
@@ -146,8 +142,7 @@ script:
         url = '{}/{}'.format(SERVER_URL, path)
 
         headers = headers if headers is not None else get_headers()
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-        verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return res.json() if is_file is False else res.content
@@ -1938,3 +1933,6 @@ script:
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 fromversion: 3.6.0
+releaseNotes: "-"
+tests:
+    - nexpose_test
