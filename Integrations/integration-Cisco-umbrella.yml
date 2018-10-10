@@ -57,6 +57,12 @@ script:
         'Authorization': 'Bearer {}'.format(API_TOKEN),
         'Accept': 'application/json'
     }
+    # remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     ''' MAPS '''
 
@@ -105,16 +111,6 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def load_proxy():
-        # Loads the system configured proxy if enabled in configuration
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
-
-    PROXY = load_proxy()
 
     def extract_domain_name(url):
         # Remove protocol, removes directory after the host name, returns only the host name.
@@ -137,7 +133,6 @@ script:
                 verify=USE_SSL,
                 params=req_params,
                 headers=DEFAULT_HEADERS,
-                proxies=PROXY,
                 data=data_list
             )
 
