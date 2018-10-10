@@ -406,7 +406,6 @@ script:
         start_time = demisto.args().get('startTime', None)
         end_time = demisto.args().get('endTime', None)
 
-
         if start_time and end_time:
             list_params['start_datetime'] = start_time
             list_params['end_datetime'] = end_time
@@ -858,7 +857,8 @@ script:
   - name: sw-list-sessions
     arguments:
     - name: startTime
-      description: Session's start time (UTC). For example, startTime="2018-07-31T12:00:00Z"
+      required: true
+      description: Session's start time (UTC). For example, startTime="2018-09-30T12:00:00Z"
     - name: endTime
       description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
     - name: limit
@@ -895,11 +895,12 @@ script:
     - contextPath: Stealthwatch.Session.connected_device_is_external
       description: Is the connected device external
       type: boolean
-    description: 'Get Sessions by the session''s occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)'
+    description: 'Get sessions by the session''s occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)'
   - name: sw-list-external-sessions
     arguments:
     - name: startTime
-      description: Session's start time (UTC). For example, startTime="2018-07-31T12:00:00Z"
+      required: true
+      description: Session's start time (UTC). For example, startTime="2018-09-30T12:00:00Z"
     - name: endTime
       description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
     - name: limit
@@ -936,11 +937,12 @@ script:
     - contextPath: Stealthwatch.ExtSession.connected_device_is_external
       description: Is the connected device external
       type: boolean
-    description: Get Sessions with external connected_ips
+    description: Get sessions with external connected IPs
   - name: sw-list-internal-sessions
     arguments:
     - name: startTime
-      description: Session's start time (UTC). For example, startTime="2018-07-31T12:00:00Z"
+      required: true
+      description: Session's start time (UTC). For example, startTime="2018-09-30T12:00:00Z"
     - name: endTime
       description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
     - name: limit
@@ -977,7 +979,7 @@ script:
     - contextPath: Stealthwatch.IntSession.connected_device_is_external
       description: Is the connected device external
       type: boolean
-    description: Get Sessions with internal connected_ips
+    description: Get sessions with internal connected IPs
   isfetch: true
   runonce: false
 releaseNotes: "-"
