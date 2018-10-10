@@ -371,6 +371,7 @@ script:
 
         return entries
 
+
     def update_command():
         custom_fields = demisto.args().get('custom_fields')
         template = demisto.args().get('template')
@@ -850,6 +851,8 @@ script:
       defaultValue: incident
     - name: number
       description: Ticket number to retrieve
+    - name: get_attachments
+      description: Wether to retrieve ticket attachments, default false
     outputs:
     - contextPath: Ticket.ID
       description: ServiceNow ticket System ID

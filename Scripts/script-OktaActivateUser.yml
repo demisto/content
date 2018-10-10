@@ -31,4 +31,3 @@ deprecated: true
 dependson:
   must:
   - okta-activate-user
-releaseNotes: "-"

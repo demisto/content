@@ -94,4 +94,3 @@ timeout: 0s
 dependson:
   must:
   - epo-command
-releaseNotes: "-"

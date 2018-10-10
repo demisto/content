@@ -80,4 +80,3 @@ runonce: false
 dependson:
   must:
   - salesforce-push-comment
-releaseNotes: "-"

@@ -23,4 +23,3 @@ dependson:
   - PagerDuty-submit-event
 runonce: false
 timeout: 0s
-releaseNotes: "-"
