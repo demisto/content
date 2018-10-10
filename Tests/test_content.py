@@ -132,7 +132,9 @@ def notify_failed_test(slack, CircleCI, playbook_id, build_number):
 
 def retrieve_id(circle_user_name, sc):
     user_id = ''
-    user_list = sc.api_call('users.list')
+    res = sc.api_call('users.list')
+
+    user_list = res.get('members', [])
     for user in user_list:
         profile = user.get('profile', {})
         name = profile.get('real_name_normalized', '')
