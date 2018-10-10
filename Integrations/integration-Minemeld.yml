@@ -347,3 +347,5 @@ script:
     description: Get miner indicators list.
   runonce: false
 releaseNotes: "Fixed proxy settings"
+tests:
+  - minemeld_test
