@@ -75,20 +75,18 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    ''' GLOBAL VARIABLESS '''
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
 
+    ''' GLOBAL VARIABLESS '''
     def get_server_url():
         url = demisto.params()['url']
         url = re.sub('/[\/]+$/', '', url)
         url = re.sub('\/$', '', url)
         return url
 
-    def load_proxy():
-        proxy = {}
-        if demisto.params().get('proxy', False):
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
 
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
@@ -102,7 +100,6 @@ script:
         API += VERSION + '/'
 
     SERVER_URL = get_server_url() + API
-    PROXY = load_proxy()
 
     DEFAULTS = {
         'limit':10,
@@ -139,13 +136,13 @@ script:
                 with open(file_name, 'rb') as f:
                     files = {'file': f}
                     res = requests.request(method, url, headers=headers, params=params, data=body,files=files, auth=(USERNAME, PASSWORD),
-                    verify=VERIFY_SSL, proxies=PROXY)
+                    verify=VERIFY_SSL)
                 shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
             except Exception as e:
                 raise Exception('Failed to upload file - ' + e.message)
         else:
             res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-            verify=VERIFY_SSL, proxies=PROXY)
+            verify=VERIFY_SSL)
 
 
         try:
@@ -365,12 +362,11 @@ script:
             links = [(attachment['download_link'], attachment['file_name']) for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies=PROXY)
+            file_res = requests.get(link[0], auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
         return entries
-
 
     def update_command():
         custom_fields = demisto.args().get('custom_fields')
@@ -851,8 +847,6 @@ script:
       defaultValue: incident
     - name: number
       description: Ticket number to retrieve
-    - name: get_attachments
-      description: Wether to retrieve ticket attachments, default false
     outputs:
     - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
