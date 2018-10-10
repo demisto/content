@@ -827,4 +827,3 @@ script:
     description: Get all the IOCs
   isfetch: true
 hidden: false
-releaseNotes: "Updated logo."

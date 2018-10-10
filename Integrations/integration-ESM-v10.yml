@@ -1502,4 +1502,3 @@ script:
     description: Gets an event list related to the alarm
   isfetch: true
   runonce: false
-releaseNotes: added commands for fetching event details of alarms.

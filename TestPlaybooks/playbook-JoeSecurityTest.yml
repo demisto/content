@@ -290,7 +290,7 @@ tasks:
       - "17"
     scriptarguments:
       query:
-        simple: file
+        simple: for next run
     separatecontext: false
     view: |-
       {
@@ -307,7 +307,7 @@ tasks:
     task:
       id: c7c50781-96e4-4227-8e86-5812b398c756
       version: -1
-      name: Download url Report - PDF
+      name: Download url Report - XML
       script: Joe Security|||joe-download-report
       type: regular
       iscommand: true
@@ -317,7 +317,7 @@ tasks:
       - "3"
     scriptarguments:
       type:
-        simple: pdf
+        simple: xml
       webid:
         complex:
           root: Joe

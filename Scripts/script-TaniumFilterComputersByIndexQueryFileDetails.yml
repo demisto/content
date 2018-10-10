@@ -2,7 +2,6 @@ commonfields:
   id: TaniumFilterComputersByIndexQueryFileDetails
   version: -1
 name: TaniumFilterComputersByIndexQueryFileDetails
-releaseNotes: "-"
 script: |
   dArgs = demisto.args()
   question_filters="Index Query File Details"
@@ -92,3 +91,6 @@ outputs:
   description: Number or results per computer name that match the filter
 scripttarget: 0
 runonce: false
+dependson:
+  must:
+  - tn-ask-manual-question

@@ -600,6 +600,3 @@ script:
       type: string
     description: Upload a file hosted on a website to WildFire for analysis
   runonce: false
-releaseNotes: |-
-  added putputs, added support in multiple inputs for wildfire-report and deprecate detonate commands.
-  add input checks for !file and !wildfire-report commands

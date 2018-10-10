@@ -9,6 +9,7 @@ CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'W
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
 TEST_DIR = 'TestPlaybooks'
+FILTER_CONF = "./Tests/filter_file.txt"
 
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
@@ -125,7 +126,7 @@ def main(circle_artifacts):
 
     print 'copying common server doc to bundles'
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
-        shutil.copyfile('./Docs/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
+        shutil.copyfile('./Documentation/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
 
     print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)
@@ -136,6 +137,7 @@ def main(circle_artifacts):
     shutil.copyfile(ZIP_TEST + '.zip', os.path.join(circle_artifacts, ZIP_TEST + '.zip'))
 
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
+    shutil.copyfile(FILTER_CONF, os.path.join(circle_artifacts, 'filter_file.txt'))
 
     print 'finished create content artifact at %s' % (circle_artifacts, )
 

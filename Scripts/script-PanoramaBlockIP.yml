@@ -86,4 +86,3 @@ dependson:
   must:
   - panorama
 timeout: 0s
-releaseNotes: Fixing output types for the script

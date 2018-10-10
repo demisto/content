@@ -32,8 +32,7 @@ script: |
   return {
     Type: entryTypes.note,
     Contents: isInRange ? 'yes' : 'no',
-    ContentsFormat: formats.json,
-    HumanReadable: isInRange ? 'yes' : 'no',
+    ContentsFormat: formats.text,
     EntryContext: ec
   };
 type: javascript
@@ -61,4 +60,3 @@ outputs:
 - contextPath: IP.InRange
   description: Is the IP is in the input ranges? (could be 'yes' or 'no)
 scripttarget: 0
-releaseNotes: "Better handling of spaces and new lines in provided IP ranges string"

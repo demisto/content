@@ -30,3 +30,6 @@ args:
   description: User ID of requested user
 scripttarget: 0
 deprecated: true
+dependson:
+  must:
+  - okta-get-user

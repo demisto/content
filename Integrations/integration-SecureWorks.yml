@@ -419,6 +419,38 @@ script:
         return response;
     }
 
+    function getTicketCountCommand(){
+        var countObject = getTicketCount(args.ticketType);
+
+        var translator = [
+            {to: 'TicketCount', from: 'ticketCount'}
+        ];
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: countObject,
+            ContentsFormat: formats.json
+        };
+
+        var translated = mapObjFunction(translator)(countObject);
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown('Secure works get ticket count response' , translated);
+
+        return entry;
+    }
+
+    function getTicketCount(ticketType){
+        var queryParams = {}
+
+        if(ticketType){
+            queryParams.ticketType = ticketType;
+        }
+
+        var response = sendRequest('tickets/count', 'POST', queryParams);
+
+        return response;
+    }
+
     function assignTicketCommand(){
         var id = args['id'];
         var response = assignTicket(id,
@@ -626,6 +658,53 @@ script:
             queryParams.includeWorklogs = includeWorklogs;
         }
         var response = sendRequest('tickets/' + ticketId, 'GET', queryParams);
+
+        return response;
+    }
+
+    function getTicketsIdsCommand() {
+            var response = getTicketsIds(args.ticketType, args.limit, args.groupingType);
+
+            if(!response || !response.ticketIds || response.ticketIds.length === 0){
+                return 'No ids returned';
+            }
+
+            var translator = [
+                {to: 'IDs', from: 'ticketIds'}
+            ];
+
+            var entry = {
+                Type: entryTypes.note,
+                Contents: response,
+                ContentsFormat: formats.json
+            };
+
+            var translated = cleanObject(mapObjFunction(translator)(response));
+            entry.ReadableContentsFormat = formats.markdown;
+            entry.HumanReadable = tableToMarkdown('Secure works get tickets ids response' , translated);
+            entry.EntryContext = {
+              'SecureWorks.IDs': response.ticketIds
+            };
+
+            return entry;
+        }
+
+    function getTicketsIds(ticketType, limit, groupingType) {
+        var queryParams = {}
+
+        if(ticketType){
+            queryParams.ticketType = ticketType;
+        }
+
+        if(limit){
+            queryParams.limit = limit;
+        }
+
+        if(groupingType){
+            queryParams.groupingType = groupingType;
+        }
+
+        var response = sendRequest('tickets/ids', 'POST', queryParams);
 
         return response;
     }
@@ -888,6 +967,12 @@ script:
             break;
         case 'secure-works-get-close-codes':
             entry = getCloseCodesCommand();
+            break;
+        case 'secure-works-get-tickets-ids':
+            entry = getTicketsIdsCommand();
+            break;
+        case 'secure-works-get-ticket-count':
+            entry = getTicketCountCommand();
             break;
     }
 
@@ -1334,6 +1419,44 @@ script:
     - contextPath: SecureWorks.Ticket.closeCodes
       description: Ticket close codes
     description: Returns a list of close codes for a ticket
+  - name: secure-works-get-tickets-ids
+    arguments:
+    - name: ticketType
+      auto: PREDEFINED
+      predefined:
+      - SERVICE_REQUEST
+      - INCIDENT
+      - CHANGE
+      description: Tickets matching the ticketType. If not specified, the path returns
+        all ticket types
+    - name: limit
+      description: If provided, limit response to that number of tickets. If not provided,
+        a maximum of 10 tickets are returned
+    - name: groupingType
+      auto: PREDEFINED
+      predefined:
+      - REQUEST
+      - CHANGE
+      - HEALTH
+      - SECURITY
+      description: If provided, limit response to tickets matching the grouping type(s)
+        identified
+    outputs:
+    - contextPath: SecureWorks.IDs
+      description: The ticket IDs
+    description: Get a list of ticket IDs in the same order as the tickets returned
+      by the GET /tickets/updates command.
+  - name: secure-works-get-ticket-count
+    arguments:
+    - name: ticketType
+      auto: PREDEFINED
+      predefined:
+      - SERVICE_REQUEST
+      - INCIDENT
+      - CHANGE
+      description: The ticket type to filter
+    description: Retrieve a count of tickets that have been updated and not yet acknowledged
   isfetch: true
   runonce: false
 fromversion: 3.6.0
+releaseNotes: "Added count tickets and get ids commands"
