@@ -54,23 +54,19 @@ script:
     API_SECRET = demisto.params()['api_secret']
     VERIFY_SSL = not demisto.params().get('unsecure', False)
 
+
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+
     def get_server_url():
         url = demisto.params()['url']
         url = re.sub('/[\/]+$/', '', url)
         url = re.sub('\/$', '', url)
         return url
 
-
-    def load_proxy():
-        proxy = {}
-
-        if demisto.params().get('proxy', False):
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
     SERVER_URL = get_server_url() + '/search'
-    PROXY = load_proxy()
 
     ''' HELPER FUNCTIONS '''
     def get_api_sign(timestamp, body):
