@@ -32,8 +32,8 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
-    parser.add_argument('-s', '--slack', help='The token for slack', required=True)
-    parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
+    parser.add_argument('-t', '--slack', help='The token for slack', required=True)
+    parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     options = parser.parse_args()
 
