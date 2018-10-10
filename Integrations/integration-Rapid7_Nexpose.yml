@@ -49,6 +49,7 @@ script:
     DAY_IN_MINUTES = 1440
     HOUR_IN_MINUTES = 60
 
+
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
