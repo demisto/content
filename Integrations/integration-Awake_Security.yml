@@ -134,19 +134,22 @@ script:
             "ReadableContentsFormat": "markdown",
         })
 
-    def lookup(lookup_type, lookup_key, lookback_minutes):
+    def lookup(lookup_type, lookup_key):
         path = "/lookup/" + lookup_type
 
         request["lookup_key"] = lookup_key
 
-        request["lookback_minutes"] = lookback_minutes
+        if "lookback_minutes" in args:
+            request["lookback_minutes"] = int(args["lookback_minutes"])
+        else:
+            request["lookback_minutes"] = 480
 
         response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
 
         return response.json()
 
-    def lookupDevice(lookup_key, lookback_minutes):
-        contents = lookup("device", lookup_key, lookback_minutes)
+    def lookupDevice(lookup_key):
+        contents = lookup("device", lookup_key)
 
         humanReadableFields = [
             "deviceScore",
@@ -171,8 +174,8 @@ script:
 
         returnResults(contents, humanReadable)
 
-    def lookupDomain(lookup_key, lookback_minutes):
-        contents = lookup("domain", lookup_key, lookback_minutes)
+    def lookupDomain(lookup_key):
+        contents = lookup("domain", lookup_key)
 
         humanReadableFields = [
             "notability",
@@ -191,8 +194,8 @@ script:
 
         returnResults(contents, humanReadable)
 
-    def lookupEmail(lookup_key, lookback_minutes):
-        contents = lookup("email", lookup_key, lookback_minutes)
+    def lookupEmail(lookup_key):
+        contents = lookup("email", lookup_key)
 
         humanReadableFields = [
             "notabilityPercentile",
@@ -212,8 +215,8 @@ script:
 
         returnResults(contents, humanReadable)
 
-    def lookupIp(lookup_key, lookback_minutes):
-        contents = lookup("ip", lookup_key, lookback_minutes)
+    def lookupIp(lookup_key):
+        contents = lookup("ip", lookup_key)
 
         humanReadableFields = [
             "deviceCount",
@@ -400,14 +403,6 @@ script:
         demisto.results('ok')
     elif command == "fetch-incidents":
         fetchIncidents()
-    elif command == "awake-lookup-device":
-        lookupDevice(args["lookup_key"], int(args["lookback_minutes"]))
-    elif command == "awake-lookup-domain":
-        lookupDomain(args["lookup_key"], int(args["lookback_minutes"]))
-    elif command == "awake-lookup-email":
-        lookupEmail(args["lookup_key"], int(args["lookback_minutes"]))
-    elif command == "awake-lookup-ip":
-        lookupIp(args["lookup_key"], int(args["lookback_minutes"]))
     elif command == "awake-query-devices":
         queryDevices()
     elif command == "awake-query-activities":
@@ -417,11 +412,13 @@ script:
     elif command == "awake-pcap-download":
         pcapDownload()
     elif command == "domain":
-        lookupDomain(args["domain"], 480)
+        lookupDomain(args["domain"])
     elif command == "email":
-        lookupDomain(args["email"], 480)
+        lookupDomain(args["email"])
     elif command == "ip":
-        lookupIp(args["ip"], 480)
+        lookupIp(args["ip"])
+    elif command == "device":
+        lookupDevice(args["device"])
 
     sys.exit(0)
   type: python
@@ -489,41 +486,6 @@ script:
     - name: tag
       description: Tag to match (Regular expression)
     description: Query domains
-  - name: awake-lookup-ip
-    arguments:
-    - name: lookup_key
-      required: true
-      description: The IP address (exact match)
-    - name: lookback_minutes
-      required: true
-      description: How many minutes of history to query
-    description: Lookup an IP address
-  - name: awake-lookup-email
-    arguments:
-    - name: lookup_key
-      required: true
-      description: The email address (Exact match)
-    - name: lookback_minutes
-      required: true
-      description: How many minutes of history to query
-    description: Lookup an email address
-  - name: awake-lookup-device
-    arguments:
-    - name: lookup_key
-      required: true
-      description: The device ID
-    - name: lookback_minutes
-      required: true
-      description: How many minutes of history to query
-    description: Lookup a device
-  - name: awake-lookup-domain
-    arguments:
-    - name: lookup_key
-      required: true
-      description: The domain name (Exact match)
-    - name: lookback_minutes
-      description: How many minutes of history to query
-    description: Lookup a domain
   - name: awake-pcap-download
     arguments:
     - name: protocol
@@ -546,17 +508,31 @@ script:
     - name: domain
       required: true
       description: The domain name
+    - name: lookback_minutes
+      description: How many minutes of history to query
     description: Lookup a domain
   - name: ip
     arguments:
     - name: ip
       required: true
       description: The IP address
+    - name: lookback_minutes
+      description: How many minutes of history to query
     description: Lookup an IP address
   - name: email
     arguments:
     - name: email
       description: The email address
+    - name: lookback_minutes
+      description: How many minutes of history to query
     description: Lookup an email address
+  - name: device
+    arguments:
+    - name: device
+      required: true
+      description: The device ID
+    - name: lookback_minutes
+      description: How many minutes of history to query
+    description: Lookup a device
   isfetch: true
   runonce: false
