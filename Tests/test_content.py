@@ -76,10 +76,10 @@ def update_test_msg(integrations, test_message):
 
 
 def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber):
+             test_message, test_options, slack, CircleCI, buildNumber, server_url):
     print '------ Test %s start ------' % (test_message,)
     # run test
-    succeed = test_integration(c, integrations, playbook_id, test_options)
+    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
     # use results
     if succeed:
         print 'PASS: %s succeed' % (test_message,)
@@ -87,7 +87,7 @@ def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
     else:
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
-        notify_failed_test(slack, CircleCI, playbook_id, buildNumber)
+        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url)
 
     print '------ Test %s end ------' % (test_message,)
 
@@ -115,7 +115,7 @@ def get_user_name_from_circle(circleci_token, build_number):
     return user_details.get('name', '')
 
 
-def notify_failed_test(slack, CircleCI, playbook_id, build_number):
+def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id):
     circle_user_name = get_user_name_from_circle(CircleCI, build_number)
     sc = SlackClient(slack)
     user_id = retrieve_id(circle_user_name, sc)
@@ -126,7 +126,7 @@ def notify_failed_test(slack, CircleCI, playbook_id, build_number):
             channel=user_id,
             username="Content CircleCI",
             as_user="False",
-            text="{0} Failed".format(playbook_id)
+            text="{0} Failed\nhttps://{1}/#/WorkPlan/{2}".format(playbook_id, server_url, inc_id)
         )
 
 
@@ -327,7 +327,7 @@ def main():
 
         run_test(c, failed_playbooks, integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
-                 buildNumber)
+                 buildNumber, server)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
 
