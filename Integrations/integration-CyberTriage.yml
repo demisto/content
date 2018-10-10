@@ -13,16 +13,17 @@ detaileddescription: "This integration allows you to collect and analyze endpoin
   endpoint, retrieve volatile and file system data, and analyze it for evidence of
   an intrusion. \n\n### SETUP\nTo use this integration, you need the Team version
   of Cyber Triage (and not the Standalone desktop version). \n\nTo configure the integration,
-  you will need to enter: \n* **hostname** of your Cyber Triage server\n* **REST Port**
-  of your Cyber Triage server. You can find this in the \"Network Settings\" tab of
-  the server's option panel. \n* **API Key** for the Cyber Triage REST API. You can
-  find this in the \"Deployment Mode\"  tab of the server's option panel.\n* **Username/Password**
-  for an administrative account that can be used to run the collection tool on the
-  endpoints. \n\n### STARTING A COLLECTION\nAfter setting up an instance, you can
-  start a collection by using the “ct-triage-endpoint\" command. The hostname or IP
-  of the target endpoint must be provided. \n\nAfter the collection has started, open
-  a Cyber Triage client to review the data.  \n\n### SUPPORT\nIf you have any problems
-  or need an evaluation copy of Cyber Triage, then please email support@cybertriage.com."
+  you will need to enter: \n* **hostname** where the Cyber Triage server has been
+  setup.\n* **REST Port** of your Cyber Triage server. This currently cannot be changed
+  in Cyber Triage. The port should be left as 9443. \n* **API Key** for the Cyber
+  Triage REST API. You can find this in the \"Deployment Mode\"  tab of the server's
+  option panel.\n* **Username/Password** an administrative Windows account that can
+  be used to run the collection tool on endpoints that need to be investigated. \n\n###
+  STARTING A COLLECTION\nAfter setting up an instance, you can start a collection
+  by using the “ct-triage-endpoint\" command. The hostname or IP of the target endpoint
+  must be provided. \n\nAfter the collection has started, open a Cyber Triage client
+  to review the data.  \n\n### SUPPORT\nIf you have any problems or need an evaluation
+  copy of Cyber Triage, then please email support@cybertriage.com."
 configuration:
 - display: Hostname of Cyber Triage server (e.g. 192.168.1.2)
   name: server
@@ -258,7 +259,9 @@ script:
       type: string
     - contextPath: Endpoint.IPAddress
       description: The endpoint IP address that Cyber Triage investigated
+      type: string
     - contextPath: Endpoint.Hostname
       description: The endpoint hostname that Cyber Triage investigated
+      type: string
     description: initiates a cyber triage collection on an endpoint
   runonce: false
