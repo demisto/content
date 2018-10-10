@@ -253,4 +253,3 @@ args:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/docs
-releaseNotes: "-"
