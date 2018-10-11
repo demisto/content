@@ -563,3 +563,5 @@ script:
   dockerimage: demisto/symantec_mss
   isfetch: true
 releaseNotes: "Fix proxy handling"
+tests:
+    - SymantecMSSTest
