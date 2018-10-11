@@ -145,7 +145,7 @@ def __create_incident_with_playbook(client, name, playbook_id):
             return False
         time.sleep(1)
 
-    return incidents['data'][0]
+    return incidents['data'][0], inc_id
 
 
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
@@ -225,7 +225,7 @@ def test_integration(client, integrations, playbook_id, options={}):
         print('Create integration %s succeed' % (integration_name, ))
 
     # create incident with playbook
-    incident = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
+    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
 
     if not incident:
         return False
@@ -269,4 +269,4 @@ def test_integration(client, integrations, playbook_id, options={}):
         # delete integration instance
         __delete_integrations_instances(client, instance_ids)
 
-    return test_pass
+    return test_pass, inc_id

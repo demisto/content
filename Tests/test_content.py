@@ -4,8 +4,10 @@ import json
 import string
 import random
 import argparse
+import requests
 
 import demisto
+from slackclient import SlackClient
 from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
@@ -30,6 +32,9 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
+    parser.add_argument('-t', '--slack', help='The token for slack', required=True)
+    parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
+    parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     options = parser.parse_args()
 
     return options
@@ -60,6 +65,177 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
             print_error('\t - ' + playbook_id)
 
 
+def update_test_msg(integrations, test_message):
+    if integrations:
+        integrations_names = [integration['name'] for integration in
+                              integrations]
+        test_message = test_message + ' with integration(s): ' + ','.join(
+            integrations_names)
+
+    return test_message
+
+
+def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+             test_message, test_options, slack, CircleCI, buildNumber, server_url):
+    print '------ Test %s start ------' % (test_message,)
+    # run test
+    succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
+    # use results
+    if succeed:
+        print 'PASS: %s succeed' % (test_message,)
+        succeed_playbooks.append(playbook_id)
+    else:
+        print 'Failed: %s failed' % (test_message,)
+        failed_playbooks.append(playbook_id)
+        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url)
+
+    print '------ Test %s end ------' % (test_message,)
+
+
+def http_request(url, params_dict=None):
+    try:
+        res = requests.request("GET",
+                               url,
+                               verify=True,
+                               params=params_dict,
+                               )
+        res.raise_for_status()
+
+        return res.json()
+
+    except Exception, e:
+        raise e
+
+
+def get_user_name_from_circle(circleci_token, build_number):
+    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number, circleci_token)
+    res = http_request(url)
+
+    user_details = res.get('user', {})
+    return user_details.get('name', '')
+
+
+def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url):
+    circle_user_name = get_user_name_from_circle(CircleCI, build_number)
+    sc = SlackClient(slack)
+    user_id = retrieve_id(circle_user_name, sc)
+
+    if user_id:
+        sc.api_call(
+            "chat.postMessage",
+            channel=user_id,
+            username="Content CircleCI",
+            as_user="False",
+            text="{0} Failed\n{1}/#/WorkPlan/{2}".format(playbook_id, server_url, inc_id)
+        )
+
+
+def retrieve_id(circle_user_name, sc):
+    user_id = ''
+    res = sc.api_call('users.list')
+
+    user_list = res.get('members', [])
+    for user in user_list:
+        profile = user.get('profile', {})
+        name = profile.get('real_name_normalized', '')
+        if name == circle_user_name:
+            user_id = user.get('id', '')
+
+    return user_id
+
+
+def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
+    with open("./Tests/failed_tests.txt", "w") as failed_tests_file:
+        failed_tests_file.write('\n'.join(failed_playbooks))
+    with open('./Tests/skipped_tests.txt', "w") as skipped_tests_file:
+        skipped_tests_file.write('\n'.join(skipped_tests))
+    with open('./Tests/skipped_integrations.txt', "w") as skipped_integrations_file:
+        skipped_integrations_file.write('\n'.join(skipped_integration))
+
+
+def set_integration_params(demisto_api_key, integrations, secret_params):
+    for integration in integrations:
+        integration_params = [item for item in secret_params if
+                              item["name"] == integration['name']]
+        if integration_params:
+            integration['params'] = integration_params[0].get('params', {})
+        elif 'Demisto REST API' == integration['name']:
+            integration['params'] = {
+                'url': 'https://localhost',
+                'apikey': demisto_api_key,
+                'insecure': True,
+            }
+
+
+def collect_integrations(integrations_conf, is_filter_configured,
+                         skipped_integration, skipped_integrations_conf):
+    integrations = []
+    has_skipped_integration = False
+    for integration in integrations_conf:
+        if type(integration) is dict:
+            name = integration.get('name')
+            if name in skipped_integrations_conf:
+                if name not in skipped_integration:
+                    skipped_integration.append(name)
+
+                has_skipped_integration = True
+                break
+
+            # dict description
+            integrations.append({
+                'name': integration.get('name'),
+                'byoi': integration.get('byoi', True),
+                'params': {}
+            })
+        else:
+            if integration in skipped_integrations_conf:
+                if integration not in skipped_integration:
+                    skipped_integration.append(integration)
+
+                has_skipped_integration = True
+                break
+
+            # string description
+            integrations.append({
+                'name': integration,
+                'byoi': True,
+                'params': {}
+            })
+
+    return has_skipped_integration, integrations
+
+
+def extract_filtered_tests():
+    with open(FILTER_CONF, 'r') as filter_file:
+        filterd_tests = filter_file.readlines()
+        filterd_tests = [line.strip('\n') for line in filterd_tests]
+        is_filter_configured = True if filterd_tests else False
+
+    return filterd_tests, is_filter_configured
+
+
+def generate_demisto_api_key(c):
+    demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+    apikey_json = {
+        'name': 'test_apikey',
+        'apikey': demisto_api_key
+    }
+    c.req('POST', '/apikeys', apikey_json)
+    return demisto_api_key
+
+
+def load_conf_files(conf_path, secret_conf_path):
+    with open(conf_path) as data_file:
+        conf = json.load(data_file)
+
+    secret_conf = None
+    if secret_conf_path:
+        with open(secret_conf_path) as data_file:
+            secret_conf = json.load(data_file)
+
+    return conf, secret_conf
+
+
 def main():
     options = options_handler()
     username = options.user
@@ -68,6 +244,9 @@ def main():
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
+    slack = options.slack
+    CircleCI = options.circleci
+    buildNumber = options.buildNumber
 
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
@@ -79,20 +258,9 @@ def main():
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
-    demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
-    apikey_json = {
-                    'name': 'test_apikey',
-                    'apikey': demisto_api_key
-                  }
-    c.req('POST', '/apikeys', apikey_json)
+    demisto_api_key = generate_demisto_api_key(c)
 
-    with open(conf_path) as data_file:
-        conf = json.load(data_file)
-
-    secret_conf = None
-    if secret_conf_path:
-        with open(secret_conf_path) as data_file:
-            secret_conf = json.load(data_file)
+    conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
 
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
@@ -100,11 +268,7 @@ def main():
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    with open(FILTER_CONF, 'r') as filter_file:
-        filterd_tests = filter_file.readlines()
-        filterd_tests = [line.strip('\n') for line in filterd_tests]
-        is_filter_configured = True if filterd_tests else False
-
+    filterd_tests, is_filter_configured = extract_filtered_tests()
     if is_filter_configured:
         is_nightly = True
 
@@ -112,30 +276,17 @@ def main():
         print('no integrations are configured for test')
         return
 
-    skipped_integration = []
-    succeed_playbooks = []
-    failed_playbooks = []
     skipped_tests = []
+    failed_playbooks = []
+    succeed_playbooks = []
+    skipped_integration = []
     for t in tests:
         playbook_id = t['playbookID']
-        integrations_conf = t.get('integrations', [])
-
         nightly_test = t.get('nightly', False)
+        integrations_conf = t.get('integrations', [])
         skip_test = True if nightly_test and not is_nightly else False
 
-        if skip_test:
-            print '------ Test %s start ------' % (test_message, )
-            print 'Skip test'
-            print '------ Test %s end ------' % (test_message,)
-
-            continue
-
-        if not is_filter_configured and playbook_id in skipped_tests_conf:
-            skipped_tests.append(playbook_id)
-            continue
-
-        if is_filter_configured and playbook_id not in filterd_tests:
-            continue
+        test_message = 'playbook: ' + playbook_id
 
         test_options = {
             'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
@@ -145,87 +296,46 @@ def main():
         if not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
 
-        integrations = []
-        has_skipped_integration = False
-        for integration in integrations_conf:
-            if type(integration) is dict:
-                name = integration.get('name')
-                if name in skipped_integrations_conf:
-                    if not is_filter_configured and name not in skipped_integration:
-                        skipped_integration.append(name)
+        has_skipped_integration, integrations = collect_integrations(
+            integrations_conf, is_filter_configured, skipped_integration,
+            skipped_integrations_conf)
 
-                    has_skipped_integration = True
-                    break
+        # Skip nightly test
+        if skip_test:
+            print '------ Test %s start ------' % (test_message, )
+            print 'Skip test'
+            print '------ Test %s end ------' % (test_message,)
 
-                # dict description
-                integrations.append({
-                    'name': integration.get('name'),
-                    'byoi': integration.get('byoi',True),
-                    'params': {}
-                })
-            else:
-                if integration in skipped_integrations_conf:
-                    if not is_filter_configured and integration not in skipped_integration:
-                        skipped_integration.append(integration)
+            continue
 
-                    has_skipped_integration = True
-                    break
+        # Skip filtered test
+        if is_filter_configured and playbook_id not in filterd_tests:
+            continue
 
-                # string description
-                integrations.append({
-                    'name': integration,
-                    'byoi': True,
-                    'params': {}
-                })
+        # Skip bad test
+        if playbook_id in skipped_tests_conf:
+            skipped_tests.append(playbook_id)
+            continue
 
+        # Skip integration
         if has_skipped_integration:
             continue
 
-        for integration in integrations:
-            integration_params = [item for item in secret_params if item["name"] == integration['name']]
-            if integration_params:
-                integration['params'] = integration_params[0].get('params', {})
-            elif 'Demisto REST API' == integration['name']:
-                integration['params'] = {
-                                            'url': 'https://localhost',
-                                            'apikey': demisto_api_key,
-                                            'insecure': True,
-                                        }
+        set_integration_params(demisto_api_key, integrations, secret_params)
+        test_message = update_test_msg(integrations, test_message)
 
-        test_message = 'playbook: ' + playbook_id
-        if integrations:
-            integrations_names = [integration['name'] for integration in integrations]
-            test_message = test_message + ' with integration(s): ' + ','.join(integrations_names)
-
-        print '------ Test %s start ------' % (test_message, )
-
-        # run test
-        succeed = test_integration(c, integrations, playbook_id, test_options)
-
-        # use results
-        if succeed:
-            print 'PASS: %s succeed' % (test_message,)
-            succeed_playbooks.append(playbook_id)
-        else:
-            print 'Failed: %s failed' % (test_message,)
-            failed_playbooks.append(playbook_id)
-
-        print '------ Test %s end ------' % (test_message,)
+        run_test(c, failed_playbooks, integrations, playbook_id,
+                 succeed_playbooks, test_message, test_options, slack, CircleCI,
+                 buildNumber, server)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
+
+    create_result_files(failed_playbooks, skipped_integration, skipped_tests)
     os.remove(FILTER_CONF)
-
-    with open("./Tests/failed_tests.txt", "w") as failed_tests_file:
-        failed_tests_file.write('\n'.join(failed_playbooks))
-
-    with open('./Tests/skipped_tests.txt', "w") as skipped_tests_file:
-        skipped_tests_file.write('\n'.join(skipped_tests))
-
-    with open('./Tests/skipped_integrations.txt', "w") as skipped_integrations_file:
-        skipped_integrations_file.write('\n'.join(skipped_integration))
 
     if len(failed_playbooks):
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

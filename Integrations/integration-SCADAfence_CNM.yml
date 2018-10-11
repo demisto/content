@@ -9,7 +9,7 @@ description: fetching data from CNM
 configuration:
 - display: API auth secret
   name: APISecret
-  defaultvalue: 
+  defaultvalue:
   type: 4
   required: true
 - display: API auth key
@@ -464,3 +464,4 @@ script:
     description: fetch asset network activity data  by one or more (combined) parameters
   isfetch: true
   runonce: false
+releaseNotes: "-"
