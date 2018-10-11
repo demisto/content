@@ -183,6 +183,7 @@ script:
 
     ''' EXECUTION CODE '''
     LOG('command is %s' % (demisto.command(), ))
+    demisto.log('proxy:' + str(demisto.params().get('proxy')))
     try:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
