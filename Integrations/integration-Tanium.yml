@@ -514,6 +514,8 @@ script:
         return final_result
 
 
+    ## Tanium modules - RESTful ##
+
     base_url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port']
 
     #############################
@@ -535,7 +537,7 @@ script:
         kwargs['data'] = '{"remote":%s,"dst":"%s","connTimeout":300000}' % (demisto.args()['remote'], demisto.args()['computer_name'])
         kwargs['timeout'] = 36000
         kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        res = session.REQUESTS_SESSION.post('https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + "/plugin/products/trace/conns", **kwargs)
+        res = session.REQUESTS_SESSION.post(base_url + "/plugin/products/trace/conns", **kwargs)
         return "Connection request was sent out successfuly" if res.ok else "Connection request failed. " + str(res)
 
     def traceCaptureSnapshot(session):
@@ -543,35 +545,33 @@ script:
         kwargs['data'] = '{}'
         kwargs['timeout'] = 36000
         kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        url = "/plugin/products/trace/conns/%s/snapshots" % demisto.args()['dst']
-        url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + url
+        url = base_url + "/plugin/products/trace/conns/%s/snapshots" % demisto.args()['host_name']
         res = session.REQUESTS_SESSION.post(url, **kwargs)
         return "Snapshot request was sent out successfuly" if res.ok else "Request failed. " + str(res)
 
-    ### new ###################################################################################################
     def traceListSnapshots(session):
-        kwargs = {}
-        kwargs['data'] = '{}'
-        kwargs['timeout'] = 36000
-        kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        url = "/plugin/products/trace/conns/%s/snapshots" % demisto.args()['dst']
-        url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + url
-        res = session.REQUESTS_SESSION.post(url, **kwargs)
-        return "Snapshot request was sent out successfuly" if res.ok else "Request failed. " + str(res)
+        response = session.http_get("plugin/products/trace/locals")
+        if not response:
+            return "No snapshots were found"
+        resp = json.loads(response)
+        ans = []
+        for m in resp.keys():
+            for db in resp[m]:
+                ans.append({'Host Name' : m, 'Snapshot Name': db})
+
+        return create_entry("Tanium Snapshots", ans, context = {'Tanium.Snapshots': ans})
 
     def traceDownloadSnapshot(session):
         kwargs = {}
         kwargs['data'] = '{}'
         kwargs['timeout'] = 36000
         kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        url = "/plugin/products/trace/conns/%s/snapshots" % demisto.args()['dst']
-        url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + url
-        res = session.REQUESTS_SESSION.post(url, **kwargs)
-        return "Snapshot request was sent out successfuly" if res.ok else "Request failed. " + str(res)
-
-
-
-
+        url = base_url + '/plugin/products/trace/locals/%s/%s' % (demisto.args()['host_name'], demisto.args()['snapshot_name'])
+        res = session.REQUESTS_SESSION.get(url, **kwargs)
+        if not res.ok:
+            return "Request failed. " + str(res)
+        d = get_filename_from_cd(res.headers['content-disposition'])
+        return fileResult(d, res.content) if res.ok else "Request failed. " + str(res)
 
     def traceGetEvidenceFiles(session, offset, limit):
         response = session.http_get('plugin/products/trace/filedownloads?offset=%s&limit=%s' % (offset, limit))
@@ -579,28 +579,22 @@ script:
         return create_entry("Tanium Evidence Files", resp, {'Tanium.EvidenceFiles' : resp}, headers = ['id', 'hash', 'path', 'created', 'host', 'size', 'spath'])
 
     def get_filename_from_cd(cd):
-        """
-        Get filename from content-disposition
-        """
         default_name = 'tanium_evidence_file.zip'
         if not cd:
             return default_name
 
         fname = re.findall('filename\\*=(.+)', cd)
         if len(fname) == 0:
-            return cd
-        else:
-            fname_enc = re.findall('UTF-8\'\'(.+)', fname[0])
-            if len(fname_enc) == 0:
-                return fname[0]
-            return fname_enc[0].decode('utf-8')
-
-    file_count_route = '/plugin/products/trace/filedownloads/count'
+            fname = re.findall('filename\\=(.+)', cd)
+            if len(fname) == 0:
+                return cd
+        fname_enc = re.findall('UTF-8\'\'(.+)', fname[0])
+        if len(fname_enc) == 0:
+            return fname[0]
+        return fname_enc[0].decode('utf-8')
 
     def getFileIDfromList(files, host, path):
         for file in files:
-            demisto.results("here" + str(file))
-
             if file.get('host') == host and file.get('path') == path:
                 return file.get('id')
         return -1
@@ -612,7 +606,7 @@ script:
         kwargs['timeout'] = 36000
         kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
         # get files count
-        url = base_url + file_count_route
+        url = base_url + '/plugin/products/trace/filedownloads/count'
         res = session.REQUESTS_SESSION.get(url, **kwargs)
         count = int(res.text) if res.ok else 0
         if count <= 0:
@@ -641,7 +635,7 @@ script:
         kwargs['data'] = '{"connId":"%s","path":"%s"}' % (demisto.args()['host_name'], file_path)
         kwargs['timeout'] = 36000
         kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + '/plugin/products/trace/filedownloads'
+        url = base_url + '/plugin/products/trace/filedownloads'
         return session.REQUESTS_SESSION.post(url, **kwargs)
 
     def traceGetEvidenceFile(session):
@@ -655,11 +649,12 @@ script:
         kwargs['data'] = '{}'
         kwargs['timeout'] = 36000
         kwargs['headers'] = {'Content-Type':'application/json', 'session': session.session_id}
-        url = '/plugin/products/trace/filedownloads/' + str(fid)
-        url = 'https://'+demisto.params()['host'] + ':' + demisto.params()['port'] + url
+        url = base_url + '/plugin/products/trace/filedownloads/' + str(fid)
         res = session.REQUESTS_SESSION.get(url, **kwargs)
+        if not res.ok:
+            return "Request failed. " + str(res)
         d = get_filename_from_cd(res.headers['content-disposition'])
-        return fileResult(d, res.content) if res.ok else "Request failed. " + str(res)
+        return fileResult(d, res.content)
 
     def restoreSoutAndExit(final_result):
         sys.stdout = sout
@@ -1293,31 +1288,30 @@ script:
       type: string
     description: Get detailed information about a given action.
   - name: tn-trace-get-live-connections
-    description: Get details of live connections
     arguments: []
+    description: Get details of live connections
   - name: tn-trace-connect
-    description: Creates a local or remote connection
     arguments:
     - name: computer_name
       required: true
       default: true
       description: Name of computer to connect to
     - name: remote
-      description: True if remote connection
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
+      description: True if remote connection
       defaultValue: "true"
+    description: Creates a local or remote connection
   - name: tn-trace-get-evidence-files-details
-    description: Get details about Tanium evidence files
     arguments:
     - name: offset
-      defaultValue: "0"
       description: Offset into the result list
+      defaultValue: "0"
     - name: limit
-      defaultValue: "25"
       description: Maximum number of results to return
+      defaultValue: "25"
     outputs:
     - contextPath: Tanium.EvidenceFiles.size
       description: Size of the file
@@ -1358,8 +1352,8 @@ script:
     - contextPath: Tanium.EvidenceFiles.id
       description: Unique Tanium file ID
       type: string
+    description: Get details about Tanium evidence files
   - name: tn-trace-get-file
-    description: Get a file from a Tanium endpoint and add it to Tanium evidence. Note that the file is compressed within a password protected Zip file (decrypt the file using the password 'infected').
     arguments:
     - name: host_name
       description: Name of computer on which the file is located
@@ -1387,4 +1381,25 @@ script:
     - contextPath: File.SSDeep
       description: SSDeep hash of the file
       type: string
+    description: Get file from a Tanium endpoint and add it to Tanium evidence. Note
+      that the file is compressed within a password protected Zip file (Decrypt the
+      file with the password 'infected')
+  - name: tn-trace-list-snapshots
+    arguments: []
+    description: Get list of local snapshots
+  - name: tn-trace-download-snapshot
+    description: Download a local snapshot of a computer
+    arguments:
+    - name: host_name
+      required: true
+      description: Name of the snapshot host
+    - name: snapshot_name
+      required: true
+      description: Name of the snapshot file
+  - name: tn-trace-capture-snapshot
+    description: Take a local snapshot of a computer
+    arguments:
+    - name: host_name
+      required: true
+      description: Name of the host to take a snapshot of
   dockerimage: demisto/pytan
