@@ -9,19 +9,24 @@ description: fetching data from CNM
 configuration:
 - display: API auth secret
   name: APISecret
-  defaultvalue:
+  defaultvalue: ""
   type: 4
   required: true
 - display: API auth key
   name: APIKey
-  defaultvalue:
+  defaultvalue: ""
   type: 4
   required: true
 - display: API url
   name: APIUrl
-  defaultvalue:
+  defaultvalue: ""
   type: 0
   required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
@@ -43,11 +48,6 @@ configuration:
   defaultvalue: Information,Warning,Threat,Severe,Critical
   type: 12
   required: true
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
 script:
   script: |+
     ''' IMPORTS '''
