@@ -49,6 +49,7 @@ script:
     DAY_IN_MINUTES = 1440
     HOUR_IN_MINUTES = 60
 
+
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -56,6 +57,7 @@ script:
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
 
     USERNAME = demisto.params()['credentials']['identifier']
@@ -1933,6 +1935,6 @@ script:
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "-"
+releaseNotes: "Fix proxy handling"
 tests:
     - nexpose_test
