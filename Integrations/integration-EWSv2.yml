@@ -684,6 +684,100 @@ script:
             raw_dict[MAILBOX] = email_address
         return raw_dict
 
+    def fallback_parse_item_as_dict(message):
+        import re
+
+        first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+        all_cap_re = re.compile('([a-z0-9])([A-Z])')
+
+        def convert(name):
+            s1 = first_cap_re.sub(r'\1_\2', name)
+            return all_cap_re.sub(r'\1_\2', s1).lower()
+
+        def clean_keys(item, is_key=False):
+            if isinstance(item, list):
+                return map(clean_keys, item)
+            if isinstance(item, dict):
+                return {clean_keys(k, True): clean_keys(v) for k,v in item.iteritems()}
+            if isinstance(item, str) and is_key:
+                if item[0] in ('#', '@'):
+                    item = item[1:]
+                item = item.replace('DateTime', 'datetime')
+                item = item.replace('ChangeKey', 'changekey')
+                item = convert(item)
+            return item
+
+        def convert_bools(item):
+            if isinstance(item, list):
+                return map(convert_bools, item)
+            if isinstance(item, dict):
+                return {k: convert_bools(v) for k,v in item.iteritems()}
+            if item == 'true':
+                return True
+            if item == 'false':
+                return False
+            return item
+
+        def handle_mailboxes(item):
+            if isinstance(item, list):
+                return map(handle_mailboxes, item)
+            if isinstance(item, dict) and 'mailbox' in item:
+                item['mailbox']['item_id'] = None
+                return item['mailbox']
+            return item
+
+        d = elem_to_internal(message)
+        d = clean_keys(d)
+        d = convert_bools(d)
+
+        d = d['message']
+
+        d['headers'] = map(lambda x: {'name': x['header_name'], 'value': x['text']}, d['internet_message_headers']['internet_message_header'])
+        del d['internet_message_headers']
+
+        d['text_body'] = d['text_body']['text'] if 'text_body' in d and 'text' in d['text_body'] else None
+        if d['body']['body_type'] == 'Text':
+            d['text_body'] = d['body']['text']
+        d['body'] = d['body']['text']
+
+        d['mime_content'] = d['mime_content']['text']
+
+        for field in ('from', 'received_representing', 'received_by', 'sender', 'to_recipients'):
+            if field == 'from':
+                d['author'] = handle_mailboxes(d[field])
+                del d[field]
+            else:
+                d[field] = handle_mailboxes(d[field])
+            if field == 'to_recipients' and isinstance(d[field], dict):
+                d[field] = [d[field]]
+
+        d['message_id'] = d['internet_message_id']
+        del d['internet_message_id']
+
+        d['changekey'] = d['item_id']['changekey']
+        d['item_id'] = d['item_id']['id']
+
+        d['conversation_id']['changekey'] = None if 'changekey' not in d['conversation_id'] else d['conversation_id']['changekey']
+
+        empty_items = {
+            'is_response_requested': False,
+            'reminder_minutes_before_start': 0,
+            'reminder_is_set': False,
+        }
+
+        for k,v in empty_items.iteritems():
+            if k not in d:
+                d[k] = v
+
+        #TODO: Handle Attachments
+
+        # DEBUG
+        dj = json.dumps(d, indent=4, separators=(',', ': '))
+        demisto.results(dj)
+        return d
+
+        demisto.results(str(d))
+        sys.exit(0)
 
     def parse_incident_from_item(item):
         incident = {}
@@ -904,18 +998,16 @@ script:
 
         raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
         raw.raise_for_status()
-        #demisto.results(raw.content)   ## DEBUG
+        demisto.info(raw.content)   ## DEBUG
         #sys.exit(0)                    ## DEBUG
 
         # Parse response to last emails request
         raw = ET.fromstring(raw.content)
         messages = raw.findall(".//t:Message", FALLBACK_NS)
         if not messages:
-            demisto.results('no incidents')    ## DEBUG
             return []
-        demisto.results('{} incident{}'.format(len(messages), 's' if len(messages) > 1 else ''))
         item_ids = map(lambda x: x.find("./t:ItemId", FALLBACK_NS).attrib['Id'], messages)
-        item_ids = filter(lambda y: y not in last_run_ids, item_ids)
+        #item_ids = filter(lambda y: y not in last_run_ids, item_ids)
 
         # Send GetItem request for the returned IDs
         payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
@@ -932,7 +1024,13 @@ script:
             <GetItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
                 <ItemShape>
                     <t:BaseShape>AllProperties</t:BaseShape>
-                    <t:AdditionalProperties><t:ExtendedFieldURI DistinguishedPropertySetId="InternetHeaders" PropertyName="From" PropertyType="String" /></t:AdditionalProperties>
+                    <t:IncludeMimeContent>true</t:IncludeMimeContent>
+                    <t:AdditionalProperties>
+                        <t:ExtendedFieldURI DistinguishedPropertySetId="InternetHeaders" PropertyName="From" PropertyType="String" />
+                        <t:FieldURI FieldURI="item:UniqueBody" />'''
+        if get_build(VERSION_STR) > EXCHANGE_2010_SP2:
+            payload += '<t:FieldURI FieldURI="item:TextBody" />'
+        payload += '''</t:AdditionalProperties>
                 </ItemShape>
                 <ItemIds>'''
         for item_id in item_ids:
@@ -949,7 +1047,6 @@ script:
         #demisto.results(ET.tostring(raw))    ## DEBUG
         #sys.exit(0)                     ## DEBUG
 
-
         messages = raw.findall(".//t:Message", FALLBACK_NS)
         if len(messages) != len(item_ids):
             raise Exception("Not all items could be retrieved")
@@ -965,6 +1062,9 @@ script:
                 'text': m.find(".//t:Body[@BodyType='Text']", FALLBACK_NS),
                 'HTML': m.find(".//t:Body[@BodyType='HTML']", FALLBACK_NS)
             }
+
+            if bodies['text'] is None:
+                bodies['text'] = m.find(".//t:TextBody[@BodyType='Text']", FALLBACK_NS)
 
             # handle general info
             incident['details'] = bodies['text'].text if bodies['text'] else bodies['HTML'].text
@@ -991,68 +1091,49 @@ script:
                     labels.append({'type': 'Email/{}'.format(email_format.lower()), 'value': bodies[email_format]})
             labels.append({'type': 'Email/format', 'value': email_format})
 
-        # FOR DEBUG
-        incident['labels'] = labels
-        incidents.append(incident)
-        demisto.results('test2')
-        demisto.results(str(incidents))
-
-            ### CONTINUE
-    '''
-            # Handle attachment - file name
-            attachments = message.Items.Message.Attachments;
-            attachments = attachments ? attachments.FileAttachment : null;
-            if (attachments && !Array.isArray(attachments)) {
-                attachments = [attachments];
-            }
-            if (attachments) {
-                for (j = 0; j < attachments.length; j++ ) {
-                    labels.push({type: 'Email/attachments', value: attachments[j].Name});
-                    labels.push({type: 'Email/attachmentId', value: attachments[j].AttachmentId['-Id']});
-                }
-            }
-
-            # Handle item attachment
-            attachments = message.Items.Message.Attachments;
-            attachments = attachments ? attachments.ItemAttachment : null;
-            if (attachments && !Array.isArray(attachments)) {
-                attachments = [attachments];
-            }
-            if (attachments) {
-                for (j = 0; j < attachments.length; j++ ) {
-                    labels.push({type: 'Email/attachmentItems', value: attachments[j].Name});
-                    labels.push({type: 'Email/attachmentItemsId', value: attachments[j].AttachmentId['-Id']});
-                }
-            }
+            # Handle attachments
+            file_attachments = m.findall('.//t:FileAttachment', FALLBACK_NS)
+            item_attachments = m.findall('.//t:ItemAttachment', FALLBACK_NS)
+            if file_attachments or item_attachments:
+                incident['attachment'] = []
+                if file_attachments:
+                    for att in file_attachments:
+                        att_id = att.find('./t:AttachmentId', FALLBACK_NS).attrib['Id']
+                        name = att.find('./t:Name', FALLBACK_NS).text
+                        # TODO: GetAttachment mime content into file result
+                        # content = fallback_get_attachment(att_id)
+                        # file_result = fileResult(name, content)
+                        incident['attachment'].append({
+                            #'path': file_result['FileID'],
+                            'name': name
+                        })
+                        labels.append({'type': 'attachments', 'value': att.find('./t:Name', FALLBACK_NS).text})
+                        labels.append({'type': 'attachmentId', 'value': att_id})
+                # TODO: handle ItemAttachments
 
             # Handle headers
-            headers = message.Items.Message.InternetMessageHeaders.InternetMessageHeader;
-            if (headers && !Array.isArray(headers)) {
-                headers = [headers];
-            }
-            if (headers) {
-                for (j = 0; j < headers.length; j++ ) {
-                    labels.push({type: 'Email/Header/'+headers[j]['-HeaderName'], value: headers[j]['#text']});
-                }
-            }
+            headers = m.findall(".//t:InternetMessageHeader", FALLBACK_NS)
+            if headers:
+                for h in headers:
+                    labels.append({'type': 'Email/Header/{}'.format(h.attrib['HeaderName']), 'value': h.text})
 
             # Add item ID
-            labels.push({type: 'Email/ID', value: message.Items.Message.ItemId['-Id']})
+            labels.append({'type': 'Email/ID', 'value': m.find("./t:ItemId", FALLBACK_NS).attrib['Id']})
 
-            incident.labels = labels;
-            incident.rawJSON = JSON.stringify(message.Items.Message);
-        incidents.push(incident);
-        }
-
+            incident['labels'] = labels
+            incident['rawJSON'] = fallback_parse_item_as_dict(m)
+        incidents.append(incident)
+        '''
         demisto.setLastRun({
             LAST_RUN_TIME: start_time.ewsformat(),
-            LAST_RUN_FOLDER: folder_name,
+            LAST_RUN_FOLDER: FOLDER_NAME,
             LAST_RUN_IDS: item_ids,
             ERROR_COUNTER: 0
         })
-
-        return incidents;
-    '''
+        '''
+        # FOR DEBUG
+        demisto.info(str(incidents))
+        return incidents
 
     def get_entry_for_file_attachment(item_id, attachment):
         entry = fileResult(get_attachment_name(attachment.name), attachment.content)
