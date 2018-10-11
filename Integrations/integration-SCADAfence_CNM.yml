@@ -465,5 +465,3 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: "-"
-tests:
-  - SCADAfence_test

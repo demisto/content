@@ -175,7 +175,7 @@ def collect_integrations(integrations_conf, is_filter_configured,
         if type(integration) is dict:
             name = integration.get('name')
             if name in skipped_integrations_conf:
-                if not is_filter_configured and name not in skipped_integration:
+                if name not in skipped_integration:
                     skipped_integration.append(name)
 
                 has_skipped_integration = True
@@ -189,8 +189,7 @@ def collect_integrations(integrations_conf, is_filter_configured,
             })
         else:
             if integration in skipped_integrations_conf:
-                if not is_filter_configured and \
-                        integration not in skipped_integration:
+                if integration not in skipped_integration:
                     skipped_integration.append(integration)
 
                 has_skipped_integration = True
@@ -309,13 +308,13 @@ def main():
 
             continue
 
-        # Skip bad test
-        if not is_filter_configured and playbook_id in skipped_tests_conf:
-            skipped_tests.append(playbook_id)
-            continue
-
         # Skip filtered test
         if is_filter_configured and playbook_id not in filterd_tests:
+            continue
+
+        # Skip bad test
+        if playbook_id in skipped_tests_conf:
+            skipped_tests.append(playbook_id)
             continue
 
         # Skip integration
