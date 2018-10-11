@@ -527,10 +527,9 @@ script:
         resp = json.loads(response) if response is not None else None
         ans = []
         for m in resp:
-            m['info']['name'] = m['info']['dst']
-            del m['info']['dst']
+            m['info']['name'] = m['name']
             ans.append(m['info'])
-        return create_entry("Tanium Live Connections", ans, context = {}, headers = ['name', 'dstType', 'state', 'initTime'])
+        return create_entry("Tanium Live Connections", ans, context = {'Tanium.LiveConnections' : ans}, headers = ['name', 'state', 'createTime', 'remote'])
 
     def traceConnect(session):
         kwargs = {}
@@ -1296,6 +1295,19 @@ script:
   - name: tn-trace-get-live-connections
     arguments: []
     description: Get details of live connections
+    outputs:
+    - contextPath: Tanium.LiveConnections.createTime
+      description: Time when connection was established
+      type: string
+    - contextPath: Tanium.LiveConnections.name
+      description: Name of host
+      type: string
+    - contextPath: Tanium.LiveConnections.remote
+      description: Is the connection remote
+      type: string
+    - contextPath: Tanium.LiveConnections.state
+      description: State of the connection
+      type: string
   - name: tn-trace-connect
     arguments:
     - name: computer_name
