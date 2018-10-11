@@ -25,7 +25,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
-  type: 0
+  type: 8
   required: false
 script:
   script: |
@@ -36,7 +36,7 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    if not demisto.params().get('proxy', False):
+    if not demisto.params().get('proxy', False) or demisto.params()['proxy'] == 'false':
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
@@ -54,8 +54,6 @@ script:
     }
 
     ''' HELPER FUNCTIONS '''
-
-
     def httpRequest(method, urlSuffix, data, headers):
         data = {} if data is None else data
 
@@ -325,4 +323,4 @@ script:
       description: Service state
     description: All the monitoring information regarding services
   runonce: false
-releaseNotes: "Fix proxy handling"
+releaseNotes: "-"
