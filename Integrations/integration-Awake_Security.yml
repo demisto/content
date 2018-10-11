@@ -44,7 +44,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: |
     import base64
     import datetime
     import re
@@ -441,8 +441,18 @@ script:
 
             def toIncident(matchingThreatBehavior):
                 # Currently the threat behavior API doesn't allow us to retrieve metadata for
-                # the behaviors that matched, which is why this incident record is so empty
-                return { "Name": matchingThreatBehavior }
+                # the behaviors that matched, which is why this incident record is mostly empty
+                #
+                # However, we can provide the original query that the threat behavior corresponded
+                # to plus the date range so that a playbook can feed them back into
+                # `awake-query-{devices,activities}` to retrieving the matching devices or
+                # activities that triggered the match to the threat behavior.
+                return {
+                    "Name": matchingThreatBehavior["name"],
+                    "Query": matchingThreatBehavior["query"],
+                    "StartTime": startTimeString,
+                    "EndTime": endTimeString,
+                }
 
             demisto.incidents(map(toIncident, matchingThreatBehaviors))
 
