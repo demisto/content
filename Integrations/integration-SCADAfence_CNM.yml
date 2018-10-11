@@ -9,19 +9,24 @@ description: fetching data from CNM
 configuration:
 - display: API auth secret
   name: APISecret
-  defaultvalue:
+  defaultvalue: ""
   type: 4
   required: true
 - display: API auth key
   name: APIKey
-  defaultvalue:
+  defaultvalue: ""
   type: 4
   required: true
 - display: API url
   name: APIUrl
-  defaultvalue:
+  defaultvalue: ""
   type: 0
   required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
@@ -61,6 +66,12 @@ script:
 
     USE_SSL = not demisto.params().get('insecure', False)
 
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     DEFAULT_HEADERS = {
         "x-api-key": API_KEY,
         "x-api-secret": API_SECRET,
@@ -95,15 +106,6 @@ script:
         LOG("Invalid alert severity values")
         raise "Invalid alert severity values"
 
-    def load_proxy():
-        """ Loads the system configured proxy if enabled in configuration """
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
-    PROXY = load_proxy()
 
     def http_request(method, url_suffix, params_dict, headers):
         """
@@ -136,8 +138,7 @@ script:
                 verify=USE_SSL,
                 data=data,
                 params=params,
-                headers=headers,
-                proxies=PROXY
+                headers=headers
             )
             res.raise_for_status()
 
@@ -464,4 +465,6 @@ script:
     description: fetch asset network activity data  by one or more (combined) parameters
   isfetch: true
   runonce: false
+tests:
+  - SCADAfence_test
 releaseNotes: "-"
