@@ -125,14 +125,55 @@ script:
         else:
             return "Empty results"
 
-    def returnResults(contents, humanReadable):
-        demisto.results({
+    def returnResults(contents, humanReadable, dbotScore):
+        machineReadable = {
+            "AwakeSecurity": contents,
+        }
+
+        if dbotScore is not None:
+            machineReadable["DBotScore"] = dbotScore
+
+        results = {
             "Type": 1,
             "ContentsFormat": "json",
-            "Contents": json.dumps({ "AwakeSecurity": contents }),
+            "Contents": json.dumps(machineReadable),
             "HumanReadable": humanReadable,
             "ReadableContentsFormat": "markdown",
-        })
+        }
+
+        demisto.results(results)
+
+    def toDBotScore(indicator_type, percentile, lookup_key):
+        # Our scores range from 0 to 100, where higher
+        # scores mean more unusual behavior
+        #
+        # Our product does not yet assign meaning
+        # to these scores since unusual behavior is
+        # not necessarily malicious, but empirically
+        # partioning the scores by quartile appears to
+        # map closely enough to Demisto's classification
+        # scheme for now.
+        if percentile <= 25:
+            # Typical range for people doing ordinary
+            # office work
+            score = 0
+        elif percentile <= 50:
+            # People doing something out of the ordinary
+            # compared to others (i.e. performing weird
+            # searches, learning something exotic, making
+            # an unusual purchase)
+            score = 1
+        elif percentile <= 75:
+            # Something doing multiple things out of the
+            # ordinary, worth investigating
+            score = 2
+        else:
+            # Probably bad or at least not compliant with
+            # company policy.  You have to make an effort
+            # to score this high.
+            score = 3
+
+        return { "Vendor": "Awake Security", "Type": indicator_type, "Indicator": lookup_key, "Score": score }
 
     def lookup(lookup_type, lookup_key):
         path = "/lookup/" + lookup_type
@@ -170,9 +211,14 @@ script:
             "lastSeen",
         ]
 
+        if "deviceScore" in contents:
+            dbotScore = toDBotScore("device", contents["deviceScore"], lookup_key)
+        else:
+            dbotScore = None
+
         humanReadable = displayTable([contents], humanReadableFields)
 
-        returnResults(contents, humanReadable)
+        returnResults(contents, humanReadable, dbotScore)
 
     def lookupDomain(lookup_key):
         contents = lookup("domain", lookup_key)
@@ -190,9 +236,14 @@ script:
             "lastSeen",
         ]
 
+        if "notability" in contents:
+            dbotScore = toDBotScore("domain", contents["notability"], lookup_key)
+        else:
+            dbotScore = None
+
         humanReadable = displayTable([contents], humanReadableFields)
 
-        returnResults(contents, humanReadable)
+        returnResults(contents, humanReadable, dbotScore)
 
     def lookupEmail(lookup_key):
         contents = lookup("email", lookup_key)
@@ -211,9 +262,14 @@ script:
             "deviceId",
         ]
 
+        if "notabilityPercentile" in contents:
+            dbotScore = toDBotScore("email", contents["notabilityPercentile"], lookup_key)
+        else:
+            dbotScore = None
+
         humanReadable = displayTable(contents, humanReadableFields)
 
-        returnResults(contents, humanReadable)
+        returnResults(contents, humanReadable, dbotScore)
 
     def lookupIp(lookup_key):
         contents = lookup("ip", lookup_key)
@@ -225,9 +281,12 @@ script:
             "ipLastSeen",
         ]
 
+        # Note: No DBotScore for IP addresses as we do not score them.
+        # Our product scores devices rather than IP addresses.
+
         humanReadable = displayTable([contents], humanReadableFields)
 
-        returnResults(contents, humanReadable)
+        returnResults(contents, humanReadable, None)
 
     def query(lookup_type):
         # Default to an empty query if unset
