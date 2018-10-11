@@ -96,7 +96,7 @@ script:
     def send_request(path, headers = get_headers(), method = 'get', body = {}, params = {}):
         url = '{}/{}'.format(SERVER_URL, path)
 
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
 
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception('Got status code {} with url {} with body {} with headers {}'.format(str(res.status_code), url, res.content, str(res.headers)))
