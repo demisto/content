@@ -465,6 +465,6 @@ script:
     description: fetch asset network activity data  by one or more (combined) parameters
   isfetch: true
   runonce: false
-releaseNotes: "fixed proxy settings"
 tests:
   - SCADAfence_test
+releaseNotes: "-"
