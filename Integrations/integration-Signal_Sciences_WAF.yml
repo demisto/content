@@ -40,7 +40,7 @@ script:
     SERVER_URL = 'https://dashboard.signalsciences.net/api/v0/'
 
     '''SUFFIX ENDPOINTS'''
-    LOGIN_SUFFIX = 'auth'
+    GET_SITES_SUFFIX = 'corps/{0}/sites'
     WHITELIST_SUFFIX = 'corps/{0}/sites/{1}/whitelist'
     BLACKLIST_SUFFIX = 'corps/{0}/sites/{1}/blacklist'
     DELETE_WHITELIST_IP_SUFFIX = 'corps/{0}/sites/{1}/whitelist/{2}'
@@ -49,11 +49,12 @@ script:
     '''TABLE TITLES'''
     WHITELIST_TITLE = 'Signal Sciences - Whitelist'
     BLACKLIST_TITLE = 'Signal Sciences - Blacklist'
+    SITES_LIST_TITLE = "Sites list"
     ADD_IP_TO_WHITELIST_TITLE = 'Signal Sciences - Adding an IP to Whitelist'
     ADD_IP_TO_BLACKLIST_TITLE = 'Signal Sciences - Adding an IP to Blacklist'
 
     '''TABLE HEADERS'''
-    ADD_IP_TO_LIST = ['Source', 'Note']
+    ADD_IP_HEADERS = ['Source', 'Note', 'Expiration data']
     WHITELIST_HEADERS = ['ID', 'Source', 'ExpiryDate', 'Note', 'CreatedDate', 'CreatedBy']
 
     ''' HELPER FUNCTIONS '''
@@ -150,13 +151,13 @@ script:
             outputs.append(output)
 
         sidedata = "Number of IPs in the Blacklist {0}".format(len(data))
-
+    # 'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS, metaadata=sidedata),
         return {
             'Type': entryTypes['note'],
             'Contents': site_blacklist,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS, metaadata=sidedata),
+            'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS),
             'EntryContext': {
                 'SigSciences.Blacklist(val.ID==obj.ID)': outputs,
             }
@@ -176,6 +177,7 @@ script:
         res = http_request('PUT', url, data=json.dumps(data))
 
         output = {}
+        human_readable = {}
         output['ID'] = res.get('id', '')
         output['Note'] = res.get('note', '')
         output['Source'] = res.get('source', '')
@@ -183,15 +185,18 @@ script:
         output['CreatedDate'] = res.get('created', '')
         output['ExpiryDate'] = res.get('expires', '')
 
-        human_readable = '### {0} \n\n The IP has been successfully added to whitelist. \n Source - {1} \n Note - {2} \n Expiration data - {3}'.format(ADD_IP_TO_WHITELIST_TITLE,
-            output['Source'], output['Note'], output['ExpiryDate'])
+        human_readable['Note'] = output['Note']
+        human_readable['Source'] = output['Source']
+        human_readable['Expiration data'] = output['ExpiryDate'] if output['ExpiryDate'] else "Not Set"
+
+        sidedata = "The IP has been successfully added to whitelist."
 
         return {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
+            'HumanReadable': tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, ADD_IP_HEADERS, metaadata=sidedata),
             'EntryContext': {
                 'SigSciences.Whitelist(val.ID==obj.ID)': output,
             }
@@ -211,6 +216,7 @@ script:
         res = http_request('PUT', url, data=json.dumps(data))
 
         output = {}
+        human_readable = {}
         output['ID'] = res.get('id', '')
         output['Note'] = res.get('note', '')
         output['Source'] = res.get('source', '')
@@ -218,15 +224,18 @@ script:
         output['CreatedDate'] = res.get('created', '')
         output['ExpiryDate'] = res.get('expires', '')
 
-        human_readable = '### {0} \n\n The IP has been successfully added to blacklist. \n Source - {1} \n Note - {2} \n Expiration data - {3}'.format(ADD_IP_TO_BLACKLIST_TITLE,
-            output['Source'], output['Note'], output['ExpiryDate'])
+        human_readable['Note'] = output['Note']
+        human_readable['Source'] = output['Source']
+        human_readable['Expiration data'] = output['ExpiryDate'] if output['ExpiryDate'] else "Not Set"
+
+        sidedata = "The IP has been successfully added to blacklist."
 
         return {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
+            'HumanReadable': tableToMarkdown(ADD_IP_TO_BLACKLIST_TITLE, human_readable, ADD_IP_HEADERS, metaadata=sidedata),
             'EntryContext': {
                 'SigSciences.Blacklist(val.ID==obj.ID)': output,
             }
@@ -239,7 +248,6 @@ script:
         site_whitelist = http_request('GET', url)
         data = site_whitelist.get('data', [])
 
-        res = {}
         for item in data:
             if item.get('source', '') == IP:
                 url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
@@ -265,7 +273,6 @@ script:
         site_blacklist = http_request('GET', url)
         data = site_blacklist.get('data', [])
 
-        res = {}
         for item in data:
             if item.get('source', '') == IP:
                 url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
@@ -284,6 +291,31 @@ script:
             }
         }
 
+
+    def get_sites():
+        """Get the sites list"""
+        url = SERVER_URL + GET_SITES_SUFFIX.format(CORPNAME)
+        res = http_request('GET', url)
+        data = res.get('data', [])
+
+        outputs = []
+        for item in data:
+            output = {}
+            output['Name'] = item.get('name', '')
+            output['CreatedDate'] = item.get('created', '')
+
+            outputs.append(output)
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(SITES_LIST_TITLE, outputs, ['Name', 'CreatedDate']),
+            'EntryContext': {
+                'SigSciences.Sites(val.Name==obj.Name)': outputs,
+            }
+        }
 
     ''' EXECUTION CODE '''
 
@@ -304,6 +336,8 @@ script:
             demisto.results(whitelist_remove_ip(**demisto.args()))
         elif demisto.command() == 'sigsci-blacklist-remove-ip':
             demisto.results(blacklist_remove_ip(**demisto.args()))
+        elif demisto.command() == 'sigsci-get-sites':
+            demisto.results(get_sites(**demisto.args()))
 
 
     except Exception, e:
@@ -438,7 +472,7 @@ script:
     - name: IP
       required: true
       description: IP Address entry to be removed.
-    description: Removed an IP from whitelist residing on Signal Sciences' Platform.
+    description: Remove an IP from whitelist residing on Signal Sciences' Platform.
   - name: sigsci-blacklist-remove-ip
     arguments:
     - name: siteName
@@ -448,6 +482,16 @@ script:
       required: true
       description: IP Address entry to be removed.
     description: Remove an IP from blacklist residing on Signal Sciences' Platform.
+  - name: sigsci-get-sites
+    arguments: []
+    outputs:
+    - contextPath: SigSciences.Sites.Name
+      description: Site name
+      type: string
+    - contextPath: SigSciences.Sites.CreatedDate
+      description: Site creation date
+      type: date
+    description: Get all the site name from SignalSciences
   runonce: false
 releaseNotes: "New integration with SignalSciences."
 tests:
