@@ -7,6 +7,10 @@
             "playbookID": "RTIR Test"
         },
         {
+          "integrations": "Devo",
+          "playbookID": "devo_test_playbook"
+        },
+        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io"
@@ -632,7 +636,7 @@
             "playbookID": "NetWitness Endpoint Test"
         },
         {
-            "playbookID": "TestMatchRegex"            
+            "playbookID": "TestMatchRegex"
         }
     ],
     "skipped_tests": [
