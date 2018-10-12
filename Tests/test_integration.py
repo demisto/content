@@ -219,7 +219,7 @@ def test_integration(client, integrations, playbook_id, options={}):
         if not instance_id:
             print_error('Failed to create instance')
             __delete_integrations_instances(client, instance_ids)
-            return False
+            return False, -1
 
         instance_ids.append(instance_id)
         print('Create integration %s succeed' % (integration_name, ))
@@ -228,12 +228,12 @@ def test_integration(client, integrations, playbook_id, options={}):
     incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
 
     if not incident:
-        return False
+        return False, -1
 
     investigation_id = incident['investigationId']
     if investigation_id is None or len(investigation_id) == 0:
         print_error('Failed to get investigation id of incident:' + incident)
-        return False
+        return False, -1
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount
