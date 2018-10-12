@@ -738,4 +738,3 @@ script:
         and the behavior of uploads, see the Message AttachmentsGuide.
     description: Sends a message to a room, by name or room ID.
 hidden: false
-releaseNotes: "Updated integration name"

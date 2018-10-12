@@ -290,7 +290,7 @@ tasks:
       - "17"
     scriptarguments:
       query:
-        simple: file
+        simple: for next run
     separatecontext: false
     view: |-
       {

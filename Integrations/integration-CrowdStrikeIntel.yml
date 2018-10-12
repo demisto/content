@@ -772,4 +772,3 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
   runonce: false
-releaseNotes: Updated doIndicator function to report "None" (DBotScore === 0) to Demisto indicator when there are no results found. Affects ip, domain, url, and file commands.
