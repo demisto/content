@@ -93,6 +93,9 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
     # Utility methods
 
     def filter_dict_null(d):
