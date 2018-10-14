@@ -10,16 +10,6 @@ detaileddescription: |-
   This integration uses ActiveMQ STOMP protocol, that must be enabled (usually port 61613 by default) in order to work.
   Fetch incidents is based on using Durable Topic Subscribers, in order to fetch messages, and convert to Demisto incidents.
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
 - display: Server IP (e.g. 192.168.0.1)
   name: hostname
   defaultvalue: ""
@@ -49,6 +39,16 @@ configuration:
   name: topic-name
   defaultvalue: ""
   type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -155,28 +155,30 @@ script:
             last_msg_id = msg_id
 
     ''' EXECUTION CODE '''
-
-    if demisto.get(demisto.params(),'client-id'):
+    client = 'Demisto'
+    if demisto.get(demisto.params(), 'client-id'):
         client = demisto.params()['client-id']
-    else:
-        client = 'Demisto'
+
     conn = create_connection()
-    connect(conn, client)
 
     LOG('command is %s' % (demisto.command(), ))
 
     try:
         if demisto.command() == 'test-module':
             # Test connectivity
+            connect(conn)
             demisto.results('ok')
 
         elif demisto.command() == 'activemq-send':
+            connect(conn)
             send_message()
 
         elif demisto.command() == 'activemq-subscribe':
+            connect(conn, client)
             subscribe()
 
         elif demisto.command() == 'fetch-incidents':
+            connect(conn, client)
             fetch_incidents()
 
     except Exception, e:
