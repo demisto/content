@@ -636,7 +636,11 @@
             "playbookID": "NetWitness Endpoint Test"
         },
         {
-            "playbookID": "TestMatchRegex"
+            "playbookID": "TestMatchRegex"            
+        },
+        {
+            "integrations": "ActiveMQ",
+            "playbookID": "ActiveMQ Test"
         }
     ],
     "skipped_tests": [
