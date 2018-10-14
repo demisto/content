@@ -36,10 +36,6 @@ script:
   script: |-
     ''' IMPORTS '''
     import requests
-    import json
-    import os
-    import sys
-    import re
     from requests.auth import HTTPBasicAuth
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
@@ -106,6 +102,17 @@ script:
             LOG(e)
             raise Exception(str(e))
 
+    def translate_group_id(group_id):
+
+        """
+        Translates group ID to group name
+        """
+        headers = {
+            'Accept':'application/json',
+        }
+        api_endpoint = "/ers/config/identitygroup/1"
+        identity_group = http_request('GET', api_endpoint, {}, {}, headers).json()['IdentityGroup']
+        return identity_group['name']
 
     ''' COMMANDS FUNCTIONS '''
 
@@ -141,7 +148,7 @@ script:
         endpoint_id = endpoint_data.get('SearchResult', {}).get('resources', [])[0].get('id', None)
 
         ec = {
-            'Endpoint(val.id === obj.id)': {
+            'Endpoint(val.ID === obj.ID)': {
                 'ID': endpoint_id,
                 'MACAddress': mac_address
             }
@@ -193,22 +200,46 @@ script:
         endpoint_details = endpoint_data.get('ERSEndPoint')
 
         if endpoint_details:
+            custom_attributes = endpoint_details.get('customAttributes')
+            if custom_attributes:
+                custom_attributes = custom_attributes.get('customAttributes')
+            portal_user = endpoint_details.get('portalUser')
+            description = endpoint_details.get('description')
+            group_name = translate_group_id(endpoint_details['groupId'])
             hr = {
                 'ID': endpoint_details['id'],
                 'MACAddress': endpoint_details['mac'],
-                'Description': endpoint_details['description'],
-                'GroupID': endpoint_details['groupId'],
+                'Group': group_name,
                 'Link': '[{0}]({0})'.format(endpoint_details['link'].get('href')),
-                'CustomAttributes': endpoint_details.get('customAttributes').get('customAttributes')
+                'CustomAttributes': custom_attributes,
+                'StaticGroupAssignment': endpoint_details['staticGroupAssignment'],
+                'StaticProfileAssignment': endpoint_details['staticProfileAssignment']
             }
-
+            detailed_ec = {
+                'ID': endpoint_details['id'],
+                'MACAddress': endpoint_details['mac'],
+                'Group': group_name,
+                'StaticGroupAssignment': endpoint_details['staticGroupAssignment'],
+                'StaticProfileAssignment': endpoint_details['staticProfileAssignment']
+            }
+            if custom_attributes:
+                detailed_ec['CustomAttributes'] = {}
+                for attribute in custom_attributes:
+                    detailed_ec['CustomAttributes'][attribute] = custom_attributes[attribute]
+            if portal_user:
+                hr['User'] = portal_user
+                detailed_ec['User'] = portal_user
+            if description:
+                hr['Description'] = description
+                detailed_ec['Description'] = description
             ec = {
                 'Endpoint(val.ID === obj.ID)': {
                     'ID': endpoint_details['id'],
                     'MACAddress': endpoint_details['mac']
                 },
-                'CiscoISE.Endpoint(val.ID === obj.ID)': endpoint_details
+                'CiscoISE.Endpoint(val.ID === obj.ID)': detailed_ec
             }
+
             title = 'Endpoint details - ' + (endpoint_id or endpoint_mac_address)
             return {
                 'Type': entryTypes['note'],
@@ -264,8 +295,8 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'Activation result was : ' + activation_result_boolean,
             'EntryContext': {
-                "CiscoISE.Endpoint(val.macAddress==obj.macAddress)": {
-                    'macAddress': json_activation_result,
+                "CiscoISE.Endpoint(val.MACAddress==obj.MACAddress)": {
+                    'MACAddress': json_activation_result,
                     'reauthenticateResult': activation_result_boolean
                 }
             }
@@ -311,7 +342,8 @@ script:
             hr.append(hr_dict)
 
         ec = {
-            'Endpoint(val.ID == obj.ID)': context
+            'Endpoint(val.ID == obj.ID)': context,
+            'CiscoISE.Endpoint(val.ID == obj.ID)': context
         }
 
         return {
@@ -319,7 +351,7 @@ script:
             'Contents': endpoints,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cisco pxGrid ISE Endpoints', hr, removeNull=True),
+            'HumanReadable': tableToMarkdown('Cisco pxGrid ISE Endpoints', hr, ['ID', 'MACAddress', 'Link'], removeNull=True),
             'EntryContext': ec
         }
 
@@ -501,23 +533,35 @@ script:
     - name: macAddress
       description: MAC address of the endpoint (format 11:22:33:44:55:66)
     outputs:
-    - contextPath: CiscoISE.Endpoint.id
-      description: Endpoint id
+    - contextPath: CiscoISE.Endpoint.ID
+      description: Endpoint ID
       type: string
-    - contextPath: CiscoISE.Endpoint.link
-      description: Endpoint link
+    - contextPath: CiscoISE.Endpoint.Description
+      description: Endpoint description
       type: string
-    - contextPath: CiscoISE.Endpoint.name
-      description: Endpoint name
+    - contextPath: CiscoISE.Endpoint.MACAddress
+      description: Endpoint MAC address
       type: string
-    - contextPath: CiscoISE.Endpoint.groupId
-      description: Endpoint groupID
+    - contextPath: CiscoISE.Endpoint.Group
+      description: Endpoint group name
       type: string
     - contextPath: Endpoint.ID
       description: Endpoint ID
       type: string
     - contextPath: Endpoint.MACAddress
       description: Endpoint MAC address
+      type: string
+    - contextPath: CiscoISE.Endpoint.CustomAttributes
+      description: Endpoint custom attributes
+      type: string
+    - contextPath: CiscoISE.Endpoint.StaticGroupAssignment
+      description: Ture if endpoint has static group assignment
+      type: boolean
+    - contextPath: CiscoISE.Endpoint.StaticProfileAssignment
+      description: Ture if endpoint has static profile assignment
+      type: boolean
+    - contextPath: CiscoISE.Endpoint.User
+      description: Endpoint profile user
       type: string
     description: Get details about certain endpoint
   - name: cisco-ise-reauthenticate-endpoint
@@ -526,7 +570,7 @@ script:
       required: true
       description: MAC address of the endpoint (format 11:22:33:44:55:66)
     outputs:
-    - contextPath: CiscoISE.Endpoint.macAddress
+    - contextPath: CiscoISE.Endpoint.MACAddress
       description: Mac address of the endpoint
       type: string
     - contextPath: CiscoISE.Endpoint.reauthenticateResult
@@ -540,6 +584,12 @@ script:
       description: Endpoint ID
       type: string
     - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC address
+      type: string
+    - contextPath: CiscoISE.Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: CiscoISE.Endpoint.MACAddress
       description: Endpoint MAC address
       type: string
     description: Get data about the existing endpoints
@@ -570,3 +620,5 @@ script:
       description: Name of the new group for the endpoint
     description: Updates the group of an endpoint
   runonce: false
+tests:
+  - cisco-ise-test-playbook
