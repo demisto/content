@@ -38,4 +38,3 @@ runonce: false
 dependson:
   must:
   - archer-manually-fetch-incident
-releaseNotes: "-"
