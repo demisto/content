@@ -289,7 +289,7 @@ script:
                 offenseId = Math.max(offenseId, offense.id);
                 incidents.push(createIncidentFromOffense(res[i]));
             }
-            setLastRun({id: offenseId});
+            setLastRun({'id': offenseId});
             return JSON.stringify(incidents);
 
         case 'qr-offenses':
@@ -574,3 +574,4 @@ script:
     description: Retrieve a note for an offense
   isfetch: true
   runonce: false
+releaseNotes: "-"
