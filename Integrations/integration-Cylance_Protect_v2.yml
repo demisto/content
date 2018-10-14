@@ -90,20 +90,18 @@ script:
         url = re.sub('\/$', '', url)
         return url
 
-    def load_proxy():
-        ''' Loads the system configured proxy if enabled in configuration '''
-        proxy = {}
-        if demisto.params()['proxy']:
-            proxy['http'] = os.environ['http_proxy']
-            proxy['https'] = os.environ['https_proxy']
-        return proxy
+    # remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     # GLOBALS
     APP_ID = demisto.params()['app_id']
     APP_SECRET = demisto.params()['app_secret']
     TID = demisto.params()['tid']
     SERVER_URL = load_server_url()
-    PROXY = load_proxy()
     FILE_THRESHOLD = demisto.params()['file_threshold']
 
 
@@ -1581,6 +1579,7 @@ script:
     description: Gets a list of global list resources for a tenant
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
-releaseNotes: "-"
+  runonce: false
+releaseNotes: "fixed proxy settings"
 tests:
   - Cylance Protect v2 Test
