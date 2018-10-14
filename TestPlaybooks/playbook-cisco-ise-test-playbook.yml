@@ -1,14 +1,14 @@
 id: cisco-ise-test-playbook
-version: 1
+version: -1
 name: cisco-ise-test-playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c44c3c35-4c0c-4963-8531-953f637ae8e5
+    taskid: 7c5c4fb7-0d5d-4d3d-87c8-b14af49877bf
     type: start
     task:
-      id: c44c3c35-4c0c-4963-8531-953f637ae8e5
+      id: 7c5c4fb7-0d5d-4d3d-87c8-b14af49877bf
       version: -1
       name: ""
       iscommand: false
@@ -27,17 +27,17 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: a0c865f0-1a23-4ae0-8570-1ab6d9957dd2
+    taskid: b533d4ba-2c9f-4ecb-8e4e-a564d202874f
     type: regular
     task:
-      id: a0c865f0-1a23-4ae0-8570-1ab6d9957dd2
+      id: b533d4ba-2c9f-4ecb-8e4e-a564d202874f
       version: -1
       name: cisco-ise-get-endpoints
       description: Get data about the existing endpoints
-      script: Cisco ISE|||cisco-ise-get-endpoints
+      script: Cisco pxGrid ISE|||cisco-ise-get-endpoints
       type: regular
       iscommand: true
-      brand: Cisco ISE
+      brand: Cisco pxGrid ISE
     nexttasks:
       '#none#':
       - "2"
@@ -52,10 +52,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 4abfb18f-d8f9-4b76-84b7-04ab872c635a
+    taskid: ecdaded9-bf7c-405c-8152-6b4b34025478
     type: regular
     task:
-      id: 4abfb18f-d8f9-4b76-84b7-04ab872c635a
+      id: ecdaded9-bf7c-405c-8152-6b4b34025478
       version: -1
       name: VerifyContext
       description: |-
@@ -70,9 +70,10 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue: {}
-      fields: {}
+      fields:
+        simple: ID,MACAddress
       path:
-        simple: CiscoISE.Endpoint.id
+        simple: Endpoint
     separatecontext: false
     view: |-
       {
