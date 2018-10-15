@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cisco Umbrella Investigate - Python",
+            "playbookID": "Cisco Umbrella Python Test"
+        },
+        {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
         },
@@ -520,10 +524,6 @@
             "playbookID": "CarbonBlackResponseTest"
         },
         {
-            "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
-        },
-        {
             "integrations": "icebrg",
             "playbookID": "Icebrg Test",
             "timeout" : 500
@@ -636,7 +636,7 @@
             "playbookID": "NetWitness Endpoint Test"
         },
         {
-            "playbookID": "TestMatchRegex"            
+            "playbookID": "TestMatchRegex"
         },
         {
             "integrations": "ActiveMQ",

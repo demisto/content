@@ -111,7 +111,6 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-
     def extract_domain_name(url):
         # Remove protocol, removes directory after the host name, returns only the host name.
         return url.split("//")[-1].split("/")[0]
@@ -344,16 +343,16 @@ script:
         # Build Output
         # Send table/context output to war-room
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Search Results:', contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Search Results:', contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -373,7 +372,7 @@ script:
         # Validate and assign response
         matches = res.get('matches')
         if not matches or not isinstance(matches, list):
-            return false
+            return False
         return matches
 
 
@@ -404,16 +403,16 @@ script:
         # Build Output
         # Send table/context output to war-room
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Co-occurrences:', contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Co-occurrences:', contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -459,16 +458,16 @@ script:
         # Build Output
         # Send table/context output to war-room
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Related Domains:', contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Related Domains:', contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -527,16 +526,16 @@ script:
         # Build Output
         # Send table/context output to war-room
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Domain Security Info:', contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Domain Security Info:', contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -590,16 +589,16 @@ script:
         # Build Output
         # Send table/context output to war-room
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('DNS History:', contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('DNS History:', contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -613,7 +612,6 @@ script:
 
         # Validate and assign response
         features = res.get('features', {})
-        #raise Exception(res)
         if not features or not features.viewkeys() > {"base_domain", "is_subdomain"}:
             return False
         # this is the actual path for ip address
@@ -665,16 +663,16 @@ script:
         # Build Output
         # Send table/context output to war-room
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': [response_contents, features_contents],
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('RRS:', response_contents, headers) + tableToMarkdown('Features:', features_contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': [response_contents, features_contents],
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('RRS:', response_contents, headers) + tableToMarkdown('Features:', features_contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -699,37 +697,45 @@ script:
         context = {}
         headers = []
         results = []
+        context_dbotscore = []
         # Get vars
         ip = demisto.args()['ip']
         # Fetch data
         res = get_ip_malicious_domains(ip)
         if res:
             # Process response - build context and markdown table
-            for item in res:
+            for domain in res:
                 contents.append({
-                    'Name': item['name'],
+                    'Name': domain['name'],
                     'Malicious': {
-                        'Vendor': 'Cisco Umbrella ',
+                        'Vendor': 'Cisco Umbrella',
                         'Description': 'For IP ' + ip
                     }
+                })
+                context_dbotscore.append({
+                    'Indicator': domain['name'],
+                    'Type': 'Domain',
+                    'Vendor': 'Cisco Umbrella',
+                    'Score': 3
                 })
 
             if contents:
                 context[outputPaths['domain']] = contents
+                context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = context_dbotscore
 
         # Build Output
         # Send table/context output to war-room
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Malicious Domains:', contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Malicious Domains:', contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -832,18 +838,18 @@ script:
         results.append ({
         # type
         'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Reputation for: ' + domain, contents, headers) +
-        tableToMarkdown('Umbrella Investigate WHOIS Record Data for: ' + domain, whois, headers) +
-        tableToMarkdown('Name Servers:', { 'Name Servers': name_servers }, headers) +
-        tableToMarkdown('Emails:', { 'Emails': emails }, headers) +
-        tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
-        # context
-        'EntryContext': context
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Reputation for: ' + domain, contents, headers) +
+            tableToMarkdown('Umbrella Investigate WHOIS Record Data for: ' + domain, whois, headers) +
+            tableToMarkdown('Name Servers:', { 'Name Servers': name_servers }, headers) +
+            tableToMarkdown('Emails:', { 'Emails': emails }, headers) +
+            tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
+            # context
+            'EntryContext': context
         })
 
         # Send table/context output to war-room
@@ -896,16 +902,16 @@ script:
 
         # Build Output
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': [contents_related_domains, contents_co_occurences],
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Umbrella Investigate Related Domains for a Domain: ', contents_related_domains, headers) + co_occurences_md,
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': [contents_related_domains, contents_co_occurences],
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Umbrella Investigate Related Domains for a Domain: ', contents_related_domains, headers) + co_occurences_md,
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -946,7 +952,7 @@ script:
             if contents:
                 context['Umbrella.DomainClassifiers(val.Domain && val.Domain == obj.Domain)'] = {
                     'Data': {
-                        'SecurityCategories': security_categories,
+                        'MalwareCategories': security_categories,
                         'Attacks': attacks,
                         'ThreatTypes': threat_types
                     },
@@ -955,16 +961,16 @@ script:
 
         # Build Output
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Classifiers: ' + domain, contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Classifiers: ' + domain, contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -987,6 +993,7 @@ script:
         context = {}
         headers = []
         results = []
+        queries_context = []
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
         start_date_string = demisto.args()['start']
@@ -1008,13 +1015,15 @@ script:
             stop_date = dates[1]
             # Query timestamp/hour needs to be calculated manually, every entry represents 1 hour (3600 secods). ts is in milliseconds
             query_ts = start_date/1000
-            queries_hour = []
 
             for query in queries:
-                queries_hour.append(ts_to_date(query_ts))
                 contents.append({
                     'Queries': query,
                     'Query Hour': ts_to_date(query_ts)
+                })
+                queries_context.append({
+                    'Queries': query,
+                    'QueryHour': ts_to_date(query_ts)
                 })
                 query_ts = query_ts + 3600
 
@@ -1023,23 +1032,22 @@ script:
                 'Data': {
                     'StartDate': ts_to_date(start_date),
                     'StopDate': ts_to_date(stop_date),
-                    'QueryHour': queries_hour,
-                    'Queries': queries
+                    'QueriesInfo': queries_context
                 }
             }
 
         # Build Output
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Volume: ' + domain + '\nStart Date ' + ts_to_date(start_date) + ' - Stop Date ' + ts_to_date(stop_date), contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Volume: ' + domain + '\nStart Date ' + ts_to_date(start_date) + ' - Stop Date ' + ts_to_date(stop_date), contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -1118,16 +1126,16 @@ script:
 
         # Build Output
         results.append ({
-        # type
-        'Type': entryTypes['note'],
-        # contents
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        # human-readable
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Reputation: ' + domain, contents, headers),
-        # context
-        'EntryContext': context
+            # type
+            'Type': entryTypes['note'],
+            # contents
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            # human-readable
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Reputation: ' + domain, contents, headers),
+            # context
+            'EntryContext': context
         })
         # Send table/context output to war-room
         return results
@@ -1143,7 +1151,7 @@ script:
         return res
 
 
-    def get_whois_for_email_command():
+    def get_domains_for_email_registrar_command():
         # Initialize
         contents = []
         context = {}
@@ -1165,7 +1173,7 @@ script:
             if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) == None:
                 return_error('The provided email is not valid: ' + email)
         # Fetch data
-        res = get_whois_for_email(emails, offset, sort, limit)
+        res = get_domains_for_email_registrar(emails, offset, sort, limit)
         if res:
             # Process response - build context and markdown table
             domains = []
@@ -1193,12 +1201,6 @@ script:
                             'Is Current': domain['current']
                         })
 
-                emails_contents.append({
-                    'Address': email,
-                    'Total Results': email_res['totalResults'],
-                    'More Data Available': email_res['moreDataAvailable'],
-                    'Result Limit': email_res['limit']
-                })
                 # each email has its own data + associated domains attached
                 emails_context.append({
                     'TotalResults': email_res['totalResults'],
@@ -1208,10 +1210,10 @@ script:
                 })
                 # each email represented by 2 tables
                 # Build Output
-                markdown = markdown + tableToMarkdown('Umbrella Investigate WHOIS Information for: ' + email, emails_contents, headers) + tableToMarkdown('Domains Associated with: ' + email, domains_contents, headers)
+                markdown = markdown + tableToMarkdown('Domains Associated with: ' + email, domains_contents, headers)
                 contents.extend((emails_contents, domains_contents))
 
-            context['Umbrella.WHOIS(val.Email && val.Email == obj.Email)'] = {
+            context['Umbrella.AssociatedDomains(val.Email && val.Email == obj.Email)'] = {
                 'Email': email,
                 'Data': emails_context
             }
@@ -1232,7 +1234,7 @@ script:
         return results
 
 
-    def get_whois_for_email(emails, offset, sort, limit):
+    def get_domains_for_email_registrar(emails, offset, sort, limit):
         # Build & Send request
         params = {}
         # single email has different api call over multiple emails
@@ -1266,7 +1268,7 @@ script:
         return res
 
 
-    def get_whois_for_nameserver_command():
+    def get_domains_for_nameserver_command():
         # Initialize
         contents = []
         context = {}
@@ -1288,7 +1290,7 @@ script:
             if re.match('^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$', nameserver) == None:
                 return_error('The provided name server is not valid: ' + nameserver)
         # Fetch data
-        res = get_whois_for_nameserver(nameservers, offset, sort, limit)
+        res = get_domains_for_nameserver(nameservers, offset, sort, limit)
         if res:
             # Process response - build context and markdown table
             domains = []
@@ -1315,12 +1317,7 @@ script:
                             'Content Categories': domains_info[domain['domain']]['content_categories'],
                             'Is Current': domain['current']
                         })
-                nameservers_contents.append({
-                    'Name': nameserver,
-                    'Total Results': nameserver_res['totalResults'],
-                    'More Data Available': nameserver_res['moreDataAvailable'],
-                    'Result Limit': nameserver_res['limit']
-                })
+
                 # each nameserver has its own data + associated domains attached
                 nameservers_context.append({
                     'TotalResults': nameserver_res['totalResults'],
@@ -1330,10 +1327,10 @@ script:
                 })
                 # each nameserver represented by 2 tables
                 # Build Output
-                markdown = markdown + tableToMarkdown('Umbrella Investigate WHOIS Information for: ' + nameserver, nameservers_contents, headers) + tableToMarkdown('Domains Associated with: ' + nameserver, domains_contents, headers)
+                markdown = markdown + tableToMarkdown('Domains Associated with: ' + nameserver, domains_contents, headers)
                 contents.extend((nameservers_contents, domains_contents))
 
-            context['Umbrella.WHOIS(val.Nameserver && val.Nameserver == obj.Nameserver)'] = {
+            context['Umbrella.AssociatedDomains(val.Nameserver && val.Nameserver == obj.Nameserver)'] = {
                 'Nameserver': nameserver,
                 'Data': nameservers_context
             }
@@ -1354,7 +1351,7 @@ script:
         return results
 
 
-    def get_whois_for_nameserver(nameservers, offset, sort, limit):
+    def get_domains_for_nameserver(nameservers, offset, sort, limit):
         # Build & Send request
         params = {}
         # single name server has different api call over multiple name servers
@@ -1407,7 +1404,7 @@ script:
             domain = {
                 'Name': res['domainName'],
                 'RegistrarName': res['registrarName'],
-                'LastRetrieved': ts_to_date(res.get('timeOfLatestRealtimeCheck')),
+                'LastRetrieved': res.get('timeOfLatestRealtimeCheck'),
                 'Created': res['created'],
                 'Updated': res['updated'],
                 'Expires': res['expires'],
@@ -1418,7 +1415,7 @@ script:
             table_domain = {
                 'Name': domain['Name'],
                 'Registrar Name': domain['RegistrarName'],
-                'Last Retrieved': domain['LastRetrieved'],
+                'Last Retrieved': ts_to_date(domain['LastRetrieved']),
                 'Created': domain['Created'],
                 'Updated': domain['Updated'],
                 'Expires': domain['Expires'],
@@ -1470,6 +1467,8 @@ script:
         context = {}
         headers = []
         results = []
+        context_dbotscore = []
+        context_malicious = []
         # Get vars
         ip = demisto.args()['ip']
         # Fetch data
@@ -1493,11 +1492,26 @@ script:
                         'Malware Categories': domains[domain]['security_categories'],
                         'Content Categories': domains[domain]['content_categories']
                     })
+                    context_dbotscore.append({
+                        'Indicator': domain,
+                        'Type': 'Domain',
+                        'Vendor': 'Cisco Umbrella',
+                        'Score': 3
+                    })
+                    context_malicious.append({
+                        'Name': domain,
+                        'Malicious': {
+                            'Vendor': 'Cisco Umbrella',
+                            'Description': 'For IP ' + ip
+                        }
+                    })
 
             context['Umbrella.MaliciousDomains(val.IP && val.IP == obj.IP)'] = {
                 'IP': ip,
                 'Data': domains_context
             }
+            context[outputPaths['domain']] = context_malicious
+            context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = context_dbotscore
 
         results.append ({
             # type
@@ -1530,13 +1544,14 @@ script:
         context = {}
         headers = []
         results = []
+        title_contents = []
         # Get vars
         regex = demisto.args()['expression']
         start = date_to_ts(demisto.args()['start'])
-        stop = date_to_ts(demisto.args().get('stop','now'))
+        stop = date_to_ts(demisto.args().get('stop'))
         is_include_category = bool(strtobool(demisto.args().get('includeCategory')))
-        limit = demisto.args().get('limit','100')
-        node_type = demisto.args().get('type','HOST')
+        limit = demisto.args().get('limit')
+        node_type = demisto.args().get('type')
         # Fetch data
         res = get_domain_using_regex(regex, start, is_include_category, stop, limit, node_type)
         if res:
@@ -1551,7 +1566,8 @@ script:
                 })
                 domain_context.append ({
                     'Name': match['name'],
-                    'FirstSeen': match['firstSeen']
+                    'FirstSeen': match['firstSeen'],
+                    'SecurityCategories': match['securityCategories']
                 })
 
             title_contents = [{
@@ -1574,7 +1590,7 @@ script:
             'Contents': [title_contents, contents],
             # human-readable
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Pattern Search for: ' + res.get('expression', regex), title_contents, headers) + tableToMarkdown('Matches: ', contents, headers),
+            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Pattern Search for: ' + regex, title_contents, headers) + tableToMarkdown('Matches: ', contents, headers),
             # context
             'EntryContext': context
         })
@@ -1594,10 +1610,9 @@ script:
         # Build & Send request
         endpoint_url = '/search/' + regex
         res = http_request(endpoint_url, params)
-
         # Assign and validate response
-        matches = res.get('matches', [])
-        if not matches:
+        results = res.get('totalResults', 0)
+        if not results:
             return False
         return res
 
@@ -1628,7 +1643,7 @@ script:
                     'MalwareCategories': item['categories'],
                     'Attacks': item['attacks'],
                     'ThreatTypes': item['threatTypes'],
-                    'Timestamp': item['timestamp'],
+                    'Timestamp': ts_to_date(item['timestamp']),
                 })
 
             context['Umbrella.Timeline(val.Domain && val.Domain == obj.Domain)'] = {
@@ -1689,7 +1704,7 @@ script:
                     'MalwareCategories': item['categories'],
                     'Attacks': item['attacks'],
                     'ThreatTypes': item['threatTypes'],
-                    'Timestamp': item['timestamp'],
+                    'Timestamp': ts_to_date(item['timestamp']),
                 })
 
             context['Umbrella.Timeline(val.IP && val.IP == obj.IP)'] = {
@@ -1750,7 +1765,7 @@ script:
                     'MalwareCategories': item['categories'],
                     'Attacks': item['attacks'],
                     'ThreatTypes': item['threatTypes'],
-                    'Timestamp': item['timestamp'],
+                    'Timestamp': ts_to_date(item['timestamp']),
                 })
 
             context['Umbrella.Timeline(val.URL && val.URL == obj.URL)'] = {
@@ -1822,10 +1837,10 @@ script:
             demisto.results(get_domain_query_volume_command())
         elif demisto.command() == 'umbrella-get-domain-details':
             demisto.results(get_domain_details_command())
-        elif demisto.command() == 'umbrella-get-whois-for-email-registrar':
-            demisto.results(get_whois_for_email_command())
-        elif demisto.command() == 'umbrella-get-whois-for-nameserver':
-            demisto.results(get_whois_for_nameserver_command())
+        elif demisto.command() == 'umbrella-get-domains-for-email-registrar':
+            demisto.results(get_domains_for_email_registrar_command())
+        elif demisto.command() == 'umbrella-get-domains-for-nameserver':
+            demisto.results(get_domains_for_nameserver_command())
         elif demisto.command() == 'umbrella-get-whois-for-domain':
             demisto.results(get_whois_for_domain_command())
         elif demisto.command() == 'umbrella-get-malicious-domains-for-ip':
@@ -1842,7 +1857,7 @@ script:
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
-        raise
+        return_error(e.message)
   type: python
   commands:
   - name: umbrella-domain-categorization
@@ -1854,15 +1869,20 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
+      type: string
     - contextPath: Domain.SecurityCategories
       description: The Umbrella security category, or categories, that match this
         domain
+      type: string
     - contextPath: Domain.ContentCategories
       description: The Umbrella content category or categories that match this domain
+      type: string
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
+      type: string
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
+      type: string
     description: Returns the category of a domain. e.g. domain=amazon.com returns
       Ecommerce/Shopping
   - name: investigate-umbrella-domain-categorization
@@ -1895,8 +1915,13 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-    - contextPath: Domain.Score
+      type: string
+    - contextPath: Domain.CoOccurrences.Score
       description: Domain score - value range between 0 and 1
+      type: number
+    - contextPath: Domain.CoOccurrences.Name
+      description: Domain name
+      type: string
     description: Get a list of related domains back and returns a list of co-occurences
       for the specified domain. A co-occurrence is when two or more domains are being
       accessed by the same users within a small window of time. Being a co-occurrence
@@ -1930,9 +1955,14 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-    - contextPath: Domain.Score
+      type: string
+    - contextPath: Domain.Related.Score
       description: This is a score reflecting the number of client IPs looking up
         related sites within 60 seconds of the original request
+      type: number
+    - contextPath: Domain.Related.Name
+      description: Related domain name
+      type: string
     description: This will return a list of domain names that have been frequently
       seen requested b around the same time (up to 60 seconds before or after) as
       the given domain name, but that are not frequently associated with other domain
@@ -1963,20 +1993,26 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
+      type: string
     - contextPath: Domain.Security.DGA
       description: Domain Generation Algorithm. This score is generated based on the
         likeliness of the domain name being generated by an algorithm rather than
         a human
+      type: number
     - contextPath: Domain.Security.Perplexity
       description: A second score on the likeliness of the name to be algorithmically
         generated, on a scale from 0 to 1
+      type: number
     - contextPath: Domain.Security.Entropy
       description: The number of bits required to encode the domain name, as a score
+      type: number
     - contextPath: Domain.Security.SecureRank
       description: Suspicious rank for a domain that reviews based on the lookup behavior
         of client IP for the domain
+      type: number
     - contextPath: Domain.Security.PageRank
       description: Popularity according to Google's pagerank algorithm
+      type: number
     - contextPath: Domain.Security.ASNScore
       description: ASN reputation score, ranges from -100 to 0 with -100 being very
         suspicious
@@ -1984,24 +2020,31 @@ script:
       description: Prefix ranks domains given their IP prefixes (an IP prefix is the
         first three octets in an IP address) and the reputation score of these prefixes.
         Ranges from -100 to 0, -100 being very suspicious
+      type: number
     - contextPath: Domain.Security.RipScore
       description: RIP ranks domains given their IP addresses and the reputation score
         of these IP addresses. Ranges from -100 to 0, -100 being very suspicious
+      type: number
     - contextPath: Domain.Security.Popularity
       description: The number of unique client IPs visiting this site, relative to
         the all requests to all sites
+      type: number
     - contextPath: Domain.Security.GeoScore
       description: A score that represents how far the different physical locations
         serving this name are from each other
+      type: number
     - contextPath: Domain.Security.KolmoorovSmirnov
       description: olmogorov–Smirnov test on geodiversity. 0 means that the client
         traffic matches what is expected for this TLD
+      type: number
     - contextPath: Domain.Security.AttackName
       description: The name of any known attacks associated with this domain, or blank
         if no known threat
+      type: string
     - contextPath: Domain.Security.ThreatType
       description: The type of the known attack, such as botnet or APT, or blank if
         no known threat
+      type: string
     description: This contains multiple scores or security features, each of which
       can be used to determine relevant datapoints to build insight on the reputation
       or security risk posed by the site. See security information about this specific
@@ -2066,61 +2109,61 @@ script:
       default: true
       description: Enter a domain like (www.cnn.com)
     outputs:
-    - contextPath: IP.Address
+    - contextPath: Domain.Address
       description: IP address
-    - contextPath: IP.DNSHistory.Age
+    - contextPath: Domain.DNSHistory.Age
       description: The day in days between now and the last request for this domain.
         This value is only useful if present
-    - contextPath: IP.DNSHistory.TtlsMin
+    - contextPath: Domain.DNSHistory.TtlsMin
       description: Minimum amount of time set that DNS records should be cached
-    - contextPath: IP.DNSHistory.TtlsMax
+    - contextPath: Domain.DNSHistory.TtlsMax
       description: Maximum amount of time set that DNS records should be cached
-    - contextPath: IP.DNSHistory.TtlsMean
+    - contextPath: Domain.DNSHistory.TtlsMean
       description: Average amount of time set that DNS records should be cached
-    - contextPath: IP.DNSHistory.TtlsMedian
+    - contextPath: Domain.DNSHistory.TtlsMedian
       description: Median amount of time set that DNS records should be cached
-    - contextPath: IP.DNSHistory.TtlsStddev
+    - contextPath: Domain.DNSHistory.TtlsStddev
       description: Standard deviation of the amount of time set that DNS records should
         be cached
-    - contextPath: IP.DNSHistory.CountryCodes
+    - contextPath: Domain.DNSHistory.CountryCodes
       description: 'List of country codes (ex: US, FR, TW) for the IPs the name maps
         to'
-    - contextPath: IP.DNSHistory.CountryCount
+    - contextPath: Domain.DNSHistory.CountryCount
       description: Number of countries the IPs are hosted in
-    - contextPath: IP.DNSHistory.Asns
+    - contextPath: Domain.DNSHistory.Asns
       description: List of ASN numbers the IPs are in
-    - contextPath: IP.DNSHistory.AsnsCount
+    - contextPath: Domain.DNSHistory.AsnsCount
       description: Number of ASNs the IPs map to
-    - contextPath: IP.DNSHistory.Prefixes
+    - contextPath: Domain.DNSHistory.Prefixes
       description: List of network prefixes the IPs map to
-    - contextPath: IP.DNSHistory.PrefixesCount
+    - contextPath: Domain.DNSHistory.PrefixesCount
       description: Number of network prefixes the IPs map to
-    - contextPath: IP.DNSHistory.Rips
+    - contextPath: Domain.DNSHistory.Rips
       description: Number of IPs seen for the domain name
-    - contextPath: IP.DNSHistory.DivRips
+    - contextPath: Domain.DNSHistory.DivRips
       description: The number of prefixes over the number of IPs
-    - contextPath: IP.DNSHistory.Locations
+    - contextPath: Domain.DNSHistory.Locations
       description: List of geo coordinates (WGS84 datum, decimal format) the IPs are
         mapping to
-    - contextPath: IP.DNSHistory.LocationsCount
+    - contextPath: Domain.DNSHistory.LocationsCount
       description: Number of distinct geo coordinates the IPs are mapping to
-    - contextPath: IP.DNSHistory.GeoDistanceSum
+    - contextPath: Domain.DNSHistory.GeoDistanceSum
       description: Minimum sum of distance between locations, in kilometers
-    - contextPath: IP.DNSHistory.GeoDistancMean
+    - contextPath: Domain.DNSHistory.GeoDistancMean
       description: Mean distance between the geo median and each location, in kilometers
-    - contextPath: IP.DNSHistory.MailExchanger
+    - contextPath: Domain.DNSHistory.MailExchanger
       description: Boolean, If an MX query for this domain name has been seen
-    - contextPath: IP.DNSHistory.NonRoutable
+    - contextPath: Domain.DNSHistory.NonRoutable
       description: Boolean. If one of the IPs is in a reserved, non-routable IP range
-    - contextPath: IP.DNSHistory.FfCandidate
+    - contextPath: Domain.DNSHistory.FfCandidate
       description: Boolean. If the domain name looks like a candidate for fast flux.
         This does not necessarily mean the domain is in fast flux, but rather that
         the IP address the domain resolves to changes rapidly
-    - contextPath: IP.DNSHistory.RipsStability
+    - contextPath: Domain.DNSHistory.RipsStability
       description: 1.0 divided by the number of times the set of IP addresses changed
-    - contextPath: IP.DNSHistory.BaseDomain
+    - contextPath: Domain.DNSHistory.BaseDomain
       description: The base domain of the requested domain
-    - contextPath: IP.DNSHistory.IsSubdomain
+    - contextPath: Domain.DNSHistory.IsSubdomain
       description: Boolean. True if the requested domain is a subdomain of another
     description: 'The DNS database can be used to query the history that Umbrella
       has seen for a given domain. The most common use case is to obtain the RRs (Resource
@@ -2315,6 +2358,18 @@ script:
       description: For malicious domains, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
     description: This command  shows whether the IP address you’ve entered as input
       has any known malicious domains associated with it. The domains that appear
       when using this endpoint are those that currently exist in the Umbrella block
@@ -2328,13 +2383,14 @@ script:
       description: Enter a domain regular expression (e.g. "cn.*\\\\.com"). Note to
         use double backslash ("\\\\")
     - name: start
-      description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time'
+      description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time, MAX:
+        -31days'
     outputs:
     - contextPath: Domain.Name
       description: Domain name
-    - contextPath: Domain.FirstSeean
+    - contextPath: Domain.FirstSeen
       description: First seen time in Epoch format
-    - contextPath: Domain.FirstSeeanISO
+    - contextPath: Domain.FirstSeenISO
       description: First seen time in ISO format
     - contextPath: Domain. SecurityCategories
       description: Matching Umbrella Security Categories
@@ -2413,6 +2469,12 @@ script:
         domain or that this domain is associated with. If none match, the return will
         be blank.
       type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
     description: Get Domain Reputation info using Cisco Umbrella Investigate.
   - name: umbrella-get-related-domains
     arguments:
@@ -2486,12 +2548,14 @@ script:
       description: 'Point in time in the past, expressed as a timestamp in the following
         format or relative time. Valid formats: start=-2days start=-2hours start=1997-07-16T19:20:30+01:00
         i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative sign. The max is 30 days.'
+      defaultValue: -7days
     - name: stop
       required: true
       description: 'Point in time in the past expressed as a timestamp in milliseconds
         or relative time. Also valid is ''now''. Valid formats: stop=-1days stop=now
         start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative
         sign. The max is 30 days.'
+      defaultValue: now
     - name: match
       required: true
       auto: PREDEFINED
@@ -2515,10 +2579,10 @@ script:
     - contextPath: Umbrella.QueryVolume.Data.StopDate
       description: Stop date for which the volume data is returned.
       type: string
-    - contextPath: Umbrella.QueryVolume.Data.QueryHour
+    - contextPath: Umbrella.QueryVolume.Data.QueriesInfo.QueryHour
       description: Query hour for which the queries data is returned.
       type: string
-    - contextPath: Umbrella.QueryVolume.Data.Queries
+    - contextPath: Umbrella.QueryVolume.Data.QueriesInfo.Queries
       description: Number of DNS queries per hour, in ascending order, to the specified
         domain.
       type: string
@@ -2598,7 +2662,7 @@ script:
       type: string
     description: The security information API method contains multiple scores or security
       features, which can act as relevant datapoints to build insight on the reputation.
-  - name: umbrella-get-whois-for-email-registrar
+  - name: umbrella-get-domains-for-email-registrar
     arguments:
     - name: emails
       required: true
@@ -2621,35 +2685,35 @@ script:
     - name: limit
       description: To limit the total number of results (domains).
     outputs:
-    - contextPath: Umbrella.WHOIS.Email
+    - contextPath: Umbrella.AssociatedDomains.Email
       description: Email address.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.TotalResults
+    - contextPath: Umbrella.AssociatedDomains.Data.TotalResults
       description: Total number of results for this email.
       type: number
-    - contextPath: Umbrella.WHOIS.Data.MoreDataAvailable
+    - contextPath: Umbrella.AssociatedDomains.Data.MoreDataAvailable
       description: Whether or not there are more than 500 results for this email,
         either yes or no.
       type: boolean
-    - contextPath: Umbrella.WHOIS.Data.ResultLimit
+    - contextPath: Umbrella.AssociatedDomains.Data.ResultLimit
       description: Total number of results for this page of results, default 500.
       type: number
-    - contextPath: Umbrella.WHOIS.Data.Domains.Name
+    - contextPath: Umbrella.AssociatedDomains.Data.Domains.Name
       description: Domains registered by this email
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Domains.Name.SecurityCategories
+    - contextPath: Umbrella.AssociatedDomains.Data.Domains.Name.SecurityCategories
       description: Security Categories associated with the domain.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Domains.Name.ContentCategories
+    - contextPath: Umbrella.AssociatedDomains.Data.Domains.Name.ContentCategories
       description: Content Categories associated with the domain.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Domains.LastObserved
+    - contextPath: Umbrella.AssociatedDomains.Data.Domains.LastObserved
       description: 'Whether the domain is current, meaning currently registered by
         this email address. Values : Past or Current'
       type: string
-    description: The WHOIS email command will return the email address or addresses
-      of the registrar for the domain or domains that are looked up.
-  - name: umbrella-get-whois-for-nameserver
+    description: The command will return the domains associated with the email address
+      or addresses of the registrar that are looked up.
+  - name: umbrella-get-domains-for-nameserver
     arguments:
     - name: nameservers
       required: true
@@ -2660,6 +2724,10 @@ script:
       description: For paging with offset for domains with more than 500 results,
         set the url-param limit. Default value is 10.
     - name: sort
+      auto: PREDEFINED
+      predefined:
+      - created
+      - updated
       description: '"To sort the list of domains based on timestamp. By default, domains
         are simply sorted by name in alphabetical order.  Possible values are: ""created"",
         ""updated"", and ""expired"", each of which sorts from the most recent date
@@ -2667,29 +2735,29 @@ script:
     - name: limit
       description: To limit the total number of results (domains).
     outputs:
-    - contextPath: Umbrella.WHOIS.Nameserver
+    - contextPath: Umbrella.AssociatedDomains.Nameserver
       description: Nameserver's domain name.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.TotalResults
+    - contextPath: Umbrella.AssociatedDomains.Data.TotalResults
       description: Total number of results for this nameserver domain name.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.MoreDataAvailable
+    - contextPath: Umbrella.AssociatedDomains.Data.MoreDataAvailable
       description: Whether or not there are more than 500 results for this email,
         either yes or no.
       type: boolean
-    - contextPath: Umbrella.WHOIS.Data.ResultLimit
+    - contextPath: Umbrella.AssociatedDomains.Data.ResultLimit
       description: Total number of results for this page of results, default 500.
       type: number
-    - contextPath: Umbrella.WHOIS.Data.Domains.Name
+    - contextPath: Umbrella.AssociatedDomains.Data.Domains.Name
       description: Domains registered by this nameserver.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Domains.Name.SecurityCategories
+    - contextPath: Umbrella.AssociatedDomains.Data.Domains.Name.SecurityCategories
       description: Security Categories associated with the domain.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Domains.Name.ContentCategories
+    - contextPath: Umbrella.AssociatedDomains.Data.Domains.Name.ContentCategories
       description: Content Categories associated with the domain.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Domains.LastObserved
+    - contextPath: Umbrella.AssociatedDomains.Data.Domains.LastObserved
       description: 'Whether the domain is current, meaning currently registered by
         this email address. Values : Past or Current'
       type: string
@@ -2770,7 +2838,8 @@ script:
         time in the past, expressed as a timestamp in the following format or relative
         time. Valid formats: start=-2days start=-2hours start=-1000minutes start=-3weeks
         start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative
-        sign for relative time. '
+        sign for relative time.  Max is -30days.'
+      defaultValue: -7days
     - name: includeCategory
       auto: PREDEFINED
       predefined:
@@ -2778,13 +2847,15 @@ script:
       - "true"
       description: Default is false, if set to true this will include security categories
         in the results and may slow the return times.
-      defaultValue: "false"
+      defaultValue: "true"
     - name: stop
       description: 'The exclusive end time in milliseconds absolute or relative time
         (eg: ''now'', ''-2days'',''1997-07-16T19:20:30+01:00'') for a query.'
+      defaultValue: now
     - name: limit
       description: The maximum number of items to return - combine with offset for
         result pagination
+      defaultValue: "100"
     - name: type
       auto: PREDEFINED
       predefined:
@@ -2792,6 +2863,7 @@ script:
       - IP
       - HOST
       description: Search database node type (URL, IP, HOST).
+      defaultValue: HOST
     outputs:
     - contextPath: Umbrella.DomainSearch.TotalResults
       description: Total results from this search string. The default number of results
@@ -2802,6 +2874,9 @@ script:
       type: string
     - contextPath: Umbrella.DomainSearch.Data.FirstSeen
       description: First Seen of the domain found.
+      type: string
+    - contextPath: Umbrella.DomainSearch.Data.SecurityCategories
+      description: Security Categories associated with the domain.
       type: string
     description: 'Get the list of matching domains (Investigate Database) based on
       a regular expression. '
@@ -2876,6 +2951,6 @@ script:
     description: The timeline command shows when a URL was given attribution of a
       particular security categorization or threat type (indicators of compromise).
   runonce: false
-releaseNotes: "Deprecated old prefix commands in favor of new prefix commands."
+releaseNotes: "Integration now written in python, added commands"
 tests:
-  - None
+  - Cisco Umbrella Python Test
