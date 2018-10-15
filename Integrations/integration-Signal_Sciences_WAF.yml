@@ -124,7 +124,7 @@ script:
             'Contents': site_whitelist,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(WHITELIST_TITLE, outputs, WHITELIST_HEADERS, metaadata=sidedata),
+            'HumanReadable': tableToMarkdown(WHITELIST_TITLE, outputs, WHITELIST_HEADERS, metadata=sidedata),
             'EntryContext': {
                 'SigSciences.Whitelist(val.ID==obj.ID)': outputs,
             }
@@ -151,13 +151,13 @@ script:
             outputs.append(output)
 
         sidedata = "Number of IPs in the Blacklist {0}".format(len(data))
-    # 'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS, metaadata=sidedata),
+
         return {
             'Type': entryTypes['note'],
             'Contents': site_blacklist,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS),
+            'HumanReadable': tableToMarkdown(BLACKLIST_TITLE, outputs, WHITELIST_HEADERS, metadata=sidedata),
             'EntryContext': {
                 'SigSciences.Blacklist(val.ID==obj.ID)': outputs,
             }
@@ -196,7 +196,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, ADD_IP_HEADERS, metaadata=sidedata),
+            'HumanReadable': tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, ADD_IP_HEADERS, metadata=sidedata),
             'EntryContext': {
                 'SigSciences.Whitelist(val.ID==obj.ID)': output,
             }
@@ -235,7 +235,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(ADD_IP_TO_BLACKLIST_TITLE, human_readable, ADD_IP_HEADERS, metaadata=sidedata),
+            'HumanReadable': tableToMarkdown(ADD_IP_TO_BLACKLIST_TITLE, human_readable, ADD_IP_HEADERS, metadata=sidedata),
             'EntryContext': {
                 'SigSciences.Blacklist(val.ID==obj.ID)': output,
             }

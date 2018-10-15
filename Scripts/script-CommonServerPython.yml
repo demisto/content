@@ -532,7 +532,7 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metaadata=None):
+  def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
       """
          Converts a demisto table in JSON form to a Markdown table
 
@@ -551,7 +551,7 @@ script: |-
          :type removeNull: ``bool``
          :keyword removeNull: Remove empty columns from the table. Deafult is False
 
-         :type metaadata: ``str``
+         :type metadata: ``str``
          :param metaadata: Metadata about the table contents
 
          :return: A string representation of the markdown table
@@ -562,8 +562,8 @@ script: |-
       if name:
           mdResult = '### ' + name + '\n'
 
-      if metaadata:
-          mdResult += metaadata + '\n'
+      if metadata:
+          mdResult += metadata + '\n'
 
       if not t or len(t) == 0:
           mdResult += '**No entries.**\n'
