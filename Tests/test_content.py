@@ -318,8 +318,8 @@ def main():
             integrations_conf = [integrations_conf]
 
         has_skipped_integration, integrations = collect_integrations(
-            integrations_conf, is_filter_configured, skipped_integration,
-            skipped_integrations_conf, is_integration_filter_configured, filterd_integrations)
+            integrations_conf, skipped_integration, skipped_integrations_conf,
+            is_integration_filter_configured, filterd_integrations)
 
         # Skip nightly test
         if not(is_filter_configured and playbook_id in filterd_tests):
