@@ -345,6 +345,10 @@ def main():
         if has_skipped_integration:
             continue
 
+        # Skip no integrations needed if on filter mode
+        if not integrations and is_integration_filter_configured:
+            continue
+
         set_integration_params(demisto_api_key, integrations, secret_params)
         test_message = update_test_msg(integrations, test_message)
 
