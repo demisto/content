@@ -141,7 +141,7 @@ def get_json(file_path):
 def collect_tests(script_ids, playbook_ids, intergration_ids):
     tests = []
     for filename in os.listdir('./TestPlaybooks'):
-        if re.match(TEST_PLAYBOOK_REGEX, filename, re.IGNORECASE)
+        if re.match(TEST_PLAYBOOK_REGEX, filename, re.IGNORECASE):
             data_dict = get_json(filename)
             tasks = data_dict.get('tasks', [])
             for task in tasks:
