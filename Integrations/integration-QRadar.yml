@@ -55,8 +55,7 @@ configuration:
   required: false
 script:
   script: |-
-    import sys, os, requests, traceback, datetime
-    from time import sleep
+    import sys, os, requests, traceback, datetime, json
     from requests.exceptions import HTTPError
 
     # Header names transformation maps
@@ -67,10 +66,7 @@ script:
     SEARCH_ID_NAMES_MAP = {'search_id': 'ID'}
     ASSET_PROPERTIES_NAMES_MAP = {'Unified Name': 'Name', 'CVSS Collateral Damage Potential': 'AggregatedCVSSScore', 'Weight': 'Weight'} #TODO: Add in missing parts: 'QRadar.Assets.LastUser'
     ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {'Primary OS ID': 'Endpoint.OS'}
-    FULL_ASSET_PROPERTIES_NAMES_MAP = {'Compliance Notes': 'ComplianceNotes', 'Compliance Plan': 'CompliancePlan', 'CVSS Collateral Damage Potential': 'CollateralDamagePotential', 'Location': 'QRadar.Assets.Location'} #TODO: add in missing parts: QRadar.Assets.GroupName, QRadar.Assets.Vulnerabilities, QRadar.Assets.SwitchID, QRadar.Assets.SwitchPort
-    FULL_ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {}
-
-    #TODO: COMPLETE THIS
+    FULL_ASSET_PROPERTIES_NAMES_MAP = {'Compliance Notes': 'ComplianceNotes', 'Compliance Plan': 'CompliancePlan', 'CVSS Collateral Damage Potential': 'CollateralDamagePotential', 'Location': 'Location', 'Switch ID': 'SwitchID', 'Switch Port ID': 'SwitchPort', 'Group Name': 'GroupName', 'Vulnerabilities': 'Vulnerabilities'}
 
     ''' GLOBAL VARS '''
     SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
@@ -80,6 +76,9 @@ script:
     USE_SSL = not demisto.params().get('insecure', False)
     CUSTOM_HEADERS = demisto.args().get('headers')
     AUTH_HEADERS = {'SEC': str(TOKEN), 'Content-Type':  'application/json'}
+    OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
+
+    OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
 
     if not TOKEN and not PASSWORD:
         raise Exception('Either credentials or auth token should be provided.')
@@ -111,12 +110,8 @@ script:
             return dict((k,v) for k,v in d1.items() if k in d2values)
         return d1
 
-    #todo improve this (better implementation). goal: DICT VALUES TO COMMA SPEREATED LIST
-    def dict_to_string(dic):
-        res = ''
-        for k,v in dic.iteritems():
-            res = res + str(v) + ','
-        return res[:-1]
+    def dict_values_to_comma_seperated_string(dic):
+        return ','.join(str(v) for v in dic.itervalues())
 
     def get_entry_for_object(title, obj, headers=None, contextKey=None):
         if len(obj) == 0:
@@ -152,7 +147,42 @@ script:
         return src
 
     def epoch_to_ISO(ms_passed_since_epoch):
-        return datetime.datetime.fromtimestamp(ms_passed_since_epoch/1000.0).strftime(("%Y-%m-%d %H:%M:%SZ"))
+        return datetime.datetime.utcfromtimestamp(ms_passed_since_epoch/1000.0).strftime(("%Y-%m-%dT%H:%M:%S.%fZ"))
+
+    def find_last_page_pos():
+        # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
+        if len(send_get_offenses_request(_range='{0}-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)) == 0:
+            return OFFENSES_PER_CALL - 1
+        # Search up until we don't have any more results
+        pos = OFFENSES_PER_CALL * 2
+        while len(send_get_offenses_request(_range='{0}-{0}'.format(str(pos)), _filter=fetchQuery)) == 1:
+            pos = pos * 2
+        # Binary search the gap from the las step
+        high = pos
+        low = pos / 2
+        while high > low+1:
+            pos = (high + low) / 2
+            if len(send_get_offenses_request(_range='{0}-{0}'.format(str(pos)), _filter=fetchQuery)) == 1:
+                # we still have results, raise the bar
+                low = pos
+            else:
+                # we're too high, lower the bar
+                high = pos
+        # low holds the last pos of the list
+        return low
+
+    def create_incident_from_offense(offense):
+        keys = offense.keys()
+        occured = epoch_to_ISO(offense['start_time'])
+        labels = []
+        for i in range(len(keys)):
+            labels.append({'type': keys[i], 'value': str(offense[keys[i]])})
+        return {
+            'name': '{0} {1}'.format(offense['id'], offense['description']),
+            'labels': labels,
+            'rawJSON': json.dumps(offense),
+            'occurred': occured
+        }
 
     def enrich_offense_result(response):
         enrich_offense_res_with_source_and_destination_address(response)
@@ -165,19 +195,19 @@ script:
         return None
 
     def enrich_offense_res_with_source_and_destination_address(response):
-        src_ids, dst_ids = extract_source_and_destination_dict(response)
-        enrich_source_addresses_dict(src_ids)
-        enrich_destination_addresses_dict(dst_ids)
+        src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
+        enrich_source_addresses_dict(src_adrs)
+        enrich_destination_addresses_dict(dst_adrs)
         for offense in response:
             if isinstance(offense['source_address_ids'], list):
                 for i in range(len(offense['source_address_ids'])):
-                    offense['source_address_ids'][i] = src_ids[offense['source_address_ids'][i]]
+                    offense['source_address_ids'][i] = src_adrs[offense['source_address_ids'][i]]
             if isinstance(offense['local_destination_address_ids'], list):
                 for i in range(len(offense['local_destination_address_ids'])):
-                    offense['local_destination_address_ids'][i] = dst_ids[offense['local_destination_address_ids'][i]]
+                    offense['local_destination_address_ids'][i] = dst_adrs[offense['local_destination_address_ids'][i]]
         return None
 
-    def extract_source_and_destination_dict(response):
+    def extract_source_and_destination_addresses_ids(response):
         src_ids = {}
         dst_ids = {}
         for offense in response:
@@ -189,21 +219,21 @@ script:
                     dst_ids[destination_id] = destination_id
         return src_ids, dst_ids
 
-    def enrich_source_addresses_dict(src_ids):
-        src_ids_str = dict_to_string(src_ids)
+    def enrich_source_addresses_dict(src_adrs):
+        src_ids_str = dict_values_to_comma_seperated_string(src_adrs)
         source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
         src_res = send_request('GET', source_url, AUTH_HEADERS)
         for src_adr in src_res:
-            src_ids[src_adr['id']] = src_adr['source_ip']
+            src_adrs[src_adr['id']] = src_adr['source_ip']
         return None
 
-    def enrich_destination_addresses_dict(dst_ids):
-        dst_ids_str = dict_to_string(dst_ids)
+    def enrich_destination_addresses_dict(dst_adrs):
+        dst_ids_str = dict_values_to_comma_seperated_string(dst_adrs)
         destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
         headers = {'Content-Type': 'application/json', "SEC": str(TOKEN)}
         dst_res = send_request('GET', destination_url, AUTH_HEADERS)
         for dst_adr in dst_res:
-            dst_ids[dst_adr['id']] = dst_adr['local_destination_ip']
+            dst_adrs[dst_adr['id']] = dst_adr['local_destination_ip']
         return None
 
     def send_request(method, url, headers=AUTH_HEADERS, params=None):
@@ -227,19 +257,20 @@ script:
         asset_key = 'QRadar.Asset(val.ID === {0}).'.format(asset['id']) #TODO: Improve this flow, as it can create values of arrays after second call
         trans_asset[asset_key + 'ID'] = asset['id']
         trans_asset['Endpoint.IPAddress'] = []
-        trans_asset['Endpoint.MACAddress'] = []
+        if full_values:
+            trans_asset['Endpoint.MACAddress'] = []
         for interface in asset['interfaces']:
             if full_values:
                 trans_asset['Endpoint.MACAddress'].append(interface['mac_address'])
             for ip_address in interface['ip_addresses']:
                 trans_asset['Endpoint.IPAddress'].append(ip_address['value'])
-        # if full_values:
-            # Try to get DNS name, if fails will pass. TODO: Complete implementation
-            # try:
-            #     trans_asset['Endpoint.Domain'] = get_domain_name(asset['domain_id'])
-            # except:
-            #     pass
-
+        if full_values:
+        # Trying to get Domain name via search in QRadar
+            try:
+                domain_name = get_domain_name(asset['domain_id'])
+                trans_asset['Endpoint.Domain'] = domain_name
+            except:
+                pass
         # Adding values found in properties of the asset
         enrich_dict_using_asset_properties(asset, trans_asset, asset_key, full_values)
 
@@ -252,14 +283,17 @@ script:
             elif full_values:
                 if prop['name'] in FULL_ASSET_PROPERTIES_NAMES_MAP:
                     trans_asset[asset_key + FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = prop['value']
-                elif prop['name'] in FULL_ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
-                    trans_asset[FULL_ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
         return None
+
+    def get_domain_name(domain_id):
+        query_param = {'query_expression': "SELECT DOMAINNAME({0}) AS 'Domain name' FROM events GROUP BY 'Domain name'".format(domain_id)}
+        search_id = send_search_request(query_param)['search_id']
+        return send_get_search_results_request(search_id)['events'][0]['Domain name']
 
     # Request/Response methods
     def send_get_offenses_request(_range, _filter='', _fields=''):
         full_url = '{0}/api/siem/offenses'.format(SERVER)
-        params = {{"filter": _filter}} if _filter else {}
+        params = {'filter': _filter} if _filter else {}
         headers = dict(AUTH_HEADERS)
         if _fields:
             params.fileds = _fields
@@ -280,9 +314,9 @@ script:
         url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
         return send_request('POST', url, params=demisto.args())
 
-    def send_search_request():
+    def send_search_request(args):
         url = '{0}/api/ariel/searches'.format(SERVER)
-        return send_request('POST', url, AUTH_HEADERS, params=demisto.args())
+        return send_request('POST', url, AUTH_HEADERS, params=args)
 
     def send_get_search_request(search_id):
         url = '{0}/api/ariel/searches/{1}'.format(SERVER, str(search_id))
@@ -302,13 +336,48 @@ script:
             headers['Range'] = 'items={0}'.format(_range)
         return send_request('GET', url, headers, params)
 
+    def send_get_closing_reasons(_range, _filter, _fields, include_deleted, include_reserved):
+        url = '{0}/api/siem/offense_closing_reasons'.format(SERVER)
+        params = {}
+        if _filter:
+            params['filter'] = _filter
+        if include_deleted:
+            params['include_deleted'] = include_deleted
+        if include_reserved:
+            params['include_reserved'] = include_reserved
+        headers = AUTH_HEADERS
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers, params)
+
     # Command methods
     def test_module():
         if not send_get_offenses_request('0-0'):
             return_error('Encoutered error while trying to fetch offenses from sever.') #todo: adjust this with generic implementation of get offenses
         return 'ok'
 
-    def get_offenses():
+    def fetch_incidents():
+        query = demisto.args().get('query')
+        lastRun = demisto.getLastRun()
+        offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
+        fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
+            # qradar returns offenses sorted desc on id and there's no way to change sorting.
+            # if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
+            # start looking for the end of the list by doubling the page position until we're empty.
+            # then start binary search back until you find the end of the list and finally return
+            # `offensesPerCall` from the end.
+        res = send_get_offenses_request(_range='0-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)
+        if len(res) >= OFFENSES_PER_CALL:
+            lastOffensePos = find_last_page_pos(fetchQuery)
+            res = send_get_offenses_request(_range='{0}-{1}'.format(str(lastOffensePos - OFFENSES_PER_CALL + 1), str(lastOffensePos)))
+        incidents = []
+        for offense in res:
+            offenseId = max(offenseId, offense['id'])
+            incidents.append(create_incident_from_offense(offense))
+        demisto.setLastRun({'id': offenseId})
+        return json.dumps(incidents)
+
+    def get_offenses_command():
         res = send_get_offenses_request(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
         enrich_offense_result(res)
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
@@ -331,7 +400,7 @@ script:
         return get_entry_for_object('QRadar Offense', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
 
     def post_search():
-        res = send_search_request()
+        res = send_search_request(demisto.args())
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
         return get_entry_for_object('QRadar Search', res, CUSTOM_HEADERS, 'QRadar.Search(val.ID === obj.ID)')
 
@@ -356,16 +425,18 @@ script:
         res = create_assets_result(res, full_values=True)
         return get_entry_for_object('QRadar Asset', res, CUSTOM_HEADERS)
 
-    def get_closing_reasons():
-        res = send_get_closing_reasons()
+    def get_closing_reasons_command():
+        args = demisto.args()
+        res = send_get_closing_reasons(args.get('range'), args.get('filter'), args.get('fields'), args.get('include_deleted'), args.get('include_reserved'))
+        return get_entry_for_object('Offense Closing Reasons', res, contextKey='QRadar.Offense.ClosingReasons')
 
     # Command selector
     if demisto.command() == 'test-module':
         demisto.results(test_module())
     elif demisto.command() == 'fetch-incidents':
-        demisto.results(test_module())
+        demisto.results(fetch_incidents())
     elif demisto.command() == 'qradar-offenses':
-        demisto.results(get_offenses())
+        demisto.results(get_offenses_command())
     elif demisto.command() == 'qradar-offense-by-id':
         demisto.results(get_offense_by_id())
     elif demisto.command() == 'qradar-update-offense':
@@ -381,11 +452,11 @@ script:
     elif demisto.command() == 'qradar-get-asset-by-id':
         demisto.results(get_asset_by_id())
     elif demisto.command() == 'qradar-get-closing-reasons':
-        demisto.results(get_closing_reasons())
+        demisto.results(get_closing_reasons_command())
     elif demisto.command() == 'qradar-get-note':
-        demisto.results(get_note())
+        demisto.results(get_note_command())
     elif demisto.command() == 'qradar-create-note':
-        demisto.results(create_note())
+        demisto.results(create_note_command())
     elif demisto.command() == 'qradar-get-reference-by-name':
         demisto.results(get_reference_by_name())
     elif demisto.command() == 'qradar-get-events':
