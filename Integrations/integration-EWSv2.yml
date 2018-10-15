@@ -105,6 +105,7 @@ script:
         Version, Folder, HTMLBody, Body
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+    from exchangelib.folders Inbox
 
     # consts
     VERSIONS = {
@@ -1188,6 +1189,10 @@ script:
             for i,f in enumerate(Folder.FIELDS):
                 if f.name == 'unread_count':
                     Folder.FIELDS.pop(i)
+                    break
+            for i,f in enumerate(Inbox.FIELDS):
+                if f.name == 'unread_count':
+                    Item.FIELDS.pop(i)
                     break
             for i,f in enumerate(Item.FIELDS):
                 if f.name == 'text_field':
