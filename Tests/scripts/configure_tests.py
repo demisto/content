@@ -125,7 +125,7 @@ def get_json(file_path):
     return data_dictionary
 
 
-def collect_tests(script_ids, playbook_ids, intergration_ids):
+def collect_tests(script_ids, playbook_ids):
     tests = []
     for filename in os.listdir('./TestPlaybooks'):
         if re.match(TEST_PLAYBOOK_REGEX, filename, re.IGNORECASE):
