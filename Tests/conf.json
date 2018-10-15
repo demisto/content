@@ -7,6 +7,10 @@
             "playbookID": "RTIR Test"
         },
         {
+          "integrations": "Devo",
+          "playbookID": "devo_test_playbook"
+        },
+        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io"
@@ -633,6 +637,10 @@
         },
         {
             "playbookID": "TestMatchRegex"            
+        },
+        {
+            "integrations": "ActiveMQ",
+            "playbookID": "ActiveMQ Test"
         }
     ],
     "skipped_tests": [
