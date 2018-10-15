@@ -34,7 +34,7 @@ SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 # File names
 ALL_TESTS = ["scripts.script-CommonIntegration.yml", "scripts.script-CommonIntegrationPython.yml",
              "scripts.script-CommonServer.yml", "scripts.script-CommonServerPython.yml",
-             "scripts.script-CommonServerUserPython.yml", "scripts.script-CommonUserServer.yml"]
+             "scripts.script-CommonServerUserPython.yml", "scripts.script-CommonUserServer.yml", "Tests.conf.json"]
 
 
 class LOG_COLORS:
