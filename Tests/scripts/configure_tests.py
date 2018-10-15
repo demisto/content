@@ -198,7 +198,7 @@ def create_test_file():
             if integrations != 'None':
                 print('Collected the following integrations:\n{0}'.format(integrations_string))
         else:
-            print('No filter configured, not running any tests')
+            print('No filter configured, running all tests')
 
     print("Creating filter_file.txt")
     with open("./Tests/filter_file.txt", "w") as filter_file:
