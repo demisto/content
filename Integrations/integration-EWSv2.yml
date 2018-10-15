@@ -82,6 +82,7 @@ script:
     from datetime import timedelta
     from cStringIO import StringIO
     import logging, warnings
+    import xml.dom.minidom
 
     # Define utf8 as default encoding
     reload(sys)
@@ -326,9 +327,7 @@ script:
           </soap:Body>
         </soap:Envelope>'''.format(FALLBACK_VERSION, mailbox)
 
-        res = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
-        res.raise_for_status()
-        folderid_elem = ET.fromstring(res.content).find(".//*[t:DisplayName='Top of Information Store']/t:FolderId", FALLBACK_NS)
+        folderid_elem = fallback_send_request(payload).find(".//*[t:DisplayName='Top of Information Store']/t:FolderId", FALLBACK_NS)
         return folderid_elem.attrib['Id'], folderid_elem.attrib['ChangeKey']
 
 
@@ -349,9 +348,10 @@ script:
                 </FindFolder>
               </soap:Body>
             </soap:Envelope>'''.format(FALLBACK_VERSION, folder_id, change_key)
-        res = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
-        res.raise_for_status()
-        subfolder_id_elem = ET.fromstring(res.content).find(".//*[t:DisplayName='{}']/t:FolderId".format(child_name), FALLBACK_NS)
+
+        subfolder_id_elem = fallback_send_request(payload).find(".//*[t:DisplayName='{}']/t:FolderId".format(child_name), FALLBACK_NS)
+        if subfolder_id_elem is None:
+            raise Exception('Invalid folder path.')
         return subfolder_id_elem.attrib['Id'], subfolder_id_elem.attrib['ChangeKey']
 
 
@@ -501,6 +501,24 @@ script:
 
             return element
 
+
+    def fallback_send_request(payload):
+        r = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
+        #demisto.info('######################### Response content:\n{}'.format(xml.dom.minidom.parseString(r.content).toprettyxml())) #DEBUG
+        if r.status_code < 200 or r.status_code >= 300:
+            error_msg = 'Got status code {} for request.'.format(r.status_code)
+            if r.content:
+                error_msg += ' Response content:\n{}'.format(xml.dom.minidom.parseString(r.content).toprettyxml())
+            raise Exception(error_msg)
+        raw = ET.fromstring(r.content)
+        errors = raw.findall(".//m:GetItemResponseMessage[@ResponseClass='Error']", FALLBACK_NS)
+        errors.extend(raw.findall(".//m:GetItemResponseMessage[@ResponseClass='Warning']", FALLBACK_NS))
+        if errors:
+            error_msg = 'Encountered the following errors:\n'
+            for e in errors:
+                error_msg += '{}: {}\n'.format(e.find('m:ResponseCode', FALLBACK_NS).text, e.find('m:MessageText', FALLBACK_NS).text)
+            raise Exception(error_msg)
+        return raw
 
     def get_searchable_mailboxes(protocol):
         searchable_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
@@ -817,8 +835,6 @@ script:
         return d
 
     def fallback_get_attachments(attachment_elems):
-        import xml.dom.minidom
-
         if not attachment_elems:
             return []
         attachment_ids = map(lambda x: x.find('.//t:AttachmentId', FALLBACK_NS).attrib['Id'], attachment_elems)
@@ -838,10 +854,7 @@ script:
                     </GetAttachment>
                 </soap:Body>
             </soap:Envelope>'''
-        raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
-        raw.raise_for_status()  #TODO: better error handling
-        #demisto.log('################# RAW ATTACHMENTS RESPONSE\n{}'.format(xml.dom.minidom.parseString(raw.content).toprettyxml())) #DEBUG
-        raw = ET.fromstring(raw.content)
+        raw = fallback_send_request(payload)
 
         attachments = []
         attachment_elems = raw.findall('.//m:Attachments/*', FALLBACK_NS)
@@ -1089,13 +1102,8 @@ script:
                 </soap:Body>
             </soap:Envelope>'''
 
-        raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
-        raw.raise_for_status()
-        #demisto.info(raw.content)   ## DEBUG
-        #sys.exit(0)                    ## DEBUG
+        raw = fallback_send_request(payload)
 
-        # Parse response to last emails request
-        raw = ET.fromstring(raw.content)
         messages = raw.findall(".//t:Message", FALLBACK_NS)
         demisto.info('{} incident{}'.format(len(messages), 's' if len(messages) != 1 else '')) # DEBUG
         if not messages:
@@ -1132,9 +1140,7 @@ script:
             </GetItem>
         </soap:Body>
     </soap:Envelope>'''
-        raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
-        raw.raise_for_status()
-        raw = ET.fromstring(raw.content)
+        raw = fallback_send_request(payload)
 
         messages = raw.findall(".//t:Message", FALLBACK_NS)
         if len(messages) != len(item_ids):
