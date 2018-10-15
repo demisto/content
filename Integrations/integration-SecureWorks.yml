@@ -1535,7 +1535,7 @@ script:
       - SERVICE_REQUEST
       - INCIDENT
       - CHANGE
-      description: ickets matching the ticketType. If not specified, the path returns
+      description: Tickets matching the ticketType. If not specified, the path returns
         all ticket types
     - name: limit
       description: If provided, limit response to that number of tickets. If not provided,
