@@ -186,6 +186,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 
             if is_integration_filter_configured and name not in filterd_integrations:
                 has_skipped_integration = True
+                break
 
             # dict description
             integrations.append({
@@ -203,6 +204,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 
             if is_integration_filter_configured and integration not in filterd_integrations:
                 has_skipped_integration = True
+                break
 
             # string description
             integrations.append({
@@ -288,10 +290,11 @@ def main():
     secret_params = secret_conf['integrations'] if secret_conf else []
 
     filterd_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
-    if is_filter_configured and not run_all_tests:
+    if (is_filter_configured or is_filter_configured) and not run_all_tests:
         is_nightly = True
 
     filterd_integrations, is_integration_filter_configured = extract_filtered_integrations()
+    is_filter = True if is_integration_filter_configured or is_filter_configured else False
 
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
@@ -322,14 +325,12 @@ def main():
             is_integration_filter_configured, filterd_integrations)
 
         # Skip nightly test
-        if not((is_filter_configured and playbook_id in filterd_tests) or
-               (is_integration_filter_configured and not has_skipped_integration)):
-            if skip_nightly_test:
-                print '------ Test %s start ------' % (test_message, )
-                print 'Skip test'
-                print '------ Test %s end ------' % (test_message,)
+        if skip_nightly_test:
+            print '------ Test %s start ------' % (test_message, )
+            print 'Skip test'
+            print '------ Test %s end ------' % (test_message,)
 
-                continue
+            continue
 
         # Skip filtered test
         if is_filter_configured and playbook_id not in filterd_tests:
