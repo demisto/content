@@ -552,7 +552,7 @@ script: |-
          :keyword removeNull: Remove empty columns from the table. Deafult is False
 
          :type metadata: ``str``
-         :param metaadata: Metadata about the table contents
+         :param metadata: Metadata about the table contents
 
          :return: A string representation of the markdown table
          :rtype: ``str``
