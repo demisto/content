@@ -616,10 +616,10 @@ tasks:
       id: 945fe664-c489-4041-872a-8fa4c096b2be
       version: -1
       name: Domain reputation
-      script: Cisco Umbrella Investigate - Python|||domain
+      script: Cisco Umbrella Investigate|||domain
       type: regular
       iscommand: true
-      brand: Cisco Umbrella Investigate - Python
+      brand: Cisco Umbrella Investigate
     nexttasks:
       '#none#':
       - "21"
