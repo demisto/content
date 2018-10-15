@@ -535,7 +535,7 @@ script:
             md += '### Lastline completed tasks list:' + "\n";
             md += objToMd(jbody.data.tasks);
         } else {
-            md += 'No tasks were completed for the specified time range.';
+            md += 'No tasks were completed during the specified time range.';
         }
         return {
             Type: entryTypes.note,
