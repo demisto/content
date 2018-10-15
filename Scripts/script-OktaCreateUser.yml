@@ -112,4 +112,3 @@ deprecated: true
 dependson:
   must:
   - okta-create-user
-releaseNotes: "-"
