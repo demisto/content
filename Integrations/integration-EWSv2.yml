@@ -1179,7 +1179,7 @@ script:
         return f_entry
 
     # Exchange 2010 fixes
-    def fix_unread_count(**kwargs):
+    def pop_bc_fields(**kwargs):
         if 'target_mailbox' in kwargs and kwargs['target_mailbox']:
             account = get_account(kwargs['target_mailbox'])
         else:
@@ -1189,13 +1189,6 @@ script:
                 if f.name == 'unread_count':
                     Folder.FIELDS.pop(i)
                     break
-
-    def fix_textfield(**kwargs):
-        if 'target_mailbox' in kwargs and kwargs['target_mailbox']:
-            account = get_account(kwargs['target_mailbox'])
-        else:
-            account = get_account(ACCOUNT_EMAIL)
-        if account.protocol.version.build <= EXCHANGE_2010_SP2:
             for i,f in enumerate(Item.FIELDS):
                 if f.name == 'text_field':
                     Item.FIELDS.pop(i)
@@ -1227,8 +1220,7 @@ script:
     try:
         config = prepare()
         args = prepare_args(demisto.args())
-        fix_unread_count(**args)
-        fix_textfield(**args)
+        pop_bc_fields(**args)
 
         if demisto.command() == 'test-module':
             test_module()
