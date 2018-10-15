@@ -1,6 +1,6 @@
-id: Cisco Umbrella Python Test
+id: Cisco Umbrella Test
 version: 28
-name: Cisco Umbrella Python Test
+name: Cisco Umbrella Test
 starttaskid: "0"
 tasks:
   "0":

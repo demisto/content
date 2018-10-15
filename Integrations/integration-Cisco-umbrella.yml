@@ -1,11 +1,11 @@
 commonfields:
-  id: Cisco Umbrella Investigate - Python
+  id: Cisco Umbrella Investigate
   version: -1
-name: Cisco Umbrella Investigate - Python
+name: Cisco Umbrella Investigate
 display: Cisco Umbrella Investigate
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
-description: Cisco Umbrella Investigate - Python
+description: Cisco Umbrella Investigate
 detaileddescription: 'Cisco Investigate is part of the Cisco Umbrella package. When
   you log into the CIsco Umbrella portal you will need to obtain the API Token for
   the Cisco Investigate Feature. '
@@ -112,7 +112,6 @@ script:
     ''' HELPER FUNCTIONS '''
 
     def extract_domain_name(url):
-        # Remove protocol, removes directory after the host name, returns only the host name.
         return url.split("//")[-1].split("/")[0]
 
 
@@ -124,7 +123,7 @@ script:
         if params_dict:
             req_params.update(params_dict)
         url = BASE_URL + api_endpoint
-        LOG('running %s request with url=%s\theaders=%s\nparams=%s\tdata=%s' % (method, url, DEFAULT_HEADERS, json.dumps(req_params), data_list))
+        LOG('running %s request with url=%s\tparams=%s\tdata=%s' % (method, url, json.dumps(req_params), data_list))
         try:
             res = requests.request(
                 method,
@@ -143,23 +142,23 @@ script:
             raise
 
 
-    def string_to_table_header(string):
-        # Checks if string, change underscore to space, capitalize every word. example: "one_two" to "One Two" (title() could work too)
+    def format_string_to_table_header_format(string):
+        # example: "one_two" to "One Two"
         if type(string) in STRING_TYPES:
             return " ".join(word.capitalize() for word in string.replace("_"," ").split())
         else:
             return_error('The key is not a string: {}'.format(string))
 
 
-    def string_to_context_key(string):
-        # Checks if string, removes underscores, capitalize every word. example: "one_two" to "OneTwo" (title() could work too)
+    def format_string_to_context_key_format(string):
+        # example: "one_two" to "OneTwo"
         if type(string) in STRING_TYPES:
             return "".join(word.capitalize() for word in string.split('_'))
         else:
             return_error('The key is not a string: {}'.format(string))
 
 
-    def date_to_ts(date):
+    def date_to_timestamp(date):
         # this helper function tries to parse a date time string according to a specific format
         # if it fails, it will just output the original value
         try:
@@ -176,7 +175,7 @@ script:
         return date
 
 
-    def ts_to_date(ts):
+    def timestamp_to_date(ts):
         if ts:
         # Gets a timestamp (either str or int, either in seconds or milliseconds) and converts it to a date.
             ts = str(ts)
@@ -272,20 +271,15 @@ script:
 
             context[outputPaths['domain']] = domain_context
 
-        # Build Output
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Categorization:', contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -329,7 +323,9 @@ script:
                     'Name': match['name'],
                     'SecurityCategories': security_categories_str if security_categories_str else None,
                     'FirstSeen': match['firstSeen'],
-                    'FirstSeenISO': match['firstSeenISO']
+                    'FirstSeenISO': match['firstSeenISO'],
+                    'FirstSeean': match['firstSeen'],
+                    'FirstSeeanISO': match['firstSeenISO']
                 }
                 if 'Malware' in security_categories_str:
                     domain['Malicious'] = {
@@ -340,21 +336,15 @@ script:
 
             context[outputPaths['domain']] = domain_context
 
-        # Build Output
-        # Send table/context output to war-room
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Search Results:', contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -400,21 +390,15 @@ script:
                     'CoOccurrences': contents
                 }
 
-        # Build Output
-        # Send table/context output to war-room
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Co-occurrences:', contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -455,21 +439,15 @@ script:
                     'Related': contents
                 }
 
-        # Build Output
-        # Send table/context output to war-room
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Related Domains:', contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -510,7 +488,7 @@ script:
             domain_security_context = {}
 
             for key in SECURITY_RESULT_INFO:
-                context_key = SECURITY_RESULT_INFO[key].get('ContextKey', string_to_context_key(SECURITY_RESULT_INFO[key]['Name']))
+                context_key = SECURITY_RESULT_INFO[key].get('ContextKey', format_string_to_context_key_format(SECURITY_RESULT_INFO[key]['Name']))
                 domain_security_context[context_key] = res[key]
 
             if domain_security_context:
@@ -523,21 +501,15 @@ script:
                     'Security': domain_security_context
                 }
 
-        # Build Output
-        # Send table/context output to war-room
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Domain Security Info:', contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -566,8 +538,8 @@ script:
             dns_history_context = {}
 
             for feature in features:
-                table_key = string_to_table_header(feature)
-                context_key = string_to_context_key(feature)
+                table_key = format_string_to_table_header_format(feature)
+                context_key = format_string_to_context_key_format(feature)
                 value = features.get(feature, '')
                 dns_history_context[context_key] = value
                 if feature in ('locations'):
@@ -586,21 +558,15 @@ script:
                 'DNSHistory': dns_history_context
             }
 
-        # Build Output
-        # Send table/context output to war-room
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('DNS History:', contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -647,9 +613,9 @@ script:
             features_contents = {}
             features_context = {}
             for key in IP_DNS_FEATURE_INFO:
-                table_key = string_to_table_header(key)
+                table_key = format_string_to_table_header_format(key)
                 features_contents[IP_DNS_FEATURE_INFO[key]] = features[key]
-                context_key = string_to_context_key(key)
+                context_key = format_string_to_context_key_format(key)
                 features_context[context_key] = features[key]
 
             context[outputPaths['ip']] = {
@@ -660,21 +626,15 @@ script:
                 }
             }
 
-        # Build Output
-        # Send table/context output to war-room
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': [response_contents, features_contents],
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('RRS:', response_contents, headers) + tableToMarkdown('Features:', features_contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -723,21 +683,15 @@ script:
                 context[outputPaths['domain']] = contents
                 context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = context_dbotscore
 
-        # Build Output
-        # Send table/context output to war-room
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Malicious Domains:', contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -772,7 +726,7 @@ script:
         whois = {
             'Name': whois['domainName'],
             'Registrar Name': whois['registrantName'],
-            'Last Retrieved': ts_to_date(whois['timeOfLatestRealtimeCheck']),
+            'Last Retrieved': timestamp_to_date(whois['timeOfLatestRealtimeCheck']),
             'Created': whois['created'],
             'Updated': whois['updated'],
             'Expires': whois['expires'],
@@ -832,27 +786,20 @@ script:
                 'Description': 'Malicious domain found with risk score -1'
             }
 
-        # Build Output
-        # Send table/context output to war-room
         # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
         results.append ({
-        # type
         'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Reputation for: ' + domain, contents, headers) +
             tableToMarkdown('Umbrella Investigate WHOIS Record Data for: ' + domain, whois, headers) +
             tableToMarkdown('Name Servers:', { 'Name Servers': name_servers }, headers) +
             tableToMarkdown('Emails:', { 'Emails': emails }, headers) +
             tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
-            # context
             'EntryContext': context
         })
 
-        # Send table/context output to war-room
         return results
 
 
@@ -900,20 +847,15 @@ script:
                             'Domain': domain
                         }
 
-        # Build Output
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': [contents_related_domains, contents_co_occurences],
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate Related Domains for a Domain: ', contents_related_domains, headers) + co_occurences_md,
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -959,20 +901,15 @@ script:
                     'Domain': domain
                 }
 
-        # Build Output
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Classifiers: ' + domain, contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
@@ -1019,44 +956,39 @@ script:
             for query in queries:
                 contents.append({
                     'Queries': query,
-                    'Query Hour': ts_to_date(query_ts)
+                    'Query Hour': timestamp_to_date(query_ts)
                 })
                 queries_context.append({
                     'Queries': query,
-                    'QueryHour': ts_to_date(query_ts)
+                    'QueryHour': timestamp_to_date(query_ts)
                 })
                 query_ts = query_ts + 3600
 
             context['Umbrella.QueryVolume(val.Domain && val.Domain == obj.Domain)'] = {
                 'Domain': domain,
                 'Data': {
-                    'StartDate': ts_to_date(start_date),
-                    'StopDate': ts_to_date(stop_date),
+                    'StartDate': timestamp_to_date(start_date),
+                    'StopDate': timestamp_to_date(stop_date),
                     'QueriesInfo': queries_context
                 }
             }
 
-        # Build Output
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Volume: ' + domain + '\nStart Date ' + ts_to_date(start_date) + ' - Stop Date ' + ts_to_date(stop_date), contents, headers),
-            # context
+            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Volume: ' + domain + '\nStart Date ' + timestamp_to_date(start_date) + ' - Stop Date ' + timestamp_to_date(stop_date), contents, headers),
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
 
     def get_domain_query_volume(domain, start_date_string, stop_date_string, match):
         # user input conversion
-        start_ts = date_to_ts(start_date_string)
-        stop_ts = date_to_ts(stop_date_string)
+        start_ts = date_to_timestamp(start_date_string)
+        stop_ts = date_to_timestamp(stop_date_string)
 
         # Build & Send request
         params = {
@@ -1100,7 +1032,7 @@ script:
             domain_security_context = {}
 
             for key in SECURITY_RESULT_INFO:
-                context_key = SECURITY_RESULT_INFO[key].get('ContextKey', string_to_context_key(SECURITY_RESULT_INFO[key]['Name']))
+                context_key = SECURITY_RESULT_INFO[key].get('ContextKey', format_string_to_context_key_format(SECURITY_RESULT_INFO[key]['Name']))
                 domain_security_context[context_key] = res[key]
 
             if domain_security_context:
@@ -1124,20 +1056,15 @@ script:
                             'Description': 'Malicious domain found via get_domain_security'
                         }
 
-        # Build Output
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Reputation: ' + domain, contents, headers),
-            # context
             'EntryContext': context
         })
-        # Send table/context output to war-room
+
         return results
 
     def get_domain_details(domain):
@@ -1217,20 +1144,16 @@ script:
                 'Email': email,
                 'Data': emails_context
             }
+
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': markdown,
-            # context
             'EntryContext': context
         })
 
-        # Send Entry
         return results
 
 
@@ -1336,18 +1259,14 @@ script:
             }
 
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': markdown,
-            # context
             'EntryContext': context
         })
-        # Send entries
+
         return results
 
 
@@ -1415,7 +1334,7 @@ script:
             table_domain = {
                 'Name': domain['Name'],
                 'Registrar Name': domain['RegistrarName'],
-                'Last Retrieved': ts_to_date(domain['LastRetrieved']),
+                'Last Retrieved': timestamp_to_date(domain['LastRetrieved']),
                 'Created': domain['Created'],
                 'Updated': domain['Updated'],
                 'Expires': domain['Expires'],
@@ -1436,15 +1355,11 @@ script:
             }
 
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': [table_domain, contents_nameserver, contents_email],
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate WHOIS Record Data for: ' + domain['Name'], table_domain, headers) + tableToMarkdown('Nameservers: ', contents_nameserver, headers) + tableToMarkdown('Email Addresses: ', contents_email, headers),
-            # context
             'EntryContext': context
         })
 
@@ -1514,17 +1429,14 @@ script:
             context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = context_dbotscore
 
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate Malicious Domains for an IP: ' + ip, contents, headers),
-            # context
             'EntryContext': context
         })
+
         return results
 
 
@@ -1547,8 +1459,8 @@ script:
         title_contents = []
         # Get vars
         regex = demisto.args()['expression']
-        start = date_to_ts(demisto.args()['start'])
-        stop = date_to_ts(demisto.args().get('stop'))
+        start = date_to_timestamp(demisto.args()['start'])
+        stop = date_to_timestamp(demisto.args().get('stop'))
         is_include_category = bool(strtobool(demisto.args().get('includeCategory')))
         limit = demisto.args().get('limit')
         node_type = demisto.args().get('type')
@@ -1583,17 +1495,14 @@ script:
             }
 
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': [title_contents, contents],
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Pattern Search for: ' + regex, title_contents, headers) + tableToMarkdown('Matches: ', contents, headers),
-            # context
             'EntryContext': context
         })
+
         return results
 
 
@@ -1637,13 +1546,13 @@ script:
                     'Malware Categories': item['categories'],
                     'Attacks': item['attacks'],
                     'Threat Types': item['threatTypes'],
-                    'Timestamp': ts_to_date(item['timestamp']),
+                    'Timestamp': timestamp_to_date(item['timestamp']),
                 })
                 timeline_context.append({
                     'MalwareCategories': item['categories'],
                     'Attacks': item['attacks'],
                     'ThreatTypes': item['threatTypes'],
-                    'Timestamp': ts_to_date(item['timestamp']),
+                    'Timestamp': timestamp_to_date(item['timestamp']),
                 })
 
             context['Umbrella.Timeline(val.Domain && val.Domain == obj.Domain)'] = {
@@ -1652,17 +1561,14 @@ script:
             }
 
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Timeline: ' + domain, contents, headers),
-            # context
             'EntryContext': context
         })
+
         return results
 
 
@@ -1698,13 +1604,13 @@ script:
                     'Malware Categories': item['categories'],
                     'Attacks': item['attacks'],
                     'Threat Types': item['threatTypes'],
-                    'Timestamp': ts_to_date(item['timestamp']),
+                    'Timestamp': timestamp_to_date(item['timestamp']),
                 })
                 timeline_context.append({
                     'MalwareCategories': item['categories'],
                     'Attacks': item['attacks'],
                     'ThreatTypes': item['threatTypes'],
-                    'Timestamp': ts_to_date(item['timestamp']),
+                    'Timestamp': timestamp_to_date(item['timestamp']),
                 })
 
             context['Umbrella.Timeline(val.IP && val.IP == obj.IP)'] = {
@@ -1713,17 +1619,14 @@ script:
             }
 
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate IP Timeline: ' + ip, contents, headers),
-            # context
             'EntryContext': context
         })
+
         return results
 
 
@@ -1759,13 +1662,13 @@ script:
                     'Malware Categories': item['categories'],
                     'Attacks': item['attacks'],
                     'Threat Types': item['threatTypes'],
-                    'Timestamp': ts_to_date(item['timestamp']),
+                    'Timestamp': timestamp_to_date(item['timestamp']),
                 })
                 timeline_context.append({
                     'MalwareCategories': item['categories'],
                     'Attacks': item['attacks'],
                     'ThreatTypes': item['threatTypes'],
-                    'Timestamp': ts_to_date(item['timestamp']),
+                    'Timestamp': timestamp_to_date(item['timestamp']),
                 })
 
             context['Umbrella.Timeline(val.URL && val.URL == obj.URL)'] = {
@@ -1774,17 +1677,14 @@ script:
             }
 
         results.append ({
-            # type
             'Type': entryTypes['note'],
-            # contents
             'ContentsFormat': formats['json'],
             'Contents': contents,
-            # human-readable
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Umbrella Investigate URL Timeline: ' + url, contents, headers),
-            # context
             'EntryContext': context
         })
+
         return results
 
     def get_url_timeline(url):
@@ -2256,25 +2156,25 @@ script:
       description: Resource record owner
     - contextPath: IP.DNSHistory.RRS.TTL
       description: Time to live for this record
-    - contextPath: IP.DNSHistory.Feature.RrCount
+    - contextPath: IP.DNSHistory.Features.RrCount
       description: Number of records of that type mapping to the given IP
-    - contextPath: IP.DNSHistory.Feature.Ld2Count
+    - contextPath: IP.DNSHistory.Features.Ld2Count
       description: Number of 2-level names mapping to the given IP
-    - contextPath: IP.DNSHistory.Feature.Ld3Count
+    - contextPath: IP.DNSHistory.Features.Ld3Count
       description: Number of 3-level names mapping to the given IP
-    - contextPath: IP.DNSHistory.Feature.Ld21Count
+    - contextPath: IP.DNSHistory.Features.Ld21Count
       description: Number of 2-level names, without the TLD, mapping to the given
         IP
-    - contextPath: IP.DNSHistory.Feature.Ld22Count
+    - contextPath: IP.DNSHistory.Features.Ld22Count
       description: Number of 3-level names, without the TLD, mapping to the given
         IP
-    - contextPath: IP.DNSHistory.Feature.DivLd2
+    - contextPath: IP.DNSHistory.Features.DivLd2
       description: ld2_count divided by the number of records
-    - contextPath: IP.DNSHistory.Feature.DivLd3
+    - contextPath: IP.DNSHistory.Features.DivLd3
       description: ld3_count divided by the number of records
-    - contextPath: IP.DNSHistory.Feature.DivLd21
+    - contextPath: IP.DNSHistory.Features.DivLd21
       description: ld2_1_count divided by the number of records
-    - contextPath: IP.DNSHistory.Feature.DivLd22
+    - contextPath: IP.DNSHistory.Features.DivLd22
       description: ld2_2_count divided by the number of records
     description: The DNS database can be used to query the history that Umbrella has
       seen for a given IP address. The most common use case is to obtain the DNS Resource
@@ -2388,12 +2288,15 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Domain name
+      type: string
     - contextPath: Domain.FirstSeen
       description: First seen time in Epoch format
+      type: string
     - contextPath: Domain.FirstSeenISO
       description: First seen time in ISO format
     - contextPath: Domain. SecurityCategories
       description: Matching Umbrella Security Categories
+      type: string
     description: This produces a list of matching domains based on a regular expression.
       You could use this for domain squatting. The pattern search functionality in
       Investigate uses regular expressions (RegEx) to search against the Investigate
