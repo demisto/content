@@ -142,10 +142,6 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
                 if playbook_name in playbook_ids:
                     tests.append(data_dict.get('id'))
 
-                brand_name = task_details.get('brand', '')
-                if brand_name in intergration_ids:
-                    tests.append(data_dict.get('id'))
-
     return tests
 
 
@@ -161,12 +157,12 @@ def find_tests_for_modified_files(modified_files):
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
             intergration_ids.append(get_script_or_integration_id(file_path))
 
-    return collect_tests(script_ids, playbook_ids, intergration_ids)
+    return collect_tests(script_ids, playbook_ids), intergration_ids
 
 
 def get_test_list(modified_files, modified_tests_list, all_tests):
     """Create a test list that should run"""
-    tests = find_tests_for_modified_files(modified_files)
+    tests, integrations = find_tests_for_modified_files(modified_files)
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
@@ -176,10 +172,7 @@ def get_test_list(modified_files, modified_tests_list, all_tests):
     if all_tests:
         tests.append("Run all tests")
 
-    if not tests:
-        tests = ['None']
-
-    return tests
+    return tests, integrations
 
 
 def create_test_file():
@@ -190,21 +183,30 @@ def create_test_file():
 
     print("Getting changed files from the branch: {0}".format(branch_name))
     tests_string = ''
+    integrations_string = ''
     if branch_name != 'master':
         files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
 
         modified_files, modified_tests_list, all_tests = get_modified_files(files_string)
+        tests, integrations = get_test_list(modified_files, modified_tests_list, all_tests)
 
-        tests = get_test_list(modified_files, modified_tests_list, all_tests)
         tests_string = '\n'.join(tests)
-        if tests_string != 'None':
-            print('Collected the following tests:\n{0}'.format(tests_string))
+        integrations_string = '\n'.join(integrations)
+        if tests != 'None' or integrations != 'None':
+            if tests != 'None':
+                print('Collected the following tests:\n{0}'.format(tests_string))
+            if integrations != 'None':
+                print('Collected the following integrations:\n{0}'.format(integrations_string))
         else:
             print('No filter configured, not running any tests')
 
     print("Creating filter_file.txt")
     with open("./Tests/filter_file.txt", "w") as filter_file:
         filter_file.write(tests_string)
+
+    print("Creating filter_file.txt")
+    with open("./Tests/integrations_file.txt", "w") as integrations_file:
+        integrations_file.write(integrations_string)
 
 
 if __name__ == "__main__":

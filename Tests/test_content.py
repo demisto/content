@@ -14,6 +14,7 @@ from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
 RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
+INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -169,8 +170,8 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
             }
 
 
-def collect_integrations(integrations_conf, is_filter_configured,
-                         skipped_integration, skipped_integrations_conf):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf,
+                         is_integration_filter_configured, filterd_integrations):
     integrations = []
     has_skipped_integration = False
     for integration in integrations_conf:
@@ -182,6 +183,9 @@ def collect_integrations(integrations_conf, is_filter_configured,
 
                 has_skipped_integration = True
                 break
+
+            if is_integration_filter_configured and name not in filterd_integrations:
+                has_skipped_integration = True
 
             # dict description
             integrations.append({
@@ -196,6 +200,9 @@ def collect_integrations(integrations_conf, is_filter_configured,
 
                 has_skipped_integration = True
                 break
+
+            if is_integration_filter_configured and integration not in filterd_integrations:
+                has_skipped_integration = True
 
             # string description
             integrations.append({
@@ -215,6 +222,15 @@ def extract_filtered_tests():
         run_all = True if RUN_ALL_TESTS in filterd_tests else False
 
     return filterd_tests, is_filter_configured, run_all
+
+
+def extract_filtered_integrations():
+    with open(INTEGRATIONS_CONF, 'r') as integrations_file:
+        filterd_integrations = integrations_file.readlines()
+        filterd_integrations = [line.strip('\n') for line in filterd_integrations]
+        is_integration_filter_configured = True if filterd_integrations else False
+
+    return filterd_integrations, is_integration_filter_configured
 
 
 def generate_demisto_api_key(c):
@@ -275,6 +291,8 @@ def main():
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
+    filterd_integrations, is_integration_filter_configured = extract_filtered_integrations()
+
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
         return
@@ -301,7 +319,7 @@ def main():
 
         has_skipped_integration, integrations = collect_integrations(
             integrations_conf, is_filter_configured, skipped_integration,
-            skipped_integrations_conf)
+            skipped_integrations_conf, is_integration_filter_configured, filterd_integrations)
 
         # Skip nightly test
         if not(is_filter_configured and playbook_id in filterd_tests):
@@ -336,6 +354,7 @@ def main():
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
     os.remove(FILTER_CONF)
+    os.remove(INTEGRATIONS_CONF)
 
     if len(failed_playbooks):
         sys.exit(1)
