@@ -1,5 +1,5 @@
 id: Cisco Umbrella Test
-version: 28
+version: 32
 name: Cisco Umbrella Test
 starttaskid: "0"
 tasks:
@@ -15,26 +15,25 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "50"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -100
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 730f814e-53e4-4dfd-8671-21cfa5b6862c
-    type: regular
+    taskid: 94933409-63ba-4d65-8aa4-e5367e39d51a
+    type: title
     task:
-      id: 730f814e-53e4-4dfd-8671-21cfa5b6862c
+      id: 94933409-63ba-4d65-8aa4-e5367e39d51a
       version: -1
-      name: Delete Context before legacy commands
-      scriptName: DeleteContext
-      type: regular
+      name: Legacy Commands
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
@@ -45,13 +44,6 @@ tasks:
       - "5"
       - "6"
       - "7"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -522,19 +514,19 @@ tasks:
     note: false
   "17":
     id: "17"
-    taskid: cff184e6-d445-45e4-8676-43bc290bc266
+    taskid: b3c5c772-d08a-4e3a-8743-ed99c4d04a8c
     type: regular
     task:
-      id: cff184e6-d445-45e4-8676-43bc290bc266
+      id: b3c5c772-d08a-4e3a-8743-ed99c4d04a8c
       version: -1
-      name: Delete context before new commands
+      name: Delete Context
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "51"
     scriptarguments:
       all:
         simple: "yes"
@@ -641,7 +633,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2080
+          "y": 2190
         }
       }
     note: false
@@ -675,7 +667,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2260
+          "y": 2350
         }
       }
     note: false
@@ -711,7 +703,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2440
+          "y": 2550
         }
       }
     note: false
@@ -740,7 +732,7 @@ tasks:
       {
         "position": {
           "x": -1580,
-          "y": 2640
+          "y": 2750
         }
       }
     note: false
@@ -767,7 +759,7 @@ tasks:
       {
         "position": {
           "x": -830,
-          "y": 2640
+          "y": 2750
         }
       }
     note: false
@@ -800,7 +792,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 2640
+          "y": 2750
         }
       }
     note: false
@@ -827,7 +819,7 @@ tasks:
       {
         "position": {
           "x": 1050,
-          "y": 2640
+          "y": 2750
         }
       }
     note: false
@@ -857,7 +849,7 @@ tasks:
       {
         "position": {
           "x": 1850,
-          "y": 2640
+          "y": 2750
         }
       }
     note: false
@@ -889,7 +881,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": 2640
+          "y": 2750
         }
       }
     note: false
@@ -925,7 +917,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 3220
+          "y": 3330
         }
       }
     note: false
@@ -959,7 +951,7 @@ tasks:
       {
         "position": {
           "x": -1580,
-          "y": 2860
+          "y": 2970
         }
       }
     note: false
@@ -993,7 +985,7 @@ tasks:
       {
         "position": {
           "x": -830,
-          "y": 2860
+          "y": 2970
         }
       }
     note: false
@@ -1027,7 +1019,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 2860
+          "y": 2970
         }
       }
     note: false
@@ -1061,7 +1053,7 @@ tasks:
       {
         "position": {
           "x": 1050,
-          "y": 2860
+          "y": 2970
         }
       }
     note: false
@@ -1095,7 +1087,7 @@ tasks:
       {
         "position": {
           "x": 1850,
-          "y": 2860
+          "y": 2970
         }
       }
     note: false
@@ -1137,7 +1129,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": 2860
+          "y": 2970
         }
       }
     note: false
@@ -1164,7 +1156,7 @@ tasks:
       {
         "position": {
           "x": -1580,
-          "y": 3470
+          "y": 3580
         }
       }
     note: false
@@ -1191,7 +1183,7 @@ tasks:
       {
         "position": {
           "x": -840,
-          "y": 3470
+          "y": 3580
         }
       }
     note: false
@@ -1226,7 +1218,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 3470
+          "y": 3580
         }
       }
     note: false
@@ -1253,7 +1245,7 @@ tasks:
       {
         "position": {
           "x": 1050,
-          "y": 3470
+          "y": 3580
         }
       }
     note: false
@@ -1280,7 +1272,7 @@ tasks:
       {
         "position": {
           "x": 1850,
-          "y": 3470
+          "y": 3580
         }
       }
     note: false
@@ -1307,7 +1299,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": 3470
+          "y": 3580
         }
       }
     note: false
@@ -1341,7 +1333,7 @@ tasks:
       {
         "position": {
           "x": -1580,
-          "y": 3670
+          "y": 3780
         }
       }
     note: false
@@ -1360,8 +1352,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 4200
+          "x": 420,
+          "y": 4310
         }
       }
     note: false
@@ -1419,7 +1411,7 @@ tasks:
       {
         "position": {
           "x": -840,
-          "y": 3660
+          "y": 3770
         }
       }
     note: false
@@ -1461,7 +1453,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 3660
+          "y": 3770
         }
       }
     note: false
@@ -1511,7 +1503,7 @@ tasks:
       {
         "position": {
           "x": 1050,
-          "y": 3660
+          "y": 3770
         }
       }
     note: false
@@ -1545,7 +1537,7 @@ tasks:
       {
         "position": {
           "x": 1850,
-          "y": 3660
+          "y": 3770
         }
       }
     note: false
@@ -1579,7 +1571,61 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": 3670
+          "y": 3780
+        }
+      }
+    note: false
+  "50":
+    id: "50"
+    taskid: e74b3428-3806-4c0a-8b1f-f40f8d5482aa
+    type: regular
+    task:
+      id: e74b3428-3806-4c0a-8b1f-f40f8d5482aa
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+  "51":
+    id: "51"
+    taskid: 22f9139f-0392-4361-8390-ee971418f696
+    type: title
+    task:
+      id: 22f9139f-0392-4361-8390-ee971418f696
+      version: -1
+      name: New Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2070
         }
       }
     note: false
@@ -1588,10 +1634,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4215,
+        "height": 4475,
         "width": 4490,
         "x": -1580,
-        "y": 50
+        "y": -100
       }
     }
   }
