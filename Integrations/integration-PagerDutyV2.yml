@@ -731,4 +731,6 @@ script:
       type: string
     description: Get the users notification rules
   runonce: false
-releaseNotes: "Fixed integration errors."
+hidden: false
+tests:
+  - PagerDuty Test

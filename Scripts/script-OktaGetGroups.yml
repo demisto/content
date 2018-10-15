@@ -31,4 +31,3 @@ deprecated: true
 dependson:
   must:
   - okta-get-groups
-releaseNotes: "-"
