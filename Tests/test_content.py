@@ -12,8 +12,8 @@ from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
 
+RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
-
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -212,8 +212,9 @@ def extract_filtered_tests():
         filterd_tests = filter_file.readlines()
         filterd_tests = [line.strip('\n') for line in filterd_tests]
         is_filter_configured = True if filterd_tests else False
+        run_all = True if RUN_ALL_TESTS in filterd_tests else False
 
-    return filterd_tests, is_filter_configured
+    return filterd_tests, is_filter_configured, run_all
 
 
 def generate_demisto_api_key(c):
@@ -270,8 +271,8 @@ def main():
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filterd_tests, is_filter_configured = extract_filtered_tests()
-    if is_filter_configured:
+    filterd_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
+    if is_filter_configured and not run_all_tests:
         is_nightly = True
 
     if not tests or len(tests) is 0:
@@ -286,7 +287,7 @@ def main():
         playbook_id = t['playbookID']
         nightly_test = t.get('nightly', False)
         integrations_conf = t.get('integrations', [])
-        skip_test = True if nightly_test and not is_nightly else False
+        skip_nightly_test = True if nightly_test and not is_nightly else False
 
         test_message = 'playbook: ' + playbook_id
 
@@ -303,12 +304,13 @@ def main():
             skipped_integrations_conf)
 
         # Skip nightly test
-        if skip_test:
-            print '------ Test %s start ------' % (test_message, )
-            print 'Skip test'
-            print '------ Test %s end ------' % (test_message,)
+        if not(is_filter_configured and playbook_id in filterd_tests):
+            if skip_nightly_test:
+                print '------ Test %s start ------' % (test_message, )
+                print 'Skip test'
+                print '------ Test %s end ------' % (test_message,)
 
-            continue
+                continue
 
         # Skip filtered test
         if is_filter_configured and playbook_id not in filterd_tests:
