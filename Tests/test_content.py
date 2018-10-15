@@ -294,7 +294,6 @@ def main():
         is_nightly = True
 
     filterd_integrations, is_integration_filter_configured = extract_filtered_integrations()
-    is_filter = True if is_integration_filter_configured or is_filter_configured else False
 
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
@@ -324,14 +323,6 @@ def main():
             integrations_conf, skipped_integration, skipped_integrations_conf,
             is_integration_filter_configured, filterd_integrations)
 
-        # Skip nightly test
-        if skip_nightly_test:
-            print '------ Test %s start ------' % (test_message, )
-            print 'Skip test'
-            print '------ Test %s end ------' % (test_message,)
-
-            continue
-
         # Skip filtered test
         if is_filter_configured and playbook_id not in filterd_tests:
             continue
@@ -347,6 +338,14 @@ def main():
 
         # Skip no integrations needed if on filter mode
         if not integrations and is_integration_filter_configured:
+            continue
+
+        # Skip nightly test
+        if skip_nightly_test:
+            print '------ Test %s start ------' % (test_message,)
+            print 'Skip test'
+            print '------ Test %s end ------' % (test_message,)
+
             continue
 
         set_integration_params(demisto_api_key, integrations, secret_params)
