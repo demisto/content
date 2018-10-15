@@ -322,7 +322,8 @@ def main():
             is_integration_filter_configured, filterd_integrations)
 
         # Skip nightly test
-        if not(is_filter_configured and playbook_id in filterd_tests):
+        if not((is_filter_configured and playbook_id in filterd_tests) or
+               (is_integration_filter_configured and not has_skipped_integration)):
             if skip_nightly_test:
                 print '------ Test %s start ------' % (test_message, )
                 print 'Skip test'
