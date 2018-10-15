@@ -586,7 +586,6 @@ script:
         return uriSuffix;
 
     def detonate(submitType ,sample, timeout, report_type, threshold, fileName):
-        sys.exit(0)
         result = file_upload(submitType, sample, fileName)
         taskId = result['taskId']
         uploadData = result['resultObj']['results'][0]
@@ -606,33 +605,40 @@ script:
 
     def return_report(uriSuffix, taskId, report_type, uploadData, status, threshold):
 
-        res = get_report(uriSuffix, taskId, report_type, uploadData, status, threshold)
+        current_status = check_task_status_by_taskId([taskId])['status']
 
-        if report_type == 'json':
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': res['content'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': res['md'],
-                'EntryContext': res['ec']
-            })
-
-        elif report_type == 'pdf' or report_type == 'zip':
-            file_type = entryTypes['entryInfoFile']
-            result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'InfoFile' in the context.
-            result['EntryContext'] = res['ec']
-            demisto.results(result)
-
-
-        elif report_type == 'sample':
-            # used to retrieve a sample from McAfee ATD to demisto
-            file_type = entryTypes['file']
-            result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'File' in the context, can be farther investigated.
-            demisto.results(result)
+        if (current_status != 'Completed'):
+            demisto.results('Please wait in order to download the report, the sample is still being analyzed.')
 
         else:
-            demisto.results(res)
+            res = get_report(uriSuffix, taskId, report_type, uploadData, status, threshold)
+
+            if report_type == 'json':
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': res['content'],
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': res['md'],
+                    'EntryContext': res['ec']
+                })
+
+            elif report_type == 'pdf' or report_type == 'zip':
+                file_type = entryTypes['entryInfoFile']
+                result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'InfoFile' in the context.
+                result['EntryContext'] = res['ec']
+                demisto.results(result)
+
+
+            elif report_type == 'sample':
+                # used to retrieve a sample from McAfee ATD to demisto
+                file_type = entryTypes['file']
+                result = fileResult(res['filename'], res['content'], file_type) # will be saved under 'File' in the context, can be farther investigated.
+                demisto.results(result)
+
+            else:
+                demisto.results(res)
+
 
     def logout():
         res = http_request('/php/session.php','delete', API_HEADERS)
@@ -1210,4 +1216,6 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "Fix proxy handling"
+releaseNotes: "Handle errors gracefully"
+tests:
+- Test Playbook McAfee ATD
