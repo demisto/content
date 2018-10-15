@@ -98,28 +98,14 @@ def get_modified_files(files_string):
 
 def collect_ids(file_path):
     """Collect tests mentioned in file_path"""
-    data_dictionary = None
-
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
-            try:
-                data_dictionary = yaml.safe_load(f)
-            except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return []
+    data_dictionary = get_json(file_path)
 
     if data_dictionary:
         return data_dictionary.get('id', ['-', ])
 
 
-def get_script_id(file_path):
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
-            try:
-                data_dictionary = yaml.safe_load(f)
-            except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return []
+def get_script_or_integration_id(file_path):
+    data_dictionary = get_json(file_path)
 
     if data_dictionary:
         commonfields = data_dictionary.get('commonfields', {})
@@ -127,6 +113,7 @@ def get_script_id(file_path):
 
 
 def get_json(file_path):
+    data_dictionary = None
     with open(os.path.expanduser(file_path), "r") as f:
         if file_path.endswith(".yaml") or file_path.endswith('.yml'):
             try:
@@ -161,17 +148,18 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
 
     return tests
 
+
 def find_tests_for_modified_files(modified_files):
     script_ids = []
     playbook_ids = []
     intergration_ids = []
     for file_path in modified_files:
         if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
-            script_ids.append(get_script_id(file_path))
+            script_ids.append(get_script_or_integration_id(file_path))
         elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             playbook_ids.append(collect_ids(file_path))
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            intergration_ids.append(collect_ids(file_path))
+            intergration_ids.append(get_script_or_integration_id(file_path))
 
     return collect_tests(script_ids, playbook_ids, intergration_ids)
 
