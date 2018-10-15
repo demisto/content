@@ -1,5 +1,5 @@
 id: 3da2e31b-f114-4d7f-8702-117f3b498de9
-version: 12
+version: 14
 name: AWS - CloudTrail Test Playbook
 starttaskid: "0"
 tasks:
@@ -245,17 +245,17 @@ tasks:
     note: false
   "20":
     id: "20"
-    taskid: d355f6fb-2c96-43b1-88e6-06f41db48ba9
+    taskid: d88ee670-7619-4de6-83f3-ad7a73f06741
     type: regular
     task:
-      id: d355f6fb-2c96-43b1-88e6-06f41db48ba9
+      id: d88ee670-7619-4de6-83f3-ad7a73f06741
       version: -1
       name: aws-cloudgtrail-lookup-events
       description: Looks up API activity events captured by CloudTrail that create,
         update, or delete resources in your account. Events for a region can be looked
         up for the times in which you had CloudTrail turned on in that region during
         the last seven days.
-      script: AWS - CloudTrail|||aws-cloudgtrail-lookup-events
+      script: AWS - CloudTrail|||aws-cloudtrail-lookup-events
       type: regular
       iscommand: true
       brand: AWS - CloudTrail
@@ -268,6 +268,10 @@ tasks:
       attributeValue:
         simple: StartLogging
       endTime: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
       startTime: {}
     separatecontext: false
     view: |-
