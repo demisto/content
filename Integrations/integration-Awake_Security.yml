@@ -335,7 +335,7 @@ script:
 
         humanReadable = displayTable(contents, humanReadableFields)
 
-        returnResults(contents, humanReadable)
+        returnResults(contents, humanReadable, None)
 
     def queryDevices():
         contents = query("devices")
@@ -356,7 +356,7 @@ script:
 
         humanReadable = displayTable(contents, humanReadableFields)
 
-        returnResults(contents, humanReadable)
+        returnResults(contents, humanReadable, None)
 
     def queryDomains():
         contents = query("domains")
@@ -378,7 +378,7 @@ script:
 
         humanReadable = displayTable(contents, humanReadableFields)
 
-        returnResults(contents, humanReadable)
+        returnResults(contents, humanReadable, None)
 
     def pcapDownload():
         slurp(["monitoringPointID"])
