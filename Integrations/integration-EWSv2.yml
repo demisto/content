@@ -1101,7 +1101,7 @@ script:
         if change_key:
             payload += '<t:FolderId Id="{}" ChangeKey="{}"></t:FolderId>'.format(folder_id, change_key)
         elif folder_id:
-            '<t:FolderId Id="{}"></t:FolderId>'.format(folder_id)
+            payload += '<t:FolderId Id="{}"></t:FolderId>'.format(folder_id)
         else:
             payload += '''<t:DistinguishedFolderId Id="inbox">
                 <t:Mailbox>
