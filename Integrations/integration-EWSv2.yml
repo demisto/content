@@ -767,18 +767,18 @@ script:
                     'attachmentId': a['attachment_id']['id'],
                     'attachmentName': a['name'],
                     'attachmentSHA256': None,
-                    'attachmentContentType': a['content_type'] if 'content_type' in a else 'application/octet-stream',
+                    'attachmentContentType': a['content_type'] if 'content_type' in a else None,
                     'attachmentContentId': a['content_id'] if 'content_id' in a else None,
                     'attachmentContentLocation': a['content_location'] if 'content_location' in a else None,
-                    'attachmentSize': a['size'],
-                    'attachmentLastModifiedTime': a['last_modified_time'],
+                    'attachmentSize': int(a['size']),
+                    'attachmentLastModifiedTime': a['last_modified_time'] + '+00:00',
                     'attachmentIsInline': a['is_inline'] if 'is_inline' in a else False,
                     'attachmentType': None
                 }
                 for a_entry in attachments_dict:
                     if a_entry['Id'] == attachment['attachmentId']:
                         attachment['attachmentSHA256'] = hashlib.sha256(a_entry['Content']).hexdigest() if a_entry['Content'] else None
-                        attachment['attachmentType'] = a_entry['Type']
+                        attachment['attachmentType'] = 'FileAttachment' if a_entry['Type'] == 'file' else 'ItemAttachment'
                         break
                 atts.append(attachment)
             return atts
@@ -792,7 +792,7 @@ script:
         d['headers'] = map(lambda x: {'name': x['header_name'], 'value': x['text']}, d['internet_message_headers']['internet_message_header'])
         del d['internet_message_headers']
 
-        d['text_body'] = d['text_body']['text'] if 'text_body' in d and 'text' in d['text_body'] else None
+        d['text_body'] = d['text_body']['text'] if 'text_body' in d and 'text' in d['text_body'] else ""
         if d['body']['body_type'] == 'Text':
             d['text_body'] = d['body']['text']
         d['body'] = d['body']['text']
@@ -829,8 +829,19 @@ script:
         if attachments_dict:
             d['attachments'] = fallback_parse_attachments(d, attachments_dict)
 
+        if 'at_all_mention' in d:
+            del d['at_all_mention']
+        del d['response_objects']
+        del d['instance_key']
+        del d['entity_extraction_result']
+        del d['flag']
+        del d['display_cc']
+        d['size'] = int(d['size'])
+        d['unique_body'] = d['unique_body']['text']
+
+
         # DEBUG
-        dj = json.dumps(d, indent=4, separators=(',', ': '))
+        #dj = json.dumps(d, indent=4, separators=(',', ': '))
         #demisto.results(dj)
         return d
 
@@ -1039,7 +1050,7 @@ script:
 
 
     def fallback_fetch_emails_as_incidents():
-        demisto.info('#################### FETCHING') # DEBUG
+        #demisto.info('#################### FETCHING') # DEBUG
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
         last_run_time = last_run[LAST_RUN_TIME] if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] else (start_time - timedelta(minutes=10)).ewsformat()
@@ -1105,7 +1116,7 @@ script:
         raw = fallback_send_request(payload)
 
         messages = raw.findall(".//t:Message", FALLBACK_NS)
-        demisto.info('{} incident{}'.format(len(messages), 's' if len(messages) != 1 else '')) # DEBUG
+        #demisto.info('{} incident{}'.format(len(messages), 's' if len(messages) != 1 else '')) # DEBUG
         if not messages:
             return []
         item_ids = map(lambda x: x.find("./t:ItemId", FALLBACK_NS).attrib['Id'], messages)
@@ -1227,7 +1238,7 @@ script:
             ERROR_COUNTER: 0
         })
 
-        demisto.info('#################### {}'.format(len(incidents))) # FOR DEBUG
+        #demisto.info('#################### {}'.format(len(incidents))) # FOR DEBUG
         #demisto.info(str(incidents)) # FOR DEBUG
         return incidents
 
