@@ -158,7 +158,10 @@ script:
 
     # Fallback constants
     FALLBACK_REQUEST_HEADERS = {'Content-Type': "text/xml; charset=utf-8"}
-    FALLBACK_NS = {'t': "http://schemas.microsoft.com/exchange/services/2006/types"}
+    FALLBACK_NS = {
+        't': "http://schemas.microsoft.com/exchange/services/2006/types",
+        'm': "http://schemas.microsoft.com/exchange/services/2006/messages"
+    }
 
     # Load integratoin params from demisto
     USE_PROXY = demisto.params()['proxy']
@@ -278,6 +281,8 @@ script:
     def fallback_get_version():
         return get_version(VERSION_STR).api_version
 
+    FALLBACK_VERSION = fallback_get_version()
+
     def get_folder_by_path(account, path):
         # handle exchange folder id
         if len(path) == 120:
@@ -319,7 +324,7 @@ script:
                 </ParentFolderIds>
             </FindFolder>
           </soap:Body>
-        </soap:Envelope>'''.format(fallback_get_version(), mailbox)
+        </soap:Envelope>'''.format(FALLBACK_VERSION, mailbox)
 
         res = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
         res.raise_for_status()
@@ -343,7 +348,7 @@ script:
                     </ParentFolderIds>
                 </FindFolder>
               </soap:Body>
-            </soap:Envelope>'''.format(fallback_get_version(), folder_id, change_key)
+            </soap:Envelope>'''.format(FALLBACK_VERSION, folder_id, change_key)
         res = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
         res.raise_for_status()
         subfolder_id_elem = ET.fromstring(res.content).find(".//*[t:DisplayName='{}']/t:FolderId".format(child_name), FALLBACK_NS)
@@ -684,7 +689,7 @@ script:
             raw_dict[MAILBOX] = email_address
         return raw_dict
 
-    def fallback_parse_item_as_dict(message):
+    def fallback_parse_item_as_dict(message, attachments_dict):
         import re
 
         first_cap_re = re.compile('(.)([A-Z][a-z]+)')
@@ -725,6 +730,40 @@ script:
                 item['mailbox']['item_id'] = None
                 return item['mailbox']
             return item
+
+        def fallback_parse_attachments(item_dict, attachments_dict):
+            if not 'attachments' in item_dict:
+                return None
+            att_elems = []
+            for k in ('item_attachment', 'file_attachment'):
+                if k in item_dict['attachments']:
+                    if isinstance(item_dict['attachments'][k], list):
+                        att_elems.extend(item_dict['attachments'][k])
+                    else:
+                        att_elems.append(item_dict['attachments'][k])
+
+            atts = []
+            for a in att_elems:
+                attachment = {
+                    'originalItemId': item_dict['item_id'],
+                    'attachmentId': a['attachment_id']['id'],
+                    'attachmentName': a['name'],
+                    'attachmentSHA256': None,
+                    'attachmentContentType': a['content_type'] if 'content_type' in a else 'application/octet-stream',
+                    'attachmentContentId': a['content_id'] if 'content_id' in a else None,
+                    'attachmentContentLocation': a['content_location'] if 'content_location' in a else None,
+                    'attachmentSize': a['size'],
+                    'attachmentLastModifiedTime': a['last_modified_time'],
+                    'attachmentIsInline': a['is_inline'] if 'is_inline' in a else False,
+                    'attachmentType': None
+                }
+                for a_entry in attachments_dict:
+                    if a_entry['Id'] == attachment['attachmentId']:
+                        attachment['attachmentSHA256'] = hashlib.sha256(a_entry['Content']).hexdigest() if a_entry['Content'] else None
+                        attachment['attachmentType'] = a_entry['Type']
+                        break
+                atts.append(attachment)
+            return atts
 
         d = elem_to_internal(message)
         d = clean_keys(d)
@@ -769,15 +808,68 @@ script:
             if k not in d:
                 d[k] = v
 
-        #TODO: Handle Attachments
+        if attachments_dict:
+            d['attachments'] = fallback_parse_attachments(d, attachments_dict)
 
         # DEBUG
         dj = json.dumps(d, indent=4, separators=(',', ': '))
-        demisto.results(dj)
+        #demisto.results(dj)
         return d
 
-        demisto.results(str(d))
-        sys.exit(0)
+    def fallback_get_attachments(attachment_elems):
+        import xml.dom.minidom
+
+        if not attachment_elems:
+            return []
+        attachment_ids = map(lambda x: x.find('.//t:AttachmentId', FALLBACK_NS).attrib['Id'], attachment_elems)
+        payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+                        <soap:Header>
+                            <t:RequestServerVersion Version="{}" />
+                        </soap:Header>
+                        <soap:Body>
+                            <GetAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+                              <AttachmentShape>
+                                <t:IncludeMimeContent>true</t:IncludeMimeContent>
+                              </AttachmentShape>
+                              <AttachmentIds>'''.format(FALLBACK_VERSION)
+        for att_id in attachment_ids:
+            payload += '<t:AttachmentId Id="{}"/>'.format(att_id)
+        payload += '''</AttachmentIds>
+                    </GetAttachment>
+                </soap:Body>
+            </soap:Envelope>'''
+        raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
+        raw.raise_for_status()  #TODO: better error handling
+        #demisto.log('################# RAW ATTACHMENTS RESPONSE\n{}'.format(xml.dom.minidom.parseString(raw.content).toprettyxml())) #DEBUG
+        raw = ET.fromstring(raw.content)
+
+        attachments = []
+        attachment_elems = raw.findall('.//m:Attachments/*', FALLBACK_NS)
+
+        # DEBUG
+        #for a in attachment_elems:
+        #    demisto.info('\n\n\n')
+        #    demisto.info(xml.dom.minidom.parseString(ET.tostring(a)).toprettyxml())
+        #    demisto.info('\n\n\n')
+
+        for a in attachment_elems:
+            name = a.find('./t:Name', FALLBACK_NS).text
+            att_type = 'file' if "FileAttachment" in a.tag else 'item'
+            content = None
+            if att_type == 'item':
+                suffix = '.msg' if a.find('./t:ContentType', FALLBACK_NS).text == 'application/octet-stream' else '.eml'
+                name += suffix
+                content = a.find('.//t:MimeContent', FALLBACK_NS).text
+            else:
+                content = a.find('.//t:Content', FALLBACK_NS).text
+            attachment = {
+                'Name': name,
+                'Id': a.find('./t:AttachmentId', FALLBACK_NS).attrib['Id'],
+                'Type': att_type,
+                'Content': content
+            }
+            attachments.append(attachment)
+        return attachments
 
     def parse_incident_from_item(item):
         incident = {}
@@ -934,6 +1026,7 @@ script:
 
 
     def fallback_fetch_emails_as_incidents():
+        demisto.info('#################### FETCHING') # DEBUG
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
         last_run_time = last_run[LAST_RUN_TIME] if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] else (start_time - timedelta(minutes=10)).ewsformat()
@@ -943,7 +1036,7 @@ script:
 
         payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
             <soap:Header>
-                <t:RequestServerVersion Version="{}" />'''.format(fallback_get_version())
+                <t:RequestServerVersion Version="{}" />'''.format(FALLBACK_VERSION)
         if demisto.params()['impersonation']:
             payload += '''<t:ExchangeImpersonation>
                         <t:ConnectingSID>
@@ -998,21 +1091,21 @@ script:
 
         raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
         raw.raise_for_status()
-        demisto.info(raw.content)   ## DEBUG
+        #demisto.info(raw.content)   ## DEBUG
         #sys.exit(0)                    ## DEBUG
 
         # Parse response to last emails request
         raw = ET.fromstring(raw.content)
         messages = raw.findall(".//t:Message", FALLBACK_NS)
+        demisto.info('{} incident{}'.format(len(messages), 's' if len(messages) != 1 else '')) # DEBUG
         if not messages:
             return []
         item_ids = map(lambda x: x.find("./t:ItemId", FALLBACK_NS).attrib['Id'], messages)
-        #item_ids = filter(lambda y: y not in last_run_ids, item_ids)
 
         # Send GetItem request for the returned IDs
         payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
         <soap:Header>
-            <t:RequestServerVersion Version="{}" />'''.format(fallback_get_version())
+            <t:RequestServerVersion Version="{}" />'''.format(FALLBACK_VERSION)
         if demisto.params()['impersonation']:
             payload += '''<t:ExchangeImpersonation>
                         <t:ConnectingSID>
@@ -1042,10 +1135,6 @@ script:
         raw = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
         raw.raise_for_status()
         raw = ET.fromstring(raw.content)
-
-        #demisto.results('test1')        ## DEBUG
-        #demisto.results(ET.tostring(raw))    ## DEBUG
-        #sys.exit(0)                     ## DEBUG
 
         messages = raw.findall(".//t:Message", FALLBACK_NS)
         if len(messages) != len(item_ids):
@@ -1092,24 +1181,25 @@ script:
             labels.append({'type': 'Email/format', 'value': email_format})
 
             # Handle attachments
-            file_attachments = m.findall('.//t:FileAttachment', FALLBACK_NS)
-            item_attachments = m.findall('.//t:ItemAttachment', FALLBACK_NS)
-            if file_attachments or item_attachments:
+            attachments = fallback_get_attachments(m.findall('./t:Attachments/*', FALLBACK_NS))
+            if attachments:
                 incident['attachment'] = []
-                if file_attachments:
-                    for att in file_attachments:
-                        att_id = att.find('./t:AttachmentId', FALLBACK_NS).attrib['Id']
-                        name = att.find('./t:Name', FALLBACK_NS).text
-                        # TODO: GetAttachment mime content into file result
-                        # content = fallback_get_attachment(att_id)
-                        # file_result = fileResult(name, content)
-                        incident['attachment'].append({
-                            #'path': file_result['FileID'],
-                            'name': name
-                        })
-                        labels.append({'type': 'attachments', 'value': att.find('./t:Name', FALLBACK_NS).text})
-                        labels.append({'type': 'attachmentId', 'value': att_id})
-                # TODO: handle ItemAttachments
+                for a in attachments:
+                    type_header = None
+                    type_id_header = None
+                    file_result = fileResult(a['Name'], a['Content'])
+                    incident['attachment'].append({
+                        'path': file_result['FileID'],
+                        'name': a['Name']
+                    })
+                    if a['Type'] == 'file':
+                        type_header = 'attachments'
+                        type_id_header = 'attachmentId'
+                    else:
+                        type_header = 'attachmentItems'
+                        type_id_header = 'attachmentItemId'
+                    labels.append({'type': type_header, 'value': a['Name']})
+                    labels.append({'type': type_id_header, 'value': a['Id']})
 
             # Handle headers
             headers = m.findall(".//t:InternetMessageHeader", FALLBACK_NS)
@@ -1121,18 +1211,18 @@ script:
             labels.append({'type': 'Email/ID', 'value': m.find("./t:ItemId", FALLBACK_NS).attrib['Id']})
 
             incident['labels'] = labels
-            incident['rawJSON'] = fallback_parse_item_as_dict(m)
-        incidents.append(incident)
-        '''
+            incident['rawJSON'] = json.dumps(fallback_parse_item_as_dict(m, attachments), ensure_ascii=False)
+            incidents.append(incident)
+
         demisto.setLastRun({
             LAST_RUN_TIME: start_time.ewsformat(),
             LAST_RUN_FOLDER: FOLDER_NAME,
             LAST_RUN_IDS: item_ids,
             ERROR_COUNTER: 0
         })
-        '''
-        # FOR DEBUG
-        demisto.info(str(incidents))
+
+        demisto.info('#################### {}'.format(len(incidents))) # FOR DEBUG
+        #demisto.info(str(incidents)) # FOR DEBUG
         return incidents
 
     def get_entry_for_file_attachment(item_id, attachment):
