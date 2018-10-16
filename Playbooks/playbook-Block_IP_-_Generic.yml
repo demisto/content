@@ -504,3 +504,5 @@ outputs:
   description: Percentage of hits
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of hits.
+tests:
+  - block_indicators_-_generic_-_test

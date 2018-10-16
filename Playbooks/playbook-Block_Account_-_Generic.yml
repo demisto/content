@@ -217,3 +217,5 @@ inputs:
   required: false
   description: Array of malicious usernames to block.
 outputs: []
+tests:
+  - block_indicators_-_generic_-_test
