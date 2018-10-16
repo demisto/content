@@ -33,4 +33,3 @@ deprecated: true
 dependson:
   must:
   - okta-get-user
-releaseNotes: "-"

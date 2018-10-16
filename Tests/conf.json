@@ -7,6 +7,18 @@
             "playbookID": "RTIR Test"
         },
         {
+          "integrations": "Devo",
+          "playbookID": "devo_test_playbook"
+        },
+        {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 500
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
@@ -609,14 +621,6 @@
         },
         {
             "integrations": [
-                "VirusTotal",
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
-        },
-        {
-            "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
                 {
@@ -637,14 +641,18 @@
         },
         {
             "playbookID": "TestMatchRegex"            
+        },
+        {
+            "integrations": "ActiveMQ",
+            "playbookID": "ActiveMQ Test"
         }
     ],
     "skipped_tests": [
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
-        "url_enrichment_-_generic_test",
         "search_endpoints_by_hash_-_generic_-_test",
-        "SCADAfence_test"
+        "SCADAfence_test",
+        "test-ThreatConnect"
     ],
     "skipped_integrations": [
         "Symantec Endpoint Protection",

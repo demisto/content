@@ -732,6 +732,5 @@ script:
     description: Get the users notification rules
   runonce: false
 hidden: false
-releaseNotes: "-"
 tests:
   - PagerDuty Test
