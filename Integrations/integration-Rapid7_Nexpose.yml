@@ -1935,6 +1935,5 @@ script:
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Fix proxy handling"
 tests:
     - nexpose_test

@@ -323,6 +323,5 @@ script:
       description: Service state
     description: All the monitoring information regarding services
   runonce: false
-releaseNotes: "-"
 tests:
     - Centreon-Test-Playbook
