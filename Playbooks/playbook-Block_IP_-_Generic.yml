@@ -431,8 +431,7 @@ view: |-
   }
 inputs:
 - key: IPBlacklistMiner
-  value:
-    simple: IPv4_blacklist
+  value: {}
   required: false
   description: The name of the IP blacklist Miner in  Minemeld.
 - key: IP

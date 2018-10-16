@@ -31,10 +31,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: a7f6b641-0eec-4448-8f3e-0f535af45bd0
+    taskid: 2874eab4-7137-43d3-8ff4-4be014c9b7b0
     type: condition
     task:
-      id: a7f6b641-0eec-4448-8f3e-0f535af45bd0
+      id: 2874eab4-7137-43d3-8ff4-4be014c9b7b0
       version: -1
       name: Is MineMeld enabled?
       description: |
@@ -49,23 +49,32 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Minemeld
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
             iscontext: true
-          right:
-            value:
-              simple: Palo Alto Minemeld
-          ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
           ignorecase: true
     view: |-
       {

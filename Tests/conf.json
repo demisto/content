@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "block_indicators_-_generic"
+        },
+        {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
         },
