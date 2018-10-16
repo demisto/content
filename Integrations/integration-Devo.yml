@@ -93,7 +93,7 @@ script:
         return headers
 
 
-    def send_request(path, headers = get_headers(), method = 'get', body = {}, params = {}):
+    def send_request(path, headers = get_headers(), method='get', body={}, params={}):
         url = '{}/{}'.format(SERVER_URL, path)
 
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
@@ -220,10 +220,10 @@ script:
       description: A query Id to launch. The body must have a query or queryId parameter.
     - name: from
       required: true
-      description: A starting date timestamp in UTC format, e.g 2012-03-01T10:00:00Z.
+      description: 'The start date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z'
     - name: to
-      description: An ending date timestamp in UTC format, e.g 2012-03-01T10:00:00Z.
-        With no ending date, the query must be continuous.
+      description: 'The end date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z,
+        set to the current time by default.'
     - name: skip
       description: Skip the first X elements of the query.
     - name: limit
