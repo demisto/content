@@ -15,8 +15,7 @@ import json
 from subprocess import Popen, PIPE
 
 # Search Keyword for the changed file
-TEST_ID = 'id'
-TESTS_LIST = 'tests'
+NO_TESTS_FORMAT = 'Forgive me for my sins but I did not create any test'
 
 # file types regexes
 SCRIPT_REGEX = "scripts.*script-.*.yml"
@@ -138,6 +137,29 @@ def get_json(file_path):
 
 def collect_tests(script_ids, playbook_ids, intergration_ids):
     tests = []
+    test_names = []
+    with open("./Tests/conf.json", 'r') as conf_file:
+        conf = json.load(conf_file)
+
+    conf_tests = conf['tests']
+    for t in conf_tests:
+        playbook_id = t['playbookID']
+        integrations_conf = t.get('integrations', [])
+
+        test_names.append(playbook_id)
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
+
+        for integration in integrations_conf:
+            if type(integration) is dict:
+                name = integration.get('name')
+                if name in intergration_ids and name not in tests:
+                    tests.append(playbook_id)
+            else:
+                if integration in intergration_ids and integration not in tests:
+                    tests.append(playbook_id)
+
+    # Searching for the appropriate test according to scriptName or playbookName
     for filename in os.listdir('./TestPlaybooks'):
         file_path = 'TestPlaybooks/' + filename
 
@@ -160,26 +182,7 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
                     if id not in tests:
                         tests.append(data_dict.get('id'))
 
-    with open("./Tests/conf.json", 'r') as conf_file:
-        conf = json.load(conf_file)
-
-    conf_tests = conf['tests']
-    for t in conf_tests:
-        playbook_id = t['playbookID']
-        integrations_conf = t.get('integrations', [])
-        if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf]
-
-        for integration in integrations_conf:
-            if type(integration) is dict:
-                name = integration.get('name')
-                if name in intergration_ids and name not in tests:
-                    tests.append(playbook_id)
-            else:
-                if integration in intergration_ids and integration not in tests:
-                    tests.append(playbook_id)
-
-    return tests
+    return tests, test_names
 
 
 def find_tests_for_modified_files(modified_files):
@@ -194,13 +197,19 @@ def find_tests_for_modified_files(modified_files):
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
             intergration_ids.append(get_script_or_integration_id(file_path))
 
-    tests = collect_tests(script_ids, playbook_ids, intergration_ids)
+    tests, test_names = collect_tests(script_ids, playbook_ids, intergration_ids)
 
+    test_names.append(NO_TESTS_FORMAT)
     # Search for tests section
     for file_path in modified_files:
         for test in get_tests(file_path):
             if test not in tests:
-                tests.append(test)
+                if test in test_names:
+                    tests.append(test)
+                else:
+                    message = "The test {0} does not exist, please re-check your code".format(test)
+                    print_color(message, LOG_COLORS.RED)
+                    sys.exit(1)
 
     return tests
 
@@ -218,7 +227,8 @@ def get_test_list(modified_files, modified_tests_list, all_tests):
         tests.append("Run all tests")
 
     if not tests:
-        tests = []
+        print_color("There are no tests that check the changes you've done, please make sure you write one", LOG_COLORS.RED)
+        sys.exit(1)
 
     return tests
 
