@@ -289,7 +289,7 @@ script:
             'Classification' : raw_detection['attributes']['classification']['superclassification'],
             'Subclassification' : raw_detection['attributes']['classification']['subclassification'],
             'Time' : get_time_str(get_time_obj(raw_detection['attributes']['time_of_occurrence'])),
-            'Acknoledged' : raw_detection['attributes']['last_acknowledged_at'] is None and raw_detection['attributes']['last_acknowledged_by'] is None,
+            'Acknowledged' : raw_detection['attributes']['last_acknowledged_at'] is None and raw_detection['attributes']['last_acknowledged_by'] is None,
             'RemediationStatus' : raw_detection['attributes'].get('last_remediated_status', {}).get('remediation_status', ''),
         }
 
@@ -659,7 +659,7 @@ script:
     - contextPath: RedCanary.Detection.Time
       description: The time the detection was confirmed as a threat by Red Canary
       type: date
-    - contextPath: RedCanary.Detection.Acknoledged
+    - contextPath: RedCanary.Detection.Acknowledged
       description: Whether or not the detection is acknowledged.
       type: boolean
     - contextPath: RedCanary.Detection.RemediationStatus
@@ -805,7 +805,7 @@ script:
     - contextPath: RedCanary.Detection.Time
       description: The time the detection was confirmed as a threat by Red Canary
       type: date
-    - contextPath: RedCanary.Detection.Acknoledged
+    - contextPath: RedCanary.Detection.Acknowledged
       description: Whether or not the detection is acknowledged.
       type: boolean
     - contextPath: RedCanary.Detection.RemediationStatus
@@ -871,7 +871,7 @@ script:
     - contextPath: RedCanary.Detection.Time
       description: The time the detection was confirmed as a threat by Red Canary
       type: date
-    - contextPath: RedCanary.Detection.Acknoledged
+    - contextPath: RedCanary.Detection.Acknowledged
       description: Whether or not the detection is acknowledged.
       type: boolean
     - contextPath: RedCanary.Detection.RemediationStatus
