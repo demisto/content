@@ -6,7 +6,6 @@ INSTANCE_ID=$(cat instance_ids)
 echo "Making sure instance started"
 aws ec2 wait instance-exists --instance-ids ${INSTANCE_ID}
 aws ec2 wait instance-running --instance-ids ${INSTANCE_ID}
-aws ec2 wait instance-status-ok --instance-ids ${INSTANCE_ID}
 echo "Instance started. fetching IP"
 
 PUBLIC_IP=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} \
@@ -15,13 +14,13 @@ echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip
 
+#copy installer files to instance
+INSTALLER=$(ls demistoserver*.sh)
+
 USER="centos"
 
 echo "wait 90 seconds to ensure server is ready for ssh"
 sleep 90s
-
-#copy installer files to instance
-INSTALLER=$(ls demistoserver*.sh)
 
 echo "add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
