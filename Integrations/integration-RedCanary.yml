@@ -60,7 +60,7 @@ script:
 
 
     ''' GLOBAL VARS '''
-    BASE_URL = 'https://{}/openapi/v3'.format(demisto.params()['domain'])
+    BASE_URL = '{}/openapi/v3'.format(demisto.params()['domain'])
     API_KEY = demisto.params()['api_key']
     USE_SSL = not demisto.params().get('insecure', False)
 
@@ -601,7 +601,7 @@ script:
         if demisto.command() != 'test-module':
             LOG.print_log()
         raise
-        return_error('error has occured: {}'.format(e.message, ))
+        return_error('error has occurred: {}'.format(e.message, ))
   type: python
   commands:
   - name: redcanary-acknowledge-detection
