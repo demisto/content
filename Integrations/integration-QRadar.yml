@@ -65,7 +65,7 @@ script:
     SINGLE_OFFENSE_NAMES_MAP = {'credibility': 'Credibility', 'relevance': 'Relevance', 'severity': 'Severity', 'assigned_to': 'AssignedTo', 'destination_networks': 'DestinationHostname', 'status': 'Status', 'closing_user': 'ClosingUser', 'closing_reason': 'ClosingReason', 'close_time': 'CloseTime', 'categories': 'Categories', 'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'flow_count': 'FlowCount', 'offense_source': 'OffenseSource', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType', 'protected': 'Protected'}
     SEARCH_ID_NAMES_MAP = {'search_id': 'ID'}
     ASSET_PROPERTIES_NAMES_MAP = {'Unified Name': 'Name', 'CVSS Collateral Damage Potential': 'AggregatedCVSSScore', 'Weight': 'Weight'} #TODO: Add in missing parts: 'QRadar.Assets.LastUser'
-    ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {'Primary OS ID': 'Endpoint.OS'}
+    ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {'Primary OS ID': 'OS'}
     FULL_ASSET_PROPERTIES_NAMES_MAP = {'Compliance Notes': 'ComplianceNotes', 'Compliance Plan': 'CompliancePlan', 'CVSS Collateral Damage Potential': 'CollateralDamagePotential', 'Location': 'Location', 'Switch ID': 'SwitchID', 'Switch Port ID': 'SwitchPort', 'Group Name': 'GroupName', 'Vulnerabilities': 'Vulnerabilities'}
 
     ''' GLOBAL VARS '''
@@ -99,7 +99,11 @@ script:
 
     def filter_dict_null(d):
         if isinstance(d, dict):
-            return dict((k, v) for k, v in d.items() if v is not None)
+            return dict((k, filter_dict_null(v)) for k, v in d.items() if filter_dict_null(v) is not None)
+        elif isinstance(d, list):
+            if len(d) > 0:
+                return list(map(filter_dict_null, d))
+            return None
         return d
 
     def filter_dict_nonintersection_key_to_value(d1, d2):
@@ -117,8 +121,6 @@ script:
         if len(obj) == 0:
             return "There is no output result"
         obj = filter_dict_null(obj)
-        if isinstance(obj, list):
-            obj = map(filter_dict_null, obj)
         if headers and isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
         ec = { contextKey: obj } if contextKey else obj
@@ -129,6 +131,22 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, obj, headers),
             'EntryContext': ec
+        }
+
+    def get_entry_for_assets(title, obj, human_readable_obj, headers=None):
+        if len(obj) == 0:
+            return "There is no output result"
+        obj = filter_dict_null(obj)
+        human_readable_obj = filter_dict_null(human_readable_obj)
+        if headers:
+            headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
+        return {
+            'Type': entryTypes['note'],
+            'Contents': obj,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, human_readable_obj, headers),
+            'EntryContext': obj
         }
 
     # change the keys of a dictionary according to a conversion map
@@ -244,45 +262,58 @@ script:
             return_error(res.json())
         return res.json()
 
+    def create_empty_endpoint_dict(full_values):
+        endpoint_dict = {}
+        endpoint_dict['IPAddress'] = []
+        endpoint_dict['OS'] = []
+        if full_values:
+            endpoint_dict['MACAddress'] = []
+            endpoint_dict['Domain'] = []
+        return endpoint_dict
+
     def create_assets_result(assets, full_values=False):
         trans_assets = {}
-        if isinstance(assets, list):
-            for asset in assets:
-                populate_asset_result(asset, trans_assets, full_values)
-        else:
-            populate_asset_result(assets, trans_assets, full_values)
-        return trans_assets
+        human_readable_trans_assets = {}
+        endpoint_dict = create_empty_endpoint_dict(full_values)
+        for asset in assets:
+            asset_key = 'QRadar.Asset(val.ID === {0})'.format(asset['id'])
+            human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
+            populated_asset = create_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
+            trans_assets[asset_key] = populated_asset
+            human_readable_trans_assets[human_readable_key] = populated_asset
+        # Adding endpoints context items
+        trans_assets['Endpoint'] = endpoint_dict
+        human_readable_trans_assets['Endpoint'] = endpoint_dict
+        return trans_assets, human_readable_trans_assets
 
-    def populate_asset_result(asset, trans_asset, full_values):
-        asset_key = 'QRadar.Asset(val.ID === {0}).'.format(asset['id']) #TODO: Improve this flow, as it can create values of arrays after second call
-        trans_asset[asset_key + 'ID'] = asset['id']
-        trans_asset['Endpoint.IPAddress'] = []
-        if full_values:
-            trans_asset['Endpoint.MACAddress'] = []
+    def create_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
+        asset_dict = {}
+        asset_dict['ID'] = asset['id']
         for interface in asset['interfaces']:
             if full_values:
-                trans_asset['Endpoint.MACAddress'].append(interface['mac_address'])
+                endpoint_dict['MACAddress'].append(interface['mac_address'])
             for ip_address in interface['ip_addresses']:
-                trans_asset['Endpoint.IPAddress'].append(ip_address['value'])
+                endpoint_dict['IPAddress'].append(ip_address['value'])
         if full_values:
         # Trying to get Domain name via search in QRadar
             try:
                 domain_name = get_domain_name(asset['domain_id'])
-                trans_asset['Endpoint.Domain'] = domain_name
+                trans_assets['Domain'].append(domain_name)
             except:
                 pass
         # Adding values found in properties of the asset
-        enrich_dict_using_asset_properties(asset, trans_asset, asset_key, full_values)
+        enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
+        return asset_dict
 
-    def enrich_dict_using_asset_properties(asset, trans_asset, asset_key, full_values):
+    def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values):
         for prop in asset['properties']:
             if prop['name'] in ASSET_PROPERTIES_NAMES_MAP:
-                trans_asset[asset_key + ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = prop['value']
+                asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = prop['value']
             elif prop['name'] in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
-                trans_asset[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
+                endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
             elif full_values:
                 if prop['name'] in FULL_ASSET_PROPERTIES_NAMES_MAP:
-                    trans_asset[asset_key + FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = prop['value']
+                    asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = prop['value']
         return None
 
     def get_domain_name(domain_id):
@@ -416,14 +447,14 @@ script:
 
     def get_assets():
         res = send_get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
-        res = create_assets_result(res)
-        return get_entry_for_object('QRadar Assets', res, CUSTOM_HEADERS)
+        res, human_readable_res = create_assets_result(res)
+        return get_entry_for_assets('QRadar Assets', res, human_readable_res, CUSTOM_HEADERS)
 
     def get_asset_by_id():
         _filter = "id=" + demisto.args().get('asset_id')
         res = send_get_assets(_filter=_filter)
-        res = create_assets_result(res, full_values=True)
-        return get_entry_for_object('QRadar Asset', res, CUSTOM_HEADERS)
+        res, human_readable_res = create_assets_result(res, full_values=True)
+        return get_entry_for_assets('QRadar Asset', res, human_readable_res, CUSTOM_HEADERS)
 
     def get_closing_reasons_command():
         args = demisto.args()
