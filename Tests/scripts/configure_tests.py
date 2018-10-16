@@ -108,7 +108,7 @@ def get_tests(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('tests', ['-', ])
+        return data_dictionary.get('tests', [])
 
 
 def get_script_or_integration_id(file_path):
