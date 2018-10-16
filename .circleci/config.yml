@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: circleci/node:9.11
     environment:
-      CONTENT_VERSION: "18.10.0"
+      CONTENT_VERSION: "18.10.1"
       GIT_SHA1: "3e41cb6ae5be2505b12055ceb31a043538c49823"
     steps:
       - checkout
@@ -56,33 +56,3 @@ jobs:
           name: Download Artifacts
           command: |
               ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-      - run:
-          name: Download Configuration
-          command: |
-              ./Tests/scripts/download_demisto_conf.sh
-      - run:
-          name: Create Instance
-          command: |
-              ./Tests/scripts/create_instance.sh instance.json
-      - run:
-          name: Setup Instance
-          command: |
-              ./Tests/scripts/run_installer_on_instance.sh
-              ./Tests/scripts/wait_until_server_ready.sh
-      - run:
-          name: Run Tests
-          shell: /bin/bash
-          command: ./Tests/scripts/run_tests.sh
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: ./Tests/scripts/slack_notifier.sh
-          when: always
-      - run:
-          name: Destroy Instances
-          command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
-          when: on_success
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
-          when: always
