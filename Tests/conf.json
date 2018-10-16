@@ -5,7 +5,7 @@
         {
             "integrations": ["Palo Alto Minemeld",
                             "PaloAlto Panorama"],
-            "playbookID": "block_indicators_-_generic"
+            "playbookID": "block_indicators_-_generic_-_test"
         },
         {
             "integrations": "RTIR",
