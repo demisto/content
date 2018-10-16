@@ -29,7 +29,7 @@ CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_N
 
 
 # File type regex
-SCRIPT_TYPE_REGEX = ".*script-.*.yml"
+SCRIPT_TYPE_REGEX = "*script-.*.yml"
 
 # File names
 ALL_TESTS = ["scripts.script-CommonIntegration.yml", "scripts.script-CommonIntegrationPython.yml",
@@ -122,25 +122,31 @@ def get_json(file_path):
                 print_error(file_path + " has yml structure issue. Error was: " + str(e))
                 return []
 
-    return data_dictionary
+    if type(data_dictionary) is dict:
+        return data_dictionary
+    else:
+        return {}
 
 
 def collect_tests(script_ids, playbook_ids):
     tests = []
     for filename in os.listdir('./TestPlaybooks'):
-        if re.match(TEST_PLAYBOOK_REGEX, filename, re.IGNORECASE):
-            data_dict = get_json(filename)
+        file_path = 'TestPlaybooks/' + filename
+
+        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            data_dict = get_json(file_path)
             tasks = data_dict.get('tasks', [])
-            for task in tasks:
+
+            for task in tasks.values():
                 task_details = task.get('task', {})
 
                 script_name = task_details.get('scriptName', '')
                 if script_name in script_ids:
                     tests.append(data_dict.get('id'))
 
-                playbook_name = task_details.get('playbookName', '')
-                if playbook_name in playbook_ids:
-                    tests.append(data_dict.get('id'))
+                # playbook_name = task_details.get('playbookName', '')
+                # if playbook_name in playbook_ids:
+                #     tests.append(data_dict.get('id'))
 
     return tests
 
@@ -186,7 +192,7 @@ def create_test_file():
     integrations_string = ''
     if branch_name != 'master':
         files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
-
+        print(files_string)
         modified_files, modified_tests_list, all_tests = get_modified_files(files_string)
         tests, integrations = get_test_list(modified_files, modified_tests_list, all_tests)
 
@@ -204,7 +210,7 @@ def create_test_file():
     with open("./Tests/filter_file.txt", "w") as filter_file:
         filter_file.write(tests_string)
 
-    print("Creating filter_file.txt")
+    print("Creating integrations_file.txt")
     with open("./Tests/integrations_file.txt", "w") as integrations_file:
         integrations_file.write(integrations_string)
 
