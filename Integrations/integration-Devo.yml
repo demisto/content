@@ -229,6 +229,7 @@ script:
     - name: limit
       description: Limit the results of the query. The query will stop after returning
         the first X elements of the query or reaching its end.
+      defaultValue: "30"
     - name: writeToContext
       description: Wether to write results to context or not
       defaultValue: "true"
@@ -237,6 +238,6 @@ script:
       description: The query results
     description: Perform a query.
   runonce: false
-releaseNotes: "Added Devo integration"
+releaseNotes: "Added a default results limit of 30"
 tests:
     - devo_test_playbook
