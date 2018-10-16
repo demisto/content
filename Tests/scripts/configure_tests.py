@@ -240,13 +240,13 @@ def find_tests_for_modified_files(modified_files):
             if test in test_names:
                 tests.add(test)
             else:
-                message = "The test {0} does not exist, please re-check your code".format(test)
+                message = "The test '{0}' does not exist, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
                 sys.exit(1)
 
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
-        message = "You've failed to provide tests for:\n{o}".format(test_string)
+        message = "You've failed to provide tests for:\n{0}".format(test_string)
         print_color(message, LOG_COLORS.RED)
         sys.exit(1)
 
