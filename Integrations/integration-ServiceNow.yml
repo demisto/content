@@ -774,7 +774,6 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log()
-        raise
         return_error(e.message)
   type: python
   commands:
