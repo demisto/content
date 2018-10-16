@@ -272,7 +272,7 @@ def main():
     secret_params = secret_conf['integrations'] if secret_conf else []
 
     filterd_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
-    if (is_filter_configured or is_filter_configured) and not run_all_tests:
+    if is_filter_configured and not run_all_tests:
         is_nightly = True
 
     if not tests or len(tests) is 0:
@@ -302,6 +302,14 @@ def main():
         has_skipped_integration, integrations = collect_integrations(
             integrations_conf, skipped_integration, skipped_integrations_conf)
 
+        # Skip nightly test
+        if skip_nightly_test:
+            print '------ Test %s start ------' % (test_message,)
+            print 'Skip test'
+            print '------ Test %s end ------' % (test_message,)
+
+            continue
+
         # Skip filtered test
         if is_filter_configured and playbook_id not in filterd_tests:
             continue
@@ -313,14 +321,6 @@ def main():
 
         # Skip integration
         if has_skipped_integration:
-            continue
-
-        # Skip nightly test
-        if skip_nightly_test:
-            print '------ Test %s start ------' % (test_message,)
-            print 'Skip test'
-            print '------ Test %s end ------' % (test_message,)
-
             continue
 
         set_integration_params(demisto_api_key, integrations, secret_params)
