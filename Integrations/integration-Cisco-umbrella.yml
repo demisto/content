@@ -265,7 +265,7 @@ script:
                 domain_context['SecurityCategories'] = security_categories
             if categorization['status'] == -1:
                 domain_context['Malicious'] = {
-                    'Vendor': 'Cisco Umbrella',
+                    'Vendor': 'Cisco Umbrella Investigate',
                     'Description': security_categories
                 }
 
@@ -329,7 +329,7 @@ script:
                 }
                 if 'Malware' in security_categories_str:
                     domain['Malicious'] = {
-                        'Vendor': 'Cisco Umbrella',
+                        'Vendor': 'Cisco Umbrella Investigate',
                         'Description': 'Tagged as malware'
                 }
                 domain_context.append(domain)
@@ -668,14 +668,14 @@ script:
                 contents.append({
                     'Name': domain['name'],
                     'Malicious': {
-                        'Vendor': 'Cisco Umbrella',
+                        'Vendor': 'Cisco Umbrella Investigate',
                         'Description': 'For IP ' + ip
                     }
                 })
                 context_dbotscore.append({
                     'Indicator': domain['name'],
                     'Type': 'Domain',
-                    'Vendor': 'Cisco Umbrella',
+                    'Vendor': 'Cisco Umbrella Investigate',
                     'Score': 3
                 })
 
@@ -764,7 +764,7 @@ script:
         context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = {
             'Indicator': domain,
             'Type': 'Domain',
-            'Vendor': 'Cisco Umbrella',
+            'Vendor': 'Cisco Umbrella Investigate',
             'Score': dbotscore
         }
         # Domain
@@ -782,7 +782,7 @@ script:
         # Add malicious if needed
         if risk_score == -1:
             context[outputPaths['domain']]['Malicious'] = {
-                'Vendor': 'Cisco Umbrella',
+                'Vendor': 'Cisco Umbrella Investigate',
                 'Description': 'Malicious domain found with risk score -1'
             }
 
@@ -1046,13 +1046,13 @@ script:
                     context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = {
                         'Indicator': domain,
                         'Type': 'Domain',
-                        'Vendor': 'Cisco Umbrella',
+                        'Vendor': 'Cisco Umbrella Investigate',
                         'Score': dbotscore
                     }
                     if dbotscore == 3:
                         context[outputPaths['domain']] = {}
                         context[outputPaths['domain']]['Malicious'] = {
-                            'Vendor': 'Cisco Umbrella',
+                            'Vendor': 'Cisco Umbrella Investigate',
                             'Description': 'Malicious domain found via get_domain_security'
                         }
 
@@ -1144,6 +1144,9 @@ script:
                 'Email': email,
                 'Data': emails_context
             }
+
+        if not markdown:
+            markdown = tableToMarkdown('Domains Associated with: ' + email, domains_contents, headers)
 
         results.append ({
             'Type': entryTypes['note'],
@@ -1257,6 +1260,9 @@ script:
                 'Nameserver': nameserver,
                 'Data': nameservers_context
             }
+
+        if not markdown:
+            markdown = tableToMarkdown('Domains Associated with: ' + nameserver, domains_contents, headers)
 
         results.append ({
             'Type': entryTypes['note'],
@@ -1410,13 +1416,13 @@ script:
                     context_dbotscore.append({
                         'Indicator': domain,
                         'Type': 'Domain',
-                        'Vendor': 'Cisco Umbrella',
+                        'Vendor': 'Cisco Umbrella Investigate',
                         'Score': 3
                     })
                     context_malicious.append({
                         'Name': domain,
                         'Malicious': {
-                            'Vendor': 'Cisco Umbrella',
+                            'Vendor': 'Cisco Umbrella Investigate',
                             'Description': 'For IP ' + ip
                         }
                     })
@@ -2447,20 +2453,17 @@ script:
       required: true
       description: 'The domain name you would like see volume for. (e.g. : www.cnn.com)'
     - name: start
-      required: true
       description: 'Point in time in the past, expressed as a timestamp in the following
         format or relative time. Valid formats: start=-2days start=-2hours start=1997-07-16T19:20:30+01:00
         i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative sign. The max is 30 days.'
       defaultValue: -7days
     - name: stop
-      required: true
       description: 'Point in time in the past expressed as a timestamp in milliseconds
         or relative time. Also valid is ''now''. Valid formats: stop=-1days stop=now
         start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative
         sign. The max is 30 days.'
       defaultValue: now
     - name: match
-      required: true
       auto: PREDEFINED
       predefined:
       - all
@@ -2587,6 +2590,7 @@ script:
         for the value of the WHOIS entry.'
     - name: limit
       description: To limit the total number of results (domains).
+      defaultValue: "100"
     outputs:
     - contextPath: Umbrella.AssociatedDomains.Email
       description: Email address.
@@ -2637,6 +2641,7 @@ script:
         for the value of the WHOIS entry."'
     - name: limit
       description: To limit the total number of results (domains).
+      defaultValue: "100"
     outputs:
     - contextPath: Umbrella.AssociatedDomains.Nameserver
       description: Nameserver's domain name.
@@ -2736,7 +2741,6 @@ script:
       description: 'A standard RegEx search pattern, must be encoded in a double quoted
         bracket. e.g. :'
     - name: start
-      required: true
       description: 'Can either be specified in relative or absolute time. Point in
         time in the past, expressed as a timestamp in the following format or relative
         time. Valid formats: start=-2days start=-2hours start=-1000minutes start=-3weeks
@@ -2856,4 +2860,4 @@ script:
   runonce: false
 releaseNotes: "Integration now written in python, added commands"
 tests:
-  - Cisco Umbrella Python Test
+  - Cisco Umbrella Test
