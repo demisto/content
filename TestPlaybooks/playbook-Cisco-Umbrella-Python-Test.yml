@@ -503,7 +503,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Cisco Umbrella
+              simple: Cisco Umbrella Investigate
     view: |-
       {
         "position": {
