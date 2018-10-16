@@ -20,6 +20,10 @@ script: |-
               ec[args.contextKey] = val;
           }
           vals.push(val);
+
+          if (flags.indexOf('g') === -1) {
+            break;
+          }
       }
   }
   if (vals.length == 1) {
@@ -57,3 +61,4 @@ outputs:
   description: List of Regex matches
   type: string
 scripttarget: 0
+releaseNotes: Fixing timeout of script if g flag is omitted and a match is found

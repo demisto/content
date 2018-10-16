@@ -2,7 +2,6 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
-releaseNotes: "Added dbotscore dictionary"
 script: |-
   # Common functions script
   # =======================
@@ -28,6 +27,36 @@ script: |-
   providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'WildFire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   dbotscores = {'Critical': 4, 'High': 3, 'Medium': 2,'Low': 1, 'Unknown': 0, 'Informational': 0.5}
+
+  def urljoin(url, suffix=""):
+      """
+          Will join url and its suffix
+
+          Example:
+          "https://google.com/", "/"   => "https://google.com/"
+          "https://google.com", "/"   => "https://google.com/"
+          "https://google.com", "api"   => "https://google.com/api"
+          "https://google.com", "/api"  => "https://google.com/api"
+          "https://google.com/", "api"  => "https://google.com/api"
+          "https://google.com/", "/api" => "https://google.com/api"
+
+          :type url: ``string``
+          :param url: URL string (required)
+
+          :type suffix: ``string``
+          :param suffix: the second part of the url
+
+          :rtype: ``string``
+          :return: Full joined url
+      """
+      if url[-1:] != "/":
+          url = url + "/"
+
+      if suffix.startswith("/"):
+          suffix = suffix[1:]
+          return url + suffix
+
+      return url + suffix
 
   def positiveUrl(entry):
       """
@@ -1179,4 +1208,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "tableToMarkdown in python supports simple array of strings (e.g ['foo', 'bar', 'koo']"
+releaseNotes: Added urljoin
+tests:
+  - TestPYCommonServer
