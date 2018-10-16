@@ -64,9 +64,10 @@ script:
     OFFENSES_NAMES_MAP = {'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType'}
     SINGLE_OFFENSE_NAMES_MAP = {'credibility': 'Credibility', 'relevance': 'Relevance', 'severity': 'Severity', 'assigned_to': 'AssignedTo', 'destination_networks': 'DestinationHostname', 'status': 'Status', 'closing_user': 'ClosingUser', 'closing_reason': 'ClosingReason', 'close_time': 'CloseTime', 'categories': 'Categories', 'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'flow_count': 'FlowCount', 'offense_source': 'OffenseSource', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType', 'protected': 'Protected'}
     SEARCH_ID_NAMES_MAP = {'search_id': 'ID'}
-    ASSET_PROPERTIES_NAMES_MAP = {'Unified Name': 'Name', 'CVSS Collateral Damage Potential': 'AggregatedCVSSScore', 'Weight': 'Weight'} #TODO: Add in missing parts: 'QRadar.Assets.LastUser'
+    ASSET_PROPERTIES_NAMES_MAP = {'Unified Name': 'Name', 'CVSS Collateral Damage Potential': 'AggregatedCVSSScore', 'Weight': 'Weight'}
     ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {'Primary OS ID': 'OS'}
     FULL_ASSET_PROPERTIES_NAMES_MAP = {'Compliance Notes': 'ComplianceNotes', 'Compliance Plan': 'CompliancePlan', 'CVSS Collateral Damage Potential': 'CollateralDamagePotential', 'Location': 'Location', 'Switch ID': 'SwitchID', 'Switch Port ID': 'SwitchPort', 'Group Name': 'GroupName', 'Vulnerabilities': 'Vulnerabilities'}
+    NOTE_NAMES_MAP = {'id': 'ID', 'note_text': 'Text', 'create_time': 'CreateTime', 'username': 'CreatedBy'}
 
     ''' GLOBAL VARS '''
     SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
@@ -308,18 +309,25 @@ script:
     def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values):
         for prop in asset['properties']:
             if prop['name'] in ASSET_PROPERTIES_NAMES_MAP:
-                asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = prop['value']
+                asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'], 'LastUser': prop['last_reported_by']}
             elif prop['name'] in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
                 endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
             elif full_values:
                 if prop['name'] in FULL_ASSET_PROPERTIES_NAMES_MAP:
-                    asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = prop['value']
+                    asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'], 'LastUser': prop['last_reported_by']}
         return None
 
     def get_domain_name(domain_id):
         query_param = {'query_expression': "SELECT DOMAINNAME({0}) AS 'Domain name' FROM events GROUP BY 'Domain name'".format(domain_id)}
         search_id = send_search_request(query_param)['search_id']
         return send_get_search_results_request(search_id)['events'][0]['Domain name']
+
+    def convert_closing_reason_name_to_id(closing_name):
+        res = send_get_closing_reasons(include_deleted=True, include_reserved=True)
+        for closing_reason in res:
+            if closing_reason['text'] == closing_name:
+                return closing_reason['id']
+        raise ValueError("Error: Given closing reason name doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
 
     # Request/Response methods
     def send_get_offenses_request(_range, _filter='', _fields=''):
@@ -367,7 +375,7 @@ script:
             headers['Range'] = 'items={0}'.format(_range)
         return send_request('GET', url, headers, params)
 
-    def send_get_closing_reasons(_range, _filter, _fields, include_deleted, include_reserved):
+    def send_get_closing_reasons(_range='', _filter='', _fields='', include_deleted=False, include_reserved=False):
         url = '{0}/api/siem/offense_closing_reasons'.format(SERVER)
         params = {}
         if _filter:
@@ -380,6 +388,12 @@ script:
         if _range:
             headers['Range'] = 'items={0}'.format(_range)
         return send_request('GET', url, headers, params)
+
+    def send_get_note(offense_id, note_id, fields):
+        url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+        params = {'fields': fields} if fields else {}
+        return send_request('GET', url, AUTH_HEADERS, params=params)
+
 
     # Command methods
     def test_module():
@@ -423,8 +437,10 @@ script:
 
     def update_offense():
         args = demisto.args()
-        if not 'closing_reason_id' in args and 'CLOSED' == args.get('status'):
-            raise ValueError('Invalid input - must provide closing reason id (may use "qradar-get-closing-reasons" command to get them) to close offense')
+        if 'closing_reason_name' in args:
+            args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
+        elif 'CLOSED' == args.get('status'):
+            raise ValueError('Invalid input - must provide closing reason name (may use "qradar-get-closing-reasons" command to get them) to close offense')
         offense_id = args.get('offense_id')
         res = send_update_offense_request(offense_id)
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
@@ -460,6 +476,12 @@ script:
         args = demisto.args()
         res = send_get_closing_reasons(args.get('range'), args.get('filter'), args.get('fields'), args.get('include_deleted'), args.get('include_reserved'))
         return get_entry_for_object('Offense Closing Reasons', res, contextKey='QRadar.Offense.ClosingReasons')
+
+    def get_note_command():
+        res = send_get_note(demisto.args().get('offense_id'), demisto.args().get('note_id'), demisto.args().get('fields'))
+        res = replace_keys(res, NOTE_NAMES_MAP)
+        res['CreateTime'] = epoch_to_ISO(res['CreateTime'])
+        return get_entry_for_object('QRadar Note', res, CUSTOM_HEADERS, 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
 
     # Command selector
     if demisto.command() == 'test-module':
@@ -652,11 +674,10 @@ script:
       - HIDDEN
       - CLOSED
       description: The new status for the offense
-    - name: closing_reason_id
-      description: 'The ID of a closing reason. You must provide a valid closing_reason_id
-        when you close an offense. TODO: System closing_reasons are: (2) False-Positive,
-        Tuned (1) Non-Issues (3) Policy Violation TODO:  use api/siem/offense_closing_reasons
-        to convert from name to id - if the name doesn''t exist then throw an error'
+    - name: closing_reason_name
+      description: 'The name of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default  closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation'
     - name: assigned_to
       description: A user to assign the offense to
     - name: headers
@@ -707,19 +728,23 @@ script:
       description: Table headers
     outputs:
     - contextPath: QRadar.Assets.ID
-      description: The ID of the asset.
+      description: The ID of the asset
     - contextPath: Endpoint.IPAddress
-      description: IP address of the asset.
-    - contextPath: QRadar.Assets.Name
-      description: Name of the asset.
+      description: IP address of the asset
+    - contextPath: QRadar.Assets.Name.Value
+      description: Name of the asset
     - contextPath: Endpoint.OS
-      description: Asset OS.
-    - contextPath: QRadar.Assets.AggregatedCVSSScore
-      description: CVSSScore.
-    - contextPath: QRadar.Assets.LastUser
-      description: Last user.
-    - contextPath: QRadar.Assets.Weight
-      description: Asset weight.
+      description: Asset OS
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
+      description: CVSSScore
+    - contextPath: QRadar.Assets.Weight.Value
+      description: Asset weight
+    - contextPath: QRadar.Assets.Name.LastUser
+      description: Last user who updated the name
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
+      description: Last user who updated the Aggregated CVSS Score
+    - contextPath: QRadar.Assets.Weight.LastUser
+      description: Last user who updated the weight
     description: List all assets found in the model
   - name: qradar-get-asset-by-id
     arguments:
@@ -734,30 +759,26 @@ script:
       description: Asset MAC address.
     - contextPath: Endpoint.IPAddress
       description: It's in ip_addresses - value
-    - contextPath: QRadar.Assets.ComplianceNotes
-      description: value
-    - contextPath: QRadar.Assets.CompliancePlan
-      description: value
-    - contextPath: QRadar.Assets.CollateralDamagePotential
-      description: Collateral damage potential.
-    - contextPath: QRadar.Assets.AggregatedCVSSScore
-      description: CVSSScore.
-    - contextPath: QRadar.Assets.Name
-      description: Name of the asset.
+    - contextPath: QRadar.Assets.ComplianceNotes.Value
+      description: Compliance notes
+    - contextPath: QRadar.Assets.CompliancePlan.Value
+      description: Compliance plan
+    - contextPath: QRadar.Assets.CollateralDamagePotential.Value
+      description: Collateral damage potential
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
+      description: CVSSScore
+    - contextPath: QRadar.Assets.Name.Value
+      description: Name of the asset
     - contextPath: QRadar.Assets.GroupName
-      description: Name of the asset's group.
+      description: Name of the asset's group
     - contextPath: Endpoint.Domain
-      description: TODO, This is for DNS name, can be reached via https://13.58.1.138/api/ariel/searches?query_expression=SELECT
-        DOMAINNAME(1) AS 'Domain name' FROM events GROUP BY 'Domain name' -> https://13.58.1.138/api/ariel/searches/{search
-        id}/results
+      description: DNS name
     - contextPath: Endpoint.OS
-      description: Asset OS.
-    - contextPath: QRadar.Assets.Weight
-      description: Asset weight.
-    - contextPath: QRadar.Assets.LastUser
-      description: Last user.
-    - contextPath: QRadar.Assets.Vulnerabilities
-      description: Vulnerabilities.
+      description: Asset OS
+    - contextPath: QRadar.Assets.Weight.Value
+      description: Asset weight
+    - contextPath: QRadar.Assets.Vulnerabilities.Value
+      description: Vulnerabilities
     - contextPath: QRadar.Assets.Location
       description: Location.
     - contextPath: QRadar.Assets.Description
@@ -766,6 +787,20 @@ script:
       description: Switch ID
     - contextPath: QRadar.Assets.SwitchPort
       description: Switch port.
+    - contextPath: QRadar.Assets.Name.LastUser
+      description: Last user who updated the name
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
+      description: Last user who updated the Aggregated CVSS Score
+    - contextPath: QRadar.Assets.Weight.LastUser
+      description: Last user who updated the weight
+    - contextPath: QRadar.Assets.ComplianceNotes.LastUser
+      description: Last user who updated the compliance notes
+    - contextPath: QRadar.Assets.CompliancePlan.LastUser
+      description: Last user who updated the compliance plan
+    - contextPath: QRadar.Assets.CollateralDamagePotential.LastUser
+      description: Last user who updated the collateral damage potential
+    - contextPath: QRadar.Assets.Vulnerabilities.LastUser
+      description: Last user who updated the vulnerabilities
     description: Retrieves the asset by id
   - name: qr-searches
     deprecated: true
@@ -917,6 +952,16 @@ script:
         in brackets and multiple fields in the same object are separated by commas
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Note.ID
+      description: Note ID
+      type: unknown
+    - contextPath: QRadar.Note.Text
+      description: Note text
+    - contextPath: QRadar.Note.CreateTime
+      description: The creation time of the note
+    - contextPath: QRadar.Note.CreatedBy
+      description: The user who created the note
     description: Retrieve a note for an offense
   - name: qradar-get-reference-by-name
     arguments:
