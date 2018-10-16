@@ -97,11 +97,19 @@ def get_modified_files(files_string):
 
 
 def collect_ids(file_path):
-    """Collect tests mentioned in file_path"""
+    """Collect id mentioned in file_path"""
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
         return data_dictionary.get('id', ['-', ])
+
+
+def get_tests(file_path):
+    """Collect tests mentioned in file_path"""
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('tests', ['-', ])
 
 
 def get_script_or_integration_id(file_path):
@@ -186,7 +194,15 @@ def find_tests_for_modified_files(modified_files):
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
             intergration_ids.append(get_script_or_integration_id(file_path))
 
-    return collect_tests(script_ids, playbook_ids, intergration_ids)
+    tests = collect_tests(script_ids, playbook_ids, intergration_ids)
+
+    # Search for tests section
+    for file_path in modified_files:
+        for test in get_tests(file_path):
+            if test not in tests:
+                tests.append(test)
+
+    return tests
 
 
 def get_test_list(modified_files, modified_tests_list, all_tests):

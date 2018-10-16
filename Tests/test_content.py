@@ -336,6 +336,9 @@ def main():
     os.remove(FILTER_CONF)
 
     if len(failed_playbooks):
+        with open("./Tests/is_build_failed.txt", "w") as is_build_failed_file:
+            is_build_failed_file.write('Build failed')
+
         sys.exit(1)
 
 
