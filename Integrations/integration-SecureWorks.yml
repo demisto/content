@@ -1351,6 +1351,30 @@ script:
     - contextPath: SecureWorks.Ticket.closeCodes
       description: Ticket close codes
       type: unknown
+    - contextPath: File.Info
+      description: Attachment file info
+      type: unknown
+    - contextPath: File.Name
+      description: Attachment file name
+      type: string
+    - contextPath: File.Size
+      description: Attachment file size
+      type: number
+    - contextPath: File.SHA1
+      description: Attachment file SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Attachment file SHA256
+      type: string
+    - contextPath: File.EntryID
+      description: Attachment file entry ID
+      type: string
+    - contextPath: File.Type
+      description: Attachment file type
+      type: string
+    - contextPath: File.MD5
+      description: Attachment file MD5
+      type: string
     description: Get the details of a specific ticket, by ID
   - name: secure-works-assign-ticket
     arguments:
@@ -1571,6 +1595,6 @@ script:
   isfetch: true
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Added count tickets and get ids commands, also option to get ticket attachments"
+releaseNotes: "Added option to get ticket attachments"
 tests:
     - None
