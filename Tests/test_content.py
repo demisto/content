@@ -36,6 +36,7 @@ def options_handler():
     parser.add_argument('-t', '--slack', help='The token for slack', required=True)
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
+    parser.add_argument('-g', '--buildName', help='The build name', required=True)
     options = parser.parse_args()
 
     return options
@@ -77,7 +78,7 @@ def update_test_msg(integrations, test_message):
 
 
 def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber, server_url):
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
     # run test
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
@@ -88,7 +89,7 @@ def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
     else:
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
-        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url)
+        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
 
     print '------ Test %s end ------' % (test_message,)
 
@@ -116,12 +117,12 @@ def get_user_name_from_circle(circleci_token, build_number):
     return user_details.get('name', '')
 
 
-def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url):
+def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url, build_name):
     circle_user_name = get_user_name_from_circle(CircleCI, build_number)
     sc = SlackClient(slack)
     user_id = retrieve_id(circle_user_name, sc)
 
-    text = "{0} Failed\n{1}".format(playbook_id, server_url) if inc_id == -1 else "{0} Failed\n{1}/#/WorkPlan/{2}".format(playbook_id, server_url, inc_id)
+    text = "{0} - {1} Failed\n{1}".format(build_name, playbook_id, server_url) if inc_id == -1 else "{0} - {1} Failed\n{1}/#/WorkPlan/{2}".format(build_name, playbook_id, server_url, inc_id)
 
     if user_id:
         sc.api_call(
@@ -250,6 +251,7 @@ def main():
     slack = options.slack
     CircleCI = options.circleci
     buildNumber = options.buildNumber
+    build_name = options.buildName
 
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
@@ -328,7 +330,7 @@ def main():
 
         run_test(c, failed_playbooks, integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
-                 buildNumber, server)
+                 buildNumber, server, build_name)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
 

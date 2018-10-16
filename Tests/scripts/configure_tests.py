@@ -136,8 +136,11 @@ def get_json(file_path):
 
 
 def collect_tests(script_ids, playbook_ids, intergration_ids):
-    tests = []
     test_names = []
+    tests = set([])
+    catched_scripts = set([])
+    catched_playbooks = set([])
+    catched_intergrations = set([])
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
@@ -153,11 +156,13 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
         for integration in integrations_conf:
             if type(integration) is dict:
                 name = integration.get('name')
-                if name in intergration_ids and name not in tests:
-                    tests.append(playbook_id)
+                if name in intergration_ids:
+                    tests.add(playbook_id)
+                    catched_intergrations.add(name)
             else:
-                if integration in intergration_ids and integration not in tests:
-                    tests.append(playbook_id)
+                if integration in intergration_ids:
+                    tests.add(playbook_id)
+                    catched_intergrations.add(integration)
 
     # Searching for the appropriate test according to scriptName or playbookName
     for filename in os.listdir('./TestPlaybooks'):
@@ -172,44 +177,78 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
 
                 script_name = task_details.get('scriptName', '')
                 if script_name in script_ids:
-                    id = data_dict.get('id')
-                    if id not in tests:
-                        tests.append(data_dict.get('id'))
+                    tests.add(data_dict.get('id'))
+                    catched_scripts.add(script_name)
 
                 playbook_name = task_details.get('playbookName', '')
                 if playbook_name in playbook_ids:
-                    id = data_dict.get('id')
-                    if id not in tests:
-                        tests.append(data_dict.get('id'))
+                    tests.add(data_dict.get('id'))
+                    catched_playbooks.add(playbook_name)
 
-    return tests, test_names
+    missing_integrations = intergration_ids - catched_intergrations
+    missing_playbooks = playbook_ids - catched_playbooks
+    missing_scripts = script_ids - catched_scripts
+    # if len(missing_integrations) > 0 or len(missing_playbooks) > 0 or len(missing_scripts) > 0:
+    #     if len(missing_integrations) > 0:
+    #         missing_string = '\n'.format(missing_integrations)
+    #         message = "The following integrations don't have tests:\n{0}".format(missing_string)
+    #         print_color(message, LOG_COLORS.RED)
+    #
+    #     if len(missing_playbooks) > 0:
+    #         missing_string = '\n'.format(missing_playbooks)
+    #         message = "The following playbooks don't have tests:\n{0}".format(missing_string)
+    #         print_color(message, LOG_COLORS.RED)
+    #
+    #     if len(missing_scripts) > 0:
+    #         missing_string = '\n'.format(missing_scripts)
+    #         message = "The following scripts don't have tests:\n{0}".format(missing_string)
+    #         print_color(message, LOG_COLORS.RED)
+    #
+    #     sys.exit(1)
+    missing_ids = missing_integrations.union(missing_playbooks).union(missing_scripts)
+    return tests, test_names, missing_ids
 
 
 def find_tests_for_modified_files(modified_files):
-    script_ids = []
-    playbook_ids = []
-    intergration_ids = []
+    id_to_path = {}
+    script_ids = set([])
+    playbook_ids = set([])
+    intergration_ids = set([])
     for file_path in modified_files:
         if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
-            script_ids.append(get_script_or_integration_id(file_path))
+            id = get_script_or_integration_id(file_path)
+            script_ids.add(id)
         elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            playbook_ids.append(collect_ids(file_path))
+            id = collect_ids(file_path)
+            playbook_ids.add(id)
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            intergration_ids.append(get_script_or_integration_id(file_path))
+            id = get_script_or_integration_id(file_path)
+            intergration_ids.add(id)
 
-    tests, test_names = collect_tests(script_ids, playbook_ids, intergration_ids)
+        id_to_path[id] = file_path
+
+    tests, test_names, missing_ids = collect_tests(script_ids, playbook_ids, intergration_ids)
 
     test_names.append(NO_TESTS_FORMAT)
     # Search for tests section
     for file_path in modified_files:
-        for test in get_tests(file_path):
-            if test not in tests:
-                if test in test_names:
-                    tests.append(test)
-                else:
-                    message = "The test {0} does not exist, please re-check your code".format(test)
-                    print_color(message, LOG_COLORS.RED)
-                    sys.exit(1)
+        tests_from_file = get_tests(file_path)
+        if tests_from_file:
+            missing_ids = missing_ids - set([file_path])
+
+        for test in tests_from_file:
+            if test in test_names:
+                tests.add(test)
+            else:
+                message = "The test {0} does not exist, please re-check your code".format(test)
+                print_color(message, LOG_COLORS.RED)
+                sys.exit(1)
+
+    if len(missing_ids) > 0:
+        test_string = '\n'.join(missing_ids)
+        message = "You've failed to provide tests for:\n{o}".format(test_string)
+        print_color(message, LOG_COLORS.RED)
+        sys.exit(1)
 
     return tests
 
@@ -221,10 +260,10 @@ def get_test_list(modified_files, modified_tests_list, all_tests):
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
         if test not in tests:
-            tests.append(test)
+            tests.add(test)
 
     if all_tests:
-        tests.append("Run all tests")
+        tests.add("Run all tests")
 
     if not tests:
         print_color("There are no tests that check the changes you've done, please make sure you write one", LOG_COLORS.RED)
@@ -248,7 +287,7 @@ def create_test_file():
         tests = get_test_list(modified_files, modified_tests_list, all_tests)
 
         tests_string = '\n'.join(tests)
-        if tests != 'None':
+        if tests_string:
             print('Collected the following tests:\n{0}'.format(tests_string))
         else:
             print('No filter configured, running all tests')
