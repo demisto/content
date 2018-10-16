@@ -31,9 +31,9 @@ CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_N
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 
 # File names
-ALL_TESTS = ["scripts.script-CommonIntegration.yml", "scripts.script-CommonIntegrationPython.yml",
-             "scripts.script-CommonServer.yml", "scripts.script-CommonServerPython.yml",
-             "scripts.script-CommonServerUserPython.yml", "scripts.script-CommonUserServer.yml", "Tests.conf.json"]
+ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
+             "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
+             "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml", "Tests/conf.json"]
 
 
 class LOG_COLORS:
@@ -60,9 +60,9 @@ def run_git_command(command):
     return p.stdout.read()
 
 
-def checked_type(file_path):
-    """Check if the file_path is from the CHECKED_TYPES_REGEXES list"""
-    for regex in CHECKED_TYPES_REGEXES:
+def checked_type(file_path, regex_list):
+    """Check if the file_path is from the regex list"""
+    for regex in regex_list:
         if re.match(regex, file_path, re.IGNORECASE):
             return True
 
@@ -85,9 +85,9 @@ def get_modified_files(files_string):
         file_status = file_data[0]
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
-            if file_path in ALL_TESTS:
+            if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
-            elif checked_type(file_path):
+            elif checked_type(file_path, CHECKED_TYPES_REGEXES):
                 modified_files_list.append(file_path)
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 modified_tests_list.append(file_path)
@@ -188,24 +188,8 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
     missing_integrations = intergration_ids - catched_intergrations
     missing_playbooks = playbook_ids - catched_playbooks
     missing_scripts = script_ids - catched_scripts
-    # if len(missing_integrations) > 0 or len(missing_playbooks) > 0 or len(missing_scripts) > 0:
-    #     if len(missing_integrations) > 0:
-    #         missing_string = '\n'.format(missing_integrations)
-    #         message = "The following integrations don't have tests:\n{0}".format(missing_string)
-    #         print_color(message, LOG_COLORS.RED)
-    #
-    #     if len(missing_playbooks) > 0:
-    #         missing_string = '\n'.format(missing_playbooks)
-    #         message = "The following playbooks don't have tests:\n{0}".format(missing_string)
-    #         print_color(message, LOG_COLORS.RED)
-    #
-    #     if len(missing_scripts) > 0:
-    #         missing_string = '\n'.format(missing_scripts)
-    #         message = "The following scripts don't have tests:\n{0}".format(missing_string)
-    #         print_color(message, LOG_COLORS.RED)
-    #
-    #     sys.exit(1)
     missing_ids = missing_integrations.union(missing_playbooks).union(missing_scripts)
+
     return tests, test_names, missing_ids
 
 
