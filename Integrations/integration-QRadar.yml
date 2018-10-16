@@ -58,17 +58,6 @@ script:
     import sys, os, requests, traceback, datetime, json
     from requests.exceptions import HTTPError
 
-    # Header names transformation maps
-    # Format: {'OldName': 'NewName'}
-
-    OFFENSES_NAMES_MAP = {'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType'}
-    SINGLE_OFFENSE_NAMES_MAP = {'credibility': 'Credibility', 'relevance': 'Relevance', 'severity': 'Severity', 'assigned_to': 'AssignedTo', 'destination_networks': 'DestinationHostname', 'status': 'Status', 'closing_user': 'ClosingUser', 'closing_reason': 'ClosingReason', 'close_time': 'CloseTime', 'categories': 'Categories', 'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'flow_count': 'FlowCount', 'offense_source': 'OffenseSource', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType', 'protected': 'Protected'}
-    SEARCH_ID_NAMES_MAP = {'search_id': 'ID'}
-    ASSET_PROPERTIES_NAMES_MAP = {'Unified Name': 'Name', 'CVSS Collateral Damage Potential': 'AggregatedCVSSScore', 'Weight': 'Weight'}
-    ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {'Primary OS ID': 'OS'}
-    FULL_ASSET_PROPERTIES_NAMES_MAP = {'Compliance Notes': 'ComplianceNotes', 'Compliance Plan': 'CompliancePlan', 'CVSS Collateral Damage Potential': 'CollateralDamagePotential', 'Location': 'Location', 'Switch ID': 'SwitchID', 'Switch Port ID': 'SwitchPort', 'Group Name': 'GroupName', 'Vulnerabilities': 'Vulnerabilities'}
-    NOTE_NAMES_MAP = {'id': 'ID', 'note_text': 'Text', 'create_time': 'CreateTime', 'username': 'CreatedBy'}
-
     ''' GLOBAL VARS '''
     SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
     USERNAME = demisto.params().get('credentials').get('identifier')
@@ -96,7 +85,19 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    # Utility methods
+    # Header names transformation maps
+    # Format: {'OldName': 'NewName'}
+
+    OFFENSES_NAMES_MAP = {'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType'}
+    SINGLE_OFFENSE_NAMES_MAP = {'credibility': 'Credibility', 'relevance': 'Relevance', 'severity': 'Severity', 'assigned_to': 'AssignedTo', 'destination_networks': 'DestinationHostname', 'status': 'Status', 'closing_user': 'ClosingUser', 'closing_reason': 'ClosingReason', 'close_time': 'CloseTime', 'categories': 'Categories', 'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'flow_count': 'FlowCount', 'offense_source': 'OffenseSource', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType', 'protected': 'Protected'}
+    SEARCH_ID_NAMES_MAP = {'search_id': 'ID'}
+    ASSET_PROPERTIES_NAMES_MAP = {'Unified Name': 'Name', 'CVSS Collateral Damage Potential': 'AggregatedCVSSScore', 'Weight': 'Weight'}
+    ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {'Primary OS ID': 'OS'}
+    FULL_ASSET_PROPERTIES_NAMES_MAP = {'Compliance Notes': 'ComplianceNotes', 'Compliance Plan': 'CompliancePlan', 'CVSS Collateral Damage Potential': 'CollateralDamagePotential', 'Location': 'Location', 'Switch ID': 'SwitchID', 'Switch Port ID': 'SwitchPort', 'Group Name': 'GroupName', 'Vulnerabilities': 'Vulnerabilities'}
+    NOTE_NAMES_MAP = {'id': 'ID', 'note_text': 'Text', 'create_time': 'CreateTime', 'username': 'CreatedBy'}
+    REFERENCE_NAMES_MAP = {'number_of_elements': 'NumberOfElements', 'name': 'Name', 'creation_time': 'CreationTime', 'element_type': 'ElementType', 'number_of_elements': 'NumberOfElements', 'time_to_live': 'TimeToLive', 'timeout_type': 'TimeoutType'}
+
+    ''' Utility methods '''
 
     def filter_dict_null(d):
         if isinstance(d, dict):
@@ -329,7 +330,8 @@ script:
                 return closing_reason['id']
         raise ValueError("Error: Given closing reason name doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
 
-    # Request/Response methods
+    ''' Request/Response methods '''
+
     def send_get_offenses_request(_range, _filter='', _fields=''):
         full_url = '{0}/api/siem/offenses'.format(SERVER)
         params = {'filter': _filter} if _filter else {}
@@ -394,8 +396,24 @@ script:
         params = {'fields': fields} if fields else {}
         return send_request('GET', url, AUTH_HEADERS, params=params)
 
+    def send_create_notes(offense_id, note_text, fields):
+        url = '{0}/api/siem/offenses/{1}/notes'.format(SERVER, offense_id)
+        params = {'fields': fields} if fields else {}
+        params['note_text'] = note_text
+        return send_request('POST', url, AUTH_HEADERS, params=params)
 
-    # Command methods
+    def send_reference_by_name_request(ref_name, _range='', _filter='', _fields=''):
+        url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+        params = {'filter': _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params.fileds = _fields
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers, params=params)
+
+    ''' Command methods '''
+
     def test_module():
         if not send_get_offenses_request('0-0'):
             return_error('Encoutered error while trying to fetch offenses from sever.') #todo: adjust this with generic implementation of get offenses
@@ -428,14 +446,14 @@ script:
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
         return get_entry_for_object('QRadar offenses', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)') #TODO: Make sure this key will act properly for lists
 
-    def get_offense_by_id():
+    def get_offense_by_id_command():
         offense_id = demisto.args().get('offense_id')
         res = send_get_offense_by_id_request(offense_id, demisto.args().get('filter'), demisto.args().get('fields'))
         enrich_offense_result(res)
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
         return get_entry_for_object('QRadar Offenses', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
 
-    def update_offense():
+    def update_offense_command():
         args = demisto.args()
         if 'closing_reason_name' in args:
             args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
@@ -446,27 +464,27 @@ script:
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
         return get_entry_for_object('QRadar Offense', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
 
-    def post_search():
+    def search_command():
         res = send_search_request(demisto.args())
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
         return get_entry_for_object('QRadar Search', res, CUSTOM_HEADERS, 'QRadar.Search(val.ID === obj.ID)')
 
-    def get_search():
+    def get_search_command():
         res = send_get_search_request(demisto.args().get('search_id'))
         res = replace_keys(res, SEARCH_ID_NAMES_MAP)
         return get_entry_for_object('QRadar Search Info', res, CUSTOM_HEADERS, 'QRadar.Search(val.ID === obj.ID)')
 
-    def get_search_results():
+    def get_search_results_command():
         search_id = demisto.args().get('search_id')
         res = send_get_search_results_request(search_id)
         return get_entry_for_object('QRadar Search Results', res, CUSTOM_HEADERS, 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
 
-    def get_assets():
+    def get_assets_command():
         res = send_get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
         res, human_readable_res = create_assets_result(res)
         return get_entry_for_assets('QRadar Assets', res, human_readable_res, CUSTOM_HEADERS)
 
-    def get_asset_by_id():
+    def get_asset_by_id_command():
         _filter = "id=" + demisto.args().get('asset_id')
         res = send_get_assets(_filter=_filter)
         res, human_readable_res = create_assets_result(res, full_values=True)
@@ -483,6 +501,19 @@ script:
         res['CreateTime'] = epoch_to_ISO(res['CreateTime'])
         return get_entry_for_object('QRadar Note', res, CUSTOM_HEADERS, 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
 
+    def create_note_command():
+        res = send_create_notes(demisto.args().get('offense_id'), demisto.args().get('note_text'), demisto.args().get('fields'))
+        res = replace_keys(res, NOTE_NAMES_MAP)
+        res['CreateTime'] = epoch_to_ISO(res['CreateTime'])
+        return get_entry_for_object('QRadar Note', res, CUSTOM_HEADERS, 'QRadar.Note')
+
+    def get_reference_by_name_command():
+        res = send_reference_by_name_request(demisto.args().get('ref_name'))
+        res = replace_keys(res, REFERENCE_NAMES_MAP)
+        if 'CreationTime' in res:
+            res['CreationTime'] = epoch_to_ISO(res['CreationTime'])
+        return get_entry_for_object('QRadar References', res, CUSTOM_HEADERS, 'QRadar.Reference')
+
     # Command selector
     if demisto.command() == 'test-module':
         demisto.results(test_module())
@@ -491,19 +522,19 @@ script:
     elif demisto.command() == 'qradar-offenses':
         demisto.results(get_offenses_command())
     elif demisto.command() == 'qradar-offense-by-id':
-        demisto.results(get_offense_by_id())
+        demisto.results(get_offense_by_id_command())
     elif demisto.command() == 'qradar-update-offense':
-        demisto.results(update_offense())
+        demisto.results(update_offense_command())
     elif demisto.command() == 'qradar-searches':
-        demisto.results(post_search())
+        demisto.results(search_command())
     elif demisto.command() == 'qradar-get-search':
-        demisto.results(get_search()) #TODO: Sit with Michal again to decide what output should be here
+        demisto.results(get_search_command())
     elif demisto.command() == 'qradar-get-search-results':
-        demisto.results(get_search_results())
+        demisto.results(get_search_results_command())
     elif demisto.command() == 'qradar-get-assets':
-        demisto.results(get_assets())
+        demisto.results(get_assets_command())
     elif demisto.command() == 'qradar-get-asset-by-id':
-        demisto.results(get_asset_by_id())
+        demisto.results(get_asset_by_id_command())
     elif demisto.command() == 'qradar-get-closing-reasons':
         demisto.results(get_closing_reasons_command())
     elif demisto.command() == 'qradar-get-note':
@@ -511,9 +542,9 @@ script:
     elif demisto.command() == 'qradar-create-note':
         demisto.results(create_note_command())
     elif demisto.command() == 'qradar-get-reference-by-name':
-        demisto.results(get_reference_by_name())
-    elif demisto.command() == 'qradar-get-events':
-        demisto.results(get_reference_by_name())
+        demisto.results(get_reference_by_name_command())
+    # elif demisto.command() == 'qradar-get-events':
+        #TODO: Talk with Michal about implementation
   type: python
   commands:
   - name: qradar-offenses
@@ -969,6 +1000,14 @@ script:
       required: true
       default: true
       description: The name of the requestered reference.
+    - name: filter
+      description: Query to filter offenses
+    - name: fields
+      description: 'Fields to filter in '
+    - name: range
+      description: Number of results in return
+    - name: headers
+      description: Table headers
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference.
@@ -985,9 +1024,6 @@ script:
     description: Information about the reference set that had data added or updated.
       This returns information set but not the contained data. This feature is supported
       from version 8.1 and upward.
-  - name: qradar-get-events
-    arguments: []
-    description: TO BE IMPLEMENTED
   isfetch: true
   runonce: false
 releaseNotes: "-"
