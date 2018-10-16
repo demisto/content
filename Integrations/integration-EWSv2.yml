@@ -1192,7 +1192,7 @@ script:
                     break
             for i,f in enumerate(Inbox.FIELDS):
                 if f.name == 'unread_count':
-                    Item.FIELDS.pop(i)
+                    Inbox.FIELDS.pop(i)
                     break
             for i,f in enumerate(Item.FIELDS):
                 if f.name == 'text_field':
