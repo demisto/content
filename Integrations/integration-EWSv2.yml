@@ -87,6 +87,7 @@ script:
     from datetime import timedelta
     from cStringIO import StringIO
     import logging, warnings
+    import subprocess
 
     # Define utf8 as default encoding
     reload(sys)
@@ -1950,7 +1951,53 @@ script:
       description: Unread emails in the folder.
       type: number
     description: Get a single specific folder.
+  - name: ews-start-compliance-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query to use for finding mails
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Name
+      description: The name of the compliance search
+      type: string
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Start compliance search
+  - name: ews-get-compliance-search
+    arguments:
+    - name: searchName
+      required: true
+      default: true
+      description: Name of the compliance search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+    description: Get compliance search status and results
+  - name: ews-purge-compliance-search-results
+    arguments:
+    - name: searchName
+      required: true
+      default: true
+      description: Name of the compliance search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Purges the results found by the compliance search
+  - name: ews-remove-compliance-search
+    arguments:
+    - name: searchName
+      required: true
+      default: true
+      description: Name of the compliance search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Remove the compliance search
   dockerimage: demisto/py-ews:3.0
   isfetch: true
   runonce: false
-releaseNotes: "Added support for Public Folders."
+releaseNotes: "Added support for Public Folders. Added support for compliance search in office365."
