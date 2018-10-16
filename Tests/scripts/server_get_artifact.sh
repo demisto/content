@@ -25,6 +25,6 @@ SERVER_DOWNLOAD_LINK=${TEMP_LINK%$'\r'}
 echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
 echo "curl to ${SERVER_DOWNLOAD_LINK}"
 
-curl -o demistoserver.sh "${SERVER_DOWNLOAD_LINK}"
+wget -o demistoserver.sh "${SERVER_DOWNLOAD_LINK}"
 
 echo "Done!"
