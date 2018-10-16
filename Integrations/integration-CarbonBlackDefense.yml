@@ -1589,4 +1589,3 @@ script:
     description: Re-set policy fields.
   isfetch: true
   runonce: false
-releaseNotes: Fix outputs in cbd-get-alerts-details command

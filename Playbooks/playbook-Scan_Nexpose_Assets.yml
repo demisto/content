@@ -1,7 +1,7 @@
-id: nexpose_scan_assets
+id: scan_assets_nexpose
 version: -1
-name: Nexpose Scan Assets
-description: Starts a Nexpose scan according to Site ID, and waits for the scan to finish by polling the scan status in pre-defined intervals.
+name: Scan Assets - Nexpose
+description: Starts a Nexpose scan according to asset IP addresses or host names, and waits for the scan to finish by polling the scan status in pre-defined intervals.
 starttaskid: "0"
 tasks:
   "0":
@@ -332,4 +332,3 @@ outputs:
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
 fromversion: 4.0.0
-releaseNotes: "Fixed inputs"

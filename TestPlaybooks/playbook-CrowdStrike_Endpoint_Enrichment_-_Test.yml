@@ -7,12 +7,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 20f4e6ab-5adb-4f41-8b6a-ef9b4ccb56da
+    taskid: 25df7ebc-1074-4325-8bb1-a0a3d4ad34cb
     type: start
     task:
-      id: 20f4e6ab-5adb-4f41-8b6a-ef9b4ccb56da
+      id: 25df7ebc-1074-4325-8bb1-a0a3d4ad34cb
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,10 +30,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 1cc3172e-272c-4dc7-8c67-528f35f06d29
+    taskid: 070aa0b5-43ae-40a1-8ea7-0ed86ed52e0f
     type: regular
     task:
-      id: 1cc3172e-272c-4dc7-8c67-528f35f06d29
+      id: 070aa0b5-43ae-40a1-8ea7-0ed86ed52e0f
       version: -1
       name: cs-device-search
       description: Search for devices in your environment by platform, host name,
@@ -60,10 +61,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: b2abb242-53e3-4029-8c51-f6f74ce18f14
+    taskid: fa76f81b-d55e-41af-8f39-2f08a71bfa22
     type: regular
     task:
-      id: b2abb242-53e3-4029-8c51-f6f74ce18f14
+      id: fa76f81b-d55e-41af-8f39-2f08a71bfa22
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -89,10 +90,10 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: be3de74a-1573-41ad-89f9-2c99ad19f088
+    taskid: b41b5726-e981-448d-8a02-93ce27941a7a
     type: playbook
     task:
-      id: be3de74a-1573-41ad-89f9-2c99ad19f088
+      id: b41b5726-e981-448d-8a02-93ce27941a7a
       version: -1
       name: CrowdStrike Endpoint Enrichment
       playbookName: CrowdStrike Endpoint Enrichment
@@ -113,10 +114,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 03223a48-5350-4558-87d2-1a79f700d052
+    taskid: 485ef202-1272-4bcb-82bf-9980f530e21e
     type: regular
     task:
-      id: 03223a48-5350-4558-87d2-1a79f700d052
+      id: 485ef202-1272-4bcb-82bf-9980f530e21e
       version: -1
       name: ContextContains
       description: This script searches for a value in a context path.
@@ -124,6 +125,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       path:
         simple: ${Endpoint.OS}
@@ -138,12 +142,40 @@ tasks:
         }
       }
     note: false
+  "12":
+    id: "12"
+    taskid: 5d48508e-7c27-4b60-8bbb-66d34d0f3c76
+    type: regular
+    task:
+      id: 5d48508e-7c27-4b60-8bbb-66d34d0f3c76
+      version: -1
+      name: cs-detection-search
+      description: String search through all Crowdstrike Detection fields.  For example,
+        provide a sensor ID to search for all detections that contain that sensor
+        ID (and any other fields that would happen to contain it)
+      script: FalconHost|||cs-detection-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    scriptarguments:
+      first_behavior: {}
+      query:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 900
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
+        "height": 945,
         "width": 380,
         "x": 50,
         "y": 50
@@ -152,4 +184,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "added context check for Endpoint"

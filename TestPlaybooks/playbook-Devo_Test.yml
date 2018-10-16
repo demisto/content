@@ -1,0 +1,247 @@
+id: devo_test_playbook
+version: -1
+name: Devo test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 72407b54-6e6d-4537-89b6-683d085faa74
+    type: start
+    task:
+      id: 72407b54-6e6d-4537-89b6-683d085faa74
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 49ff8dcb-6146-4d93-8da4-2130fed54621
+    type: regular
+    task:
+      id: 49ff8dcb-6146-4d93-8da4-2130fed54621
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 9f026452-9cfc-4c1e-8660-2db166b1da28
+    type: regular
+    task:
+      id: 9f026452-9cfc-4c1e-8660-2db166b1da28
+      version: -1
+      name: Select query
+      description: Perform a query.
+      script: Devo|||devo-query
+      type: regular
+      iscommand: true
+      brand: Devo
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      from:
+        simple: 2018-10-07T08:00:00Z
+      limit:
+        simple: "5"
+      query:
+        simple: from demo.ecommerce.data select * where method="GET"
+      queryId: {}
+      skip: {}
+      to:
+        simple: 2018-10-07T08:30:00Z
+      writeToContext: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 65441542-2bc1-429a-83a8-de9e868b6da7
+    type: regular
+    task:
+      id: 65441542-2bc1-429a-83a8-de9e868b6da7
+      version: -1
+      name: Query by Id
+      description: Perform a query.
+      script: Devo|||devo-query
+      type: regular
+      iscommand: true
+      brand: Devo
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      from:
+        simple: 2018-10-07T08:00:00Z
+      limit: {}
+      query: {}
+      queryId:
+        simple: a7561571-c786-4fb7-93d0-e2f2c74c190d
+      skip: {}
+      to:
+        simple: 2018-10-07T10:00:00Z
+      writeToContext: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 74616a07-709a-4bc5-8178-8d761168b78f
+    type: regular
+    task:
+      id: 74616a07-709a-4bc5-8178-8d761168b78f
+      version: -1
+      name: Verify Results
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Results
+      path:
+        simple: Devo
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: a65cff6d-d386-4202-8718-ce304ed5b6de
+    type: regular
+    task:
+      id: a65cff6d-d386-4202-8718-ce304ed5b6de
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 32222117-e7d0-43b4-812b-a90e79811dce
+    type: regular
+    task:
+      id: 32222117-e7d0-43b4-812b-a90e79811dce
+      version: -1
+      name: Verify Results
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Results
+      path:
+        simple: Devo
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

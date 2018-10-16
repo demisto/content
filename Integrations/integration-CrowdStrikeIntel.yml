@@ -372,7 +372,7 @@ script:
         add(a, 'maxLastModifiedDate', 'max_last_modified_date', dateToEpoch);
         var res = doReq('GET', 'reports/queries/reports/v1', a);
         var md = '';
-        if (res.obj.resources) {
+        if (res.obj.resources && Object.keys(res.obj.resources).length > 0) {
             // Now need to retrieve the full data for each id
             var resFull = doReq('GET', '/reports/entities/reports/v1', {ids: res.obj.resources});
             // Restore original pagination
@@ -389,11 +389,19 @@ script:
                     md += 'Created: ' + new Date(o[i].created_date) + '\n';
                     md += 'Last modified: ' + new Date(o[i].last_modified_date) + '\n'
                     md += 'Description: ' + o[i].short_description + '\n';
-                    md += 'Target industries: ' + o[i].target_industries.map(function(curr) {return curr.value;}).join(', ') + '\n';
-                    md += 'Target countries: ' + o[i].target_countries.map(function(curr) {return curr.value;}).join(', ') + '\n';
-                    md += 'Motivations: ' + o[i].motivations.map(function(curr) {return curr.value;}).join(', ') + '\n';
-                    md += 'Tags: ' + o[i].tags.map(function(curr) {return curr.value;}).join(', ') + '\n';
-                }
+                    if (o[i].target_industries) {
+                      md += 'Target industries: ' + o[i].target_industries.map(function(curr) {return curr.value;}).join(', ') + '\n';
+                    }
+                    if (o[i].target_countries) {
+                      md += 'Target countries: ' + o[i].target_countries.map(function(curr) {return curr.value;}).join(', ') + '\n';
+                    }
+                    if (o[i].motivations) {
+                      md += 'Motivations: ' + o[i].motivations.map(function(curr) {return curr.value;}).join(', ') + '\n';
+                    }
+                    if (o[i].tags) {
+                      md += 'Tags: ' + o[i].tags.map(function(curr) {return curr.value;}).join(', ') + '\n';
+                    }
+                  }
             } else {
                 md = 'No result found';
             }
