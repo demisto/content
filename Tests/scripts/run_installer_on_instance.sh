@@ -6,6 +6,7 @@ INSTANCE_ID=$(cat instance_ids)
 echo "Making sure instance started"
 aws ec2 wait instance-exists --instance-ids ${INSTANCE_ID}
 aws ec2 wait instance-running --instance-ids ${INSTANCE_ID}
+aws ec2 wait instance-status-ok --instance-ids ${INSTANCE_ID}
 echo "Instance started. fetching IP"
 
 PUBLIC_IP=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} \
