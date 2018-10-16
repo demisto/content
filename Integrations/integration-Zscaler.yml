@@ -47,7 +47,6 @@ script:
     DEFAULT_HEADERS = {
         'content-type': 'application/json'
     }
-
     ERROR_CODES_DICT = {
         400: 'Invalid or bad request',
         401: 'Session is not authenticated or timed out',
@@ -59,7 +58,6 @@ script:
         500: 'Unexpected error',
         503: 'Service is temporarily unavailable'
     }
-
     ''' HELPER FUNCTIONS '''
     def http_request(method, url_suffix, data=None, headers=DEFAULT_HEADERS):
         data = {} if data is None else data
@@ -296,10 +294,52 @@ script:
             listOfIps += '- ' + ip + '\n'
         return 'Removed the following IP addresses from the whitelist successfully:\n' + listOfIps
 
+    def get_blacklist_command():
+        blacklist = get_blacklist().get('blacklistUrls')
+        if blacklist:
+            hr = '### Zscaler blacklist\n'
+            for url in blacklist:
+                hr += '- ' + url + '\n'
+            ec = {
+                'Zscaler.Blacklist': blacklist
+            }
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': blacklist,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr,
+                'EntryContext': ec
+            }
+            return entry
+        else:
+            return 'No results found'
+
     def get_blacklist():
         cmd_url = '/security/advanced'
         result = http_request('GET', cmd_url, None, DEFAULT_HEADERS)
         return json.loads(result.content)
+
+    def get_whitelist_command():
+        whitelist = get_whitelist().get('whitelistUrls')
+        if whitelist:
+            hr = '### Zscaler whitelist\n'
+            for url in whitelist:
+                hr += '- ' + url + '\n'
+            ec = {
+                'Zscaler.Whitelist': whitelist
+            }
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': whitelist,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr,
+                'EntryContext': ec
+            }
+            return entry
+        else:
+            return 'No results found'
 
     def get_whitelist():
         cmd_url = '/security'
@@ -680,6 +720,10 @@ script:
             demisto.results(category_remove_ip(demisto.args()['category-id'], demisto.args()['ip']))
         elif demisto.command() == 'zscaler-get-categories':
             demisto.results(get_categories_command())
+        elif demisto.command() == 'zscaler-get-blacklist':
+            demisto.results(get_blacklist_command())
+        elif demisto.command() == 'zscaler-get-whitelist':
+            demisto.results(get_whitelist_command())
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -949,5 +993,18 @@ script:
       description: Category name
       type: string
     description: Returns a list of all categories
+  - name: zscaler-get-blacklist
+    arguments: []
+    outputs:
+    - contextPath: Zscaler.Blacklist
+      description: Zscaler blacklist
+      type: string
+    description: Returns Zscaler default blacklist
+  - name: zscaler-get-whitelist
+    arguments: []
+    outputs:
+    - contextPath: Zscaler.Whitelist
+      description: Zsclaer whitelist
+      type: string
+    description: Returns Zscaler default whitelist
   runonce: false
-releaseNotes: "Improved error messages and log outputs"
