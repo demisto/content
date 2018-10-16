@@ -10,8 +10,8 @@ except ImportError:
 
 import re
 import os
-import pip
 import sys
+import json
 from subprocess import Popen, PIPE
 
 # Search Keyword for the changed file
@@ -29,7 +29,7 @@ CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_N
 
 
 # File type regex
-SCRIPT_TYPE_REGEX = "*script-.*.yml"
+SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 
 # File names
 ALL_TESTS = ["scripts.script-CommonIntegration.yml", "scripts.script-CommonIntegrationPython.yml",
@@ -128,7 +128,7 @@ def get_json(file_path):
         return {}
 
 
-def collect_tests(script_ids, playbook_ids):
+def collect_tests(script_ids, playbook_ids, intergration_ids):
     tests = []
     for filename in os.listdir('./TestPlaybooks'):
         file_path = 'TestPlaybooks/' + filename
@@ -142,11 +142,34 @@ def collect_tests(script_ids, playbook_ids):
 
                 script_name = task_details.get('scriptName', '')
                 if script_name in script_ids:
-                    tests.append(data_dict.get('id'))
+                    id = data_dict.get('id')
+                    if id not in tests:
+                        tests.append(data_dict.get('id'))
 
-                # playbook_name = task_details.get('playbookName', '')
-                # if playbook_name in playbook_ids:
-                #     tests.append(data_dict.get('id'))
+                playbook_name = task_details.get('playbookName', '')
+                if playbook_name in playbook_ids:
+                    id = data_dict.get('id')
+                    if id not in tests:
+                        tests.append(data_dict.get('id'))
+
+    with open("./Tests/conf.json", 'r') as conf_file:
+        conf = json.load(conf_file)
+
+    conf_tests = conf['tests']
+    for t in conf_tests:
+        playbook_id = t['playbookID']
+        integrations_conf = t.get('integrations', [])
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
+
+        for integration in integrations_conf:
+            if type(integration) is dict:
+                name = integration.get('name')
+                if name in intergration_ids and name not in tests:
+                    tests.append(playbook_id)
+            else:
+                if integration in intergration_ids and integration not in tests:
+                    tests.append(playbook_id)
 
     return tests
 
@@ -163,12 +186,12 @@ def find_tests_for_modified_files(modified_files):
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
             intergration_ids.append(get_script_or_integration_id(file_path))
 
-    return collect_tests(script_ids, playbook_ids), intergration_ids
+    return collect_tests(script_ids, playbook_ids, intergration_ids)
 
 
 def get_test_list(modified_files, modified_tests_list, all_tests):
     """Create a test list that should run"""
-    tests, integrations = find_tests_for_modified_files(modified_files)
+    tests = find_tests_for_modified_files(modified_files)
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
@@ -178,7 +201,10 @@ def get_test_list(modified_files, modified_tests_list, all_tests):
     if all_tests:
         tests.append("Run all tests")
 
-    return tests, integrations
+    if not tests:
+        tests = []
+
+    return tests
 
 
 def create_test_file():
@@ -189,30 +215,21 @@ def create_test_file():
 
     print("Getting changed files from the branch: {0}".format(branch_name))
     tests_string = ''
-    integrations_string = ''
     if branch_name != 'master':
         files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
-        print(files_string)
+
         modified_files, modified_tests_list, all_tests = get_modified_files(files_string)
-        tests, integrations = get_test_list(modified_files, modified_tests_list, all_tests)
+        tests = get_test_list(modified_files, modified_tests_list, all_tests)
 
         tests_string = '\n'.join(tests)
-        integrations_string = '\n'.join(integrations)
-        if tests != 'None' or integrations != 'None':
-            if tests != 'None':
-                print('Collected the following tests:\n{0}'.format(tests_string))
-            if integrations != 'None':
-                print('Collected the following integrations:\n{0}'.format(integrations_string))
+        if tests != 'None':
+            print('Collected the following tests:\n{0}'.format(tests_string))
         else:
             print('No filter configured, running all tests')
 
     print("Creating filter_file.txt")
     with open("./Tests/filter_file.txt", "w") as filter_file:
         filter_file.write(tests_string)
-
-    print("Creating integrations_file.txt")
-    with open("./Tests/integrations_file.txt", "w") as integrations_file:
-        integrations_file.write(integrations_string)
 
 
 if __name__ == "__main__":
