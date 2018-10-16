@@ -651,6 +651,7 @@
         "test-ThreatConnect"
     ],
     "skipped_integrations": [
+        "McAfee Advanced Threat Defense",
         "Symantec Endpoint Protection",
         "RedLock",
         "Symantec Messaging Gateway",
