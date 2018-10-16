@@ -953,4 +953,6 @@ script:
     description: Get a detection by unique identifier.
   isfetch: true
   runonce: false
+tests:
+  - RedCanaryTest
 releaseNotes: "New Integration"
