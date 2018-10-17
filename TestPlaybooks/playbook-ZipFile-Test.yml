@@ -1,5 +1,5 @@
 id: 270e9681-9775-43ef-8eed-5735df6bd156
-version: 33
+version: 34
 name: ZipFile-Test
 description: Test ZipFile and UnzipFile scripts
 starttaskid: "0"
@@ -129,33 +129,6 @@ tasks:
         "position": {
           "x": 450,
           "y": -70
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 4ae201b7-a401-4ef1-85d1-06bd6e26d8b5
-    type: regular
-    task:
-      id: 4ae201b7-a401-4ef1-85d1-06bd6e26d8b5
-      version: -1
-      name: closeInvestigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      id: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 940,
-          "y": 820
         }
       }
     note: false
@@ -480,9 +453,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -508,7 +478,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 865,
         "width": 1270,
         "x": 450,
         "y": -200
