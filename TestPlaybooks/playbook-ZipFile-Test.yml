@@ -69,10 +69,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: a9029504-7000-4375-826c-ba7523735f8b
+    taskid: 5c0ee0f9-599f-4a19-80bc-c0094f8f52c9
     type: regular
     task:
-      id: a9029504-7000-4375-826c-ba7523735f8b
+      id: 5c0ee0f9-599f-4a19-80bc-c0094f8f52c9
       version: -1
       name: UnzipFile
       description: Unzip a file using fileName or entryID to specify a file. Files
@@ -453,6 +453,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -473,12 +476,37 @@ tasks:
         }
       }
     note: false
+  "17":
+    id: "17"
+    taskid: 4a0a616f-fbec-4f6a-8134-1386ecb7b0e5
+    type: regular
+    task:
+      id: 4a0a616f-fbec-4f6a-8134-1386ecb7b0e5
+      version: -1
+      name: CloseInvestigation
+      description: Close an investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 750
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 865,
+        "height": 1045,
         "width": 1270,
         "x": 450,
         "y": -200
