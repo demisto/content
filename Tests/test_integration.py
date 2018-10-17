@@ -142,7 +142,7 @@ def __create_incident_with_playbook(client, name, playbook_id):
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
             print_error('failed to get incident with id:' + inc_id)
-            return False
+            return False, -1
         time.sleep(1)
 
     return incidents['data'][0], inc_id
