@@ -3,8 +3,25 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": ["Palo Alto Minemeld",
+                            "Panorama"],
+            "playbookID": "block_indicators_-_generic_-_test"
+        },
+        {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+          "integrations": "Devo",
+          "playbookID": "devo_test_playbook"
+        },
+        {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 500
         },
         {
             "integrations": "SCADAfence CNM",
@@ -605,14 +622,6 @@
         },
         {
             "integrations": [
-                "VirusTotal",
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
-        },
-        {
-            "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
                 {
@@ -630,15 +639,22 @@
         {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
+        },
+        {
+            "playbookID": "TestMatchRegex"
+        },
+        {
+            "integrations": "ActiveMQ",
+            "playbookID": "ActiveMQ Test"
         }
     ],
     "skipped_tests": [
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
-        "url_enrichment_-_generic_test",
         "search_endpoints_by_hash_-_generic_-_test"
     ],
     "skipped_integrations": [
+        "McAfee Advanced Threat Defense",
         "Symantec Endpoint Protection",
         "RedLock",
         "Symantec Messaging Gateway",
@@ -656,7 +672,6 @@
         "XFE",
         "iDefense",
         "LogRhythm",
-        "FireEye HX",
         "Phish.AI",
         "Centreon",
         "TruSTAR",
