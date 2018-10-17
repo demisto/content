@@ -2,6 +2,8 @@
 
 echo "start instance test"
 
+SECRET_CONF_PATH=$(cat secret_conf_path)
+
 USERNAME="admin"
 PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminPassword')
 
@@ -10,7 +12,6 @@ temp="${PASSWORD%\"}"
 temp="${temp#\"}"
 PASSWORD=$temp
 
-SECRET_CONF_PATH=$(cat secret_conf_path)
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
 SERVER_IP=$(cat public_ip)
