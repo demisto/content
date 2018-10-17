@@ -218,6 +218,14 @@ def extract_filtered_tests():
     return filterd_tests, is_filter_configured, run_all
 
 
+def update_password(c, username, password):
+    password_change_json = {
+        'id': username,
+        'password': password
+    }
+    c.req('POST', '/users/setpw', password_change_json)
+
+
 def generate_demisto_api_key(c):
     demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
     apikey_json = {
