@@ -129,19 +129,19 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password):
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
-        print_color("Starting Slack notifications about instances", LOG_COLORS.GREEN)
-        attachments, integrations_counter = get_attachments(secret_conf_path, server, user, password)
+    # if branch_name == 'master':
+    print_color("Starting Slack notifications about instances", LOG_COLORS.GREEN)
+    attachments, integrations_counter = get_attachments(secret_conf_path, server, user, password)
 
-        sc = SlackClient(slack_token)
-        sc.api_call(
-            "chat.postMessage",
-            channel="test_slack",
-            username="Instances nightly report",
-            as_user="False",
-            attachments=attachments,
-            text="You have {0} instances configurations".format(integrations_counter)
-        )
+    sc = SlackClient(slack_token)
+    sc.api_call(
+        "chat.postMessage",
+        channel="test_slack",
+        username="Instances nightly report",
+        as_user="False",
+        attachments=attachments,
+        text="You have {0} instances configurations".format(integrations_counter)
+    )
 
 
 if __name__ == "__main__":
