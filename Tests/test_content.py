@@ -253,7 +253,7 @@ def main():
     buildNumber = options.buildNumber
     build_name = options.buildName
 
-    if not (username and password and server):
+    if not (username and old_password and server):
         print_error('You must provide server user & password arguments')
         sys.exit(1)
 
