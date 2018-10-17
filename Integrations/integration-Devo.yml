@@ -80,7 +80,7 @@ script:
         return sign.hexdigest()
 
 
-    def get_headers(body = ''):
+    def get_headers(body=''):
         headers = {
             'Content-Type': 'application/json'
         }
@@ -93,7 +93,9 @@ script:
         return headers
 
 
-    def send_request(path, headers = get_headers(), method='get', body={}, params={}):
+    def send_request(path, headers=get_headers(), method='get', body=None, params=None):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
         url = '{}/{}'.format(SERVER_URL, path)
 
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
