@@ -65,6 +65,16 @@ jobs:
           command: |
               ./Tests/scripts/create_instance.sh instance.json
       - run:
+          name: Setup Instance
+          command: |
+              ./Tests/scripts/run_installer_on_instance.sh
+              ./Tests/scripts/wait_until_server_ready.sh
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: ./Tests/scripts/slack_notifier.sh
+          when: always
+      - run:
           name: Instance Test
           command: ./Tests/scripts/instance_test.sh
           when: always

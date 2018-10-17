@@ -57,9 +57,6 @@ def options_handler():
 
 
 def get_demisto_instance_and_login(server, username, password):
-    print("this is the server {0}".format(server))
-    print("this is the username {0}".format(username))
-    print("this is the password {0}".format(password))
     c = demisto.DemistoClient(None, server, username, password)
     res = c.Login()
     if res.status_code is not 200:
