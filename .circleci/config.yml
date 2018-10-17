@@ -76,7 +76,6 @@ jobs:
           when: always
       - run:
           name: Instance Test
-          shell: /bin/bash
           command: ./Tests/instance_test.sh
           when: always
       - run:
