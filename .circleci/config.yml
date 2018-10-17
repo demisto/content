@@ -76,7 +76,7 @@ jobs:
           when: always
       - run:
           name: Instance Test
-          command: ./Tests/instance_test.sh
+          command: ./Tests/scripts/instance_test.sh
           when: always
       - run:
           name: Destroy Instances
