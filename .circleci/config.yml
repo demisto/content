@@ -75,6 +75,11 @@ jobs:
           command: ./Tests/scripts/slack_notifier.sh
           when: always
       - run:
+          name: Instance Test
+          shell: /bin/bash
+          command: ./Tests/instance_test.sh
+          when: always
+      - run:
           name: Destroy Instances
           command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
           when: always
