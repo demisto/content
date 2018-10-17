@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": ["Palo Alto Minemeld",
+                            "Panorama"],
+            "playbookID": "block_indicators_-_generic_-_test"
+        },
+        {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
         },
@@ -646,10 +651,10 @@
     "skipped_tests": [
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
-        "search_endpoints_by_hash_-_generic_-_test",
-        "SCADAfence_test"
+        "search_endpoints_by_hash_-_generic_-_test"
     ],
     "skipped_integrations": [
+        "McAfee Advanced Threat Defense",
         "Symantec Endpoint Protection",
         "RedLock",
         "Symantec Messaging Gateway",

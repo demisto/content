@@ -226,4 +226,3 @@ inputs:
   required: true
   description: DT filter for polling IDs
 outputs: []
-releaseNotes: "-"
