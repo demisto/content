@@ -110,8 +110,8 @@ def get_attachments(secret_conf_path, server, user, password):
         }
         fields.append(field_failed_tests)
 
-    color = 'good' if failed_integration else 'danger'
-    title = 'There are no problematic instances' if failed_integration else 'Encountered problems with instances'
+    color = 'danger' if failed_integration else 'good'
+    title = 'There are no problematic instances' if not failed_integration else 'Encountered problems with instances'
 
     attachment = [{
         'fallback': title,
