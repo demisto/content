@@ -467,4 +467,3 @@ script:
   runonce: false
 tests:
   - SCADAfence_test
-releaseNotes: "-"

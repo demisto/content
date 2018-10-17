@@ -2,6 +2,7 @@ commonfields:
   id: ParseEmailFiles
   version: -1
 name: ParseEmailFiles
+releaseNotes: "-"
 script: |-
   from email import message_from_string
   from email.header import decode_header
@@ -34,6 +35,7 @@ script: |-
   import olefile as OleFile
   from email.parser import HeaderParser
   from email.parser import Parser as EmailParser
+  import re
 
   reload(sys)
   sys.setdefaultencoding('utf8')
@@ -436,18 +438,15 @@ script: |-
                   print("Directory: " + str(dir))
                   print("Contents: " + self._getStream(dir))
   ########################################################################################################################
-  REGEX_EXTRACT_EMAIL = '[\s\S]*<([^>]*)>.*'
+  REGEX_EXTRACT_EMAIL = r'[\w\.-]+@[\w\.-]+'
 
 
 
   def extractAddress(s):
       if type(s) not in [str, unicode]:
           return s
-      m = match(REGEX_EXTRACT_EMAIL, s)
-      if m and m.groups():
-          return m.group(1)
       else:
-          return s
+          return re.findall(REGEX_EXTRACT_EMAIL,s)
 
   def dataToMD(emailData):
       md = "### Results:\n"
