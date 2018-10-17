@@ -1826,5 +1826,3 @@ script:
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
 releaseNotes: "Fixed outputs, added catalog task ticket type"
-tests:
-    - None
