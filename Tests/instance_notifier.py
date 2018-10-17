@@ -89,8 +89,7 @@ def test_instances(secret_conf_path, server, username, password):
 
         instance_id = __create_integration_instance(c, integration_name, integration_params, is_byoi)
         if not instance_id:
-            print_error('Failed to create instance')
-            __delete_integrations_instances(c, instance_ids)
+            print_error('Failed to create instance of %s' % (integration_name,))
             failed_integration.append(integration_name)
         else:
             instance_ids.append(instance_id)
