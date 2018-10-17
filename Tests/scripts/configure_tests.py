@@ -15,6 +15,7 @@ import json
 from subprocess import Popen, PIPE
 
 # Search Keyword for the changed file
+RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'Forgive me for my sins but I did not create any test'
 
 # file types regexes
@@ -214,14 +215,13 @@ def find_tests_for_modified_files(modified_files):
     tests, test_names, missing_ids = collect_tests(script_ids, playbook_ids, intergration_ids)
 
     test_names.append(NO_TESTS_FORMAT)
+    test_names.append(RUN_ALL_TESTS_FORMAT)
     # Search for tests section
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
-        if tests_from_file:
-            missing_ids = missing_ids - set([file_path])
-
         for test in tests_from_file:
             if test in test_names:
+                missing_ids = missing_ids - set([file_path])
                 tests.add(test)
             else:
                 message = "The test '{0}' does not exist, please re-check your code".format(test)
