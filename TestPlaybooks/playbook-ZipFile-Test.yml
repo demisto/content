@@ -1,5 +1,5 @@
 id: 270e9681-9775-43ef-8eed-5735df6bd156
-version: 34
+version: 38
 name: ZipFile-Test
 description: Test ZipFile and UnzipFile scripts
 starttaskid: "0"
@@ -132,40 +132,6 @@ tasks:
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: 5ec42902-9d57-4034-8d26-b6dba40fe345
-    type: condition
-    task:
-      id: 5ec42902-9d57-4034-8d26-b6dba40fe345
-      version: -1
-      name: VerifySuccessfulCycle
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.[2].Info
-            iscontext: true
-          right:
-            value:
-              simple: application/zip
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 570
-        }
-      }
-    note: false
   "8":
     id: "8"
     taskid: 30c92aa8-4bfb-4795-828f-f76201ca4a30
@@ -181,7 +147,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     scriptarguments:
       entryID:
         simple: ${File.[1].EntryID}
@@ -285,7 +251,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "13"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
@@ -299,40 +265,6 @@ tasks:
         "position": {
           "x": 900,
           "y": 240
-        }
-      }
-    note: false
-  "12":
-    id: "12"
-    taskid: 6774be3c-06f2-46da-8381-0234c524d434
-    type: condition
-    task:
-      id: 6774be3c-06f2-46da-8381-0234c524d434
-      version: -1
-      name: VerifySuccessfulCycle
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.[1].Info
-            iscontext: true
-          right:
-            value:
-              simple: image/jpeg
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 570
         }
       }
     note: false
@@ -425,7 +357,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "17"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
@@ -439,40 +371,6 @@ tasks:
         "position": {
           "x": 1340,
           "y": 240
-        }
-      }
-    note: false
-  "16":
-    id: "16"
-    taskid: 00ce7d19-6e78-4ab4-8f0d-944a6aab9a3f
-    type: condition
-    task:
-      id: 00ce7d19-6e78-4ab4-8f0d-944a6aab9a3f
-      version: -1
-      name: VerifySuccessfulCycle
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.[1].Info
-            iscontext: true
-          right:
-            value:
-              simple: image/jpeg
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 570
         }
       }
     note: false
@@ -497,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 750
+          "y": 400
         }
       }
     note: false
@@ -506,7 +404,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1045,
+        "height": 695,
         "width": 1270,
         "x": 450,
         "y": -200
