@@ -3,7 +3,7 @@
 echo "start instance test"
 
 USERNAME="admin"
-PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminNewPassword')
+PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminPassword')
 
 # remove quotes from password
 temp="${PASSWORD%\"}"
