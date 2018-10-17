@@ -7,15 +7,20 @@ SERVER_IP=$(cat public_ip)
 SERVER_URL="https://$SERVER_IP"
 CONF_PATH="./Tests/conf.json"
 USERNAME="admin"
-PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminPassword')
+OLD_PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminPassword')
+NEW_PASSWORD=$(cat $SECRET_CONF_PATH | jq '.adminNewPassword')
 
 # remove quotes from password
-temp="${PASSWORD%\"}"
+temp="${OLD_PASSWORD%\"}"
 temp="${temp#\"}"
-PASSWORD=$temp
+OLD_PASSWORD=$temp
 
+# remove quotes from password
+temp2="${NEW_PASSWORD%\"}"
+temp2="${temp2#\"}"
+NEW_PASSWORD=$temp2
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
 echo "Starts tests with server url - $SERVER_URL"
-python ./Tests/test_content.py -u "$USERNAME" -p "$PASSWORD" -s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CIRCLE_BUILD_NUM" -g "$CIRCLE_BRANCH"
+python ./Tests/test_content.py -u "$USERNAME" -p "$OLD_PASSWORD" -k "$NEW_PASSWORD"-s "$SERVER_URL" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CIRCLE_BUILD_NUM" -g "$CIRCLE_BRANCH"
