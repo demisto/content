@@ -1224,6 +1224,109 @@ script:
             raise  # Let the other error hadling logic deal with it
 
 
+    def get_cs_error(stderr):
+        return {
+            "Type": entryTypes["error"],
+            "ContentsFormat": formats["text"],
+            "Contents" : stderr
+        } if stderr else None
+
+    def get_cs_status(search_name, status):
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'Search {} status: {}'.format(search_name, status),
+            'EntryContext': {
+                'EWS.ComplianceSearch(val.Name === obj.Name)': {'Name': search_name, 'Status': status}
+            }
+        }
+
+    def start_compliance_search(query):
+        if not 'outlook.office365.com' in EWS_SERVER:
+            raise Exception("This command is only supported for Office 365")
+        output = subprocess.Popen(["pwsh","/usr/local/office365startcompliancesearch.ps1", USERNAME, PASSWORD, query], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+
+        if stderr:
+            return get_cs_error(sterr)
+
+        prefix = '"Action status: '
+        pref_ind = stdout.find(prefix)
+        sub_start = pref_ind + len(prefix)
+        sub_end = sub_start + 45
+        search_name = stdout[sub_start:sub_end]
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'Search started: {}'.format(search_name),
+            'EntryContext': {
+                'EWS.ComplianceSearch': {'Name': search_name, 'Status': 'Starting'}
+            }
+        }
+
+    def get_compliance_search(search_name):
+        if not 'outlook.office365.com' in EWS_SERVER:
+            raise Exception("This command is only supported for Office 365")
+        output = subprocess.Popen(["pwsh","/usr/local/office365getcompliancesearch.ps1", USERNAME, PASSWORD, search_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+
+        if stderr:
+            return get_cs_error(sterr)
+
+        stdout = stdout.split('\n', 1)
+        results = [get_cs_status(search_name, stdout[0])]
+
+        if stdout[0] == 'Completed':
+            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
+            res = map(lambda x: {k: v for k,v in (s.split(': ') for s in x)}, res)
+            results.append(
+                {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': stdout,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Office 365 Compliance search results', res, ['Location', 'Item count', 'Total size'])
+                }
+            )
+
+        return results
+
+
+    def purge_compliance_search(search_name):
+        if not 'outlook.office365.com' in EWS_SERVER:
+            raise Exception("This command is only supported for Office 365")
+        output = subprocess.Popen(["pwsh","/usr/local/office365compliancesearchstartpurge.ps1", USERNAME, PASSWORD, search_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+
+        if stderr:
+            return get_cs_error(sterr)
+
+        return get_cs_status(search_name, 'Purging')
+
+
+    def check_purge_compliance_search(search_name):
+        if not 'outlook.office365.com' in EWS_SERVER:
+            raise Exception("This command is only supported for Office 365")
+        output = subprocess.Popen(["pwsh","/usr/local/office365compliancesearchcheckpurge.ps1", USERNAME, PASSWORD, search_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+
+        if stderr:
+            return get_cs_error(sterr)
+
+        return get_cs_status(search_name, 'Purged' if stdout.split('\n')[-2] == 'Completed' else 'Purging')
+
+
+    def remove_compliance_search(search_name):
+        if not 'outlook.office365.com' in EWS_SERVER:
+            raise Exception("This command is only supported for Office 365")
+        output = subprocess.Popen(["pwsh","/usr/local/office365removecompliancesearch.ps1", USERNAME, PASSWORD, search_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+
+        if stderr:
+            return get_cs_error(sterr)
+
+        return get_cs_status(search_name, 'Removed')
+
 
     def test_module():
         try:
@@ -1291,6 +1394,16 @@ script:
             encode_and_submit_results(get_items(**args))
         elif demisto.command() == 'ews-get-folder':
             encode_and_submit_results(get_folder(**args))
+        elif demisto.command() == 'ews-start-compliance-search':
+            encode_and_submit_results(start_compliance_search(**args))
+        elif demisto.command() == 'ews-get-compliance-search':
+            encode_and_submit_results(get_compliance_search(**args))
+        elif demisto.command() == 'ews-purge-compliance-search-results':
+            encode_and_submit_results(purge_compliance_search(**args))
+        elif demisto.command() == 'ews-get-compliance-search-purge-status':
+            encode_and_submit_results(check_purge_compliance_search(**args))
+        elif demisto.command() == 'ews-remove-compliance-search':
+            encode_and_submit_results(remove_compliance_search(**args))
 
 
     except Exception, e:
@@ -1967,7 +2080,7 @@ script:
     description: Start compliance search
   - name: ews-get-compliance-search
     arguments:
-    - name: searchName
+    - name: search-name
       required: true
       default: true
       description: Name of the compliance search
@@ -1977,7 +2090,7 @@ script:
     description: Get compliance search status and results
   - name: ews-purge-compliance-search-results
     arguments:
-    - name: searchName
+    - name: search-name
       required: true
       default: true
       description: Name of the compliance search
@@ -1988,7 +2101,7 @@ script:
     description: Purges the results found by the compliance search
   - name: ews-remove-compliance-search
     arguments:
-    - name: searchName
+    - name: search-name
       required: true
       default: true
       description: Name of the compliance search
@@ -1997,6 +2110,16 @@ script:
       description: The status of the compliance search
       type: string
     description: Remove the compliance search
+  - name: ews-get-compliance-search-purge-status
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+    description: Check the status of the purge operation on the compliance search.
   dockerimage: demisto/py-ews:3.0
   isfetch: true
   runonce: false
