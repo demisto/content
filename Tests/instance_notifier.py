@@ -48,7 +48,7 @@ def options_handler():
     parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file', required=True)
-    parser.add_argument('-s', '--server', help='The server URL to connect to', required=True)
+    parser.add_argument('-c', '--server', help='The server URL to connect to', required=True)
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     options = parser.parse_args()
