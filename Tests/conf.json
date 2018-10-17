@@ -654,6 +654,7 @@
         "search_endpoints_by_hash_-_generic_-_test"
     ],
     "skipped_integrations": [
+        "McAfee Advanced Threat Defense",
         "Symantec Endpoint Protection",
         "RedLock",
         "Symantec Messaging Gateway",
