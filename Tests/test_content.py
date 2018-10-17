@@ -28,7 +28,7 @@ def str2bool(v):
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
-    parser.add_argument('-p', '--password', help='The password for the login', required=True)
+    parser.add_argument('-p', '--oldPassword', help='The old password for the login', required=True)
     parser.add_argument('-s', '--server', help='The server URL to connect to', required=True)
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
@@ -37,6 +37,7 @@ def options_handler():
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
+    parser.add_argument('-k', '--NewPassword', help='The new password', required=True)
     options = parser.parse_args()
 
     return options
@@ -251,7 +252,8 @@ def load_conf_files(conf_path, secret_conf_path):
 def main():
     options = options_handler()
     username = options.user
-    password = options.password
+    old_password = options.oldPassword
+    new_password = options.NewPassword
     server = options.server
     conf_path = options.conf
     secret_conf_path = options.secret
@@ -265,12 +267,13 @@ def main():
         print_error('You must provide server user & password arguments')
         sys.exit(1)
 
-    c = demisto.DemistoClient(None, server, username, password)
+    c = demisto.DemistoClient(None, server, username, old_password)
     res = c.Login()
     if res.status_code is not 200:
         print_error("Login has failed with status code " + str(res.status_code))
         sys.exit(1)
 
+    update_password(c, username, new_password)
     demisto_api_key = generate_demisto_api_key(c)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
