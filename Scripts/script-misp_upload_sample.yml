@@ -57,4 +57,3 @@ scripttarget: 0
 dependson:
   must:
   - internal-misp-upload-sample
-releaseNotes: "-"
