@@ -1459,4 +1459,3 @@ script:
   isfetch: true
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Added count tickets and get ids commands"

@@ -562,6 +562,5 @@ script:
     description: Get a list of incidents
   dockerimage: demisto/symantec_mss
   isfetch: true
-releaseNotes: "Fix proxy handling"
 tests:
     - SymantecMSSTest
