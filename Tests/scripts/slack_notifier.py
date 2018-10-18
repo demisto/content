@@ -179,7 +179,7 @@ if __name__ == "__main__":
     if options.nightly:
         slack_notifier(options.url, options.buildNumber, options.slack, options.circleci)
     else:
-        print_color("Not nightly build, stopping Slack Notifications about Content buile", LOG_COLORS.RED)
+        print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
     os.remove('./Tests/failed_tests.txt')
     os.remove('./Tests/skipped_tests.txt')
