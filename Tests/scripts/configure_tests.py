@@ -244,7 +244,9 @@ def find_tests_for_modified_files(modified_files):
 
 def get_test_list(modified_files, modified_tests_list, all_tests):
     """Create a test list that should run"""
-    tests = find_tests_for_modified_files(modified_files)
+    tests = set([])
+    if modified_files:
+        tests = find_tests_for_modified_files(modified_files)
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
@@ -254,7 +256,7 @@ def get_test_list(modified_files, modified_tests_list, all_tests):
     if all_tests:
         tests.add("Run all tests")
 
-    if not tests:
+    if not tests and (modified_files or modified_tests_list or all_tests):
         print_color("There are no tests that check the changes you've done, please make sure you write one", LOG_COLORS.RED)
         sys.exit(1)
 
