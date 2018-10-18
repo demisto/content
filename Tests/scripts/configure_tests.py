@@ -101,7 +101,7 @@ def collect_ids(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('id', ['-', ])
+        return data_dictionary.get('id', '-')
 
 
 def get_tests(file_path):
@@ -221,7 +221,12 @@ def find_tests_for_modified_files(modified_files):
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
             if test in test_names:
-                missing_ids = missing_ids - set([file_path])
+                if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                    id = get_script_or_integration_id(file_path)
+                else:
+                    id = collect_ids(file_path)
+
+                missing_ids = missing_ids - set([id])
                 tests.add(test)
             else:
                 message = "The test '{0}' does not exist, please re-check your code".format(test)
