@@ -176,6 +176,50 @@ script:
     IS_TEST_MODULE = False
     BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 
+
+    # Exchange 2010 Fixes:
+    def fix_2010():
+        if 'target-mailbox' in demisto.args():
+            account = get_account(demisto.args()['target_mailbox'])
+        else:
+            account = get_account(ACCOUNT_EMAIL)
+        if account.protocol.version.build <= EXCHANGE_2010_SP2:
+            for m in (Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact, exchangelib.items.DistributionList, exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest, exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+                for i,f in enumerate(m.FIELDS):
+                    if f.name == 'text_body':
+                        m.FIELDS.pop(i)
+                        break
+            for m in (exchangelib.Folder, exchangelib.folders.Inbox):
+                for i,f in enumerate(m.FIELDS):
+                    if f.name == 'unread_count':
+                        m.pop(i)
+                        break
+
+            def repr1(self):
+                return self.__class__.__name__ + \
+                    repr((self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.id, self.changekey))
+
+            def repr2(self):
+                return self.__class__.__name__ + \
+                    repr((self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey))
+
+            def repr3(self):
+                return self.__class__.__name__ + \
+                       repr((self.account, '[self]', self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey))
+
+            exchangelib.Folder.__repr__ = repr1
+            exchangelib.folders.Inbox.__repr__ = repr2
+            exchangelib.folders.RootOfHierarchy.__repr__ = repr3
+            exchangelib.folders.Root.__repr__ = repr3
+
+    fix_2010()
+
+    # Collect exchange debug log to a stringIO
+    log_stream = StringIO()
+
+    logging.basicConfig(stream=log_stream, level=logging.DEBUG)
+
+
     def str_to_unicode(obj):
         if isinstance(obj, dict):
             obj = {k: str_to_unicode(v) for k,v in obj.iteritems()}
@@ -1179,46 +1223,6 @@ script:
         if 'unread_count' in map(lambda x: x.name, exchangelib.Folder.FIELDS):
             f_entry['unreadCount'] = f.unread_count
         return f_entry
-
-
-    def fix_2010_errors(**kwargs):
-        if 'target_mailbox' in kwargs and kwargs['target_mailbox']:
-            account = get_account(kwargs['target_mailbox'])
-        else:
-            account = get_account(ACCOUNT_EMAIL)
-        if account.protocol.version.build <= EXCHANGE_2010_SP2:
-            for i,f in enumerate(Item.FIELDS):
-                if f.name == 'text_field':
-                    Item.FIELDS.pop(i)
-                    break
-            for i,f in enumerate(Message.FIELDS):
-                if f.name == 'text_field':
-                    Message.FIELDS.pop(i)
-                    break
-            for i,f in enumerate(exchangelib.Folder.FIELDS):
-                if f.name == 'unread_count':
-                    exchangelib.Folder.FIELDS.pop(i)
-                    break
-            for i,f in enumerate(exchangelib.folders.Inbox.FIELDS):
-                if f.name == 'unread_count':
-                    exchangelib.folders.Inbox.FIELDS.pop(i)
-                    break
-
-            class Folder2(exchangelib.Folder):
-                def __repr__(self):
-                    return self.__class__.__name__ + \
-                        repr((self.root, self.name, self.total_count, self.child_folder_count,
-                            self.folder_class, self.id, self.changekey))
-
-            exchangelib.Folder = Folder2
-
-            class Inbox2(exchangelib.folders.Inbox):
-                def __repr__(self):
-                    return self.__class__.__name__ + \
-                        repr((self.root, self.name, self.total_count, self.child_folder_count,
-                            self.folder_class, self.id, self.changekey))
-
-            exchangelib.folders.Inbox = Inbox2
 
 
     def test_module():
