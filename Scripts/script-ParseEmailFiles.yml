@@ -497,6 +497,7 @@ script: |-
           'Headers': '\n'.join(headers),
           'Attachments': '' if not attachments else ','.join(attachments)
       }
+      emailData['ToCount'] = 1 if not isinstance(emailData['To'], list) else len(emailData['To'])
 
       return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
           'EntryContext': {'Email': emailData}}]
@@ -573,6 +574,8 @@ script: |-
               'Attachments': '' if not attachments else ','.join(attachments),
               'Format': eml.get_content_type()
           }
+          emailData['ToCount'] = 1 if not isinstance(emailData['To'], list) else len(emailData['To'])
+
           return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
               'EntryContext': {'Email': emailData}}]
 
