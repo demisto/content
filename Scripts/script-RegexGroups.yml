@@ -52,5 +52,3 @@ args:
     (Comma-separated values supported)
 scripttarget: 0
 runonce: false
-tests:
-  - RegexGroups Test
