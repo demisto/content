@@ -975,6 +975,5 @@ script:
   dockerimage: demisto/rt-ir
   isfetch: true
   runonce: false
-releaseNotes: "Improved fetch incidents implementation and added rtir-add-reply command"
 tests:
   - RTIR Test
