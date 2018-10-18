@@ -24,9 +24,9 @@ PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
-PARTIAL_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
+BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX, PARTIAL_INTEGRATION_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX, BETA_INTEGRATION_REGEX]
 
 
 # File type regex
@@ -201,7 +201,7 @@ def find_tests_for_modified_files(modified_files):
             id = collect_ids(file_path)
             playbook_ids.add(id)
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(PARTIAL_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             id = get_script_or_integration_id(file_path)
             intergration_ids.add(id)
 
@@ -216,7 +216,7 @@ def find_tests_for_modified_files(modified_files):
             if test in test_names:
                 if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
                         re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                        re.match(PARTIAL_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                        re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
                     id = get_script_or_integration_id(file_path)
 
                 else:
