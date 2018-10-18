@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3a462079-516f-47ad-81e4-1fd3077f7481
+    taskid: c11c9a7c-02d4-455b-8efd-168153e3ae56
     type: start
     task:
-      id: 3a462079-516f-47ad-81e4-1fd3077f7481
+      id: c11c9a7c-02d4-455b-8efd-168153e3ae56
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: e1fc9d2a-dd77-4a8a-89f0-9ea9fa38c307
+    taskid: 8fbe9806-845f-477e-860a-589dc1700883
     type: regular
     task:
-      id: e1fc9d2a-dd77-4a8a-89f0-9ea9fa38c307
+      id: 8fbe9806-845f-477e-860a-589dc1700883
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -60,17 +60,17 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: f6f618c6-8e5b-47ae-87c4-ad4fb6fa6c6e
+    taskid: 705ef878-e764-438b-869c-dab5d69d93c2
     type: regular
     task:
-      id: f6f618c6-8e5b-47ae-87c4-ad4fb6fa6c6e
+      id: 705ef878-e764-438b-869c-dab5d69d93c2
       version: -1
       name: Get user information from current session
       description: Get logged in user
-      script: Threat Grid New|||threat-grid-who-am-i
+      script: Threat Grid|||threat-grid-who-am-i
       type: regular
       iscommand: true
-      brand: Threat Grid New
+      brand: Threat Grid
     nexttasks:
       '#none#':
       - "4"
@@ -86,22 +86,22 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 8b84f11e-205e-42d4-8796-48905fab68f2
+    taskid: be9ca341-49b2-4182-8e0f-4bb813993d98
     type: regular
     task:
-      id: 8b84f11e-205e-42d4-8796-48905fab68f2
+      id: be9ca341-49b2-4182-8e0f-4bb813993d98
       version: -1
       name: Get samples (limit of 1) from given time range
       description: Search samples on the Threat Grid platform. Input parameters are
         ANDed together. Only finished samples can be searched (that is, the ones that
         are having a status of succ or fail.)
-      script: Threat Grid New|||threat-grid-get-samples
+      script: Threat Grid|||threat-grid-get-samples
       type: regular
       iscommand: true
-      brand: Threat Grid New
+      brand: Threat Grid
     nexttasks:
       '#none#':
-      - "7"
+      - "12"
     scriptarguments:
       after:
         simple: 2018-07-01T00:00:00-0000
@@ -129,10 +129,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: cd560420-a769-4cbf-83c5-be4006a38a1d
+    taskid: 65668ac1-515d-47af-83cf-24d60cef39cf
     type: regular
     task:
-      id: cd560420-a769-4cbf-83c5-be4006a38a1d
+      id: 65668ac1-515d-47af-83cf-24d60cef39cf
       version: -1
       name: Get user rate limit
       description: Get rate limit for a specific user name. ThreatGrid employs a simple
@@ -140,10 +140,10 @@ tasks:
         which can be submitted within some variable time period by a user. Multiple
         rate limits can be employed to form overlapping submission limits. For example,
         20 submissions per hour AND 400 per day.
-      script: Threat Grid New|||threat-grid-user-get-rate-limit
+      script: Threat Grid|||threat-grid-user-get-rate-limit
       type: regular
       iscommand: true
-      brand: Threat Grid New
+      brand: Threat Grid
     scriptarguments:
       login:
         simple: ${ThreatGrid.User.Login}
@@ -158,21 +158,21 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 7254d3e8-74c0-47c1-8959-43d7f733dfc1
+    taskid: d0a3a370-a30d-4bdb-84fd-55461c11ab27
     type: regular
     task:
-      id: 7254d3e8-74c0-47c1-8959-43d7f733dfc1
+      id: d0a3a370-a30d-4bdb-84fd-55461c11ab27
       version: -1
       name: 'Download the sample '
       description: Download a sample by using its ID. The downloaded file is an archive
         of the sample itself, in a zip format as a form of quarantine.
-      script: Threat Grid New|||threat-grid-download-sample-by-id
+      script: Threat Grid|||threat-grid-download-sample-by-id
       type: regular
       iscommand: true
-      brand: Threat Grid New
+      brand: Threat Grid
     nexttasks:
       '#none#':
-      - "8"
+      - "18"
     scriptarguments:
       id:
         simple: ${ThreatGrid.Sample.ID}
@@ -181,26 +181,26 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 545
+          "y": 720
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: 6bc6edee-72c4-4a28-8e79-eea0fa34fe26
+    taskid: 6e41f0dd-8565-4c1e-8a22-7da74b248318
     type: regular
     task:
-      id: 6bc6edee-72c4-4a28-8e79-eea0fa34fe26
+      id: 6e41f0dd-8565-4c1e-8a22-7da74b248318
       version: -1
       name: Reupload the sample
       description: Submits a sample to threat grid for analysis
-      script: Threat Grid New|||threat-grid-upload-sample
+      script: Threat Grid|||threat-grid-upload-sample
       type: regular
       iscommand: true
-      brand: Threat Grid New
+      brand: Threat Grid
     nexttasks:
       '#none#':
-      - "9"
+      - "17"
     scriptarguments:
       file-id:
         simple: ${File.EntryID}
@@ -215,44 +215,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 720
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: c4647362-3a99-4e47-8e7c-2d2cfaf821e2
-    type: regular
-    task:
-      id: c4647362-3a99-4e47-8e7c-2d2cfaf821e2
-      version: -1
-      name: Sleep until analysis is done
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      seconds:
-        simple: "300"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 895
+          "y": 1100
         }
       }
     note: false
   "10":
     id: "10"
-    taskid: 2f58788e-b4ee-426a-8a0a-e574725c7dbe
+    taskid: 57ab6a57-5b86-4902-848a-37552c471ecc
     type: regular
     task:
-      id: 2f58788e-b4ee-426a-8a0a-e574725c7dbe
+      id: 57ab6a57-5b86-4902-848a-37552c471ecc
       version: -1
       name: threat-grid-organization-get-rate-limit
       description: Get rate limits applied to an organization. ThreatGrid employs
@@ -261,10 +233,10 @@ tasks:
         organization and/or per a license basis. Multiple rate limits can be employed
         to form overlapping submission limits. For example, 20 submissions per hour
         AND 400 per day.
-      script: Threat Grid New|||threat-grid-organization-get-rate-limit
+      script: Threat Grid|||threat-grid-organization-get-rate-limit
       type: regular
       iscommand: true
-      brand: Threat Grid New
+      brand: Threat Grid
     scriptarguments:
       adminLogin:
         simple: ${ThreatGrid.User.Login}
@@ -279,10 +251,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: c5b7c3c1-dc78-4bbd-83bc-b08fda50ab07
+    taskid: 92b30fc8-cbad-4a71-8d49-e2eef09bd5bc
     type: condition
     task:
-      id: c5b7c3c1-dc78-4bbd-83bc-b08fda50ab07
+      id: 92b30fc8-cbad-4a71-8d49-e2eef09bd5bc
       version: -1
       name: Check if user is admin
       scriptName: AreValuesEqual
@@ -310,10 +282,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 7fc9d00b-f1e5-4c54-88ed-bc8608c6fa4a
+    taskid: 9a7734b3-6b5f-4363-84a4-5975cd5fde6c
     type: condition
     task:
-      id: 7fc9d00b-f1e5-4c54-88ed-bc8608c6fa4a
+      id: 9a7734b3-6b5f-4363-84a4-5975cd5fde6c
       version: -1
       name: Verify that the sample state is succ
       scriptName: Exists
@@ -321,10 +293,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "14"
       "yes":
-      - "15"
+      - "7"
     scriptarguments:
       value:
         simple: ${ThreatGrid.Sample.State(val=='succ')}
@@ -333,51 +303,23 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1070
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: 57b56836-6d41-49c1-85aa-35ed78ec95ba
-    type: regular
-    task:
-      id: 57b56836-6d41-49c1-85aa-35ed78ec95ba
-      version: -1
-      name: Sleep until analysis is done
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      seconds:
-        simple: "300"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 797.5,
-          "y": 1245
+          "y": 545
         }
       }
     note: false
   "15":
     id: "15"
-    taskid: 06705e4b-663c-4e20-8cd5-4856ecbf57cc
+    taskid: 732139fc-670f-4ff9-8093-f68f5b29077c
     type: regular
     task:
-      id: 06705e4b-663c-4e20-8cd5-4856ecbf57cc
+      id: 732139fc-670f-4ff9-8093-f68f5b29077c
       version: -1
       name: threat-grid-get-threat-summary-by-id
       description: Returns a summary of the threats detected during analysis
-      script: Threat Grid New|||threat-grid-get-threat-summary-by-id
+      script: Threat Grid|||threat-grid-get-threat-summary-by-id
       type: regular
       iscommand: true
-      brand: Threat Grid New
+      brand: Threat Grid
     nexttasks:
       '#none#':
       - "16"
@@ -389,16 +331,16 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1595
+          "y": 1475
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 4975b612-35c9-4d68-81ca-aea41be1e84e
+    taskid: 2dbf860e-8c3b-449e-8a4d-f415ab1ad423
     type: condition
     task:
-      id: 4975b612-35c9-4d68-81ca-aea41be1e84e
+      id: 2dbf860e-8c3b-449e-8a4d-f415ab1ad423
       version: -1
       name: Check we have a score for this file
       scriptName: Exists
@@ -407,7 +349,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "19"
     scriptarguments:
       value:
         simple: ${ThreatGrid.Sample.Score}
@@ -416,70 +358,108 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1770
+          "y": 1650
         }
       }
     note: false
   "17":
     id: "17"
-    taskid: 07971c4a-ae93-4156-8bda-67147d1e139d
-    type: regular
+    taskid: 2aa16945-eb26-4c62-8a5f-15bf0b67ba32
+    type: playbook
     task:
-      id: 07971c4a-ae93-4156-8bda-67147d1e139d
+      id: 2aa16945-eb26-4c62-8a5f-15bf0b67ba32
       version: -1
-      name: closeInvestigation
-      description: Close the current investigation
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      duplicates: {}
-      id: {}
-      internalemail: {}
-      killchain: {}
-      lob: {}
-      outcome: {}
-      phishingjoshtest: {}
-      shiftnotes: {}
-      syfintenralid: {}
-      testarr: {}
-    separatecontext: false
+      Ids:
+        simple: ${ThreatGrid.Sample.ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: threat-grid-get-threat-summary-by-id
+      Timeout:
+        simple: "10"
+      dt:
+        simple: ThreatGrid.Sample(val.Score!==100).ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1945
+          "y": 1305
         }
       }
     note: false
   "18":
     id: "18"
-    taskid: b17ad7fa-84da-4da9-86fe-129c4db96bac
-    type: condition
+    taskid: 42b23177-a7e6-4b47-8130-7910269a8910
+    type: regular
     task:
-      id: b17ad7fa-84da-4da9-86fe-129c4db96bac
+      id: 42b23177-a7e6-4b47-8130-7910269a8910
       version: -1
-      name: Verify that the sample state is succ
-      scriptName: Exists
-      type: condition
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
-      - "15"
+      '#none#':
+      - "8"
     scriptarguments:
-      value:
-        simple: ${ThreatGrid.Sample.State(val=='succ')}
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: ThreatGrid
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 797.5,
-          "y": 1420
+          "x": 910,
+          "y": 890
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 3e0b3fea-bcf7-4fff-82ed-f518665a670b
+    type: title
+    task:
+      id: 3e0b3fea-bcf7-4fff-82ed-f518665a670b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1840
         }
       }
     note: false
@@ -488,7 +468,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1990,
+        "height": 1855,
         "width": 1240,
         "x": 50,
         "y": 50
