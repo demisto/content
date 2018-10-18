@@ -208,7 +208,6 @@ script:
             requests.append(r.json())
         return {'samples': samples, 'requests': requests}
 
-
     def get_sample_state_by_id():
         """
         Get the state of a sample given its id
@@ -599,8 +598,8 @@ script:
             dbots.append({
                 'Vendor': 'ThreatGrid',
                 'Type': 'IOC',
-                'Indicator': ioc['IOC'],
-                'Score': calc_score(ioc['Severity'])
+                'Indicator': k['ioc'],
+                'Score': calc_score(k['severity'])
             })
         md = tableToMarkdown('ThreatGrid Behavioral Indicators for sample: ' + demisto.getArg('id'), iocs, ['Title', 'Confidence', 'Severity', 'IOC', 'Tags', 'IOCCategory', 'Data.Path', 'Data.SHA256', 'Data.URL'])
         md += tableToMarkdown('DBot', dbots, ['Indicator', 'Score', 'Type', 'Vendor'])
@@ -746,7 +745,9 @@ script:
             'registry-key': 'registry_keys',
             'url': 'urls'
         }
-        r = req('GET', SUB_API + 'iocs/feeds/' + (name_conversion[name] or name), params=handle_filters())
+        requested_feed = name_conversion[name] if name in name_conversion else name
+        url = SUB_API + 'iocs/feeds/' + requested_feed
+        r = req('GET', url, params=handle_filters())
         demisto.results([
             {
                 'Type': entryTypes['note'],
@@ -766,25 +767,31 @@ script:
         if aid:
             url += '/' + aid
         r = req('GET', url)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': None,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        })
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {},
+                'HumanReadable': None,
+                'Contents': r.json(),
+                'ContentsFormat': formats['json']
+            },
+            fileResult(url, r.content)
+        ])
 
 
     def get_analysis_metadata():
         sample_id = demisto.getArg('id')
         r = req('GET', SUB_API + 'samples/' + sample_id + '/analysis/metadata')
-        demisto.results({
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': None,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        })
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {},
+                'HumanReadable': None,
+                'Contents': r.json(),
+                'ContentsFormat': formats['json']
+            },
+            fileResult(url, r.content)
+        ])
 
 
     def get_analysis_network_stream():
@@ -794,13 +801,16 @@ script:
         if nsid:
             url += '/' + nsid
         r = req('GET', url)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': None,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        })
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {},
+                'HumanReadable': None,
+                'Contents': r.json(),
+                'ContentsFormat': formats['json']
+            },
+            fileResult(url, r.content)
+        ])
 
 
     def get_analysis_process():
@@ -810,28 +820,16 @@ script:
         if pid:
             url += '/' + pid
         r = req('GET', url)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': None,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        })
-
-
-    def detonate_file():
-        demisto.args()['file-id'] = demisto.getArg('file-entry-id')
-        demisto.args()['filename'] = 'DetonatedFile-' + demisto.getArg('file-entry-id')
-        sample_id = upload_sample()
-        timer = 0
-        status = get_sample_state_helper([sample_id])['samples'][0]['State']
-        delay = float(demisto.getArg('delay'))
-        while status != 'succ' and timer < int(demisto.getArg('timeout')):
-            time.sleep(delay)
-            timer += delay
-            status = get_sample_state_helper([sample_id])['samples'][0]['State']
-        get_threat_summary_by_id()
-
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {},
+                'HumanReadable': None,
+                'Contents': r.json(),
+                'ContentsFormat': formats['json']
+            },
+            fileResult(url, r.content)
+        ])
 
     if demisto.command() == 'test-module':
         request = req('GET', USER_API + 'session/whoami')
@@ -842,9 +840,9 @@ script:
         download_sample()
     elif demisto.command() == 'threat-grid-get-samples':
         get_samples()
-    elif demisto.command() == 'threat-grid-get-sample-by-id' or demisto.command() == 'threat-grid-get-samples-state':
+    elif demisto.command() == 'threat-grid-get-sample-by-id':
         get_sample_by_id()
-    elif demisto.command() == 'threat-grid-get-sample-state-by-id':
+    elif demisto.command() == 'threat-grid-get-sample-state-by-id' or demisto.command() == 'threat-grid-get-samples-state':
         get_sample_state_by_id()
     elif demisto.command() == 'threat-grid-upload-sample':
         upload_sample()
