@@ -100,15 +100,12 @@ def copy_test_files(bundle_test):
         shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def main(circle_artifacts, is_nigthly):
+def main(circle_artifacts):
     print 'starting create content artifact ...'
 
     # version that separate post bundle from pre bundle
     # e.i. any yml with "fromversion" of <version_num> or more will be only on post bundle
     version_num = "3.5"
-
-    if is_nigthly:
-        CONTENT_DIRS.append('Partial_Integrations')
 
     print 'creating dir for bundles ...'
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
