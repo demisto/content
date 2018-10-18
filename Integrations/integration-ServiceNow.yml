@@ -483,7 +483,7 @@ script:
 
         return send_request(path, 'patch', body=body)
 
-    def query_command():
+    def query_tickets_command():
         sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
         sysparm_query = demisto.args().get('query')
         if not sysparm_query:
@@ -512,13 +512,47 @@ script:
         return entry
 
 
-    def query(ticket_type, sysparm_limit, sysparm_query):
+    def query_table_command():
+        table_name = demisto.args()['table_name']
+        sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
+        sysparm_query = demisto.args().get('query')
+        fields = demisto.args().get('fields')
+
+        res = query(table_name, sysparm_limit, sysparm_query)
+
+        if not res or 'result' not in res:
+            return 'No results found'
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json']
+        }
+
+        if fields:
+            fields = argToList(fields)
+            result = [dict(filter(lambda kv_pair: kv_pair[0] in fields, r.iteritems())) for r in res['result']]
+
+            if any(result):
+                entry['ReadableContentsFormat'] = formats['markdown']
+                entry['HumanReadable'] =  tableToMarkdown('ServiceNow query results for table: ' + table_name, result, removeNull=True)
+                entry['EntryContext'] = {
+                      'ServiceNow.Results': createContext(result)
+                }
+            else:
+                entry['ReadableContentsFormat'] = formats['text']
+                entry['HumanReadable'] = 'No such fields were found in the result'
+
+        return entry
+
+
+    def query(table_name, sysparm_limit, sysparm_query):
         query_params = {}
         query_params['sysparm_limit'] = sysparm_limit
         if sysparm_query:
             query_params['sysparm_query'] = sysparm_query
 
-        path = 'table/' + ticket_type
+        path = 'table/' + table_name
 
         return send_request(path, 'get', params = query_params)
 
@@ -1650,7 +1684,48 @@ script:
       description: Publish the link as comment on the ticket, if false will publish
         the link as WorkNote, format bool
     description: Add comment to specific ticket by providing ticket id
+  - name: servicenow-query-tickets
+    arguments:
+    - name: limit
+      description: Limit for how many tickets to retrieve
+      defaultValue: "10"
+    - name: sysparm_query
+      deprecated: true
+      description: Query
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      description: Ticket type
+      defaultValue: incident
+    - name: query
+      description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    outputs:
+    - contextPath: Ticket.ID
+      description: ServiceNow ticket System ID
+      type: string
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+      type: string
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+      type: string
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+      type: string
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
+    description: Retrieve ticket info with query
   - name: servicenow-query
+    deprecated: true
     arguments:
     - name: limit
       description: Limit for how many tickets to retrieve
@@ -1824,7 +1899,22 @@ script:
       description: Comments
       type: string
     description: query the cmdb_ci_computer table with a computer code
+  - name: servicenow-query-table
+    arguments:
+    - name: table_name
+      required: true
+      description: The name of the table to query
+    - name: limit
+      description: Limit for how many tickets to retrieve
+      defaultValue: "10"
+    - name: query
+      description: The query to run. For more information about querying in ServiceNow,
+        see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - name: fields
+      description: Table fields to display and output to the context
+      isArray: true
+    description: Query a specified table in ServiceNow
   isfetch: true
-releaseNotes: "Added catalog task ticket type to dropdown, errors now displayed more gracefully"
+releaseNotes: "Added command to query a specified table, mapped values to string"
 tests:
     - Run all tests
