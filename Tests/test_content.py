@@ -296,9 +296,10 @@ def main():
 
             continue
 
-        # Skip filtered test
-        if is_filter_configured and playbook_id not in filterd_tests:
-            continue
+        if not run_all_tests:
+            # Skip filtered test
+            if is_filter_configured and playbook_id not in filterd_tests:
+                continue
 
         # Skip bad test
         if playbook_id in skipped_tests_conf:
