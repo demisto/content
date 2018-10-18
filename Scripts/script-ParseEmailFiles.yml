@@ -7,7 +7,7 @@ script: |-
   from email import message_from_string
   from email.header import decode_header
   from base64 import b64decode
-  from re import match
+  import re
 
   # --- LICENSE -----------------------------------------------------------------
   #
@@ -35,7 +35,6 @@ script: |-
   import olefile as OleFile
   from email.parser import HeaderParser
   from email.parser import Parser as EmailParser
-  import re
 
   reload(sys)
   sys.setdefaultencoding('utf8')
@@ -438,15 +437,17 @@ script: |-
                   print("Directory: " + str(dir))
                   print("Contents: " + self._getStream(dir))
   ########################################################################################################################
-  REGEX_EXTRACT_EMAIL = r'[\w\.-]+@[\w\.-]+'
-
+  REGEX_EXTRACT_EMAIL = '<([^>]+)>'
 
 
   def extractAddress(s):
-      if type(s) not in [str, unicode]:
+      if not isinstance(s, STRING_TYPES):
           return s
+      m = re.findall(REGEX_EXTRACT_EMAIL, s)
+      if m:
+          return m
       else:
-          return re.findall(REGEX_EXTRACT_EMAIL,s)
+          return s
 
   def dataToMD(emailData):
       md = "### Results:\n"
@@ -496,6 +497,7 @@ script: |-
           'Headers': '\n'.join(headers),
           'Attachments': '' if not attachments else ','.join(attachments)
       }
+      emailData['ToCount'] = 1 if not isinstance(emailData['To'], list) else len(emailData['To'])
 
       return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
           'EntryContext': {'Email': emailData}}]
@@ -572,6 +574,8 @@ script: |-
               'Attachments': '' if not attachments else ','.join(attachments),
               'Format': eml.get_content_type()
           }
+          emailData['ToCount'] = 1 if not isinstance(emailData['To'], list) else len(emailData['To'])
+
           return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
               'EntryContext': {'Email': emailData}}]
 
