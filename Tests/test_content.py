@@ -163,6 +163,7 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
                               item["name"] == integration['name']]
         if integration_params:
             integration['params'] = integration_params[0].get('params', {})
+            integration['byoi'] = integration_params[0].get('byoi', True)
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
@@ -175,35 +176,18 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     integrations = []
     has_skipped_integration = False
     for integration in integrations_conf:
-        if type(integration) is dict:
-            name = integration.get('name')
-            if name in skipped_integrations_conf:
-                if name not in skipped_integration:
-                    skipped_integration.append(name)
+        if integration in skipped_integrations_conf:
+            if integration not in skipped_integration:
+                skipped_integration.append(integration)
 
-                has_skipped_integration = True
-                break
+            has_skipped_integration = True
+            break
 
-            # dict description
-            integrations.append({
-                'name': integration.get('name'),
-                'byoi': integration.get('byoi', True),
-                'params': {}
-            })
-        else:
-            if integration in skipped_integrations_conf:
-                if integration not in skipped_integration:
-                    skipped_integration.append(integration)
-
-                has_skipped_integration = True
-                break
-
-            # string description
-            integrations.append({
-                'name': integration,
-                'byoi': True,
-                'params': {}
-            })
+        # string description
+        integrations.append({
+            'name': integration,
+            'params': {}
+        })
 
     return has_skipped_integration, integrations
 
@@ -312,9 +296,10 @@ def main():
 
             continue
 
-        # Skip filtered test
-        if is_filter_configured and playbook_id not in filterd_tests:
-            continue
+        if not run_all_tests:
+            # Skip filtered test
+            if is_filter_configured and playbook_id not in filterd_tests:
+                continue
 
         # Skip bad test
         if playbook_id in skipped_tests_conf:

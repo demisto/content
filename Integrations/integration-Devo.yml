@@ -233,7 +233,7 @@ script:
         the first X elements of the query or reaching its end.
       defaultValue: "30"
     - name: writeToContext
-      description: Wether to write results to context or not
+      description: Whether to write results to context or not
       defaultValue: "true"
     outputs:
     - contextPath: Devo.Results

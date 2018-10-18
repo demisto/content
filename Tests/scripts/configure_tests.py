@@ -101,7 +101,7 @@ def collect_ids(file_path):
     data_dictionary = get_json(file_path)
 
     if data_dictionary:
-        return data_dictionary.get('id', ['-', ])
+        return data_dictionary.get('id', '-')
 
 
 def get_tests(file_path):
@@ -221,7 +221,12 @@ def find_tests_for_modified_files(modified_files):
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
             if test in test_names:
-                missing_ids = missing_ids - set([file_path])
+                if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                    id = get_script_or_integration_id(file_path)
+                else:
+                    id = collect_ids(file_path)
+
+                missing_ids = missing_ids - set([id])
                 tests.add(test)
             else:
                 message = "The test '{0}' does not exist, please re-check your code".format(test)
@@ -239,7 +244,9 @@ def find_tests_for_modified_files(modified_files):
 
 def get_test_list(modified_files, modified_tests_list, all_tests):
     """Create a test list that should run"""
-    tests = find_tests_for_modified_files(modified_files)
+    tests = set([])
+    if modified_files:
+        tests = find_tests_for_modified_files(modified_files)
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
@@ -249,7 +256,7 @@ def get_test_list(modified_files, modified_tests_list, all_tests):
     if all_tests:
         tests.add("Run all tests")
 
-    if not tests:
+    if not tests and (modified_files or modified_tests_list or all_tests):
         print_color("There are no tests that check the changes you've done, please make sure you write one", LOG_COLORS.RED)
         sys.exit(1)
 
