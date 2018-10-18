@@ -680,7 +680,7 @@ script:
 
 
     function getTicketAttachmentsEntries(ticket) {
-        var entries = []
+        var entries = [];
         if(!ticket.attachmentInfo || ticket.attachmentInfo.length === 0){
             return entries;
         }
@@ -1597,4 +1597,4 @@ script:
 fromversion: 3.6.0
 releaseNotes: "Added option to get ticket attachments"
 tests:
-    - None
+    - Run all tests
