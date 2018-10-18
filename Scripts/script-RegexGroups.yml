@@ -34,6 +34,8 @@ type: python
 tags:
 - transformer
 - string
+comment: Extraction of elements which are contained in all the subgroups of the match
+  to the pattern
 enabled: true
 args:
 - name: value
