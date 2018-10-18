@@ -86,14 +86,16 @@ def test_instances(secret_conf_path, server, username, password):
         integration_name = integration.get('name', None)
         integration_params = integration.get('params', None)
         is_byoi = integration.get('byoi', True)
+        has_integration = integration.get('has_integration', True)
 
-        instance_id = __create_integration_instance(c, integration_name, integration_params, is_byoi)
-        if not instance_id:
-            print_error('Failed to create instance of %s' % (integration_name,))
-            failed_integration.append(integration_name)
-        else:
-            instance_ids.append(instance_id)
-            print('Create integration %s succeed' % (integration_name,))
+        if has_integration:
+            instance_id = __create_integration_instance(c, integration_name, integration_params, is_byoi)
+            if not instance_id:
+                print_error('Failed to create instance of %s' % (integration_name,))
+                failed_integration.append(integration_name)
+            else:
+                instance_ids.append(instance_id)
+                print('Create integration %s succeed' % (integration_name,))
 
     return failed_integration, integrations_counter
 
