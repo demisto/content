@@ -674,11 +674,11 @@ script:
             get_report_command()
 
         elif demisto.command() == 'detonate-file': #deprecated, please use 'ATD - Detonate File' playbook
-            detonate(0, demisto.args()['upload'], demisto.args()['timeout'], demisto.args()['format'], demisto.args()['threshold'], demisto.args['fileName'])
+            detonate(0, demisto.args().get('upload'), demisto.args().get('timeout'), demisto.args().get('format'), demisto.args().get('threshold'), demisto.args.get('fileName'))
             #submit type for regular file is 0
 
         elif demisto.command() == 'detonate-url': #deprecated, please use 'Detonate URL - McAfee ATD_python' playbook
-            detonate(1, demisto.args()['url'], demisto.args()['timeout'], demisto.args()['format'], demisto.args()['threshold'], demisto.args['fileName'])
+            detonate(1, demisto.args()['url'], demisto.args().get('timeout'), demisto.args().get('format'), demisto.args().get('threshold')))
             #submit type for url submission is 1
 
         #elif demisto.command() == 'detonate-file-remote':
