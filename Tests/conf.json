@@ -3,8 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": ["Palo Alto Minemeld",
-                            "Panorama"],
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Panorama"
+            ],
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
@@ -32,10 +34,7 @@
             "playbookID": "Test Playbook McAfee ePO"
         },
         {
-            "integrations": {
-                "name": "activedir",
-                "byoi": false
-            },
+            "integrations": "activedir",
             "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
         {
@@ -173,12 +172,10 @@
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
-            "integrations": [{
-                "name": "Mail Sender (New)"
-            },{
-                "name": "google",
-                "byoi": false
-            }],
+            "integrations": [
+                "Mail Sender (New)",
+                "google"
+            ],
             "playbookID": "Mail Sender (New) Test"
         },
         {
@@ -241,10 +238,7 @@
             "playbookID": "sep_-_test_endpoint_search"
         },
         {
-            "integrations": {
-                "name": "carbonblackprotection",
-                "byoi": false
-            },
+            "integrations": "carbonblackprotection",
             "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
             "timeout": 500
         },
@@ -253,10 +247,7 @@
             "timeout": 240
         },
         {
-            "integrations": {
-                "name": "activedir",
-                "byoi": false
-            },
+            "integrations": "activedir",
             "playbookID": "account_enrichment_-_generic_test"
         },
         {
@@ -295,10 +286,7 @@
             "playbookID": "PostgreSQL Test"
         },
         {
-            "integrations": {
-                "name": "google",
-                "byoi": false
-            },
+            "integrations": "google",
             "playbookID": "GsuiteTest"
         },
         {
@@ -518,10 +506,7 @@
             "playbookID": "DNSDBTest"
         },
         {
-            "integrations": {
-                "name": "carbonblack-v2",
-                "byoi": true
-            },
+            "integrations": "carbonblack-v2",
             "playbookID": "CarbonBlackResponseTest"
         },
         {
@@ -613,10 +598,8 @@
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
-                {
-                    "name": "activedir",
-                    "byoi": false
-                }],
+                "activedir"
+            ],
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
@@ -624,14 +607,8 @@
             "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
-                {
-                    "name": "carbonblackprotection",
-                    "byoi": false
-                },
-                {
-                    "name": "carbonblack",
-                    "byoi": false
-                }
+                "carbonblackprotection",
+                "carbonblack"
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
