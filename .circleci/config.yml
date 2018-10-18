@@ -48,7 +48,9 @@ jobs:
           command: ./Documentation/commonServerDocs.sh
       - run:
           name: Create Content Artifacts
-          command: python content_creator.py $CIRCLE_ARTIFACTS
+          command: |
+              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+              python content_creator.py $CIRCLE_ARTIFACTS $IS_NIGHTLY
       - store_artifacts:
           path: artifacts
           destination: artifacts

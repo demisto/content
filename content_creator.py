@@ -9,7 +9,6 @@ CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'W
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
 TEST_DIR = 'TestPlaybooks'
-FILTER_CONF = "./Tests/filter_file.txt"
 
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
@@ -19,7 +18,6 @@ BUNDLE_TEST = 'bundle_test'
 ZIP_PRE = 'content_yml'
 ZIP_POST = 'content_new'
 ZIP_TEST = 'content_test'
-
 
 
 def is_ge_version(ver1, ver2):
@@ -77,6 +75,7 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
 
     print ' - total post files: %d' % (post_files, )
 
+
 def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     # handle *.json files
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
@@ -92,6 +91,7 @@ def copy_dir_files(*args):
     # handle *.yml files
     copy_dir_yml(*args)
 
+
 def copy_test_files(bundle_test):
     print 'copying test files to test bundle'
     scan_files = glob.glob(os.path.join(TEST_DIR, '*'))
@@ -100,12 +100,15 @@ def copy_test_files(bundle_test):
         shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def main(circle_artifacts):
+def main(circle_artifacts, is_nigthly):
     print 'starting create content artifact ...'
 
     # version that separate post bundle from pre bundle
     # e.i. any yml with "fromversion" of <version_num> or more will be only on post bundle
     version_num = "3.5"
+
+    if is_nigthly:
+        CONTENT_DIRS.append('Partial_Integrations')
 
     print 'creating dir for bundles ...'
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
@@ -137,7 +140,6 @@ def main(circle_artifacts):
     shutil.copyfile(ZIP_TEST + '.zip', os.path.join(circle_artifacts, ZIP_TEST + '.zip'))
 
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
-    shutil.copyfile(FILTER_CONF, os.path.join(circle_artifacts, 'filter_file.txt'))
 
     print 'finished create content artifact at %s' % (circle_artifacts, )
 
