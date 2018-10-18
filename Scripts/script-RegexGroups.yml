@@ -1,0 +1,54 @@
+commonfields:
+  id: RegexGroups
+  version: -1
+name: RegexGroups
+script: |
+  match_target = demisto.args()['value']
+  regex_pattern = re.compile(r'{}'.format(demisto.args()['regex']))
+  capture_groups = demisto.args().get('groups')
+  dict_keys = demisto.args().get('keys')
+
+  if capture_groups:
+      capture_groups = capture_groups.split(',')
+
+  if dict_keys:
+      dict_keys = dict_keys.split(',')
+
+  pattern_match = re.match(regex_pattern, match_target)
+  matches = []
+  if pattern_match:
+      for i in pattern_match.groups():
+          matches.append(i)
+
+  if capture_groups:
+      matches = [matches[int(x)] for x in capture_groups]
+
+  if dict_keys:
+      if len(dict_keys) != len(matches):
+          matches = 'Error: Number of keys does not match number of items'
+      else:
+          matches = dict(zip(dict_keys,matches))
+
+  demisto.results(matches)
+type: python
+tags:
+- transformer
+- string
+enabled: true
+args:
+- name: value
+  required: true
+  description: Text to match against
+- name: regex
+  required: true
+  description: Regex pattern to search given in Python
+- name: groups
+  description: Capture groups to return - if not provided, all will be returned. (Comma-separated
+    values supported)
+- name: keys
+  description: Key names to map to capture group items, ordered by capture groups.
+    (Comma-separated values supported)
+scripttarget: 0
+runonce: false
+tests:
+  - RegexGroups Test

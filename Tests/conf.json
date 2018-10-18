@@ -646,6 +646,9 @@
         {
             "integrations": "ActiveMQ",
             "playbookID": "ActiveMQ Test"
+        },
+        {
+            "integrations": "RegexGroups Test"
         }
     ],
     "skipped_tests": [

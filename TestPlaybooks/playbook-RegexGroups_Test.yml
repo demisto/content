@@ -1,0 +1,149 @@
+id: RegexGroups Test
+version: -1
+name: RegexGroups Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2811de25-b5ad-4a03-827d-63aca3323a87
+    type: start
+    task:
+      id: 2811de25-b5ad-4a03-827d-63aca3323a87
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 128bdce8-f043-4bca-878c-c035dadac83a
+    type: regular
+    task:
+      id: 128bdce8-f043-4bca-878c-c035dadac83a
+      version: -1
+      name: Set test data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: TestData
+      value:
+        simple: The quick brown fox
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 59513aa9-145d-4f1c-86bf-829801d3de5b
+    type: regular
+    task:
+      id: 59513aa9-145d-4f1c-86bf-829801d3de5b
+      version: -1
+      name: Set test output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Output
+      value:
+        complex:
+          root: TestData
+          transformers:
+          - operator: 37385158-1757-43c1-81d8-05ae4e770c71
+            args:
+              groups:
+                value:
+                  simple: 0,1
+              keys:
+                value:
+                  simple: article,noun
+              regex:
+                value:
+                  simple: (The)\s(quick).*(fox)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 46216352-bb4b-4454-8aec-dd896c4b1288
+    type: regular
+    task:
+      id: 46216352-bb4b-4454-8aec-dd896c4b1288
+      version: -1
+      name: Verify output
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '{"article":"The","noun":"quick"}'
+      fields: {}
+      path:
+        simple: Output
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
