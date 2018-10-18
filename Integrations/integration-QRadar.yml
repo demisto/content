@@ -545,6 +545,8 @@ script:
         demisto.results(get_reference_by_name_command())
     # elif demisto.command() == 'qradar-get-events':
         #TODO: Talk with Michal about implementation
+    else:
+        return_error('Unrecognized command: ' + demisto.command())
   type: python
   commands:
   - name: qradar-offenses
