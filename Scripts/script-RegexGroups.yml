@@ -58,4 +58,6 @@ args:
     (Comma-separated values supported) e.g. article,noun
 scripttarget: 0
 runonce: false
+tests:
+  - RegexGroups Test
 
