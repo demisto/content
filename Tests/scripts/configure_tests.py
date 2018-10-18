@@ -24,7 +24,7 @@ PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
-PARTIAL_INTEGRATION_REGEX = "partial_integrations.*integration-.*.yml"
+PARTIAL_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX, PARTIAL_INTEGRATION_REGEX]
 
