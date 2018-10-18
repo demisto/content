@@ -1764,7 +1764,7 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Retrieve ticket info with query
+    description: Deprecated. Please use servicenow-query-table or servicenow-query-tickets instead.
   - name: servicenow-incidents-query
     deprecated: true
     arguments:
