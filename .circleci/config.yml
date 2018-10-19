@@ -4,8 +4,8 @@ jobs:
     docker:
       - image: circleci/node:9.11
     environment:
-      CONTENT_VERSION: "18.9.2"
-      GIT_SHA1: "5c5e8ac47db85abc2134f87f7d0f4fdbc8de272f"
+      CONTENT_VERSION: "18.10.1"
+      GIT_SHA1: "ef73b78e1cb1749298a7d419f6d157a5643db33e"
     steps:
       - checkout
       - run:
@@ -77,6 +77,10 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: ./Tests/scripts/slack_notifier.sh
+          when: always
+      - run:
+          name: Instance Test
+          command: ./Tests/scripts/instance_test.sh
           when: always
       - run:
           name: Destroy Instances
