@@ -155,8 +155,8 @@ def validate_schema(file_path, matching_regex=None):
     print file_path + " doesn't match any of the known supported file prefix/suffix, please make sure that its naming is correct."
     return True
 
-def validate_committed_files():
-    files_string = run_git_command("git diff-index --name-status --cached HEAD")
+def validate_committed_files(branch_name):
+    files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
     modified_files = get_modified_files(files_string)
     missing_release_notes = False
     wrong_schema = False
@@ -200,6 +200,7 @@ def validate_all_files():
     if wrong_schema or found_wrong_name:
         sys.exit(1)    
 
+
 def main(argv):
     ''' 
     This script runs both in a local and a remote environment. In a local environment we don't have any 
@@ -207,17 +208,17 @@ def main(argv):
     Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
     so the user won't be disturbed by non critical loggings
     '''
-    only_committed_files = False
-    if len(argv) > 0:
-        only_committed_files = argv[0] and (argv[0] == True or argv[0].lower() == 'true')
+    branches = run_git_command("git branch")
+    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name = branch_name_reg.group(1)
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
-    if only_committed_files:
+    if branch_name != 'master':
         import logging
         logging.basicConfig(level=logging.CRITICAL)
 
         # validates only committed files
-        validate_committed_files()
+        validate_committed_files(branch_name)
     else:
         # validates all of Content repo directories according to their schemas
         validate_all_files()
