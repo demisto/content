@@ -263,7 +263,7 @@ script:
             for m in (exchangelib.Folder, exchangelib.folders.Inbox):
                 for i,f in enumerate(m.FIELDS):
                     if f.name == 'unread_count':
-                        m.pop(i)
+                        m.FIELDS.pop(i)
                         break
 
             def repr1(self):
@@ -280,7 +280,6 @@ script:
 
             exchangelib.Folder.__repr__ = repr1
             exchangelib.folders.Inbox.__repr__ = repr2
-            exchangelib.folders.RootOfHierarchy.__repr__ = repr3
             exchangelib.folders.Root.__repr__ = repr3
 
         start_logging()
@@ -1253,11 +1252,11 @@ script:
     def encode_and_submit_results(obj):
         demisto.results(str_to_unicode(obj))
 
-    try:
-        config = prepare()
-        args = prepare_args(demisto.args())
-        fix_2010()
 
+    config = prepare()
+    args = prepare_args(demisto.args())
+    try:
+        fix_2010()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
