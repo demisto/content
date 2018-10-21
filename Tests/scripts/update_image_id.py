@@ -5,6 +5,10 @@ import subprocess
 
 
 def main(confile):
+    with open(confile, 'r') as conf_file:
+        conf = json.load(conf_file)
+    print(json.dumps(conf))
+
     aws = subprocess.Popen(['aws', 'ec2', 'describe-images', '--filters', 'Name=name,Values=Demisto-Circle-CI-Content-Master*',
                             "--query", "'Images[*].[ImageId,CreationDate]'", "--output", "text"], stdout=subprocess.PIPE)
     aws.wait()
@@ -14,12 +18,10 @@ def main(confile):
     image_id.wait()
 
     image_id = image_id.stdout.read()
+    image_id = image_id.split()[0]
 
     print(image_id)
     print(confile)
-
-    with open(confile, 'r') as conf_file:
-        conf = json.load(conf_file)
 
     conf['ImageId'] = image_id
 
