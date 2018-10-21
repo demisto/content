@@ -65,16 +65,11 @@ script:
     """
 
     def set_proxies():
-
-        if demisto.params()['proxy']:
-            http = os.environ['http_proxy'] or os.environ['HTTP_PROXY']
-            https = os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-            proxies = {
-                'http': http,
-                'https': https
-            }
-            return proxies
-        return None
+        if not demisto.params().get('proxy', False):
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
 
     """
 
@@ -86,7 +81,6 @@ script:
     PASSWORD = demisto.params()['credentials']['password']
     USE_SSL = not demisto.params()['insecure']
     VERSION = demisto.params()['version']
-    PROXIES = set_proxies()
     GET_HEADERS = {
         'Accept': 'application/json'
     }
@@ -784,7 +778,6 @@ script:
                 url,
                 headers=GET_HEADERS,
                 verify=USE_SSL,
-                proxies=PROXIES,
                 auth=(USERNAME,PASSWORD)
             )
         except requests.exceptions.SSLError as e:
@@ -2199,8 +2192,7 @@ script:
 
         request_kwargs = {
             'headers': headers,
-            'verify': USE_SSL,
-            'proxies': PROXIES
+            'verify': USE_SSL
         }
 
         #add optional arguments if specified
@@ -2253,6 +2245,7 @@ script:
 
     """
 
+    set_proxies()
 
     command = demisto.command()
     LOG('Running command "{}"'.format(command))

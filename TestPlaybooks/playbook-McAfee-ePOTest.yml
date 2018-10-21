@@ -12,7 +12,6 @@ tasks:
       id: 9c17a635-9e99-417a-8c68-880d51d249ea
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: f5f66780-3252-4358-8ba0-a23a93f950af
+    taskid: 9d782edf-e520-4aea-89f0-4fdc5a62717d
     type: regular
     task:
-      id: f5f66780-3252-4358-8ba0-a23a93f950af
+      id: 9d782edf-e520-4aea-89f0-4fdc5a62717d
       version: -1
       name: epo-help
       description: print help on ePO commands
@@ -58,10 +57,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 27599254-2d14-43ad-8163-f835cf452254
+    taskid: cc7909c6-5df1-4ed1-8f99-03c27d0589a8
     type: regular
     task:
-      id: 27599254-2d14-43ad-8163-f835cf452254
+      id: cc7909c6-5df1-4ed1-8f99-03c27d0589a8
       version: -1
       name: epo-get-current-dat
       description: Check the existing DAT file version in ePO
@@ -83,10 +82,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: f36f5d04-31a2-4f10-81a5-9e298127277f
+    taskid: f894f664-e25c-4c41-85ad-3c33cd6c648a
     type: regular
     task:
-      id: f36f5d04-31a2-4f10-81a5-9e298127277f
+      id: f894f664-e25c-4c41-85ad-3c33cd6c648a
       version: -1
       name: epo-get-latest-dat
       description: Check the latest DAT file in McAfee repository
@@ -108,10 +107,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 2d0e4059-549c-407f-887b-2b2c3219e7fe
+    taskid: 69c6da75-438d-456f-8206-82543ec88da7
     type: regular
     task:
-      id: 2d0e4059-549c-407f-887b-2b2c3219e7fe
+      id: 69c6da75-438d-456f-8206-82543ec88da7
       version: -1
       name: epo-get-system-tree-group
       description: Get System Tree groups
@@ -141,7 +140,6 @@ tasks:
       id: 09f0aa2b-df1d-45a7-84dc-09f127a28095
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -150,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -188,10 +186,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 09e6bff7-74d7-47af-89a8-a52fd152f71d
+    taskid: 0611ceaf-3264-45cd-817d-e8bc928e0380
     type: regular
     task:
-      id: 09e6bff7-74d7-47af-89a8-a52fd152f71d
+      id: 0611ceaf-3264-45cd-817d-e8bc928e0380
       version: -1
       name: epo-update-client-dat
       description: Run client task to update the DAT file
@@ -201,7 +199,7 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "18"
+      - "5"
     scriptarguments:
       abortAfterMinutes: {}
       randomizationInterval: {}
@@ -221,10 +219,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 6db271f9-ffc0-4c09-82d3-97aa63262bbf
+    taskid: 1cb1bd51-d39a-4fc3-89e2-4e91de885a43
     type: regular
     task:
-      id: 6db271f9-ffc0-4c09-82d3-97aa63262bbf
+      id: 1cb1bd51-d39a-4fc3-89e2-4e91de885a43
       version: -1
       name: epo-update-repository
       description: Trigger a Server Task in specific ePO servers to pull latest signatures
@@ -247,10 +245,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 2e95d96f-03f6-479e-8ad1-0e22f2aae116
+    taskid: bd51bc8b-e4d9-4716-8378-c90d72c79f76
     type: regular
     task:
-      id: 2e95d96f-03f6-479e-8ad1-0e22f2aae116
+      id: bd51bc8b-e4d9-4716-8378-c90d72c79f76
       version: -1
       name: epo-find-systems
       description: Find systems in the System Tree - by group ID or by search
@@ -362,45 +360,12 @@ tasks:
         }
       }
     note: false
-  "18":
-    id: "18"
-    taskid: c42f531d-e8d4-4145-853e-ca5dad58b3ad
-    type: regular
-    task:
-      id: c42f531d-e8d4-4145-853e-ca5dad58b3ad
-      version: -1
-      name: epo-command
-      description: 'Execute ePO command. Run ''epo-help'' command to see a list available
-        commands. e.g:  !epo-command command="clienttask.find" commandArgs="searchText:On-demand".
-        You can also specify ''headers'' argument  to filter tables headers. e.g:
-        ''!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
-      script: epo|||epo-command
-      type: regular
-      iscommand: true
-      brand: epo
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      command:
-        simple: clienttask.find
-      commandArgs:
-        simple: searchText:On-demand
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 1960,
         "width": 380,
         "x": 50,
         "y": 50
