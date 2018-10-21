@@ -1964,6 +1964,10 @@ script:
         #validate the host name or agent ID was passed
         if not args.get('hostName') and not args.get('agentId'):
             raise ValueError('Please provide either agentId or hostName')
+
+        if not args.get('defaultSystemScript') and not args.get('script'):
+            raise ValueError('If the script is not provided, defaultSystemScript must be specified.')
+
         if args.get('script') and not args.get('scriptName'):
             raise ValueError('If the script is provided, script name must be specified as well.')
 
