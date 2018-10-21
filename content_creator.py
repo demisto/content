@@ -9,7 +9,6 @@ CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'W
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
 
 TEST_DIR = 'TestPlaybooks'
-FILTER_CONF = "./Tests/filter_file.txt"
 
 # temp folder names
 BUNDLE_PRE = 'bundle_pre'
@@ -19,7 +18,6 @@ BUNDLE_TEST = 'bundle_test'
 ZIP_PRE = 'content_yml'
 ZIP_POST = 'content_new'
 ZIP_TEST = 'content_test'
-
 
 
 def is_ge_version(ver1, ver2):
@@ -77,6 +75,7 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
 
     print ' - total post files: %d' % (post_files, )
 
+
 def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     # handle *.json files
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
@@ -91,6 +90,7 @@ def copy_dir_files(*args):
     copy_dir_json(*args)
     # handle *.yml files
     copy_dir_yml(*args)
+
 
 def copy_test_files(bundle_test):
     print 'copying test files to test bundle'
@@ -137,7 +137,6 @@ def main(circle_artifacts):
     shutil.copyfile(ZIP_TEST + '.zip', os.path.join(circle_artifacts, ZIP_TEST + '.zip'))
 
     shutil.copyfile('release-notes.txt', os.path.join(circle_artifacts, 'release-notes.txt'))
-    shutil.copyfile(FILTER_CONF, os.path.join(circle_artifacts, 'filter_file.txt'))
 
     print 'finished create content artifact at %s' % (circle_artifacts, )
 
