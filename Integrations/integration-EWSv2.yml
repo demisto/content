@@ -285,8 +285,6 @@ script:
 
         start_logging()
 
-    fix_2010()
-
     def str_to_unicode(obj):
         if isinstance(obj, dict):
             obj = {k: str_to_unicode(v) for k,v in obj.iteritems()}
@@ -1258,7 +1256,7 @@ script:
     try:
         config = prepare()
         args = prepare_args(demisto.args())
-        fix_2010_errors(**args)
+        fix_2010()
 
         if demisto.command() == 'test-module':
             test_module()
