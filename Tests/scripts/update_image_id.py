@@ -1,9 +1,16 @@
 import sys
 import json
 import argparse
+import subprocess
 
 
-def main(image_id, confile):
+def main(confile):
+    aws = subprocess.Popen(['aws', 'ec2', 'describe-images', '--filters', 'Name=name,Values=Demisto-Circle-CI-Content-Master*',
+                            "--query", "'Images[*].[ImageId,CreationDate]'", "--output", "text"],
+                                stdout=subprocess.PIPE)
+    sort = subprocess.Popen(['sort', '-k2', '-r'], stdin=aws.stdout, stdout=subprocess.PIPE)
+    image_id = subprocess.Popen(['head', '-n', '1'], stdin=sort.stdout)
+
     print(image_id)
     print(confile)
 
@@ -22,8 +29,8 @@ def main(image_id, confile):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Utility for updating image id')
-    parser.add_argument('-i', '--image', help='The image_id', required=True)
+    # parser.add_argument('-i', '--image', help='The image_id', required=True)
     parser.add_argument('-c', '--conf', help='The conf file', required=True)
     options = parser.parse_args()
 
-    main(options.image, options.conf)
+    main(options.conf)
