@@ -1,0 +1,122 @@
+id: Account Enrichment
+version: -1
+name: Account Enrichment
+fromversion: 2.5.0
+toversion: 3.1.0
+description: Enrich the accounts under the Account context key with details from relevant
+  integrations such as AD.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 065b25dc-7aad-4356-8bee-261b189251b3
+    type: start
+    task:
+      id: 065b25dc-7aad-4356-8bee-261b189251b3
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: be4d8a4d-14b5-4541-8d40-1df25ef145c6
+    type: condition
+    task:
+      id: be4d8a4d-14b5-4541-8d40-1df25ef145c6
+      version: -1
+      name: Is AD configured?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      value: ${modules.brand(val === 'activedir')}
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c205b05d-8d32-47e8-8f88-a5a2ce0e86fa
+    type: regular
+    task:
+      id: c205b05d-8d32-47e8-8f88-a5a2ce0e86fa
+      version: -1
+      name: Query AD to get user details
+      description: ""
+      scriptName: ADGetUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes: ""
+      customFieldData: ${Account.Email.Address}
+      customFieldType: mail
+      dn: ""
+      headers: ""
+      name: ""
+      nestedSearch: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 561f7e3c-e8cf-4f68-8bbe-64c7cb608995
+    type: title
+    task:
+      id: 561f7e3c-e8cf-4f68-8bbe-64c7cb608995
+      version: -1
+      name: User Enrichment Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

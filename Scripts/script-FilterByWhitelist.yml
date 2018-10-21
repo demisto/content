@@ -24,7 +24,7 @@ script: |
           hr = hr + item + " is in the list\n"
           whitlisted.append(item)
       else:
-          hr = hr + item + " is in on the list\n"
+          hr = hr + item + " is not part of the list\n"
           notwhitelisted.append(item)
 
 
