@@ -22,10 +22,8 @@ def main(image_id, confile):
     with open(image_id, 'r') as image_id_file:
         image_id_lines = image_id_file.readlines()
         image_id_lines = [line.strip('\n') for line in image_id_lines]
-        conf = json.load(conf_file)
         id = image_id_lines[0]
         id = id.split()[0]
-
 
     print(id)
     print(confile)
