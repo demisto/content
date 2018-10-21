@@ -6,10 +6,12 @@ import subprocess
 
 def main(confile):
     aws = subprocess.Popen(['aws', 'ec2', 'describe-images', '--filters', 'Name=name,Values=Demisto-Circle-CI-Content-Master*',
-                            "--query", "'Images[*].[ImageId,CreationDate]'", "--output", "text"],
-                                stdout=subprocess.PIPE)
+                            "--query", "'Images[*].[ImageId,CreationDate]'", "--output", "text"], stdout=subprocess.PIPE)
+    aws.wait()
     sort = subprocess.Popen(['sort', '-k2', '-r'], stdin=aws.stdout, stdout=subprocess.PIPE)
+    sort.wait()
     image_id = subprocess.Popen(['head', '-n', '1'], stdin=sort.stdout, stdout=subprocess.PIPE)
+    image_id.wait()
 
     image_id = image_id.stdout.read()
 
