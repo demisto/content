@@ -1255,8 +1255,8 @@ script:
 
     config = prepare()
     args = prepare_args(demisto.args())
+    fix_2010()
     try:
-        fix_2010()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
