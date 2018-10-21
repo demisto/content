@@ -8,14 +8,16 @@ aws configure set region us-west-2
 
 CONFFILE=$1
 
-#create instance
-#REQUEST_ID=$(aws ec2 request-spot-instances \
-#    --launch-specification file://${CONFFILE} \
-#    --query 'SpotInstanceRequests[0].SpotInstanceRequestId' | tr -d '"')
-
-REQUEST_ID=$(aws ec2 describe-images \
+IMAGE_ID=$(aws ec2 describe-images \
     --filters Name=name,Values=Demisto-Circle-CI-Content-Master* \
     --query 'Images[*].[ImageId,CreationDate]' --output text | sort -k2 -r | head -n1)
+
+python update_image_id.py ${IMAGE_ID} ${CONFFILE}
+
+#create instance
+REQUEST_ID=$(aws ec2 request-spot-instances \
+    --launch-specification file://${CONFFILE} \
+    --query 'SpotInstanceRequests[0].SpotInstanceRequestId' | tr -d '"')
 
 if [ -z "$REQUEST_ID" ]
 then

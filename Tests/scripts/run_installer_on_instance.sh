@@ -55,13 +55,13 @@ scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 
-#scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
-#scp -r ./TestPlaybooks/* ${USER}@${PUBLIC_IP}:~/TestPlaybooks
+scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
+scp -r ./TestPlaybooks/* ${USER}@${PUBLIC_IP}:~/TestPlaybooks
 
 # override exiting content with current
-#COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content_new.zip -d /usr/local/demisto/res \
-#    && sudo cp ~/TestPlaybooks/* /usr/local/demisto/res"
-#ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
+COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content_new.zip -d /usr/local/demisto/res \
+    && sudo cp ~/TestPlaybooks/* /usr/local/demisto/res"
+ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "start server"
 
