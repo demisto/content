@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Threat Grid",
+            "playbookID": "ThreatGridTest",
+            "timeout": 600
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -593,10 +598,6 @@
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
-        },
-        {
-            "integrations": "Threat Grid",
-            "playbookID": "ThreatGridTest"
         },
         {
             "integrations": [
