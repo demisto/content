@@ -89,7 +89,7 @@ script:
     # Format: {'OldName': 'NewName'}
 
     OFFENSES_NAMES_MAP = {'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType'}
-    SINGLE_OFFENSE_NAMES_MAP = {'credibility': 'Credibility', 'relevance': 'Relevance', 'severity': 'Severity', 'assigned_to': 'AssignedTo', 'destination_networks': 'DestinationHostname', 'status': 'Status', 'closing_user': 'ClosingUser', 'closing_reason': 'ClosingReason', 'close_time': 'CloseTime', 'categories': 'Categories', 'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'flow_count': 'FlowCount', 'offense_source': 'OffenseSource', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType', 'protected': 'Protected'}
+    SINGLE_OFFENSE_NAMES_MAP = {'credibility': 'Credibility', 'relevance': 'Relevance', 'severity': 'Severity', 'assigned_to': 'AssignedTo', 'destination_networks': 'DestinationHostname', 'status': 'Status', 'closing_user': 'ClosingUser', 'closing_reason_id': 'ClosingReason', 'close_time': 'CloseTime', 'categories': 'Categories', 'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'flow_count': 'FlowCount', 'offense_source': 'OffenseSource', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType', 'protected': 'Protected'}
     SEARCH_ID_NAMES_MAP = {'search_id': 'ID'}
     ASSET_PROPERTIES_NAMES_MAP = {'Unified Name': 'Name', 'CVSS Collateral Damage Potential': 'AggregatedCVSSScore', 'Weight': 'Weight'}
     ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {'Primary OS ID': 'OS'}
@@ -204,40 +204,53 @@ script:
             'occurred': occured
         }
 
-    def enrich_offense_result(response):
+    def enrich_offense_result(response, full_enrichment=False):
         enrich_offense_res_with_source_and_destination_address(response)
-        # Convert epoch to iso
-        for offense in response:
-            if 'start_time' in offense:
-                offense['start_time'] = epoch_to_ISO(offense['start_time'])
-            if 'last_updated_time' in offense:
-                offense['last_updated_time'] = epoch_to_ISO(offense['last_updated_time'])
-        return None
+        # Convert epoch to iso and closing_reason_id to closing reason name
+        if isinstance(response, list):
+            for offense in response:
+                enrich_offense_start_and_update_times(offense)
+                if full_enrichment:
+                    enrich_offense_closing_reason_id(offense)
+                if full_enrichment and 'closing_reason_id' in offense:
+                    offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
+        else:
+            enrich_offense_start_and_update_times(response)
+            if full_enrichment:
+                enrich_offense_closing_reason_id(response)
+
+        return response
 
     def enrich_offense_res_with_source_and_destination_address(response):
         src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
         enrich_source_addresses_dict(src_adrs)
         enrich_destination_addresses_dict(dst_adrs)
-        for offense in response:
-            if isinstance(offense['source_address_ids'], list):
-                for i in range(len(offense['source_address_ids'])):
-                    offense['source_address_ids'][i] = src_adrs[offense['source_address_ids'][i]]
-            if isinstance(offense['local_destination_address_ids'], list):
-                for i in range(len(offense['local_destination_address_ids'])):
-                    offense['local_destination_address_ids'][i] = dst_adrs[offense['local_destination_address_ids'][i]]
-        return None
+        if isinstance(response, list):
+            for offense in response:
+               enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
+        else:
+            enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
+        return response
 
     def extract_source_and_destination_addresses_ids(response):
         src_ids = {}
         dst_ids = {}
-        for offense in response:
-            if isinstance(offense['source_address_ids'], list):
-                for source_id in offense['source_address_ids']:
-                    src_ids[source_id] = source_id
-            if isinstance(offense['local_destination_address_ids'], list):
-                for destination_id in offense['local_destination_address_ids']:
-                    dst_ids[destination_id] = destination_id
+        if isinstance(response, list):
+            for offense in response:
+                populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids)
+        else:
+            populate_src_and_dst_dicts_with_single_offense(response, src_ids, dst_ids)
+
         return src_ids, dst_ids
+
+    def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
+        if isinstance(offense['source_address_ids'], list):
+            for source_id in offense['source_address_ids']:
+                src_ids[source_id] = source_id
+        if isinstance(offense['local_destination_address_ids'], list):
+            for destination_id in offense['local_destination_address_ids']:
+                dst_ids[destination_id] = destination_id
+        return None
 
     def enrich_source_addresses_dict(src_adrs):
         src_ids_str = dict_values_to_comma_seperated_string(src_adrs)
@@ -245,7 +258,7 @@ script:
         src_res = send_request('GET', source_url, AUTH_HEADERS)
         for src_adr in src_res:
             src_adrs[src_adr['id']] = src_adr['source_ip']
-        return None
+        return src_adrs
 
     def enrich_destination_addresses_dict(dst_adrs):
         dst_ids_str = dict_values_to_comma_seperated_string(dst_adrs)
@@ -254,6 +267,28 @@ script:
         dst_res = send_request('GET', destination_url, AUTH_HEADERS)
         for dst_adr in dst_res:
             dst_adrs[dst_adr['id']] = dst_adr['local_destination_ip']
+        return dst_adrs
+
+    def enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs):
+        if isinstance(offense['source_address_ids'], list):
+            for i in range(len(offense['source_address_ids'])):
+                offense['source_address_ids'][i] = src_adrs[offense['source_address_ids'][i]]
+        if isinstance(offense['local_destination_address_ids'], list):
+            for i in range(len(offense['local_destination_address_ids'])):
+                offense['local_destination_address_ids'][i] = dst_adrs[offense['local_destination_address_ids'][i]]
+
+        return None
+
+    def enrich_offense_closing_reason_id(offense):
+        if 'closing_reason_id' in offense:
+            offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
+
+    def enrich_offense_start_and_update_times(offense):
+        if 'start_time' in offense:
+            offense['start_time'] = epoch_to_ISO(offense['start_time'])
+        if 'last_updated_time' in offense:
+            offense['last_updated_time'] = epoch_to_ISO(offense['last_updated_time'])
+
         return None
 
     def send_request(method, url, headers=AUTH_HEADERS, params=None):
@@ -329,6 +364,14 @@ script:
             if closing_reason['text'] == closing_name:
                 return closing_reason['id']
         raise ValueError("Error: Given closing reason name doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
+
+    def convert_closing_reason_id_to_name(closing_id):
+        res = send_get_closing_reasons(include_deleted=True, include_reserved=True)
+        for closing_reason in res:
+            if closing_reason['id'] == closing_id:
+                return closing_reason['text']
+        raise ValueError("Error: Given closing reason id doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
+
 
     ''' Request/Response methods '''
 
@@ -415,8 +458,8 @@ script:
     ''' Command methods '''
 
     def test_module():
-        if not send_get_offenses_request('0-0'):
-            return_error('Encoutered error while trying to fetch offenses from sever.') #todo: adjust this with generic implementation of get offenses
+        if not send_get_offenses_request(_range='0-0'):
+            return_error('Encoutered error while trying to fetch offenses from sever.')
         return 'ok'
 
     def fetch_incidents():
@@ -444,12 +487,12 @@ script:
         res = send_get_offenses_request(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
         enrich_offense_result(res)
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
-        return get_entry_for_object('QRadar offenses', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)') #TODO: Make sure this key will act properly for lists
+        return get_entry_for_object('QRadar offenses', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
 
     def get_offense_by_id_command():
         offense_id = demisto.args().get('offense_id')
         res = send_get_offense_by_id_request(offense_id, demisto.args().get('filter'), demisto.args().get('fields'))
-        enrich_offense_result(res)
+        enrich_offense_result(res, full_enrichment=True)
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
         return get_entry_for_object('QRadar Offenses', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
 
@@ -461,6 +504,7 @@ script:
             raise ValueError('Invalid input - must provide closing reason name (may use "qradar-get-closing-reasons" command to get them) to close offense')
         offense_id = args.get('offense_id')
         res = send_update_offense_request(offense_id)
+        enrich_offense_result(res, full_enrichment=True)
         res = filter_dict_nonintersection_key_to_value(replace_keys(res, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
         return get_entry_for_object('QRadar Offense', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
 
@@ -545,8 +589,6 @@ script:
         demisto.results(get_reference_by_name_command())
     # elif demisto.command() == 'qradar-get-events':
         #TODO: Talk with Michal about implementation
-    else:
-        return_error('Unrecognized command: ' + demisto.command())
   type: python
   commands:
   - name: qradar-offenses
@@ -567,13 +609,11 @@ script:
     - contextPath: QRadar.Offense.Description
       description: The description of the offense.
     - contextPath: QRadar.Offense.SourceAddress
-      description: TODO_REQS_ANOTHER_CALL_TO_API(url + /siem/source_addresses?filter=id
-        in ({0},{1})) The source addresses that are associated with the offense.
+      description: The source addresses that are associated with the offense.
     - contextPath: QRadar.Offense.DestinatioAddress
-      description: TODO_REQS_ANOTHER_CALL_TO_API(url + siem/local_destination_addresses?filter=id
-        in ({0},{1})) The destination addresses that are associated with the offense.
+      description: The destination addresses that are associated with the offense.
     - contextPath: QRadar.Offense.StartTime
-      description: CONVERT_TO_ISO The time (ISO) when the offense was started.
+      description: The time (ISO) when the offense was started.
     - contextPath: QRadar.Offense.EventCount
       description: The number of events that are associated with the offense.
     - contextPath: QRadar.Offense.FlowCount
@@ -583,7 +623,7 @@ script:
     - contextPath: QRadar.Offense.Magnitude
       description: The magnitude of the offense.
     - contextPath: QRadar.Offense.LastUpdatedTime
-      description: CONVERT_TO_ISO The time (ISO) when the offense was last updated.
+      description: The time (ISO) when the offense was last updated.
     - contextPath: QRadar.Offense.OffenseType
       description: A number that represents the offense type
     description: Gets offenses from QRadar
@@ -609,15 +649,13 @@ script:
     - contextPath: QRadar.Offense.Severity
       description: The severity of the offense
     - contextPath: QRadar.Offense.SourceAddress
-      description: TODO_REQS_ANOTHER_CALL_TO_API(url + /siem/source_addresses?filter=id
-        in ({0},{1})) The source addresses that are associated with the offense.
+      description: The source addresses that are associated with the offense.
     - contextPath: QRadar.Offense.DestinatioAddress
-      description: TODO_REQS_ANOTHER_CALL_TO_API(url + siem/local_destination_addresses?filter=id
-        in ({0},{1})) The destination addresses that are associated with the offense.
+      description: The destination addresses that are associated with the offense.
     - contextPath: QRadar.Offense.AssignedTo
       description: The user the offense is assigned to.
     - contextPath: QRadar.Offense.StartTime
-      description: CONVERT_TO_ISO The time (ISO) when the offense was started.
+      description: The time (ISO) when the offense was started.
     - contextPath: QRadar.Offense.ID
       description: The ID of the offense.
     - contextPath: QRadar.Offense.DestinationHostname
@@ -727,13 +765,11 @@ script:
     - contextPath: QRadar.Offense.Description
       description: The description of the offense.
     - contextPath: QRadar.Offense.SourceAddress
-      description: TODO_REQS_ANOTHER_CALL_TO_API The source addresses that are associated
-        with the offense.
+      description: The source addresses that are associated with the offense.
     - contextPath: QRadar.Offense.DestinatioAddress
-      description: TODO_REQS_ANOTHER_CALL_TO_API The destination addresses that are
-        associated with the offense.
+      description: The destination addresses that are associated with the offense.
     - contextPath: QRadar.Offense.StartTime
-      description: CONVERT_TO_ISO The time (ISO) when the offense was started.
+      description: The time (ISO) when the offense was started.
     - contextPath: QRadar.Offense.EventCount
       description: The number of events that are associated with the offense.
     - contextPath: QRadar.Offense.FlowCount
@@ -743,7 +779,7 @@ script:
     - contextPath: QRadar.Offense.Magnitude
       description: The magnitude of the offense.
     - contextPath: QRadar.Offense.LastUpdatedTime
-      description: CONVERT_TO_ISO The time (ISO) when the offense was last updated.
+      description: The time (ISO) when the offense was last updated.
     - contextPath: QRadar.Offense.OffenseType
       description: A number that represents the offense type
     - contextPath: QRadar.Offense.Protected
