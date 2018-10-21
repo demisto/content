@@ -25,8 +25,9 @@ PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
 TEST_PLAYBOOK_REGEX = "TestPlaybooks.*playbook-.*.yml"
 TEST_NOT_PLAYBOOK_REGEX = "TestPlaybooks.(?!playbook).*-.*.yml"
+BETA_INTEGRATION_REGEX = "beta_integrations.*integration-.*.yml"
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX]
+CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX, BETA_INTEGRATION_REGEX]
 
 
 # File type regex
@@ -193,7 +194,6 @@ def collect_tests(script_ids, playbook_ids, intergration_ids):
 
 
 def find_tests_for_modified_files(modified_files):
-    id_to_path = {}
     script_ids = set([])
     playbook_ids = set([])
     intergration_ids = set([])
@@ -204,11 +204,10 @@ def find_tests_for_modified_files(modified_files):
         elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             id = collect_ids(file_path)
             playbook_ids.add(id)
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             id = get_script_or_integration_id(file_path)
             intergration_ids.add(id)
-
-        id_to_path[id] = file_path
 
     tests, test_names, missing_ids = collect_tests(script_ids, playbook_ids, intergration_ids)
 
@@ -219,8 +218,11 @@ def find_tests_for_modified_files(modified_files):
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
             if test in test_names:
-                if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
+                        re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                        re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
                     id = get_script_or_integration_id(file_path)
+
                 else:
                     id = collect_ids(file_path)
 
