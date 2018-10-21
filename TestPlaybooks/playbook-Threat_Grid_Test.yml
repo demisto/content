@@ -397,7 +397,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: ThreatGrid.Sample(val.Score!==100).ID
+        simple: ThreatGrid.Sample(val.Score===0).ID
     separatecontext: true
     loop:
       iscommand: false
