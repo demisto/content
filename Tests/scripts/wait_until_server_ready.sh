@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-echo "wait for 90 seconds until server is ready"
-sleep 90s
+#echo "wait for 90 seconds until server is ready"
+#sleep 90s
 
 SERVER_IP=$(cat public_ip)
 SERVER_URL="https://$SERVER_IP"

@@ -53,10 +53,6 @@ jobs:
           path: artifacts
           destination: artifacts
       - run:
-          name: Download Artifacts
-          command: |
-              ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-      - run:
           name: Download Configuration
           command: |
               ./Tests/scripts/download_demisto_conf.sh

@@ -10,8 +10,8 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 DEMISTO_LIC_PATH="./demisto.lic"
 echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 
-DEMISTO_SEVERCONF_PATH="./demisto.conf"
-echo ${DEMISTO_SEVERCONF_PATH} > demisto_conf_path
+# DEMISTO_SEVERCONF_PATH="./demisto.conf"
+# echo ${DEMISTO_SEVERCONF_PATH} > demisto_conf_path
 
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o "$SECRET_CONF_PATH"
@@ -30,9 +30,9 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic" -o "$DEMISTO_LIC_PATH"
 
-    echo "Downloading server conf file..."
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf" -o "$DEMISTO_SEVERCONF_PATH"
+    # echo "Downloading server conf file..."
+    # curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+    #   --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf" -o "$DEMISTO_SEVERCONF_PATH"
 
     echo "Downloading instance conf file..."
     if [ -n "${NIGHTLY}" ]
@@ -51,9 +51,9 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic?ref=$CIRCLE_BRANCH" -o "$DEMISTO_LIC_PATH"
 
-    echo "Downloading server conf file..."
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf?ref=$CIRCLE_BRANCH" -o "$DEMISTO_SEVERCONF_PATH"
+    # echo "Downloading server conf file..."
+    # curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+    #   --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf?ref=$CIRCLE_BRANCH" -o "$DEMISTO_SEVERCONF_PATH"
 
     echo "Downloading instance conf file..."
     if [ -n "${NIGHTLY}" ]
