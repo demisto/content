@@ -40,7 +40,33 @@ script: |-
   var indicatorsRes = executeCommand("findIndicators", {"query":query+" and investigationIDs:"+investigation.id,"size":1});
   if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0].Contents[0]) {
       // we have results, so we found a maliciuos indicator for this investigation
-      return 'yes';
+      if (parseInt(args.minVendor) > 1) {
+          var minVendor = parseInt(args.minVendor);
+          r = indicatorsRes[0].Contents;
+          for (i = 0; i < r.length; i++) {
+              var indicator = r[i];
+              var scores = indicator.insightCache.scores;
+              var vendors = Object.keys(scores);
+              var vendorPositiveCount = 0;
+              for (j = 0; j < vendors.length; j++) {
+                  var vendorScore = scores[vendors[j]].score;
+                  if (args.includeSuspicious == 'yes') {
+                      if (vendorScore >= 2) {
+                          vendorPositiveCount += 1;
+                      }
+                  } else {
+                      if (vendorScore >= 3) {
+                          vendorPositiveCount += 1;
+                      }
+                  }
+              }
+              if (vendorPositiveCount >= minVendor) {
+                  return 'yes';
+              }
+          }
+      } else {
+          return 'yes';
+      }
   }
   return 'no';
 type: javascript
@@ -61,9 +87,15 @@ args:
   defaultValue: "no"
 - name: maliciousQueryOverride
   description: Override the query to search for malicious indicators in Demisto
+- name: minVendor
+  description: 'Minimum vendor count that found a specific indicator as  Malicious for
+    it to be Malicious, default is 1, meaning if 1 vendor found malicious it''s then
+    it is malicious '
+  defaultValue: "1"
 outputs:
 - contextPath: "yes"
   description: if found any Malicious File/URL/IP in the investigation
 - contextPath: "no"
   description: if did not found any Malicious File/URL/IP in the investigation
 scripttarget: 0
+releaseNotes: "Support giving min vendor count for IsMaliciousIndicatorFound automation"
