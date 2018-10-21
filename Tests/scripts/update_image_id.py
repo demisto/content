@@ -1,12 +1,15 @@
 import sys
 import json
+import argparse
 
 
 def main(image_id, confile):
+    print(image_id)
+    print(confile)
+
     with open(confile, 'r') as conf_file:
         conf = json.load(conf_file)
 
-    print(image_id)
     conf['ImageId'] = image_id
 
     with open(confile, 'w') as conf_file:
@@ -18,4 +21,9 @@ def main(image_id, confile):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    parser = argparse.ArgumentParser(description='Utility for updating image id')
+    parser.add_argument('-i', '--image', help='The image_id', required=True)
+    parser.add_argument('-c', '--conf', help='The conf file', required=True)
+    options = parser.parse_args()
+
+    main(options.image, options.conf)
