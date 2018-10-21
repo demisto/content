@@ -2770,5 +2770,6 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
+releaseNotes: "Enforce passing either 'defaultSystemScript' argument or both 'script' and 'scriptName' arguments when running 'fireeye-hx-data-acquisition'"
 tests:
   - FireEye HX Test
