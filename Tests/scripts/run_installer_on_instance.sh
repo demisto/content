@@ -20,8 +20,8 @@ echo ${PUBLIC_IP} > public_ip
 #USER="centos"
 USER="ec2-user"
 
-echo "wait 90 seconds to ensure server is ready for ssh"
-sleep 90s
+#echo "wait 90 seconds to ensure server is ready for ssh"
+#sleep 90s
 
 echo "add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
@@ -32,8 +32,8 @@ ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 #scp ${INSTALLER} ${USER}@${PUBLIC_IP}:~/installer_files/installer.sh
 
 # copy licence to instance
-DEMISTO_LIC_PATH=$(cat demisto_lic_path)
-scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
+#DEMISTO_LIC_PATH=$(cat demisto_lic_path)
+#scp ${DEMISTO_LIC_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.lic
 
 #DEMISTO_SEVERCONF_PATH=$(cat demisto_conf_path)
 #scp ${DEMISTO_SEVERCONF_PATH} ${USER}@${PUBLIC_IP}:~/installer_files/demisto.conf
