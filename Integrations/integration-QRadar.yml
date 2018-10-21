@@ -671,7 +671,7 @@ script:
     - contextPath: QRadar.Offense.ClosingUser
       description: The user that closed the offense
     - contextPath: QRadar.Offense.ClosingReason
-      description: ID_TO_BE_REVIEWED The offense closing reason.
+      description: The offense closing reason.
     - contextPath: QRadar.Offense.CloseTime
       description: CONVERT_TO_ISO The time when the offense was closed.
     - contextPath: QRadar.Offense.LastUpdatedTime
