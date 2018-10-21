@@ -1,12 +1,14 @@
 id: CrowdStrike Falcon Sandbox - Detonate file
 version: -1
 name: CrowdStrike Falcon Sandbox - Detonate file
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook
-  returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types -
-  EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data. The detonation supports the following file types - PE32, EXE, DLL, JAR,
+  JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML,
+  SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF,
+  JSE, VBE, CHM
+fromversion: 4.0.0
 starttaskid: "0"
-fromversion: "4.0.0"
 tasks:
   "0":
     id: "0"
@@ -16,9 +18,9 @@ tasks:
       id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
-      description: "Start"
     nexttasks:
       '#none#':
       - "5"
@@ -26,7 +28,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -82,7 +84,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -95,16 +97,16 @@ tasks:
       id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
-      description: "When this task is reached, then the playbook is complete"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1480
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -132,7 +134,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 387.5,
           "y": 1245
         }
       }
@@ -164,7 +166,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 545
         }
       }
@@ -177,11 +179,11 @@ tasks:
       id: ab929de2-d71d-487e-8200-68a9178aca32
       version: -1
       name: CrowdStrike Upload Sample
+      description: Submits a sample to CrowdStrike
       script: VxStream|||crowdstrike-submit-sample
       type: regular
       iscommand: true
       brand: VxStream
-      description: "Submits a sample to CrowdStrike"
     nexttasks:
       '#none#':
       - "16"
@@ -196,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 905
+          "x": 387.5,
+          "y": 895
         }
       }
     note: false
@@ -209,10 +211,10 @@ tasks:
       id: a15cdef0-f6bd-48e3-8198-3f7c20e668fe
       version: -1
       name: Is there a file to detonate?
+      description: Asserts there's a file to detonate
       type: condition
       iscommand: false
       brand: ""
-      description: "Asserts there's a file to detonate"
     nexttasks:
       '#default#':
       - "6"
@@ -237,16 +239,16 @@ tasks:
     note: false
   "15":
     id: "15"
-    taskid: 5c983564-e96c-4357-86f3-e69161b8b37b
+    taskid: a0565f2c-c720-4196-84d2-21e057c23637
     type: condition
     task:
-      id: 5c983564-e96c-4357-86f3-e69161b8b37b
+      id: a0565f2c-c720-4196-84d2-21e057c23637
       version: -1
       name: Is the file type supported?
+      description: Asserts the file type is supported
       type: condition
       iscommand: false
       brand: ""
-      description: "Asserts the file type is supported"
     nexttasks:
       '#default#':
       - "6"
@@ -269,7 +271,8 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
                   - operator: match
                     left:
                       value:
@@ -277,13 +280,23 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 710
+          "x": 275,
+          "y": 720
         }
       }
     note: false
@@ -295,11 +308,12 @@ tasks:
       id: c6e5c638-5c9e-470c-8f57-7931c2689dba
       version: -1
       name: GenericPolling
+      description: Initiated the generic polling playbook that will do the polling
+        command
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: "Initiated the generic polling playbook that will do the polling command"
     nexttasks:
       '#none#':
       - "8"
@@ -327,7 +341,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 387.5,
           "y": 1070
         }
       }
@@ -339,9 +353,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1495,
-        "width": 687.5,
-        "x": 162.5,
+        "height": 1435,
+        "width": 717.5,
+        "x": 50,
         "y": 50
       }
     }
@@ -357,7 +371,8 @@ inputs:
   value:
     simple: "100"
   required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command.
+  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
+    command.
 - key: Interval
   value:
     simple: "5"
@@ -411,3 +426,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+tests:
+- VxStream Test
+- detonate_file_-_generic_test

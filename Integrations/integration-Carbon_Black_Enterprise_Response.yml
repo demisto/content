@@ -1640,7 +1640,6 @@ script:
   - name: cb-sensor-info
     arguments:
     - name: sensor
-      required: true
       default: true
       description: the sensor id
     - name: ip
@@ -1823,3 +1822,5 @@ script:
     description: Retrieve watchlist in Carbon black Response.
   isfetch: true
   runonce: false
+tests:
+  - CarbonBlackResponseTest

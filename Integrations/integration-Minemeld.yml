@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Use proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
@@ -215,10 +215,12 @@ script:
     SERVER_URL = demisto.params()['url']
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
-    USE_PROXY = demisto.params()['proxy']
 
-    if not USE_PROXY:
-        os.environ['NO_PROXY'] = SERVER_URL
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     MM = MineMeldAPIClient(
         url=SERVER_URL,
@@ -344,3 +346,5 @@ script:
       type: string
     description: Get miner indicators list.
   runonce: false
+tests:
+  - minemeld_test
