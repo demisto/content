@@ -8,9 +8,11 @@ aws configure set region us-west-2
 
 CONFFILE=$1
 
-#IMAGE_ID=$(aws ec2 describe-images \
-#    --filters Name=name,Values=Demisto-Circle-CI-Content-Master* \
-#    --query 'Images[*].[ImageId,CreationDate]' --output text | sort -k2 -r | head -n1)
+IMAGE_ID=$(aws ec2 describe-images \
+    --filters Name=name,Values=Demisto-Circle-CI-Content-Master* \
+    --query 'Images[*].[ImageId,CreationDate]' --output text | sort -k2 -r | head -n1)
+
+echo $IMAGE_ID
 
 python ./Tests/scripts/update_image_id.py -c $CONFFILE
 
