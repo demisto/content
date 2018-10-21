@@ -177,6 +177,67 @@ script:
     BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 
 
+    # Prep Functions
+    def get_auth_method(auth_method):
+        auth_method = auth_method.lower()
+        if auth_method == 'ntlm':
+            return NTLM
+        elif auth_method == 'basic':
+            return BASIC
+        elif auth_method == 'digest':
+            return DIGEST
+        raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
+
+
+    def get_build(version_str):
+        if version_str not in VERSIONS:
+            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
+        return VERSIONS[version_str]
+
+
+    def get_version(version_str):
+        if version_str not in VERSIONS:
+            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
+        return Version(VERSIONS[version_str])
+
+
+    def prepare():
+        if NON_SECURE:
+            BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+
+        if not USE_PROXY:
+            def remove_from_dict(d, key):
+                if key in d:
+                    del d[key]
+
+            remove_from_dict(os.environ, 'HTTP_PROXY')
+            remove_from_dict(os.environ, 'http_proxy')
+            remove_from_dict(os.environ, 'HTTPS_PROXY')
+            remove_from_dict(os.environ, 'https_proxy')
+
+            os.environ['NO_PROXY'] = EWS_SERVER
+
+        version = get_version(VERSION_STR)
+        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
+        config_args = {
+            'credentials': credentials,
+            'auth_type': get_auth_method(AUTH_METHOD_STR),
+            'version': version
+        }
+        if 'http' in EWS_SERVER.lower():
+            config_args['service_endpoint'] = EWS_SERVER
+        else:
+            config_args['server'] = EWS_SERVER
+        config = Configuration(**config_args)
+        return config
+
+
+    def get_account(account_email, access_type=ACCESS_TYPE):
+        return Account(
+            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
+        )
+
+
     # LOGGING
     log_stream = None
 
@@ -186,8 +247,8 @@ script:
             log_stream = StringIO()
             logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
-    # Exchange 2010 Fixes:
-    # NOTE: Will start logging after it is run
+
+    # Exchange 2010 Fixes
     def fix_2010():
         if 'target-mailbox' in demisto.args():
             account = get_account(demisto.args()['target_mailbox'])
@@ -267,17 +328,6 @@ script:
         }
 
 
-    def get_auth_method(auth_method):
-        auth_method = auth_method.lower()
-        if auth_method == 'ntlm':
-            return NTLM
-        elif auth_method == 'basic':
-            return BASIC
-        elif auth_method == 'digest':
-            return DIGEST
-        raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
-
-
     def get_items_from_mailbox(account, item_ids):
         if type(item_ids) is not list:
             item_ids = [item_ids]
@@ -296,17 +346,6 @@ script:
         if len(result) == 0:
             raise Exception("ItemId %s not found" % str(item_id))
         return result[0]
-
-
-    def get_build(version_str):
-        if version_str not in VERSIONS:
-            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
-        return VERSIONS[version_str]
-
-    def get_version(version_str):
-        if version_str not in VERSIONS:
-            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
-        return Version(VERSIONS[version_str])
 
 
     def get_folder_by_path(account, path):
@@ -328,37 +367,6 @@ script:
             folder_result = folder_filter_by_name[0]
 
         return folder_result
-
-
-    def prepare():
-        if NON_SECURE:
-            BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
-
-        if not USE_PROXY:
-            def remove_from_dict(d, key):
-                if key in d:
-                    del d[key]
-
-            remove_from_dict(os.environ, 'HTTP_PROXY')
-            remove_from_dict(os.environ, 'http_proxy')
-            remove_from_dict(os.environ, 'HTTPS_PROXY')
-            remove_from_dict(os.environ, 'https_proxy')
-
-            os.environ['NO_PROXY'] = EWS_SERVER
-
-        version = get_version(VERSION_STR)
-        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
-        config_args = {
-            'credentials': credentials,
-            'auth_type': get_auth_method(AUTH_METHOD_STR),
-            'version': version
-        }
-        if 'http' in EWS_SERVER.lower():
-            config_args['service_endpoint'] = EWS_SERVER
-        else:
-            config_args['server'] = EWS_SERVER
-        config = Configuration(**config_args)
-        return config
 
 
     class MarkAsJunk(EWSAccountService):
@@ -505,12 +513,6 @@ script:
         return get_entry_for_object("Search mailboxes results",
                                     CONTEXT_UPDATE_EWS_ITEM,
                                     search_results)
-
-
-    def get_account(account_email, access_type=ACCESS_TYPE):
-        return Account(
-            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
-        )
 
 
     def get_last_run():
