@@ -200,7 +200,7 @@ tasks:
       brand: Threat Grid
     nexttasks:
       '#none#':
-      - "17"
+      - "20"
     scriptarguments:
       file-id:
         simple: ${File.EntryID}
@@ -215,7 +215,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1100
+          "y": 1070
         }
       }
     note: false
@@ -331,7 +331,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1475
+          "y": 1595
         }
       }
     note: false
@@ -358,7 +358,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1650
+          "y": 1770
         }
       }
     note: false
@@ -407,7 +407,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1305
+          "y": 1420
         }
       }
     note: false
@@ -439,7 +439,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 890
+          "y": 895
         }
       }
     note: false
@@ -459,7 +459,35 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1840
+          "y": 1945
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: e6a910ed-0525-472e-8832-6f287df03ad7
+    type: regular
+    task:
+      id: e6a910ed-0525-472e-8832-6f287df03ad7
+      version: -1
+      name: threat-grid-get-threat-summary-by-id
+      description: Returns a summary of the threats detected during analysis
+      script: Threat Grid|||threat-grid-get-threat-summary-by-id
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      id:
+        simple: ${ThreatGrid.Sample.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
         }
       }
     note: false
@@ -468,7 +496,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1855,
+        "height": 1960,
         "width": 1240,
         "x": 50,
         "y": 50
