@@ -278,7 +278,7 @@ script:
         return None
 
     def enrich_offense_closing_reason_id(offense):
-        if 'closing_reason_id' in offense:
+        if offense['closing_reason_id']:
             offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
 
     def enrich_offense_start_and_update_times(offense):
@@ -456,8 +456,8 @@ script:
     ''' Command methods '''
 
     def test_module():
-        if not send_get_offenses_request(_range='0-0'):
-            return_error('Encoutered error while trying to fetch offenses from sever.')
+        send_get_offenses_request('0-0')
+        # If encountered error, send_request will return_error
         return 'ok'
 
     def fetch_incidents():
@@ -527,7 +527,7 @@ script:
         return get_entry_for_assets('QRadar Assets', res, human_readable_res, CUSTOM_HEADERS)
 
     def get_asset_by_id_command():
-        _filter = "id=" + demisto.args().get('asset_id')
+        _filter = "id=" + str(demisto.args().get('asset_id'))
         res = send_get_assets(_filter=_filter)
         res, human_readable_res = create_assets_result(res, full_values=True)
         return get_entry_for_assets('QRadar Asset', res, human_readable_res, CUSTOM_HEADERS)
@@ -585,8 +585,6 @@ script:
         demisto.results(create_note_command())
     elif demisto.command() == 'qradar-get-reference-by-name':
         demisto.results(get_reference_by_name_command())
-    # elif demisto.command() == 'qradar-get-events':
-        #TODO: Talk with Michal about implementation
   type: python
   commands:
   - name: qradar-offenses
@@ -673,9 +671,9 @@ script:
     - contextPath: QRadar.Offense.ClosingReason
       description: The offense closing reason.
     - contextPath: QRadar.Offense.CloseTime
-      description: CONVERT_TO_ISO The time when the offense was closed.
+      description: The time when the offense was closed.
     - contextPath: QRadar.Offense.LastUpdatedTime
-      description: CONVERT_TO_ISO The time (ISO) when the offense was last updated.
+      description: The time (ISO) when the offense was last updated.
     - contextPath: QRadar.Offense.Categories
       description: Event categories that are associated with the offense.
     - contextPath: QRadar.Offense.FlowCount
@@ -684,6 +682,8 @@ script:
       description: Offense followup.
     - contextPath: QRadar.Offense.OffenseType
       description: A number that represents the offense type
+    - contextPath: QRadar.Offense.Protected
+      description: Is the offense protected
     description: Gets offense with matching offense ID from qradar
   - name: qradar-searches
     arguments:
@@ -1063,3 +1063,5 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: "-"
+tests:
+  - test_Qradar
