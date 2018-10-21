@@ -177,7 +177,17 @@ script:
     BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 
 
+    # LOGGING
+    log_stream = None
+
+    def start_logging():
+        global log_stream
+        if log_stream is not None:
+            log_stream = StringIO()
+            logging.basicConfig(stream=log_stream, level=logging.DEBUG)
+
     # Exchange 2010 Fixes:
+    # NOTE: Will start logging after it is run
     def fix_2010():
         if 'target-mailbox' in demisto.args():
             account = get_account(demisto.args()['target_mailbox'])
@@ -212,13 +222,9 @@ script:
             exchangelib.folders.RootOfHierarchy.__repr__ = repr3
             exchangelib.folders.Root.__repr__ = repr3
 
+        start_logging()
+
     fix_2010()
-
-    # Collect exchange debug log to a stringIO
-    log_stream = StringIO()
-
-    logging.basicConfig(stream=log_stream, level=logging.DEBUG)
-
 
     def str_to_unicode(obj):
         if isinstance(obj, dict):
