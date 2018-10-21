@@ -11,6 +11,8 @@ def main(confile):
     sort = subprocess.Popen(['sort', '-k2', '-r'], stdin=aws.stdout, stdout=subprocess.PIPE)
     image_id = subprocess.Popen(['head', '-n', '1'], stdin=sort.stdout)
 
+    image_id = image_id.stdout.read()
+
     print(image_id)
     print(confile)
 
