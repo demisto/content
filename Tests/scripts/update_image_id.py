@@ -9,7 +9,7 @@ def main(confile):
                             "--query", "'Images[*].[ImageId,CreationDate]'", "--output", "text"],
                                 stdout=subprocess.PIPE)
     sort = subprocess.Popen(['sort', '-k2', '-r'], stdin=aws.stdout, stdout=subprocess.PIPE)
-    image_id = subprocess.Popen(['head', '-n', '1'], stdin=sort.stdout)
+    image_id = subprocess.Popen(['head', '-n', '1'], stdin=sort.stdout, stdout=subprocess.PIPE)
 
     image_id = image_id.stdout.read()
 
