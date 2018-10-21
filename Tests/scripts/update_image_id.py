@@ -46,4 +46,4 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--conf', help='The conf file', required=True)
     options = parser.parse_args()
 
-    main(options.options.conf)
+    main(options.image, options.conf)
