@@ -212,8 +212,6 @@ script:
                 enrich_offense_start_and_update_times(offense)
                 if full_enrichment:
                     enrich_offense_closing_reason_id(offense)
-                if full_enrichment and 'closing_reason_id' in offense:
-                    offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
         else:
             enrich_offense_start_and_update_times(response)
             if full_enrichment:
