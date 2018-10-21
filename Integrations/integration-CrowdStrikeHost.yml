@@ -935,6 +935,5 @@ script:
       type: string
     description: Fetch details of a Crowdstrike Detection using the detection ID
   runonce: false
-releaseNotes: "Added new commands cs-detection-search, cs-detection-details"
 tests:
 - CrowdStrike Endpoint Enrichment - Test

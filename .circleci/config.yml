@@ -4,8 +4,8 @@ jobs:
     docker:
       - image: circleci/node:9.11
     environment:
-      CONTENT_VERSION: "18.10.0"
-      GIT_SHA1: "3e41cb6ae5be2505b12055ceb31a043538c49823"
+      CONTENT_VERSION: "18.10.1"
+      GIT_SHA1: "ef73b78e1cb1749298a7d419f6d157a5643db33e"
     steps:
       - checkout
       - run:
@@ -79,9 +79,13 @@ jobs:
           command: ./Tests/scripts/slack_notifier.sh
           when: always
       - run:
+          name: Instance Test
+          command: ./Tests/scripts/instance_test.sh
+          when: always
+      - run:
           name: Destroy Instances
           command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
-          when: on_success
+          when: always
       - store_artifacts:
           path: artifacts
           destination: artifacts
