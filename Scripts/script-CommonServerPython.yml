@@ -770,6 +770,12 @@ script: |-
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
+  def hash_djb2(s, seed=5381):
+    hash = seed
+    for x in s:
+        hash = (( hash << 5) + hash) + ord(x)
+    return hash & 0xFFFFFFFF
+
   def file_result_existing_file(filename, saveFilename=None):
       """
          Rename an existing file
