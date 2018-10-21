@@ -31,7 +31,7 @@ tasks:
       id: 489b704c-bef9-40e7-8aa8-f74cca308a94
       version: -1
       name: ""
-      description: '-'
+      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
