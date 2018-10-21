@@ -1691,9 +1691,6 @@ script:
     - name: limit
       description: Limit for how many tickets to retrieve
       defaultValue: "10"
-    - name: sysparm_query
-      deprecated: true
-      description: Query
     - name: ticket_type
       auto: PREDEFINED
       predefined:
