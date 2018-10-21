@@ -659,7 +659,7 @@ script:
     - name: headers
       description: Table headers
     outputs:
-    - contextPath: QRadar.Search.id
+    - contextPath: QRadar.Search.ID
       description: Search ID
     description: Searches in QRadar
   - name: qradar-get-search
