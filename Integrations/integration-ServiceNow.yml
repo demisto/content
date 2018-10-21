@@ -797,14 +797,16 @@ script:
             demisto.results(add_link_command())
         elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
             demisto.results(add_comment_command())
-        elif demisto.command() == 'servicenow-query' or demisto.command() == 'servicenow-incidents-query':
-            demisto.results(query_command())
+        elif demisto.command() == 'servicenow-query' or demisto.command() == 'servicenow-incidents-query' or demisto.command() == 'servicenow-query-tickets':
+            demisto.results(query_tickets_command())
         elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
             demisto.results(upload_file_command())
         elif demisto.command() == 'servicenow-get-computer':
             demisto.results(get_computer_command())
         elif demisto.command() == 'servicenow-get-groups':
             demisto.results(get_groups_command())
+        if demisto.command() == 'servicenow-query-table':
+            demisto.results(query_table_command())
     except Exception as e:
         LOG(e)
         LOG.print_log()
