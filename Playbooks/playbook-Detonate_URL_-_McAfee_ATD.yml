@@ -1,4 +1,4 @@
-id: detonate_url_-_mcafee_atd
+id: Detonate URL - McAfee ATD
 version: -1
 name: Detonate URL - McAfee ATD
 fromversion: 4.0.0
@@ -15,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -230,7 +229,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
@@ -384,7 +382,7 @@ tasks:
       id: 230fe216-0869-44e5-885a-8f7f32e4a7fa
       version: -1
       name: Set Context
-      description: "-"
+      description: '-'
       scriptName: Set
       type: regular
       iscommand: false
@@ -442,11 +440,11 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 outputs:
-- contextPath: File.Size
-  description: File size (only in case of report type=json)
-  type: number
-- contextPath: DBotScore.Indicator
-  description: The indicator we tested (only in case of report type=json)
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
   type: string
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score (only in case of report type=json)
@@ -466,8 +464,11 @@ outputs:
 - contextPath: File.Type
   description: File type e.g. "PE" (only in case of report type=json)
   type: string
-- contextPath: File.MD5
-  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
   type: string
 - contextPath: File.SHA1
   description: SHA1 hash of the file (only in case of report type=json)
@@ -478,9 +479,27 @@ outputs:
 - contextPath: File.EntryID
   description: The Entry ID of the sample
   type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
-  type: string
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file
+  type: number
+- contextPath: InfoFile.Type
+  description: The type of the report file
+  type: string
+tests:
+- Test Playbook McAfee ATD
+releaseNotes: "Added outputs to the playbook"

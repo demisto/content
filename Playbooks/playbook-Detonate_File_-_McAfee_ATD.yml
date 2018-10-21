@@ -31,7 +31,7 @@ tasks:
       id: 489b704c-bef9-40e7-8aa8-f74cca308a94
       version: -1
       name: ""
-      description: "-"
+      description: '-'
       iscommand: false
       brand: ""
     nexttasks:
@@ -465,7 +465,7 @@ tasks:
       id: 7bd95c47-0c05-49e3-80ba-43d2f0e4e2b9
       version: -1
       name: Set Context
-      description: "-"
+      description: '-'
       scriptName: Set
       type: regular
       iscommand: false
@@ -520,11 +520,9 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 outputs:
-- contextPath: DBotScore.Type
-  description: The type of the indicator (only in case of report type=json)
-  type: string
-- contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
+- contextPath: InfoFile.Size
+  description: The size of the report file
+  type: number
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score (only in case of report type=json)
   type: string
@@ -534,6 +532,12 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
   type: number
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
 - contextPath: DBotScore.Indicator
   description: The indicator we tested (only in case of report type=json)
   type: string
@@ -546,9 +550,36 @@ outputs:
 - contextPath: InfoFile.Info
   description: The info of the report file
   type: string
-- contextPath: InfoFile.Size
-  description: The size of the report file
-  type: number
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+tests:
+- Test Playbook McAfee ATD
+releaseNotes: "Added outputs to the playbook"
