@@ -24,4 +24,3 @@ then
 fi
 
 echo "Server is ready :)"
-sleep 150s

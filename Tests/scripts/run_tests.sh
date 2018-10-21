@@ -14,11 +14,6 @@ temp="${PASSWORD%\"}"
 temp="${temp#\"}"
 PASSWORD=$temp
 
-# remove quotes from username
-temp2="${USERNAME%\"}"
-temp2="${temp#\"}"
-USERNAME=$temp2
-
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
 
