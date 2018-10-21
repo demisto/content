@@ -1856,3 +1856,5 @@ script:
     description: Returns data regarding the analysis processes
   runonce: false
 releaseNotes: "-"
+tests:
+  - ThreatGridTest
