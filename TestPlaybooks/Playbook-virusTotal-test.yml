@@ -13,12 +13,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 71423874-3b06-4cb7-8793-4fee37cc0a96
+    taskid: fbc0a5b6-b590-4c67-892d-2647693d2cd6
     type: start
     task:
-      id: 71423874-3b06-4cb7-8793-4fee37cc0a96
+      id: fbc0a5b6-b590-4c67-892d-2647693d2cd6
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -35,10 +36,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 0743e22f-6693-432f-8942-e2c5c8d7d1c6
+    taskid: 87fc2b38-fc78-4b6b-8029-c4742562790a
     type: regular
     task:
-      id: 0743e22f-6693-432f-8942-e2c5c8d7d1c6
+      id: 87fc2b38-fc78-4b6b-8029-c4742562790a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -65,10 +66,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 961cdb02-3923-4ff6-8e8d-042daaecb132
+    taskid: 41074bb4-f178-4bc6-8c8c-e94a6a88d287
     type: regular
     task:
-      id: 961cdb02-3923-4ff6-8e8d-042daaecb132
+      id: 41074bb4-f178-4bc6-8c8c-e94a6a88d287
       version: -1
       name: ip
       description: Check IP Reputation
@@ -92,16 +93,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1770
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 644f3518-1ce8-456c-8453-0ac2888c7f35
+    taskid: 0d3e173c-6f32-4dc0-82e5-be12b00bf415
     type: regular
     task:
-      id: 644f3518-1ce8-456c-8453-0ac2888c7f35
+      id: 0d3e173c-6f32-4dc0-82e5-be12b00bf415
       version: -1
       name: VerifyContext
       description: |-
@@ -128,16 +129,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1945
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: bf6b22c8-8f2e-491f-810b-63e848c1dcf5
+    taskid: b93ff6d0-222f-414e-86b7-9e4756ba96f2
     type: regular
     task:
-      id: bf6b22c8-8f2e-491f-810b-63e848c1dcf5
+      id: b93ff6d0-222f-414e-86b7-9e4756ba96f2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -158,16 +159,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 2120
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: db257a40-5c02-4d07-8b68-d34ee3b90d1c
+    taskid: 468189c0-e66d-425b-8503-bb5f3c597b3c
     type: regular
     task:
-      id: db257a40-5c02-4d07-8b68-d34ee3b90d1c
+      id: 468189c0-e66d-425b-8503-bb5f3c597b3c
       version: -1
       name: VerifyContext
       description: |-
@@ -194,16 +195,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 2470
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: e5ea4e58-d3e6-457f-8d18-f895689a8495
+    taskid: 77693418-e6b8-4c55-885a-1a08eb02cb56
     type: regular
     task:
-      id: e5ea4e58-d3e6-457f-8d18-f895689a8495
+      id: 77693418-e6b8-4c55-885a-1a08eb02cb56
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -224,16 +225,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 2645
         }
       }
     note: false
   "7":
     id: "7"
-    taskid: 28074093-8ae1-4cc2-88a7-3407d883e5d1
+    taskid: e5df64df-b9ab-465f-85c2-6e28df71ab89
     type: regular
     task:
-      id: 28074093-8ae1-4cc2-88a7-3407d883e5d1
+      id: e5df64df-b9ab-465f-85c2-6e28df71ab89
       version: -1
       name: domain
       description: Check domain reputation
@@ -258,16 +259,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 2295
         }
       }
     note: false
   "8":
     id: "8"
-    taskid: 98fb256b-e7bd-4ac5-8c51-d6988359201f
+    taskid: 8aed972a-b3d7-4d2c-8eaa-65953f817f29
     type: regular
     task:
-      id: 98fb256b-e7bd-4ac5-8c51-d6988359201f
+      id: 8aed972a-b3d7-4d2c-8eaa-65953f817f29
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -290,16 +291,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2995
         }
       }
     note: false
   "9":
     id: "9"
-    taskid: 872e04c9-e0fe-4702-8a6d-bda991b30eab
+    taskid: fbdad560-db79-4fad-8a89-df9498ba49ee
     type: regular
     task:
-      id: 872e04c9-e0fe-4702-8a6d-bda991b30eab
+      id: fbdad560-db79-4fad-8a89-df9498ba49ee
       version: -1
       name: VerifyContext
       description: |-
@@ -326,16 +327,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 3170
         }
       }
     note: false
   "10":
     id: "10"
-    taskid: c2ceb52d-17ac-4343-87ac-4b9247216633
+    taskid: e353ede6-3b44-41bd-80f4-c761a50018d4
     type: regular
     task:
-      id: c2ceb52d-17ac-4343-87ac-4b9247216633
+      id: e353ede6-3b44-41bd-80f4-c761a50018d4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -356,16 +357,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 3345
         }
       }
     note: false
   "14":
     id: "14"
-    taskid: d25275fc-8733-4e85-877d-bc3c8461a64b
+    taskid: 3d11944c-a38e-4303-8574-cbaf0aa04043
     type: regular
     task:
-      id: d25275fc-8733-4e85-877d-bc3c8461a64b
+      id: 3d11944c-a38e-4303-8574-cbaf0aa04043
       version: -1
       name: url
       description: Check URL Reputation
@@ -390,16 +391,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 7195
         }
       }
     note: false
   "15":
     id: "15"
-    taskid: 7a3f1dc5-3b6a-4ae0-822a-4a78765d3c0c
+    taskid: 9713721c-fd37-4a64-8249-00731a144e23
     type: regular
     task:
-      id: 7a3f1dc5-3b6a-4ae0-822a-4a78765d3c0c
+      id: 9713721c-fd37-4a64-8249-00731a144e23
       version: -1
       name: VerifyContext
       description: |-
@@ -426,16 +427,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 7370
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 011b1702-ef5d-45f8-8b8f-b3e43fb284b1
+    taskid: 288df2d7-3b0f-4138-8098-c35753d3d6ef
     type: regular
     task:
-      id: 011b1702-ef5d-45f8-8b8f-b3e43fb284b1
+      id: 288df2d7-3b0f-4138-8098-c35753d3d6ef
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -456,16 +457,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 7545
         }
       }
     note: false
   "17":
     id: "17"
-    taskid: 99480269-782c-45b2-803b-ae105ff96295
+    taskid: 0e99b781-0388-4b43-88a9-f281147b63bb
     type: regular
     task:
-      id: 99480269-782c-45b2-803b-ae105ff96295
+      id: 0e99b781-0388-4b43-88a9-f281147b63bb
       version: -1
       name: Sleep
       description: |
@@ -489,16 +490,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 5270
         }
       }
     note: false
   "18":
     id: "18"
-    taskid: f43b1c1a-6c2b-4114-884a-1dfe5fcf7174
+    taskid: 397437c1-fffd-4ee8-8509-eaf4a790da68
     type: regular
     task:
-      id: f43b1c1a-6c2b-4114-884a-1dfe5fcf7174
+      id: 397437c1-fffd-4ee8-8509-eaf4a790da68
       version: -1
       name: Sleep
       description: |
@@ -513,7 +514,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "51"
     scriptarguments:
       seconds:
         simple: "61"
@@ -528,10 +529,10 @@ tasks:
     note: false
   "19":
     id: "19"
-    taskid: f65e1131-28ce-4f81-854f-72415e7efeaf
+    taskid: 1c2b2cc4-61bd-49c3-8c04-d01215cdeabd
     type: regular
     task:
-      id: f65e1131-28ce-4f81-854f-72415e7efeaf
+      id: 1c2b2cc4-61bd-49c3-8c04-d01215cdeabd
       version: -1
       name: Sleep
       description: |
@@ -555,16 +556,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 4045
         }
       }
     note: false
   "20":
     id: "20"
-    taskid: 3fb071a5-f127-431e-83b4-c0acab8394e7
+    taskid: 2f041110-4a06-4051-890a-9e4eef6719ee
     type: regular
     task:
-      id: 3fb071a5-f127-431e-83b4-c0acab8394e7
+      id: 2f041110-4a06-4051-890a-9e4eef6719ee
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -587,16 +588,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 4220
         }
       }
     note: false
   "21":
     id: "21"
-    taskid: 1c4782ac-7056-47de-8cdb-877c7309966f
+    taskid: a0a9d6dc-1775-4632-8444-df6ccfa1a310
     type: regular
     task:
-      id: 1c4782ac-7056-47de-8cdb-877c7309966f
+      id: a0a9d6dc-1775-4632-8444-df6ccfa1a310
       version: -1
       name: VerifyContext
       description: |-
@@ -623,16 +624,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 4395
         }
       }
     note: false
   "22":
     id: "22"
-    taskid: ca977b45-c194-41ad-82e9-b10b73476842
+    taskid: 3f8d477b-810b-448e-8587-2a33691a6a0e
     type: regular
     task:
-      id: ca977b45-c194-41ad-82e9-b10b73476842
+      id: 3f8d477b-810b-448e-8587-2a33691a6a0e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -653,16 +654,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 4570
         }
       }
     note: false
   "23":
     id: "23"
-    taskid: cd777197-4f4d-499a-8bd0-42e1cd0d3f0e
+    taskid: 084ad60a-a06a-4839-8888-5aeddde84e1e
     type: regular
     task:
-      id: cd777197-4f4d-499a-8bd0-42e1cd0d3f0e
+      id: 084ad60a-a06a-4839-8888-5aeddde84e1e
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -686,16 +687,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 4745
         }
       }
     note: false
   "24":
     id: "24"
-    taskid: edefff1d-f693-456f-8c21-c9a915cd7219
+    taskid: b8ce335f-6600-46b7-8441-51500c04120c
     type: regular
     task:
-      id: edefff1d-f693-456f-8c21-c9a915cd7219
+      id: b8ce335f-6600-46b7-8441-51500c04120c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -716,16 +717,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 5095
         }
       }
     note: false
   "25":
     id: "25"
-    taskid: cca71f0a-78da-4b31-81c9-d9736c1f8a09
+    taskid: b0147926-e6e2-4035-8da8-83ec20f6960e
     type: regular
     task:
-      id: cca71f0a-78da-4b31-81c9-d9736c1f8a09
+      id: b0147926-e6e2-4035-8da8-83ec20f6960e
       version: -1
       name: VerifyContext
       description: |-
@@ -752,16 +753,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 4920
         }
       }
     note: false
   "26":
     id: "26"
-    taskid: 29179daa-f7ce-4e31-8504-0d263cb9ee0c
+    taskid: c375b052-7231-455b-8bcb-dac4a6e28357
     type: regular
     task:
-      id: 29179daa-f7ce-4e31-8504-0d263cb9ee0c
+      id: c375b052-7231-455b-8bcb-dac4a6e28357
       version: -1
       name: Sleep
       description: |
@@ -785,16 +786,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2820
         }
       }
     note: false
   "27":
     id: "27"
-    taskid: a8607c1a-392a-49b8-8bb0-5c8d6cd64db7
+    taskid: c6776e4b-636b-4bd0-8adb-c94678989c62
     type: regular
     task:
-      id: a8607c1a-392a-49b8-8bb0-5c8d6cd64db7
+      id: c6776e4b-636b-4bd0-8adb-c94678989c62
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -818,16 +819,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 3520
         }
       }
     note: false
   "28":
     id: "28"
-    taskid: 17541525-4704-4bb0-832d-e731a9c856b9
+    taskid: 23f53974-c027-41ab-8811-95d2eec56780
     type: regular
     task:
-      id: 17541525-4704-4bb0-832d-e731a9c856b9
+      id: 23f53974-c027-41ab-8811-95d2eec56780
       version: -1
       name: VerifyContext
       description: |-
@@ -854,16 +855,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3695
         }
       }
     note: false
   "29":
     id: "29"
-    taskid: 7f6d3410-45e8-4ab8-89a9-62f774eac375
+    taskid: 9cc4003e-da6b-435e-8cb9-b53063240c5f
     type: regular
     task:
-      id: 7f6d3410-45e8-4ab8-89a9-62f774eac375
+      id: 9cc4003e-da6b-435e-8cb9-b53063240c5f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -884,16 +885,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3870
         }
       }
     note: false
   "30":
     id: "30"
-    taskid: 648d6211-9aba-4e32-8995-71ab7577a828
+    taskid: 35aaac7d-d462-4388-8841-1577865db358
     type: regular
     task:
-      id: 648d6211-9aba-4e32-8995-71ab7577a828
+      id: 35aaac7d-d462-4388-8841-1577865db358
       version: -1
       name: url
       description: Check URL Reputation
@@ -919,16 +920,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 5445
         }
       }
     note: false
   "31":
     id: "31"
-    taskid: a94a0879-1ce9-4d79-8c41-82a90b5d8164
+    taskid: 6ca95084-d873-445d-8a94-2081c1c12d7a
     type: regular
     task:
-      id: a94a0879-1ce9-4d79-8c41-82a90b5d8164
+      id: 6ca95084-d873-445d-8a94-2081c1c12d7a
       version: -1
       name: VerifyContext
       description: |-
@@ -955,16 +956,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 5620
         }
       }
     note: false
   "32":
     id: "32"
-    taskid: 7edc727e-0b12-4c7c-8213-54c226dd9118
+    taskid: 963f1e17-84b9-4099-8e96-b8c0ad4bceb1
     type: regular
     task:
-      id: 7edc727e-0b12-4c7c-8213-54c226dd9118
+      id: 963f1e17-84b9-4099-8e96-b8c0ad4bceb1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -985,16 +986,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 5795
         }
       }
     note: false
   "33":
     id: "33"
-    taskid: bcdf7b8a-8d7f-4990-850f-758fe8b12b5b
+    taskid: 35a1233f-7a25-45a4-8032-4946c7c6f1a2
     type: regular
     task:
-      id: bcdf7b8a-8d7f-4990-850f-758fe8b12b5b
+      id: 35a1233f-7a25-45a4-8032-4946c7c6f1a2
       version: -1
       name: url
       description: Check URL Reputation
@@ -1021,16 +1022,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 5970
         }
       }
     note: false
   "34":
     id: "34"
-    taskid: 9f8d4991-b928-4b6d-8a23-90a8c6165135
+    taskid: 732f6dde-eba2-403e-8b12-2bcbf1f93391
     type: regular
     task:
-      id: 9f8d4991-b928-4b6d-8a23-90a8c6165135
+      id: 732f6dde-eba2-403e-8b12-2bcbf1f93391
       version: -1
       name: VerifyContext
       description: |-
@@ -1057,16 +1058,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 6320
         }
       }
     note: false
   "35":
     id: "35"
-    taskid: 15f9191a-38c6-4f43-8619-7e89bd9e5857
+    taskid: 50d59fa1-4084-4e05-8980-7b5b7e3afa59
     type: regular
     task:
-      id: 15f9191a-38c6-4f43-8619-7e89bd9e5857
+      id: 50d59fa1-4084-4e05-8980-7b5b7e3afa59
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1087,16 +1088,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 6495
         }
       }
     note: false
   "36":
     id: "36"
-    taskid: 527c8f7e-4e0a-457d-8fd6-f09979ff3cf1
+    taskid: ee29d4f2-1cc0-496e-873c-22354b6531a9
     type: regular
     task:
-      id: 527c8f7e-4e0a-457d-8fd6-f09979ff3cf1
+      id: ee29d4f2-1cc0-496e-873c-22354b6531a9
       version: -1
       name: url
       description: Check URL Reputation
@@ -1122,16 +1123,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 6670
         }
       }
     note: false
   "37":
     id: "37"
-    taskid: a02e3cdb-64cd-4b8f-8973-c2bbfdb7d5a5
+    taskid: e48588e0-6576-4c20-8342-b7843db51778
     type: regular
     task:
-      id: a02e3cdb-64cd-4b8f-8973-c2bbfdb7d5a5
+      id: e48588e0-6576-4c20-8342-b7843db51778
       version: -1
       name: VerifyContext
       description: |-
@@ -1158,16 +1159,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 6845
         }
       }
     note: false
   "38":
     id: "38"
-    taskid: 8985f2ec-0f94-4f9c-85b8-d8bde666215a
+    taskid: 627a1c4e-8b3a-4824-8b20-bb133b7fa8a8
     type: regular
     task:
-      id: 8985f2ec-0f94-4f9c-85b8-d8bde666215a
+      id: 627a1c4e-8b3a-4824-8b20-bb133b7fa8a8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1188,16 +1189,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 7020
         }
       }
     note: false
   "39":
     id: "39"
-    taskid: 00840dee-999d-4c17-8618-908c8f5a456b
+    taskid: 33f46a1c-c857-4fba-8063-177b0c3980c2
     type: regular
     task:
-      id: 00840dee-999d-4c17-8618-908c8f5a456b
+      id: 33f46a1c-c857-4fba-8063-177b0c3980c2
       version: -1
       name: ip
       description: Check IP Reputation
@@ -1223,16 +1224,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 7895
         }
       }
     note: false
   "40":
     id: "40"
-    taskid: c0c1478b-b08a-4b6b-8a17-6a225c1324d7
+    taskid: 5161a874-d5f5-4831-8976-4d54985bf713
     type: regular
     task:
-      id: c0c1478b-b08a-4b6b-8a17-6a225c1324d7
+      id: 5161a874-d5f5-4831-8976-4d54985bf713
       version: -1
       name: VerifyContext
       description: |-
@@ -1259,16 +1260,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 8070
         }
       }
     note: false
   "41":
     id: "41"
-    taskid: f03a7eaa-1295-4360-8d18-5c2fdfa1a770
+    taskid: 12e33401-20e9-46df-8222-5f70ca369c79
     type: regular
     task:
-      id: f03a7eaa-1295-4360-8d18-5c2fdfa1a770
+      id: 12e33401-20e9-46df-8222-5f70ca369c79
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1289,16 +1290,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7020
+          "y": 8245
         }
       }
     note: false
   "42":
     id: "42"
-    taskid: a3d06b70-bda1-41bb-8790-961e80d29368
+    taskid: 879a3293-f937-47d8-8cae-c47be21f56fd
     type: regular
     task:
-      id: a3d06b70-bda1-41bb-8790-961e80d29368
+      id: 879a3293-f937-47d8-8cae-c47be21f56fd
       version: -1
       name: domain
       description: Check domain reputation
@@ -1324,16 +1325,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7195
+          "y": 8420
         }
       }
     note: false
   "43":
     id: "43"
-    taskid: b611e3cc-e6a0-4ea4-87c9-3cc6f7451d5d
+    taskid: 6af29423-7a41-44a2-8fb6-e40a90580ddc
     type: regular
     task:
-      id: b611e3cc-e6a0-4ea4-87c9-3cc6f7451d5d
+      id: 6af29423-7a41-44a2-8fb6-e40a90580ddc
       version: -1
       name: VerifyContext
       description: |-
@@ -1360,16 +1361,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 8595
         }
       }
     note: false
   "44":
     id: "44"
-    taskid: 3bacca89-9573-4fed-846b-b5fa504a909b
+    taskid: bd75825e-7875-42bb-861d-e06c9b3366c6
     type: regular
     task:
-      id: 3bacca89-9573-4fed-846b-b5fa504a909b
+      id: bd75825e-7875-42bb-861d-e06c9b3366c6
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1390,16 +1391,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7545
+          "y": 8770
         }
       }
     note: false
   "45":
     id: "45"
-    taskid: c5302261-97fd-40b2-815d-2871585b0c01
+    taskid: f284b293-2fc2-4037-88ba-925cae625590
     type: regular
     task:
-      id: c5302261-97fd-40b2-815d-2871585b0c01
+      id: f284b293-2fc2-4037-88ba-925cae625590
       version: -1
       name: Sleep
       description: |
@@ -1423,16 +1424,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7720
+          "y": 8945
         }
       }
     note: false
   "46":
     id: "46"
-    taskid: 0c568a1b-9c16-4175-8f74-832d97723e77
+    taskid: dff8c385-ec95-4e11-85f3-ce998c19bd51
     type: regular
     task:
-      id: 0c568a1b-9c16-4175-8f74-832d97723e77
+      id: dff8c385-ec95-4e11-85f3-ce998c19bd51
       version: -1
       name: Sleep
       description: |
@@ -1456,16 +1457,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 7720
         }
       }
     note: false
   "47":
     id: "47"
-    taskid: 4dd3c3a4-647d-4d96-89be-373ec104cd4b
+    taskid: 25a0ecb2-daaf-42d4-8524-60795e5a619d
     type: regular
     task:
-      id: 4dd3c3a4-647d-4d96-89be-373ec104cd4b
+      id: 25a0ecb2-daaf-42d4-8524-60795e5a619d
       version: -1
       name: url
       description: Check URL Reputation
@@ -1491,16 +1492,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7895
+          "y": 9120
         }
       }
     note: false
   "48":
     id: "48"
-    taskid: 2c29894e-84c7-4cb3-8601-a0280ec0dcc8
+    taskid: 67734c89-8a55-4f57-8ef0-ec6b2e7fed8b
     type: regular
     task:
-      id: 2c29894e-84c7-4cb3-8601-a0280ec0dcc8
+      id: 67734c89-8a55-4f57-8ef0-ec6b2e7fed8b
       version: -1
       name: VerifyContext
       description: |-
@@ -1527,16 +1528,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8070
+          "y": 9295
         }
       }
     note: false
   "49":
     id: "49"
-    taskid: 78de73d9-5738-4f1e-8f3a-279784213968
+    taskid: 777e2b05-dea9-4ca1-8883-92114bb13bb9
     type: regular
     task:
-      id: 78de73d9-5738-4f1e-8f3a-279784213968
+      id: 777e2b05-dea9-4ca1-8883-92114bb13bb9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1554,16 +1555,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8245
+          "y": 9470
         }
       }
     note: false
   "50":
     id: "50"
-    taskid: b77cbcaa-a437-43d9-83d4-01983fee1100
+    taskid: bab08c39-594e-4a73-8da8-96d335e1863f
     type: regular
     task:
-      id: b77cbcaa-a437-43d9-83d4-01983fee1100
+      id: bab08c39-594e-4a73-8da8-96d335e1863f
       version: -1
       name: Sleep
       description: |
@@ -1587,7 +1588,246 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 6145
+        }
+      }
+    note: false
+  "51":
+    id: "51"
+    taskid: f2436eb1-9cec-4ff1-8f1b-bd2265562e39
+    type: regular
+    task:
+      id: f2436eb1-9cec-4ff1-8f1b-bd2265562e39
+      version: -1
+      name: Set
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File.SHA1
+      value:
+        simple: 3395856ce81f2b7382dee72602f798b642f14140
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "52":
+    id: "52"
+    taskid: 6e7ba29f-377e-4f67-8e1d-1c63ef08ba8e
+    type: regular
+    task:
+      id: 6e7ba29f-377e-4f67-8e1d-1c63ef08ba8e
+      version: -1
+      name: Set2
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: File.SHA1
+      value:
+        simple: cf8bd9dfddff007f75adf4c2be48005cea317c62
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "53":
+    id: "53"
+    taskid: 24529095-6330-444b-8347-fd45e0c93bc7
+    type: regular
+    task:
+      id: 24529095-6330-444b-8347-fd45e0c93bc7
+      version: -1
+      name: file
+      description: Check file reputation of the given hash
+      script: VirusTotal|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      confidenceThreshold: {}
+      file:
+        complex:
+          root: File
+          accessor: SHA1
+      long: {}
+      owners: {}
+      ratingThreshold: {}
+      retries: {}
+      threshold:
+        simple: "1"
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "54":
+    id: "54"
+    taskid: b3315d00-9fe2-4198-8b1d-29682ff1d063
+    type: regular
+    task:
+      id: b3315d00-9fe2-4198-8b1d-29682ff1d063
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "55":
+    id: "55"
+    taskid: 3224e0a8-9919-49c8-8d6a-af6967ef7661
+    type: regular
+    task:
+      id: 3224e0a8-9919-49c8-8d6a-af6967ef7661
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "56":
+    id: "56"
+    taskid: 35b51707-78e6-4dae-8396-7868c25875c9
+    type: condition
+    task:
+      id: 35b51707-78e6-4dae-8396-7868c25875c9
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.MD5
+                iscontext: true
+              right:
+                value:
+                  simple: 44d88612fea8a8f36de82e1278abb02f
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "57":
+    id: "57"
+    taskid: 76204030-571d-4760-8f6b-a0ebae01c368
+    type: condition
+    task:
+      id: 76204030-571d-4760-8f6b-a0ebae01c368
+      version: -1
+      name: Exists2
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.MD5
+                iscontext: true
+              right:
+                value:
+                  simple: 69630e4574ec6798239b091cda43dca0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -1596,7 +1836,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8290,
+        "height": 9515,
         "width": 380,
         "x": 50,
         "y": 50

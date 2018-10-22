@@ -441,7 +441,9 @@ tasks:
       emailtocount:
         complex:
           root: Email
-          accessor: ToCount
+          accessor: To
+          transformers:
+          - operator: count
       emailurlclicked:
         complex:
           root: EmailUrlClicked
