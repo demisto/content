@@ -57,24 +57,11 @@ script:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-    def set_proxies():
-        if demisto.params()['proxy']:
-            http = os.environ['http_proxy'] or os.environ['HTTP_PROXY']
-            https = os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-            proxies = {
-                'http': http,
-                'https': https
-            }
-            return proxies
-        return None
-
-
     '''
     GLOBAL VARS
     '''
 
     API_KEY = demisto.params().get('api_key')
-    PROXIES = set_proxies()
     BASE_PATH = '{}/api/v1'.format(demisto.params().get('server'))
     HTTP_HEADERS = {
         'Content-Type': 'application/json'
@@ -96,6 +83,14 @@ script:
     '''
     BASIC FUNCTIONS
     '''
+
+    def set_proxies():
+        if not demisto.params().get('proxy', False):
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
+
     def listify(comma_separated_list):
 
         if isinstance(comma_separated_list, list):
@@ -112,8 +107,7 @@ script:
 
         request_kwargs = {
             'headers': headers,
-            'verify': USE_SSL,
-            'proxies': PROXIES
+            'verify': USE_SSL
         }
 
         #add optional arguments if specified
@@ -634,6 +628,8 @@ script:
     '''
     EXECUTION
     '''
+
+    set_proxies()
 
     try:
         if demisto.command() == 'test-module':
