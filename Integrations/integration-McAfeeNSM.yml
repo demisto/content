@@ -414,8 +414,10 @@ script:
     outputs:
     - contextPath: NSM.Domains.ID
       description: Domain ID
+      type: number
     - contextPath: NSM.Domains.Name
       description: Domain Name
+      type: string
     description: Get all domains
   - name: nsm-get-alerts
     arguments:
@@ -452,18 +454,25 @@ script:
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID
+      type: number
     - contextPath: NSM.Alerts.Name
       description: Alert Name
+      type: string
     - contextPath: NSM.Alerts.State
       description: Alert State (Acknowledged,Unacknowledged)
+      type: string
     - contextPath: NSM.Alerts.CreatedTime
       description: Alert Creation Time
+      type: string
     - contextPath: NSM.Alerts.Assignee
       description: Alert Assignee
+      type: string
     - contextPath: NSM.Alerts.AttackSeverity
       description: Alert Severity
+      type: string
     - contextPath: NSM.Alerts.Application
       description: The Application assosiated to the alert
+      type: string
     - contextPath: NSM.Alerts.EventResult
       description: Event Result
     - contextPath: NSM.Alerts.Event
@@ -520,18 +529,25 @@ script:
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID
+      type: number
     - contextPath: NSM.Alerts.Name
       description: Alert Name
+      type: string
     - contextPath: NSM.Alerts.State
       description: Alert State (Acknowledged,Unacknowledged)
+      type: string
     - contextPath: NSM.Alerts.CreatedTime
       description: Alert Creation Time
+      type: string
     - contextPath: NSM.Alerts.Assignee
       description: Alert Assignee
+      type: string
     - contextPath: NSM.Alerts.AttackSeverity
       description: Alert Severity
+      type: string
     - contextPath: NSM.Alerts.Application
       description: The Application assosiated to the alert
+      type: string
     - contextPath: NSM.Alerts.EventResult
       description: Event Result
     - contextPath: NSM.Alerts.Event
@@ -596,14 +612,19 @@ script:
     outputs:
     - contextPath: NSM.IPSPolicies.ID
       description: IPS Policy ID
+      type: number
     - contextPath: NSM.IPSPolicies.Name
       description: IPS Policy Name
+      type: string
     - contextPath: NSM.IPSPolicies.DomainID
       description: IPS Policy Domain ID
+      type: number
     - contextPath: NSM.IPSPolicies.IsEditable
       description: Whether the IPS policy is editable
+      type: boolean
     - contextPath: NSM.IPSPolicies.VisibleToChildren
       description: Whether the IPS Policy is visible to domain's children
+      type: boolean
     description: Get IPS Policies in a domain
   - name: nsm-get-ips-policy-details
     arguments:
@@ -614,18 +635,25 @@ script:
     outputs:
     - contextPath: NSM.IPSPolicies.ID
       description: IPS Policy ID
+      type: number
     - contextPath: NSM.IPSPolicies.Name
       description: IPS Policy Name
+      type: string
     - contextPath: NSM.IPSPolicies.Description
       description: IPS Policy information
+      type: string
     - contextPath: NSM.IPSPolicies.CreatedTime
       description: Policy creation time
+      type: string
     - contextPath: NSM.IPSPolicies.IsEditable
       description: Whether the IPS policy is editable
+      type: boolean
     - contextPath: NSM.IPSPolicies.VisibleToChildren
       description: Whether the IPS Policy is visible to domain's children
+      type: boolean
     - contextPath: NSM.IPSPolicies.Version
       description: IPS Policy Version
+      type: number
     - contextPath: NSM.IPSPolicies.InboundRuleSet
       description: Inbound Rule Set
     - contextPath: NSM.IPSPolicies.OutboundRuleSet
@@ -641,13 +669,18 @@ script:
     outputs:
     - contextPath: NSM.Attacks.ID
       description: Attack ID
+      type: string
     - contextPath: NSM.Attacks.Name
       description: Attack Name
+      type: string
     - contextPath: NSM.Attacks.Severity
       description: Attack Severity
+      type: number
     - contextPath: NSM.Attacks.Direction
       description: Attack Direction
+      type: string
     - contextPath: NSM.Attacks.Category
       description: Attack Category
+      type: string
     description: Get all available attack definitions in NSM
   runonce: false

@@ -3,6 +3,33 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Panorama"
+            ],
+            "playbookID": "block_indicators_-_generic_-_test"
+        },
+        {
+          "integrations": "Signal Sciences WAF",
+          "playbookID": "SignalSciences Test"
+        },
+        {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
+        },
+        {
+          "integrations": "Devo",
+          "playbookID": "devo_test_playbook"
+        },
+        {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io"
+            ],
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 500
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
@@ -15,10 +42,7 @@
             "playbookID": "Test Playbook McAfee ePO"
         },
         {
-            "integrations": {
-                "name": "activedir",
-                "byoi": false
-            },
+            "integrations": "activedir",
             "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
         {
@@ -156,12 +180,10 @@
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
-            "integrations": [{
-                "name": "Mail Sender (New)"
-            },{
-                "name": "google",
-                "byoi": false
-            }],
+            "integrations": [
+                "Mail Sender (New)",
+                "google"
+            ],
             "playbookID": "Mail Sender (New) Test"
         },
         {
@@ -212,9 +234,6 @@
             "timeout": 240
         },
         {
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test"
         },
@@ -227,17 +246,7 @@
             "playbookID": "sep_-_test_endpoint_search"
         },
         {
-            "integrations": [
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
-        },
-        {
-            "integrations": {
-                "name": "carbonblackprotection",
-                "byoi": false
-            },
+            "integrations": "carbonblackprotection",
             "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
             "timeout": 500
         },
@@ -246,25 +255,7 @@
             "timeout": 240
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
-        },
-        {
-            "integrations": {
-                "name": "activedir",
-                "byoi": false
-            },
+            "integrations": "activedir",
             "playbookID": "account_enrichment_-_generic_test"
         },
         {
@@ -303,10 +294,7 @@
             "playbookID": "PostgreSQL Test"
         },
         {
-            "integrations": {
-                "name": "google",
-                "byoi": false
-            },
+            "integrations": "google",
             "playbookID": "GsuiteTest"
         },
         {
@@ -479,10 +467,6 @@
             "nightly": true
         },
         {
-            "integrations": "RTIR",
-            "playbookID": "RTIR Test"
-        },
-        {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Test"
         },
@@ -498,13 +482,6 @@
         {
             "integrations": "ThreatConnect",
             "playbookID": "test-ThreatConnect"
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
         },
         {
             "integrations": "VxStream",
@@ -537,10 +514,7 @@
             "playbookID": "DNSDBTest"
         },
         {
-            "integrations": {
-                "name": "carbonblack-v2",
-                "byoi": true
-            },
+            "integrations": "carbonblack-v2",
             "playbookID": "CarbonBlackResponseTest"
         },
         {
@@ -632,33 +606,17 @@
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
-                {
-                    "name": "activedir",
-                    "byoi": false
-                }],
+                "activedir"
+            ],
             "playbookID": "entity_enrichment_generic_test",
             "timeout": 240
         },
         {
             "integrations": [
-                "VirusTotal",
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
-        },
-        {
-            "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
-                {
-                    "name": "carbonblackprotection",
-                    "byoi": false
-                },
-                {
-                    "name": "carbonblack",
-                    "byoi": false
-                }
+                "carbonblackprotection",
+                "carbonblack"
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
@@ -666,23 +624,23 @@
         {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
+        },
+        {
+            "playbookID": "TestMatchRegex"
+        },
+        {
+            "integrations": "ActiveMQ",
+            "playbookID": "ActiveMQ Test"
         }
     ],
     "skipped_tests": [
-        "block_endpoint_-_carbon_black_response_-_test",
-        "VxStream Test",
         "File Enrichment - Generic Test",
         "entity_enrichment_generic_test",
-        "url_enrichment_-_generic_test",
-        "search_endpoints_by_hash_-_generic_-_test",
-        "Jira-Test",
-        "VerifyHumanReadableFormat",
-        "Cybereason Test",
-        "McAfee ATD",
-        "RTIR Test",
-        "NetWitness Endpoint Test"
+        "search_endpoints_by_hash_-_generic_-_test"
     ],
     "skipped_integrations": [
+        "McAfee Advanced Threat Defense",
+        "Symantec Endpoint Protection",
         "RedLock",
         "Symantec Messaging Gateway",
         "Cylance Protect",
@@ -691,7 +649,6 @@
         "Anomali ThreatStream",
         "Farsight DNSDB",
         "Cisco Umbrella Investigate",
-        "icebrg",
         "Symantec MSS",
         "Remedy AR",
         "McAfee Active Response",
@@ -700,12 +657,13 @@
         "XFE",
         "iDefense",
         "LogRhythm",
-        "FireEye HX",
         "Phish.AI",
         "Centreon",
         "TruSTAR",
         "AlphaSOC Wisdom",
         "Jask",
-        "Qualys"
+        "Qualys",
+        "Dell Secureworks",
+        "Service Manager"
     ]
 }
