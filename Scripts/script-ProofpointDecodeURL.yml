@@ -42,7 +42,7 @@ script: |
 
 
   except RuntimeError as e:
-      sys.exit(e)
+      demisto.results({"Type":entryTypes["error"], "ContentsFormat":formats["text"], "Contents":str(e)})
 type: python
 tags: []
 comment: Decode ProofPoint URLs to get the actual URLs
@@ -57,3 +57,4 @@ outputs:
   description: Decoded URLs
 scripttarget: 0
 dockerimage: demisto/python3
+releaseNotes: Better handling of error scenarios
