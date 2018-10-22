@@ -34,10 +34,6 @@
             "playbookID": "SCADAfence_test"
         },
         {
-            "integrations": "Trend Micro Deep Discovery Analyzer",
-            "playbookID": "Test Playbook TrendMicroDDA"
-        },
-        {
             "integrations": "epo",
             "playbookID": "Test Playbook McAfee ePO"
         },
