@@ -144,33 +144,6 @@ script:
             message += " - Scan cannot be launched in its current status."
         return message
 
-    def prep_create_scan_params(uuid, name, enabled, text_targets, start_time, timezone, scan_rule_frequency, scan_rule_time_interval, scan_rule_days_to_run, email_accounts, description, scanner_id):
-        settings = {
-            'name': name,
-            'enabled': enabled,
-            'text_targets': text_targets
-        }
-        if start_time:
-            settings['starttime'] = start_time
-        if timezone:
-            settings['timezone'] = timezone,
-        if email_accounts:
-            settings['emails'] = email_accounts,
-        if description:
-            settings['description'] = description,
-        if scanner_id:
-            settings['scanner_id'] = scanner_id
-        rrules = (scan_rule_frequency, scan_rule_time_interval, scan_rule_days_to_run)
-        if any(rrules):
-            if not all(rrules):
-                raise ValueError("When giving a scan-rule argument, all scan-rule arguments must be given.")
-            settings['rrules'] = "FREQ={};INTERVAL={};BYDAY={}".format(*rrules)
-
-        return {
-            'uuid': uuid,
-            'settings': settings
-        }
-
     # Request/Response methods
     # kwargs: request parameters
     def send_scan_request(scan_id="", endpoint="", method='GET', debug=False, **kwargs):
@@ -224,14 +197,6 @@ script:
         res = requests.get(full_url, headers=AUTH_HEADERS)
         res.raise_for_status()
         return res.json()
-
-    def send_create_scan_request(**kwargs):
-        full_url = "{}scans".format(BASE_URL)
-        params = prep_create_scan_params(**kwargs)
-        res = requests.post(full_url, headers=AUTH_HEADERS, params=params)
-        res.raise_for_status()
-        return res.json()
-
 
     def get_vuln_info(vulns):
         vulns_info = {v['plugin_id']: v for v in vulns}
@@ -318,10 +283,6 @@ script:
         templates = replace_keys(info['templates'], TEMPLATE_NAMES_MAP)
         return get_entry_for_object('Scan editor templates', 'Tenable.ScanEditorTemplates', templates, TEMPLATE_HEADERS)
 
-    def create_scan(**kwargs):
-        info = send_create_scan_request(**kwargs)
-        return get_entry_for_object('The requested scan was created successfully', 'Tenable.Scan', info[''])
-
 
     # Command selector
     if demisto.command() == 'test-module':
@@ -340,19 +301,16 @@ script:
         demisto.results(get_scan_status(demisto.getArg('scan-id')))
     elif demisto.command() == 'tenable-get-scan-editor-templates':
         demisto.results(get_templates())
-    elif demisto.command() == 'tenable-create-scan':
-        demisto.results(create_scan(demisto.getArg('uuid'), demisto.getArg('name'), demisto.getArg('enabled'), demisto.getArg('text_targets'), demisto.getArg('start_time'), demisto.getArg('timezone'), demisto.getArg('scan_rule_frequency'), demisto.getArg('scan_rule_time_interval'), demisto.getArg('scan_rule_days_to_run'), demisto.getArg('email_accounts'), demisto.getArg('description'), demisto.getArg('scanner_id')
-        ))
   type: python
   commands:
   - name: tenable-get-scans
     arguments:
     - name: folder-id
       description: 'The ID of the folder whose scans should be listed. Scans are stored
-        in specific folders on Tenable. e.g : folderId = 8'
+        in specific folders on Tenable. e.g : folderId=8'
     - name: last-modified-date
       description: 'Limit the results to those that have only changed since this time.
-        Time in the following format -  MM/DD/YYYY. e.g : lastModifiedDate = 08/12/2018'
+        Time in the following format -  MM/DD/YYYY. e.g : lastModifiedDate=08/12/2018'
     outputs:
     - contextPath: Tenable.Scan.Id
       description: The unique id of the scan.
@@ -685,81 +643,5 @@ script:
       type: string
     description: Get the list of available scanning editor templates to create new
       scans.
-  - name: tenable-create-scan
-    arguments:
-    - name: uuid
-      required: true
-      default: true
-      description: The uuid for the editor template to use.
-    - name: name
-      required: true
-      description: The name of the scan.
-    - name: enabled
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      description: If true, the schedule for the scan is enabled.
-      defaultValue: "yes"
-    - name: text-targets
-      required: true
-      description: The list of targets to scan.
-    - name: start-time
-      description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
-    - name: timezone
-      description: The timezone for the scan schedule.
-    - name: scan-rule-frequency
-      auto: PREDEFINED
-      predefined:
-      - ONETIME
-      - DAILY
-      - WEEKLY
-      - MONTHLY
-      - YEARLY
-      description: The frequency (scanRuleFrequency=onetime or daily or weekly or
-        monthly or yearly) Expects a string comprised of three values. If you specify
-        scanRuleFrequency you need to specify scanRuleTimeInterval and scanRuleDaysToRun
-        as well. To create a scan that runs every three weeks on Monday Wednesday
-        and Friday the string would be scanRuleFrequency=weekly;scanRuleTimeInterval=3;scanRuleDaysToRun=mo,we,fr
-    - name: scan-rule-time-interval
-      description: The time interval for which you want to run the scan (timeInterval=1
-        or 2 or 3 ... x), Expects a string comprised of three values. If you specify
-        timeInterval you need to specify scanFrequency and daysToRun as well. To create
-        a scan that runs every three weeks on Monday Wednesday and Friday the string
-        would be scanFrequency=weekly;timeInterval=3;daysToRun=mo,we,fr. 
-    - name: scan-rule-days-to-run
-      description: The days of the week on which you want to run the scan. (scanRuleDaysToRun=su,mo,tu,we,th,fr,sa)
-        Please write down first two letter of the word. Expects a string comprised
-        of three values. If you specify scanRuleDaysToRun you need to specify scanRuleFrequency
-        and scanRuleTimeInterval as well. To create a scan that runs every three weeks
-        on Monday Wednesday and Friday the string would be scanRuleFrequency=weekly;scanRuleTimeInterval=3;scanRuleDaysToRun=mo,we,fr. 
-    - name: email-accounts
-      description: A comma separated list of accounts who will recieve the email summary
-        report.
-    - name: description
-      description: The description of the scan.
-    - name: scanner-id
-      description: The unique id of the scanner to use.
-    outputs:
-    - contextPath: Tenable.Scan.CreationDate
-      description: The creation date of the scan.
-      type: date
-    - contextPath: Tenable.Scan.Targets
-      description: The targets specified for the scan.
-      type: string
-    - contextPath: Tenable.Scan.DefaultPermissions
-      description: The default permissions assigned to the scan.
-      type: number
-    - contextPath: Tenable.Scan.Id
-      description: The unique ID of the scan.
-      type: number
-    - contextPath: Tenable.Scan.Name
-      description: The name of the scan.
-      type: string
-    - contextPath: Tenable.Scan.Owner
-      description: The owner of the scan.
-      type: string
-    description: Create a scan on the Tenable platform.
   runonce: false
 releaseNotes: "-"
