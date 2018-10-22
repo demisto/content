@@ -26,8 +26,9 @@ if (!$session)
 
 Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
 
-
+$actionName = $searchName + "_Purge"
 $actionStatus = Get-ComplianceSearchAction $actionName
+""
 $actionStatus.Status
 
 # Close the session
