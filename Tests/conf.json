@@ -10,6 +10,10 @@
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
+          "integrations": "Signal Sciences WAF",
+          "playbookID": "SignalSciences Test"
+        },
+        {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
         },
@@ -656,6 +660,7 @@
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
         "Phish.AI": "Need to check the reason for skipping",
-        "Dell Secureworks": "Instance locally installed on @liorblob PC"
+        "Dell Secureworks": "Instance locally installed on @liorblob PC",
+        "Service Manager": "Expired license"
     }
 }
