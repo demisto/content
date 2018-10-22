@@ -53,13 +53,15 @@ echo "update server with branch content"
 
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
+ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
 
 scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
 scp -r ./TestPlaybooks/* ${USER}@${PUBLIC_IP}:~/TestPlaybooks
+scp -r ./Beta_Integrations/* ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
 # override exiting content with current
 COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content_new.zip -d /usr/local/demisto/res \
-    && sudo cp ~/TestPlaybooks/* /usr/local/demisto/res"
+    && sudo cp ~/TestPlaybooks/* /usr/local/demisto/res && sudo cp ~/Beta_Integrations/* /usr/local/demisto/res"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "start server"

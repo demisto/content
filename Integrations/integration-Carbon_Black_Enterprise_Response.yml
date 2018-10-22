@@ -1822,6 +1822,5 @@ script:
     description: Retrieve watchlist in Carbon black Response.
   isfetch: true
   runonce: false
-releaseNotes: "cb-sensor-info sensor is not mandatory any more, user can query by hostname, ip, groupid, sensor"
 tests:
   - CarbonBlackResponseTest
