@@ -214,4 +214,4 @@ script:
   runonce: false
   releaseNotes: More powerful version of Whois with proxy support.
 tests:
-  - Whois (New) - Test
+  - Whois New - Test
