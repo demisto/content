@@ -1,0 +1,274 @@
+commonfields:
+  id: BitDam
+  version: -1
+name: BitDam
+display: BitDam
+category: Email Gateway
+image: data:image/png;base64,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
+description: BitDam secure email gateway protects from advanced content-borne threats
+  with the most accurate prevention of known and unknown threats, at their source.
+detaileddescription: |-
+  In order to generate an API token, log in to BitDam Dashboard.
+  Navigate to your profile, click on 'API token' tab and then 'Generate API Token'.
+configuration:
+- display: BitDam API URL
+  name: url
+  defaultvalue: http://cloud.bitdam.com/api/v1.0
+  type: 0
+  required: true
+- display: API Token
+  name: apitoken
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |
+    # The command demisto.command() holds the command sent from the user.
+    '''IMPORTS'''
+    import requests
+    import base64
+    import json
+
+    '''INTEGRATION PARAMS'''
+    API_TOKEN = demisto.params().get('apitoken')
+    URL_BASE = demisto.params().get('url')
+
+    '''CONSTANTS'''
+    READ_BINARY_MODE = 'rb'
+    SLASH = '/'
+    SCAN_FILE_URL = 'files/'
+    GET_FILE_VERDICT_URL = 'files/?file_identifier_value={}&file_identifier_type={}'
+    TOKEN_PREFIX = 'Bearer'
+    RESPONSE_CODE_OK = 200
+    STATUS_IN_PROGRESS = 'IN_PROGRESS'
+    STATUS_DONE = 'DONE'
+    VERDICT_MALICIOUS = 'MALICIOUS'
+    VERDICT_CLEAN = 'CLEAN'
+    BITDAM_COMMAND_PREFIX = 'bitdam'
+    DBOTSCORE_CLEAN = 1
+    DBOTSCORE_MALICIOUS = 3
+
+    '''HELPER FUNCTIONS'''
+    def get_file_bytes(entry_id):
+        get_file_path_res = demisto.getFilePath(entry_id)
+        file_path = get_file_path_res["path"]
+        with open(file_path, READ_BINARY_MODE) as fopen:
+            bytes = fopen.read()
+        return base64.b64encode(bytes)
+
+
+    def get_url_base_with_trailing_slash():
+        '''
+        Returns the intergation's base url parameter, making sure it contains an trailing slash
+        '''
+        url_base = URL_BASE
+        return url_base if url_base.endswith(SLASH) else url_base + SLASH
+
+
+    def get_auth_headers():
+        headers = {}
+        headers['Authorization'] = "{} {}".format(TOKEN_PREFIX, API_TOKEN)
+        return headers
+
+
+    def build_json_response(content, context, human_readable):
+
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': content,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(human_readable, content),
+            'EntryContext': context
+        }
+
+
+    def get_file_name(entry_id):
+        get_file_path_res = demisto.getFilePath(entry_id)
+        return get_file_path_res["name"]
+
+
+    def scan_file_command():
+        # Get data to build the request
+        entry_id = demisto.args().get('entryId')
+        file_name = get_file_name(entry_id)
+        file_bytes = get_file_bytes(entry_id)
+        json_data = {'filename': file_name,
+                         'file_data_base64': base64.b64encode(file_bytes)}
+        raw_json = json.dumps(json_data, ensure_ascii=False)
+        url = "{}{}".format(get_url_base_with_trailing_slash(), SCAN_FILE_URL)
+        auth_headers = get_auth_headers()
+
+        # Send the HTTP request
+        response = requests.post(url, data=raw_json, headers=auth_headers)
+        return response
+
+
+    def get_file_verdict_command(identifier_type, identifier_value):
+        # Get data to build the request
+        scan_file_relative_url_formatted = GET_FILE_VERDICT_URL.format(identifier_value,
+                                                                identifier_type)
+        auth_headers = get_auth_headers()
+        url = "{}{}".format(get_url_base_with_trailing_slash(), scan_file_relative_url_formatted)
+
+        # Send the request
+        response = requests.get(url, headers=auth_headers)
+        return response
+
+
+    def parse_scan_file_response(response):
+        # Parse response
+        if RESPONSE_CODE_OK != response.status_code:
+            raise Exception("Scan file failed. Response code -{}, Data- '{}'".format(
+                str(response.status_code),
+                response.content))
+        response_json = json.loads(response.content)
+        if not response_json.has_key('data') or not response_json['data'].has_key('sha1'):
+            raise Exception(
+                "Scan file failed. Bad response json - {}".format(response.content))
+        returned_sha1 = response_json['data']['sha1']
+        return returned_sha1
+
+
+    def parse_get_file_verdict_response(response):
+        # Parse results
+        if RESPONSE_CODE_OK != response.status_code:
+            raise Exception("Get file verdict failed. Response code -{}, Data- '{}'".format(
+                str(response.status_code),
+                response.content))
+
+        response_json = json.loads(response.content)
+        status = ''
+        verdict = ''
+        if not response_json.has_key('data') or not response_json['data'].has_key('Verdict'):
+            # Still in progress
+            status = STATUS_IN_PROGRESS
+        else:
+            status = STATUS_DONE
+            if VERDICT_CLEAN.lower() in response_json['data']['Verdict'].lower():
+                verdict = VERDICT_CLEAN
+            else:
+                verdict = VERDICT_MALICIOUS
+        return verdict, status
+
+
+    def verdict_to_dbotscore(verdict):
+        if VERDICT_CLEAN == verdict:
+            return DBOTSCORE_CLEAN
+        elif VERDICT_MALICIOUS == verdict:
+            return DBOTSCORE_MALICIOUS
+        return None
+
+    '''API_IMPL'''
+    def scan_file():
+        response = scan_file_command()
+        returned_sha1 = parse_scan_file_response(response)
+
+        # Build demisto reponse
+        response_content = {'SHA1' : returned_sha1}
+        response_context = {'BitDam' : {'FileScan' : {'SHA1' : returned_sha1}}}
+        return build_json_response(response_content, response_context,
+                                    "File was submitted successfully")
+
+
+    def get_file_verdict():
+        identifier_type = demisto.args().get('idType')
+        identifier_value = demisto.args().get('idValue')
+        response = get_file_verdict_command(identifier_type, identifier_value)
+        verdict, status = parse_get_file_verdict_response(response)
+
+        response_content = {'STATUS' : status,
+                            'VERDICT' : verdict,
+                            'ID' : identifier_value}
+
+
+        context = {}
+        context['BitDam.Analysis(val.ID && val.ID == obj.ID)'] = {
+
+                'Status' : status, 'Verdict' : verdict, 'ID' : identifier_value
+            }
+
+        if VERDICT_MALICIOUS == verdict:
+            context[outputPaths['file']] = {'SHA1': identifier_value}
+            context[outputPaths['file']]['Malicious'] = {
+                'Vendor': 'BitDam',
+                'Description': 'Process whitelist inconsistency by bitdam-get-file-verdict'
+            }
+
+        dbotscore = verdict_to_dbotscore(verdict)
+        if dbotscore:
+            context[outputPaths['dbotscore']] = {
+                        'Indicator': identifier_value,
+                        'Type': 'File',
+                        'Vendor': 'BitDam',
+                        'Score': dbotscore
+                    }
+        response_context = context
+        return build_json_response(response_content, response_context,
+                                    "Get file verdict was performed successfully")
+
+
+    def test_module():
+        response = get_file_verdict_command('sha1', '111')
+        if RESPONSE_CODE_OK == response.status_code:
+            return True
+        raise Exception("Status code - {}, Error- '{}'".format(str(response.status_code),
+        response.content))
+
+
+    COMMAND_TO_API = {
+        'bitdam-upload-file' : scan_file,
+        'bitdam-get-verdict' : get_file_verdict,
+    }
+
+    '''COMMAND_CLASIFIER'''
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        if test_module():
+            demisto.results('ok')
+        sys.exit(0)
+    elif demisto.command().startswith(BITDAM_COMMAND_PREFIX):
+        demisto.results(COMMAND_TO_API[demisto.command()]())
+  type: python
+  commands:
+  - name: bitdam-upload-file
+    arguments:
+    - name: entryId
+      required: true
+      description: File's entry ID from war room
+    outputs:
+    - contextPath: BitDam.FileScan.SHA1
+      description: SHA 1
+      type: string
+    description: Upload a file sample to BitDam's service
+  - name: bitdam-get-verdict
+    arguments:
+    - name: idValue
+      required: true
+      description: The value of the file's unique identifier (for example - file's
+        SHA1)
+    - name: idType
+      description: Type of the identifier(default:sha1)
+      defaultValue: sha1
+    outputs:
+    - contextPath: BitDam.Analysis.Status
+      description: Status of the analysis. Can be either 'DONE' or 'IN_PROGRESS'
+    - contextPath: BitDam.Analysis.Verdict
+      description: Final verdict of the analysis. Can be 'Clean', 'Malicious' or empty
+        if analysis isn't finished.
+      type: string
+    - contextPath: BitDam.Analysis.ID
+      description: Unique identifier
+      type: string
+    description: Get verdict for a scanned file
+  runonce: false
