@@ -44,7 +44,7 @@ configuration:
   type: 12
   required: true
 script:
-  script: |+
+  script: |
     ''' IMPORTS '''
     import requests
     import json
@@ -54,12 +54,18 @@ script:
     requests.packages.urllib3.disable_warnings()
 
     ''' GLOBAL VARS '''
-    API_URL=demisto.params()['APIUrl'] + "/externalApi"
-    API_KEY=demisto.params()['APIKey']
-    API_SECRET=demisto.params()['APISecret']
+    API_URL = demisto.params()['APIUrl'].rstrip('/') + '/externalApi'
+    API_KEY = demisto.params()['APIKey']
+    API_SECRET = demisto.params()['APISecret']
     ALERT_SEVERITY = demisto.params()['AlertSeverity']
 
     USE_SSL = not demisto.params().get('insecure', False)
+
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     DEFAULT_HEADERS = {
         "x-api-key": API_KEY,
@@ -136,8 +142,7 @@ script:
                 verify=USE_SSL,
                 data=data,
                 params=params,
-                headers=headers,
-                proxies=PROXY
+                headers=headers
             )
             res.raise_for_status()
 
@@ -436,7 +441,6 @@ script:
 
     elif demisto.command() == 'fetch-incidents':
         demisto.incidents(fetch_incidents())
-
   type: python
   commands:
   - name: scadafence-getAlerts
