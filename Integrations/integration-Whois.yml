@@ -213,5 +213,5 @@ script:
   dockerimage: demisto/ippysocks
   runonce: false
   releaseNotes: More powerful version of Whois with proxy support.
-  tests:
+tests:
   - Whois (New) - Test
