@@ -1,6 +1,6 @@
 id: d6102383-60a9-461a-8fe7-becc6a084d09
 version: 7
-name: Whois-Test
+name: Whois Test
 description: This is a test playbook for Whois. It will retrieve details for google.com
   and confirm the domain name is the same.
 starttaskid: "0"
