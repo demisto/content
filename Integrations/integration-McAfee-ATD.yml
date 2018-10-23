@@ -44,6 +44,7 @@ script:
     import re
     import base64
     import shutil
+    import time
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -123,8 +124,6 @@ script:
         if res.status_code < 200 or res.status_code >= 300:
                 return_error('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
         uriStr = str(uri)
-        if (uriStr.find("session") == -1):
-            logout()
         result = res.content
         if not uri.startswith('php/showreport.php?'):
             result = json.loads(result)
@@ -423,7 +422,7 @@ script:
         filenameToUpload = fileName if (submitType == '0' and fileName) else ''
         if (submitType == '0'):
             resultObj = file_upload_raw(body, file, filenameToUpload)
-        elif (submitType == '1'):
+        else:
             resultObj = url_upload_raw(body)
         return{
             'taskId': resultObj['results'][0]['taskId'],
@@ -506,7 +505,7 @@ script:
                 context['ATD']['Task(val.taskId==obj.taskId)'] = {
                     'status': status,
                     'taskId': uploadData['taskId'],
-                    'jobId': uploadData['subId'],
+                    'jobId': uploadData['subId'] if 'subId' in uploadData else None,
                     'messageId': uploadData['messageId'],
                     'url': uploadData['url'],
                     'srcIp': uploadData['srcIp'],
@@ -516,13 +515,12 @@ script:
                     'SHA256': uploadData['sha256'],
                     'Report':
                         {
-                        'Attachments': reportSummary['Attachments'],
-                        'Environment': reportSummar['Environment'],
-                        'Environment': reportSummary['Environment'],
-                        'Ips': reportSummary['Ips'],
-                        'Verdict':reportSummary['Verdict'],
-                        'Data': reportSummary['Data'],
-                        'Selectors': reportSummary['Selectors'],
+                        'Attachments': reportSummary['Attachments'] if 'Attachments' in reportSummary else None,
+                        'Environment': reportSummary['Environment'] if 'Environment' in reportSummary else None,
+                        'Ips': reportSummary['Ips'] if 'Ips' in reportSummary else None,
+                        'Verdict':reportSummary['Verdict'] if 'Verdict' in reportSummary else None,
+                        'Data': reportSummary['Data'] if 'Data' in reportSummary else None,
+                        'Selectors': reportSummary['Selectors'] if 'Selectors' in reportSummary else None,
                         }
                     }
         return context
@@ -536,14 +534,12 @@ script:
         jresString = json.dumps(jres)
         if (report_type == 'json'):
             md = tableToMarkdown('McAfee ATD Sandbox Report', summary, summary.keys(), None, True)
-            return{
+            return {
                 'content': jresString,
                 'md': md,
                 'ec': ec
             }
-
         res = http_request('php/showreport.php?' + uriSuffix + '&iType=' + report_type, 'get', API_HEADERS)
-
         if (report_type == 'pdf' or report_type == 'zip'):
             if(report_type == 'pdf' and not get_session_credentials()['isAdmin']):
                 return 'No permission to download PDF'
@@ -586,20 +582,21 @@ script:
         return uriSuffix;
 
     def detonate(submitType ,sample, timeout, report_type, threshold, fileName):
-        result = file_upload(submitType, sample, fileName)
+        result = file_upload(submitType, sample, fileName, None, None, None, None, None, None, None, None)
         taskId = result['taskId']
         uploadData = result['resultObj']['results'][0]
 
         status = ''
-        start = datetime.utcnow()
-        diff = 0;
-
-        while (diff < timeout):
-            status = checkTaskStatusByTaskId([taskId])['status']
+        timeout = int(timeout)
+        while (0 < timeout):
+            status = str(check_task_status_by_taskId([taskId])['status'])
             if (status == 'Completed'):
-                uriSuffix = 'iTaskId=' + taskId
+                uriSuffix = 'iTaskId=' + str(taskId)
                 return_report(uriSuffix, taskId, report_type, uploadData, status, threshold)
-            diff = ( datetime.utcnow() - start ) / 1000
+                exit(0)
+            time.sleep(1)
+            timeout -= 1
+
         return_error("Timeout due to no answer after " + demisto.args()['timeout'] +
                 " seconds. Check the status using '!atd-check-status' in a while and if 'completed' execute '!atd-get-report'.")
 
@@ -677,7 +674,7 @@ script:
             #submit type for regular file is 0
 
         elif demisto.command() == 'detonate-url': #deprecated, please use 'Detonate URL - McAfee ATD_python' playbook
-            detonate(1, demisto.args()['url'], demisto.args().get('timeout'), demisto.args().get('format'), demisto.args().get('threshold')))
+            detonate(1, demisto.args().get('url'), demisto.args().get('timeout'), demisto.args().get('format'), demisto.args().get('threshold'), None)
             #submit type for url submission is 1
 
         #elif demisto.command() == 'detonate-file-remote':
@@ -1215,6 +1212,6 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "Handle errors gracefully"
+releaseNotes: "Handle errors gracefully, detonate-url fixes"
 tests:
 - Test Playbook McAfee ATD
