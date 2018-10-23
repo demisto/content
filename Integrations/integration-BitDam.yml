@@ -153,15 +153,17 @@ script:
                             'ID' : identifier_value}
         context = {}
         context['BitDam.Analysis(val.ID && val.ID == obj.ID)'] = {
-
-                'Status' : status, 'Verdict' : verdict, 'ID' : identifier_value
+                'Status' : status,
+                'Verdict' : verdict,
+                'ID' : identifier_value
             }
 
         if VERDICT_MALICIOUS == verdict:
             context[outputPaths['file']] = {'SHA1': identifier_value}
             context[outputPaths['file']]['Malicious'] = {
                 'Vendor': 'BitDam',
-                'Description': 'Process whitelist inconsistency by bitdam-get-file-verdict'
+                'Description': 'Process whitelist inconsistency by bitdam-get-file-verdict',
+                'Name': identifier_value
             }
 
         dbotscore = verdict_to_dbotscore(verdict)
