@@ -1,0 +1,99 @@
+id: cisco-ise-test-playbook
+version: -1
+name: cisco-ise-test-playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7c5c4fb7-0d5d-4d3d-87c8-b14af49877bf
+    type: start
+    task:
+      id: 7c5c4fb7-0d5d-4d3d-87c8-b14af49877bf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: b533d4ba-2c9f-4ecb-8e4e-a564d202874f
+    type: regular
+    task:
+      id: b533d4ba-2c9f-4ecb-8e4e-a564d202874f
+      version: -1
+      name: cisco-ise-get-endpoints
+      description: Get data about the existing endpoints
+      script: Cisco pxGrid ISE|||cisco-ise-get-endpoints
+      type: regular
+      iscommand: true
+      brand: Cisco pxGrid ISE
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: ecdaded9-bf7c-405c-8152-6b4b34025478
+    type: regular
+    task:
+      id: ecdaded9-bf7c-405c-8152-6b4b34025478
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID,MACAddress
+      path:
+        simple: Endpoint
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
