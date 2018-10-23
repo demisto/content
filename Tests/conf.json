@@ -599,6 +599,10 @@
             "nightly": true
         },
         {
+            "integrations": "Whois New",
+            "playbookID": "whois_test"
+        },
+        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io",
