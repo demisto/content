@@ -22,6 +22,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
@@ -44,7 +49,7 @@ configuration:
   type: 12
   required: true
 script:
-  script: |
+  script: |+
     ''' IMPORTS '''
     import requests
     import json
@@ -54,9 +59,9 @@ script:
     requests.packages.urllib3.disable_warnings()
 
     ''' GLOBAL VARS '''
-    API_URL = demisto.params()['APIUrl'].rstrip('/') + '/externalApi'
-    API_KEY = demisto.params()['APIKey']
-    API_SECRET = demisto.params()['APISecret']
+    API_URL= demisto.params()['APIUrl'].rstrip('/') + '/externalApi'
+    API_KEY=demisto.params()['APIKey']
+    API_SECRET=demisto.params()['APISecret']
     ALERT_SEVERITY = demisto.params()['AlertSeverity']
 
     USE_SSL = not demisto.params().get('insecure', False)
@@ -101,16 +106,6 @@ script:
         LOG("Invalid alert severity values")
         raise Exception("Invalid alert severity values")
 
-    def load_proxy():
-        """ Loads the system configured proxy if enabled in configuration """
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
-    PROXY = load_proxy()
-
     def http_request(method, url_suffix, params_dict, headers):
         """
 
@@ -128,7 +123,7 @@ script:
         url = API_URL + url_suffix
 
         LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, headers, json.dumps(req_params)))
-
+        res_msg = ""
         try:
 
             if method in ['PATCH', 'POST']:
@@ -144,6 +139,8 @@ script:
                 params=params,
                 headers=headers
             )
+            if res.text:
+                res_msg = res.text
             res.raise_for_status()
 
             if not res.text:
@@ -151,8 +148,8 @@ script:
             return json.loads(res.text)
 
         except Exception, e:
-            LOG(e)
-            raise Exception(e)
+            LOG("{}\n{}".format(e, res_msg))
+            raise Exception("{}\n{}".format(e, res_msg))
 
 
     def call_api(method, api_suffix, params):
@@ -241,7 +238,7 @@ script:
         if asset_data:
             api_suffix = "/assets"
             return call_api('GET', api_suffix, asset_data)
-        raise Exception("Invalid call for assets data (missing parameters)")
+        return_error("Invalid call for assets data (missing parameters)")
 
     def get_asset_map(asset_details):
         """
@@ -252,7 +249,7 @@ script:
         if asset_details:
             api_suffix = "/asset/map"
             return call_api('GET', api_suffix, asset_details)
-        raise Exception("Invalid call for asset map (missing parameters)")
+        return_error("Invalid call for asset map (missing parameters)")
 
     def get_assets_map():
         """
@@ -272,7 +269,7 @@ script:
         if asset_details:
             api_suffix = "/asset/traffic"
             return call_api('GET', api_suffix, asset_details)
-        raise Exception("Invalid call for asset map (missing parameters)")
+        return_error("Invalid call for asset traffic (missing parameters)")
 
     def dest_endpoint(ep):
         return {
@@ -332,16 +329,25 @@ script:
         remediation = demisto.args()['remediationText']
 
         api_suffix = "/alert"
-
-        status = call_api('POST', api_suffix, {
+        alert_data = {
             'ip': ip,
             'severity': severity,
             'details': description,
             'active': active,
             'remediation': remediation
+        }
+        data = call_api('POST', api_suffix, alert_data)
+        
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Create alert:', data),
+            'EntryContext': {
+                'SCADAfence.Alert': data
+            }
         })
-
-        demisto.results(status)
 
     elif demisto.command() == 'scadafence-getAlerts':
         ip = None
@@ -351,8 +357,17 @@ script:
         if 'severity' in demisto.args():
             severity = demisto.args()['severity']
         data = get_alerts(severity, ip, None)
-        md = '## Following alerts were found\n'
-        md += tableToMarkdown('Alerts are: ', data)
+        output = []
+        for alert in data:
+            output.append({
+                        'status': alert['status'],
+                        'severity': alert['severity'],
+                        'ip': alert['ip'],
+                        'details': alert['details'],
+                        'id': alert['id'],
+                        'remediation': alert['remediation']
+                    })
+        md = tableToMarkdown('Alerts are: ', output)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': data,
@@ -360,7 +375,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'SCADAfence.Alerts(val.id==obj.id)': data
+                'SCADAfence.Alert(val.id==obj.id)': output
             }
         })
 
@@ -368,7 +383,18 @@ script:
         api_suffix = "/alerts/" + demisto.args()['alertId']
         alert_status = demisto.args()['alertStatus']
         call_api('PATCH', api_suffix, {'status': alert_status})
-        demisto.results("Alert " + demisto.args()['alertId'] + " status was set to '" + alert_status + "' successfully.")
+        md = tableToMarkdown("Setting status for alert " + demisto.args()['alertId'] + " to '" + alert_status + "':",{"success": True})
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': {"status": alert_status},
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'SCADAfence.Alert.status': alert_status
+            }
+        })
+
 
     elif demisto.command() == 'scadafence-getAsset':
         params = map_optional_params(['ipAddress', 'hostName', 'assetType'], ['ip', 'host', 'type'])
@@ -413,7 +439,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'SCADAfence.Connections(val.ip==obj.ip)': data
+                'SCADAfence.Connection': data
             }
         })
 
@@ -441,6 +467,7 @@ script:
 
     elif demisto.command() == 'fetch-incidents':
         demisto.incidents(fetch_incidents())
+
   type: python
   commands:
   - name: scadafence-getAlerts
@@ -457,19 +484,19 @@ script:
     - name: ipAddress
       description: get alerts for specified IP
     outputs:
-    - contextPath: SCADAfence.Alerts.id
+    - contextPath: SCADAfence.Alert.id
       description: alert ID
       type: string
-    - contextPath: SCADAfence.Alerts.ip
+    - contextPath: SCADAfence.Alert.ip
       description: asset IP
       type: string
-    - contextPath: SCADAfence.Alerts.severity
+    - contextPath: SCADAfence.Alert.severity
       description: alert severity level
       type: string
-    - contextPath: SCADAfence.Alerts.type
+    - contextPath: SCADAfence.Alert.type
       description: short alert description
       type: string
-    - contextPath: SCADAfence.Alerts.details
+    - contextPath: SCADAfence.Alert.details
       description: extended alert description
       type: string
     description: query alerts data from SCADAfence CNM
@@ -522,6 +549,10 @@ script:
       - InProgress
       - Resolved
       description: Alert status
+    outputs:
+    - contextPath: SCADAfence.Alert.status
+      description: new status for the alert
+      type: string
     description: setting alert status
   - name: scadafence-getAssetConnections
     arguments:
@@ -560,10 +591,18 @@ script:
     - name: hostName
       description: optional - hostname of the asset
     outputs:
-    - contextPath: SCADAfence.AssetTraffic.TCP
-      description: network activity summary over TCP
-    - contextPath: SCADAfence.AssetTraffic.UDP
-      description: network activity summary over UDP
+    - contextPath: SCADAfence.AssetTraffic.TCP_tx_bytes
+      description: bytes sent by the asset via TCP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.TCP_rx_bytes
+      description: bytes received by the asset via TCP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.UDP_tx_bytes
+      description: bytes sent by the asset via UDP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.UDP_rx_bytes
+      description: bytes received by the asset via UDP
+      type: number
     description: fetch asset network activity data  by one or more (combined) parameters
   - name: scadafence-createAlert
     arguments:
@@ -595,38 +634,48 @@ script:
       - "False"
       description: set active=True to make the alert appear on SCADAfence UI
       defaultValue: "True"
+    outputs:
+    - contextPath: SCADAfence.Alert.alertCreated
+      description: flag defining alert creation status
+      type: boolean
+    - contextPath: SCADAfence.Alert.id
+      description: unique ID set to a new alert
+      type: string
     description: create alert in SCADAfence CNM
   - name: scadafence-getAllConnections
     arguments: []
     outputs:
-    - contextPath: SCADAfence.Connections.src_ip
+    - contextPath: SCADAfence.Connection.src_ip
       description: IP address of endpoint A
-    - contextPath: SCADAfence.Connections.dest_ip
+      type: string
+    - contextPath: SCADAfence.Connection.dest_ip
       description: IP address of endpoint B
       type: string
-    - contextPath: SCADAfence.Connections.src_port
+    - contextPath: SCADAfence.Connection.src_port
       description: port of endpoint A
       type: number
-    - contextPath: SCADAfence.Connections.dest_port
+    - contextPath: SCADAfence.Connection.dest_port
       description: port of endpoint B
       type: number
-    - contextPath: SCADAfence.Connections.src_mac
+    - contextPath: SCADAfence.Connection.src_mac
       description: endpoint A MAC address
       type: string
-    - contextPath: SCADAfence.Connections.dest_mac
+    - contextPath: SCADAfence.Connection.dest_mac
       description: endpoint B MAC address
-    - contextPath: SCADAfence.Connections.src_cname
+      type: string
+    - contextPath: SCADAfence.Connection.src_cname
       description: endpoint A hostname
       type: string
-    - contextPath: SCADAfence.Connections.dest_cname
+    - contextPath: SCADAfence.Connection.dest_cname
       description: endpoint B hostname
       type: string
-    - contextPath: SCADAfence.Connections.proto
+    - contextPath: SCADAfence.Connection.proto
       description: L4 protocol
       type: string
-    - contextPath: SCADAfence.Connections.traffic
+    - contextPath: SCADAfence.Connection.traffic
       description: total number of bytes sent in both directions
       type: number
     description: scadafence-getAllConnections - fetches all connections from the CNM
   isfetch: true
   runonce: false
+
