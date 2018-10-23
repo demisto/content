@@ -2,7 +2,6 @@ id: Office 365 Search and Delete
 version: -1
 name: Office 365 Search and Delete
 starttaskid: "0"
-releaseNotes: "-"
 tasks:
   "0":
     id: "0"
@@ -343,5 +342,6 @@ inputs:
   required: true
   description: Compliance Search query
 outputs: []
+releaseNotes: "-"
 tests:
   - Forgive me for my sins but I did not create any test
