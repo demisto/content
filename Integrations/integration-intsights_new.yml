@@ -1184,8 +1184,7 @@ script:
     - name: free-text
       description: The alert's comments
     - name: is-hidden
-      description: The alerts' hidden status (Delete alert from the account instance
-      - only when reason is FalsePositive)
+      description: The alerts' hidden status (Delete alert from the account instance - only when reason is FalsePositive)
       defaultValue: "False"
     - name: rate
       description: The alert's rate
