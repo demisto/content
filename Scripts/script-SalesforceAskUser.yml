@@ -77,3 +77,6 @@ args:
   description: Add a link to the message
 scripttarget: 0
 runonce: false
+dependson:
+  must:
+  - salesforce-push-comment

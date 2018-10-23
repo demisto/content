@@ -48,6 +48,11 @@ configuration:
   defaultvalue: "0"
   type: 0
   required: false
+- display: Queue name to fetch incidents from
+  name: fetch_queue
+  defaultvalue: Incident Reports
+  type: 0
+  required: false
 script:
   script: |-
     ''' IMPORTS '''
@@ -539,7 +544,22 @@ script:
             demisto.error(str(e))
             return_error('Failed to add comment')
 
+    def add_reply():
+        ticket_id = demisto.args().get('ticket-id')
+        text = demisto.args().get('text')
+        cc = demisto.args().get('cc')
+        try:
+            added_reply = tracker.reply(ticket_id=ticket_id, text=text, cc=cc)
+            if added_reply is True:
+                demisto.results('Replied successfully to ticket {}.'.format(ticket_id))
+            else:
+                return_error('Failed to reply')
+        except Exception, e:
+            demisto.error(str(e))
+            return_error('Failed to reply')
+
     def fetch_incidents():
+        fetch_queue = demisto.get(demisto.params(), 'fetch_queue')
         last_run = demisto.getLastRun()
         last_ticket_id = demisto.getLastRun()['ticket_id'] if (demisto.getLastRun() and demisto.getLastRun()['ticket_id']) else 0
         raw_query='id>{}+AND+Priority>{}'.format(last_ticket_id, FETCH_PRIORITY)
@@ -550,7 +570,7 @@ script:
                 status_query += 'Status={}{}{}+OR+'.format(apostrophe, status, apostrophe)
             raw_query += status_query
             raw_query += ')'
-        tickets = tracker.search(raw_query=raw_query)
+        tickets = tracker.search(Queue=fetch_queue, raw_query=raw_query)
         incidents = []
         max_ticket_id = last_ticket_id
         for ticket in tickets:
@@ -604,6 +624,9 @@ script:
 
         elif demisto.command() == 'rtir-add-comment':
             add_comment()
+
+        elif demisto.command() == 'rtir-add-reply':
+            add_reply()
 
     except Exception, e:
         LOG(e.message)
@@ -937,6 +960,20 @@ script:
         values supported, e.g. entryID1,entryID2
       isArray: true
     description: Add a comment to an existing ticket.
+  - name: rtir-add-reply
+    arguments:
+    - name: ticket-id
+      required: true
+      description: Ticket ID to send the reply to the user
+    - name: text
+      required: true
+      description: reply text
+    - name: cc
+      description: Email of the user to send the reply
+      isArray: true
+    description: Send a reply from an existing ticket to the user
   dockerimage: demisto/rt-ir
   isfetch: true
   runonce: false
+tests:
+  - RTIR Test
