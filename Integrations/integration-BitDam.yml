@@ -245,7 +245,8 @@ script:
     arguments:
     - name: entryId
       required: true
-      description: File's entry ID from war room
+      description: File's entry ID from war room. Supported types are doc, dot, docx, docm, dotx,
+        dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam, csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
     outputs:
     - contextPath: BitDam.FileScan.SHA1
       description: SHA 1
