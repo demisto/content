@@ -1,5 +1,5 @@
 id: Whois Test
-version: 7
+version: -1
 name: Whois Test
 description: This is a test playbook for Whois. It will retrieve details for google.com
   and confirm the domain name is the same.
