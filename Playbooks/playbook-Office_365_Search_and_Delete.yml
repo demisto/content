@@ -62,6 +62,14 @@ tasks:
       id: f2775280-9f9f-4107-820b-d36851d617a2
       version: -1
       name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -75,9 +83,9 @@ tasks:
           root: EWS
           accessor: ComplianceSearch.Name
       Interval:
-        simple: "60"
+        simple: "15"
       PollingCommandArgName:
-        simple: search_name
+        simple: search-name
       PollingCommandName:
         simple: ews-get-compliance-search
       Timeout:
@@ -172,7 +180,7 @@ tasks:
       search-name:
         complex:
           root: EWS
-          accessor: ComplianceSearch.Status
+          accessor: ComplianceSearch.Name
     separatecontext: false
     view: |-
       {
@@ -210,6 +218,14 @@ tasks:
       id: 5d7d9177-0151-4673-8ee6-dc7b7fdfebcb
       version: -1
       name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
