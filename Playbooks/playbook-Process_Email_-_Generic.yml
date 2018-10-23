@@ -437,12 +437,17 @@ tasks:
           accessor: To
           transformers:
           - operator: uniq
-          - operator: Stringify
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
       emailtocount:
         complex:
           root: Email
           accessor: To
           transformers:
+          - operator: uniq
           - operator: count
       emailurlclicked:
         complex:
