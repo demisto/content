@@ -100,16 +100,25 @@ script:
     log_stream = StringIO()
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
+    import exchangelib
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, ErrorInvalidIdMalformed, \
         ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest
     from exchangelib.items import Item, Message
     from exchangelib.services import EWSService, EWSAccountService
-    from exchangelib.util import create_element, add_xml_child, MNS, TNS
+    from exchangelib.util import create_element, add_xml_child
     from exchangelib import IMPERSONATION, DELEGATE, Account, ServiceAccount, \
         EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, ItemAttachment, \
         Version, Folder, HTMLBody, Body
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+
+    # Docker BC
+    MNS = None
+    TNS = None
+    if exchangelib.__version__ == "1.12.0":
+        MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
+    else:
+        MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.MNS
 
     # consts
     VERSIONS = {
@@ -180,6 +189,14 @@ script:
     IS_TEST_MODULE = False
     BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 
+
+    PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
+    if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
+        if demisto.command() == 'test-module':
+            demisto.results(PUBLIC_FOLDERS_ERROR)
+            exit(3)
+        raise Exception(PUBLIC_FOLDERS_ERROR)
+
     def str_to_unicode(obj):
         if isinstance(obj, dict):
             obj = {k: str_to_unicode(v) for k,v in obj.iteritems()}
@@ -240,6 +257,9 @@ script:
         result = [x for x in result if not isinstance(x, ErrorItemNotFound)]
         if len(result) != len(item_ids):
             raise Exception("One or more items were not found. Check the input item ids")
+        if exchangelib.__version__ != "1.12.0":   # Docker BC
+            for item in result:
+                item.folder = Folder(account=account)
         return result
 
 
@@ -260,12 +280,19 @@ script:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
         return Version(VERSIONS[version_str])
 
+
     def is_default_folder(folder_path, is_public):
+        if exchangelib.__version__ != "1.12.0":   # Docker BC
+            return False
+
         if is_public is not None:
             return is_public
+
         if folder_path == FOLDER_NAME:
             return IS_PUBLIC_FOLDER
+
         return False
+
 
     def get_folder_by_path(account, path, is_public=False):
         # handle exchange folder id
@@ -586,11 +613,18 @@ script:
 
         if compact_fields:
             new_dict = {}
-            if 'id' in raw_dict:
-                new_dict['item_id'] = raw_dict['id']
-            for field in ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
-                          'has_attachments', 'importance', 'message_id', 'last_modified_time',
-                          'size', 'subject', 'text_body', 'headers', 'body', 'folder_path']:
+            fields_list = ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
+                           'has_attachments', 'importance', 'message_id', 'last_modified_time',
+                           'size', 'subject', 'text_body', 'headers', 'body', 'folder_path']
+
+            # Docker BC
+            if exchangelib.__version__ == "1.12.0":
+                if 'id' in raw_dict:
+                    new_dict['item_id'] = raw_dict['id']
+            else:
+                fields_list.append('item_id')
+
+            for field in fields_list:
                 if field in raw_dict:
                     new_dict[field] = raw_dict.get(field)
             for field in ['received_by', 'author', 'sender']:
@@ -976,7 +1010,10 @@ script:
     def prepare_args(d):
         d = dict((k.replace("-", "_"), v) for k, v in d.items())
         if 'is_public' in d:
-            d['is_public'] = d['is_public'] == 'True'
+            if exchangelib.__version__ != "1.12.0":   # Docker BC
+                raise Exception(PUBLIC_FOLDERS_ERROR)
+            else:
+                d['is_public'] = d['is_public'] == 'True'
         return d
 
 
@@ -1133,8 +1170,9 @@ script:
     def find_folders(target_mailbox=None, is_public=None):
         account = get_account(target_mailbox or ACCOUNT_EMAIL)
         root = account.root
-        if is_public:
-            root = account.public_folders_root
+        if exchangelib.__version__ == "1.12.0":   # Docker BC
+            if is_public:
+                root = account.public_folders_root
         folders = []
         for f in root.walk():
             folder = folder_to_context_entry(f)
@@ -1162,7 +1200,9 @@ script:
         items = get_limited_number_of_messages_from_qs(qs, limit)
         items_result = map(lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True), items)
         hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
-                      'receivedBy', 'author', 'toRecipients', 'itemId']
+                      'receivedBy', 'author', 'toRecipients', ]
+        if exchangelib.__version__ == "1.12.0":   # Docker BC
+            hm_headers.append('itemId')
         return get_entry_for_object('Items in folder ' + folder_path,
                                     CONTEXT_UPDATE_EWS_ITEM,
                                     items_result,
