@@ -1264,6 +1264,12 @@ script:
             raise  # Let the other error hadling logic deal with it
 
 
+    def check_cs_prereqs():
+        if not 'outlook.office365.com' in EWS_SERVER:
+            raise Exception("This command is only supported for Office 365")
+        if exchangelib.__version__ != "1.12.0":
+            raise Exception("Please update your docker image to use this command")
+
     def get_cs_error(stderr):
         return {
             "Type": entryTypes["error"],
@@ -1282,8 +1288,7 @@ script:
         }
 
     def start_compliance_search(query):
-        if not 'outlook.office365.com' in EWS_SERVER:
-            raise Exception("This command is only supported for Office 365")
+        check_cs_prereqs()
         output = subprocess.Popen(["pwsh","/usr/local/office365startcompliancesearch.ps1", USERNAME, PASSWORD, query], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
 
@@ -1305,8 +1310,7 @@ script:
         }
 
     def get_compliance_search(search_name):
-        if not 'outlook.office365.com' in EWS_SERVER:
-            raise Exception("This command is only supported for Office 365")
+        check_cs_prereqs()
         output = subprocess.Popen(["pwsh","/usr/local/office365getcompliancesearch.ps1", USERNAME, PASSWORD, search_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
 
@@ -1333,8 +1337,7 @@ script:
 
 
     def purge_compliance_search(search_name):
-        if not 'outlook.office365.com' in EWS_SERVER:
-            raise Exception("This command is only supported for Office 365")
+        check_cs_prereqs()
         output = subprocess.Popen(["pwsh","/usr/local/office365compliancesearchstartpurge.ps1", USERNAME, PASSWORD, search_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
 
@@ -1345,8 +1348,7 @@ script:
 
 
     def check_purge_compliance_search(search_name):
-        if not 'outlook.office365.com' in EWS_SERVER:
-            raise Exception("This command is only supported for Office 365")
+        check_cs_prereqs()
         output = subprocess.Popen(["pwsh","/usr/local/office365compliancesearchcheckpurge.ps1", USERNAME, PASSWORD, search_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
 
@@ -1357,8 +1359,7 @@ script:
 
 
     def remove_compliance_search(search_name):
-        if not 'outlook.office365.com' in EWS_SERVER:
-            raise Exception("This command is only supported for Office 365")
+        check_cs_prereqs()
         output = subprocess.Popen(["pwsh","/usr/local/office365removecompliancesearch.ps1", USERNAME, PASSWORD, search_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = output.communicate()
 
