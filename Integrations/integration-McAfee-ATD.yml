@@ -639,7 +639,6 @@ script:
             else:
                 demisto.results(res)
 
-
     def logout():
         res = http_request('/php/session.php','delete', API_HEADERS)
 

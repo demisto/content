@@ -101,14 +101,17 @@ def get_attachments(build_url, build_st):
 
 
 def get_fields():
+    print('Extracting failed_tests')
     with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
         failed_tests = failed_tests_file.readlines()
         failed_tests = [line.strip('\n') for line in failed_tests]
 
+    print('Extracting skipped_tests')
     with open('./Tests/skipped_tests.txt', 'r') as skipped_tests_file:
         skipped_tests = skipped_tests_file.readlines()
         skipped_tests = [line.strip('\n') for line in skipped_tests]
 
+    print('Extracting skipped_integrations')
     with open('./Tests/skipped_integrations.txt', 'r') as skipped_integrations_file:
         skipped_integrations = skipped_integrations_file.readlines()
         skipped_integrations = [line.strip('\n') for line in skipped_integrations]
@@ -148,6 +151,8 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
     branch_name = branch_name_reg.group(1)
 
     if branch_name == 'master':
+        print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
+        print("Extracting build status")
         build_st = extract_build_status(build_number, circleci_token)
         attachments = get_attachments(build_url, build_st)
 
@@ -173,6 +178,8 @@ if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
         slack_notifier(options.url, options.buildNumber, options.slack, options.circleci)
+    else:
+        print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
     os.remove('./Tests/failed_tests.txt')
     os.remove('./Tests/skipped_tests.txt')
