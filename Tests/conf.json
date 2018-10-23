@@ -418,10 +418,6 @@
             "playbookID": "pyEWS_Test"
         },
         {
-            "integrations": "EWS v2",
-            "playbookID": "pyEWS Public Folders test"
-        },
-        {
 
             "integrations": "Netskope",
             "playbookID": "Netskope Test"
