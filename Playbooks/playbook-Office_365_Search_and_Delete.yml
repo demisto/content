@@ -1,6 +1,7 @@
 id: Office 365 Search and Delete
 version: -1
 name: Office 365 Search and Delete
+description: "Run a ComplianceSearch on Office 365 and delete the results."
 starttaskid: "0"
 tasks:
   "0":
