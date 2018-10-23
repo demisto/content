@@ -2160,7 +2160,7 @@ script:
     - contextPath: EWS.ComplianceSearch.Status
       description: The status of the compliance search
     description: Check the status of the purge operation on the compliance search.
-  dockerimage: demisto/py-ews:3.0
+  dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
 releaseNotes: "Added support for Public Folders. Added support for compliance search in office365."
