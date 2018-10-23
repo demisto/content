@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 98ddf65c-717d-4749-8599-124c1edc125d
+    taskid: be521bc7-58d3-46bb-80f0-a866691acb24
     type: start
     task:
-      id: 98ddf65c-717d-4749-8599-124c1edc125d
+      id: be521bc7-58d3-46bb-80f0-a866691acb24
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 2e5c1e1f-bdd0-42d8-8c44-1c4f52e0044e
+    taskid: 52e1f658-096e-4990-84c8-3fd005e81768
     type: regular
     task:
-      id: 2e5c1e1f-bdd0-42d8-8c44-1c4f52e0044e
+      id: 52e1f658-096e-4990-84c8-3fd005e81768
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -57,10 +57,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: ace4cdd2-76a7-4335-8bf8-f67ed1747eaa
+    taskid: 22200198-1e4a-43a3-89b8-ff9b222419c8
     type: regular
     task:
-      id: ace4cdd2-76a7-4335-8bf8-f67ed1747eaa
+      id: 22200198-1e4a-43a3-89b8-ff9b222419c8
       version: -1
       name: nexpose-get-assets
       description: Returns all assets for which you have access.
@@ -86,10 +86,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 9231d489-297d-4823-86e2-95c1a28c886e
+    taskid: 443d18c8-05a9-488e-8305-6ec302260ab4
     type: regular
     task:
-      id: 9231d489-297d-4823-86e2-95c1a28c886e
+      id: 443d18c8-05a9-488e-8305-6ec302260ab4
       version: -1
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
@@ -123,10 +123,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 15446f3f-d228-4225-8a51-ad679d88bfe0
+    taskid: feb0d6e0-051b-476f-8b06-ce10e64cd939
     type: regular
     task:
-      id: 15446f3f-d228-4225-8a51-ad679d88bfe0
+      id: feb0d6e0-051b-476f-8b06-ce10e64cd939
       version: -1
       name: nexpose-get-asset
       description: Returns the specified asset.
@@ -151,10 +151,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 01069902-746c-4b83-83a4-223c1116b7f5
+    taskid: ee71a361-a392-4933-88f6-e01bad21cbd4
     type: regular
     task:
-      id: 01069902-746c-4b83-83a4-223c1116b7f5
+      id: ee71a361-a392-4933-88f6-e01bad21cbd4
       version: -1
       name: VerifyContext
       description: |-
@@ -187,10 +187,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: ac909c39-cb29-4bf6-854a-9161b2be572a
+    taskid: 3704c1f9-e007-429a-8500-c4d112aa7c99
     type: regular
     task:
-      id: ac909c39-cb29-4bf6-854a-9161b2be572a
+      id: 3704c1f9-e007-429a-8500-c4d112aa7c99
       version: -1
       name: nexpose-create-assets-report
       description: Generates a new report on given assets according to a template
@@ -219,10 +219,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 0331bfef-4f75-4571-800d-85b210e4681e
+    taskid: 822fdb13-3913-4ffa-80b6-06effb9ebb4f
     type: regular
     task:
-      id: 0331bfef-4f75-4571-800d-85b210e4681e
+      id: 822fdb13-3913-4ffa-80b6-06effb9ebb4f
       version: -1
       name: nexpose-get-asset-vulnerability
       description: Returns the details and possible remediations for an asset's given
@@ -250,10 +250,10 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: 3a8e6d0f-d76f-4f5a-8438-acc561205d5a
+    taskid: 65b0b02e-4758-45e3-8f0b-95da079d84c5
     type: regular
     task:
-      id: 3a8e6d0f-d76f-4f5a-8438-acc561205d5a
+      id: 65b0b02e-4758-45e3-8f0b-95da079d84c5
       version: -1
       name: VerifyContext
       description: |-
@@ -286,10 +286,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: b7cfb3fa-f4dd-47bd-88a5-3e13492ff37d
+    taskid: ac42cb58-14e7-409a-8fd8-e3e2ffa9fcf3
     type: regular
     task:
-      id: b7cfb3fa-f4dd-47bd-88a5-3e13492ff37d
+      id: ac42cb58-14e7-409a-8fd8-e3e2ffa9fcf3
       version: -1
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
@@ -323,10 +323,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 57398db9-47fd-485b-8226-e28641d73a4e
+    taskid: 54361a97-c5f8-4944-865f-578462b4c2d8
     type: regular
     task:
-      id: 57398db9-47fd-485b-8226-e28641d73a4e
+      id: 54361a97-c5f8-4944-865f-578462b4c2d8
       version: -1
       name: nexpose-create-assets-report-xml
       description: Generates a new report on given assets according to a template
@@ -356,10 +356,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: a548d7a3-9758-4a39-8302-05f609568e8a
+    taskid: 87c5533b-461a-4b91-86cd-b7bfdd74fb01
     type: regular
     task:
-      id: a548d7a3-9758-4a39-8302-05f609568e8a
+      id: 87c5533b-461a-4b91-86cd-b7bfdd74fb01
       version: -1
       name: VerifyContext
       description: |-
@@ -374,7 +374,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "16"
     scriptarguments:
       expectedValue:
         simple: '["pdf","xml"]'
@@ -392,10 +392,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: 0b21d1e7-ee8f-45ca-8ef4-92f185737153
+    taskid: ec7a065b-7595-49b7-8595-b99bf1e1a2d7
     type: regular
     task:
-      id: 0b21d1e7-ee8f-45ca-8ef4-92f185737153
+      id: ec7a065b-7595-49b7-8595-b99bf1e1a2d7
       version: -1
       name: nexpose-create-site
       description: Creates a new site with the specified configuration.
@@ -412,23 +412,31 @@ tasks:
       description: {}
       importance: {}
       name:
-        simple: test_playbook_site
+        complex:
+          root: GeneratedUUID
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: test_playbook_site
+              suffix: {}
       scanTemplateId: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
   "15":
     id: "15"
-    taskid: bc8aa772-137e-43de-8534-7acda0ab56f6
+    taskid: 02e0f920-d539-4efd-86eb-1eb3ad86dbb7
     type: regular
     task:
-      id: bc8aa772-137e-43de-8534-7acda0ab56f6
+      id: 02e0f920-d539-4efd-86eb-1eb3ad86dbb7
       version: -1
       name: nexpose-delete-site
       description: Delete a site
@@ -444,7 +452,32 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 77fb7ab7-e124-4c75-812e-37731bcee145
+    type: regular
+    task:
+      id: 77fb7ab7-e124-4c75-812e-37731bcee145
+      version: -1
+      name: GenerateUUID
+      description: Generates random UUID
+      scriptName: GenerateUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -453,7 +486,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2340,
+        "height": 2515,
         "width": 380,
         "x": 50,
         "y": 50
