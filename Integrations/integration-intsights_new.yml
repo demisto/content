@@ -649,6 +649,8 @@ script:
         get_ioc_blocklist_status()
     elif demisto.command() == 'intsights-update-ioc-blocklist-status':
         update_ioc_blocklist_status()
+    elif demisto.command() == 'intsights-close-alert':
+        close_alert()
     else:
         return_error('Unrecognized command: ' + demisto.command())
   type: python
