@@ -215,7 +215,7 @@ script:
                 var afterWhitespace = query.substring(httpIndex + whitespaceIndex)
                 query = beforeHttp + url + afterWhitespace
             }
-            var headers = 'headers' in args ? argToList(args.headers) : null;
+            var headers = 'headers' in args ? argToList(args.headers) : undefined;
             var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
                 a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, a2i(params.sleepBetweenChecks, defaultSleep));
             var md = '';
