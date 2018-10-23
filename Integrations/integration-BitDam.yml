@@ -4,7 +4,7 @@ commonfields:
 name: BitDam
 display: BitDam
 category: Email Gateway
-image: data:image/png;base64,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
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAE4tJREFUeAHtWwlwVVWa/s+57963ZE9IzAIJIBJDdlAExG5cC+2xWtzGpcvppuxyRiHgiqOWUpZVU109LQLa3XaPbevYPe3WPdMKTretIiIIErKQsMQEiYEsZH0vL2+525nvvPBCQt4DtJSya96pJPfes/zn3O8//3puiBIlgUACgQQCCQQSCCQQSCCQQCCBQAKBBAIJBBIIJBBIIJBAIIHA3wMCLN4iS6s3VHLTuoEx4sQdE7rZtkmp8xaTHQqQv3EXcdU11i6YsIixISZEB7P5ftPs+6y5ea0+1iFxc1YRiMvgRct3P8d0ujvYvp+sYR8xzkkwTjYxEkIQcydRUuVFFD50gMyeI8TRjpaxxQvcC9vQGbH9ROwNywi/1NR0f8dYh8TNWUFAiTdLsmPRlUzTFqhFM8jOyCZrZIg8oQHK5T6apgzSNLOLcgYOUv6sacT6j1DIMCggFLLAWCZMAndBmimM8VzG1ctIYbfm5l6t93RftJtoy4mdEG8BifqvBYG4EnznVf+8fiCYVWMGnFRekEQFfIg0EaLhoWHyBS0KcyeYKMitCMrKzyant5u8wyFqtPOpwciloHCQyqCtjy8TjIbmdpBtG7+3dH5Xc/M9/q/lDRJETolAFP9Jner/sXIj11NWDJiMPCn99EbvfNqWdB0NTyklu7OFjKOHMGZ0uJaZTVklJZTdspWqfHU0VQtQrZFPW/Ui0mHCVSj2aOHYGLYdfkvlA7fU1q4NROsT128GgbgqOuy6c+kr3gUX/c/w+bRPz6eSrC/oqqR3KDfYRL6sajLPKSNHYJCUkJ9YcJj0oUEKFF9M9cpMauojKuNddLW7jXzCRUetVGhoqG68g4APBiYX25aW3tP9zuZv5rUSVKMIxJXgkqpn16mKulrYYbJshUzY1yynjy7J2UsXZTUZrc6F5l+15eTr8ZL++X4SpkHMoZJ7djlRcppz5EgnLxg8SMvoU+q3XfSmXkYjpJFqG5G5GVOErQeubdr/8KboYuJd5817Pg1tHqLJAi9rPOQJ1Nbe5Y03/kvWs9LS11SifTGGzaE5c8h6/fWbrRiN38qquAyuKF+3jinaakFgCOynLFIGdUulbNfgzR8t/NfGh9pXmjsXbeAj//uqHT52DD1CRF4fpVx3a2pSwYzzhjs6ltlDAzdeZjY4qnx7aPNwITWkVZPDpZHTnUykUF1X+4FFh7f8CAPjl4qq9W/BUVsspPM2uUiHbQTRXDtj7M8Kczx/gtmCVVRvvIGR41xO5m/q6mp65fCqqnXpFlNWKOTw2GS1NdatfCFKtqJqw2qmqHcJ24zhCApEjSwEHNo4Y2/bZuD1xsYHR6Jjv43XuAyuXLZlPRmixvCCcQGESUYA1lSGuJxCnFe11NU0nMkLLVi+6+bggO+3uUaP+1r/FlKn5NJ7oSI6GEolSkonR3b2stoXqv/7VLTKqzfs4ExdIBkMyceGi7FsGbohXret8Me6yr5/YNeK/srKDfNJ4TsVxUOm6f9FY13N3XKesrnPlSgk9nHuhnYK7G/c019GtDbiKFRWb9jIFfcK29ZH55q0MMn30fmFbX1qkvXj5jPEYhKps1AxMYMxbsK7i15WlORs6hU51G3m0RfD0+hYH6PhPi/xkUDcceNIRG4/+c381yoXPH9JT3L2iuedV1OFNURXpB6lpVoLtWZW074jn99WS3RKBoMQwJfAIgIX5me4DU+YR4gkGPaZwjJJUVwXq0aoBu1PoHMApt9rCyMNoyPSK8cpDmEJww7D2UMoQMEoc2Ub9okp/QT8Yrj1GapOzAXxxdzYmVQoIwLkBi5UbPvtyspnL29oWNEix3/bSlxGvbUzx0x3mpSuNVGWZzflprgomFFA/oKpxJyZdGDnmb/KlMryTYqprwiFTNpvn0N7lSrK8wzS3IFmWsrbvnPH5XdkXf/ey/2npCilFuDbzL6p5Nz85vF99+3rdXPNeowzxxqZZQNTL0P7E8XFeftbWrp+ZHNlGhj66k03vaa0tnZn6rrIhtN3XA0ItbT0uVxF4bYv0+VjQz6pCiR5n+1QriiZnt0Znau3dx8LBjM9QYNdAOY/ha2ykHN1qsXCG5csWfu9LVvWTrIhs2ZtcLrdDk9Wlju4BaYI/oSKUDFf0nS59GM7dtwXLL3wuVzNdDp1fSDc3PxQt2yTZsR2JieHhwa8Bw+uGZZ10SJpmKadY1lhs6lpdU+0PtY1LoMPBGcIhg1um2EAZpMK9eiCjU1Xuygt6XAsWnHrbhtY7WWKAyYXFg+K3jSdFHakUm/mDGpwV+T0sqI59N7LH8UlMK5BFS4zhpPjLy9f9yuE3qshWU7ImVsOOdDavRjz/hrssoWDzz7QenSTwp0vKbaJ9+bqcZteomjmXhm+pQ75nke2LnSc8zZxQ48xlw+k3wcDroFa+Qvmms/JcWXvYMYlqP9AzitLxdwNl3Ch3IkNOR/Z29QBr99fUb1+h26FFM4d1zGg4Q/T/WDWi4YR2mJzXqBors+hDW4ERPdB43yPGaFUlyepv6J6wx/JCj8h7T38kTtN27xHcHu6wh1mZfWzTYLZjzfuqYmJX1wG/3hqpyNFx8YJeUlzqqRoGvJSMlEBJoHhp9Opo685+ndH8prCQTWDJHJcZeRS4XFjw/j9goI9BjMGPzsPPWMucDwdeQ8JnSQlsp5zBWqYccZho23zkKyDrfRAq2Ydt5npJJRMRXFnE6JzqOfRLki0c0WbonBN1k1F5ZjEChuLjVPq6+8dqqxc/zCmfBebCkyzl6ErGLyWV1RlPAmnbw1IO6QuwKqkccGdmD2q/pHwlfl9m5K9vjD3JLMMtMHrpJlg3N8UJWmakDlBaCNidqrC3ffjLhn+QS9TXI9FLEXEjEifxLEEKeE3S6qfvXB/3Yp20JhQ4jK4vtOwdMzrY9nwnFPI4pnEMqeSkjedWDLM0KYNEwjFe5iyXKSUOF68a5ZRTxZiZmhpCmPry5SmpoXJmeakoTRP4bZ4BCbWA3BRXVa9UdrBE0WwDADzOFS0KixjENbzGdnImA1UJcRgPVxpwVmtZQb/3bKNLM7ZHUJEdsMxywq+Mmpz6X2wYokceybFNAc/5jyjBZ57CcbNlWPA3DVccT4qIARw1OQhC5gusOFYEaT9MjAeJzMRZqMqwnVcpY+BH2JJcGKTLGvkQ9wflu+K5wqsD13oLkQScCJDX2CzbEXEIDFYKoShca5lO+zwLXj+CX4nlPgMTp1LDifCT4Q0SloWaZmZkGQo2eAAKcNj/soEYjEe2OKOpzZ+kpp96TY9nZxQzR7dS0nmCKXgJMPDTcpwBMmwe2Wce+oyigWYJP4QsZDjeksJkTGXlBLbtu5vali1fVxz9FbdW7vyAB4exG4vUoV9G8BDotXu2Ltn1f3RTgiTrozen+4qT8mgPluxe0rAsoyyuc9U4ETmEclc0IUtZT9orFvxXpROVdXGi7H+3yESKIrWjb/KCMEW5hN762qelPURO0xsO+pL5DMkusHg1tX7a+/tks8VVRuf4IpjbWRzCHaRrDu5xGXwdy4VjqxML2W5cajgOUZuMQh/c5iSjT5Kd3hpwcmUYj+LB877j5c6rJLFvcq0cy3LwCItaFCTRBhhCOy7okSeJYfOqMCpQb9Y3XF6JbNkivIA7B9Cn5pP4hF0cOGOCMxoB+yXtfJXitBXKZHMDTSExQW/iXEtGQzGj3X/3vpVY8yVhOvrV36Mta2EpvkTHmFLxhepxs1BZoV/Ga2VZgAbbhv2YYTB2Ly/jTJX9rHI2oz3eALtmF7A9EwucRm8b/NBwwGJTXIP0dSsPpqd30XTsvsRc3DqCKRMphSnZvHP2z+49ql3fnCNufl9GtTcQb+bksO9lBY4TFoYWTCtkIbIHSJ6Nw6F49WjXrRlW8bj2MtHI0oXTRIWhCscvsECXJYzps5BiuyV4uKfVNu2Yikni/upZ/nSrdhWuViC1LojWExxZEW2eYws9Z1YxFTmfA8RWgd8gekkInvjeDdpWSkECR5fKdvGJVLEhAMabOYQRF5aO/BRyJ0/qcRl8O2OFkWxVRoaYuTv06h730zq04qoMHeAZuRAmr9E+fNjc3atu+HR7b1a0eX9rkwyUrNJS8kn11AH6SNuOqbmjTk2pyFrqya9Wtu0qi1GvxehLs9hTHwfUn6u5haXwEEBOCcJSoyBX7VKqnqoRyRJpPYQrdhqTBmdztD1YXgbk4vXG7aSUihmG7YJs21nLPUUIRTd1FGq0FjY9qfewXEZ/NJwqZWsKuQBokkZLvKkpoEp6TQIO9EQgMDRX6PznPaKFdvFKbd3ehwKFQ42U5m3gfLSEXQN+slSDCpx+j5/87RURjuYinRSYhc4Hgej6htg5+IbhM9i9/x6anEcei9nWsThw9yb4TTNlJShMvOcHtd83E5Q0bLNk0rVJHihtNNno8RlsF66WBmBt6wzMIEGyWF8QVnmR5Rrt1EyyVDwy5Vlh15Mviyzgwpch2hvTgG1T10Ij9pFM1wfB/zZOc10hhxmzJKe6aSCeHKKIfQrCBpLplPhJfdJiZKa/TQFSMe0vyLMrcmnGyAmEw2IMVZBelZIxw6e7BG3RpuCQWWWcBhr4bkjzaU8XTZvw/VNtTVj2qas7GfT4IStxw7QpNSfjRKXwXenr+MpLEhh/zDBH6KhkJs6A1m0XZSTF6p6XEx/2nW+uOSH6XPO33phxsxuyi/spCJ7DzW1NVD3QC4N9aiN/1L1+/ZIkvhUlEa9aMVm7JeVczdM2GFoYrqtlyIIniVJIFbuV7m2XbfDVbFUNHwSG34QekrmUH551cbrYL9n6Lb5NirhCUbAT/IYtAaJhXH2SGpEkQO630XcfeEokyI76NGdO2vkmvYgb/6CgsMKOD8VSGN+hOf/wqcOSK/ayBzxW6DEIb0yfgWPz0KJy+Df7S43dZYksy0UxpkuwW66CgpJS/YQmUjffonyZPeiJ2c5iqfenvc3crZNp1c/XkwtnfnAwE0jBnv9hy98aJ2a3JgcgocqYsmJYilbpcqT4gqWWQgvH8KJUl959To4HqNGEZI2Nshh+XsMSuqDMi0ArTyo1D/B6UGg7MsAATg5ksHMiQOOR3CQfdLSMAOTX6bJegGnz3y8sb7m5WgnW1ceYFoYcbZ2IzEtTyF2X3QjRFYHDTNWhA0i+JFri5CL/B1rHr05sW50lL1OLsfrxjCa0B6Xwb1GllBTM0ktyCRP5hRsQJv07iM03HKM2ofSYzoJUcqAh91culbdrhfNSXaFH7j2gt23Lymtp021F9AHTWVghCAVEah039wa+0NHdGCcK4AZmw9Zmwj8J3WFmmVDgvgeMPppxJERD1YRzByFRGLAxmjU1j7shUP2CAD7CdR5rqSFZEIYKKfhNyTjUZgC4D6OGeMmxBzwmNkuBEM/3Vs/Ole0WX6KhLz0rUO+Ke+Cb3ciHkaIIyAVUIdCNKOfjg21WPYHAshA58KQdGMirBHpPVXF7hlf2Il1w3ZP8LBhhmTuV7673MUT2qIk4jLYPXeRosKUhHo7ybuvmXSfn5KUAF2Q00lPL9r+i86hJd2/brmGhg0PTuRwvIPwSSYu1iRvo3/TM917fHnTKgrbz/unS7dpg36NnnrjJhr0J5MTaUpZIp/uWKHn6uprTutB4+x2uYOzTBbzFUBMJcT/1FO3554JtJDU344PhuYLh2AOxnsiEx//g6PDl8vKnvkLU3k51IILlrtN6ANtipJVAJu6FWo+oqfHj5FeLEAN2ly0N9WubBvfNv7++KHDr3C48cLBgz2FMo1qqcy399MP2quqFqUIrs6GHiBT5W0H6m7Wy+dtXIpcjRsZ1EB942ov0b1j5PBiP9OYeE3yT3M44USeKFYwr4U7uxbC5ZCZ/oETLSfuYol8pPWaq55a3zeQUqNZPpqZ1k0VOV1UdE6Iev0e+qj9XDroK4x86SE3XhhfexQ7+mmZdoD2hPKpzjmF/uHCnVSc/wX9cccC+uSz2VicSRySK4tMVgDA+oAmvts6arsi9Yk/Xz8CcRm87cEZzypCvSc7fYDqraX0oe8q2lnvoJ6uEDmgNVRIq0AI5oSOWOpoo/PdvfRpyhTKL+6isrwO2t06izbtmUchXYswN7p0eY4KhdiLQ9crv80H5dH1/r1f4zJ40ZX/+cyUWbmrKgpqaTrfhU9mR8g7yKnPn0H9yGQFwLjkY5yuT22mvNJO2uOeAofJSY2HptOOA+eTN+ghJ6RW2ttokZIL+9WFA/hb9tat3hqtT1y/OQTi2mA7Zwbv/MJPB7dnEbcvo4wUP52D3HQ+JHphWjstpKO0tbcU4WsxdTfPpa7eTOr3pUYcIBX5ZXkkGC2jTgsS6bYFd9m6u7ludawv2qLdE9evEYG4DB5p3IUjyyQ4UDKBDyse0iinh1FJn0Vd9gyqMZZQG+EYE8EG/qkF/WzS1Ki0yo/cob9lC/KtcCj2km38PDAsXmxtrUHglShnC4G4DMZZdV2W4m+dxXvYPLVLZPOA1WJliU36dHbIzIgwVZNfUUaVPHgbyQ+M6uQRqOKjyAo04J/RtvgGkrcfPnzqLyfP1gv/f5snyp6Y7y2WTMeHWIcjKRfWvxmSdzX6vUOzqDVm/2hla+tK5L7GGd9oQ+KaQCCBQAKBBAIJBBIIJBBIIJBAIIFAAoEEAgkEEggkEEggkEDgqyLwf29xHT2+qP2sAAAAAElFTkSuQmCC
 description: BitDam secure email gateway protects from advanced content-borne threats
   with the most accurate prevention of known and unknown threats, at their source.
 detaileddescription: |-
@@ -33,7 +33,6 @@ configuration:
   required: false
 script:
   script: |
-    # The command demisto.command() holds the command sent from the user.
     '''IMPORTS'''
     import requests
     import base64
@@ -59,6 +58,7 @@ script:
     DBOTSCORE_MALICIOUS = 3
 
     '''HELPER FUNCTIONS'''
+
     def get_file_bytes(entry_id):
         get_file_path_res = demisto.getFilePath(entry_id)
         file_path = get_file_path_res["path"]
@@ -82,7 +82,6 @@ script:
 
 
     def build_json_response(content, context, human_readable):
-
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -96,6 +95,24 @@ script:
     def get_file_name(entry_id):
         get_file_path_res = demisto.getFilePath(entry_id)
         return get_file_path_res["name"]
+
+
+    def verdict_to_dbotscore(verdict):
+        if VERDICT_CLEAN == verdict:
+            return DBOTSCORE_CLEAN
+        elif VERDICT_MALICIOUS == verdict:
+            return DBOTSCORE_MALICIOUS
+        return None
+
+
+    '''API_IMPL'''
+    def scan_file():
+        response = scan_file_command()
+        returned_sha1 = parse_scan_file_response(response)
+        # Build demisto reponse
+        response_content = {'SHA1' : returned_sha1}
+        response_context = {'BitDam' : {'FileScan' : {'SHA1' : returned_sha1}}}
+        return build_json_response(response_content, response_context, "File was submitted successfully")
 
 
     def scan_file_command():
@@ -114,24 +131,10 @@ script:
         return response
 
 
-    def get_file_verdict_command(identifier_type, identifier_value):
-        # Get data to build the request
-        scan_file_relative_url_formatted = GET_FILE_VERDICT_URL.format(identifier_value,
-                                                                identifier_type)
-        auth_headers = get_auth_headers()
-        url = "{}{}".format(get_url_base_with_trailing_slash(), scan_file_relative_url_formatted)
-
-        # Send the request
-        response = requests.get(url, headers=auth_headers)
-        return response
-
-
     def parse_scan_file_response(response):
         # Parse response
         if RESPONSE_CODE_OK != response.status_code:
-            raise Exception("Scan file failed. Response code -{}, Data- '{}'".format(
-                str(response.status_code),
-                response.content))
+            raise Exception("Scan file failed. Response code -{}, Data- '{}'".format(str(response.status_code), response.content))
         response_json = json.loads(response.content)
         if not response_json.has_key('data') or not response_json['data'].has_key('sha1'):
             raise Exception(
@@ -140,58 +143,14 @@ script:
         return returned_sha1
 
 
-    def parse_get_file_verdict_response(response):
-        # Parse results
-        if RESPONSE_CODE_OK != response.status_code:
-            raise Exception("Get file verdict failed. Response code -{}, Data- '{}'".format(
-                str(response.status_code),
-                response.content))
-
-        response_json = json.loads(response.content)
-        status = ''
-        verdict = ''
-        if not response_json.has_key('data') or not response_json['data'].has_key('Verdict'):
-            # Still in progress
-            status = STATUS_IN_PROGRESS
-        else:
-            status = STATUS_DONE
-            if VERDICT_CLEAN.lower() in response_json['data']['Verdict'].lower():
-                verdict = VERDICT_CLEAN
-            else:
-                verdict = VERDICT_MALICIOUS
-        return verdict, status
-
-
-    def verdict_to_dbotscore(verdict):
-        if VERDICT_CLEAN == verdict:
-            return DBOTSCORE_CLEAN
-        elif VERDICT_MALICIOUS == verdict:
-            return DBOTSCORE_MALICIOUS
-        return None
-
-    '''API_IMPL'''
-    def scan_file():
-        response = scan_file_command()
-        returned_sha1 = parse_scan_file_response(response)
-
-        # Build demisto reponse
-        response_content = {'SHA1' : returned_sha1}
-        response_context = {'BitDam' : {'FileScan' : {'SHA1' : returned_sha1}}}
-        return build_json_response(response_content, response_context,
-                                    "File was submitted successfully")
-
-
     def get_file_verdict():
         identifier_type = demisto.args().get('idType')
         identifier_value = demisto.args().get('idValue')
         response = get_file_verdict_command(identifier_type, identifier_value)
         verdict, status = parse_get_file_verdict_response(response)
-
         response_content = {'STATUS' : status,
                             'VERDICT' : verdict,
                             'ID' : identifier_value}
-
-
         context = {}
         context['BitDam.Analysis(val.ID && val.ID == obj.ID)'] = {
 
@@ -216,6 +175,34 @@ script:
         response_context = context
         return build_json_response(response_content, response_context,
                                     "Get file verdict was performed successfully")
+
+    def parse_get_file_verdict_response(response):
+        # Parse results
+        if RESPONSE_CODE_OK != response.status_code:
+            raise Exception("Get file verdict failed. Response code -{}, Data- '{}'".format(str(response.status_code),response.content))
+        response_json = json.loads(response.content)
+        status = ''
+        verdict = ''
+        if not response_json.has_key('data') or not response_json['data'].has_key('Verdict'):
+            # Still in progress
+            status = STATUS_IN_PROGRESS
+        else:
+            status = STATUS_DONE
+            if VERDICT_CLEAN.lower() in response_json['data']['Verdict'].lower():
+                verdict = VERDICT_CLEAN
+            else:
+                verdict = VERDICT_MALICIOUS
+        return verdict, status
+
+
+    def get_file_verdict_command(identifier_type, identifier_value):
+        # Get data to build the request
+        scan_file_relative_url_formatted = GET_FILE_VERDICT_URL.format(identifier_value, identifier_type)
+        auth_headers = get_auth_headers()
+        url = "{}{}".format(get_url_base_with_trailing_slash(), scan_file_relative_url_formatted)
+        # Send the request
+        response = requests.get(url, headers=auth_headers)
+        return response
 
 
     def test_module():
