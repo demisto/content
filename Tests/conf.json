@@ -627,6 +627,10 @@
         {
             "integrations": "ActiveMQ",
             "playbookID": "ActiveMQ Test"
+        },
+        {
+            "integrations": "Cisco pxGrid ISE",
+            "playbookID": "cisco-ise-test-playbook"
         }
     ],
     "skipped_tests": [
