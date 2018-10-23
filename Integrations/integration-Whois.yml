@@ -9,7 +9,7 @@ description: Provides data enrichment for domains and IP addresses.
 detaileddescription: |-
   To use this integration, send a *domain*, *url*, or *IP address* as a "query" parameter to the command "whois". All available information will be returned both in the War Room as well as via context. If information cannot be found, whois will respond in the War Room that no information was found for the query.
 
-  **Please note:** internet access is *required* for this integration
+  **Please note:** internet access is *required* for this integration to work
 configuration:
 - display: Proxy Server
   name: proxy
