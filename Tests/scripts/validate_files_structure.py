@@ -70,17 +70,21 @@ SCHEMAS_PATH = "Tests/schemas/"
 DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, 
         LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
 
+
 class LOG_COLORS:
     NATIVE = '\033[m'
     RED = '\033[01;31m'
     GREEN = '\033[01;32m'
 
+
 # print srt in the given color
 def print_color(msg, color):
     print(str(color) +str(msg) + LOG_COLORS.NATIVE)
 
+
 def print_error(error_str):
     print_color(error_str, LOG_COLORS.RED)
+
 
 def run_git_command(command):
     p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
@@ -90,11 +94,13 @@ def run_git_command(command):
         sys.exit(1)
     return p.stdout.read()
 
+
 def checked_type(file_path):
     for regex in CHECKED_TYPES_REGEXES:
         if re.match(regex, file_path, re.IGNORECASE):
             return True
     return False
+
 
 def get_modified_files(files_string):
     all_files = files_string.split('\n')
@@ -132,6 +138,7 @@ def validate_file_release_notes(file_path):
     
     return True
 
+
 def validate_schema(file_path, matching_regex=None):
     if matching_regex is None:
         for regex in CHECKED_TYPES_REGEXES:
@@ -155,6 +162,7 @@ def validate_schema(file_path, matching_regex=None):
     print file_path + " doesn't match any of the known supported file prefix/suffix, please make sure that its naming is correct."
     return True
 
+
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
     modified_files = get_modified_files(files_string)
@@ -170,6 +178,7 @@ def validate_committed_files(branch_name):
 
     if missing_release_notes or wrong_schema:
         sys.exit(1)
+
 
 def validate_all_files():
     found_wrong_name = False
@@ -201,7 +210,35 @@ def validate_all_files():
         sys.exit(1)    
 
 
-def main(argv):
+def validate_conf_json():
+    with open("./Tests/conf.json") as data_file:
+        conf = json.load(data_file)
+
+    skipped_tests_conf = conf['skipped_tests']
+    skipped_integrations_conf = conf['skipped_integrations']
+
+    problemtic_tests = []
+    problemtic_integrations = []
+
+    for test, description in skipped_tests_conf.items():
+        if description == "":
+            problemtic_tests.append(test)
+
+    for integration, description in skipped_integrations_conf.items():
+        if description == "":
+            problemtic_integrations.append(integration)
+
+    if problemtic_tests:
+        print("Those tests don't have description:\n{0}".format('\n'.join(problemtic_tests)))
+
+    if problemtic_integrations:
+        print("Those integrations don't have description:\n{0}".format('\n'.join(problemtic_integrations)))
+
+    if problemtic_integrations or problemtic_tests:
+        sys.exit(1)
+
+
+def main():
     ''' 
     This script runs both in a local and a remote environment. In a local environment we don't have any 
     logger assigned, and then pykwalify raises an error, since it is logging the validation results.
@@ -213,6 +250,7 @@ def main(argv):
     branch_name = branch_name_reg.group(1)
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
+    validate_conf_json()
     if branch_name != 'master':
         import logging
         logging.basicConfig(level=logging.CRITICAL)
@@ -227,4 +265,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+    main()
