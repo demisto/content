@@ -119,19 +119,21 @@ def validate_file_release_notes(file_path):
     data_dictionary = None
     if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
         return True # Test playbooks don't need releaseNotes
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".json"):
-            data_dictionary = json.load(f)
-        elif file_path.endswith(".yaml") or file_path.endswith('.yml'):
-            try:
-                data_dictionary = yaml.safe_load(f)
-            except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return False
 
-    if data_dictionary and data_dictionary.get('releaseNotes') is None:
-        print_error("File " + file_path + " is missing releaseNotes, please add.")
-        return False
+    if os.path.isfile(file_path):
+        with open(os.path.expanduser(file_path), "r") as f:
+            if file_path.endswith(".json"):
+                data_dictionary = json.load(f)
+            elif file_path.endswith(".yaml") or file_path.endswith('.yml'):
+                try:
+                    data_dictionary = yaml.safe_load(f)
+                except Exception as e:
+                    print_error(file_path + " has yml structure issue. Error was: " + str(e))
+                    return False
+
+        if data_dictionary and data_dictionary.get('releaseNotes') is None:
+            print_error("File " + file_path + " is missing releaseNotes, please add.")
+            return False
 
     return True
 
@@ -143,6 +145,9 @@ def validate_schema(file_path, matching_regex=None):
                 break
 
     if matching_regex in SKIPPED_SCHEMAS:
+        return True
+
+    if not os.path.isfile(file_path):
         return True
 
     if matching_regex is not None and REGEXES_TO_SCHEMA_DIC.get(matching_regex):
