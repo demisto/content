@@ -99,6 +99,7 @@ script:
     log_stream = StringIO()
     logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
+    import exchangelib
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, ErrorInvalidIdMalformed, \
         ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest
     from exchangelib.items import Item, Message
@@ -181,11 +182,19 @@ script:
         raise Exception("Provide a valid email address")
     PASSWORD = demisto.params()['credentials']['password']
     FOLDER_NAME = demisto.params().get('folder', 'Inbox')
-    IS_PUBLIC_FOLDER = demisto.params()['isPublicFolder'] if exchangelib.__version__ == "1.12.0" else False  # Docker BC
+    IS_PUBLIC_FOLDER = demisto.params()['isPublicFolder']
     ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
     FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
     IS_TEST_MODULE = False
     BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
+
+
+    PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
+    if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
+        if demisto.command() == 'test-module':
+            demisto.results(PUBLIC_FOLDERS_ERROR)
+            exit(3)
+        raise Exception(PUBLIC_FOLDERS_ERROR)
 
     def str_to_unicode(obj):
         if isinstance(obj, dict):
@@ -270,14 +279,19 @@ script:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
         return Version(VERSIONS[version_str])
 
+
     def is_default_folder(folder_path, is_public):
         if exchangelib.__version__ != "1.12.0":   # Docker BC
             return False
+
         if is_public is not None:
             return is_public
+
         if folder_path == FOLDER_NAME:
             return IS_PUBLIC_FOLDER
+
         return False
+
 
     def get_folder_by_path(account, path, is_public=False):
         # handle exchange folder id
@@ -996,7 +1010,7 @@ script:
         d = dict((k.replace("-", "_"), v) for k, v in d.items())
         if 'is_public' in d:
             if exchangelib.__version__ != "1.12.0":   # Docker BC
-                d['is_public'] = False
+                raise Exception(PUBLIC_FOLDERS_ERROR)
             else:
                 d['is_public'] = d['is_public'] == 'True'
         return d
