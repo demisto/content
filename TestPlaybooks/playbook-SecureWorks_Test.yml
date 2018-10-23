@@ -42,7 +42,7 @@ tasks:
       brand: Dell Secureworks
     nexttasks:
       '#none#':
-      - "6"
+      - "5"
     scriptarguments:
       assignedGroupId: {}
       assignedTicket2: {}
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -176,7 +176,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "12"
     scriptarguments:
       expectedValue:
         simple: test
@@ -215,7 +215,7 @@ tasks:
       brand: Dell Secureworks
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     scriptarguments:
       acknowledge:
         simple: "true"
@@ -228,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -354,7 +354,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -373,7 +373,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -407,6 +407,72 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: f43b21f0-5059-4115-8264-c79de699e822
+    type: regular
+    task:
+      id: f43b21f0-5059-4115-8264-c79de699e822
+      version: -1
+      name: secure-works-get-ticket with attachments
+      description: Get the details of a specific ticket, by ID
+      script: Dell Secureworks|||secure-works-get-ticket
+      type: regular
+      iscommand: true
+      brand: Dell Secureworks
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      getAttachments:
+        simple: "true"
+      id:
+        simple: ${SecureWorks.Ticket.ticketId}
+      includeWorklogs: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 6e6ad26a-ff09-4dcd-8e8d-ea9b1a5e49ae
+    type: regular
+    task:
+      id: 6e6ad26a-ff09-4dcd-8e8d-ea9b1a5e49ae
+      version: -1
+      name: Verify File
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1945
         }
       }
@@ -416,7 +482,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 2310,
         "width": 380,
         "x": 50,
         "y": 50
