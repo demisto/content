@@ -379,11 +379,11 @@ script:
         @staticmethod
         def parse_element(element):
             return {
-                MAILBOX: element.find("{%s}PrimarySmtpAddress" % TNS).text,
-                MAILBOX_ID: element.find("{%s}ReferenceId" % TNS).text,
-                'displayName': element.find("{%s}DisplayName" % TNS).text,
-                'isExternal': element.find("{%s}IsExternalMailbox" % TNS).text,
-                'externalEmailAddress': element.find("{%s}ExternalEmailAddress" % TNS).text
+                MAILBOX: element.find("{%s}PrimarySmtpAddress" % TNS).text if element.find("{%s}PrimarySmtpAddress" % TNS) is not None else None,
+                MAILBOX_ID: element.find("{%s}ReferenceId" % TNS).text if element.find("{%s}ReferenceId" % TNS) is not None else None,
+                'displayName': element.find("{%s}DisplayName" % TNS).text if element.find("{%s}DisplayName" % TNS) is not None else None,
+                'isExternal': element.find("{%s}IsExternalMailbox" % TNS).text if element.find("{%s}IsExternalMailbox" % TNS) is not None else None,
+                'externalEmailAddress': element.find("{%s}ExternalEmailAddress" % TNS).text if element.find("{%s}ExternalEmailAddress" % TNS) is not None else None
             }
 
         def call(self):
