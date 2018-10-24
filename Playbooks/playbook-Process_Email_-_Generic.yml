@@ -437,12 +437,17 @@ tasks:
           accessor: To
           transformers:
           - operator: uniq
-          - operator: Stringify
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
       emailtocount:
         complex:
           root: Email
           accessor: To
           transformers:
+          - operator: uniq
           - operator: count
       emailurlclicked:
         complex:
@@ -805,3 +810,5 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
+tests:
+  - Forgive me for my sins but I did not create any test
