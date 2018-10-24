@@ -1,11 +1,11 @@
 id: Detonate File - Lastline
 version: -1
 name: Detonate File - Lastline
-fromversion: 4.0.0
 description: |-
   Detonates a File using the Lastline sandbox.
   Lastline supports the following File Types:
   EXE, SYS, DLL, COM, SCR, CPL, OCX, CGI, DOC, DOTM, DOCX, DOTX, XLS, PPAM, XSLX, PPS, XLSB, PPSX, XLSM, PPSM, PPT, PPTX, PPTM, RTF, SHS, XLTM, SLDM, XLTX, SLDX, XLAM, THMX, DOCM, XAR, JTD, JTDC, PDF, SWF, GZ, 7Z, TGZ, MSI, ZIP, LZH, CAB, LZMA, APK, JAR, CLASS, JPEG, PNG, GIF, CMD, ACE, BAT, ARJ, VBS, CHM, XML, LNK, URL, MOF, HTM, OCX, HTML, POTM, EML, POTX, MSG, PS, |VB, REG, VBA, WSC, VBE, WSF, VBS, WSH
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -26,17 +26,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 931a99fb-8c91-4fd9-8173-0e38e05d658c
+    taskid: b22f116d-2041-4a0e-832d-3ff0e9dfbff5
     type: regular
     task:
-      id: 931a99fb-8c91-4fd9-8173-0e38e05d658c
+      id: b22f116d-2041-4a0e-832d-3ff0e9dfbff5
       version: -1
       name: Lastline Upload File
       description: Uploads the submission to Lastline.
@@ -46,8 +46,12 @@ tasks:
       brand: Lastline
     nexttasks:
       '#none#':
-      - "2"
+      - "13"
     scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.File
+          accessor: EntryID
       entryID:
         complex:
           root: inputs.File
@@ -58,17 +62,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 500,
           "y": 895
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: 10ec1d52-9321-4491-8ce4-b3b371692182
+    taskid: 3a6ac4c3-7fc4-4af3-87e7-ae5c78160d11
     type: playbook
     task:
-      id: 10ec1d52-9321-4491-8ce4-b3b371692182
+      id: 3a6ac4c3-7fc4-4af3-87e7-ae5c78160d11
       version: -1
       name: GenericPolling
       description: |-
@@ -90,7 +94,7 @@ tasks:
       Ids:
         complex:
           root: Lastline
-          accessor: Submission.uuid
+          accessor: Submission.UUID
       Interval:
         complex:
           root: inputs.Interval
@@ -102,7 +106,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: Lastline.Submission(val.status != 'Completed').uuid
+        simple: Lastline.Submission(val.Status != 'Completed').UUID
     separatecontext: true
     loop:
       iscommand: false
@@ -112,16 +116,16 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 65873615-76c2-4fae-81e7-ca947b5fbd67
+    taskid: d372022a-88a0-4312-8ee7-6f0ebe64533e
     type: regular
     task:
-      id: 65873615-76c2-4fae-81e7-ca947b5fbd67
+      id: d372022a-88a0-4312-8ee7-6f0ebe64533e
       version: -1
       name: Lastline Get Report
       description: Retrieve the report from Lastline.
@@ -137,22 +141,13 @@ tasks:
       uuid:
         complex:
           root: Lastline
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Lastline.Submission.status
-                iscontext: true
-              right:
-                value:
-                  simple: Completed
-          accessor: Submission.uuid
+          accessor: Submission.UUID
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1245
+          "x": 500,
+          "y": 1420
         }
       }
     note: false
@@ -173,7 +168,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -226,7 +221,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -291,7 +286,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 387.5,
           "y": 720
         }
       }
@@ -323,7 +318,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 387.5,
           "y": 545
         }
       }
@@ -357,8 +352,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 370
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: cec4ac98-aed7-4400-824b-2244a72dcc1a
+    type: condition
+    task:
+      id: cec4ac98-aed7-4400-824b-2244a72dcc1a
+      version: -1
+      name: Filter UUIDs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Lastline
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Lastline.Submission.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Completed
+                accessor: Submission.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
         }
       }
     note: false
@@ -367,8 +406,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 717.5,
+        "height": 1610,
+        "width": 830,
         "x": 50,
         "y": 50
       }
@@ -397,6 +436,7 @@ outputs:
   type: string
 - contextPath: InfoFile.EntryID
   description: The EntryID of the report file
+  type: string
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score (only in case of report type=json)
   type: string
@@ -424,7 +464,76 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
+- contextPath: URL.Data
+  description: List of malicious URLs identified by Lastline analysis
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision
+  type: string
+- contextPath: URL.Malicious.Score
+  description: For malicious URLs, the score from the vendor
+  type: number
+- contextPath: File.MD5
+  description: Bad hash MD5
+  type: string
+- contextPath: File.SHA1
+  description: Bad hash SHA1
+  type: string
+- contextPath: File.SHA256
+  description: Bad hash SHA256
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Score
+  description: For malicious files, the score from the vendor
+  type: number
+- contextPath: Lastline.Submission.Status
+  description: Status of the submission
+  type: string
+- contextPath: Lastline.Submission.DNSqueries
+  description: List of DNS queries done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.NetworkConnections
+  description: ist of network connections done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.DownloadedFiles
+  description: List of files that were downloaded using the Microsoft Windows file-download
+    API functions. Each element is a tuple of file-origin URL and a File element.
+  type: string
+- contextPath: Lastline.Submission.UUID
+  description: Task UUID of submitted sample
+  type: number
+- contextPath: Lastline.Submission.YaraSignatures.name
+  description: Yara signatures name
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.score
+  description: The score according to the yara signatures. from 0 to 100.
+  type: number
+- contextPath: Lastline.Submission.Process.arguments
+  description: Argument of the process
+  type: string
+- contextPath: Lastline.Submission.Process.process_id
+  description: The process ID
+  type: string
+- contextPath: Lastline.Submission.Process.executable.abs_path
+  description: Absolute path of the executable of the process
+  type: string
+- contextPath: Lastline.Submission.Process.executable.filename
+  description: Filename of the executable
+  type: string
+- contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+  description: Yara signature of the executable of the process
+  type: string
+- contextPath: Lastline.Submission.Process.executable.ext_info
+  description: Executable info of the process
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.internal
+  description: True if the signature is only for internal usage
+  type: boolean
 releaseNotes: new detonate playbook using the pooling mechanism.
 tests:
 - Lastline - testplaybook
-- detonate_file_-_generic_test

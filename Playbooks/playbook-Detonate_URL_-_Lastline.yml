@@ -1,8 +1,8 @@
 id: Detonate URL - Lastline
 version: -1
 name: Detonate URL - Lastline
-fromversion: 4.0.0
 description: Detonates a URL using the Lastline sandbox integration.
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -23,17 +23,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 387.5,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 8adc1b63-514e-47bc-87e5-7d1a676d19ac
+    taskid: 5843724a-5947-48e9-85dc-721427e3e01f
     type: regular
     task:
-      id: 8adc1b63-514e-47bc-87e5-7d1a676d19ac
+      id: 5843724a-5947-48e9-85dc-721427e3e01f
       version: -1
       name: Lastline Upload URL
       description: Uploads the submission to Latline.
@@ -43,7 +43,7 @@ tasks:
       brand: Lastline
     nexttasks:
       '#none#':
-      - "2"
+      - "10"
     scriptarguments:
       pushToPortal: {}
       threshold: {}
@@ -54,17 +54,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 545
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: d71c2b83-4d1c-46c2-8dcd-cd697b6dba10
+    taskid: 7c75a11f-5a39-410e-8fed-bbf95f6556c4
     type: playbook
     task:
-      id: d71c2b83-4d1c-46c2-8dcd-cd697b6dba10
+      id: 7c75a11f-5a39-410e-8fed-bbf95f6556c4
       version: -1
       name: GenericPolling
       description: |-
@@ -86,7 +86,7 @@ tasks:
       Ids:
         complex:
           root: Lastline
-          accessor: Submission.uuid
+          accessor: Submission.UUID
       Interval:
         complex:
           root: inputs.Interval
@@ -98,7 +98,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: Lastline.Submission(val.status != 'Completed')
+        simple: Lastline.Submission(val.Status != 'Completed').UUID
     separatecontext: true
     loop:
       iscommand: false
@@ -108,16 +108,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: d401f915-5858-4733-84e1-88c734ff94fd
+    taskid: c8e4ee12-826c-4f53-8ded-b9fea0f653d1
     type: regular
     task:
-      id: d401f915-5858-4733-84e1-88c734ff94fd
+      id: c8e4ee12-826c-4f53-8ded-b9fea0f653d1
       version: -1
       name: Lastline Get Report
       description: Retrieve the reports from Lastline.
@@ -133,13 +133,13 @@ tasks:
       uuid:
         complex:
           root: Lastline
-          accessor: Submission.uuid
+          accessor: Submission.UUID
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 162.5,
+          "y": 1070
         }
       }
     note: false
@@ -172,7 +172,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 370
         }
       }
@@ -185,7 +185,6 @@ tasks:
       id: 686f6312-301b-461a-877c-6e4ec794393f
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -193,8 +192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1070
+          "x": 397.5,
+          "y": 1245
         }
       }
     note: false
@@ -247,8 +246,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 387.5,
           "y": 195
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: b5e9fe45-6986-4e58-8ba4-229eafdcf817
+    type: condition
+    task:
+      id: b5e9fe45-6986-4e58-8ba4-229eafdcf817
+      version: -1
+      name: Filter UUIDs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Lastline
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Lastline.Submission.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Completed
+                accessor: Submission.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
         }
       }
     note: false
@@ -257,8 +300,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 605,
+        "height": 1260,
+        "width": 727.5,
         "x": 50,
         "y": 50
       }
@@ -325,7 +368,61 @@ outputs:
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
   type: string
-releaseNotes: new detonate playbook using the pooling mechanism.
+- contextPath: URL.Data
+  description: List of malicious URLs identified by Lastline analysis
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision
+  type: string
+- contextPath: URL.Malicious.Score
+  description: For malicious URLs, the score from the vendor
+  type: number
+- contextPath: File.Malicious.Score
+  description: For malicious files, the score from the vendor
+  type: number
+- contextPath: Lastline.Submission.Status
+  description: Status of the submission
+  type: string
+- contextPath: Lastline.Submission.DNSqueries
+  description: List of DNS queries done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.NetworkConnections
+  description: ist of network connections done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.DownloadedFiles
+  description: List of files that were downloaded using the Microsoft Windows file-download
+    API functions. Each element is a tuple of file-origin URL and a File element.
+  type: string
+- contextPath: Lastline.Submission.UUID
+  description: ID of the submission
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.name
+  description: Yara signatures name
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.score
+  description: The score according to the yara signatures. from 0 to 100.
+  type: number
+- contextPath: Lastline.Submission.Process.arguments
+  description: Argument of the process
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.internal
+  description: True if the signature is only for internal usage
+  type: boolean
+- contextPath: Lastline.Submission.Process.process_id
+  description: The process ID
+  type: string
+- contextPath: Lastline.Submission.Process.executable.abs_path
+  description: Absolute path of the executable of the process
+  type: string
+- contextPath: Lastline.Submission.Process.executable.filename
+  description: Filename of the executable
+  type: string
+- contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+  description: Yara signature of the executable of the process
+  type: string
 tests:
 - Lastline - testplaybook
-- detonate_url_-_generic_test
+releaseNote: New detonation playbook

@@ -12,6 +12,7 @@ tasks:
       id: 30a0f72b-95a6-4902-8820-7f1343bf0dcb
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -114,15 +115,15 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 9d76a1e6-10f1-4132-8dcc-62896ba790ea
+    taskid: 268d74cd-235f-4cd2-89a9-d5cdcbf7d01b
     type: regular
     task:
-      id: 9d76a1e6-10f1-4132-8dcc-62896ba790ea
+      id: 268d74cd-235f-4cd2-89a9-d5cdcbf7d01b
       version: -1
-      name: FileCreateAndUpload
+      name: get pdf file
       description: |
         Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
+      scriptName: http
       type: regular
       iscommand: false
       brand: ""
@@ -130,12 +131,20 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      data:
-        simple: How I need a drink, alcoholic in nature, after the heavy coding, involving  design
-          patterns.
-      entryId: {}
-      filename:
-        simple: test_file_lastline.txt
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+      username: {}
     separatecontext: false
     view: |-
       {
