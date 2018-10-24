@@ -27,7 +27,7 @@ ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
 
 scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
-scp content_test.zip ${USER}@${PUBLIC_IP}:~/TestPlaybooks
+scp content_test.zip ${USER}@${PUBLIC_IP}:~/content
 scp -r ./Beta_Integrations/* ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
 # override exiting content with current
