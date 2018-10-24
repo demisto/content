@@ -26,7 +26,7 @@ ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
 
-zip -r test_playbooks.zip ./TestPlaybooks/
+zip -r test_playbooks.zip ./TestPlaybooks/*
 
 scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
 scp test_playbooks.zip ${USER}@${PUBLIC_IP}:~/TestPlaybooks
