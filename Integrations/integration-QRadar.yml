@@ -58,23 +58,21 @@ script:
     import sys, os, requests, traceback, datetime, json
     from requests.exceptions import HTTPError
 
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
     ''' GLOBAL VARS '''
     SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
     USERNAME = demisto.params().get('credentials').get('identifier')
     PASSWORD = demisto.params().get('credentials').get('password')
     TOKEN = demisto.params().get('token')
     USE_SSL = not demisto.params().get('insecure', False)
-    CUSTOM_HEADERS = demisto.args().get('headers')
     AUTH_HEADERS = {'SEC': str(TOKEN), 'Content-Type':  'application/json'}
     OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
-
     OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
 
     if not TOKEN and not PASSWORD:
         raise Exception('Either credentials or auth token should be provided.')
-
-    if CUSTOM_HEADERS:
-        CUSTOM_HEADERS = CUSTOM_HEADERS.split(',')
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -82,23 +80,84 @@ script:
         del os.environ['http_proxy']
         del os.environ['https_proxy']
 
-    # disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
-    # Header names transformation maps
+    ''' Header names transformation maps '''
     # Format: {'OldName': 'NewName'}
 
-    OFFENSES_NAMES_MAP = {'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType'}
-    SINGLE_OFFENSE_NAMES_MAP = {'credibility': 'Credibility', 'relevance': 'Relevance', 'severity': 'Severity', 'assigned_to': 'AssignedTo', 'destination_networks': 'DestinationHostname', 'status': 'Status', 'closing_user': 'ClosingUser', 'closing_reason_id': 'ClosingReason', 'close_time': 'CloseTime', 'categories': 'Categories', 'follow_up': 'Followup', 'id': 'ID', 'description': 'Description', 'source_address': 'SourceAddress', 'destination_address': 'DestinatioAddress', 'start_time': 'StartTime', 'event_count': 'EventCount', 'flow_count': 'FlowCount', 'offense_source': 'OffenseSource', 'magnitude': 'Magnitude', 'last_updated_time': 'LastUpdatedTime', 'offense_type': 'OffenseType', 'protected': 'Protected'}
-    SEARCH_ID_NAMES_MAP = {'search_id': 'ID'}
-    ASSET_PROPERTIES_NAMES_MAP = {'Unified Name': 'Name', 'CVSS Collateral Damage Potential': 'AggregatedCVSSScore', 'Weight': 'Weight'}
-    ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {'Primary OS ID': 'OS'}
-    FULL_ASSET_PROPERTIES_NAMES_MAP = {'Compliance Notes': 'ComplianceNotes', 'Compliance Plan': 'CompliancePlan', 'CVSS Collateral Damage Potential': 'CollateralDamagePotential', 'Location': 'Location', 'Switch ID': 'SwitchID', 'Switch Port ID': 'SwitchPort', 'Group Name': 'GroupName', 'Vulnerabilities': 'Vulnerabilities'}
-    NOTE_NAMES_MAP = {'id': 'ID', 'note_text': 'Text', 'create_time': 'CreateTime', 'username': 'CreatedBy'}
-    REFERENCE_NAMES_MAP = {'number_of_elements': 'NumberOfElements', 'name': 'Name', 'creation_time': 'CreationTime', 'element_type': 'ElementType', 'number_of_elements': 'NumberOfElements', 'time_to_live': 'TimeToLive', 'timeout_type': 'TimeoutType'}
+    OFFENSES_NAMES_MAP = {
+        'follow_up': 'Followup',
+        'id': 'ID', 'description': 'Description',
+        'source_address': 'SourceAddress',
+        'destination_address': 'DestinatioAddress',
+        'start_time': 'StartTime',
+        'event_count': 'EventCount',
+        'magnitude': 'Magnitude',
+        'last_updated_time': 'LastUpdatedTime',
+        'offense_type': 'OffenseType'
+    }
+
+    SINGLE_OFFENSE_NAMES_MAP = {
+        'credibility': 'Credibility',
+        'relevance': 'Relevance',
+        'severity': 'Severity',
+        'assigned_to': 'AssignedTo',
+        'destination_networks': 'DestinationHostname',
+        'status': 'Status',
+        'closing_user': 'ClosingUser',
+        'closing_reason_id': 'ClosingReason',
+        'close_time': 'CloseTime',
+        'categories': 'Categories',
+        'follow_up': 'Followup',
+        'id': 'ID',
+        'description': 'Description',
+        'source_address': 'SourceAddress',
+        'destination_address': 'DestinatioAddress',
+        'start_time': 'StartTime',
+        'event_count': 'EventCount',
+        'flow_count': 'FlowCount',
+        'offense_source': 'OffenseSource',
+        'magnitude': 'Magnitude',
+        'last_updated_time': 'LastUpdatedTime',
+        'offense_type': 'OffenseType',
+        'protected': 'Protected'
+    }
+
+    SEARCH_ID_NAMES_MAP = {
+        'search_id': 'ID'
+    }
+
+    ASSET_PROPERTIES_NAMES_MAP = {
+        'Unified Name': 'Name',
+        'CVSS Collateral Damage Potential': 'AggregatedCVSSScore',
+        'Weight': 'Weight'
+    }
+    ASSET_PROPERTIES_ENDPOINT_NAMES_MAP = {
+        'Primary OS ID': 'OS'
+    }
+
+    FULL_ASSET_PROPERTIES_NAMES_MAP = {
+        'Compliance Notes': 'ComplianceNotes',
+        'Compliance Plan': 'CompliancePlan',
+        'CVSS Collateral Damage Potential': 'CollateralDamagePotential',
+        'Location': 'Location',
+        'Switch ID': 'SwitchID',
+        'Switch Port ID': 'SwitchPort',
+        'Group Name': 'GroupName',
+        'Vulnerabilities': 'Vulnerabilities'
+    }
+
+    REFERENCE_NAMES_MAP = {
+        'number_of_elements': 'NumberOfElements',
+        'name': 'Name',
+        'creation_time': 'CreationTime',
+        'element_type': 'ElementType',
+        'number_of_elements': 'NumberOfElements',
+        'time_to_live': 'TimeToLive',
+        'timeout_type': 'TimeoutType'
+    }
 
     ''' Utility methods '''
 
+    # Filters recursively null values from dictionary
     def filter_dict_null(d):
         if isinstance(d, dict):
             return dict((k, filter_dict_null(v)) for k, v in d.items() if filter_dict_null(v) is not None)
@@ -108,6 +167,7 @@ script:
             return None
         return d
 
+    # Filters recursively from dictionary (d1) all keys that do not appear in d2
     def filter_dict_nonintersection_key_to_value(d1, d2):
         if isinstance(d1, list):
             return map(lambda x: filter_dict_nonintersection_key_to_value(x, d2), d1)
@@ -116,44 +176,8 @@ script:
             return dict((k,v) for k,v in d1.items() if k in d2values)
         return d1
 
-    def dict_values_to_comma_seperated_string(dic):
-        return ','.join(str(v) for v in dic.itervalues())
-
-    def get_entry_for_object(title, obj, headers=None, contextKey=None):
-        if len(obj) == 0:
-            return "There is no output result"
-        obj = filter_dict_null(obj)
-        if headers and isinstance(obj, dict):
-            headers = list(set(headers).intersection(set(obj.keys())))
-        ec = { contextKey: obj } if contextKey else obj
-        return {
-            'Type': entryTypes['note'],
-            'Contents': obj,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, obj, headers),
-            'EntryContext': ec
-        }
-
-    def get_entry_for_assets(title, obj, human_readable_obj, headers=None):
-        if len(obj) == 0:
-            return "There is no output result"
-        obj = filter_dict_null(obj)
-        human_readable_obj = filter_dict_null(human_readable_obj)
-        if headers:
-            headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
-        return {
-            'Type': entryTypes['note'],
-            'Contents': obj,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, human_readable_obj, headers),
-            'EntryContext': obj
-        }
-
-    # change the keys of a dictionary according to a conversion map
+    # Change the keys of a dictionary according to a conversion map
     # trans_map - { 'OldKey': 'NewKey', ...}
-    # camelize - change all keys from snake_case to CamelCase
     def replace_keys(src, trans_map):
         def replace(key, trans_map):
             if key in trans_map:
@@ -166,23 +190,195 @@ script:
             src = {replace(k, trans_map): v for k,v in src.iteritems()}
         return src
 
+    # Transforms flat dictionary to comma seperated values
+    def dict_values_to_comma_seperated_string(dic):
+        return ','.join(str(v) for v in dic.itervalues())
+
+    # Sends request to the server using the given method, url, headers and params
+    def send_request(method, url, headers=AUTH_HEADERS, params=None):
+        try:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+            res.raise_for_status()
+        except HTTPError, e:
+            return_error(res.json())
+        return res.json()
+
+    # Generic function that receives a result json, and turns it into an entryObject
+    def get_entry_for_object(title, obj, headers=None, contextKey=None):
+        if len(obj) == 0:
+            return "There is no output result"
+        obj = filter_dict_null(obj)
+        if headers:
+            if isinstance(headers, basestring):
+                headers = headers.split(',')
+            if isinstance(obj, dict):
+                headers = list(set(headers).intersection(set(obj.keys())))
+        ec = { contextKey: obj } if contextKey else obj
+        return {
+            'Type': entryTypes['note'],
+            'Contents': obj,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, obj, headers),
+            'EntryContext': ec
+        }
+
+    # Converts epoch (miliseconds) to ISO string
     def epoch_to_ISO(ms_passed_since_epoch):
         return datetime.datetime.utcfromtimestamp(ms_passed_since_epoch/1000.0).strftime(("%Y-%m-%dT%H:%M:%S.%fZ"))
 
+    # Converts closing reason name to id
+    def convert_closing_reason_name_to_id(closing_name):
+        res = get_closing_reasons(include_deleted=True, include_reserved=True)
+        for closing_reason in res:
+            if closing_reason['text'] == closing_name:
+                return closing_reason['id']
+        raise ValueError("Error: Given closing reason name doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
+
+    # Converts closing reason id to name
+    def convert_closing_reason_id_to_name(closing_id):
+        res = get_closing_reasons(include_deleted=True, include_reserved=True)
+        for closing_reason in res:
+            if closing_reason['id'] == closing_id:
+                return closing_reason['text']
+        raise ValueError("Error: Given closing reason id doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
+
+    ''' Request/Response methods '''
+
+    # Returns the result of an offenses request
+    def get_offenses(_range, _filter='', _fields=''):
+        full_url = '{0}/api/siem/offenses'.format(SERVER)
+        params = {'filter': _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params.fileds = _fields
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', full_url, headers, params)
+
+    # Returns the result of a single offense request
+    def get_offense_by_id(offense_id, _filter='', _fields=''):
+        full_url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
+        demisto.info(full_url)
+        params = {"filter": _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params.fileds = _fields
+        return send_request('GET', full_url, headers, params)
+
+    # Updates a single offense and returns the updated offense
+    def update_offense(offense_id):
+        url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
+        return send_request('POST', url, params=demisto.args())
+
+    # Posts a search in QRadar and returns the search object
+    def search(args):
+        url = '{0}/api/ariel/searches'.format(SERVER)
+        return send_request('POST', url, AUTH_HEADERS, params=args)
+
+    # Returns a search object (doesn't contain reuslt)
+    def get_search(search_id):
+        url = '{0}/api/ariel/searches/{1}'.format(SERVER, str(search_id))
+        return send_request('GET', url, AUTH_HEADERS)
+
+    # Returns a search result
+    def get_search_results(search_id):
+        url = '{0}/api/ariel/searches/{1}/results'.format(SERVER, str(search_id))
+        return send_request('GET', url, AUTH_HEADERS)
+
+    # Returns the result of an assets request
+    def get_assets(_range='', _filter='', _fields=''):
+        url = '{0}/api/asset_model/assets'.format(SERVER)
+        params = {"filter": _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params.fileds = _fields
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers, params)
+
+    # Returns the result of a closing reasons request
+    def get_closing_reasons(_range='', _filter='', _fields='', include_deleted=False, include_reserved=False):
+        url = '{0}/api/siem/offense_closing_reasons'.format(SERVER)
+        params = {}
+        if _filter:
+            params['filter'] = _filter
+        if include_deleted:
+            params['include_deleted'] = include_deleted
+        if include_reserved:
+            params['include_reserved'] = include_reserved
+        headers = AUTH_HEADERS
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers, params)
+
+    # Returns the result of a get note request
+    def get_note(offense_id, note_id, fields):
+        url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+        params = {'fields': fields} if fields else {}
+        return send_request('GET', url, AUTH_HEADERS, params=params)
+
+    # Creates a note and returns the note as a result
+    def create_note(offense_id, note_text, fields):
+        url = '{0}/api/siem/offenses/{1}/notes'.format(SERVER, offense_id)
+        params = {'fields': fields} if fields else {}
+        params['note_text'] = note_text
+        return send_request('POST', url, AUTH_HEADERS, params=params)
+
+    # Returns the result of a reference request
+    def get_reference_by_name(ref_name, _range='', _filter='', _fields=''):
+        url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+        params = {'filter': _filter} if _filter else {}
+        headers = dict(AUTH_HEADERS)
+        if _fields:
+            params.fileds = _fields
+        if _range:
+            headers['Range'] = 'items={0}'.format(_range)
+        return send_request('GET', url, headers, params=params)
+
+    ''' Command methods '''
+
+    def test_module():
+        get_offenses('0-0')
+        # If encountered error, send_request will return_error
+        return 'ok'
+
+    def fetch_incidents():
+        query = demisto.args().get('query')
+        lastRun = demisto.getLastRun()
+        offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
+        fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
+            # qradar returns offenses sorted desc on id and there's no way to change sorting.
+            # if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
+            # start looking for the end of the list by doubling the page position until we're empty.
+            # then start binary search back until you find the end of the list and finally return
+            # `offensesPerCall` from the end.
+        raw_offenses = get_offenses(_range='0-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)
+        if len(raw_offenses) >= OFFENSES_PER_CALL:
+            lastOffensePos = find_last_page_pos(fetchQuery)
+            raw_offenses = get_offenses(_range='{0}-{1}'.format(str(lastOffensePos - OFFENSES_PER_CALL + 1), str(lastOffensePos)))
+        incidents = []
+        for offense in raw_offenses:
+            offenseId = max(offenseId, offense['id'])
+            incidents.append(create_incident_from_offense(offense))
+        demisto.setLastRun({'id': offenseId})
+        return json.dumps(incidents)
+
+    # Finds the last page position for QRadar query that receives a range parameter
     def find_last_page_pos():
         # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
-        if len(send_get_offenses_request(_range='{0}-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)) == 0:
+        if len(get_offenses(_range='{0}-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)) == 0:
             return OFFENSES_PER_CALL - 1
         # Search up until we don't have any more results
         pos = OFFENSES_PER_CALL * 2
-        while len(send_get_offenses_request(_range='{0}-{0}'.format(str(pos)), _filter=fetchQuery)) == 1:
+        while len(get_offenses(_range='{0}-{0}'.format(str(pos)), _filter=fetchQuery)) == 1:
             pos = pos * 2
         # Binary search the gap from the las step
         high = pos
         low = pos / 2
         while high > low+1:
             pos = (high + low) / 2
-            if len(send_get_offenses_request(_range='{0}-{0}'.format(str(pos)), _filter=fetchQuery)) == 1:
+            if len(get_offenses(_range='{0}-{0}'.format(str(pos)), _filter=fetchQuery)) == 1:
                 # we still have results, raise the bar
                 low = pos
             else:
@@ -191,6 +387,7 @@ script:
         # low holds the last pos of the list
         return low
 
+    # Creates incidents from offense
     def create_incident_from_offense(offense):
         keys = offense.keys()
         occured = epoch_to_ISO(offense['start_time'])
@@ -204,6 +401,13 @@ script:
             'occurred': occured
         }
 
+    def get_offenses_command():
+        raw_offenses = get_offenses(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
+        enrich_offense_result(raw_offenses)
+        offenses = filter_dict_nonintersection_key_to_value(replace_keys(raw_offenses, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
+        return get_entry_for_object('QRadar offenses', offenses, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
+
+    # Enriches the values of a given offense result (full_enrichment adds more enrichment options)
     def enrich_offense_result(response, full_enrichment=False):
         enrich_offense_res_with_source_and_destination_address(response)
         # Convert epoch to iso and closing_reason_id to closing reason name
@@ -211,14 +415,15 @@ script:
             for offense in response:
                 enrich_offense_start_and_update_times(offense)
                 if full_enrichment:
-                    enrich_offense_closing_reason_id(offense)
+                    replace_offense_closing_reason_id_with_value(offense)
         else:
             enrich_offense_start_and_update_times(response)
             if full_enrichment:
-                enrich_offense_closing_reason_id(response)
+                replace_offense_closing_reason_id_with_value(response)
 
         return response
 
+    # Enriches offense result dictionary with source and destination addresses
     def enrich_offense_res_with_source_and_destination_address(response):
         src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
         enrich_source_addresses_dict(src_adrs)
@@ -230,6 +435,7 @@ script:
             enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
         return response
 
+    # Helper method: Extracts all source and destination addresses ids from an offense result
     def extract_source_and_destination_addresses_ids(response):
         src_ids = {}
         dst_ids = {}
@@ -241,6 +447,7 @@ script:
 
         return src_ids, dst_ids
 
+    # Helper method: Populates source and destination id dictionaries with the id key/values
     def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
         if isinstance(offense['source_address_ids'], list):
             for source_id in offense['source_address_ids']:
@@ -250,6 +457,7 @@ script:
                 dst_ids[destination_id] = destination_id
         return None
 
+    # Helper method: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
     def enrich_source_addresses_dict(src_adrs):
         src_ids_str = dict_values_to_comma_seperated_string(src_adrs)
         source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
@@ -258,6 +466,7 @@ script:
             src_adrs[src_adr['id']] = src_adr['source_ip']
         return src_adrs
 
+    # Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to the ids
     def enrich_destination_addresses_dict(dst_adrs):
         dst_ids_str = dict_values_to_comma_seperated_string(dst_adrs)
         destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
@@ -267,6 +476,7 @@ script:
             dst_adrs[dst_adr['id']] = dst_adr['local_destination_ip']
         return dst_adrs
 
+    # Helper method: For a single offense replaces the source and destination ids with the actual addresses
     def enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs):
         if isinstance(offense['source_address_ids'], list):
             for i in range(len(offense['source_address_ids'])):
@@ -277,10 +487,12 @@ script:
 
         return None
 
-    def enrich_offense_closing_reason_id(offense):
+    # Helper method: For a single offense replaces the closing_reason_id with its corresponding value
+    def replace_offense_closing_reason_id_with_value(offense):
         if offense['closing_reason_id']:
             offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
 
+    # Helper method: For a single offense replaces the epoch times with ISO string
     def enrich_offense_start_and_update_times(offense):
         if 'start_time' in offense:
             offense['start_time'] = epoch_to_ISO(offense['start_time'])
@@ -289,22 +501,69 @@ script:
 
         return None
 
-    def send_request(method, url, headers=AUTH_HEADERS, params=None):
-        try:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
-            res.raise_for_status()
-        except HTTPError, e:
-            return_error(res.json())
-        return res.json()
+    def get_offense_by_id_command():
+        offense_id = demisto.args().get('offense_id')
+        raw_offense = get_offense_by_id(offense_id, demisto.args().get('filter'), demisto.args().get('fields'))
+        enrich_offense_result(raw_offense, full_enrichment=True)
+        offense = filter_dict_nonintersection_key_to_value(replace_keys(raw_offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
+        return get_entry_for_object('QRadar Offenses', offense, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
 
-    def create_empty_endpoint_dict(full_values):
-        endpoint_dict = {}
-        endpoint_dict['IPAddress'] = []
-        endpoint_dict['OS'] = []
-        if full_values:
-            endpoint_dict['MACAddress'] = []
-            endpoint_dict['Domain'] = []
-        return endpoint_dict
+    def update_offense_command():
+        args = demisto.args()
+        if 'closing_reason_name' in args:
+            args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
+        elif 'CLOSED' == args.get('status'):
+            raise ValueError('Invalid input - must provide closing reason name (may use "qradar-get-closing-reasons" command to get them) to close offense')
+        offense_id = args.get('offense_id')
+        raw_offense = update_offense(offense_id)
+        enrich_offense_result(raw_offense, full_enrichment=True)
+        offense = filter_dict_nonintersection_key_to_value(replace_keys(raw_offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
+        return get_entry_for_object('QRadar Offense', offense, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
+
+    def search_command():
+        raw_search = search(demisto.args())
+        search = filter_dict_nonintersection_key_to_value(replace_keys(raw_search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+        return get_entry_for_object('QRadar Search', search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
+
+    def get_search_command():
+        raw_search = get_search(demisto.args().get('search_id'))
+        search = replace_keys(raw_search, SEARCH_ID_NAMES_MAP)
+        return get_entry_for_object('QRadar Search Info', search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
+
+    def get_search_results_command():
+        search_id = demisto.args().get('search_id')
+        raw_search_results = get_search_results(search_id)
+        return get_entry_for_object('QRadar Search Results', raw_search_results, demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
+
+    def get_assets_command():
+        raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
+        assets_result, human_readable_res = create_assets_result(raw_assets)
+        return get_entry_for_assets('QRadar Assets', assets_result, human_readable_res, demisto.args().get('headers'))
+
+    def get_asset_by_id_command():
+        _filter = "id=" + str(demisto.args().get('asset_id'))
+        raw_asset = get_assets(_filter=_filter)
+        asset_result, human_readable_res = create_assets_result(raw_asset, full_values=True)
+        return get_entry_for_assets('QRadar Asset', asset_result, human_readable_res, demisto.args().get('headers'))
+
+    # Specific implementation for assets commands, that turns asset result to entryObject
+    def get_entry_for_assets(title, obj, human_readable_obj, headers=None):
+        if len(obj) == 0:
+            return "There is no output result"
+        obj = filter_dict_null(obj)
+        human_readable_obj = filter_dict_null(human_readable_obj)
+        if headers:
+            if isinstance(headers, basestring):
+                headers = headers.split(',')
+            headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
+        return {
+            'Type': entryTypes['note'],
+            'Contents': obj,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, human_readable_obj, headers),
+            'EntryContext': obj
+        }
 
     def create_assets_result(assets, full_values=False):
         trans_assets = {}
@@ -313,7 +572,7 @@ script:
         for asset in assets:
             asset_key = 'QRadar.Asset(val.ID === {0})'.format(asset['id'])
             human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
-            populated_asset = create_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
+            populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
             trans_assets[asset_key] = populated_asset
             human_readable_trans_assets[human_readable_key] = populated_asset
         # Adding endpoints context items
@@ -321,7 +580,7 @@ script:
         human_readable_trans_assets['Endpoint'] = endpoint_dict
         return trans_assets, human_readable_trans_assets
 
-    def create_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
+    def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
         asset_dict = {}
         asset_dict['ID'] = asset['id']
         for interface in asset['interfaces']:
@@ -351,210 +610,57 @@ script:
                     asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'], 'LastUser': prop['last_reported_by']}
         return None
 
+    # Creates an empty endpoint dictionary (for use in other methods)
+    def create_empty_endpoint_dict(full_values):
+      endpoint_dict = {}
+      endpoint_dict['IPAddress'] = []
+      endpoint_dict['OS'] = []
+      if full_values:
+        endpoint_dict['MACAddress'] = []
+        endpoint_dict['Domain'] = []
+      return endpoint_dict
+
+    # Retrieves domain name using domain id
     def get_domain_name(domain_id):
-        query_param = {'query_expression': "SELECT DOMAINNAME({0}) AS 'Domain name' FROM events GROUP BY 'Domain name'".format(domain_id)}
-        search_id = send_search_request(query_param)['search_id']
-        return send_get_search_results_request(search_id)['events'][0]['Domain name']
-
-    def convert_closing_reason_name_to_id(closing_name):
-        res = send_get_closing_reasons(include_deleted=True, include_reserved=True)
-        for closing_reason in res:
-            if closing_reason['text'] == closing_name:
-                return closing_reason['id']
-        raise ValueError("Error: Given closing reason name doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
-
-    def convert_closing_reason_id_to_name(closing_id):
-        res = send_get_closing_reasons(include_deleted=True, include_reserved=True)
-        for closing_reason in res:
-            if closing_reason['id'] == closing_id:
-                return closing_reason['text']
-        raise ValueError("Error: Given closing reason id doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
-
-
-    ''' Request/Response methods '''
-
-    def send_get_offenses_request(_range, _filter='', _fields=''):
-        full_url = '{0}/api/siem/offenses'.format(SERVER)
-        params = {'filter': _filter} if _filter else {}
-        headers = dict(AUTH_HEADERS)
-        if _fields:
-            params.fileds = _fields
-        if _range:
-            headers['Range'] = 'items={0}'.format(_range)
-        return send_request('GET', full_url, headers, params)
-
-    def send_get_offense_by_id_request(offense_id, _filter='', _fields=''):
-        full_url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
-        demisto.info(full_url)
-        params = {"filter": _filter} if _filter else {}
-        headers = dict(AUTH_HEADERS)
-        if _fields:
-            params.fileds = _fields
-        return send_request('GET', full_url, headers, params)
-
-    def send_update_offense_request(offense_id):
-        url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
-        return send_request('POST', url, params=demisto.args())
-
-    def send_search_request(args):
-        url = '{0}/api/ariel/searches'.format(SERVER)
-        return send_request('POST', url, AUTH_HEADERS, params=args)
-
-    def send_get_search_request(search_id):
-        url = '{0}/api/ariel/searches/{1}'.format(SERVER, str(search_id))
-        return send_request('GET', url, AUTH_HEADERS)
-
-    def send_get_search_results_request(search_id):
-        url = '{0}/api/ariel/searches/{1}/results'.format(SERVER, str(search_id))
-        return send_request('GET', url, AUTH_HEADERS)
-
-    def send_get_assets(_range='', _filter='', _fields=''):
-        url = '{0}/api/asset_model/assets'.format(SERVER)
-        params = {"filter": _filter} if _filter else {}
-        headers = dict(AUTH_HEADERS)
-        if _fields:
-            params.fileds = _fields
-        if _range:
-            headers['Range'] = 'items={0}'.format(_range)
-        return send_request('GET', url, headers, params)
-
-    def send_get_closing_reasons(_range='', _filter='', _fields='', include_deleted=False, include_reserved=False):
-        url = '{0}/api/siem/offense_closing_reasons'.format(SERVER)
-        params = {}
-        if _filter:
-            params['filter'] = _filter
-        if include_deleted:
-            params['include_deleted'] = include_deleted
-        if include_reserved:
-            params['include_reserved'] = include_reserved
-        headers = AUTH_HEADERS
-        if _range:
-            headers['Range'] = 'items={0}'.format(_range)
-        return send_request('GET', url, headers, params)
-
-    def send_get_note(offense_id, note_id, fields):
-        url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
-        params = {'fields': fields} if fields else {}
-        return send_request('GET', url, AUTH_HEADERS, params=params)
-
-    def send_create_notes(offense_id, note_text, fields):
-        url = '{0}/api/siem/offenses/{1}/notes'.format(SERVER, offense_id)
-        params = {'fields': fields} if fields else {}
-        params['note_text'] = note_text
-        return send_request('POST', url, AUTH_HEADERS, params=params)
-
-    def send_reference_by_name_request(ref_name, _range='', _filter='', _fields=''):
-        url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
-        params = {'filter': _filter} if _filter else {}
-        headers = dict(AUTH_HEADERS)
-        if _fields:
-            params.fileds = _fields
-        if _range:
-            headers['Range'] = 'items={0}'.format(_range)
-        return send_request('GET', url, headers, params=params)
-
-    ''' Command methods '''
-
-    def test_module():
-        send_get_offenses_request('0-0')
-        # If encountered error, send_request will return_error
-        return 'ok'
-
-    def fetch_incidents():
-        query = demisto.args().get('query')
-        lastRun = demisto.getLastRun()
-        offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
-        fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
-            # qradar returns offenses sorted desc on id and there's no way to change sorting.
-            # if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
-            # start looking for the end of the list by doubling the page position until we're empty.
-            # then start binary search back until you find the end of the list and finally return
-            # `offensesPerCall` from the end.
-        res = send_get_offenses_request(_range='0-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)
-        if len(res) >= OFFENSES_PER_CALL:
-            lastOffensePos = find_last_page_pos(fetchQuery)
-            res = send_get_offenses_request(_range='{0}-{1}'.format(str(lastOffensePos - OFFENSES_PER_CALL + 1), str(lastOffensePos)))
-        incidents = []
-        for offense in res:
-            offenseId = max(offenseId, offense['id'])
-            incidents.append(create_incident_from_offense(offense))
-        demisto.setLastRun({'id': offenseId})
-        return json.dumps(incidents)
-
-    def get_offenses_command():
-        res = send_get_offenses_request(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
-        enrich_offense_result(res)
-        res = filter_dict_nonintersection_key_to_value(replace_keys(res, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
-        return get_entry_for_object('QRadar offenses', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
-
-    def get_offense_by_id_command():
-        offense_id = demisto.args().get('offense_id')
-        res = send_get_offense_by_id_request(offense_id, demisto.args().get('filter'), demisto.args().get('fields'))
-        enrich_offense_result(res, full_enrichment=True)
-        res = filter_dict_nonintersection_key_to_value(replace_keys(res, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
-        return get_entry_for_object('QRadar Offenses', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
-
-    def update_offense_command():
-        args = demisto.args()
-        if 'closing_reason_name' in args:
-            args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
-        elif 'CLOSED' == args.get('status'):
-            raise ValueError('Invalid input - must provide closing reason name (may use "qradar-get-closing-reasons" command to get them) to close offense')
-        offense_id = args.get('offense_id')
-        res = send_update_offense_request(offense_id)
-        enrich_offense_result(res, full_enrichment=True)
-        res = filter_dict_nonintersection_key_to_value(replace_keys(res, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP)
-        return get_entry_for_object('QRadar Offense', res, CUSTOM_HEADERS, 'QRadar.Offense(val.ID === obj.ID)')
-
-    def search_command():
-        res = send_search_request(demisto.args())
-        res = filter_dict_nonintersection_key_to_value(replace_keys(res, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
-        return get_entry_for_object('QRadar Search', res, CUSTOM_HEADERS, 'QRadar.Search(val.ID === obj.ID)')
-
-    def get_search_command():
-        res = send_get_search_request(demisto.args().get('search_id'))
-        res = replace_keys(res, SEARCH_ID_NAMES_MAP)
-        return get_entry_for_object('QRadar Search Info', res, CUSTOM_HEADERS, 'QRadar.Search(val.ID === obj.ID)')
-
-    def get_search_results_command():
-        search_id = demisto.args().get('search_id')
-        res = send_get_search_results_request(search_id)
-        return get_entry_for_object('QRadar Search Results', res, CUSTOM_HEADERS, 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
-
-    def get_assets_command():
-        res = send_get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
-        res, human_readable_res = create_assets_result(res)
-        return get_entry_for_assets('QRadar Assets', res, human_readable_res, CUSTOM_HEADERS)
-
-    def get_asset_by_id_command():
-        _filter = "id=" + str(demisto.args().get('asset_id'))
-        res = send_get_assets(_filter=_filter)
-        res, human_readable_res = create_assets_result(res, full_values=True)
-        return get_entry_for_assets('QRadar Asset', res, human_readable_res, CUSTOM_HEADERS)
+      query_param = {'query_expression': "SELECT DOMAINNAME({0}) AS 'Domain name' FROM events GROUP BY 'Domain name'".format(domain_id)}
+      search_id = search(query_param)['search_id']
+      return get_search_results(search_id)['events'][0]['Domain name']
 
     def get_closing_reasons_command():
         args = demisto.args()
-        res = send_get_closing_reasons(args.get('range'), args.get('filter'), args.get('fields'), args.get('include_deleted'), args.get('include_reserved'))
-        return get_entry_for_object('Offense Closing Reasons', res, contextKey='QRadar.Offense.ClosingReasons')
+        closing_reasons = get_closing_reasons(args.get('range'), args.get('filter'), args.get('fields'), args.get('include_deleted'), args.get('include_reserved'))
+        return get_entry_for_object('Offense Closing Reasons', closing_reasons, contextKey='QRadar.Offense.ClosingReasons')
 
     def get_note_command():
-        res = send_get_note(demisto.args().get('offense_id'), demisto.args().get('note_id'), demisto.args().get('fields'))
-        res = replace_keys(res, NOTE_NAMES_MAP)
-        res['CreateTime'] = epoch_to_ISO(res['CreateTime'])
-        return get_entry_for_object('QRadar Note', res, CUSTOM_HEADERS, 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
+        raw_note = get_note(demisto.args().get('offense_id'), demisto.args().get('note_id'), demisto.args().get('fields'))
+        note_names_map = {
+            'id': 'ID',
+            'note_text': 'Text',
+            'create_time': 'CreateTime',
+            'username': 'CreatedBy'
+        }
+        note = replace_keys(raw_note, note_names_map)
+        note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
+        return get_entry_for_object('QRadar Note', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
 
     def create_note_command():
-        res = send_create_notes(demisto.args().get('offense_id'), demisto.args().get('note_text'), demisto.args().get('fields'))
-        res = replace_keys(res, NOTE_NAMES_MAP)
-        res['CreateTime'] = epoch_to_ISO(res['CreateTime'])
-        return get_entry_for_object('QRadar Note', res, CUSTOM_HEADERS, 'QRadar.Note')
+        raw_note = create_note(demisto.args().get('offense_id'), demisto.args().get('note_text'), demisto.args().get('fields'))
+        note_names_map = {
+            'id': 'ID',
+            'note_text': 'Text',
+            'create_time': 'CreateTime',
+            'username': 'CreatedBy'
+        }
+        note = replace_keys(raw_note, note_names_map)
+        note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
+        return get_entry_for_object('QRadar Note', note, demisto.args().get('headers'), 'QRadar.Note')
 
     def get_reference_by_name_command():
-        res = send_reference_by_name_request(demisto.args().get('ref_name'))
-        res = replace_keys(res, REFERENCE_NAMES_MAP)
-        if 'CreationTime' in res:
-            res['CreationTime'] = epoch_to_ISO(res['CreationTime'])
-        return get_entry_for_object('QRadar References', res, CUSTOM_HEADERS, 'QRadar.Reference')
+        raw_ref = get_reference_by_name(demisto.args().get('ref_name'))
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        if 'CreationTime' in ref:
+            ref['CreationTime'] = epoch_to_ISO(ref['CreationTime'])
+        return get_entry_for_object('QRadar References', ref, demisto.args().get('headers'), 'QRadar.Reference')
 
     # Command selector
     if demisto.command() == 'test-module':
