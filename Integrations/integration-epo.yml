@@ -483,6 +483,18 @@ script:
             var parsedArgs = parseCommandArgs(args.command, args.commandArgs);
             return epoCommand(parsedArgs);
 
+        case 'epo-wakeup-agent':
+            args.command = 'system.wakeupAgent';
+            return epoCommand(undefined);
+
+        case 'epo-apply-tag':
+            args.command = 'system.applyTag';
+            return epoCommand(undefined);
+
+        case 'epo-clear-tag':
+            args.command = 'system.clearTag';
+            return epoCommand(undefined);
+
         default:
             throw 'ePO Error: unknown command';
     }
@@ -635,7 +647,31 @@ script:
       commands. e.g:  !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand".
       You can also specify ''headers'' argument  to filter tables headers. e.g: ''!epo-command
       command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
+  - name: epo-wakeup-agent
+    arguments:
+    - name: names
+      required: true
+      description: Agent hostname
+    description: Wakeup an agent
+  - name: epo-apply-tag
+    arguments:
+    - name: names
+      required: true
+      description: Hostnames to apply tags on
+    - name: tagName
+      required: true
+      description: Tag name
+    description: Applies a tag
+  - name: epo-clear-tag
+    arguments:
+    - name: names
+      required: true
+      description: Hostnames to clear tags from
+    - name: tagName
+      required: true
+      description: Tag name
+    description: Clears a tag
   runonce: false
 tests:
 - Test Playbook McAfee ePO
-releaseNotes: Added epo-advanced-command for playbooks use
+releaseNotes: Added epo-advanced-command for playbooks use. Also added epo-clear-tag,epo-apply-tag,epo-wakeup-agent

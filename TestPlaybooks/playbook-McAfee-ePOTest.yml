@@ -12,7 +12,6 @@ tasks:
       id: f321cc54-abd1-4ba4-89d3-32c83b9c058e
       version: -1
       name: ""
-      description: "-"
       iscommand: false
       brand: ""
     nexttasks:
@@ -141,7 +140,6 @@ tasks:
       id: d5b711a6-8243-46b0-84d5-9b8cbba6ba94
       version: -1
       name: Done
-      description: "-"
       type: title
       iscommand: false
       brand: ""
@@ -150,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -364,10 +362,10 @@ tasks:
     note: false
   "18":
     id: "18"
-    taskid: 427cf98f-2058-4cde-8daa-89b63fa04d72
+    taskid: d752730c-df7b-423f-8c42-cb931956e179
     type: regular
     task:
-      id: 427cf98f-2058-4cde-8daa-89b63fa04d72
+      id: d752730c-df7b-423f-8c42-cb931956e179
       version: -1
       name: epo-advanced-command
       description: 'Execute ePO command. Run ''epo-help'' command to see a list available
@@ -380,7 +378,7 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "5"
+      - "19"
     scriptarguments:
       command:
         simple: clienttask.find
@@ -395,12 +393,72 @@ tasks:
         }
       }
     note: false
+  "19":
+    id: "19"
+    taskid: 43f4a787-cff7-441e-89ba-884272efea3f
+    type: regular
+    task:
+      id: 43f4a787-cff7-441e-89ba-884272efea3f
+      version: -1
+      name: epo-apply-tag
+      description: Applies a tag
+      script: epo|||epo-apply-tag
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      names:
+        simple: ADMIN-PC
+      tagName:
+        simple: Tag For Test Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 86ab2c0d-1f90-4505-866d-f3c7e8de58f4
+    type: regular
+    task:
+      id: 86ab2c0d-1f90-4505-866d-f3c7e8de58f4
+      version: -1
+      name: epo-clear-tag
+      description: Clears a tag
+      script: epo|||epo-clear-tag
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      names:
+        simple: ADMIN-PC
+      tagName:
+        simple: Tag For Test Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 2485,
         "width": 380,
         "x": 50,
         "y": 50
