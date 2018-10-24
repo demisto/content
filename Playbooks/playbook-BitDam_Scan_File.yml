@@ -2,9 +2,10 @@ id: Detonate File - BitDam
 version: 18
 name: Detonate File - BitDam
 description: |-
-  Detonates one or more files using the Joe Security - Joe Sandbox integration.
-  Returns relevant reports to the War Room and file reputations to the context data.
-  All file types are supported.
+  Detonates one or more files using BitDam integration.
+  Returns verdict to the War Room and file reputations to the context data.
+  Supported file types are mainly PDF & microsoft office software/
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -12,6 +13,7 @@ tasks:
     taskid: cf22dcbc-af9c-42fa-8963-205d412e6965
     type: start
     task:
+      description: ""
       id: cf22dcbc-af9c-42fa-8963-205d412e6965
       version: -1
       name: ""
@@ -34,6 +36,7 @@ tasks:
     taskid: 4c2c547d-ad8a-4e52-8bab-63760b7677cc
     type: regular
     task:
+      description: ""
       id: 4c2c547d-ad8a-4e52-8bab-63760b7677cc
       version: -1
       name: BitDam Upload File
@@ -116,6 +119,7 @@ tasks:
     taskid: aa6d7b50-e89e-4046-8245-91d4e430544d
     type: title
     task:
+      description: ""
       id: aa6d7b50-e89e-4046-8245-91d4e430544d
       version: -1
       name: Done
@@ -261,6 +265,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "10"
@@ -291,6 +296,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -404,3 +410,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+releaseNotes: "File scan & results playbook"
