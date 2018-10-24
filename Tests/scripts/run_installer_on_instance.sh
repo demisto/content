@@ -26,15 +26,13 @@ ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
 
-zip -r test_playbooks.zip ./TestPlaybooks/*
-
 scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
-scp test_playbooks.zip ${USER}@${PUBLIC_IP}:~/TestPlaybooks
+scp content_test.zip ${USER}@${PUBLIC_IP}:~/TestPlaybooks
 scp -r ./Beta_Integrations/* ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
 # override exiting content with current
 COPY_CONTENT_COMMAND="sudo unzip -o ~/content/content_new.zip -d /usr/local/demisto/res \
-    && sudo unzip -o ~/TestPlaybooks/test_playbooks.zip -d /usr/local/demisto/res && sudo cp ~/Beta_Integrations/* /usr/local/demisto/res"
+    && sudo unzip -o ~/content/content_test.zip -d /usr/local/demisto/res && sudo cp ~/Beta_Integrations/* /usr/local/demisto/res"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "start server"
