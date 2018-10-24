@@ -116,25 +116,6 @@ script:
         }
 
 
-    def download_artifact():
-        """
-        Download an artifact given an artifact id.
-        """
-        aid = demisto.getArg('aid')
-        r = req('GET', SUB_API + 'artifacts/' + aid + '/download')
-        ec = {'ThreatGrid.Artifact.Id': aid}
-        demisto.results([
-            {
-                'Type': entryTypes['note'],
-                'EntryContext': ec,
-                'HumanReadable': '### ThreatGrid Artifact Download - \n' + 'Your download request has been completed successfully for ' + aid,
-                'Contents': ec,
-                'ContentsFormat': formats['json']
-            },
-            fileResult(aid + '-artifact', r.content)
-        ])
-
-
     def download_sample():
         """
         Download a sample given the sample id
@@ -246,7 +227,7 @@ script:
                 return_error('Error in API call to Threat Grid service %s - %s' % ('samples', r.text))
             sample = sample_to_readable(r.json().get('data'))
             md = tableToMarkdown('ThreatGrid - Sample Upload', [sample], [
-                'ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'OS', 'SubmittedAt', 'StartedAt', 'CompletedAt'
+                'ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'OS', 'SubmittedAt'
             ])
             demisto.results({
                 'Type': entryTypes['note'],
@@ -442,8 +423,6 @@ script:
         request = req('GET', USER_API + 'users/' + login + '/rate-limit')
         r = request.json()
         rate_limit = {
-            'Minutes': [demisto.get(rate_limit, 'minutes') for rate_limit in (demisto.get(r, 'data.user.submission-rate-limit') or [])],
-            'Samples': [demisto.get(rate_limit, 'samples') for rate_limit in (demisto.get(r, 'data.user.submission-rate-limit') or [])],
             'SubmissionWaitSeconds': demisto.get(r, 'data.user.submission-wait-seconds'),
             'SubmissionsAvailable': demisto.get(r, 'data.user.submissions-available')
         }
@@ -451,7 +430,7 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'ThreatGrid.User.RateLimit': rate_limit},
             'HumanReadable': tableToMarkdown('ThreatGrid - User Rate Limit', [rate_limit], [
-                'Minutes', 'Samples', 'SubmissionWaitSeconds', 'SubmissionsAvailable'
+                'SubmissionWaitSeconds', 'SubmissionsAvailable'
             ]),
             'ContentsFormat': formats['json'],
             'Contents': r
@@ -722,9 +701,9 @@ script:
         Get specific feed
         """
         feed_name = demisto.getArg('feed-name')
-        feed_period = demisto.getArg('feed-period')
+        feed_period = '_' + demisto.getArg('feed-period') if demisto.getArg('feed-period') else ''
         output_type = demisto.getArg('output-type')
-        r = req('GET', SUB_API + 'feeds/' + feed_name + '-' + feed_period + '.' + output_type)
+        r = req('GET', USER_API + 'feeds/' + feed_name + feed_period + '.' + output_type)
         demisto.results([
             {
                 'Type': entryTypes['note'],
@@ -735,7 +714,6 @@ script:
             },
             fileResult(feed_name + output_type, r.content)
         ])
-
 
     def feeds_helper(name):
         name_conversion = {
@@ -834,8 +812,6 @@ script:
     if demisto.command() == 'test-module':
         request = req('GET', USER_API + 'session/whoami')
         demisto.results('ok')
-    elif demisto.command() == 'threat-grid-download-artifact':
-        download_artifact()
     elif demisto.command() == 'threat-grid-download-sample-by-id':
         download_sample()
     elif demisto.command() == 'threat-grid-get-samples':
@@ -896,6 +872,8 @@ script:
         get_analysis_network_stream()
     elif demisto.command() == 'threat-grid-get-analysis-process' or demisto.command() == 'threat-grid-get-analysis-processes':
         get_analysis_process()
+    elif demisto.command() == 'threat-grid-download-artifact':
+        return_error('Error: The API for this command is no longer supported')
     else:
         return_error('Unrecognized command: ' + demisto.command())
   type: python
@@ -950,8 +928,6 @@ script:
       description: The sample sha256
     - contextPath: ThreatGrid.Sample.OS
       description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     - contextPath: ThreatGrid.Sample.StartedAt
@@ -984,8 +960,6 @@ script:
       description: The sample sha256
     - contextPath: ThreatGrid.Sample.OS
       description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     - contextPath: ThreatGrid.Sample.StartedAt
@@ -1396,12 +1370,7 @@ script:
       default: true
       description: The feed name
     - name: feed-period
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - hourly
-      - daily
-      description: Feed period (hourly/daily)
+      description: Feed daily date (YYYY-MM-DD)
     - name: output-type
       description: The output type
       defaultValue: json
