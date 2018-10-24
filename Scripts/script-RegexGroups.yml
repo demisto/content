@@ -17,7 +17,7 @@ script: |-
   if dict_keys:
       dict_keys = dict_keys.split(',')
   try:
-      pattern_match = re.match(regex_pattern, match_target)
+      pattern_match = re.search(regex_pattern, match_target)
       matches = []
       if pattern_match:
           for i in pattern_match.groups():
