@@ -1317,9 +1317,11 @@ script:
         if stderr:
             return get_cs_error(sterr)
 
+        # Get search status
         stdout = stdout.split('\n', 1)
         results = [get_cs_status(search_name, stdout[0])]
 
+        # Parse search results from script output if the search has completed. Output to warroom as table.
         if stdout[0] == 'Completed':
             res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
             res = map(lambda x: {k: v for k,v in (s.split(': ') for s in x)}, res)
