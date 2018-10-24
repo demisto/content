@@ -1309,6 +1309,7 @@ script:
     description: Returns a JSON list of the Indicators of Compromise identified in
       this sample run
   - name: threat-grid-download-artifact
+    deprecated: true
     arguments:
     - name: aid
       required: true
