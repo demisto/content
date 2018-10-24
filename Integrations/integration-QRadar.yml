@@ -667,19 +667,19 @@ script:
         demisto.results(test_module())
     elif demisto.command() == 'fetch-incidents':
         demisto.results(fetch_incidents())
-    elif demisto.command() == 'qradar-offenses':
+    elif demisto.command() in ['qradar-offenses', 'qr-offenses']:
         demisto.results(get_offenses_command())
     elif demisto.command() == 'qradar-offense-by-id':
         demisto.results(get_offense_by_id_command())
-    elif demisto.command() == 'qradar-update-offense':
+    elif demisto.command() in ['qradar-update-offense', 'qr-update-offense']:
         demisto.results(update_offense_command())
-    elif demisto.command() == 'qradar-searches':
+    elif demisto.command() in ['qradar-searches', 'qr-searches']:
         demisto.results(search_command())
-    elif demisto.command() == 'qradar-get-search':
+    elif demisto.command() in ['qradar-get-search', 'qr-get-search']:
         demisto.results(get_search_command())
-    elif demisto.command() == 'qradar-get-search-results':
+    elif demisto.command() in ['qradar-get-search-results', 'qr-get-search-results']:
         demisto.results(get_search_results_command())
-    elif demisto.command() == 'qradar-get-assets':
+    elif demisto.command() in ['qradar-get-assets', 'qr-get-assets']:
         demisto.results(get_assets_command())
     elif demisto.command() == 'qradar-get-asset-by-id':
         demisto.results(get_asset_by_id_command())
@@ -708,6 +708,7 @@ script:
       description: Offense followup.
     - contextPath: QRadar.Offense.ID
       description: The ID of the offense.
+      type: int
     - contextPath: QRadar.Offense.Description
       description: The description of the offense.
     - contextPath: QRadar.Offense.SourceAddress
@@ -803,6 +804,7 @@ script:
     outputs:
     - contextPath: QRadar.Search.ID
       description: Search ID
+      type: int
     description: Searches in QRadar
   - name: qradar-get-search
     arguments:
@@ -866,6 +868,7 @@ script:
       description: Offense followup.
     - contextPath: QRadar.Offense.ID
       description: The ID of the offense.
+      type: int
     - contextPath: QRadar.Offense.Description
       description: The description of the offense.
     - contextPath: QRadar.Offense.SourceAddress
@@ -902,6 +905,7 @@ script:
     outputs:
     - contextPath: QRadar.Assets.ID
       description: The ID of the asset
+      type: int
     - contextPath: Endpoint.IPAddress
       description: IP address of the asset
     - contextPath: QRadar.Assets.Name.Value
@@ -981,9 +985,14 @@ script:
     - name: query_expression
       required: true
       default: true
-      description: The query expressions in AQL
+      description: The query expressions in AQL (for more information about Ariel
+        Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID
+      type: int
     description: Searches in QRadar
   - name: qr-get-search
     deprecated: true
@@ -994,7 +1003,7 @@ script:
       description: The search id
     - name: headers
       description: Table headers
-    description: Gets a specific search id
+    description: Gets a specific search using search id
   - name: qr-get-search-results
     deprecated: true
     arguments:
@@ -1032,10 +1041,11 @@ script:
       - OPEN
       - HIDDEN
       - CLOSED
-      description: he new status for the offense
-    - name: closing_reason_id
-      description: The ID of a closing reason. You must provide a valid closing_reason_id
-        when you close an offense
+      description: The new status for the offense
+    - name: closing_reason_name
+      description: 'The name of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default  closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation'
     - name: assigned_to
       description: A user to assign the offense to
     - name: headers
@@ -1044,6 +1054,34 @@ script:
       description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
         in brackets and multiple fields in the same object are separated by commas
+    outputs:
+    - contextPath: QRadar.Offense.Followup
+      description: Offense followup.
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: int
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.DestinatioAddress
+      description: The destination addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type
+    - contextPath: QRadar.Offense.Protected
+      description: Is the offense protected
     description: Update an offense
   - name: qr-get-assets
     deprecated: true
@@ -1056,6 +1094,26 @@ script:
       description: Query to filter offenses
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Assets.ID
+      description: The ID of the asset
+      type: int
+    - contextPath: Endpoint.IPAddress
+      description: IP address of the asset
+    - contextPath: QRadar.Assets.Name.Value
+      description: Name of the asset
+    - contextPath: Endpoint.OS
+      description: Asset OS
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
+      description: CVSSScore
+    - contextPath: QRadar.Assets.Weight.Value
+      description: Asset weight
+    - contextPath: QRadar.Assets.Name.LastUser
+      description: Last user who updated the name
+    - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
+      description: Last user who updated the Aggregated CVSS Score
+    - contextPath: QRadar.Assets.Weight.LastUser
+      description: Last user who updated the weight
     description: List all assets found in the model
   - name: qr-offenses
     deprecated: true
@@ -1068,7 +1126,33 @@ script:
       description: Number of results in return
     - name: headers
       description: Table headers
-    description: Gets offenses from qradar
+    outputs:
+    - contextPath: QRadar.Offense.Followup
+      description: Offense followup.
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: int
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.DestinatioAddress
+      description: The destination addresses that are associated with the offense.
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type
+    description: Gets offenses from QRadar
   - name: qradar-get-closing-reasons
     arguments:
     - name: include_reserved
@@ -1128,7 +1212,7 @@ script:
     outputs:
     - contextPath: QRadar.Note.ID
       description: Note ID
-      type: unknown
+      type: int
     - contextPath: QRadar.Note.Text
       description: Note text
     - contextPath: QRadar.Note.CreateTime
