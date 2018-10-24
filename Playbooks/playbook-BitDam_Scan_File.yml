@@ -1,5 +1,5 @@
 id: Detonate File - BitDam
-version: 14
+version: 18
 name: Detonate File - BitDam
 description: |-
   Detonates one or more files using the Joe Security - Joe Sandbox integration.
@@ -53,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 720
+          "x": 272.5,
+          "y": 905
         }
       }
     note: false
@@ -106,8 +106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 895
+          "x": 272.5,
+          "y": 1080
         }
       }
     note: false
@@ -127,7 +127,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -244,8 +244,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1070
+          "x": 272.5,
+          "y": 1255
         }
       }
     note: false
@@ -263,7 +263,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     scriptarguments:
       append: {}
       key:
@@ -280,12 +280,75 @@ tasks:
         }
       }
     note: false
+  "10":
+    id: "10"
+    taskid: 699619cb-33c2-4b32-88ef-ba0844c2cddf
+    type: condition
+    task:
+      id: 699619cb-33c2-4b32-88ef-ba0844c2cddf
+      version: -1
+      name: Is File type supported?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 272.5,
+          "y": 720
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1435,
         "width": 605,
         "x": 50,
         "y": 50
