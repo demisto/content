@@ -34,10 +34,10 @@ tasks:
       version: -1
       name: intsights-get-alerts
       description: Fetch alerts
-      script: Intsights (new)|||intsights-get-alerts
+      script: '|||intsights-get-alerts'
       type: regular
       iscommand: true
-      brand: Intsights (new)
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -72,10 +72,10 @@ tasks:
       version: -1
       name: intsights-add-comment-to-alert
       description: Add comment to alert
-      script: Intsights (new)|||intsights-add-comment-to-alert
+      script: '|||intsights-add-comment-to-alert'
       type: regular
       iscommand: true
-      brand: Intsights (new)
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -102,10 +102,10 @@ tasks:
       version: -1
       name: intsights-get-alert-activities
       description: Get alert activities
-      script: Intsights (new)|||intsights-get-alert-activities
+      script: '|||intsights-get-alert-activities'
       type: regular
       iscommand: true
-      brand: Intsights (new)
+      brand: ""
     nexttasks:
       '#none#':
       - "24"
@@ -160,10 +160,10 @@ tasks:
       version: -1
       name: intsights-update-alert-severity
       description: Change the alert's severity
-      script: Intsights (new)|||intsights-update-alert-severity
+      script: '|||intsights-update-alert-severity'
       type: regular
       iscommand: true
-      brand: Intsights (new)
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -190,10 +190,10 @@ tasks:
       version: -1
       name: intsights-get-iocs
       description: Get count totals of the available IOCs
-      script: Intsights (new)|||intsights-get-iocs
+      script: '|||intsights-get-iocs'
       type: regular
       iscommand: true
-      brand: Intsights (new)
+      brand: ""
     nexttasks:
       '#none#':
       - "20"
@@ -225,10 +225,10 @@ tasks:
       version: -1
       name: intsights-add-tag-to-alert
       description: Adds a tag to the alert
-      script: Intsights (new)|||intsights-add-tag-to-alert
+      script: '|||intsights-add-tag-to-alert'
       type: regular
       iscommand: true
-      brand: Intsights (new)
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
