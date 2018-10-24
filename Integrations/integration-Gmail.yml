@@ -16,10 +16,11 @@ detaileddescription: "This API enables the usage of Google Admin API. In order t
   order to search user mailboxes, please authorize this api too: [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly)\n\nIn
   order to delete emails from user mailbox, please authorize this api too: \n[https://mail.google.com](https://mail.google.com),
   \n[https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify)\n\nIn
-  order to to fetch user security tokens, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security)\n\nIn
-  order to to fetch mobile info, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.readonly](https://www.googleapis.com/auth/admin.directory.device.mobile.readonly)\n\nIn
-  order to to preform actions on mobile devices, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.action](https://www.googleapis.com/auth/admin.directory.device.mobile.action)\n\nIn
-  order to to preform actions on chorme devices, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.chromeos](https://www.googleapis.com/auth/admin.directory.device.chromeos)\n\nFor
+  order to fetch user security tokens, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security)\n\nIn
+  order to fetch mobile info, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.readonly](https://www.googleapis.com/auth/admin.directory.device.mobile.readonly)\n\nIn
+  order to preform actions on mobile devices, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.device.mobile.action](https://www.googleapis.com/auth/admin.directory.device.mobile.action)\n\nIn
+  order to preform actions on chorme devices, please authorize this api too:[https://www.googleapis.com/auth/admin.directory.device.chromeos](https://www.googleapis.com/auth/admin.directory.device.chromeos)\n\nIn
+  order to block email addresses, please authorize this api too:\n[https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic)\n\nFor
   the email user param, please choose a user with admin permissions and make sure
   that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.\n\nIn
   order to revoke/fetch user role, you will need the Immutable Google Apps ID param.\nTo
@@ -46,11 +47,6 @@ configuration:
   name: queryUserKey
   defaultvalue: ""
   type: 0
-  required: false
-- display: Require users to enter additional password
-  name: additionalPassword
-  defaultvalue: ""
-  type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
@@ -81,6 +77,7 @@ script:
     PRIVATE_KEY_CONTENT = demisto.params()['adminEmail'].get('password', '{}')
     GAPPS_ID = demisto.params().get('gappsID')
     SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
+
 
     ''' HELPER FUNCTIONS '''
     def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
@@ -334,6 +331,26 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, context, headers),
             'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)' : context}
+        }
+
+
+    def filters_to_entry(title, response):
+        context = []
+        for filter_data in response:
+            context.append({
+                'ID' : filter_data.get('id'),
+                'Criteria' : filter_data.get('criteria'),
+                'Action' : filter_data.get('action'),
+            })
+
+        headers = ['ID', 'Criteria', 'Action', ]
+
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, context, headers),
         }
 
 
@@ -773,6 +790,34 @@ script:
         return result['messages']
 
 
+    def block_email_command():
+        args = demisto.args()
+
+        user_id = args.get('user-id', ADMIN_EMAIL)
+        block = args.get('block')
+
+        _filter = block_email(user_id, block)
+
+        # return _filter
+        return filters_to_entry('New filter:', [_filter])
+
+
+    def block_email(user_id, block):
+        command_args = {
+            'userId': user_id,
+            'body' : {
+                'criteria': {'from' : block},
+                'action': {'addLabelIds': ['TRASH', ]},
+            }
+        }
+
+        credentials = get_credentials(['https://www.googleapis.com/auth/gmail.settings.basic',], delegated_user=user_id)
+        service = discovery.build('gmail', 'v1', credentials=credentials)
+        result = service.users().settings().filters().create(**command_args).execute()
+
+        return result
+
+
     def fetch_incidents():
         params = demisto.params()
         user_key = params['queryUserKey']
@@ -856,6 +901,8 @@ script:
             demisto.results(delete_mail_command())
         elif demisto.command() == 'gmail-get-thread':
             demisto.results(get_thread_command())
+        elif demisto.command() == 'gmail-block-email':
+            demisto.results(block_email_command())
 
     except Exception, e:
         LOG('%s: %s' % (type(e), e.message, ))
@@ -867,7 +914,6 @@ script:
             'ContentsFormat': formats['text'],
             'Contents': 'error has occured: %s' % (e.message, ),
         })
-        raise
   type: python
   commands:
   - name: gmail-delete-user
@@ -1548,6 +1594,20 @@ script:
       description: The Gmail.Mailbox
       type: string
     description: Move a mail to a different mailbox
+  - name: gmail-block-email
+    arguments:
+    - name: user-id
+      required: true
+      default: true
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+    - name: block
+      required: true
+      description: Email to block messages from.
+    description: block an email address
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
+tests:
+- GmailTest
+releaseNotes: "Added block email command"
