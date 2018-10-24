@@ -18,3 +18,4 @@ dependson:
   must:
   - cuckoo-get-task-report
 timeout: 0s
+releaseNotes: "-"

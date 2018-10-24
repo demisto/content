@@ -28,3 +28,4 @@ dependson:
   must:
   - cuckoo-create-task-from-url
 timeout: 0s
+releaseNotes: "-"
