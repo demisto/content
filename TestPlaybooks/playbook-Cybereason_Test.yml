@@ -217,7 +217,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Name,CreationTime,EndTime,Parent,OwnerMachine,User
+        simple: Name,CreationTime,EndTime,OwnerMachine,User
       path:
         simple: Process
     separatecontext: false
