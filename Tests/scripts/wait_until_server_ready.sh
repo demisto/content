@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-echo "wait for 90 seconds until server is ready"
-sleep 90s
-
 SERVER_IP=$(cat public_ip)
 SERVER_URL="https://$SERVER_IP"
 GET_HTTP_CODE_COMMAND="curl --write-out %{http_code} --silent --output /dev/null $SERVER_URL/user -k"
@@ -27,4 +24,3 @@ then
 fi
 
 echo "Server is ready :)"
-
