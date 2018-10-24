@@ -118,7 +118,7 @@ script:
     if exchangelib.__version__ == "1.12.0":
         MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
     else:
-        MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.MNS
+        MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.TNS
 
     # consts
     VERSIONS = {
