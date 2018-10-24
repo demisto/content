@@ -80,7 +80,7 @@ tasks:
         complex:
           root: TestData
           transformers:
-          - operator: 37385158-1757-43c1-81d8-05ae4e770c71
+          - operator: RegexGroups
             args:
               groups:
                 value:
@@ -234,7 +234,7 @@ tasks:
         complex:
           root: TestData
           transformers:
-          - operator: 37385158-1757-43c1-81d8-05ae4e770c71
+          - operator: RegexGroups
             args:
               groups: {}
               keys: {}
