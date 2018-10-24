@@ -687,10 +687,10 @@ tasks:
       id: 017f0872-122e-4bdc-8b68-aa1a5c7bfb3b
       version: -1
       name: block the admin
-      script: '|||gmail-block-email'
+      script: Gmail|||gmail-block-email
       type: regular
       iscommand: true
-      brand: ""
+      brand: Gmail
     nexttasks:
       '#none#':
       - "6"

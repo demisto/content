@@ -798,7 +798,6 @@ script:
 
         _filter = block_email(user_id, block)
 
-        # return _filter
         return filters_to_entry('New filter:', [_filter])
 
 
