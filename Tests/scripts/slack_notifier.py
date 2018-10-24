@@ -70,24 +70,10 @@ def options_handler():
     return options
 
 
-def extract_build_status(build_number, circleci_token):
-    url = "https://circleci.com/api/v1.1/project/github/demisto/content/{0}?circle-token={1}".format(build_number, circleci_token)
-    res = http_request(url)
-
-    status = 'success'
-    steps = res.get('steps', [])
-    for step in steps:
-        action = step.get('actions', [{}])[0]
-        if action.get('status', 'failed') == 'failed':
-            status = 'failed'
-
-    return status
-
-
-def get_attachments(build_url, build_st):
-    color = 'good' if build_st is 'success' else 'danger'
-    title = 'Content Build - Success' if build_st is 'success' else 'Content Build - Failure'
-    fields = get_fields()
+def get_attachments(build_url):
+    fields, failed_tests = get_fields()
+    color = 'good' if not failed_tests else 'danger'
+    title = 'Content Build - Success' if not failed_tests else 'Content Build - Failure'
 
     attachment = [{
         'fallback': title,
@@ -142,7 +128,7 @@ def get_fields():
         }
         fields.append(field_skipped_integrations)
 
-    return fields
+    return fields, failed_tests
 
 
 def slack_notifier(build_url, build_number, slack_token, circleci_token):
@@ -153,8 +139,7 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
     if branch_name == 'master':
         print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
         print("Extracting build status")
-        build_st = extract_build_status(build_number, circleci_token)
-        attachments = get_attachments(build_url, build_st)
+        attachments = get_attachments(build_url)
 
         sc = SlackClient(slack_token)
         sc.api_call(
