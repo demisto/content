@@ -633,6 +633,9 @@
             "playbookID": "ActiveMQ Test"
         },
         {
+            "playbookID": "RegexGroups Test"
+        },
+        {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
         }
