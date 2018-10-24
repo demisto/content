@@ -1,6 +1,6 @@
 commonfields:
   id: CuckooDetonateFile
-  version: 3
+  version: -1
 name: CuckooDetonateFile
 script: |-
   res =  demisto.executeCommand("cuckoo-create-task-from-file", demisto.args())

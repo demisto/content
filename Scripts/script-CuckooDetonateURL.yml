@@ -1,6 +1,6 @@
 commonfields:
   id: CuckooDetonateURL
-  version: 2
+  version: -1
 name: CuckooDetonateURL
 script: |-
   res =  demisto.executeCommand("cuckoo-create-task-from-url", demisto.args())

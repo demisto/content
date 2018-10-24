@@ -1,6 +1,6 @@
 commonfields:
   id: CuckooTaskStatus
-  version: 2
+  version: -1
 name: CuckooTaskStatus
 script: |+
   res = demisto.executeCommand("cuckoo-view-task", {"id": demisto.args()["taskID"]})

@@ -1,6 +1,6 @@
 commonfields:
   id: SandboxDetonateFile
-  version: 24
+  version: -1
 name: SandboxDetonateFile
 script: |-
   from time import sleep
@@ -32,7 +32,7 @@ script: |-
           wildfireDone = True
       if 'cuckoo sandbox' not in usingBrand.lower():
           cuckooDone = True
-      if 'check point sandblast' not in usingBrand.lower() and 'check point sandblast appliance' not in usingBrand.lower():
+      if 'check point sandblast' not in usingBrand.lower():
           sandblastDone = True
   # Get the file's hash
   resFileEntry = demisto.executeCommand('getEntry',{'id': demisto.args()['entryID']})
