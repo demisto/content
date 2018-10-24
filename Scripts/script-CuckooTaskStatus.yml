@@ -1,9 +1,9 @@
 commonfields:
   id: CuckooTaskStatus
-  version: -1
+  version: 2
 name: CuckooTaskStatus
 script: |+
-  res = demisto.executeCommand("ck-view", {"id": demisto.args()["taskID"]})
+  res = demisto.executeCommand("cuckoo-view-task", {"id": demisto.args()["taskID"]})
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -27,5 +27,5 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ck-view
+  - cuckoo-view-task
 timeout: 0s
