@@ -522,13 +522,13 @@ script:
 
     def search_command():
         raw_search = search(demisto.args())
-        search = filter_dict_nonintersection_key_to_value(replace_keys(raw_search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
-        return get_entry_for_object('QRadar Search', search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
+        raw_search = filter_dict_nonintersection_key_to_value(replace_keys(raw_search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+        return get_entry_for_object('QRadar Search', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
 
     def get_search_command():
         raw_search = get_search(demisto.args().get('search_id'))
-        search = replace_keys(raw_search, SEARCH_ID_NAMES_MAP)
-        return get_entry_for_object('QRadar Search Info', search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
+        raw_search = replace_keys(raw_search, SEARCH_ID_NAMES_MAP)
+        return get_entry_for_object('QRadar Search Info', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
 
     def get_search_results_command():
         search_id = demisto.args().get('search_id')
