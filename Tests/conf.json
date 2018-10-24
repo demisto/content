@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "BitDam",
+            "playbookID": "Detonate File - BitDam Test"
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
