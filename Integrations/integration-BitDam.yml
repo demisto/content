@@ -215,19 +215,16 @@ script:
         response.content))
 
 
-    COMMAND_TO_API = {
-        'bitdam-upload-file' : scan_file,
-        'bitdam-get-verdict' : get_file_verdict,
-    }
-
     '''COMMAND_CLASIFIER'''
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         if test_module():
             demisto.results('ok')
         sys.exit(0)
-    elif demisto.command().startswith(BITDAM_COMMAND_PREFIX):
-        demisto.results(COMMAND_TO_API[demisto.command()]())
+    elif demisto.command() == 'bitdam-upload-file':
+        demisto.results(scan_file())
+    elif demisto.command() == 'bitdam-get-verdict':
+        demisto.results(get_file_verdict())
   type: python
   commands:
   - name: bitdam-upload-file
@@ -253,6 +250,7 @@ script:
     outputs:
     - contextPath: BitDam.Analysis.Status
       description: Status of the analysis. Can be either 'DONE' or 'IN_PROGRESS'
+      type: string
     - contextPath: BitDam.Analysis.Verdict
       description: Final verdict of the analysis. Can be 'Clean', 'Malicious' or empty
         if analysis isn't finished.
@@ -260,5 +258,27 @@ script:
     - contextPath: BitDam.Analysis.ID
       description: Unique identifier
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: DBotScore.Type
+      description: The Indicator Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: File.Malicious.Name
+      description: File's name
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
     description: Get verdict for a scanned file
   runonce: false
+releaseNotes: "Added new BitDam integration for scanning pdf & microsoft office files"
