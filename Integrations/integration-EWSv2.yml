@@ -1435,15 +1435,15 @@ script:
             encode_and_submit_results(get_items(**args))
         elif demisto.command() == 'ews-get-folder':
             encode_and_submit_results(get_folder(**args))
-        elif demisto.command() == 'ews-start-compliance-search':
+        elif demisto.command() == 'ews-o365-start-compliance-search':
             encode_and_submit_results(start_compliance_search(**args))
-        elif demisto.command() == 'ews-get-compliance-search':
+        elif demisto.command() == 'ews-o365-get-compliance-search':
             encode_and_submit_results(get_compliance_search(**args))
-        elif demisto.command() == 'ews-purge-compliance-search-results':
+        elif demisto.command() == 'ews-o365-purge-compliance-search-results':
             encode_and_submit_results(purge_compliance_search(**args))
-        elif demisto.command() == 'ews-get-compliance-search-purge-status':
+        elif demisto.command() == 'ews-o365-get-compliance-search-purge-status':
             encode_and_submit_results(check_purge_compliance_search(**args))
-        elif demisto.command() == 'ews-remove-compliance-search':
+        elif demisto.command() == 'ews-o365-remove-compliance-search':
             encode_and_submit_results(remove_compliance_search(**args))
 
 
@@ -2105,7 +2105,7 @@ script:
       description: Unread emails in the folder.
       type: number
     description: Get a single specific folder.
-  - name: ews-start-compliance-search
+  - name: ews-o365-start-compliance-search
     arguments:
     - name: query
       required: true
@@ -2119,7 +2119,7 @@ script:
       description: The status of the compliance search
       type: string
     description: Start compliance search
-  - name: ews-get-compliance-search
+  - name: ews-o365-get-compliance-search
     arguments:
     - name: search-name
       required: true
@@ -2129,7 +2129,7 @@ script:
     - contextPath: EWS.ComplianceSearch.Status
       description: The status of the compliance search
     description: Get compliance search status and results
-  - name: ews-purge-compliance-search-results
+  - name: ews-o365-purge-compliance-search-results
     arguments:
     - name: search-name
       required: true
@@ -2140,7 +2140,7 @@ script:
       description: The status of the compliance search
       type: string
     description: Purges the results found by the compliance search
-  - name: ews-remove-compliance-search
+  - name: ews-o365-remove-compliance-search
     arguments:
     - name: search-name
       required: true
@@ -2151,7 +2151,7 @@ script:
       description: The status of the compliance search
       type: string
     description: Remove the compliance search
-  - name: ews-get-compliance-search-purge-status
+  - name: ews-o365-get-compliance-search-purge-status
     arguments:
     - name: search-name
       required: true
