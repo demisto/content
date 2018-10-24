@@ -199,3 +199,5 @@ system: true
 timeout: 86.4µs
 runonce: false
 releaseNotes: "-"
+tests:
+  - Forgive me for my sins but I did not create any test
