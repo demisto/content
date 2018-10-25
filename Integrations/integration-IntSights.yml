@@ -138,7 +138,7 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':alerts},
             'Contents': alerts,
-            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts, ['ID', 'Severity', 'Type', 'FoundDate', 'Source.Type', 'Source.URL', 'Source.Email', 'Source.NetworkType', 'IsClosed', 'IsFlagged']),
+            'HumanReadable': tableToMarkdown('IntSights Alerts', alerts, ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged']),
             'ContentsFormat': formats['json']
         })
 
@@ -152,10 +152,10 @@ script:
             'Severity': demisto.get(r,'Details.Severity'),
             'Type': demisto.get(r,'Details.Type'),
             'FoundDate': demisto.get(r,'FoundDate'),
-            'Source.Type': demisto.get(r,'Details.Source.Type'),
-            'Source.URL': demisto.get(r,'Details.Source.URL'),
-            'Source.Email': demisto.get(r,'Details.Source.Email'),
-            'Source.NetworkType': demisto.get(r,'Details.Source.NetworkType'),
+            'SourceType': demisto.get(r,'Details.Source.Type'),
+            'SourceURL': demisto.get(r,'Details.Source.URL'),
+            'SourceEmail': demisto.get(r,'Details.Source.Email'),
+            'SourceNetworkType': demisto.get(r,'Details.Source.NetworkType'),
             'IsClosed': demisto.get(r,'IsClosed'),
             'IsFlagged': demisto.get(r,'IsFlagged'),
             'Assets': demisto.get(r,'Assets')
@@ -180,7 +180,7 @@ script:
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)':activity},
             'Contents': activity,
-            'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity], ['ID', 'Severity', 'Type', 'FoundDate', 'Source.Type', 'Source.URL', 'Source.Email', 'Source.NetworkType', 'IsClosed', 'IsFlagged']),
+            'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity], ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL', 'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged']),
             'ContentsFormat': formats['json']
         })
 
@@ -889,16 +889,16 @@ script:
     - contextPath: IntSights.Alerts.FoundDate
       description: The date the alert was found
       type: date
-    - contextPath: IntSights.Alerts.Source.Type
+    - contextPath: IntSights.Alerts.SourceType
       description: The alert source type
       type: string
-    - contextPath: IntSights.Alerts.Source.URL
+    - contextPath: IntSights.Alerts.SourceURL
       description: The alert source URL
       type: string
-    - contextPath: IntSights.Alerts.Source.Email
+    - contextPath: IntSights.Alerts.SourceEmail
       description: The alert source email
       type: string
-    - contextPath: IntSights.Alerts.Source.NetworkType
+    - contextPath: IntSights.Alerts.SourceNetworkType
       description: The network type of the alert
       type: string
     - contextPath: IntSights.Alerts.IsClosed
@@ -1103,16 +1103,16 @@ script:
     - contextPath: IntSights.Alerts.FoundDate
       description: The date the alert was found
       type: date
-    - contextPath: IntSights.Alerts.Source.Type
+    - contextPath: IntSights.Alerts.SourceType
       description: The alert source type
       type: string
-    - contextPath: IntSights.Alerts.Source.URL
+    - contextPath: IntSights.Alerts.SourceURL
       description: The alert source URL
       type: string
-    - contextPath: IntSights.Alerts.Source.Email
+    - contextPath: IntSights.Alerts.SourceEmail
       description: The alert source email
       type: string
-    - contextPath: IntSights.Alerts.Source.NetworkType
+    - contextPath: IntSights.Alerts.SourceNetworkType
       description: The network type of the alert
       type: string
     - contextPath: IntSights.Alerts.IsClosed
