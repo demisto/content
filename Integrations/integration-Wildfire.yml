@@ -62,6 +62,8 @@ script:
     var DEFAULT_HEADERS = {'Content-Type': ['application/x-www-form-urlencoded']};
     var TOKEN = params.token;
 
+    var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+    var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
 
     //HELPERS//
     function sendRequest(url, body, headers) {
@@ -149,18 +151,23 @@ script:
 
     function GetReportArgsHandler(md5, hash, file) {
         if(file) {
-            return [file];
+            if( MD5_REGEX.test(file) || SHA256_REGEX.test(file)){
+                return [file];
+            } else {
+                throw 'Invalid hash. Only SHA256 and MD5 are supported.';
+            }
         } else {
             inputs = md5? argToList(md5) : argToList(hash);
             for (i = 0; i < inputs.length; i++) {
-                if ((inputs[i] && !/^[A-Fa-f0-9]{64}$/.test(inputs[i])) && !/^[A-Fa-f0-9]{32}$/.test(inputs[i])) {
+                if ( SHA256_REGEX.test(inputs[i]) || MD5_REGEX.test(inputs[i]) ) {
+                    continue;
+                } else {
                     throw 'Invalid hash. Only SHA256 and MD5 are supported.';
                 }
             }
             return inputs;
         }
     }
-
 
     //COMMANDS//
     function uploadFile(upload) {
@@ -593,4 +600,3 @@ script:
       type: string
     description: Upload a file hosted on a website to WildFire for analysis
   runonce: false
-releaseNotes: added putputs, added support in multiple inputs for wildfire-report and deprecate detonate commands.

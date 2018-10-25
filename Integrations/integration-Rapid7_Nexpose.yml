@@ -53,11 +53,17 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
 
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('unsecure', False)
-    TOKEN = demisto.params().get('token', None)
+    TOKEN = demisto.params().get('token')
 
     def get_server_url():
         url = demisto.params()['server']
@@ -66,16 +72,8 @@ script:
         return url
 
 
-    def load_proxy():
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
     BASE_URL = get_server_url()
     SERVER_URL = BASE_URL + '/api/3'
-    PROXY = load_proxy()
 
     def get_login_headers():
         headers = {
@@ -95,7 +93,7 @@ script:
             'nexposeccusername': USERNAME,
             'nexposeccpassword': PASSWORD
         }
-        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
             return ''
         body = res.json()
@@ -126,7 +124,7 @@ script:
     def get_site(asset_id):
         url = BASE_URL + '/data/assets/' + str(asset_id) + '/scans'
         headers = get_site_headers()
-        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
            return ''
         response = res.json()
@@ -139,11 +137,14 @@ script:
             'ip': response['records'][0]['ipAddress']
         }
 
-    def send_request(path, method = 'get', body = {}, params = {}, headers=None, is_file=False):
-        url = '%s/%s' % (SERVER_URL, path)
+    def send_request(path, method = 'get', body=None, params=None, headers=None, is_file=False):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+
+        url = '{}/{}'.format(SERVER_URL, path)
+
         headers = headers if headers is not None else get_headers()
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-        verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return res.json() if is_file is False else res.content
@@ -1160,7 +1161,13 @@ script:
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
         hosts = demisto.args().get('hosts', '')
 
-        scan_response = start_scan(site, hosts.split(','), name)
+        if not hosts:
+            assets = get_site_assets(site)
+            hosts = [asset['ip'] for asset in assets]
+        else:
+            hosts = argToList(hosts)
+
+        scan_response = start_scan(site, hosts, name)
 
         if(scan_response is None or 'id' not in scan_response):
             return 'Could not start scan'
@@ -1175,7 +1182,13 @@ script:
             'name': name,
             'hosts': hosts
         }
+
         return send_request(path, 'post', body=body)
+
+    def get_site_assets(site_id):
+        path = 'sites/' + site_id + '/assets'
+
+        return get_list_response(path)
 
     try:
         if demisto.command() == 'test-module':
@@ -1837,6 +1850,7 @@ script:
       description: Multiple criteria of <string> The hosts that should be included
         as a part of the scan. This should be a mixture of IP Addresses and Hostnames
         as a comma separated string array.
+      isArray: true
     - name: name
       description: <string> The user-driven scan name for the scan.
     outputs:
@@ -1921,4 +1935,5 @@ script:
     description: Starts a scan for specified asset IP addresses and host names.
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Added ability to create a site"
+tests:
+    - nexpose_test

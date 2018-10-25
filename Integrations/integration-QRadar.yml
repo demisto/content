@@ -32,7 +32,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Number of offenses to pull per API call
+- display: "Number of offenses to pull per API call (max: 50)"
   name: offensesPerCall
   defaultvalue: "50"
   type: 0
@@ -65,6 +65,7 @@ script:
     var insecure = params.insecure;
     var query = params.query;
     var offensesPerCall = parseInt(params.offensesPerCall || 50);
+    offensesPerCall = offensesPerCall > 50 ? 50 : offensesPerCall;
 
     var createIncidentFromOffense = function(incident) {
         var keys = Object.keys(incident);
@@ -225,36 +226,72 @@ script:
     }
     delete(args.headers);
 
+    var findLastPagePos = function (fetchQuery) {
+        // make sure it's not a fluke and we simply have exactly offensePerCall results
+        if (getOffenses(fetchQuery, undefined, offensesPerCall + '-' + offensesPerCall).length == 0) {
+            return offensesPerCall-1;
+        }
+
+        // search up until we don't have any more results
+        pos = offensesPerCall*2;
+        while (getOffenses(fetchQuery, undefined, pos + '-' + pos).length == 1) {
+            pos *= 2;
+        }
+
+        // binary search the gap from the last step
+        var high = pos; // doesn't have results
+        var low = pos / 2; // last place we saw results
+        while (high > low+1) { // if
+            pos = parseInt((high + low) / 2); // split the gap and round down
+            if (getOffenses(fetchQuery, undefined, pos + '-' + pos).length == 1) {
+                // we still have results, raise the bar
+                low = pos;
+            } else {
+                // we're too high, lower the bar
+                high = pos;
+            }
+        }
+        // low holds the last pos of the list
+        return low;
+    }
+
     switch (command) {
         case 'test-module':
-            if (getOffenses(undefined, undefined, '0-1')) {
+            if (getOffenses(undefined, undefined, '0-0')) { // return only one offense
                 return 'ok';
             }
             return 'not ok';
         case 'fetch-incidents':
             var lastRun = getLastRun();
-            var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
-            var res = getOffenses('start_time>' + startTime + (query ? (' AND (' + query +')') : ''), undefined, '0-' + (offensesPerCall-1));
-            var totalOffenses = res.length;
-            var lastCallOffenses = res.length;
-            while (startTime && lastCallOffenses >= offensesPerCall) {
-                var min = res.length;
-                var max = min + offensesPerCall;
-                var lastIncidentTime = res[res.length-1].start_time;
 
-                res = res.concat(getOffenses('start_time>' + startTime + ' AND start_time<' + lastIncidentTime + (query ? (' AND (' + query +')') : ''), undefined, min + '-' + max));
-                lastCallOffenses = res.length - totalOffenses;
-                totalOffenses = res.length;
+            // Using startTime is deprecated, and is being supported here for backward compability
+            // it should be removed once everyone use this code at least once
+            var offenseId = lastRun && lastRun.id ? lastRun.id : 0;
+            var startTime = lastRun && lastRun.startTime ? lastRun.startTime : 0;
+            var fetchQuery = (startTime ? 'start_time>' + startTime : 'id>' + offenseId) + (query ? (' AND (' + query +')') : '');
+            /*
+                qradar returns offenses sorted desc on id and there's no way to change sorting.
+                if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
+                start looking for the end of the list by doubling the page position until we're empty.
+                then start binary search back until you find the end of the list and finally return
+                `offensesPerCall` from the end.
+            */
+            var res = getOffenses(fetchQuery, undefined, '0-' + (offensesPerCall-1));
+            if (res.length >= offensesPerCall) {
+                var lastOffensePos = findLastPagePos(fetchQuery);
+                res = getOffenses(fetchQuery, undefined, lastOffensePos-offensesPerCall+1 + '-' + lastOffensePos);
             }
 
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
                 var offense = res[i];
                 startTime = Math.max(startTime, offense.start_time);
+                offenseId = Math.max(offenseId, offense.id);
                 incidents.push(createIncidentFromOffense(res[i]));
             }
-            setLastRun({startTime: startTime});
+            setLastRun({'id': offenseId});
             return JSON.stringify(incidents);
+
         case 'qr-offenses':
         case 'qradar-offenses':
             return addHumanRedable(getOffenses(args.filter, args.fields, args.range), 'QRadar offenses', headers);
@@ -537,4 +574,3 @@ script:
     description: Retrieve a note for an offense
   isfetch: true
   runonce: false
-releaseNotes: "-"

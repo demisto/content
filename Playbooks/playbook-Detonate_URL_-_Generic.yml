@@ -352,4 +352,3 @@ outputs:
 - contextPath: InfoFile
   description: The report file's object
   type: unknown
-releaseNotes: "New generic detonation playbook for URL"

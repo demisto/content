@@ -2,11 +2,12 @@ commonfields:
   id: ParseEmailFiles
   version: -1
 name: ParseEmailFiles
+releaseNotes: "-"
 script: |-
   from email import message_from_string
   from email.header import decode_header
   from base64 import b64decode
-  from re import match
+  import re
 
   # --- LICENSE -----------------------------------------------------------------
   #
@@ -436,18 +437,14 @@ script: |-
                   print("Directory: " + str(dir))
                   print("Contents: " + self._getStream(dir))
   ########################################################################################################################
-  REGEX_EXTRACT_EMAIL = '[\s\S]*<([^>]*)>.*'
-
+  REGEX_EXTRACT_EMAIL = r'[\w\.-]+@[\w\.-]+'
 
 
   def extractAddress(s):
       if type(s) not in [str, unicode]:
           return s
-      m = match(REGEX_EXTRACT_EMAIL, s)
-      if m and m.groups():
-          return m.group(1)
       else:
-          return s
+          return re.findall(REGEX_EXTRACT_EMAIL,s)
 
   def dataToMD(emailData):
       md = "### Results:\n"
@@ -655,4 +652,5 @@ outputs:
   description: The format of the email if available
 scripttarget: 0
 runonce: false
-releaseNotes: "Fixed header parsing."
+tests:
+  - Forgive me for my sins but I did not create any test

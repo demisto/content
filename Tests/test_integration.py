@@ -142,10 +142,10 @@ def __create_incident_with_playbook(client, name, playbook_id):
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
             print_error('failed to get incident with id:' + inc_id)
-            return False
+            return False, -1
         time.sleep(1)
 
-    return incidents['data'][0]
+    return incidents['data'][0], inc_id
 
 
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
@@ -219,21 +219,21 @@ def test_integration(client, integrations, playbook_id, options={}):
         if not instance_id:
             print_error('Failed to create instance')
             __delete_integrations_instances(client, instance_ids)
-            return False
+            return False, -1
 
         instance_ids.append(instance_id)
         print('Create integration %s succeed' % (integration_name, ))
 
     # create incident with playbook
-    incident = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
+    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
 
     if not incident:
-        return False
+        return False, -1
 
     investigation_id = incident['investigationId']
     if investigation_id is None or len(investigation_id) == 0:
         print_error('Failed to get investigation id of incident:' + incident)
-        return False
+        return False, -1
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount
@@ -266,7 +266,7 @@ def test_integration(client, integrations, playbook_id, options={}):
         # delete incident
         __delete_incident(client, incident)
 
-    # delete integration instance
-    __delete_integrations_instances(client, instance_ids)
+        # delete integration instance
+        __delete_integrations_instances(client, instance_ids)
 
-    return test_pass
+    return test_pass, inc_id

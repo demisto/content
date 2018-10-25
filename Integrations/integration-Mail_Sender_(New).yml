@@ -157,6 +157,30 @@ script:
         return cleanBody, attachments
 
 
+    def collect_manual_attachments():
+        attachments = []
+        for attachment in demisto.getArg('manualAttachObj') or []:
+            res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+
+            path = res['path']
+            maintype, subtype = guess_type(attachment['FileName'])
+            if maintype == 'text':
+                with open(path) as fp:
+                    data = fp.read()
+            else:
+                with open(path, 'rb') as fp:
+                    data = fp.read()
+            attachments.append({
+                'name': attachment['FileName'],
+                'maintype': maintype,
+                'subtype': subtype,
+                'data': data,
+                'cid': ''
+            })
+
+        return attachments
+
+
     def collect_attachments():
         """
         Collect all attachments into a list with all data
@@ -168,6 +192,7 @@ script:
         for i, aid in enumerate(attachIDs):
             try:
                 fileRes = demisto.getFilePath(aid)
+
                 path = fileRes['path']
                 if len(attachNames) > i and attachNames[i]:
                     filename = attachNames[i]
@@ -274,6 +299,7 @@ script:
             return_error('You must have at least one recipient')
 
         attachments = collect_attachments()
+        attachments.extend(collect_manual_attachments())
 
         # Let's see what type of message we are talking about
         if not htmlBody:

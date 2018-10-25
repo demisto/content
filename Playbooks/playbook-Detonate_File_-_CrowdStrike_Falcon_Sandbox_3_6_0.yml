@@ -1,0 +1,337 @@
+id: CrowdStrike Falcon Sandbox - Detonate file
+version: -1
+name: CrowdStrike Falcon Sandbox - Detonate file
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data.
+fromversion: 3.5.0
+toversion: 3.6.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 99639e9f-c42f-4241-849e-205318e76136
+    type: start
+    task:
+      id: 99639e9f-c42f-4241-849e-205318e76136
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 382bacc2-d6bd-4c14-8f52-4583422c52b4
+    type: regular
+    task:
+      id: 382bacc2-d6bd-4c14-8f52-4583422c52b4
+      version: -1
+      name: DetonateFile (CS Falcon Sandbox)
+      description: Detonate the file in CrowdStrike Falcon Sandbox.
+      script: VxStream|||crowdstrike-detonate-file
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      delay: {}
+      entryId:
+        complex:
+          root: File
+          filters:
+          - - operator: string.match
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:exe|scr|pif|dll|com|cpl|etc|doc|docx|ppt|pps|pptx|ppsx|xls|xlsx|rtf|pub|PDF|APK|JAR|sct|lnk|chm|hta|wsf|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|PL|ELF|EML|MSG)\b
+              ignorecase: true
+            - operator: string.match
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:exe|scr|pif|dll|com|cpl|etc|doc|docx|ppt|pps|pptx|ppsx|xls|xlsx|rtf|pub|PDF|APK|JAR|sct|lnk|chm|hta|wsf|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|PL|ELF|EML|MSG)\b
+              ignorecase: true
+          accessor: EntryID
+      environmentID: {}
+      timeout: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 896
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 94c56870-3c61-4f5c-8816-7d412d155b5f
+    type: condition
+    task:
+      id: 94c56870-3c61-4f5c-8816-7d412d155b5f
+      version: -1
+      name: Is CS Falcon Sandbox enabled?
+      description: Verify that there is a valid instance of CrowdStrike Falcon Sandbox
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "10"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VxStream
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 164
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 54bc8e82-f709-4686-8a24-43b6cbe9986b
+    type: title
+    task:
+      id: 54bc8e82-f709-4686-8a24-43b6cbe9986b
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 49f9beb3-ca33-46ec-8221-0592122e44b8
+    type: regular
+    task:
+      id: 49f9beb3-ca33-46ec-8221-0592122e44b8
+      version: -1
+      name: Set file to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "9":
+    id: "9"
+    taskid: db62439a-babe-4770-86ec-9e473e10880e
+    type: condition
+    task:
+      id: db62439a-babe-4770-86ec-9e473e10880e
+      version: -1
+      name: Is the file type supported?
+      description: Check if file type is supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: string.match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:exe|scr|pif|dll|com|cpl|etc|doc|docx|ppt|pps|pptx|ppsx|xls|xlsx|rtf|pub|PDF|APK|JAR|sct|lnk|chm|hta|wsf|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|PL|ELF|EML|MSG)\b
+                    ignorecase: true
+                  - operator: string.match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:exe|scr|pif|dll|com|cpl|etc|doc|docx|ppt|pps|pptx|ppsx|xls|xlsx|rtf|pub|PDF|APK|JAR|sct|lnk|chm|hta|wsf|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|PL|ELF|EML|MSG)\b
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    taskid: abd56ee9-97d0-4f35-8f5b-ac44b78c3f0b
+    type: condition
+    task:
+      id: abd56ee9-97d0-4f35-8f5b-ac44b78c3f0b
+      version: -1
+      name: Is there a file to detonate?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 368
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_6_#default#": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate.
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 of the file
+  type: string
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number

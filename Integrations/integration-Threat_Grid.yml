@@ -243,14 +243,14 @@ script:
         'threat-grid-get-video-by-id': 'samples/%id%/video.webm',
         'threat-grid-get-analysis-by-id': 'samples/%id%/analysis.json',
         'threat-grid-get-processes-by-id': 'samples/%id%/processes.json',
-        'threat-grid-get-pcap-by-id': 'samples/%id%/network.json',
+        'threat-grid-get-pcap-by-id': 'samples/%id%/network.pcap',
         'threat-grid-get-warnings-by-id': 'samples/%id%/warnings.json',
         'threat-grid-get-summary-by-id': 'samples/%id%/summary',
         'threat-grid-get-threat-summary-by-id': 'samples/%id%/threat',
         'threat-grid-get-html-report-by-id': 'samples/%id%/report.html',
         'threat-grid-download-sample-by-id': 'samples/%id%/sample.zip',
         'threat-grid-get-analysis-iocs': 'samples/%id%/analysis/iocs',
-        'threat-grid-get-analysis-ioc': 'samples/%id%/analysis/%ioc%',
+        'threat-grid-get-analysis-ioc': 'samples/%id%/analysis/iocs/%ioc%',
         'threat-grid-get-analysis-network-streams': 'samples/%id%/analysis/network_streams',
         'threat-grid-get-analysis-network-stream': 'samples/%id%/analysis/network_streams/%nsid%',
         'threat-grid-get-analysis-artifacts': 'samples/%id%/analysis/artifacts',
@@ -1090,4 +1090,3 @@ script:
       type: int
     description: Convert a URL into a file for Threat Grid file detonation.
   runonce: false
-releaseNotes: "Added 'playbook' parameter."

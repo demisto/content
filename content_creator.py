@@ -20,7 +20,6 @@ ZIP_POST = 'content_new'
 ZIP_TEST = 'content_test'
 
 
-
 def is_ge_version(ver1, ver2):
     # fix the version to arrays of numbers
     ver1 = [int(i) for i in str(ver1).split('.')]
@@ -76,6 +75,7 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
 
     print ' - total post files: %d' % (post_files, )
 
+
 def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     # handle *.json files
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
@@ -90,6 +90,7 @@ def copy_dir_files(*args):
     copy_dir_json(*args)
     # handle *.yml files
     copy_dir_yml(*args)
+
 
 def copy_test_files(bundle_test):
     print 'copying test files to test bundle'
@@ -125,7 +126,7 @@ def main(circle_artifacts):
 
     print 'copying common server doc to bundles'
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
-        shutil.copyfile('./Docs/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
+        shutil.copyfile('./Documentation/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
 
     print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)
