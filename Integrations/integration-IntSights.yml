@@ -315,7 +315,8 @@ script:
         free_text = demisto.getArg('free-text')
         is_hidden = demisto.getArg('is-hidden')
         rate = demisto.getArg('rate')
-        close_details = {'ID': alert_id, 'Close.Reason': reason, 'Close.FreeText': free_text, 'Close.Rate': rate, 'IsHidden': is_hidden}
+        close_details = {'ID': alert_id, 'Close Reason': reason, 'Closed FreeText': free_text, 'Closed Rate': rate, 'IsHidden': is_hidden}
+        close_details_context = {'ID': alert_id, 'Closed': {'Reason': reason, 'FreeText': free_text, 'Rate': rate}, 'IsHidden': is_hidden}
         url = 'public/v1/data/alerts/close-alert/' + alert_id
         json_data = {'Reason': reason}
 
@@ -330,8 +331,8 @@ script:
         demisto.results({
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': close_details},
-            'Contents': close_details,
-            'HumanReadable': tableToMarkdown('IntSights Close Alert: The Alert has successfully been closed.', [close_details], ['ID', 'Close.Reason', 'Close.FreeText', 'Close.Rate', 'IsHidden']),
+            'Contents': close_details_context,
+            'HumanReadable': tableToMarkdown('IntSights Close Alert: The Alert has successfully been closed.', [close_details], ['ID', 'Close Reason', 'Closed FreeText', 'Closed Rate', 'IsHidden']),
             'ContentsFormat': formats['json']
         })
 
@@ -404,7 +405,7 @@ script:
         r = req('PATCH', 'public/v1/data/alerts/remove-tag/' + alert_id, json_data={'TagID': tag_id})
         ec = {
             'ID': alert_id,
-            'Tags.TagID': tag_id
+            'Tags': {'ID': tag_id}
         }
         demisto.results({
             'Type': entryTypes['note'],
@@ -439,7 +440,7 @@ script:
         """
         Convert IOC to readable format
         """
-        return {
+        ioc_context = {
             'ID': demisto.get(r,'_id'),
             'SourceID': demisto.get(r,'SourceID'),
             'AccountID': demisto.get(r,'AccountID'),
@@ -452,10 +453,28 @@ script:
             'Severity': demisto.get(r,'Severity'),
             'SourceName': demisto.get(r, 'Source.Name'),
             'SourceConfidence': demisto.get(r, 'Source.Confidence'),
-            'Flags.IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
-            'Enrichment.Status': demisto.get(r, 'Enrichment.Status'),
-            'Enrichment.Date': demisto.get(r, 'Enrichment.Data')
+            'Flags': {'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa')},
+            'Enrichment': {'Status': demisto.get(r, 'Enrichment.Status')},
+            'Enrichment': {'Date': demisto.get(r, 'Enrichment.Data')}
         }
+        ioc_readable = {
+            'ID': demisto.get(r,'_id'),
+            'SourceID': demisto.get(r,'SourceID'),
+            'AccountID': demisto.get(r,'AccountID'),
+            'Type': demisto.get(r,'Type'),
+            'Value': demisto.get(r,'Value'),
+            'FirstSeen': demisto.get(r,'FirstSeen'),
+            'LastSeen': demisto.get(r,'LastSeen'),
+            'Domain': demisto.get(r,'Domain'),
+            'Status': demisto.get(r,'Status'),
+            'Severity': demisto.get(r,'Severity'),
+            'SourceName': demisto.get(r, 'Source.Name'),
+            'SourceConfidence': demisto.get(r, 'Source.Confidence'),
+            'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
+            'Enrichment Status': demisto.get(r, 'Enrichment.Status'),
+            'Enrichment Date': demisto.get(r, 'Enrichment.Data')
+        }
+        return ioc_context, ioc_readable
 
 
     def search_for_IOC():
@@ -464,13 +483,13 @@ script:
         """
         value = demisto.getArg('value')
         r = req('GET', 'public/v1/iocs/ioc-by-value', handle_filters()).json()
-        IOC = IOC_to_readable(r)
+        ioc_context, ioc_readable = IOC_to_readable(r)
         demisto.results(
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {'IntSights.Iocs': IOC},
+                'EntryContext': {'IntSights.Iocs': ioc_context},
                 'Contents': r,
-                'HumanReadable': tableToMarkdown('IOC Information', [activity], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'Flags.IsInAlexa', 'Enrichment.Status', 'Enrichment.Data']),
+                'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable], ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
                 'ContentsFormat': formats['json']
             }
         )
@@ -521,15 +540,18 @@ script:
         Gets all IOCs with the given filters
         """
         r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters()).json()
-        iocs = []
+        iocs_context = []
+        iocs_readable = []
         for k in r:
-            iocs.append(IOC_to_readable(k))
+            ioc_context, ioc_readable = IOC_to_readable(k)
+            iocs_context.append(ioc_context)
+            iocs_readable.append(ioc_readable)
         demisto.results(
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {'IntSights.Iocs': iocs},
+                'EntryContext': {'IntSights.Iocs': iocs_context},
                 'Contents': r,
-                'HumanReadable': tableToMarkdown('IOC Information', iocs, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'Flags.IsInAlexa', 'Enrichment.Status', 'Enrichment.Data']),
+                'HumanReadable': tableToMarkdown('IOC Information', iocs_readable, ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence', 'IsInAlexa', 'Enrichment Status', 'Enrichment Date']),
                 'ContentsFormat': formats['json']
             }
         )
@@ -546,7 +568,7 @@ script:
         }
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'Insights.Alerts(val.ID === obj.ID)': ec},
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
             'Contents': ec,
             'HumanReadable': '### IntSights Alert Takedown\n' + 'The Alert Takedown request has been sent successfully for ' + str(alert_id),
             'ContentsFormat': formats['json']
@@ -565,7 +587,7 @@ script:
         }
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'Insights.Alerts(val.ID === obj.ID)': ec},
+            'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
             'Contents': ec,
             'HumanReadable': tableToMarkdown('IntSights Alert Takedown Status', [ec], ['ID', 'TakedownStatus']),
             'ContentsFormat': formats['json']
@@ -805,7 +827,7 @@ script:
     - contextPath: IntSights.Alerts.ID
       description: The alert ID
       type: string
-    - contextPath: IntSights.Alerts.Tags.TagID
+    - contextPath: IntSights.Alerts.Tags.ID
       description: The tag ID
       type: string
     description: ' Removes a tag from the alert'
