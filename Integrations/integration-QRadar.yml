@@ -533,7 +533,7 @@ script:
     def get_search_results_command():
         search_id = demisto.args().get('search_id')
         raw_search_results = get_search_results(search_id)
-        return get_entry_for_object('QRadar Search Results', raw_search_results, demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
+        return get_entry_for_object('QRadar Search Results', raw_search_results['events'], demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -628,8 +628,22 @@ script:
 
     def get_closing_reasons_command():
         args = demisto.args()
-        closing_reasons = get_closing_reasons(args.get('range'), args.get('filter'), args.get('fields'), args.get('include_deleted'), args.get('include_reserved'))
-        return get_entry_for_object('Offense Closing Reasons', closing_reasons, contextKey='QRadar.Offense.ClosingReasons')
+        closing_reasons_map = {
+            'id': 'ID',
+            'text': 'Name',
+            'is_reserved': 'IsReserved',
+            'is_deleted': 'IsDeleted'
+        }
+        raw_closing_reasons = get_closing_reasons(args.get('range'), args.get('filter'), args.get('fields'), args.get('include_deleted'), args.get('include_reserved'))
+        closing_reasons = replace_keys(raw_closing_reasons, closing_reasons_map)
+
+        # prepare for printing:
+        closing_reasons_map.pop('id', None)
+        closing_reasons_map.pop('text', None)
+        headers = 'ID,Name,' + dict_values_to_comma_seperated_string(closing_reasons_map)
+
+        return get_entry_for_object('Offense Closing Reasons', closing_reasons, contextKey='QRadar.Offense.ClosingReasons', headers=headers)
+
 
     def get_note_command():
         raw_note = get_note(demisto.args().get('offense_id'), demisto.args().get('note_id'), demisto.args().get('fields'))
@@ -1177,6 +1191,11 @@ script:
         on the contents of various fields
     - name: range
       description: Number of results in return
+    outputs:
+    - contextPath: QRadar.Offense.ClosingReasons.id
+      description: Closing reason ID
+    - contextPath: QRadar.Offense.ClosingReasons.text
+      description: Closing reason name
     description: Get closing reasons
   - name: qradar-create-note
     arguments:
