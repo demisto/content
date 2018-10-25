@@ -2,6 +2,7 @@ id: Office 365 Search and Delete
 version: -1
 name: Office 365 Search and Delete
 description: "Run a ComplianceSearch on Office 365 and delete the results."
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -12,6 +13,7 @@ tasks:
       id: 54ef50e9-fe1c-4750-8c0c-0f23d1adcc2f
       version: -1
       name: ""
+      description: "start"
       iscommand: false
       brand: ""
     nexttasks:
@@ -144,6 +146,7 @@ tasks:
       id: ba34205c-fc58-4017-8377-cffd6187b25a
       version: -1
       name: Purge Compliance Search Results?
+      description: "Purge Compliance Search Results?"
       type: condition
       iscommand: false
       brand: ""
@@ -199,6 +202,7 @@ tasks:
       id: 5558f163-14fa-47e2-824f-a59ee77f6f05
       version: -1
       name: Done
+      description: "Done"
       type: title
       iscommand: false
       brand: ""
