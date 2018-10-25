@@ -11,6 +11,7 @@ tasks:
       id: ba686c35-05d0-47d6-86c2-104c2fbc8a34
       version: -1
       name: ""
+      description: "start"
       iscommand: false
       brand: ""
     nexttasks:
@@ -33,6 +34,7 @@ tasks:
       id: 337289c1-434a-48f0-8582-805a93481cb7
       version: -1
       name: qradar-get-assets
+      description: "execute command qradar-get-assets"
       script: QRadar|||qradar-get-assets
       type: regular
       iscommand: true
@@ -63,6 +65,7 @@ tasks:
       id: e6980dea-b09e-45a3-8dc5-7dcbd5417a72
       version: -1
       name: qradar-create-note in existing offense
+      description: "execute command qradar-create-note"
       script: QRadar|||qradar-create-note
       type: regular
       iscommand: true
@@ -94,6 +97,7 @@ tasks:
       id: 4b155eec-4d12-4c02-82ec-f9258e7d11ee
       version: -1
       name: qradar-searches
+      description: "execute command qradar-searches"
       script: QRadar|||qradar-searches
       type: regular
       iscommand: true
@@ -122,6 +126,7 @@ tasks:
       id: b20da714-4192-4367-8c06-251a5576481d
       version: -1
       name: qradar-get-search-results
+      description: "execute command qradar-get-search-results"
       script: QRadar|||qradar-get-search-results
       type: regular
       iscommand: true
@@ -151,6 +156,7 @@ tasks:
       id: dbd0113f-5e43-4695-8713-594da0b6301a
       version: -1
       name: qradar-get-note
+      description: "execute command qradar-get-note"
       script: QRadar|||qradar-get-note
       type: regular
       iscommand: true
@@ -182,6 +188,7 @@ tasks:
       id: f2fd51ee-179a-4e52-8e76-5246c5b1cb93
       version: -1
       name: qradar-get-search
+      description: "execute command qradar-get-search"
       script: QRadar|||qradar-get-search
       type: regular
       iscommand: true
@@ -210,6 +217,7 @@ tasks:
       id: 7818d9d1-2a30-4c06-8d11-f566bdae2242
       version: -1
       name: qradar-offenses
+      description: "execute command qradar-offenses"
       script: QRadar|||qradar-offenses
       type: regular
       iscommand: true
@@ -241,6 +249,7 @@ tasks:
       id: d4e59267-3464-467a-8e90-9f4ddf3e6db1
       version: -1
       name: qradar-offense-by-id
+      description: "execute command qradar-offense-by-id"
       script: QRadar|||qradar-offense-by-id
       type: regular
       iscommand: true
@@ -272,6 +281,7 @@ tasks:
       id: aaf5f5a2-ca57-467a-84c2-6ab1e60992d6
       version: -1
       name: Verify offense credibility exists
+      description: "Verifies offense credibility exists"
       type: condition
       iscommand: false
       brand: ""
@@ -305,6 +315,7 @@ tasks:
       id: 3a5f3995-050f-46d5-82b7-3d7615a9fb81
       version: -1
       name: Set offense protected to false (qradar-update-offense)
+      description: "execute command qradar-update-offense"
       script: QRadar|||qradar-update-offense
       type: regular
       iscommand: true
@@ -340,6 +351,7 @@ tasks:
       id: 6f18a118-3bd9-4948-85f8-810c5ef1618f
       version: -1
       name: Verify protected was set to false
+      description: "Verifies protected was set to false"
       type: condition
       iscommand: false
       brand: ""
@@ -371,6 +383,7 @@ tasks:
       id: 3e1456e4-732f-452b-833a-a9dd8fb6885a
       version: -1
       name: Set offense protected to true (qradar-update-offense)
+      description: "execute command qradar-update-offense"
       script: QRadar|||qradar-update-offense
       type: regular
       iscommand: true
@@ -406,6 +419,7 @@ tasks:
       id: e298dae2-216b-4209-8f2c-52103ca68c73
       version: -1
       name: Verify protected was set to true
+      description: "Verifies protected was set to true"
       type: condition
       iscommand: false
       brand: ""
@@ -437,6 +451,7 @@ tasks:
       id: 3a36b94f-50e6-426a-8f57-5d1bf1d26a59
       version: -1
       name: Offense test was completed successfully
+      description: "Offense test end"
       type: title
       iscommand: false
       brand: ""
@@ -457,6 +472,7 @@ tasks:
       id: db2756ca-d9c6-4c8c-8957-a93a31c865ba
       version: -1
       name: Offense test was completed successfully
+      description: "Offense test end"
       type: title
       iscommand: false
       brand: ""
@@ -477,6 +493,7 @@ tasks:
       id: 7a95a6a8-3fa7-42c2-8984-bbe8699f0803
       version: -1
       name: Verify note text matches
+      description: "Verifies note text matches request"
       type: condition
       iscommand: false
       brand: ""
@@ -511,6 +528,7 @@ tasks:
       id: 3fc0e31d-85d2-4679-88e2-34d96ad40839
       version: -1
       name: Notes test was completed successfully
+      description: "Notes test end"
       type: title
       iscommand: false
       brand: ""
@@ -531,6 +549,7 @@ tasks:
       id: 9e5a907c-1795-43e1-84f2-f853de1f0d78
       version: -1
       name: qradar-get-asset-by-id
+      description: "execute command qradar-get-asset-by-id"
       script: QRadar|||qradar-get-asset-by-id
       type: regular
       iscommand: true
@@ -558,6 +577,7 @@ tasks:
       id: 0489fafa-d9f1-4ac4-84e9-da67408cd668
       version: -1
       name: Verify MACAddress was pulled successfully
+      description: "Verifies MACAddress was pulled successfully"
       type: condition
       iscommand: false
       brand: ""
@@ -589,6 +609,7 @@ tasks:
       id: ec1c3243-a2a7-495c-87d1-4d502dc77e76
       version: -1
       name: Assets test was completed successfully
+      description: "Assets test end"
       type: title
       iscommand: false
       brand: ""
@@ -609,6 +630,7 @@ tasks:
       id: b0c53c79-ce2f-415b-82bc-2811aa1bfdc1
       version: -1
       name: Search test was completed successfully
+      description: "Search test end"
       type: title
       iscommand: false
       brand: ""
@@ -629,6 +651,7 @@ tasks:
       id: 05a09476-a9de-45f5-8989-43bee8179e65
       version: -1
       name: Delete All Context
+      description: "Deletes all the context"
       scriptName: DeleteContext
       type: regular
       iscommand: false
