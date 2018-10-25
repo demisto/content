@@ -499,18 +499,19 @@ script:
         context_path = 'ThreatGrid.AnalysisResults.Sample.Id.Annotations'
         ec = {context_path: []}
         ips = demisto.get(r.json(), 'data.items.network')
-        for k in ips:
-            annotation = {
-                'IP': k,
-                'IP.Asn': ips[k].get('asn'),
-                'IP.City': ips[k].get('city'),
-                'IP.Country': ips[k].get('country'),
-                'IP.Org': ips[k].get('org'),
-                'IP.Region': ips[k].get('region'),
-                'IP.Timestamp': ips[k].get('ts')
-            }
-            annotations.append(annotation)
-            ec[context_path].append(annotation)
+        if ips:
+            for k in ips:
+                annotation = {
+                    'IP': k,
+                    'IP.Asn': ips[k].get('asn'),
+                    'IP.City': ips[k].get('city'),
+                    'IP.Country': ips[k].get('country'),
+                    'IP.Org': ips[k].get('org'),
+                    'IP.Region': ips[k].get('region'),
+                    'IP.Timestamp': ips[k].get('ts')
+                }
+                annotations.append(annotation)
+                ec[context_path].append(annotation)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -572,14 +573,12 @@ script:
         r = req('GET', url, params=params)
         iocs = []
         dbots = []
-        for k in demisto.get(r.json(), 'data.items'):
-            iocs.append(ioc_to_readable(k))
-            dbots.append({
-                'Vendor': 'ThreatGrid',
-                'Type': 'IOC',
-                'Indicator': k['ioc'],
-                'Score': calc_score(k['severity'])
-            })
+        items = demisto.get(r.json(), 'data.items')
+        if not items:
+            append_to_analysis_iocs_arrays(iocs, dbots, demisto.get(r.json(), 'data'))
+        else:
+            for k in items:
+                append_to_analysis_iocs_arrays(iocs, dbots, k)
         md = tableToMarkdown('ThreatGrid Behavioral Indicators for sample: ' + demisto.getArg('id'), iocs, ['Title', 'Confidence', 'Severity', 'IOC', 'Tags', 'IOCCategory', 'Data.Path', 'Data.SHA256', 'Data.URL'])
         md += tableToMarkdown('DBot', dbots, ['Indicator', 'Score', 'Type', 'Vendor'])
         demisto.results({
@@ -588,6 +587,19 @@ script:
             'HumanReadable': md,
             'ContentsFormat': formats['json'],
             'Contents': r.json()
+        })
+
+
+    def append_to_analysis_iocs_arrays(iocs, dbots, k):
+        """
+        Helper for appending analysis item to ioc an dbot arrays
+        """
+        iocs.append(ioc_to_readable(k))
+        dbots.append({
+            'Vendor': 'ThreatGrid',
+            'Type': 'IOC',
+            'Indicator': k['ioc'],
+            'Score': calc_score(k['severity'])
         })
 
 
@@ -721,7 +733,8 @@ script:
             'ip': 'ips',
             'network-stream': 'network_streams',
             'registry-key': 'registry_keys',
-            'url': 'urls'
+            'url': 'urls',
+            'path': 'paths'
         }
         requested_feed = name_conversion[name] if name in name_conversion else name
         url = SUB_API + 'iocs/feeds/' + requested_feed
@@ -768,7 +781,7 @@ script:
                 'Contents': r.json(),
                 'ContentsFormat': formats['json']
             },
-            fileResult(url, r.content)
+            fileResult('metadata_' + sample_id, r.content)
         ])
 
 
@@ -850,8 +863,6 @@ script:
         get_analysis_iocs()
     elif demisto.command() == 'threat-grid-url-to-file':
         url_to_file()
-    elif demisto.command() == 'threat-grid-detonate-file':
-        detonate_file()
     elif demisto.command() == 'threat-grid-search-samples':
         search_samples()
     elif demisto.command() == 'threat-grid-search-ips':
@@ -862,7 +873,7 @@ script:
         search_submissions()
     elif demisto.command() == 'threat-grid-get-specific-feed':
         get_specific_feed()
-    elif demisto.command() == 'threat-grid-feeds-artifacts' or demisto.command() == 'threat-grid-feeds-domain' or demisto.command() == 'threat-grid-feeds-ip' or demisto.command() == 'threat-grid-feeds-network-stream' or demisto.command() == 'threat-grid-feeds-registry-key' or demisto.command() == 'threat-grid-feeds-url':
+    elif demisto.command() in ['threat-grid-feeds-artifacts', 'threat-grid-feeds-domain', 'threat-grid-feeds-ip', 'threat-grid-feeds-network-stream' ,'threat-grid-feeds-registry-key', 'threat-grid-feeds-url', 'threat-grid-feeds-path']:
         feeds_helper(demisto.command()[18:])
     elif demisto.command() == 'threat-grid-get-analysis-artifact' or demisto.command() == 'threat-grid-get-analysis-artifacts':
         get_analysis_artifact()
@@ -872,7 +883,7 @@ script:
         get_analysis_network_stream()
     elif demisto.command() == 'threat-grid-get-analysis-process' or demisto.command() == 'threat-grid-get-analysis-processes':
         get_analysis_process()
-    elif demisto.command() == 'threat-grid-download-artifact':
+    elif demisto.command() in ['threat-grid-download-artifact', 'threat-grid-detonate-file']:
         return_error('Error: The API for this command is no longer supported')
     else:
         return_error('Unrecognized command: ' + demisto.command())
@@ -1377,6 +1388,7 @@ script:
       defaultValue: json
     description: Gets a specific threat feed
   - name: threat-grid-detonate-file
+    deprecated: true
     arguments:
     - name: file-entry-id
       required: true
