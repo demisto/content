@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "BitDam",
+            "playbookID": "Detonate File - BitDam Test"
+        },
+        {
             "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
@@ -634,6 +638,9 @@
             "playbookID": "ActiveMQ Test"
         },
         {
+            "playbookID": "RegexGroups Test"
+        },
+        {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
         }
@@ -652,6 +659,7 @@
 
     },
     "skipped_integrations": {
+        "PhishTank": "Service problem - 500 internal server error",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
