@@ -1192,9 +1192,9 @@ script:
     - name: range
       description: Number of results in return
     outputs:
-    - contextPath: QRadar.Offense.ClosingReasons.id
+    - contextPath: QRadar.Offense.ClosingReasons.ID
       description: Closing reason ID
-    - contextPath: QRadar.Offense.ClosingReasons.text
+    - contextPath: QRadar.Offense.ClosingReasons.Name
       description: Closing reason name
     description: Get closing reasons
   - name: qradar-create-note
@@ -1212,6 +1212,16 @@ script:
         in brackets and multiple fields in the same object are separated by commas
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Note.ID
+      description: Note ID
+      type: int
+    - contextPath: QRadar.Note.Text
+      description: Note text
+    - contextPath: QRadar.Note.CreateTime
+      description: The creation time of the note
+    - contextPath: QRadar.Note.CreatedBy
+      description: The user who created the note
     description: Create a note on an offense
   - name: qradar-get-note
     arguments:
