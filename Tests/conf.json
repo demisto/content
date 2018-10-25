@@ -641,7 +641,6 @@
         }
     ],
     "skipped_tests": {
-        "PhishTank Testing": "Service problem - 500 internal server error",
         "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
@@ -655,6 +654,7 @@
 
     },
     "skipped_integrations": {
+        "PhishTank": "Service problem - 500 internal server error",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
