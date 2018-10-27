@@ -104,6 +104,7 @@ def checked_type(file_path):
 
 def get_modified_files(files_string):
     all_files = files_string.split('\n')
+    added_files_list = []
     modified_files_list = []
     for f in all_files:
         file_data = f.split()
@@ -115,8 +116,12 @@ def get_modified_files(files_string):
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.append(file_path)
+        if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
+            added_files_list.append(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
+
+    return modified_files_list, added_files_list
 
     return modified_files_list
 
@@ -172,7 +177,7 @@ def validate_schema(file_path, matching_regex=None):
 
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
-    modified_files = get_modified_files(files_string)
+    modified_files, added_files = get_modified_files(files_string)
     missing_release_notes = False
     wrong_schema = False
     for file_path in modified_files:
@@ -180,6 +185,11 @@ def validate_committed_files(branch_name):
         if not validate_file_release_notes(file_path):
             missing_release_notes = True
 
+        if not validate_schema(file_path):
+            wrong_schema = True
+
+    for file_path in added_files:
+        print "Validating {}".format(file_path)
         if not validate_schema(file_path):
             wrong_schema = True
 

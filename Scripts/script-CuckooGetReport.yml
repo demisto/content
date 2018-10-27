@@ -1,8 +1,8 @@
 commonfields:
   id: CuckooGetReport
-  version: 1
+  version: -1
 name: CuckooGetReport
-script: 'demisto.results( demisto.executeCommand("ck-report", { "id": demisto.args()["taskID"] }) )'
+script: 'demisto.results( demisto.executeCommand("cuckoo-get-task-report", { "id": demisto.args()["taskID"] }) )'
 type: python
 tags:
 - cuckoo
@@ -16,5 +16,8 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ck-report
+  - cuckoo-get-task-report
 timeout: 0s
+releaseNotes: "-"
+tests:
+  - Forgive me for my sins but I did not create any test

@@ -7,6 +7,10 @@
             "playbookID": "IntSights Test"
         },
         {
+            "integrations": "BitDam",
+            "playbookID": "Detonate File - BitDam Test"
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -633,6 +637,9 @@
             "playbookID": "ActiveMQ Test"
         },
         {
+            "playbookID": "RegexGroups Test"
+        },
+        {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
         }
@@ -651,6 +658,7 @@
 
     },
     "skipped_integrations": {
+        "PhishTank": "Service problem - 500 internal server error",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
