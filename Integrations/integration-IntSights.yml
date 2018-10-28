@@ -983,16 +983,16 @@ script:
     - name: source-ID
       description: Ioc source
     - name: first-seen-from
-      description: 'Ioc date of first seen in the following string format - MM/DD/YYYY
+      description: 'Beginning of the date range when the IOC first seen in the following string format - MM/DD/YYYY
         Default value: 0'
     - name: first-seen-to
-      description: 'Ioc date of first seen in the following string format - MM/DD/YYYY
+      description: 'End of the date range when the IOC first seen in the following string format - MM/DD/YYYY
         Default value: 0'
     - name: last-seen-from
-      description: 'Ioc date of last seen in the following string format - MM/DD/YYYY
+      description: 'Beginning of the date range when the IOC last seen in the following string format - MM/DD/YYYY
         Default value: 0'
     - name: last-seen-to
-      description: 'Ioc date of last seen in the following string format - MM/DD/YYYY
+      description: 'End of the date range when the IOC last seen in the following string format - MM/DD/YYYY
         Default value: 0'
     outputs:
     - contextPath: IntSights.Iocs.ID
