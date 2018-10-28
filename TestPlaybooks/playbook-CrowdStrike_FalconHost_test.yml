@@ -1,4 +1,4 @@
-id: ef0928fe-e290-40dc-830f-3856e46521af
+id: crowdstrike_falconhost_test
 version: 10
 name: CrowdStrike FalconHost Test
 starttaskid: "0"
