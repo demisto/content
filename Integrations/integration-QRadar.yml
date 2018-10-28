@@ -71,7 +71,7 @@ script:
     OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
     OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
 
-    if not TOKEN and not PASSWORD:
+    if not TOKEN and not (USERNAME and PASSWORD):
         raise Exception('Either credentials or auth token should be provided.')
 
     if not demisto.params()['proxy']:
@@ -86,8 +86,8 @@ script:
     OFFENSES_NAMES_MAP = {
         'follow_up': 'Followup',
         'id': 'ID', 'description': 'Description',
-        'source_address': 'SourceAddress',
-        'destination_address': 'DestinatioAddress',
+        'source_address_ids': 'SourceAddress',
+        'destination_address_ids': 'DestinationAddress',
         'start_time': 'StartTime',
         'event_count': 'EventCount',
         'magnitude': 'Magnitude',
@@ -110,7 +110,7 @@ script:
         'id': 'ID',
         'description': 'Description',
         'source_address': 'SourceAddress',
-        'destination_address': 'DestinatioAddress',
+        'destination_address_ids': 'DestinationAddress',
         'start_time': 'StartTime',
         'event_count': 'EventCount',
         'flow_count': 'FlowCount',
@@ -122,7 +122,8 @@ script:
     }
 
     SEARCH_ID_NAMES_MAP = {
-        'search_id': 'ID'
+        'search_id': 'ID',
+        'status': 'Status'
     }
 
     ASSET_PROPERTIES_NAMES_MAP = {
@@ -197,7 +198,7 @@ script:
     # Sends request to the server using the given method, url, headers and params
     def send_request(method, url, headers=AUTH_HEADERS, params=None):
         try:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
             res.raise_for_status()
         except HTTPError, e:
             return_error(res.json())
@@ -233,7 +234,7 @@ script:
         for closing_reason in res:
             if closing_reason['text'] == closing_name:
                 return closing_reason['id']
-        raise ValueError("Error: Given closing reason name doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
+        return closing_name
 
     # Converts closing reason id to name
     def convert_closing_reason_id_to_name(closing_id):
@@ -241,7 +242,14 @@ script:
         for closing_reason in res:
             if closing_reason['id'] == closing_id:
                 return closing_reason['text']
-        raise ValueError("Error: Given closing reason id doesn't exist. Please use use 'qradar-get-closing-reasons' command to get a valid closing reason.")
+        return closing_id
+
+    # Converts offense type id to name
+    def convert_offense_type_id_to_name(offense_type_id):
+        res = get_offense_type(offense_type_id)
+        if 'name' in res:
+            return res['name']
+        return offense_id
 
     ''' Request/Response methods '''
 
@@ -311,6 +319,14 @@ script:
         if _range:
             headers['Range'] = 'items={0}'.format(_range)
         return send_request('GET', url, headers, params)
+
+    # Returns the result of a offense types request
+    def get_offense_type(type_id):
+        url = '{0}/api/siem/offense_types/{1}'.format(SERVER, type_id)
+        # Due to a bug in QRadar, this functions does not work if username/password was not provided
+        if USERNAME and PASSWORD:
+            return send_request('GET', url, headers=None)
+        return {type_id}
 
     # Returns the result of a get note request
     def get_note(offense_id, note_id, fields):
@@ -410,18 +426,21 @@ script:
     # Enriches the values of a given offense result (full_enrichment adds more enrichment options)
     def enrich_offense_result(response, full_enrichment=False):
         enrich_offense_res_with_source_and_destination_address(response)
-        # Convert epoch to iso and closing_reason_id to closing reason name
         if isinstance(response, list):
             for offense in response:
-                enrich_offense_start_and_update_times(offense)
-                if full_enrichment:
-                    replace_offense_closing_reason_id_with_value(offense)
+                enrich_single_offense_result(offense, full_enrichment)
         else:
-            enrich_offense_start_and_update_times(response)
-            if full_enrichment:
-                replace_offense_closing_reason_id_with_value(response)
+            enrich_single_offense_result(response, full_enrichment)
 
         return response
+
+    # Convert epoch to iso and closing_reason_id to closing reason name, and if full_enrichment then converts closing_reason_id to name
+    def enrich_single_offense_result(offense, full_enrichment):
+        enrich_offense_start_and_update_times(offense)
+        if offense['offense_type']:
+            offense['offense_type'] = convert_offense_type_id_to_name(offense['offense_type'])
+        if full_enrichment and offense['closing_reason_id']:
+            offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
 
     # Enriches offense result dictionary with source and destination addresses
     def enrich_offense_res_with_source_and_destination_address(response):
@@ -487,11 +506,6 @@ script:
 
         return None
 
-    # Helper method: For a single offense replaces the closing_reason_id with its corresponding value
-    def replace_offense_closing_reason_id_with_value(offense):
-        if offense['closing_reason_id']:
-            offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
-
     # Helper method: For a single offense replaces the epoch times with ISO string
     def enrich_offense_start_and_update_times(offense):
         if 'start_time' in offense:
@@ -526,14 +540,15 @@ script:
         return get_entry_for_object('QRadar Search', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
 
     def get_search_command():
-        raw_search = get_search(demisto.args().get('search_id'))
+        search_id = demisto.args().get('search_id')
+        raw_search = get_search(search_id)
         raw_search = replace_keys(raw_search, SEARCH_ID_NAMES_MAP)
-        return get_entry_for_object('QRadar Search Info', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === obj.ID)')
+        return get_entry_for_object('QRadar Search Info', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === {0})'.format(search_id))
 
     def get_search_results_command():
         search_id = demisto.args().get('search_id')
         raw_search_results = get_search_results(search_id)
-        return get_entry_for_object('QRadar Search Results', raw_search_results['events'], demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
+        return get_entry_for_object('QRadar Search Results', raw_search_results, demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -727,7 +742,7 @@ script:
       description: The description of the offense.
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
-    - contextPath: QRadar.Offense.DestinatioAddress
+    - contextPath: QRadar.Offense.DestinationAddress
       description: The destination addresses that are associated with the offense.
     - contextPath: QRadar.Offense.StartTime
       description: The time (ISO) when the offense was started.
@@ -742,7 +757,7 @@ script:
     - contextPath: QRadar.Offense.LastUpdatedTime
       description: The time (ISO) when the offense was last updated.
     - contextPath: QRadar.Offense.OffenseType
-      description: A number that represents the offense type
+      description: The offense type (due to API limitations if username and password were not provided, this value will be the id of offense type)
     description: Gets offenses from QRadar
   - name: qradar-offense-by-id
     arguments:
@@ -767,7 +782,7 @@ script:
       description: The severity of the offense
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
-    - contextPath: QRadar.Offense.DestinatioAddress
+    - contextPath: QRadar.Offense.DestinationAddress
       description: The destination addresses that are associated with the offense.
     - contextPath: QRadar.Offense.AssignedTo
       description: The user the offense is assigned to.
@@ -819,7 +834,10 @@ script:
     - contextPath: QRadar.Search.ID
       description: Search ID
       type: int
-    description: Searches in QRadar
+    - contextPath: QRadar.Search.State
+      description: The state of the search.
+      type: string
+    description: Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.
   - name: qradar-get-search
     arguments:
     - name: search_id
@@ -828,7 +846,14 @@ script:
       description: The search id
     - name: headers
       description: Table headers
-    description: Gets a specific search id
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID
+      type: int
+    - contextPath: QRadar.Search.State
+      description: The state of the search.
+      type: string
+    description: Gets a specific search id and state
   - name: qradar-get-search-results
     arguments:
     - name: search_id
@@ -839,6 +864,9 @@ script:
       description: Number of results in return
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Search.Result
+      description: The result of the search
     description: Gets search results
   - name: qradar-update-offense
     arguments:
@@ -887,7 +915,7 @@ script:
       description: The description of the offense.
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
-    - contextPath: QRadar.Offense.DestinatioAddress
+    - contextPath: QRadar.Offense.DestinationAddress
       description: The destination addresses that are associated with the offense.
     - contextPath: QRadar.Offense.StartTime
       description: The time (ISO) when the offense was started.
@@ -1007,6 +1035,9 @@ script:
     - contextPath: QRadar.Search.ID
       description: Search ID
       type: int
+    - contextPath: QRadar.Search.State
+      description: The state of the search.
+      type: string
     description: Searches in QRadar
   - name: qr-get-search
     deprecated: true
@@ -1017,7 +1048,14 @@ script:
       description: The search id
     - name: headers
       description: Table headers
-    description: Gets a specific search using search id
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID
+      type: int
+    - contextPath: QRadar.Search.State
+      description: The state of the search.
+      type: string
+    description: Gets a specific search id and state
   - name: qr-get-search-results
     deprecated: true
     arguments:
@@ -1029,10 +1067,17 @@ script:
       description: Number of results in return
     - name: headers
       description: Table headers
+    outputs:
+    - contextPath: QRadar.Search.Result
+      description: The result of the search
     description: Gets search results
   - name: qr-update-offense
     deprecated: true
     arguments:
+    - name: closing_reason_id
+      deprecated: true
+      description: The ID of a closing reason. You must provide a valid closing_reason_id
+        when you close an offense
     - name: offense_id
       required: true
       default: true
@@ -1060,6 +1105,10 @@ script:
       description: 'The name of a closing reason. You must provide a valid closing_reason_name
         when you close an offense. The default  closing_reasons are: (1) False-Positive,
         Tuned (2) Non-Issues (3) Policy Violation'
+    - name: closing_reason_id
+      deprecated: true
+      description: The ID of a closing reason. You must provide a valid closing_reason_id
+        when you close an offense
     - name: assigned_to
       description: A user to assign the offense to
     - name: headers
@@ -1078,7 +1127,7 @@ script:
       description: The description of the offense.
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
-    - contextPath: QRadar.Offense.DestinatioAddress
+    - contextPath: QRadar.Offense.DestinationAddress
       description: The destination addresses that are associated with the offense.
     - contextPath: QRadar.Offense.StartTime
       description: The time (ISO) when the offense was started.
@@ -1150,7 +1199,7 @@ script:
       description: The description of the offense.
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
-    - contextPath: QRadar.Offense.DestinatioAddress
+    - contextPath: QRadar.Offense.DestinationAddress
       description: The destination addresses that are associated with the offense.
     - contextPath: QRadar.Offense.StartTime
       description: The time (ISO) when the offense was started.
