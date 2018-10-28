@@ -38,6 +38,11 @@
             "playbookID": "SCADAfence_test"
         },
         {
+            "integrations": "Lastline",
+            "playbookID": "Lastline - testplaybook",
+            "nightly": true
+        },
+        {
             "integrations": "epo",
             "playbookID": "Test Playbook McAfee ePO"
         },
@@ -139,7 +144,8 @@
             "integrations": [
                 "VxStream",
                 "McAfee Advanced Threat Defense",
-                "WildFire"
+                "WildFire",
+                "Lastline"
             ]
         },
         {
@@ -148,7 +154,8 @@
             "nightly": true,
             "integrations": [
                 "McAfee Advanced Threat Defense",
-                "VxStream"
+                "VxStream",
+                "Lastline"
             ]
         },
         {
