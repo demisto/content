@@ -938,4 +938,4 @@ script:
 tests:
 - CrowdStrike Endpoint Enrichment - Test
 - crowdstrike_falconhost_test
-relaseNotes: "-"
+releaseNotes: "-"
