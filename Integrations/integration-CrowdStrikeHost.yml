@@ -114,7 +114,7 @@ script:
     // add args to a if exists
     function add(a, k, f) {
         if (args[k]) {
-            var parts = argToList(args[k]);
+            var parts = argToList(args[k].toString());
             for (var i=0; i<parts.length; i++) {
                 parts[i] = parts[i].trim();
             }
