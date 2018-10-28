@@ -2711,11 +2711,12 @@ script:
     arguments:
     - name: table_name
       required: true
+      description: The table name
     - name: id
       required: true
       description: The system ID of the ticket to update
     description: Delete a record in a specified ServiceNow table
   isfetch: true
-releaseNotes: "-"
+releaseNotes: ""
 tests:
     - Run all tests
