@@ -1,5 +1,5 @@
 id: crowdstrike_falconhost_test
-version: 10
+version: -1
 name: CrowdStrike FalconHost Test
 starttaskid: "0"
 tasks:
