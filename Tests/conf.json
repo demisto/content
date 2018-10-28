@@ -268,6 +268,10 @@
             "playbookID": "CrowdStrike Endpoint Enrichment - Test"
         },
         {
+          "integrations": "FalconHost",
+          "playbookID": "crowdstrike_falconhost_test"
+        },
+        {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io"
