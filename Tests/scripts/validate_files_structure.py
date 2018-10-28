@@ -217,6 +217,7 @@ def validate_committed_files(branch_name):
     modified_files, added_files = get_modified_files(files_string)
     missing_release_notes = False
     wrong_schema = False
+    missing_test = False
     for file_path in modified_files:
         print "Validating {}".format(file_path)
         if not validate_file_release_notes(file_path):
@@ -232,9 +233,10 @@ def validate_committed_files(branch_name):
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if not is_test_in_conf_json(file_path):
+                missing_test = True
                 print_error("You've failed to add the {0} to conf.json".format(file_path))
 
-    if missing_release_notes or wrong_schema:
+    if missing_release_notes or wrong_schema or missing_test:
         sys.exit(1)
 
 
