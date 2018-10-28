@@ -83,6 +83,31 @@ script:
             return {k: v for k, v in d.iteritems() if k in keys}
         return d
 
+    def convert_dict_context_dates(d):
+        def convert_epoch_to_date(k, v):
+            if any(s in k.lower() for s in ('date', 'time')):
+                try:
+                    return datetime.utcfromtimestamp(int(v)).strftime('%Y-%m-%dT%H:%M:%SZ')
+                except:
+                    pass
+            return v
+
+        if isinstance(d, list):
+            return map(convert_dict_context_dates, d)
+        if isinstance(d, dict):
+            return {k: convert_dict_context_dates(convert_epoch_to_date(k, v)) for k, v in d.iteritems()}
+        return d
+
+    def convert_dict_readable_dates(d):
+        def convert_epoch_to_date(k, v):
+            return formatEpochDate(v) if isinstance(v, int) and any(s in k.lower() for s in ('date', 'time')) else v
+
+        if isinstance(d, list):
+            return map(convert_dict_readable_dates, d)
+        if isinstance(d, dict):
+            return {k: convert_dict_readable_dates(convert_epoch_to_date(k, v)) for k, v in d.iteritems()}
+        return d
+
     def get_entry_for_object(title, context_key, obj, headers=None):
         if len(obj) == 0:
             return "There is no output result"
@@ -92,14 +117,17 @@ script:
         if headers and isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
 
+        hr_obj = convert_dict_readable_dates(obj)
+        context_obj = convert_dict_context_dates(filter_dict_keys(obj, headers) if headers else obj)
+
         return {
             'Type': entryTypes['note'],
-            'Contents': obj,
+            'Contents': context_obj,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, obj, headers),
+            'HumanReadable': tableToMarkdown(title, hr_obj, headers),
             'EntryContext': {
-                context_key: filter_dict_keys(obj, headers) if headers else obj
+                context_key: context_obj
             }
         }
 
@@ -153,7 +181,7 @@ script:
 
     # Request/Response methods
     # kwargs: request parameters
-    def send_scan_request(scan_id="", endpoint="", method='GET', debug=False, **kwargs):
+    def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, **kwargs):
         if endpoint:
             endpoint = '/' + endpoint
         full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
@@ -161,7 +189,7 @@ script:
             res = requests.request(method, full_url, headers=AUTH_HEADERS, params=kwargs)
             res.raise_for_status()
         except HTTPError, e:
-            if debug and res.status_code == 403:
+            if ignore_license_error and res.status_code == 403:
                 return
             err_msg = get_scan_error_message(res, scan_id)
             if demisto.command() != 'test-module':
@@ -176,7 +204,7 @@ script:
         return res.json()
 
     def get_scan_info(scans_result_elem):
-        response = send_scan_request(scans_result_elem['id'], debug=True) #TODO: handle 403
+        response = send_scan_request(scans_result_elem['id'], ignore_license_error=True)
         if response:
             response['info'].update(scans_result_elem)
             return response['info']
@@ -224,10 +252,13 @@ script:
 
     def get_scans(folder_id, last_modification_date):
         response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
-        res = map(get_scan_info, response['scans'])
-        res = filter(lambda x: x is not None, res) # for 403 workaround
-        res = replace_keys(res)
-        return get_entry_for_object('Tenable.io - List of Scans', 'Tenable.Scan', res, GET_SCANS_HEADERS)
+        scan_entries = map(get_scan_info, response['scans'])
+        valid_scans = filter(lambda x: x is not None, scan_entries)
+        invalid_scans = [k for k,v in zip(response['scans'], scan_entries) if v is None]
+        res = [get_entry_for_object('Tenable.io - List of Scans', 'Tenable.Scan', replace_keys(valid_scans), GET_SCANS_HEADERS)]
+        if invalid_scans:
+            res.append(get_entry_for_object('Inactive Web Applications scan IDs - Renew WAS license to use these scans', 'Tenable.Scan', replace_keys(invalid_scans), GET_SCANS_HEADERS))
+        return res
 
     def launch_scan(scan_id, targets):
         scan_info = send_scan_request(scan_id)['info']
@@ -352,7 +383,7 @@ script:
       type: date
     - contextPath: Tenable.Scan.StartTime
       description: The scheduled start time for the scan.
-      type: string
+      type: date
     - contextPath: Tenable.Scan.Scanner
       description: The scanner assigned for the scan.
       type: string
