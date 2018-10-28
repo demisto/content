@@ -173,6 +173,45 @@ def validate_schema(file_path, matching_regex=None):
     return True
 
 
+def get_json(file_path):
+    data_dictionary = None
+    with open(os.path.expanduser(file_path), "r") as f:
+        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
+            try:
+                data_dictionary = yaml.safe_load(f)
+            except Exception as e:
+                print_error(file_path + " has yml structure issue. Error was: " + str(e))
+                return []
+
+    if type(data_dictionary) is dict:
+        return data_dictionary
+    else:
+        return {}
+
+
+def collect_ids(file_path):
+    """Collect id mentioned in file_path"""
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        return data_dictionary.get('id', '-')
+
+
+def is_test_in_conf_json(file_path):
+    file_id = collect_ids(file_path)
+
+    with open("./Tests/conf.json") as data_file:
+        conf = json.load(data_file)
+
+    conf_tests = conf['tests']
+    for test in conf_tests:
+        playbook_id = test['playbookID']
+        if file_id == playbook_id:
+            return True
+
+    return False
+
+
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
     modified_files, added_files = get_modified_files(files_string)
@@ -190,6 +229,10 @@ def validate_committed_files(branch_name):
         print "Validating {}".format(file_path)
         if not validate_schema(file_path):
             wrong_schema = True
+
+        if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if not is_test_in_conf_json(file_path):
+                print_error("You've failed to add the {0} to conf.json".format(file_path))
 
     if missing_release_notes or wrong_schema:
         sys.exit(1)
