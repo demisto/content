@@ -103,46 +103,46 @@ script:
 
     TICKET_STATES = {
         'incident': {
-            '1': 'New',
-            '2': 'In Progress',
-            '3': 'On Hold',
-            '4': 'Awaiting Caller',
-            '5': 'Awaiting Evidence',
-            '6': 'Resolved',
-            '7': 'Closed',
-            '8': 'Canceled'
+            '1': '1 - New',
+            '2': '2 - In Progress',
+            '3': '3 - On Hold',
+            '4': '4 - Awaiting Caller',
+            '5': '5 - Awaiting Evidence',
+            '6': '6 - Resolved',
+            '7': '7 - Closed',
+            '8': '8 - Canceled'
         },
         'problem': {
-            '1': 'Open',
-            '2': 'Known Error',
-            '3': 'Pending Change',
-            '4': 'Closed/Resolved'
+            '1': '1 - Open',
+            '2': '2 - Known Error',
+            '3': '3 - Pending Change',
+            '4': '4 - Closed/Resolved'
         },
         'change_request': {
-            '-5': 'New',
-            '-4': 'Assess',
-            '-3': 'Authorize',
-            '-2': 'Scheduled',
-            '-1': 'Implement',
-            '0': 'Review',
-            '3': 'Closed',
-            '4': 'Canceled'
+            '-5': '-5 - New',
+            '-4': '-4 - Assess',
+            '-3': '-3 - Authorize',
+            '-2': '-2 - Scheduled',
+            '-1': '-1 - Implement',
+            '0': '0 - Review',
+            '3': '3 - Closed',
+            '4': '4 - Canceled'
         }
     }
 
 
     TICKET_SEVERITY = {
-        '1': 'High',
-        '2': 'Medium',
-        '3': 'Low'
+        '1': '1 - High',
+        '2': '2 - Medium',
+        '3': '3 - Low'
     }
 
     TICKET_PRIORITY = {
-        '1': 'Critical',
-        '2': 'High',
-        '3': 'Moderate',
-        '4': 'Low',
-        '5': 'Planning'
+        '1': '1 - Critical',
+        '2': '2 - High',
+        '3': '3 - Moderate',
+        '4': '4 - Low',
+        '5': '5 - Planning'
     }
 
     DEFAULTS = {
@@ -188,10 +188,11 @@ script:
             res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
             verify=VERIFY_SSL)
 
-
         try:
             obj = res.json()
         except Exception as e:
+            if not res.content:
+                return ''
             raise Exception('Error parsing reply - {} - {}'.format(res.content, e.message))
 
         if 'error' in obj:
@@ -280,15 +281,8 @@ script:
 
         return result
 
-    def get_body(template_name, custom_fields):
+    def get_ticket_fields(template):
         body = {}
-        template = template_name
-        inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
-        inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
-
-        if template:
-            template = get_template(template_name)
-
         for arg in SNOW_ARGS:
             input_arg = demisto.args().get(arg)
             if input_arg:
@@ -298,8 +292,19 @@ script:
                     body[arg] = inv_priority.get(input_arg, input_arg)
                 else:
                     body[arg] = input_arg
-            elif template_name and arg in template:
+            elif template and arg in template:
                 body[arg] = template[arg]
+
+        return body
+
+    def get_body(template, fields, custom_fields):
+        body = {}
+        inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
+        inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
+
+        if fields:
+            for field in fields:
+                body[field] = fields[field]
 
         if custom_fields:
             for field in custom_fields:
@@ -308,14 +313,16 @@ script:
         return body
 
 
-    def split_custom_fields(fields):
+    def split_fields(fields):
         dic_fields = {}
-        arr_fields = fields.split(';')
 
-        for f in arr_fields:
-            field = f.split('=')
-            if len(field) > 1:
-                dic_fields[field[0]] = field[1]
+        if fields:
+            arr_fields = fields.split(';')
+
+            for f in arr_fields:
+                field = f.split('=')
+                if len(field) > 1:
+                    dic_fields[field[0]] = field[1]
 
         return dic_fields
 
@@ -433,12 +440,17 @@ script:
 
         return entries
 
-    def update_command():
-        custom_fields = demisto.args().get('custom_fields')
+    def update_ticket_command():
+        custom_fields = split_fields(demisto.args().get('custom_fields'))
         template = demisto.args().get('template')
         ticket_type = get_table_name(demisto.args().get('ticket_type'))
+        ticket_id = demisto.args()['id']
 
-        res = update(ticket_type, custom_fields, template)
+        if template:
+            template = get_template(template_name)
+        fields = get_ticket_fields(template)
+
+        res = update(ticket_type, ticket_id ,fields, custom_fields, template)
 
         hr = get_ticket_human_readable(res['result'], ticket_type)
 
@@ -453,21 +465,22 @@ script:
         return entry
 
 
-    def update(ticket_type, custom_fields, template):
-        if custom_fields:
-            custom_fields = split_custom_fields(custom_fields)
-
-        body = get_body(template, custom_fields)
-        path = 'table/' + ticket_type + '/' + demisto.args()['id']
+    def update(ticket_type, ticket_id, fields, custom_fields, template):
+        body = get_body(template, fields, custom_fields)
+        path = 'table/' + ticket_type + '/' + ticket_id
 
         return send_request(path, 'patch', body = body)
 
-    def create_command():
-        custom_fields = demisto.args().get('custom_fields')
+    def create_ticket_command():
+        custom_fields = split_fields(demisto.args().get('custom_fields'))
         template = demisto.args().get('template')
         ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
-        res = create(ticket_type, custom_fields, template)
+        if template:
+            template = get_template(template_name)
+        fields = get_ticket_fields(template)
+
+        res = create(ticket_type, fields, custom_fields, template)
 
         hr = get_ticket_human_readable(res['result'], ticket_type)
 
@@ -478,20 +491,40 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow ticket created\nTicket type: ' + ticket_type, hr, removeNull=True),
             'EntryContext': {
-                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result'])
             }
         }
 
         return entry
 
-    def create(ticket_type, custom_fields, template):
-        if custom_fields:
-            custom_fields = split_custom_fields(custom_fields)
-
-        body = get_body(demisto.args().get('template'), custom_fields)
+    def create(ticket_type, fields, custom_fields, template):
+        body = get_body(template, fields, custom_fields)
         path = 'table/' + ticket_type
 
         return send_request(path, 'post', body = body)
+
+    def delete_ticket_command():
+        ticket_id = demisto.args()['id']
+        ticket_type = get_table_name(demisto.args().get('ticket_type'))
+
+        res = delete(ticket_type, ticket_id)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Ticket with ID ' + ticket_id + ' was succesfully deleted.'
+        }
+
+        return entry
+
+    def delete(ticket_type, ticket_id):
+        path = 'table/' + ticket_type + '/' + ticket_id
+
+        return send_request(path, 'delete')
+
+
 
     def add_link_command():
         ticket_id = demisto.args()['id']
@@ -856,10 +889,12 @@ script:
             fetch_incidents()
         elif demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update':
             demisto.results(get_ticket_command())
-        elif demisto.command() == 'servicenow-update' or demisto.command() == 'servicenow-incident-update':
-            demisto.results(update_command())
-        elif demisto.command() == 'servicenow-create' or demisto.command() == 'servicenow-incident-create':
-            demisto.results(create_command())
+        elif demisto.command() == 'servicenow-update' or demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
+            demisto.results(update_ticket_command())
+        elif demisto.command() == 'servicenow-create' or demisto.command() == 'servicenow-incident-create' or demisto.command() == 'servicenow-create-ticket':
+            demisto.results(create_ticket_command())
+        elif demisto.command() == 'servicenow-delete-ticket':
+            demisto.results(delete_ticket_command())
         elif demisto.command() == 'servicenow-add-link' or demisto.command() == 'servicenow-incident-add-link':
             demisto.results(add_link_command())
         elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
@@ -877,10 +912,92 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log()
+        raise
         return_error(e.message)
   type: python
   commands:
+  - name: servicenow-get-ticket
+    arguments:
+    - name: id
+      default: true
+      description: Ticket System ID to retrieve
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      description: Ticket type
+      defaultValue: incident
+    - name: number
+      description: Ticket number to retrieve
+    - name: get_attachments
+      description: Whether to retrieve ticket attachments, default false
+    outputs:
+    - contextPath: Ticket.ID
+      description: The unique ticket identifier.
+      type: string
+    - contextPath: Ticket.Creator
+      description: A string field that indicates the user who created the ticket.
+      type: string
+    - contextPath: Ticket.CreatedOn
+      description: The date and time when the ticket was created.
+      type: date
+    - contextPath: Ticket.Assignee
+      description: Specifies the user assigned to complete the ticket. By default,
+        this field uses a reference qualifier to only display users with the itil
+        role.
+      type: string
+    - contextPath: Ticket.State
+      description: Status of the ticket.
+      type: string
+    - contextPath: Ticket.Summary
+      description: A human-readable title for the record.
+      type: string
+    - contextPath: Ticket.Number
+      description: The display value of the ticket.
+      type: string
+    - contextPath: Ticket.Active
+      description: Specifies whether work is still being done on a task or whether
+        the work for the task is complete.
+      type: boolean
+    - contextPath: Ticket.AdditionalComments
+      description: Comments about the task record.
+    - contextPath: Ticket.Priority
+      description: Specifies how high a priority the ticket should be for the assignee.
+      type: string
+    - contextPath: Ticket.OpenedAt
+      description: The date and time when the ticket was opened for the first time.
+      type: date
+    - contextPath: File.Info
+      description: Attachment file info
+      type: string
+    - contextPath: File.Name
+      description: Attachment file name
+      type: string
+    - contextPath: File.Size
+      description: Attachment file size
+      type: number
+    - contextPath: File.SHA1
+      description: Attachment file SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Attachment file SHA256
+      type: string
+    - contextPath: File.EntryID
+      description: Attachment file entry ID
+      type: string
+    - contextPath: File.Type
+      description: Attachment file type
+      type: string
+    - contextPath: File.MD5
+      description: Attachment file MD5
+      type: string
+    description: Retrieve ticket information by specific ticket ID
   - name: servicenow-get
+    deprecated: true
     arguments:
     - name: id
       default: true
@@ -996,7 +1113,7 @@ script:
       description: ServiceNow ticket number
       type: string
     description: Retrieve ticket information by specific ticket ID
-  - name: servicenow-create
+  - name: servicenow-create-ticket
     arguments:
     - name: short_description
       description: Short description of the ticket
@@ -1175,7 +1292,218 @@ script:
     - name: template
       description: Template name to use as a base to create new tickets.
     - name: custom_fields
-      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - normal
+      - standard
+      - emergency
+      description: Type of Change Request ticket
+      defaultValue: normal
+    - name: state
+      description: State of the ticket
+    outputs:
+    - contextPath: Ticket.ID
+      description: ServiceNow ticket System ID
+      type: string
+    - contextPath: Ticket.Creator
+      description: ServiceNow ticket creator
+      type: string
+    - contextPath: Ticket.Assignee
+      description: ServiceNow ticket assignee
+      type: string
+    - contextPath: Ticket.State
+      description: ServiceNow ticket state
+      type: string
+    - contextPath: Ticket.Summary
+      description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
+    description: Create new ServiceNow ticket
+  - name: servicenow-create
+    deprecated: true
+    arguments:
+    - name: short_description
+      description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      description: Ticket type
+      defaultValue: incident
+    - name: urgency
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Ticket urgency
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Ticket severity
+    - name: impact
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Ticket impact
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set ticket as Active
+    - name: activity_due
+      description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+    - name: additional_assignee_list
+      description: List of assigned users to the ticket
+    - name: approval_history
+      description: Ticket history approval
+    - name: approval_set
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - name: assigned_to
+      description: To whom the ticket is assigned
+    - name: business_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: business_service
+      description: Business service
+    - name: business_stc
+      description: Business source
+    - name: calendar_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: caller_id
+      description: UID Format
+    - name: category
+      description: Category of ticket
+    - name: caused_by
+      description: UID Format
+    - name: close_code
+      description: Ticket's close code
+    - name: close_notes
+      description: Close notes of the ticket
+    - name: closed_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: closed_by
+      description: User who closed the ticket
+    - name: cmdb_ci
+      description: UID Format
+    - name: comments
+      description: Format type journal input
+    - name: comments_and_work_notes
+      description: Format type journal input
+    - name: company
+      description: UID Format
+    - name: contact_type
+      description: Contact type
+    - name: correlation_display
+      description: Correlation display
+    - name: correlation_id
+      description: Correlation id
+    - name: delivery_plan
+      description: UID Format
+    - name: display
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If you want to display comments, work_notes...
+    - name: description
+      description: Ticket description
+    - name: due_date
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: escalation
+      description: Escalation
+    - name: expected_start
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: follow_up
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: group_list
+      description: UID format list
+    - name: knowledge
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
+    - name: location
+      description: Location of the ticket
+    - name: made_sla
+      description: SLA of the ticket
+    - name: notify
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Notify about this ticket
+    - name: order
+      description: Order number
+    - name: parent
+      description: UID Format
+    - name: parent_incident
+      description: UID Format
+    - name: problem_id
+      description: UID Format
+    - name: reassignment_count
+      description: How many users included in this ticket before
+    - name: reopen_count
+      description: How many time the ticket has been reopened
+    - name: resolved_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: resolved_by
+      description: UID Format
+    - name: rfc
+      description: UID
+    - name: sla_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: subcategory
+      description: Subcategory
+    - name: sys_updated_by
+      description: Last updated by
+    - name: sys_updated_on
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: user_input
+      description: Input from the end user
+    - name: watch_list
+      description: A list of watched tickets
+    - name: work_end
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: work_notes
+      description: Format journal list
+    - name: work_notes_list
+      description: List with UIDs
+    - name: work_start
+      description: Date when started to work on the ticket
+    - name: assignment_group
+      description: Set AssignmentGroup - uuid of group like 46b87022a9fe198101a78787e40d7547
+    - name: incident_state
+      description: integer
+    - name: number
+      description: Ticket number
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - Planning
+      - Low
+      - Moderate
+      - High
+      - Critical
+      description: Priority of the ticket (number)
+    - name: template
+      description: Template name to use as a base to create new tickets.
+    - name: custom_fields
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
     - name: type
       auto: PREDEFINED
       predefined:
@@ -1381,7 +1709,7 @@ script:
       description: ServiceNow ticket number
       type: string
     description: Create new ServiceNow ticket
-  - name: servicenow-update
+  - name: servicenow-update-ticket
     arguments:
     - name: short_description
       description: Short description of the ticket
@@ -1561,7 +1889,200 @@ script:
       required: true
       description: System ID of the ticket to update
     - name: custom_fields
-      description: 'Custom fields in this format: fieldname=value;fieldname=value...'
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - normal
+      - standard
+      - emergency
+      description: Type of Change Request ticket
+      defaultValue: normal
+    - name: state
+      description: State of the ticket
+    description: Update specific ticket by providing ticket id
+  - name: servicenow-update
+    deprecated: true
+    arguments:
+    - name: short_description
+      description: Short description of the ticket
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      description: Ticket type
+      defaultValue: incident
+    - name: urgency
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Ticket urgency
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Ticket severity
+    - name: impact
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Ticket impact
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Does the ticket active(true/false)
+    - name: activity_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: additional_assignee_list
+      description: List of assigned users to the ticket
+    - name: approval_history
+      description: Ticket history approval
+    - name: approval_set
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+    - name: assigned_to
+      description: To whom the ticket is assigned
+    - name: business_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: business_service
+      description: Business service
+    - name: business_stc
+      description: Business source
+    - name: calendar_duration
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: caller_id
+      description: UID Format
+    - name: category
+      description: Category name
+    - name: caused_by
+      description: UID Format
+    - name: close_code
+      description: Ticket's close code
+    - name: close_notes
+      description: Close notes of the ticket
+    - name: closed_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: closed_by
+      description: User who closed the ticket
+    - name: cmdb_ci
+      description: UID Format
+    - name: comments
+      description: Format type journal input
+    - name: comments_and_work_notes
+      description: Format type journal input
+    - name: company
+      description: UID Format
+    - name: contact_type
+      description: Contact type
+    - name: correlation_display
+      description: Correlation display
+    - name: correlation_id
+      description: Correlation id
+    - name: delivery_plan
+      description: UID Format
+    - name: display
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If you want to display comments, work_notes...
+    - name: description
+      description: Ticket description
+    - name: due_date
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: escalation
+      description: Escalation
+    - name: expected_start
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: follow_up
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: group_list
+      description: UID format list
+    - name: knowledge
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Is the ticket solved in the knowledge base
+    - name: location
+      description: Location of the ticket
+    - name: made_sla
+      description: SLA of the ticket
+    - name: notify
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Notify about this ticket
+    - name: order
+      description: Order number
+    - name: parent
+      description: UID Format
+    - name: parent_incident
+      description: UID Format
+    - name: problem_id
+      description: UID Format
+    - name: reassignment_count
+      description: How many users included in this ticket before
+    - name: reopen_count
+      description: How many time the ticket has been reopened
+    - name: resolved_at
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: resolved_by
+      description: UID Format
+    - name: rfc
+      description: UID
+    - name: sla_due
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: subcategory
+      description: Subcategory
+    - name: sys_updated_by
+      description: Last updated by
+    - name: sys_updated_on
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: user_input
+      description: Input from the end user
+    - name: watch_list
+      description: A list of watched tickets
+    - name: work_end
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - name: work_notes
+      description: Format journal list
+    - name: work_notes_list
+      description: List with UIDs
+    - name: work_start
+      description: Date when started to work on the ticket
+    - name: assignment_group
+      description: UID
+    - name: incident_state
+      description: integer
+    - name: number
+      description: Ticket number
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - Planning
+      - Low
+      - Moderate
+      - High
+      - Critical
+      description: Priority of the ticket
+    - name: id
+      required: true
+      description: System ID of the ticket to update
+    - name: custom_fields
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
     - name: type
       auto: PREDEFINED
       predefined:
@@ -1730,6 +2251,21 @@ script:
       required: true
       description: System ID of the ticket to update
     description: Update specific ticket by providing ticket id
+  - name: servicenow-delete-ticket
+    arguments:
+    - name: id
+      required: true
+      description: Ticket System ID
+    - name: ticket_type
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      description: Ticket type
+    description: Delete a ticket from ServiceNow
   - name: servicenow-add-link
     arguments:
     - name: id
@@ -2096,6 +2632,89 @@ script:
         child table contains the record.
       type: string
     description: Query a specified table in ServiceNow
+  - name: servicenow-create-record
+    arguments:
+    - name: table_name
+      required: true
+      description: The name of the table to create a record in
+    - name: fields
+      description: 'Fields and their values to create the record with, in the format:
+        fieldname1=value;fieldname2=value;...'
+    - name: custom_fields
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
+    outputs:
+    - contextPath: ServiceNow.Record.sys_id
+      description: The unique record identifier for the record.
+      type: string
+    - contextPath: ServiceNow.Record.sys_updated_by
+      description: A string field that indicates the user who most recently updated
+        the record.
+      type: string
+    - contextPath: ServiceNow.Record.sys_updated
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
+      type: date
+    - contextPath: ServiceNow.Record.sys_created_by
+      description: A string field that indicates the user who created the record.
+      type: string
+    - contextPath: ServiceNow.Record.sys_created_on
+      description: time-stamp field that indicates when a record was created.
+      type: date
+    - contextPath: ServiceNow.Record.sys_mod_count
+      description: A numeric field that counts the number of updates for this record
+        since record creation.
+      type: number
+    - contextPath: ServiceNow.Record.sys_class_name
+      description: If the table is extensible, a string field that indicates which
+        child table contains the record.
+      type: string
+    description: Create a new record in a specified ServiceNow table
+  - name: servicenow-update-record
+    arguments:
+    - name: table_name
+      required: true
+      description: The name of the table to update the record in
+    - name: id
+      required: true
+      description: The system ID of the ticket to update
+    - name: fields
+      description: 'Fields and their values to update in the record, in the format:
+        fieldname1=value;fieldname2=value;...'
+    outputs:
+    - contextPath: ServiceNow.Record.sys_id
+      description: The unique record identifier for the record.
+      type: string
+    - contextPath: ServiceNow.Record.sys_updated_by
+      description: A string field that indicates the user who most recently updated
+        the record.
+      type: string
+    - contextPath: ServiceNow.Record.sys_updated
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
+      type: date
+    - contextPath: ServiceNow.Record.sys_created_by
+      description: A string field that indicates the user who created the record.
+      type: string
+    - contextPath: ServiceNow.Record.sys_created_on
+      description: time-stamp field that indicates when a record was created.
+      type: date
+    - contextPath: ServiceNow.Record.sys_mod_count
+      description: A numeric field that counts the number of updates for this record
+        since record creation.
+      type: number
+    - contextPath: ServiceNow.Record.sys_class_name
+      description: If the table is extensible, a string field that indicates which
+        child table contains the record.
+      type: string
+    description: Update a record in a specified ServiceNow table
+  - name: servicenow-delete-record
+    arguments:
+    - name: table_name
+      required: true
+    - name: id
+      required: true
+      description: The system ID of the ticket to update
+    description: Delete a record in a specified ServiceNow table
   isfetch: true
 releaseNotes: "-"
 tests:
