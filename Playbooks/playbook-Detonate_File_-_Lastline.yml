@@ -365,6 +365,7 @@ tasks:
       id: cec4ac98-aed7-4400-824b-2244a72dcc1a
       version: -1
       name: Filter UUIDs
+      description: ""
       type: condition
       iscommand: false
       brand: ""
