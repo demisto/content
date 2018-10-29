@@ -189,7 +189,7 @@ def validate_committed_files(branch_name):
     wrong_schema = False
     is_changed_id = False
     for file_path in modified_files:
-        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
             if changed_id(branch_name, file_path):
                 is_changed_id = True
 
