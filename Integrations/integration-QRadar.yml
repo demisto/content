@@ -63,8 +63,9 @@ script:
 
     ''' GLOBAL VARS '''
     SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-    USERNAME = demisto.params().get('credentials').get('identifier')
-    PASSWORD = demisto.params().get('credentials').get('password')
+    CREDENTIALS = demisto.params().get('credentials')
+    USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
+    PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
     TOKEN = demisto.params().get('token')
     USE_SSL = not demisto.params().get('insecure', False)
     AUTH_HEADERS = {'SEC': str(TOKEN), 'Content-Type':  'application/json'}
@@ -168,6 +169,16 @@ script:
             return None
         return d
 
+      # Converts unicode dictionary to string (recursively)
+    def unicode_to_str_recur(obj):
+        if isinstance(obj, dict):
+            obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k,v in obj.iteritems()}
+        elif isinstance(obj, list):
+            obj = map(unicode_to_str_recur, obj)
+        elif isinstance(obj, unicode):
+            obj = str(obj)
+        return obj
+
     # Filters recursively from dictionary (d1) all keys that do not appear in d2
     def filter_dict_nonintersection_key_to_value(d1, d2):
         if isinstance(d1, list):
@@ -259,7 +270,7 @@ script:
         params = {'filter': _filter} if _filter else {}
         headers = dict(AUTH_HEADERS)
         if _fields:
-            params.fileds = _fields
+            params['fields'] = _fields
         if _range:
             headers['Range'] = 'items={0}'.format(_range)
         return send_request('GET', full_url, headers, params)
@@ -271,7 +282,7 @@ script:
         params = {"filter": _filter} if _filter else {}
         headers = dict(AUTH_HEADERS)
         if _fields:
-            params.fileds = _fields
+            params['fields'] = _fields
         return send_request('GET', full_url, headers, params)
 
     # Updates a single offense and returns the updated offense
@@ -303,7 +314,7 @@ script:
         params = {"filter": _filter} if _filter else {}
         headers = dict(AUTH_HEADERS)
         if _fields:
-            params.fileds = _fields
+            params['fields'] = _fields
         if _range:
             headers['Range'] = 'items={0}'.format(_range)
         return send_request('GET', url, headers, params)
@@ -350,7 +361,7 @@ script:
         params = {'filter': _filter} if _filter else {}
         headers = dict(AUTH_HEADERS)
         if _fields:
-            params.fileds = _fields
+            params['fields'] = _fields
         if _range:
             headers['Range'] = 'items={0}'.format(_range)
         return send_request('GET', url, headers, params=params)
@@ -440,16 +451,18 @@ script:
     # Convert epoch to iso and closing_reason_id to closing reason name, and if full_enrichment then converts closing_reason_id to name
     def enrich_single_offense_result(offense, full_enrichment):
         enrich_offense_start_and_update_times(offense)
-        if offense['offense_type']:
+        if 'offense_type' in offense:
             offense['offense_type'] = convert_offense_type_id_to_name(offense['offense_type'])
-        if full_enrichment and offense['closing_reason_id']:
+        if full_enrichment and 'closing_reason_id' in offense:
             offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
 
     # Enriches offense result dictionary with source and destination addresses
     def enrich_offense_res_with_source_and_destination_address(response):
         src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
-        enrich_source_addresses_dict(src_adrs)
-        enrich_destination_addresses_dict(dst_adrs)
+        if src_adrs:
+            enrich_source_addresses_dict(src_adrs)
+        if dst_adrs:
+            enrich_destination_addresses_dict(dst_adrs)
         if isinstance(response, list):
             for offense in response:
                enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
@@ -471,10 +484,10 @@ script:
 
     # Helper method: Populates source and destination id dictionaries with the id key/values
     def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
-        if isinstance(offense['source_address_ids'], list):
+        if 'source_address_ids' in offense and isinstance(offense['source_address_ids'], list):
             for source_id in offense['source_address_ids']:
                 src_ids[source_id] = source_id
-        if isinstance(offense['local_destination_address_ids'], list):
+        if 'local_destination_address_ids' in offense and isinstance(offense['local_destination_address_ids'], list):
             for destination_id in offense['local_destination_address_ids']:
                 dst_ids[destination_id] = destination_id
         return None
@@ -500,10 +513,10 @@ script:
 
     # Helper method: For a single offense replaces the source and destination ids with the actual addresses
     def enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs):
-        if isinstance(offense['source_address_ids'], list):
+        if 'source_address_ids' in offense and isinstance(offense['source_address_ids'], list):
             for i in range(len(offense['source_address_ids'])):
                 offense['source_address_ids'][i] = src_adrs[offense['source_address_ids'][i]]
-        if isinstance(offense['local_destination_address_ids'], list):
+        if 'local_destination_address_ids' in offense and isinstance(offense['local_destination_address_ids'], list):
             for i in range(len(offense['local_destination_address_ids'])):
                 offense['local_destination_address_ids'][i] = dst_adrs[offense['local_destination_address_ids'][i]]
 
@@ -545,13 +558,13 @@ script:
     def get_search_command():
         search_id = demisto.args().get('search_id')
         raw_search = get_search(search_id)
-        raw_search = replace_keys(raw_search, SEARCH_ID_NAMES_MAP)
+        raw_search = filter_dict_nonintersection_key_to_value(replace_keys(raw_search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
         return get_entry_for_object('QRadar Search Info', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === {0})'.format(search_id))
 
     def get_search_results_command():
         search_id = demisto.args().get('search_id')
         raw_search_results = get_search_results(search_id, demisto.args().get('range'))
-        return get_entry_for_object('QRadar Search Results', raw_search_results, demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
+        return get_entry_for_object('QRadar Search Results', unicode_to_str_recur(raw_search_results), demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -672,7 +685,8 @@ script:
             'username': 'CreatedBy'
         }
         note = replace_keys(raw_note, note_names_map)
-        note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
+        if 'CreateTime' in note:
+          note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
         return get_entry_for_object('QRadar Note', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
 
     def create_note_command():
@@ -783,8 +797,6 @@ script:
         back in the response. Fields that are not named are excluded. Specify subfields
         in brackets and multiple fields in the same object are separated by commas.
         The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html"
-    - name: range
-      description: "Range of results to return. e.g.: 0-20"
     - name: headers
       description: Table headers to use the human readable output (if none provided, will show all table headers)
     outputs:
@@ -1419,16 +1431,6 @@ script:
       required: true
       default: true
       description: The name of the requestered reference.
-    - name: filter
-      description: 'Query to filter offense. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
-    - name: fields
-      description: "If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
-        The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--reference_data-sets-GET.html"
-    - name: range
-      description: 'Range of results to return. e.g.: 0-20'
     - name: headers
       description: Table headers to use the human readable output (if none provided, will show all table headers)
     outputs:
