@@ -114,7 +114,11 @@ script:
     // add args to a if exists
     function add(a, k, f) {
         if (args[k]) {
-            var parts = argToList(args[k].toString());
+            // check if the argument is a number
+            if(!isNaN(args[k])){
+                args[k] = args[k].toString();
+            }
+            var parts = argToList(args[k]);
             for (var i=0; i<parts.length; i++) {
                 parts[i] = parts[i].trim();
             }
