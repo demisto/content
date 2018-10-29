@@ -6,13 +6,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0bdda7da-b046-48c1-8efd-932842f29ad9
+    taskid: d2f0582e-13e8-4c58-8758-7ac4231b0f49
     type: start
     task:
-      id: 0bdda7da-b046-48c1-8efd-932842f29ad9
+      id: d2f0582e-13e8-4c58-8758-7ac4231b0f49
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -22,19 +21,107 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 377c2aa9-7562-4b8d-84e4-3a4a1acf796e
+    taskid: 93014e3e-b77c-414b-892a-2f07d0d47505
     type: regular
     task:
-      id: 377c2aa9-7562-4b8d-84e4-3a4a1acf796e
+      id: 93014e3e-b77c-414b-892a-2f07d0d47505
       version: -1
-      name: TextFromHTML
+      name: TextFromHTML English
+      description: Extract regular text from the given HTML
+      scriptName: TextFromHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      html:
+        simple: |-
+          <!DOCTYPE html>
+          <html>
+          <body>
+          <h1>This is heading 1</h1>
+          </body>
+          </html>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 307e44c4-21b5-4c40-8545-129db13f1ff7
+    type: title
+    task:
+      id: 307e44c4-21b5-4c40-8545-129db13f1ff7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: c083cbb1-22b6-4dc3-84af-36331320a7c2
+    type: regular
+    task:
+      id: c083cbb1-22b6-4dc3-84af-36331320a7c2
+      version: -1
+      name: TextFromHTML Hebrew
+      description: Extract regular text from the given HTML
+      scriptName: TextFromHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      html:
+        simple: |-
+          <!DOCTYPE html>
+          <html>
+          <body>
+          <h1>משפט בעברית לבדיקה</h1>
+          </body>
+          </html>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 7d367296-03e6-4a3c-801f-4db5d7c50899
+    type: regular
+    task:
+      id: 7d367296-03e6-4a3c-801f-4db5d7c50899
+      version: -1
+      name: TextFromHTML Spanish
       description: Extract regular text from the given HTML
       scriptName: TextFromHTML
       type: regular
@@ -49,36 +136,15 @@ tasks:
           <!DOCTYPE html>
           <html>
           <body>
-          <h1>This is heading 1</h1>
+          <h1>Frase en español para revisión</h1>
           </body>
           </html>
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: da5dc287-dcac-478a-8f25-26728a177cbe
-    type: title
-    task:
-      id: da5dc287-dcac-478a-8f25-26728a177cbe
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 403
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -87,9 +153,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 418,
+        "height": 735,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
