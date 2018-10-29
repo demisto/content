@@ -51,17 +51,6 @@ script:
                 return item
         return default
 
-    def return_error_and_exit(message, err):
-        if err is not None:
-            demisto.error(err)
-
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': message
-        })
-        sys.exit(0)
-
     def get_sites():
         fullurl = BASE_URL + '/api/sites'
         res = requests.get(
@@ -71,10 +60,7 @@ script:
             )
 
         if res.status_code < 200 or res.status_code >= 300:
-            return_error_and_exit(
-                'Failed to get sites',
-                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
-                )
+            return_error('Failed to get sites.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content))
 
         raw_sites = json.loads(xml2json(res.content))
 
@@ -164,10 +150,7 @@ script:
             )
 
         if res.status_code < 200 or res.status_code >= 300:
-            return_error_and_exit(
-                'Failed to get site',
-                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
-                )
+            return_error('Failed to get site {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(site_name, fullurl, res.status_code, res.content))
 
         raw_site = json.loads(xml2json(res.content))
 
@@ -220,10 +203,7 @@ script:
             )
 
         if res.status_code < 200 or res.status_code >= 300:
-            return_error_and_exit(
-                'Failed to get endpoints',
-                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
-                )
+            return_error('Failed to get endpoints.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content))
 
         raw_endpoints = json.loads(xml2json(res.content))
         if (not raw_endpoints or not raw_endpoints.has_key('BESAPI')):
@@ -295,9 +275,8 @@ script:
             )
 
         if res.status_code < 200 or res.status_code >= 300:
-            return_error_and_exit(
-                'Failed to get computer {}'.format(computer_id),
-                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
+            return_error(
+                'Failed to get computer {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(computer_id, fullurl, res.status_code, res.content)
                 )
 
         raw_endpoint = json.loads(xml2json(res.content))
@@ -405,9 +384,8 @@ script:
             )
 
         if res.status_code < 200 or res.status_code >= 300:
-            return_error_and_exit(
-                'Failed to get patches',
-                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
+            return_error(
+                'Failed to get patches. Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
                 )
 
         raw_patches = json.loads(xml2json(res.content))
@@ -474,10 +452,7 @@ script:
             )
 
         if res.status_code < 200 or res.status_code >= 300:
-            return_error_and_exit(
-                'Failed to get patch {}'.format(patch_id),
-                'Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
-                )
+            return_error('Failed to get patch/fixlet {}. Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(patch_id, fullurl, res.status_code, res.content))
 
         raw_patch = json.loads(xml2json(res.content))
         if (not raw_patch or not raw_patch.has_key('BES')):
@@ -567,6 +542,9 @@ script:
             )
 
         LOG('deploy_patch - raw response: ' + res.content)
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to deploy patch {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fixlet_id, fullurl, res.status_code, res.content))
+
         raw_action = json.loads(xml2json(res.content))
         if (not raw_action or not raw_action.has_key('BESAPI')):
             return None
@@ -612,6 +590,130 @@ script:
             }
         })
 
+
+    def action_delete(action_id):
+        res = requests.delete(
+            BASE_URL + '/api/action/' + action_id,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to delete action {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(action_id, fullurl, res.status_code, res.content))
+
+
+    def action_delete_command():
+        action_id = demisto.args().get('action_id')
+
+        action_delete(action_id)
+
+        demisto.results('Action {} was deleted successfully'.format(action_id))
+
+
+    def get_action_status(action_id):
+        fullurl = BASE_URL + '/api/action/' + action_id + '/status'
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to get action {} status.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(action_id, fullurl, res.status_code, res.content))
+
+        raw_action = json.loads(xml2json(res.content))
+        if (not raw_action or not raw_action.has_key('BESAPI')):
+            return None
+
+        raw_action = demisto.get(raw_action, 'BESAPI.ActionResults')
+        return raw_action.get('Status')
+
+    def get_action_status_command():
+        action_id = demisto.args().get('action_id')
+
+        status = get_action_status(action_id)
+
+        output = {
+            'ID': action_id,
+            'Status': status
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': output,
+            'HumanReadable': 'Action {} status is {}'.format(action_id, status),
+            'EntryContext': {
+                'Bigfix.Action(val.ID==obj.ID)': output
+            }
+        })
+
+    def action_stop(action_id):
+        res = requests.post(
+            BASE_URL + '/api/action/' + action_id + '/stop',
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to stop action {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(action_id, fullurl, res.status_code, res.content))
+
+
+    def action_stop_command():
+        action_id = demisto.args().get('action_id')
+
+        action_stop(action_id)
+
+        demisto.results('Action {} was stopped successfully'.format(action_id))
+
+    def query(relevance):
+        fullurl = BASE_URL + '/api/query'
+        params = {
+            'relevance': relevance
+        }
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE,
+            params=params
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Query failed.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content))
+
+        raw_action = json.loads(xml2json(res.content))
+        if (not raw_action or not raw_action.has_key('BESAPI')):
+            demisto.info('BigFix query has incorrect response format. Response Body: {}'.format(res.content))
+            return_error('The response has incorrect format. Check the logs')
+
+        if demisto.get(raw_action, 'BESAPI.Query.Error'):
+            error = demisto.get(raw_action, 'BESAPI.Query.Error')
+            return_error(error)
+
+        raw_query_results = demisto.get(raw_action, 'BESAPI.Query')
+        return raw_query_results
+
+    def query_command():
+        relevance = demisto.args().get('relevance')
+        results = query(relevance)
+
+        if results == None:
+            demisto.results('No results')
+            sys.exit(0)
+
+        output = demisto.dt(results, 'Result.Answer.#text')
+        if not isinstance(output, list):
+            output = [output]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'HumanReadable': tableToMarkdown('Query Results: {}'.format(relevance), output, ['Results']),
+            'EntryContext': {
+                'Bigfix.QueryResults': output
+            }
+        })
+
     try:
         # do requets to /api/help
         # should be good indicator for test connectivity
@@ -650,10 +752,23 @@ script:
 
         elif demisto.command() == 'bigfix-deploy-patch':
             deploy_patch_command()
+
+        elif demisto.command() == 'bigfix-action-delete':
+            action_delete_command()
+
+        elif demisto.command() == 'bigfix-action-status':
+            get_action_status_command()
+
+        elif demisto.command() == 'bigfix-action-stop':
+            action_stop_command()
+
+        elif demisto.command():
+            query_command()
+
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
-        raise
+        return_error(e.message)
   type: python
   commands:
   - name: bigfix-get-sites
@@ -678,11 +793,11 @@ script:
       description: Site domain
       type: string
     - contextPath: Bigfix.Site.GatherURL
-      type: string
       description: Gather URL
-    - contextPath: Bigfix.Site.GlobalReadPermission
       type: string
+    - contextPath: Bigfix.Site.GlobalReadPermission
       description: Global Read Permission available or not.
+      type: string
     description: Retrieves all the sites
   - name: bigfix-get-site
     arguments:
@@ -719,11 +834,11 @@ script:
       description: Site domain
       type: string
     - contextPath: Bigfix.Site.GatherURL
-      type: string
       description: Gather URL
-    - contextPath: Bigfix.Site.GlobalReadPermission
       type: string
+    - contextPath: Bigfix.Site.GlobalReadPermission
       description: Global Read Permission available or not.
+      type: string
     description: Retrieve single site by name and type
   - name: bigfix-get-patches
     arguments:
@@ -745,8 +860,8 @@ script:
       description: Patch (fixlet) ID
       type: string
     - contextPath: Bigfix.Patch.LastModified
-      type: date
       description: Last modified Timestamp.
+      type: date
     - contextPath: Bigfix.Patch.Name
       description: Name of the Patch requested.
       type: string
@@ -754,14 +869,14 @@ script:
       description: The link for the patch
       type: string
     - contextPath: Bigfix.Patch.Description
-      type: string
       description: Description of the Patch requested.
+      type: string
     - contextPath: Bigfix.Patch.Relevance
-      type: string
       description: Relevance of the Patch requested.
-    - contextPath: Bigfix.Patch.Category
       type: string
+    - contextPath: Bigfix.Patch.Category
       description: Category of the Patch requested.
+      type: string
     - contextPath: Bigfix.Patch.DownloadSize
       description: Download size.
       type: string
@@ -781,8 +896,8 @@ script:
       description: Action ID of the Patch requested.
       type: string
     - contextPath: Bigfix.Patch.ActionScript
-      type: string
       description: Action Script of the Patch requested.
+      type: string
     description: Retrieve all the patches (fixlets) of site
   - name: bigfix-get-endpoints
     arguments: []
@@ -1029,8 +1144,8 @@ script:
     - contextPath: Bigfix.Patch.Relevance
       description: Relevance of the Patch requested.
     - contextPath: Bigfix.Patch.Category
-      type: string
       description: Category of the Patch requested.
+      type: string
     - contextPath: Bigfix.Patch.DownloadSize
       description: Download size.
     - contextPath: Bigfix.Patch.Source
@@ -1045,8 +1160,45 @@ script:
       description: Action ID of the Patch requested.
       type: string
     - contextPath: Bigfix.Patch.ActionScript
-      type: string
       description: Action Script of the Patch requested.
+      type: string
     description: Retrieve patch (fixlet) by id
+  - name: bigfix-action-delete
+    arguments:
+    - name: action_id
+      required: true
+      description: Action ID
+    description: 'Stops and deletes the specified action. Note: You cannot delete
+      actions that are members of a Multiple Action Group. This note applies to IBM
+      BigFix V9.2 and later.'
+  - name: bigfix-action-status
+    arguments:
+    - name: action_id
+      required: true
+      description: Action ID
+    outputs:
+    - contextPath: Bigfix.Action.ID
+      description: Action ID
+      type: string
+    - contextPath: Bigfix.Action.Status
+      description: Action Status (e.g Open, Stopped)
+      type: string
+    description: Gets the status of an action against it's targets.
+  - name: bigfix-action-stop
+    arguments:
+    - name: action_id
+      required: true
+      description: Action ID
+    description: Stops the specified action.
+  - name: bigfix-query
+    arguments:
+    - name: relevance
+      required: true
+      description: 'Relevance query (example:  names of bes computers)'
+    outputs:
+    - contextPath: Bigfix.QueryResults
+      description: The results of the query
+      type: unknown
+    description: Evaluate a relevance expression and get the result. This runs request
+      is processed through the server to WebReports.
   runonce: false
-releaseNotes: "-"
