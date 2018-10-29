@@ -103,7 +103,7 @@ class Content:
                         return None
 
                     if ans is None:
-                        print_error("Error:\n[%s] is missing releaseNotes entry" % (path,))
+                        print_error("Error:\n[%s] is missing releaseNotes/description entry" % (path,))
                         missing_rn = True
                     elif ans:
                         new_count += 1
