@@ -1,5 +1,5 @@
 id: Cisco Umbrella Test
-version: 1
+version: 38
 name: Cisco Umbrella Test
 starttaskid: "0"
 tasks:
@@ -109,10 +109,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: ddd567a1-2413-4a9a-89c0-d4a467880cae
+    taskid: 1c13ae89-add8-410d-87f0-f513243685a8
     type: regular
     task:
-      id: ddd567a1-2413-4a9a-89c0-d4a467880cae
+      id: 1c13ae89-add8-410d-87f0-f513243685a8
       version: -1
       name: umbrella-domain-related
       script: '|||umbrella-domain-related'
@@ -124,7 +124,7 @@ tasks:
       - "11"
     scriptarguments:
       domain:
-        simple: walla.com
+        simple: google.com
     separatecontext: false
     view: |-
       {
@@ -317,10 +317,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 021e253d-9117-4557-894e-a45589e0d2f3
+    taskid: aca1aaa1-6fc7-4ed5-8c8b-ee1f7a2b80b1
     type: condition
     task:
-      id: 021e253d-9117-4557-894e-a45589e0d2f3
+      id: aca1aaa1-6fc7-4ed5-8c8b-ee1f7a2b80b1
       version: -1
       name: Test related domains context
       type: condition
@@ -333,14 +333,30 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: in
           left:
             value:
               simple: Domain.Related.Name
             iscontext: true
           right:
             value:
-              simple: c3s2.iphmx.com
+              simple: google.com
+        - operator: in
+          left:
+            value:
+              simple: Domain.Related.Name
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+        - operator: in
+          left:
+            value:
+              simple: Domain.Related.Name
+            iscontext: true
+          right:
+            value:
+              simple: yahoo.com
     view: |-
       {
         "position": {
@@ -480,10 +496,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: 12abeeb2-4e7b-4263-83c5-c3765ca51e5c
+    taskid: 29978faf-abf8-4e8c-8af1-d4e637b2f0ba
     type: condition
     task:
-      id: 12abeeb2-4e7b-4263-83c5-c3765ca51e5c
+      id: 29978faf-abf8-4e8c-8af1-d4e637b2f0ba
       version: -1
       name: Test IP malicious domains context
       type: condition
@@ -496,7 +512,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: in
           left:
             value:
               simple: Domain.Malicious.Vendor
@@ -616,10 +632,10 @@ tasks:
       id: 945fe664-c489-4041-872a-8fa4c096b2be
       version: -1
       name: Domain reputation
-      script: Cisco Umbrella Investigate|||domain
+      script: Cisco Umbrella Investigate - Python|||domain
       type: regular
       iscommand: true
-      brand: Cisco Umbrella Investigate
+      brand: Cisco Umbrella Investigate - Python
     nexttasks:
       '#none#':
       - "21"
@@ -1305,10 +1321,10 @@ tasks:
     note: false
   "43":
     id: "43"
-    taskid: c2d4e52e-17bd-4192-8344-33561f0d27e0
+    taskid: 71d96738-78e7-49ec-8f0c-8bf559363047
     type: condition
     task:
-      id: c2d4e52e-17bd-4192-8344-33561f0d27e0
+      id: 71d96738-78e7-49ec-8f0c-8bf559363047
       version: -1
       name: Test umbrella-get-whois-for-domain Context
       type: condition
@@ -1324,7 +1340,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Umbrella.WHOIS.Data.IANAID
+              simple: Domain.Umbrella.Whois.IANAID
             iscontext: true
           right:
             value:

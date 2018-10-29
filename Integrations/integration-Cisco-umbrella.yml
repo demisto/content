@@ -2726,34 +2726,34 @@ script:
       required: true
       description: 'Domain name without wildcards and including TLD. (e.g. : www.cnn.com)'
     outputs:
-    - contextPath: Umbrella.WHOIS.Domain
+    - contextPath: Domain.Umbrella.Whois.Name
       description: Domain's name.
       type: string
-    - contextPath: Umbrella.WHOIS.Data.RegistrarName
+    - contextPath: Domain.Umbrella.Whois.RegistrarName
       description: Domain registrar name
       type: string
-    - contextPath: Umbrella.WHOIS.Data.LastRetrieved
+    - contextPath: Domain.Umbrella.Whois.LastRetrieved
       description: Domain last retrieved date
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Created
+    - contextPath: Domain.Umbrella.Whois.Created
       description: Domain created date
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Updated
+    - contextPath: Domain.Umbrella.Whois.Updated
       description: Domain updated date
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Expires
+    - contextPath: Domain.Umbrella.Whois.Expires
       description: Domain expiry date
       type: string
-    - contextPath: Umbrella.WHOIS.Data.IANAID
+    - contextPath: Domain.Umbrella.Whois.IANAID
       description: IANA ID
       type: string
-    - contextPath: Umbrella.WHOIS.Data.LastObserved
+    - contextPath: Domain.Umbrella.Whois.LastObserved
       description: Domain last observed
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Nameservers.Name
+    - contextPath: Domain.Umbrella.Whois.Nameservers.Name
       description: Domain's name servers
       type: string
-    - contextPath: Umbrella.WHOIS.Data.Emails.Name
+    - contextPath: Domain.Umbrella.Whois.Emails.Name
       description: Domain's email
       type: string
     description: This command will provide a standard WHOIS response record for a
