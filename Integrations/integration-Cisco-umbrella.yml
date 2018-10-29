@@ -2908,4 +2908,4 @@ script:
   runonce: false
 releaseNotes: "Integration now written in python, added commands"
 tests:
-  - Cisco Umbrella Test
+  - Cisco-Umbrella-Test
