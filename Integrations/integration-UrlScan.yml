@@ -393,9 +393,9 @@ script:
     - contextPath: URLScan.Certificates
       description: Certificates found for the URL scanned
     description: Submit an url to scan
-  releaseNotes: Deprecated ip, url and file commands. Reformatted context outputs.
   dockerimage: demisto/urlscan
   runonce: false
+releaseNotes: Deprecated ip, url and file commands. Reformatted context outputs.
 fromversion: 3.5.0
 tests:
   - urlscan_malicious_Test
