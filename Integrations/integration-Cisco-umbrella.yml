@@ -57,6 +57,7 @@ script:
         'Authorization': 'Bearer {}'.format(API_TOKEN),
         'Accept': 'application/json'
     }
+    DEFAULT_THRESHOLD = -100
     # remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -304,10 +305,13 @@ script:
         # Get vars
         regex = demisto.args()['regex']
         start = demisto.args().get('start','')
+        limit = int(demisto.args().get('limit'))
         # Fetch data
         matches = get_domain_search(regex,start)
         if matches:
             # Process response - build context and markdown table
+            if limit:
+                matches = matches[:limit]
             contents = matches[:]
             for index, row in enumerate(contents):
                 contents[index] = {
@@ -471,6 +475,7 @@ script:
         results = []
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
+        threshold = int(demisto.args().get('threshold'))
         # Fetch data
         res = get_domain_security(domain)
         if res:
@@ -494,12 +499,27 @@ script:
             if domain_security_context:
                 secure_rank = res.get('securerank2', False)
                 if secure_rank:
-                    DBotScore = securerank_to_dbotscore(secure_rank)
+                    if threshold != DEFAULT_THRESHOLD and secure_rank < threshold:
+                        DBotScore = 3
+                    else:
+                        DBotScore = securerank_to_dbotscore(secure_rank)
+                    context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = {
+                        'Indicator': domain,
+                        'Type': 'Domain',
+                        'Vendor': 'Cisco Umbrella Investigate',
+                        'Score': DBotScore
+                    }
 
                 context[outputPaths['domain']] = {
                     'Name': domain,
                     'Security': domain_security_context
                 }
+
+                if DBotScore == 3:
+                    context[outputPaths['domain']]['Malicious'] = {
+                        'Vendor': 'Cisco Umbrella Investigate',
+                        'Description': 'Malicious domain found via umbrella-domain-security'
+                    }
 
         results.append ({
             'Type': entryTypes['note'],
@@ -594,6 +614,7 @@ script:
         results = []
         # Get vars
         ip = demisto.args()['ip']
+        limit = int(demisto.args().get('limit'))
         # Fetch data
         response_object = get_ip_dns_history(ip)
         if response_object:
@@ -601,6 +622,8 @@ script:
             features = response_object['features']
             # Process response - build context and markdown table
             response_contents = []
+            if limit:
+                response = response[:limit]
             for item in response:
                 response_contents.append({
                     'RR': item['rr'],
@@ -792,8 +815,8 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Reputation for: ' + domain, contents, headers) +
-            tableToMarkdown('Umbrella Investigate WHOIS Record Data for: ' + domain, whois, headers) +
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers) +
+            tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers) +
             tableToMarkdown('Name Servers:', { 'Name Servers': name_servers }, headers) +
             tableToMarkdown('Emails:', { 'Emails': emails }, headers) +
             tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
@@ -835,7 +858,7 @@ script:
             if is_co_occurences:
                 contents_co_occurences = get_co_occurences(domain)
                 if contents_co_occurences:
-                    co_occurences_md = tableToMarkdown('Umbrella Investigate Domain Co-occurences for: ' + domain, contents_co_occurences, headers)
+                    co_occurences_md = tableToMarkdown('"Umbrella Investigate" Domain Co-occurences for: ' + domain, contents_co_occurences, headers)
                     if related_domains:
                         context['Umbrella.CoOccurences(val.Domain && val.Domain == obj.Domain)'] = {
                             'Domain': domain,
@@ -852,7 +875,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': [contents_related_domains, contents_co_occurences],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Related Domains for a Domain: ', contents_related_domains, headers) + co_occurences_md,
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Related Domains for a Domain: ', contents_related_domains, headers) + co_occurences_md,
             'EntryContext': context
         })
 
@@ -906,7 +929,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Classifiers: ' + domain, contents, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Classifiers: ' + domain, contents, headers),
             'EntryContext': context
         })
 
@@ -936,6 +959,7 @@ script:
         start_date_string = demisto.args()['start']
         stop_date_string = demisto.args()['stop']
         match = demisto.args()['match']
+        limit = int(demisto.args().get('limit'))
 
         # validation and user input conversion
         if match != 'all' and match != 'exact' and match != 'component':
@@ -952,7 +976,8 @@ script:
             stop_date = dates[1]
             # Query timestamp/hour needs to be calculated manually, every entry represents 1 hour (3600 secods). ts is in milliseconds
             query_ts = start_date/1000
-
+            if limit:
+                queries = queries[:limit]
             for query in queries:
                 contents.append({
                     'Queries': query,
@@ -978,7 +1003,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Volume: ' + domain + '\nStart Date ' + timestamp_to_date(start_date) + ' - Stop Date ' + timestamp_to_date(stop_date), contents, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Volume: ' + domain + '\nStart Date ' + timestamp_to_date(start_date) + ' - Stop Date ' + timestamp_to_date(stop_date), contents, headers),
             'EntryContext': context
         })
 
@@ -1015,6 +1040,7 @@ script:
         results = []
         # Get vars
         domain = extract_domain_name(demisto.args()['domain'])
+        threshold = int(demisto.args().get('threshold'))
         # Fetch data
         res = get_domain_details(domain)
         if res:
@@ -1042,7 +1068,10 @@ script:
                 }
                 secure_rank = res.get('securerank2', False)
                 if secure_rank:
-                    dbotscore = securerank_to_dbotscore(secure_rank)
+                    if threshold != DEFAULT_THRESHOLD and secure_rank < threshold:
+                        dbotscore = 3
+                    else:
+                        dbotscore = securerank_to_dbotscore(secure_rank)
                     context['DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'] = {
                         'Indicator': domain,
                         'Type': 'Domain',
@@ -1053,7 +1082,7 @@ script:
                         context[outputPaths['domain']] = {}
                         context[outputPaths['domain']]['Malicious'] = {
                             'Vendor': 'Cisco Umbrella Investigate',
-                            'Description': 'Malicious domain found via get_domain_security'
+                            'Description': 'Malicious domain found via get-domain-details'
                         }
 
         results.append ({
@@ -1061,7 +1090,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Reputation: ' + domain, contents, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Reputation: ' + domain, contents, headers),
             'EntryContext': context
         })
 
@@ -1326,7 +1355,7 @@ script:
             # Process response - build context and markdown table
             nameservers = res.get('nameServers')
             emails = res.get('emails')
-            domain = {
+            whois = {
                 'Name': res['domainName'],
                 'RegistrarName': res['registrarName'],
                 'LastRetrieved': res.get('timeOfLatestRealtimeCheck'),
@@ -1337,35 +1366,32 @@ script:
                 'LastObserved': res['auditUpdatedDate'],
             }
 
-            table_domain = {
-                'Name': domain['Name'],
-                'Registrar Name': domain['RegistrarName'],
-                'Last Retrieved': timestamp_to_date(domain['LastRetrieved']),
-                'Created': domain['Created'],
-                'Updated': domain['Updated'],
-                'Expires': domain['Expires'],
-                'IANAID': domain['IANAID'],
-                'Last Observed': domain['LastObserved'],
+            table_whois = {
+                'Name': whois['Name'],
+                'Registrar Name': whois['RegistrarName'],
+                'Last Retrieved': timestamp_to_date(whois['LastRetrieved']),
+                'Created': whois['Created'],
+                'Updated': whois['Updated'],
+                'Expires': whois['Expires'],
+                'IANAID': whois['IANAID'],
+                'Last Observed': whois['LastObserved'],
             }
 
             contents_nameserver = { 'Nameservers': nameservers }
             contents_email = { 'Emails': emails }
 
-            domain.update({
+            whois.update({
                 'Nameservers': nameservers,
                 'Emails': emails
             })
-            context['Umbrella.WHOIS(val.Domain && val.Domain == obj.Domain)'] = {
-                'Domain': original_domain,
-                'Data': domain
-            }
+            context['Domain.Umbrella.Whois(val.Name && val.Name == obj.Name)'] = whois
 
         results.append ({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': [table_domain, contents_nameserver, contents_email],
+            'Contents': [table_whois, contents_nameserver, contents_email],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate WHOIS Record Data for: ' + domain['Name'], table_domain, headers) + tableToMarkdown('Nameservers: ', contents_nameserver, headers) + tableToMarkdown('Email Addresses: ', contents_email, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'], table_whois, headers) + tableToMarkdown('Nameservers: ', contents_nameserver, headers) + tableToMarkdown('Email Addresses: ', contents_email, headers),
             'EntryContext': context
         })
 
@@ -1439,7 +1465,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Malicious Domains for an IP: ' + ip, contents, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Malicious Domains for an IP: ' + ip, contents, headers),
             'EntryContext': context
         })
 
@@ -1505,7 +1531,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': [title_contents, contents],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Pattern Search for: ' + regex, title_contents, headers) + tableToMarkdown('Matches: ', contents, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Pattern Search for: ' + regex, title_contents, headers) + tableToMarkdown('Matches: ', contents, headers),
             'EntryContext': context
         })
 
@@ -1571,7 +1597,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate Domain Timeline: ' + domain, contents, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Timeline: ' + domain, contents, headers),
             'EntryContext': context
         })
 
@@ -1629,7 +1655,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate IP Timeline: ' + ip, contents, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" IP Timeline: ' + ip, contents, headers),
             'EntryContext': context
         })
 
@@ -1687,7 +1713,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Umbrella Investigate URL Timeline: ' + url, contents, headers),
+            'HumanReadable': tableToMarkdown('"Umbrella Investigate" URL Timeline: ' + url, contents, headers),
             'EntryContext': context
         })
 
@@ -1896,6 +1922,10 @@ script:
       required: true
       default: true
       description: Enter a domain like (www.cnn.com)
+    - name: threshold
+      description: Manually set a threshold instead of secure rank in order to determine
+        if domain is malicious. from -100(malicious) to 100(good)
+      defaultValue: "-100"
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -2149,6 +2179,10 @@ script:
       required: true
       default: true
       description: 'Enter an IP Address:'
+    - name: limit
+      description: Limit fetched results, removing limit can fetch big amount of results
+        into context.
+      defaultValue: "100"
     outputs:
     - contextPath: IP.Address
       description: IP address
@@ -2291,6 +2325,10 @@ script:
     - name: start
       description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time, MAX:
         -31days'
+    - name: limit
+      description: Limit fetched results, removing limit can fetch big amount of results
+        into context.
+      defaultValue: "100"
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -2384,7 +2422,9 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
       type: string
-    description: Get Domain Reputation info using Cisco Umbrella Investigate.
+    description: Get Domain Reputation info using Cisco Umbrella Investigate. Domain
+      reputation score is either true or false from the service and cannot be modified
+      using a threshold.
   - name: umbrella-get-related-domains
     arguments:
     - name: domain
@@ -2475,6 +2515,10 @@ script:
         Examples are www.cisco.com, mail.cisco.com, wwwin.cisco.com, something.else.cisco.com.     3.All
         returns the sum of component and exact, this is the default.'
       defaultValue: all
+    - name: limit
+      description: Limit fetched results, removing limit can fetch big amount of results
+        into context.
+      defaultValue: "100"
     outputs:
     - contextPath: Umbrella.QueryVolume.Domain
       description: The domain's name.
@@ -2500,6 +2544,10 @@ script:
       required: true
       description: 'The domain name you would like see the security info for. (e.g.
         : www.cnn.com)'
+    - name: threshold
+      description: Manually set a threshold instead of secure rank in order to determine
+        if domain is malicious. from -100(malicious) to 100(good)
+      defaultValue: "-100"
     outputs:
     - contextPath: Umbrella.DomainDetails.Domain
       description: The domain's name.
