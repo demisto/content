@@ -67,7 +67,7 @@ REGEXES_TO_SCHEMA_DIC={INTEGRATION_REGEX: "integration", PLAYBOOK_REGEX: "playbo
 
 SCHEMAS_PATH = "Tests/schemas/"
 
-DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, 
+DIRS = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR,
         LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR]
 
 
@@ -104,40 +104,47 @@ def checked_type(file_path):
 
 def get_modified_files(files_string):
     all_files = files_string.split('\n')
+    added_files_list = []
     modified_files_list = []
     for f in all_files:
         file_data = f.split()
         if not file_data:
             continue
+
         file_status = file_data[0]
         file_path = file_data[1]
+
         if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.append(file_path)
+        if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
+            added_files_list.append(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
-    return modified_files_list
+
+    return modified_files_list, added_files_list
 
 
 def validate_file_release_notes(file_path):
     data_dictionary = None
     if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
         return True # Test playbooks don't need releaseNotes
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".json"):
-            data_dictionary = json.load(f)
-        elif file_path.endswith(".yaml") or file_path.endswith('.yml'):
-            try:
-                data_dictionary = yaml.safe_load(f)
-            except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return False
 
-    if data_dictionary and data_dictionary.get('releaseNotes') is None:
-        print_error("File " + file_path + " is missing releaseNotes, please add.")
-        return False
-    
+    if os.path.isfile(file_path):
+        with open(os.path.expanduser(file_path), "r") as f:
+            if file_path.endswith(".json"):
+                data_dictionary = json.load(f)
+            elif file_path.endswith(".yaml") or file_path.endswith('.yml'):
+                try:
+                    data_dictionary = yaml.safe_load(f)
+                except Exception as e:
+                    print_error(file_path + " has yml structure issue. Error was: " + str(e))
+                    return False
+
+        if data_dictionary and data_dictionary.get('releaseNotes') is None:
+            print_error("File " + file_path + " is missing releaseNotes, please add.")
+            return False
+
     return True
-
 
 def validate_schema(file_path, matching_regex=None):
     if matching_regex is None:
@@ -145,10 +152,13 @@ def validate_schema(file_path, matching_regex=None):
             if re.match(regex, file_path, re.IGNORECASE):
                 matching_regex = regex
                 break
-    
+
     if matching_regex in SKIPPED_SCHEMAS:
         return True
-    
+
+    if not os.path.isfile(file_path):
+        return True
+
     if matching_regex is not None and REGEXES_TO_SCHEMA_DIC.get(matching_regex):
         c = Core(source_file=file_path, schema_files=[SCHEMAS_PATH + REGEXES_TO_SCHEMA_DIC.get(matching_regex) + '.yml'])
         try:
@@ -165,7 +175,7 @@ def validate_schema(file_path, matching_regex=None):
 
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
-    modified_files = get_modified_files(files_string)
+    modified_files, added_files = get_modified_files(files_string)
     missing_release_notes = False
     wrong_schema = False
     for file_path in modified_files:
@@ -173,6 +183,11 @@ def validate_committed_files(branch_name):
         if not validate_file_release_notes(file_path):
             missing_release_notes = True
 
+        if not validate_schema(file_path):
+            wrong_schema = True
+
+    for file_path in added_files:
+        print "Validating {}".format(file_path)
         if not validate_schema(file_path):
             wrong_schema = True
 
@@ -205,9 +220,9 @@ def validate_all_files():
                 if not validate_schema(os.path.join(root, file_name), regex):
                     print_error("file " + os.path.join(root, file_name) + " schema is wrong.")
                     wrong_schema = True
- 
+
     if wrong_schema or found_wrong_name:
-        sys.exit(1)    
+        sys.exit(1)
 
 
 def validate_conf_json():
@@ -239,8 +254,8 @@ def validate_conf_json():
 
 
 def main():
-    ''' 
-    This script runs both in a local and a remote environment. In a local environment we don't have any 
+    '''
+    This script runs both in a local and a remote environment. In a local environment we don't have any
     logger assigned, and then pykwalify raises an error, since it is logging the validation results.
     Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
     so the user won't be disturbed by non critical loggings
