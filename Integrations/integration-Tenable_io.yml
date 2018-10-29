@@ -269,7 +269,7 @@ script:
             'id': scan_id,
             'targets': targets
         })
-        return get_entry_for_object('The requested scan was launched successfully', 'Tenable.Scan', res)
+        return get_entry_for_object('The requested scan was launched successfully', 'Tenable.Scan', replace_keys(res))
 
     def get_report(scan_id, info, detailed):
         results = []
@@ -289,8 +289,7 @@ script:
         if detailed == 'yes':
             assets = replace_keys(scan_details['hosts'] + scan_details['comphosts'])
             results.append(get_entry_for_object('Assets', 'Tenable.Assets', assets, SCAN_REPORT_HOSTS_HEADERS))
-            remediations = scan_details['remediations']['remediations']
-            if len(remediations) > 0:
+            if 'remediations' in scan_details and 'remediations' in scan_details['remediations'] and len(scan_details['remediations']['remediations']) > 0:
                 remediations = replace_keys(remediations, REMEDIATIONS_NAMES_MAP)
                 results.append(get_entry_for_object('Remediations', 'Tenable.Remediations', remediations, SCAN_REPORT_REMEDIATIONS_HEADERS))
         return results
@@ -411,6 +410,9 @@ script:
     - contextPath: Tenable.Scan.Id
       description: The unique id of the scan.
       type: number
+    - contextPath: Tenable.Scan.ScanUuid
+      description: The UUID of the scan.
+      type: string
     - contextPath: Tenable.Scan.Targets
       description: The targets to be scanned.
       type: string

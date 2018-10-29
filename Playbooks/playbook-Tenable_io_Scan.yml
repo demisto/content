@@ -69,19 +69,25 @@ tasks:
       id: 990ff4bf-b662-4e14-83fb-b6654144a57c
       version: -1
       name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: "Wait for scan to finish"
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       Ids:
         complex:
-          root: Tenable
-          accessor: Scan.Id
+          root: inputs.scan-id
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -124,8 +130,7 @@ tasks:
     scriptarguments:
       scan-id:
         complex:
-          root: Tenable
-          accessor: Scan.Id
+          root: inputs.scan-id
     separatecontext: false
     view: |-
       {
@@ -154,7 +159,8 @@ tasks:
       info:
         simple: "yes"
       scan-id:
-        simple: ${Tenable.Scan.Id}
+        complex:
+          root: inputs.scan-id
     separatecontext: false
     view: |-
       {
