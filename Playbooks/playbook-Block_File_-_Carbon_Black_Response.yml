@@ -334,3 +334,5 @@ outputs:
   description: Last block hostname
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
+tests:
+  - block_indicators_-_generic_-_test
