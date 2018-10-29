@@ -532,11 +532,11 @@ tasks:
       group: {}
       order: {}
       select:
-        simple: '"(select EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)"'
+        simple: (select EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)
       target:
         simple: EPOLeafNode
       where:
-        simple: '"(hasTag EPOLeafNode.AppliedTags 4)"'
+        simple: (hasTag EPOLeafNode.AppliedTags 4)
     separatecontext: false
     view: |-
       {
