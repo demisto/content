@@ -526,7 +526,7 @@
         },
         {
             "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
+            "playbookID": "Cisco Umbrella Test"
         },
         {
             "integrations": "icebrg",
