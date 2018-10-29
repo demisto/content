@@ -183,7 +183,7 @@ def changed_id(file_path):
 
 
 def validate_committed_files(branch_name):
-    files_string = run_git_command("git diff --name-status HEAD")
+    files_string = run_git_command("git diff --name-status --no-merges HEAD")
     modified_files, added_files = get_modified_files(files_string)
     missing_release_notes = False
     wrong_schema = False
