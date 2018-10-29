@@ -173,12 +173,25 @@ def validate_schema(file_path, matching_regex=None):
     return True
 
 
+def changed_id(file_path, branch_name):
+    change_string = run_git_command("git diff -G'id: ' --pickaxe-all origin/master...{0}".format(branch_name))
+    if re.match("\+id: .*", change_string):
+        return True
+
+    return False
+
+
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
     modified_files, added_files = get_modified_files(files_string)
     missing_release_notes = False
     wrong_schema = False
+    is_changed_id = False
     for file_path in modified_files:
+        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            if changed_id(file_path, branch_name):
+                is_changed_id = True
+
         print "Validating {}".format(file_path)
         if not validate_file_release_notes(file_path):
             missing_release_notes = True
@@ -191,7 +204,7 @@ def validate_committed_files(branch_name):
         if not validate_schema(file_path):
             wrong_schema = True
 
-    if missing_release_notes or wrong_schema:
+    if missing_release_notes or wrong_schema or is_changed_id:
         sys.exit(1)
 
 
