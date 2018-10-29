@@ -36,19 +36,21 @@ script:
     # Header names transformation maps
     # Format: {'OldName': 'NewName'}
     FIELD_NAMES_MAP = {'ScanType': 'Type', 'ScanStart': 'StartTime', 'ScanEnd': 'EndTime', 'ScannerName': 'Scanner', 'SeenLast': 'LastSeen', 'SeenFirst': 'FirstSeen', 'PluginId': 'Id'}
+    LAUNCH_SCAN_NAMES_MAP = {'ScanUuid': 'Uuid'}
     REMEDIATIONS_NAMES_MAP = {'Value': 'Id', 'Vulns': 'AssociatedVulnerabilities', 'Hosts': 'AffectedHosts', 'Remediation': 'Description'}
     ASSET_VULNS_NAMES_MAP = {'PluginId': 'Id', 'PluginFamily': 'Family', 'PluginName': 'Name'}
     TEMPLATE_NAMES_MAP = {'Desc': 'Description', 'IsWas': 'WebApplicationScanning', 'IsAgent': 'IsForAgent'}
 
     # Output Headers / Context Keys
-    GET_SCANS_HEADERS = ('Id', 'Uuid', 'Name', 'Type', 'Owner', 'Enabled', 'Status', 'UserPermissions', 'CreationDate', 'LastModificationDate', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId')
-    SCAN_REPORT_INFO_HEADERS = ('Id', 'Uuid', 'Name', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId')
-    SCAN_REPORT_VULNERABILITIES_HEADERS = ('Id', 'Name', 'Description', 'FirstSeen', 'LastSeen', 'Solution', 'Synopsis', 'Count', 'Severity', 'RiskFactor')
-    SCAN_REPORT_HOSTS_HEADERS = ('AssetId', 'Hostname', 'Score', 'Critical', 'High', 'Medium', 'Low')
-    SCAN_REPORT_REMEDIATIONS_HEADERS = ('Id', 'Description', 'AffectedHosts', 'AssociatedVulnerabilities')
-    VULNERABILITY_DETAILS_HEADERS = ('Description', 'FirstSeen', 'LastSeen', 'Solution', 'Synopsis', 'Count', 'Severity', 'Family', 'ModificationDate', 'Name', 'Type', 'PublicationDate', 'RiskFactor', 'CvssVector', 'CvssBaseScore', 'Cvss3Vector', 'Cvss3BaseScore')
-    ASSET_VULNS_HEADERS = ('Count', 'Family', 'Id', 'Name', 'VulnerabilityState', 'Severity')
-    TEMPLATE_HEADERS = ('Unsupported', 'CloudOnly', 'Description', 'SubscriptionOnly', 'WebApplicationScanning', 'Title', 'IsForAgent', 'Uuid', 'ManagerOnly', 'Name')
+    GET_SCANS_HEADERS = ['Id', 'Uuid', 'Name', 'Type', 'Owner', 'Enabled', 'Status', 'UserPermissions', 'CreationDate', 'LastModificationDate', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId']
+    LAUNCH_SCAN_HEADERS = ['Id', 'Uuid', 'Targets']
+    SCAN_REPORT_INFO_HEADERS = ['Id', 'Uuid', 'Name', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId']
+    SCAN_REPORT_VULNERABILITIES_HEADERS = ['Id', 'Name', 'Description', 'FirstSeen', 'LastSeen', 'Solution', 'Synopsis', 'Count', 'Severity', 'RiskFactor']
+    SCAN_REPORT_HOSTS_HEADERS = ['AssetId', 'Hostname', 'Score', 'Critical', 'High', 'Medium', 'Low']
+    SCAN_REPORT_REMEDIATIONS_HEADERS = ['Id', 'Description', 'AffectedHosts', 'AssociatedVulnerabilities']
+    VULNERABILITY_DETAILS_HEADERS = ['Name', 'Type', 'Synopsis', 'Description', 'FirstSeen', 'LastSeen', 'Solution', 'Count', 'Severity', 'Family', 'ModificationDate', 'PublicationDate', 'RiskFactor', 'CvssVector', 'CvssBaseScore', 'Cvss3Vector', 'Cvss3BaseScore']
+    ASSET_VULNS_HEADERS = ['Count', 'Family', 'Id', 'Name', 'VulnerabilityState', 'Severity']
+    TEMPLATE_HEADERS = ['Unsupported', 'CloudOnly', 'Description', 'SubscriptionOnly', 'WebApplicationScanning', 'Title', 'IsForAgent', 'Uuid', 'ManagerOnly', 'Name']
 
     BASE_URL = 'https://cloud.tenable.com/'
     ACCESS_KEY = demisto.params()['access-key']
@@ -108,14 +110,19 @@ script:
             return {k: convert_dict_readable_dates(convert_epoch_to_date(k, v)) for k, v in d.iteritems()}
         return d
 
-    def get_entry_for_object(title, context_key, obj, headers=None):
+    def get_entry_for_object(title, context_key, obj, headers=None, remove_null=False):
+        # Python program to illustrate the intersection
+        # of two lists in most simple way
+        def intersection(lst1, lst2):
+            return [value for value in lst1 if value in lst2]
+
         if len(obj) == 0:
             return "There is no output result"
         obj = filter_dict_null(obj)
         if isinstance(obj, list):
             obj = map(filter_dict_null, obj)
         if headers and isinstance(obj, dict):
-            headers = list(set(headers).intersection(set(obj.keys())))
+            headers = intersection(headers, obj.keys())
 
         hr_obj = convert_dict_readable_dates(obj)
         context_obj = convert_dict_context_dates(filter_dict_keys(obj, headers) if headers else obj)
@@ -125,7 +132,7 @@ script:
             'Contents': context_obj,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, hr_obj, headers),
+            'HumanReadable': tableToMarkdown(title, hr_obj, headers, removeNull=remove_null),
             'EntryContext': {
                 context_key: context_obj
             }
@@ -235,15 +242,16 @@ script:
 
     def get_vuln_info(vulns):
         vulns_info = {v['plugin_id']: v for v in vulns}
+        infos = []
         errors = []
-        for v in vulns:
-            pid = v['plugin_id']
-            vuln_details = send_vuln_details_request(v['plugin_id'])
+        for pid, info in vulns_info.iteritems():
+            vuln_details = send_vuln_details_request(pid)
             if u'error' in vuln_details:
-                errors.append(pid)
+                errors.append(info)
             else:
-                vulns_info[pid].update(flatten(vuln_details['info']))
-        return list(vulns_info.itervalues()), errors
+                info.update(flatten(vuln_details['info']))
+                infos.append(info)
+        return infos, errors
 
     # Command methods
     def test_module():
@@ -257,7 +265,7 @@ script:
         invalid_scans = [k for k,v in zip(response['scans'], scan_entries) if v is None]
         res = [get_entry_for_object('Tenable.io - List of Scans', 'Tenable.Scan', replace_keys(valid_scans), GET_SCANS_HEADERS)]
         if invalid_scans:
-            res.append(get_entry_for_object('Inactive Web Applications scan IDs - Renew WAS license to use these scans', 'Tenable.Scan', replace_keys(invalid_scans), GET_SCANS_HEADERS))
+            res.append(get_entry_for_object('Inactive Web Applications Scans - Renew WAS license to use these scans', 'Tenable.Scan', replace_keys(invalid_scans), GET_SCANS_HEADERS, remove_null=True))
         return res
 
     def launch_scan(scan_id, targets):
@@ -269,7 +277,8 @@ script:
             'id': scan_id,
             'targets': targets
         })
-        return get_entry_for_object('The requested scan was launched successfully', 'Tenable.Scan', replace_keys(res))
+
+        return get_entry_for_object('The requested scan was launched successfully', 'Tenable.Scan', replace_keys(res, LAUNCH_SCAN_NAMES_MAP), LAUNCH_SCAN_HEADERS)
 
     def get_report(scan_id, info, detailed):
         results = []
@@ -284,7 +293,8 @@ script:
         vuln_info = replace_keys(vuln_info)
         results.append(get_entry_for_object('Vulnerabilities', 'Tenable.Vulnerabilities', vuln_info, SCAN_REPORT_VULNERABILITIES_HEADERS))
         if len(vulns_not_found) > 0:
-            results.append('The following vulnerability IDs were not found in the Tenable workbench:\n' + ', '.join(vulns_not_found))
+            vulns_not_found = replace_keys(vulns_not_found)
+            results.append(get_entry_for_object('Vulnerabilities - Missing From Workbench', 'Tenable.Vulnerabilities', vulns_not_found, SCAN_REPORT_VULNERABILITIES_HEADERS, True))
 
         if detailed == 'yes':
             assets = replace_keys(scan_details['hosts'] + scan_details['comphosts'])
