@@ -173,9 +173,10 @@ def validate_schema(file_path, matching_regex=None):
     return True
 
 
-def changed_id(file_path, branch_name):
-    change_string = run_git_command("git diff -G'id: ' --pickaxe-all origin/master...{0}".format(branch_name))
-    if re.match("\+id: .*", change_string):
+def changed_id(branch_name, file_path):
+    change_string = run_git_command("git diff origin/master...{0} {1}".format(branch_name, file_path))
+    if re.search("\+id: .*", change_string):
+        print_error("You've changed the ID of the playbook {0} please undo.".format(file_path))
         return True
 
     return False
@@ -189,7 +190,7 @@ def validate_committed_files(branch_name):
     is_changed_id = False
     for file_path in modified_files:
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-            if changed_id(file_path, branch_name):
+            if changed_id(branch_name, file_path):
                 is_changed_id = True
 
         print "Validating {}".format(file_path)
