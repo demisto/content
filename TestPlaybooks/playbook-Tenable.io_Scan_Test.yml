@@ -1,0 +1,102 @@
+id: Tenable.io Scan Test
+version: -1
+name: Tenable.io Scan Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 44f901f3-0641-4dd2-8bd4-a27d26c2b1d8
+    type: start
+    task:
+      id: 44f901f3-0641-4dd2-8bd4-a27d26c2b1d8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 8aabb701-60e9-42b4-8d62-16ae7f4ba33d
+    type: playbook
+    task:
+      id: 8aabb701-60e9-42b4-8d62-16ae7f4ba33d
+      version: -1
+      name: Tenable.io Scan
+      playbookName: Tenable.io Scan
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      scan-id:
+        simple: "10"
+      targets: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: b03c3491-b59b-4fe1-86be-e510119d6f89
+    type: regular
+    task:
+      id: b03c3491-b59b-4fe1-86be-e510119d6f89
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

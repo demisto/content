@@ -192,3 +192,5 @@ inputs:
   required: false
   description: Alternative targets list to the scan's configured targets
 outputs: []
+tests:
+  - Tenable.io Scan Test
