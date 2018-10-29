@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c879b475-da9e-4fbc-87a7-a1dc9f701ff3
+    taskid: 2c9d96a0-f815-4c0c-8088-29eae39ef7c9
     type: start
     task:
-      id: c879b475-da9e-4fbc-87a7-a1dc9f701ff3
+      id: 2c9d96a0-f815-4c0c-8088-29eae39ef7c9
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: d8bb2e17-553c-4f9a-8dcb-0f28135d4252
+    taskid: fe4946dd-7be1-4cb8-8e7c-04d791c0e022
     type: regular
     task:
-      id: d8bb2e17-553c-4f9a-8dcb-0f28135d4252
+      id: fe4946dd-7be1-4cb8-8e7c-04d791c0e022
       version: -1
       name: bigfix-get-sites
       description: Retrieves all the sites
@@ -50,12 +51,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: aff75f98-9ad2-49d1-85c7-38c3b335318f
+    taskid: 047cd2f3-3b2d-46dc-8be9-3622e1addc02
     type: regular
     task:
-      id: aff75f98-9ad2-49d1-85c7-38c3b335318f
+      id: 047cd2f3-3b2d-46dc-8be9-3622e1addc02
       version: -1
       name: bigfix-get-site (default master)
       description: Retrieve single site by name and type
@@ -79,12 +81,13 @@ tasks:
           "y": 1420
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 01d23eb2-ca2f-4bdb-8f03-ebfebb7ffcf1
+    taskid: 8a932779-f2b1-487a-8fce-c71ff0fe5a82
     type: regular
     task:
-      id: 01d23eb2-ca2f-4bdb-8f03-ebfebb7ffcf1
+      id: 8a932779-f2b1-487a-8fce-c71ff0fe5a82
       version: -1
       name: bigfix-get-site (external BES Support)
       description: Retrieve single site by name and type
@@ -110,12 +113,13 @@ tasks:
           "y": 895
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 9522870e-a9b6-43ce-8574-3dbd135e7870
+    taskid: f738eb65-123b-4635-899e-0e99363c98ee
     type: regular
     task:
-      id: 9522870e-a9b6-43ce-8574-3dbd135e7870
+      id: f738eb65-123b-4635-899e-0e99363c98ee
       version: -1
       name: bigfix-get-patches
       description: Retrieve all the patches (fixlets) of site
@@ -139,12 +143,13 @@ tasks:
           "y": 2295
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: 9a60ba77-384a-43fa-8776-974f60eb8a04
+    taskid: 355ac42b-fc75-459e-8e96-2a21872c1fe0
     type: regular
     task:
-      id: 9a60ba77-384a-43fa-8776-974f60eb8a04
+      id: 355ac42b-fc75-459e-8e96-2a21872c1fe0
       version: -1
       name: bigfix-deploy-patch
       description: Deploy patch on site
@@ -152,9 +157,18 @@ tasks:
       type: regular
       iscommand: true
       brand: BigFix
+    nexttasks:
+      '#none#':
+      - "24"
     scriptarguments:
-      computer_ids: {}
-      site_name: {}
+      action_id:
+        simple: Action2
+      computer_ids:
+        simple: "3385267"
+      fixlet_id:
+        simple: "1759"
+      site_name:
+        simple: BES Support
       site_type:
         simple: master
     separatecontext: false
@@ -165,12 +179,13 @@ tasks:
           "y": 2645
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: e3324fb2-ddd7-498e-8040-df362709ce7b
+    taskid: 673663a6-79c0-4bd8-8695-643da5c57840
     type: regular
     task:
-      id: e3324fb2-ddd7-498e-8040-df362709ce7b
+      id: 673663a6-79c0-4bd8-8695-643da5c57840
       version: -1
       name: bigfix-get-endpoints
       script: BigFix|||bigfix-get-endpoints
@@ -188,12 +203,13 @@ tasks:
           "y": 1770
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: 8addcb19-af3c-4d34-86a6-6f19eabdeee2
+    taskid: 3d9ef20e-ae32-43a9-8084-5acedc2b1041
     type: regular
     task:
-      id: 8addcb19-af3c-4d34-86a6-6f19eabdeee2
+      id: 3d9ef20e-ae32-43a9-8084-5acedc2b1041
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -216,12 +232,13 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 094abbf5-6e0e-4c2b-8b30-9e4be337ee21
+    taskid: cb760a6b-80be-4a21-8bd9-5dd145aee5c5
     type: regular
     task:
-      id: 094abbf5-6e0e-4c2b-8b30-9e4be337ee21
+      id: cb760a6b-80be-4a21-8bd9-5dd145aee5c5
       version: -1
       name: VerifyContext
       description: |-
@@ -250,12 +267,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "9":
     id: "9"
-    taskid: 9f9dbeba-8ce2-4740-8f64-f747ee220eb8
+    taskid: 7b25a9e5-2290-4102-8765-14f68c31291b
     type: regular
     task:
-      id: 9f9dbeba-8ce2-4740-8f64-f747ee220eb8
+      id: 7b25a9e5-2290-4102-8765-14f68c31291b
       version: -1
       name: VerifyContext
       description: |-
@@ -284,12 +302,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "10":
     id: "10"
-    taskid: b9b713f9-eeb7-499f-88e6-02ebc95f3b16
+    taskid: 1a1e91bf-e6f7-421a-8497-87f307824559
     type: regular
     task:
-      id: b9b713f9-eeb7-499f-88e6-02ebc95f3b16
+      id: 1a1e91bf-e6f7-421a-8497-87f307824559
       version: -1
       name: VerifyContext
       description: |-
@@ -318,12 +337,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: 08bbbfbd-0f6d-4937-8c10-3006983500b9
+    taskid: 54c5763c-c5a9-4619-8076-c6c0771bfe39
     type: regular
     task:
-      id: 08bbbfbd-0f6d-4937-8c10-3006983500b9
+      id: 54c5763c-c5a9-4619-8076-c6c0771bfe39
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -345,12 +365,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "12":
     id: "12"
-    taskid: ec89a2c9-62a6-409f-8fd7-d75e200a3660
+    taskid: 75be5e31-bc88-459c-83f4-76edf213ea58
     type: regular
     task:
-      id: ec89a2c9-62a6-409f-8fd7-d75e200a3660
+      id: 75be5e31-bc88-459c-83f4-76edf213ea58
       version: -1
       name: VerifyContext
       description: |-
@@ -379,12 +400,13 @@ tasks:
           "y": 1595
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 167a1a91-0e08-4dea-8936-3d6909c5e95c
+    taskid: ee4f72e4-8c06-4bd2-8cbc-4b14dcd257dc
     type: regular
     task:
-      id: 167a1a91-0e08-4dea-8936-3d6909c5e95c
+      id: ee4f72e4-8c06-4bd2-8cbc-4b14dcd257dc
       version: -1
       name: VerifyContext
       description: |-
@@ -413,12 +435,13 @@ tasks:
           "y": 1595
         }
       }
+    note: false
   "14":
     id: "14"
-    taskid: 67d826ea-6630-4598-89de-474ba20ba639
+    taskid: 691fe7b7-448d-478a-88fe-2c54ee12326c
     type: regular
     task:
-      id: 67d826ea-6630-4598-89de-474ba20ba639
+      id: 691fe7b7-448d-478a-88fe-2c54ee12326c
       version: -1
       name: VerifyContext
       description: |-
@@ -447,12 +470,13 @@ tasks:
           "y": 1595
         }
       }
+    note: false
   "16":
     id: "16"
-    taskid: e36fbd43-fc6c-4bc2-82d8-f4c1207fdc91
+    taskid: 1eb56d17-07d5-464e-8d80-60cdfe905eab
     type: regular
     task:
-      id: e36fbd43-fc6c-4bc2-82d8-f4c1207fdc91
+      id: 1eb56d17-07d5-464e-8d80-60cdfe905eab
       version: -1
       name: VerifyContext
       description: |-
@@ -481,12 +505,13 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "17":
     id: "17"
-    taskid: 59450d2b-9074-4e57-893f-f3ce8d1b767c
+    taskid: a7825e03-6121-454d-89a4-6bc4fd2bba71
     type: regular
     task:
-      id: 59450d2b-9074-4e57-893f-f3ce8d1b767c
+      id: a7825e03-6121-454d-89a4-6bc4fd2bba71
       version: -1
       name: VerifyContext
       description: |-
@@ -515,12 +540,13 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "18":
     id: "18"
-    taskid: c1945c4c-7971-4a36-83dc-73ac507c05cd
+    taskid: a9da70c1-243d-4ff5-8fd5-fa74981aea5f
     type: regular
     task:
-      id: c1945c4c-7971-4a36-83dc-73ac507c05cd
+      id: a9da70c1-243d-4ff5-8fd5-fa74981aea5f
       version: -1
       name: VerifyContext
       description: |-
@@ -549,12 +575,13 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "19":
     id: "19"
-    taskid: c425e406-6928-4a9e-8cc1-0dbdbb7d2c43
+    taskid: 57f4cde6-d8ec-4cde-8b7e-b45d34012c16
     type: regular
     task:
-      id: c425e406-6928-4a9e-8cc1-0dbdbb7d2c43
+      id: 57f4cde6-d8ec-4cde-8b7e-b45d34012c16
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -576,12 +603,13 @@ tasks:
           "y": 1245
         }
       }
+    note: false
   "20":
     id: "20"
-    taskid: 7b680ecd-beb4-4a76-824b-d0a94e872916
+    taskid: 6981e34d-806b-4768-8cbd-ee21be93b5de
     type: regular
     task:
-      id: 7b680ecd-beb4-4a76-824b-d0a94e872916
+      id: 6981e34d-806b-4768-8cbd-ee21be93b5de
       version: -1
       name: Fail test
       description: |-
@@ -610,12 +638,13 @@ tasks:
           "y": 2120
         }
       }
+    note: false
   "21":
     id: "21"
-    taskid: 1f00dcab-0c39-42b4-8f6e-5f5debdfa7a2
+    taskid: 85e9f1bf-6dfd-43d7-8595-207b2002c0a5
     type: regular
     task:
-      id: 1f00dcab-0c39-42b4-8f6e-5f5debdfa7a2
+      id: 85e9f1bf-6dfd-43d7-8595-207b2002c0a5
       version: -1
       name: VerifyContext
       description: |-
@@ -644,12 +673,13 @@ tasks:
           "y": 2470
         }
       }
+    note: false
   "22":
     id: "22"
-    taskid: cbf49483-7355-4e4a-84b0-4f1b6e940e0d
+    taskid: b08f8a3c-0c73-44a8-846e-cb0da44d0f7b
     type: regular
     task:
-      id: cbf49483-7355-4e4a-84b0-4f1b6e940e0d
+      id: b08f8a3c-0c73-44a8-846e-cb0da44d0f7b
       version: -1
       name: VerifyContext
       description: |-
@@ -678,12 +708,13 @@ tasks:
           "y": 2470
         }
       }
+    note: false
   "23":
     id: "23"
-    taskid: 278f143e-ea79-4078-8809-a7cb3b0b0036
+    taskid: bf6f1bac-3ccb-42c4-8554-d94227d2122a
     type: condition
     task:
-      id: 278f143e-ea79-4078-8809-a7cb3b0b0036
+      id: bf6f1bac-3ccb-42c4-8554-d94227d2122a
       version: -1
       name: Verify endpoint
       type: condition
@@ -698,7 +729,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: string.isEqual
+      - - operator: isEqualString
           left:
             value:
               simple: Bigfix.Endpoint.ID
@@ -713,12 +744,91 @@ tasks:
           "y": 1945
         }
       }
+    note: false
+  "24":
+    id: "24"
+    taskid: c2a4f754-6742-4844-8fe2-83eef7b3f392
+    type: regular
+    task:
+      id: c2a4f754-6742-4844-8fe2-83eef7b3f392
+      version: -1
+      name: Stop action
+      script: '|||bigfix-action-stop'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      action_id:
+        simple: ${Bigfix.Action.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2850
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: 2bf85dd9-1ff3-4e4a-81dd-4dea22ad7620
+    type: regular
+    task:
+      id: 2bf85dd9-1ff3-4e4a-81dd-4dea22ad7620
+      version: -1
+      name: Get action status
+      script: '|||bigfix-action-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      action_id:
+        simple: ${Bigfix.Action.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3050
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 4fb123eb-7745-4130-8067-b22c09ba4c10
+    type: regular
+    task:
+      id: 4fb123eb-7745-4130-8067-b22c09ba4c10
+      version: -1
+      name: Delete action
+      script: '|||bigfix-action-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      action_id:
+        simple: ${Bigfix.Action.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3270
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2690,
+        "height": 3315,
         "width": 1240,
         "x": 50,
         "y": 50
