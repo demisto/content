@@ -11,6 +11,7 @@ description: |
   * Palo Alto Networks Minemeld
   * Palo Alto Networks Panorama
   * Zscaler
+  * Carbon Black Enterprise Response
 starttaskid: "0"
 tasks:
   "0":
@@ -31,8 +32,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 50
+          "x": 690,
+          "y": 60
         }
       }
     note: false
@@ -52,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 515
+          "x": 690,
+          "y": 530
         }
       }
     note: false
@@ -168,10 +169,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: ac0d12ef-c8cb-4a76-87ad-5980e026458a
+    taskid: 903a8a58-46c8-4ab0-8b6e-d83e35f442fb
     type: title
     task:
-      id: ac0d12ef-c8cb-4a76-87ad-5980e026458a
+      id: 903a8a58-46c8-4ab0-8b6e-d83e35f442fb
       version: -1
       name: Block indicators
       description: ""
@@ -183,12 +184,38 @@ tasks:
       - "3"
       - "4"
       - "5"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 690,
           "y": 195
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 90693a3c-4767-46ac-8199-0bc4706264bf
+    type: playbook
+    task:
+      id: 90693a3c-4767-46ac-8199-0bc4706264bf
+      version: -1
+      name: Block File - Generic
+      description: ""
+      playbookName: Block File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
         }
       }
     note: false
@@ -197,10 +224,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 530,
-        "width": 1240,
+        "height": 535,
+        "width": 1670,
         "x": 50,
-        "y": 50
+        "y": 60
       }
     }
   }
