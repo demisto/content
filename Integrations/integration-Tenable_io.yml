@@ -471,55 +471,55 @@ script:
     - contextPath: Tenable.Scan.FolderId
       description: The unique id of the folder where the scan has been stored.
       type: string
-    - contextPath: Vulnerabilities.Id
+    - contextPath: Tenable.Vulnerabilities.Id
       description: The unique ID of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.Name
+    - contextPath: Tenable.Vulnerabilities.Name
       description: The name of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.Description
+    - contextPath: Tenable.Vulnerabilities.Description
       description: The description of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.FirstSeen
+    - contextPath: Tenable.Vulnerabilities.FirstSeen
       description: When the vulnerability was first seen.
       type: date
-    - contextPath: Vulnerabilities.LastSeen
+    - contextPath: Tenable.Vulnerabilities.LastSeen
       description: When the vulnerability was last seen.
       type: date
-    - contextPath: Vulnerabilities.Solution
+    - contextPath: Tenable.Vulnerabilities.Solution
       description: Information on how to fix the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.Synopsis
+    - contextPath: Tenable.Vulnerabilities.Synopsis
       description: A brief summary of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.Count
+    - contextPath: Tenable.Vulnerabilities.Count
       description: A count of the vulnerability occurrences.
       type: number
-    - contextPath: Vulnerabilities.Severity
+    - contextPath: Tenable.Vulnerabilities.Severity
       description: The severity level of the vulnerability.
       type: number
-    - contextPath: Vulnerabilities.RiskFactor
+    - contextPath: Tenable.Vulnerabilities.RiskFactor
       description: String containing risk factor information.
       type: string
-    - contextPath: Assets.AssetId
+    - contextPath: Tenable.Assets.AssetId
       description: The unique id of the host.
       type: number
-    - contextPath: Assets.Hostname
+    - contextPath: Tenable.Assets.Hostname
       description: The name of the host.
       type: string
-    - contextPath: Assets.Score
+    - contextPath: Tenable.Assets.Score
       description: The overall score for the host.
       type: number
-    - contextPath: Assets.Critical
+    - contextPath: Tenable.Assets.Critical
       description: The percentage of critical findings on the host.
       type: number
-    - contextPath: Assets.High
+    - contextPath: Tenable.Assets.High
       description: Retrieving data. Wait a few seconds and try to cut or copy again.
       type: number
-    - contextPath: Assets.Medium
+    - contextPath: Tenable.Assets.Medium
       description: The percentage of medium findings on the host.
       type: number
-    - contextPath: Assets.Low
+    - contextPath: Tenable.Assets.Low
       description: The percentage of low findings on the host.
       type: number
     - contextPath: Remediations.Id
@@ -546,57 +546,57 @@ script:
       description: The number of days of data prior to and including today that should
         be returned.
     outputs:
-    - contextPath: Vulnerabilities.Description
+    - contextPath: Tenable.Vulnerabilities.Description
       description: The description of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.FirstSeen
+    - contextPath: Tenable.Vulnerabilities.FirstSeen
       description: When the vulnerability was first seen.
       type: date
-    - contextPath: Vulnerabilities.LastSeen
+    - contextPath: Tenable.Vulnerabilities.LastSeen
       description: When the vulnerability was last seen.
       type: date
-    - contextPath: Vulnerabilities.Solution
+    - contextPath: Tenable.Vulnerabilities.Solution
       description: Information on how to fix the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.Synopsis
+    - contextPath: Tenable.Vulnerabilities.Synopsis
       description: A brief summary of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.Count
+    - contextPath: Tenable.Vulnerabilities.Count
       description: A count of the vulnerability occurrences.
       type: number
-    - contextPath: Vulnerabilities.Severity
+    - contextPath: Tenable.Vulnerabilities.Severity
       description: Integer [0-4] indicating how severe the vulnerability is, where
         0 is info only.
       type: number
-    - contextPath: Vulnerabilities.Family
+    - contextPath: Tenable.Vulnerabilities.Family
       description: Object containing plugin information such as family, type, and
         publication and modification dates.
       type: string
-    - contextPath: Vulnerabilities.ModificationDate
+    - contextPath: Tenable.Vulnerabilities.ModificationDate
       description: The last modification date for the vulnerability in Unix time.
       type: date
-    - contextPath: Vulnerabilities.Name
+    - contextPath: Tenable.Vulnerabilities.Name
       description: The name of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.Type
+    - contextPath: Tenable.Vulnerabilities.Type
       description: The type of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.PublicationDate
+    - contextPath: Tenable.Vulnerabilities.PublicationDate
       description: The publication date of the vulnerability.
       type: date
-    - contextPath: Vulnerabilities.RiskFactor
+    - contextPath: Tenable.Vulnerabilities.RiskFactor
       description: The risk factor of the vulnerability.
       type: string
-    - contextPath: Vulnerabilities.CvssVector
+    - contextPath: Tenable.Vulnerabilities.CvssVector
       description: The Common Vulnerability Scoring System vector.
       type: string
-    - contextPath: Vulnerabilities.CvssBaseScore
+    - contextPath: Tenable.Vulnerabilities.CvssBaseScore
       description: The Common Vulnerability Scoring System allotted base score.
       type: string
-    - contextPath: Vulnerabilities.Cvss3Vector
+    - contextPath: Tenable.Vulnerabilities.Cvss3Vector
       description: The Common Vulnerability Scoring System version 3 vector.
       type: string
-    - contextPath: Vulnerabilities.Cvss3BaseScore
+    - contextPath: Tenable.Vulnerabilities.Cvss3BaseScore
       description: The Common Vulnerability Scoring System version 3 allotted base
         score.
       type: string
@@ -611,23 +611,23 @@ script:
       description: The number of days of data prior to and including today that should
         be returned.
     outputs:
-    - contextPath: Vulnerabilities.Count
+    - contextPath: Tenable.Vulnerabilities.Count
       description: The number of times the vulnerability was found.
       type: number
-    - contextPath: Vulnerabilities.Family
+    - contextPath: Tenable.Vulnerabilities.Family
       description: The vulnerability's family.
       type: string
-    - contextPath: Vulnerabilities.Id
+    - contextPath: Tenable.Vulnerabilities.Id
       description: The unique vulnerability's ID.
       type: number
-    - contextPath: Vulnerabilities.Name
+    - contextPath: Tenable.Vulnerabilities.Name
       description: The name of the vulnerability's.
       type: string
-    - contextPath: Vulnerabilities.VulnerabilityState
+    - contextPath: Tenable.Vulnerabilities.VulnerabilityState
       description: The current state of the reported vulnerability (Active, Fixed,
         New, etc.)
       type: string
-    - contextPath: Vulnerabilities.Severity
+    - contextPath: Tenable.Vulnerabilities.Severity
       description: Integer [0-4] indicating how severe the vulnerability is, where
         0 is info only.
       type: number
