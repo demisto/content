@@ -1173,7 +1173,7 @@ script:
                 bodies['text'] = m.find(".//t:TextBody[@BodyType='Text']", FALLBACK_NS)
 
             # handle general info
-            incident['details'] = bodies['text'].text if bodies['text'] else bodies['HTML'].text
+            incident['details'] = bodies['text'].text if bodies['text'] is not None else bodies['HTML'].text
             incident['name'] = m.find('./t:Subject', FALLBACK_NS).text
             labels.append({'type': 'Email/subject', 'value': incident['name']})
             incident['occured'] = m.find('./t:DateTimeCreated', FALLBACK_NS).text
