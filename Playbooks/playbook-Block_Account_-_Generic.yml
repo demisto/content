@@ -1,0 +1,221 @@
+id: block_account_-_generic
+version: -1
+name: Block Account - Generic
+fromversion: 4.0.0
+description: |-
+  This playbook blocks malicious usernames using all integrations that you have enabled.
+
+  Supported integrations for this playbook:
+  * Active Directory
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    type: start
+    task:
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    type: title
+    task:
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 870
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 0b958771-7e06-4239-899f-f7d133be6938
+    type: title
+    task:
+      id: 0b958771-7e06-4239-899f-f7d133be6938
+      version: -1
+      name: Block accounts
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 380
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 2c5a17dd-e019-4e20-8f5b-4333678a26e0
+    type: condition
+    task:
+      id: 2c5a17dd-e019-4e20-8f5b-4333678a26e0
+      version: -1
+      name: Is there a username to block?
+      description: Verify that the playbook input includes at least one username to
+        block.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 5da07472-33bb-451d-8562-365e05f456ec
+    type: condition
+    task:
+      id: 5da07472-33bb-451d-8562-365e05f456ec
+      version: -1
+      name: Is Active Directory enabled?
+      description: |
+        Verify that there is a valid instance of Active Directory enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: activedir
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: c8b9285e-4d21-4070-89b6-33c611531812
+    type: regular
+    task:
+      id: c8b9285e-4d21-4070-89b6-33c611531812
+      version: -1
+      name: Disable account in active directory
+      description: Disable the account using Active Directory.
+      script: activedir|||ad-disable-account
+      type: regular
+      iscommand: true
+      brand: activedir
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      base-dn: {}
+      username:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 690
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 745,
+        "x": -90,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Username
+  value: {}
+  required: false
+  description: Array of malicious usernames to block.
+outputs: []
+tests:
+  - block_indicators_-_generic_-_test

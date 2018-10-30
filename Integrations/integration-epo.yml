@@ -397,7 +397,7 @@ script:
         var commandArgsDict = {};
         commandArgsDict["command"] = command;
         var commandArgsList = commandArgs.split(',');
-        var temp;
+        var temp = [];
         for (i=0; i < commandArgsList.length; i++) {
             //commandArgsVal in commandArgsList:
             temp = commandArgsList[i].split(':');
@@ -410,9 +410,6 @@ script:
         if (parsedArgs) {
             args = parsedArgs;
         }
-        if (!args.command) {
-                throw 'ePO error: command argument is missing';
-        }
         var pArgs = {};
         for (var key in args) {
             if (key != 'command' && key != 'headers') {
@@ -420,15 +417,17 @@ script:
             }
         }
         var result = callEpo(args.command,pArgs);
+
         var md;
         var contents;
         if (typeof result === 'string') {
             md = "#### ePO command *"+args.command+"* results:\n" + result;
             contents = { result: result };
         } else {
+
             md = tableToMarkdown(
                 'ePO command *'+args.command+'* results:',
-                Object.keys(result || {}).map(function (k) { return result[k]}), // object keys
+                Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
                 args.headers && args.headers.split(',')
             );
             contents = result;
@@ -469,11 +468,32 @@ script:
             return epoFindSystems();
 
         case 'epo-command':
-            if (args.commandArgs) {
-                var parsedArgs = parseCommandArgs(args.command, args.commandArgs);
-                return epoCommand(parsedArgs)
+            if (!args.command) {
+                throw 'ePO error: command argument is missing';
             }
-            return epoCommand();
+            return epoCommand(undefined);
+
+        case 'epo-advanced-command':
+            if (!args.command) {
+                throw 'ePO error: command argument is missing';
+            }
+            if (!args.commandArgs) {
+                throw 'ePO error: commandArgs argument is missing';
+            }
+            var parsedArgs = parseCommandArgs(args.command, args.commandArgs);
+            return epoCommand(parsedArgs);
+
+        case 'epo-wakeup-agent':
+            args.command = 'system.wakeupAgent';
+            return epoCommand(undefined);
+
+        case 'epo-apply-tag':
+            args.command = 'system.applyTag';
+            return epoCommand(undefined);
+
+        case 'epo-clear-tag':
+            args.command = 'system.clearTag';
+            return epoCommand(undefined);
 
         default:
             throw 'ePO Error: unknown command';
@@ -608,20 +628,50 @@ script:
       type: number
     description: Find systems in the System Tree - by group ID or by search
   - name: epo-command
+    arguments: []
+    description: Execute ePO command. Receives mandatory 'command' argument and other
+      specific commands other arguments - Run 'epo-help' command to see a list available
+      commands. You can also specify 'headers' argument  to filter tables headers.
+      e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
+  - name: epo-advanced-command
     arguments:
     - name: command
+      required: true
       description: Command to execute. Run a core.help command or !epo-help to identify
         all possible commands.
     - name: commandArgs
+      required: true
       description: Comma separated key value pairs as additional arguments to pass.  E.g.
         argName1:argValue1,argName2:argValue2
-    outputs:
-    - contextPath: ePO.Command
-      description: EPO command output
     description: 'Execute ePO command. Run ''epo-help'' command to see a list available
-      commands. e.g:  !epo-command command="clienttask.find" commandArgs="searchText:On-demand".
+      commands. e.g:  !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand".
       You can also specify ''headers'' argument  to filter tables headers. e.g: ''!epo-command
       command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
+  - name: epo-wakeup-agent
+    arguments:
+    - name: names
+      required: true
+      description: Agent hostname
+    description: Wakeup an agent
+  - name: epo-apply-tag
+    arguments:
+    - name: names
+      required: true
+      description: Hostnames to apply tags on
+    - name: tagName
+      required: true
+      description: Tag name
+    description: Applies a tag
+  - name: epo-clear-tag
+    arguments:
+    - name: names
+      required: true
+      description: Hostnames to clear tags from
+    - name: tagName
+      required: true
+      description: Tag name
+    description: Clears a tag
   runonce: false
 tests:
-- "Test Playbook McAfee ePO"
+- Test Playbook McAfee ePO
+releaseNotes: Added epo-advanced-command for playbooks use. Also added epo-clear-tag,epo-apply-tag,epo-wakeup-agent
