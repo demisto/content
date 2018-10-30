@@ -14,15 +14,10 @@ configuration:
   defaultvalue: https://api.intsights.com/
   type: 0
   required: true
-- display: Account-ID
-  name: Account-Id
+- display: Credentials
+  name: credentials
   defaultvalue: ""
-  type: 0
-  required: true
-- display: API Key
-  name: APIKey
-  defaultvalue: ""
-  type: 4
+  type: 9
   required: true
 - display: 'Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage",
     "Phishing", "BrandSecurity", "ExploitableData", "VIP"'
@@ -71,9 +66,9 @@ script:
 
     VALIDATE_CERT = not demisto.params().get('insecure', True)
 
-    id_and_api_key = demisto.getParam('Account-Id') + ':' + demisto.getParam('APIKey')
+    id_and_api_key = demisto.getParam('credentials')['identifier'] + ':' + demisto.getParam('credentials')['password']
     encoded_auth_key = base64.b64encode(id_and_api_key.encode("utf-8"))
-    HEADERS = {'Authorization': 'Basic ' + encoded_auth_key, 'Content-Type': 'application/json', 'Account-Id': demisto.getParam('Account-Id')}
+    HEADERS = {'Authorization': 'Basic ' + encoded_auth_key, 'Content-Type': 'application/json', 'Account-Id': demisto.getParam('credentials')['identifier']}
 
     def req(method, path, json_data=None, params=None):
         """
