@@ -38,8 +38,14 @@
             "playbookID": "SCADAfence_test"
         },
         {
+
             "integrations": "BigFix",
             "playbookID": "BigFixTest"
+        },
+        {
+            "integrations": "Lastline",
+            "playbookID": "Lastline - testplaybook",
+            "nightly": true
         },
         {
             "integrations": "epo",
@@ -143,7 +149,8 @@
             "integrations": [
                 "VxStream",
                 "McAfee Advanced Threat Defense",
-                "WildFire"
+                "WildFire",
+                "Lastline"
             ]
         },
         {
@@ -152,7 +159,8 @@
             "nightly": true,
             "integrations": [
                 "McAfee Advanced Threat Defense",
-                "VxStream"
+                "VxStream",
+                "Lastline"
             ]
         },
         {
@@ -523,7 +531,7 @@
         },
         {
             "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
+            "playbookID": "Cisco Umbrella Test"
         },
         {
             "integrations": "icebrg",
@@ -658,6 +666,7 @@
 
     },
     "skipped_integrations": {
+        "PhishTank": "Service problem - 500 internal server error",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
@@ -666,7 +675,6 @@
         "QRadar": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
-        "Cisco Umbrella Investigate": "Under development",
         "Symantec MSS": "No instance",
         "Remedy AR": "DevOps investigation",
         "McAfee Active Response": "DevOps investigation",
