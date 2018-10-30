@@ -547,8 +547,7 @@ script:
 
         # handle first time fetch
         if last_fetch is None:
-            # last_fetch = datetime.now() - timedelta(days=1)
-            last_fetch = datetime.now() - timedelta(days=35)
+            last_fetch = datetime.now() - timedelta(days=5)
         else:
             last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
 
@@ -600,7 +599,6 @@ script:
         LOG(e.message)
         if demisto.command() != 'test-module':
             LOG.print_log()
-        raise
         return_error('error has occurred: {}'.format(e.message, ))
   type: python
   commands:
