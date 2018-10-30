@@ -52,9 +52,18 @@ script:
     //HELPER//
     function callEpo(pCommand, pArgs) {
         var url = serverUrl + 'remote/' + pCommand;
+
+        log(String(Object.keys(pArgs)));
+        //delete thisIsObject["key"]
+        delete pArgs["execution-timeout"];
+        log(String(Object.keys(pArgs)));
+
         url += encodeToURLQuery(pArgs);
         url += (Object.keys(pArgs).length > 0) ? '&' : '?';
         url += ':output=json';
+
+        log(url);
+
         var result = http(
             url,
             {
@@ -706,4 +715,4 @@ script:
   runonce: false
 tests:
 - Test Playbook McAfee ePO
-releaseNotes: Added epo-list-tables, epo-query-table commands.
+releaseNotes: execution arg deletion
