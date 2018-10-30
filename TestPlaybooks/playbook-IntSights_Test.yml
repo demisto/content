@@ -1,0 +1,474 @@
+id: IntSights Test
+version: 38
+name: IntSights Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cf35c13f-a0e9-4ff1-8e30-445d5b253416
+    type: start
+    task:
+      id: cf35c13f-a0e9-4ff1-8e30-445d5b253416
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 399f6405-6d99-4ccc-8e1f-2286821baf15
+    type: regular
+    task:
+      id: 399f6405-6d99-4ccc-8e1f-2286821baf15
+      version: -1
+      name: intsights-get-alerts
+      description: Fetch alerts
+      script: '|||intsights-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alert-type: {}
+      assigned: {}
+      found-date-from: {}
+      found-date-to:
+        simple: "1537426800000"
+      is-closed: {}
+      is-flagged: {}
+      network-type: {}
+      severity: {}
+      source-date-from: {}
+      source-date-to: {}
+      source-type: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 23889971-e35f-46d1-8767-9fc9400d8392
+    type: regular
+    task:
+      id: 23889971-e35f-46d1-8767-9fc9400d8392
+      version: -1
+      name: intsights-add-comment-to-alert
+      description: Add comment to alert
+      script: '|||intsights-add-comment-to-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alert-id:
+        simple: ${IntSights.Alerts.[0].ID}
+      comment:
+        simple: 'test: updating severity'
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 38d5ac7e-0b0d-4bd2-8d8b-a287b8f736a9
+    type: regular
+    task:
+      id: 38d5ac7e-0b0d-4bd2-8d8b-a287b8f736a9
+      version: -1
+      name: intsights-get-alert-activities
+      description: Get alert activities
+      script: '|||intsights-get-alert-activities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+      - "25"
+    scriptarguments:
+      alert-id:
+        simple: ${IntSights.Alerts.[0].ID}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1420
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 86075ad3-fb94-4d93-8434-ce73f85109b4
+    type: regular
+    task:
+      id: 86075ad3-fb94-4d93-8434-ce73f85109b4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 7325e6af-bd44-4377-8377-22fe97aacdc6
+    type: regular
+    task:
+      id: 7325e6af-bd44-4377-8377-22fe97aacdc6
+      version: -1
+      name: intsights-update-alert-severity
+      description: Change the alert's severity
+      script: '|||intsights-update-alert-severity'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert-id:
+        simple: ${IntSights.Alerts.[0].ID}
+      severity:
+        simple: Low
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "6":
+    id: "6"
+    taskid: b4cf1e8c-af7b-4bae-8d2d-cc300e4a5b5e
+    type: regular
+    task:
+      id: b4cf1e8c-af7b-4bae-8d2d-cc300e4a5b5e
+      version: -1
+      name: intsights-get-iocs
+      description: Get count totals of the available IOCs
+      script: '|||intsights-get-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      first-seen-from: {}
+      first-seen-to:
+        simple: "1537426800000"
+      last-seen-from: {}
+      last-seen-to: {}
+      limit: {}
+      severity: {}
+      source-ID: {}
+      type: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 410b32c6-b3f8-48d8-85bf-5188a9b234b8
+    type: regular
+    task:
+      id: 410b32c6-b3f8-48d8-85bf-5188a9b234b8
+      version: -1
+      name: intsights-add-tag-to-alert
+      description: Adds a tag to the alert
+      script: '|||intsights-add-tag-to-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert-id:
+        simple: ${IntSights.Alerts.[0].ID}
+      tag-name:
+        simple: test-tag
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1245
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 34c1b9df-221d-4c5b-845c-141b37950a9e
+    type: regular
+    task:
+      id: 34c1b9df-221d-4c5b-845c-141b37950a9e
+      version: -1
+      name: closeInvestigation
+      description: Close the current investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+  "11":
+    id: "11"
+    taskid: a81ba9c6-4575-4df7-86c1-cbeb019e05cd
+    type: regular
+    task:
+      id: a81ba9c6-4575-4df7-86c1-cbeb019e05cd
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: IntSights.Alerts=>val.length>2
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 4d2d1502-894f-41f6-817e-c9329ba9707f
+    type: condition
+    task:
+      id: 4d2d1502-894f-41f6-817e-c9329ba9707f
+      version: -1
+      name: Verify alert severity is correct
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "10"
+      "yes":
+      - "26"
+    scriptarguments:
+      value:
+        simple: ${IntSights.Alerts.[0].Status(val != 'Low')}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "20":
+    id: "20"
+    taskid: d53974f9-3bdc-491a-8646-f8acf7a68dd1
+    type: regular
+    task:
+      id: d53974f9-3bdc-491a-8646-f8acf7a68dd1
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: IntSights.Iocs=>val.length>10
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 75f174e9-ea09-48b3-829c-a89907860f2c
+    type: condition
+    task:
+      id: 75f174e9-ea09-48b3-829c-a89907860f2c
+      version: -1
+      name: Verify a tag exists
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "26"
+      "yes":
+      - "10"
+    scriptarguments:
+      array:
+        simple: ${IntSights.Alerts.[0].Activities.Type}
+      value:
+        simple: AddTag
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+  "25":
+    id: "25"
+    taskid: cc98344c-0798-4974-8e4d-8c7102950106
+    type: condition
+    task:
+      id: cc98344c-0798-4974-8e4d-8c7102950106
+      version: -1
+      name: Verify a comment exists
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "26"
+      "yes":
+      - "10"
+    scriptarguments:
+      array:
+        simple: ${IntSights.Alerts.[0].Activities.Type}
+      value:
+        simple: WriteComment
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 1ad18af6-01cc-4e9c-8d00-99a3ca17ec1d
+    type: regular
+    task:
+      id: 1ad18af6-01cc-4e9c-8d00-99a3ca17ec1d
+      version: -1
+      name: Fail
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

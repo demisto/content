@@ -9,6 +9,10 @@
           "playbookID": "blockip_test_playbook"
         },
         {
+            "integrations": "IntSights",
+            "playbookID": "IntSights Test"
+        },
+        {
             "integrations": "BitDam",
             "playbookID": "Detonate File - BitDam Test"
         },
@@ -673,7 +677,6 @@
         "RedLock": "Don't have alerts",
         "Symantec Messaging Gateway": "DevOps investigation",
         "Cylance Protect": "Under development",
-        "QRadar": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
         "Symantec MSS": "No instance",
