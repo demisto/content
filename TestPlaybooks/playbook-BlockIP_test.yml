@@ -34,7 +34,7 @@ tasks:
       version: -1
       name: BlockIP
       description: Blocks IP in configured firewall
-      scriptName: BlockIP_copy
+      scriptName: BlockIP
       type: regular
       iscommand: false
       brand: ""
