@@ -3,15 +3,15 @@ commonfields:
   version: 5
 name: BlockIP
 script: |-
-  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorame'})[0].Contents;
-  var blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname': 'check point'})[0].Contents;
+  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'Panorama'})[0].Contents;
+  var blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname': 'Check point'})[0].Contents;
 
   if (args['using-brand']) {
       switch (args['using-brand'].toLowerCase()) {
-          case 'panorama':
+          case 'Panorama':
               blockCP = false;
               break;
-          case 'check point':
+          case 'Check point':
               blockPanorama = false;
               break;
       }
