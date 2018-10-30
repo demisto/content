@@ -26,6 +26,10 @@
             "playbookID": "RTIR Test"
         },
         {
+            "integrations": "RedCanary",
+            "playbookID": "RedCanaryTest"
+        },
+        {
           "integrations": "Devo",
           "playbookID": "devo_test_playbook"
         },
