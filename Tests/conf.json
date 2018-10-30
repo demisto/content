@@ -665,7 +665,6 @@
 
     },
     "skipped_integrations": {
-        "PhishTank": "Service problem - 500 internal server error",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
