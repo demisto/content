@@ -14,31 +14,36 @@ script: |-
           break;
   }
 
+  if (!args.rulename) {
+      args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
+  }
+
   var entries = [];
   if (blockPanorama) {
       entries.push(executeCommand('PanoramaBlockIP', args));
   }
 
   if (blockCP) {
-      entries.push(!args.ipname ?
-              'Failed adding to Check Point as ipname argument is missing':
-              executeCommand('CPBlockIP', args))
+      if (!args.ipname) {
+          args.ipname = + args.ip + ' . ' + args.direction;
+      }
+      entries.push(executeCommand('CPBlockIP', args));
   }
+
   return entries;
 type: javascript
-comment: Blocks IP in configured firewall
 tags:
 - firewall
 - checkpoint
 - panorama
-system: true
+comment: Blocks IP in configured firewall
+enabled: true
 args:
 - name: ip
   required: true
   default: true
   description: IP to block
 - name: rulename
-  required: true
   description: Rule name
 - name: direction
   required: true
@@ -51,8 +56,9 @@ args:
 - name: ipname
   description: Base name for added ip/hosts inside checkpoint db
 scripttarget: 0
+runonce: false
+releaseNotes: made rulename and ipname optional, with sensible defaults
 dependson:
   should:
   - panorama
   - checkpoint
-timeout: 0s
