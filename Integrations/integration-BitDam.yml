@@ -281,6 +281,5 @@ script:
       type: string
     description: Get verdict for a scanned file
   runonce: false
-releaseNotes: "Added new BitDam integration for scanning pdf & microsoft office files."
 tests:
   - Detonate File - BitDam Test

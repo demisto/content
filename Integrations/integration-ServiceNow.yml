@@ -1825,6 +1825,5 @@ script:
       type: string
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
-releaseNotes: "Added catalog task ticket type to dropdown, errors now displayed more gracefully"
 tests:
     - Run all tests

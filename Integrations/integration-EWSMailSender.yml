@@ -296,4 +296,3 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
-releaseNotes: "-"

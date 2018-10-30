@@ -714,7 +714,6 @@ inputs:
   required: true
   description: The default role to assign the incident to.
 outputs: []
-releaseNotes: "-"
 tests:
   - Phishing test - attachment
   - Phishing test - Inline

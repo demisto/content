@@ -5,7 +5,6 @@ fromversion: 4.0.0
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
-releaseNotes: "-"
 tasks:
   "0":
     id: "0"

@@ -26,4 +26,3 @@ args:
   description: The HTML to strip tags from
 scripttarget: 0
 runonce: false
-releaseNotes: "Added support for multiple languages"

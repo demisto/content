@@ -954,7 +954,6 @@ script:
         12:00:00'
     description: Gets a list of tasks
   runonce: false
-releaseNotes: added outputs, support multiple inputs for get-report, handle errors gracefully, code readability
 tests:
 - Lastline - testplaybook
 - detonate_url_-_generic_test
