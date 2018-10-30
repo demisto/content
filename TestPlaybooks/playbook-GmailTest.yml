@@ -687,7 +687,7 @@ tasks:
       id: 017f0872-122e-4bdc-8b68-aa1a5c7bfb3b
       version: -1
       name: block the admin
-      script: Gmail|||gmail-block-email
+      script: Gmail|||gmail-add-delete-filter
       type: regular
       iscommand: true
       brand: Gmail
@@ -695,7 +695,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      block:
+      email-address:
         complex:
           root: Account
           filters:
