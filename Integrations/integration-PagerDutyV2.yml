@@ -734,6 +734,5 @@ script:
     description: Get the users notification rules
   runonce: false
 hidden: false
-releaseNotes: "Adding option to send ServiceKey with the PagerDuty-submit-event command"
 tests:
   - PagerDuty Test

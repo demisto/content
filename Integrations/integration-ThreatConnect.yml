@@ -691,4 +691,3 @@ script:
   dockerimage: demisto/threatconnect-sdk
 tests:
   - "test-ThreatConnect"
-releaseNotes: "Fixed filter issue when ratingThreshold is provided"

@@ -135,6 +135,5 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/7zip
-releaseNotes: Enables decompression of AES encrypted files. Now accepts file extensions permitted by 7 Zip.
 tests:
   - ZipFile-Test

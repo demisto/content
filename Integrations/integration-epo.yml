@@ -706,4 +706,3 @@ script:
   runonce: false
 tests:
 - Test Playbook McAfee ePO
-releaseNotes: Added epo-list-tables, epo-query-table commands.
