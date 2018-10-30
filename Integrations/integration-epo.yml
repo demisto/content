@@ -52,6 +52,12 @@ script:
     //HELPER//
     function callEpo(pCommand, pArgs) {
         var url = serverUrl + 'remote/' + pCommand;
+
+        log(String(Object.keys(pArgs)));
+        //delete thisIsObject["Cow"]
+        delete pArgs["execution-timeout"];
+        log(String(Object.keys(pArgs)));
+
         url += encodeToURLQuery(pArgs);
         url += (Object.keys(pArgs).length > 0) ? '&' : '?';
         url += ':output=json';
