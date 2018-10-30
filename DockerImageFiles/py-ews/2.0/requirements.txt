@@ -19,7 +19,7 @@ Pygments==2.2.0
 pykerberos==1.2.1
 python-dateutil==2.7.3
 pytz==2018.4
-requests==2.18.4
+requests>=2.20.0
 requests-kerberos==0.12.0
 requests-ntlm==1.1.0
 six==1.11.0
