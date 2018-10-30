@@ -54,8 +54,9 @@ script:
         var url = serverUrl + 'remote/' + pCommand;
 
         log(String(Object.keys(pArgs)));
-        //delete thisIsObject["key"]
-        delete pArgs["execution-timeout"];
+        if ('execution-timeout' in pArgs) {
+          delete pArgs['execution-timeout'];
+        }
         log(String(Object.keys(pArgs)));
 
         url += encodeToURLQuery(pArgs);
