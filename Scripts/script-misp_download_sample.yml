@@ -30,3 +30,6 @@ args:
   description: If set, it will return all samples from events that have a match for
     the hash provided above
 scripttarget: 0
+dependson:
+  must:
+  - internal-misp-download-sample

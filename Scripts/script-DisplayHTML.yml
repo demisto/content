@@ -35,4 +35,3 @@ args:
   description: Add a header text to the output
 scripttarget: 0
 runonce: false
-releaseNotes: Fix script execution in case matkAsNote was not defined

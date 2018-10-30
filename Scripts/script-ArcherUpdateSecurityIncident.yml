@@ -94,4 +94,7 @@ args:
 - name: contentId
   description: Archer Content Id
 scripttarget: 0
+dependson:
+  must:
+  - archer-update-record
 runonce: false

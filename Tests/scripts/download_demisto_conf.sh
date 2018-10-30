@@ -27,11 +27,36 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic" -o "$DEMISTO_LIC_PATH"
 
+    echo "Downloading instance conf file..."
+    if [ -n "${NIGHTLY}" ]
+      then
+        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+          --location "https://api.github.com/repos/demisto/content-test-conf/contents/nightly_instance.json" -o "instance.json"
+
+      else
+        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+          --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json" -o "instance.json"
+
+    fi
+
   else
     echo "Downloading license file..."
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic?ref=$CIRCLE_BRANCH" -o "$DEMISTO_LIC_PATH"
 
-fi
+    echo "Downloading instance conf file..."
+    if [ -n "${NIGHTLY}" ]
+      then
+        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+          --location "https://api.github.com/repos/demisto/content-test-conf/contents/nightly_instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
 
+      else
+        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+          --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
+
+    fi
+
+fi
+echo "using instance:"
+cat instance.json
 echo "Successfully downloaded configuration files"

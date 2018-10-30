@@ -157,7 +157,9 @@ script:
         index_str = 'aella-ser*'
 
         query_str = 'event_name:{}  AND severity:>{}'.format(event, score)
+
         ts_str = str(long(checkTime * 1000))
+
         query_json = { 'query':
             { 'bool':
                 { 'must':
@@ -199,6 +201,7 @@ script:
                 cached_event = {}
 
             new_cached_event = {}
+
             for hit in hits:
                 source = hit.get('_source', None)
                 if not source:
@@ -218,9 +221,11 @@ script:
                 if not event_name:
                     continue
                 eid = hit['_id']
+
                 new_cached_event[eid] = True
                 if cached_event.get(eid, False):
                     continue
+
                 sdi = '{}_{}'.format(event_name, eid)
                 incident = {
                     'name' : sdi,
@@ -235,6 +240,7 @@ script:
             demisto.info('Incidents is {}'.format(incidents))
             demisto.setLastRun({'cached_event': new_cached_event})
             demisto.incidents(incidents)
+
         else:
             demisto.info('Poll incidents failed {}'.format(action_result))
             demisto.incidents([])

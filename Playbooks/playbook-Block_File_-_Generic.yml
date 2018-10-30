@@ -1,0 +1,112 @@
+id: block_file_-_generic
+version: -1
+name: Block File - Generic
+fromversion: 4.0.0
+description: A generic playbook for blocking files from running on endpoints. This
+  playbook currently supports Carbon Black Enterprise Response.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
+    type: start
+    task:
+      id: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: e3fbf02a-78a1-4329-837e-a6116bcf92af
+    type: playbook
+    task:
+      id: e3fbf02a-78a1-4329-837e-a6116bcf92af
+      version: -1
+      name: Block File - Carbon Black Response
+      description: ""
+      playbookName: Block File - Carbon Black Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: fceba42b-c11f-4521-8b0a-f86d410adc0e
+    type: title
+    task:
+      id: fceba42b-c11f-4521-8b0a-f86d410adc0e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    simple: ${File.MD5}
+  required: false
+  description: The MD5 hash of the file you want to block.
+outputs:
+- contextPath: CbResponse.BlockedHashes.LastBlock.Time
+  description: Last block time
+- contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
+  description: Last block hostname
+- contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
+  description: Last block sensor ID
+tests:
+  - block_indicators_-_generic_-_test
