@@ -90,3 +90,5 @@ releaseNotes: made rulename optional, with sensible defaults
 dependson:
   must:
   - panorama
+tests:
+- blockip_test_playbook

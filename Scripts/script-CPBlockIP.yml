@@ -103,3 +103,5 @@ releaseNotes: made rulename and ipname optional, with sensible defaults
 dependson:
   must:
   - checkpoint
+tests:
+- blockip_test_playbook
