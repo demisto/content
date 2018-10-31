@@ -46,7 +46,7 @@ configuration:
   type: 13
   required: false
 script:
-  script: |+
+  script: |
     ''' IMPORTS '''
     from luminateapi.luminate_python import LuminateV2Client
     import json
@@ -58,8 +58,9 @@ script:
     ''' CONSTS '''
     DEFAULT_FETCH_SIZE = 10
     VERIFY_CERTIFICATE = True
-    MAX_ALERTS_FETCH = 999
+    MAX_ALERTS_FETCH = 500
 
+    ''' FUNCTIONS '''
     ''' HELPER FUNCTIONS '''
     def human_readable_string_to_epoch(data):
         return int(dateparser.parse(data).strftime('%s')) * 1000
@@ -206,10 +207,10 @@ script:
 
         incidents = []
         # in case there is no alerts we move the last time to now.
-        temp_date=int(time.time()*1000)
+        temp_date=int(time.time() * 1000)
         for data in result.get('Logs', []):
             incident = alert_to_incident(data)
-            temp_date = human_readable_string_to_epoch(incident['occurred'])+1000
+            temp_date = human_readable_string_to_epoch(incident['occurred']) + 1000
 
             incidents.append(incident)
 
@@ -218,7 +219,7 @@ script:
         return incidents
 
     ''' EXECUTION CODE '''
-    LOG('command is %s' % (demisto.command(),))
+    LOG('command is {}'.format(demisto.command()))
 
     try:
         luminate_client = LuminateV2Client(demisto.params()['luminate_api_url'],
@@ -246,7 +247,7 @@ script:
             demisto.results(get_ssh_access_logs_command())
 
     except Exception, e:
-        LOG('%s: %s' % (type(e), e.message,))
+        LOG('{}: {}'.format(type(e), e.message))
         if demisto.command() != 'test-module':
             LOG.print_log()
 
@@ -255,8 +256,6 @@ script:
             'ContentsFormat': formats['text'],
             'Contents': 'error has occured: %s' % (e.message,),
         })
-        raise
-
   type: python
   commands:
   - name: lum-block-user
@@ -352,3 +351,5 @@ script:
   dockerimage: luminate/demisto-luminate-api:afae47df4f343c092e0d3c1083e83c8a8f4beeea
   isfetch: true
   runonce: false
+fromversion: 0.0.0
+releaseNotes: "fixed CR"
