@@ -297,6 +297,14 @@ script:
         query = quote(raw_query, safe='')
         r = http_request('GET', 'search/?q=page.url:"'+query+'"')
 
+        if r['total'] == 0:
+            demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['markdown'],
+                    'Contents': 'No results found for {}'.format(raw_query),
+                    'HumanReadable': 'No results found for {}'.format(raw_query)
+                    })
+            return
         res_dict = r['results'][0]
         res_tasks = res_dict['task']
         res_stats = res_dict['stats']
