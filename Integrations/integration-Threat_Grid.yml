@@ -304,11 +304,17 @@ script:
         request = req('GET', SUB_API + 'samples/' + sample_id + '/summary')
         r = request.json()
         sample = {'ID': sample_id, 'AnalysisSummary': [], 'ArtifactsCount': []}
+
+        # Search submissions request for extra information
+        sub_request = req('GET', SUB_API + 'search/submissions', params={'api_key': API_KEY, 'q': demisto.get(r, 'data.sha256')})
+        sub_r = sub_request.json()
+        sub_r_first_item = demisto.get(sub_r, 'data.items')[0]
+
         sample['AnalysisSummary'] = {
             'RegistryCount': demisto.get(r, 'data.registry_count'),
             'FileName': demisto.get(r, 'data.filename'),
             'SHA256': demisto.get(r, 'data.sha256'),
-            'SampleType': demisto.get(r, 'data.sample'),
+            'SampleType': demisto.get(sub_r_first_item, 'item.analysis.metadata.submitted_file.type'),
             'FirstSeen': demisto.get(r, 'data.first_seen'),
             'LastSeen': demisto.get(r, 'data.last_seen'),
         }
@@ -758,15 +764,15 @@ script:
         if aid:
             url += '/' + aid
         r = req('GET', url)
+        ec = {'ThreatGrid.Sample(val.ID === {0})'.format(sample_id) : r.json()}
         demisto.results([
             {
                 'Type': entryTypes['note'],
-                'EntryContext': {},
+                'EntryContext': ec,
                 'HumanReadable': None,
                 'Contents': r.json(),
                 'ContentsFormat': formats['json']
             },
-            fileResult(url, r.content)
         ])
 
 
@@ -928,9 +934,9 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The sample state
+      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
-      description: The sample status
+      description: The sample status, one of a stable set of strings "succ, fail"
     - contextPath: ThreatGrid.Sample.MD5
       description: The sample md5
     - contextPath: ThreatGrid.Sample.SHA1
@@ -960,9 +966,9 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The sample state
+      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
-      description: The sample status
+      description: The sample status, one of a stable set of strings "succ, fail"
     - contextPath: ThreatGrid.Sample.MD5
       description: The sample md5
     - contextPath: ThreatGrid.Sample.SHA1
@@ -1051,7 +1057,7 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The sample state
+      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The sample status
     - contextPath: ThreatGrid.Sample.MD5
@@ -1070,7 +1076,7 @@ script:
   - name: threat-grid-search-submissions
     arguments:
     - name: q
-      description: Query text.
+      description: Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to 'true'
     - name: user-only
       description: Only display submissions created by the current user, as determined
         by the value of api_key
@@ -1088,12 +1094,13 @@ script:
         either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic).
     - name: state
       description: 'Restrict match to submissions in specific state or states. Value
-        is a comma-delimited string containing one or more of the values:  wait proc
+        is a comma-delimited string containing one or more of the values: wait proc
         succ fail'
     - name: advanced
-      description: 'Interpret ''q'' as an advanced elasticsearch query, allowing matches
-        by specific field, for instance:  https:// ... /search/submissions?q=sha256:1b4468
-        ... &advanced=true'
+      description: 'When set to ''true'' interprets ''q'' as a Lucene query syntax, allowing matches
+        by specific field, for instance: q=sha256:1b4468 will return items with sha256 equal to 1b4468.
+        q=analysis.threat_score:64 will return analysis whose threat_score value is equal to 64.
+        For reference see: https://lucene.apache.org/core/2_9_4/queryparsersyntax.html'
     - name: sort_by
       description: Sorts by timestamp, submitted_at, analyzed_at, filename, type,
         state, threat or threat_score, login
@@ -1112,7 +1119,7 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The name of the sample file
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample
+      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The status of the sample
     - contextPath: ThreatGrid.Sample.MD5
@@ -1496,7 +1503,7 @@ script:
       description: search by IOC name
     - name: tag
       description: search by tag name
-    description: Search IPs
+    description: Search IPs. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
   - name: threat-grid-get-analysis-annotations
     arguments:
     - name: id
@@ -1558,7 +1565,7 @@ script:
       description: Result ID
     - contextPath: ThreatGrid.Samples.Details
       description: Detail of sample
-    description: Search Samples
+    description: Search Samples. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
   - name: threat-grid-search-urls
     arguments:
     - name: url
@@ -1591,7 +1598,7 @@ script:
       description: search by artifact downloaded
     - name: tag
       description: search by url tag
-    description: Search urls
+    description: Search urls. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
   - name: threat-grid-get-samples-state
     arguments:
     - name: ids
@@ -1784,6 +1791,9 @@ script:
       required: true
       default: true
       description: the sample id
+    outputs:
+    - contextPath: ThreatGrid.Sample.Analysis
+      description: Analysis datat of the sample
     description: Returns the sample id artifacts
   - name: threat-grid-get-analysis-ioc
     arguments:
@@ -1794,6 +1804,9 @@ script:
     - name: ioc
       required: true
       description: the ioc requested
+    outputs:
+    - contextPath: ThreatGrid.Sample.Analysis
+      description: Analysis datat of the sample
     description: Returns data regarding the specified Indicator of Compromise
   - name: threat-grid-get-analysis-metadata
     arguments:
