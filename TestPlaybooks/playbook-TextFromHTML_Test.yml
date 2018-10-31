@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 93014e3e-b77c-414b-892a-2f07d0d47505
+    taskid: a1912c95-0e5e-458f-846c-33d8bd68bfd7
     type: regular
     task:
-      id: 93014e3e-b77c-414b-892a-2f07d0d47505
+      id: a1912c95-0e5e-458f-846c-33d8bd68bfd7
       version: -1
       name: TextFromHTML English
       description: Extract regular text from the given HTML
@@ -41,7 +41,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
     scriptarguments:
       html:
         simple: |-
@@ -76,16 +76,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1245
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: c083cbb1-22b6-4dc3-84af-36331320a7c2
+    taskid: 2acd90a5-2f10-49ec-8efd-199e77b62cd3
     type: regular
     task:
-      id: c083cbb1-22b6-4dc3-84af-36331320a7c2
+      id: 2acd90a5-2f10-49ec-8efd-199e77b62cd3
       version: -1
       name: TextFromHTML Hebrew
       description: Extract regular text from the given HTML
@@ -95,7 +95,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "8"
     scriptarguments:
       html:
         simple: |-
@@ -110,16 +110,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: 7d367296-03e6-4a3c-801f-4db5d7c50899
+    taskid: 6cc28933-17a6-485d-8eb1-ea65d604bd9f
     type: regular
     task:
-      id: 7d367296-03e6-4a3c-801f-4db5d7c50899
+      id: 6cc28933-17a6-485d-8eb1-ea65d604bd9f
       version: -1
       name: TextFromHTML Spanish
       description: Extract regular text from the given HTML
@@ -129,7 +129,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "10"
     scriptarguments:
       html:
         simple: |-
@@ -144,7 +144,103 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 9454119c-168b-4c1a-8e09-a630d0902d1f
+    type: regular
+    task:
+      id: 9454119c-168b-4c1a-8e09-a630d0902d1f
+      version: -1
+      name: Verify context English
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue:
+        simple: |2
+
+          This is heading 1
+      fields: {}
+      path:
+        simple: english
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: e5a56030-0c1e-489b-8c6f-eef09272aea2
+    type: regular
+    task:
+      id: e5a56030-0c1e-489b-8c6f-eef09272aea2
+      version: -1
+      name: Verify context Hebrew
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: |2
+
+          משפט בעברית לבדיקה
+      fields: {}
+      path:
+        simple: hebrew
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: edef43b1-6b31-4df2-8afa-af4a0974cbdd
+    type: regular
+    task:
+      id: edef43b1-6b31-4df2-8afa-af4a0974cbdd
+      version: -1
+      name: Verify context Hebrew
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue:
+        simple: |2
+
+          Frase en español para revisión
+      fields: {}
+      path:
+        simple: spanish
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -153,7 +249,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
