@@ -50,6 +50,11 @@
             "playbookID": "SCADAfence_test"
         },
         {
+
+            "integrations": "BigFix",
+            "playbookID": "BigFixTest"
+        },
+        {
             "integrations": "Lastline",
             "playbookID": "Lastline - testplaybook",
             "nightly": true
