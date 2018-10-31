@@ -36,7 +36,6 @@ script:
     import requests
     import json
     import time
-    import polling
     import collections
     from requests.utils import quote
     import datetime
@@ -81,6 +80,56 @@ script:
         return collections.defaultdict(makehash)
 
 
+    try:
+        from Queue import Queue
+    except ImportError:
+        from queue import Queue
+
+
+    def step_constant(step):
+        return step
+
+
+    def step_linear_double(step):
+        return step * 2
+
+
+    def is_truthy(val):
+        return bool(val)
+
+
+    def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check_success=is_truthy,
+             step_function=step_constant, ignore_exceptions=(), poll_forever=False, collect_values=None, *a, **k):
+
+        kwargs = kwargs or dict()
+        values = collect_values or Queue()
+
+        max_time = time.time() + timeout if timeout else None
+        tries = 0
+
+        last_item = None
+        while True:
+
+            try:
+                val = target(*args, **kwargs)
+                last_item = val
+            except ignore_exceptions as e:
+                last_item = e
+            else:
+                if check_success(val):
+                    return val
+
+            values.put(last_item)
+            tries += 1
+            if max_time is not None and time.time() >= max_time:
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['markdown'],
+                    'Contents': 'The operation timed out. Please try again with a longer timeout period.',
+                    'HumanReadable': 'The operation timed out. Please try again with a longer timeout period.'
+                    })
+            time.sleep(step)
+            step = step_function(step)
 
 
     '''MAIN FUNCTIONS'''
@@ -98,7 +147,7 @@ script:
             TIMEOUT = demisto.args().get('timeout')
         uri = BASE_URL+'result/{}'.format(uuid)
 
-        ready = polling.poll(
+        ready = poll(
             lambda: requests.get(uri).status_code == 200,
             step=5,
             ignore_exceptions=(requests.exceptions.ConnectionError,),
@@ -315,6 +364,7 @@ script:
         urlscan_search_command()
         sys.exit(0)
 
+
   type: python
   commands:
   - name: urlscan-search
@@ -393,7 +443,6 @@ script:
     - contextPath: URLScan.Certificates
       description: Certificates found for the URL scanned
     description: Submit an url to scan
-  dockerimage: demisto/urlscan
   runonce: false
 releaseNotes: Deprecated ip, url and file commands. Reformatted context outputs.
 fromversion: 3.5.0
