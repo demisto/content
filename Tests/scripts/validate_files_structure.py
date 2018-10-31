@@ -175,6 +175,15 @@ def validate_schema(file_path, matching_regex=None):
     return True
 
 
+def changed_id(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    if re.search("\+id: .*", change_string) or re.search("\-id: .*", change_string):
+        print_error("You've changed the ID of the playbook {0} please undo.".format(file_path))
+        return True
+
+    return False
+
+
 def get_json(file_path):
     data_dictionary = None
     with open(os.path.expanduser(file_path), "r") as f:
@@ -215,12 +224,17 @@ def is_test_in_conf_json(file_path):
 
 
 def validate_committed_files(branch_name):
-    files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+    files_string = run_git_command("git diff --name-status --no-merges HEAD")
     modified_files, added_files = get_modified_files(files_string)
     missing_release_notes = False
     wrong_schema = False
+    is_changed_id = False
     missing_test = False
     for file_path in modified_files:
+        if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if changed_id(file_path):
+                is_changed_id = True
+
         print "Validating {}".format(file_path)
         if not validate_file_release_notes(file_path):
             missing_release_notes = True
@@ -238,7 +252,7 @@ def validate_committed_files(branch_name):
                 missing_test = True
                 print_error("You've failed to add the {0} to conf.json".format(file_path))
 
-    if missing_release_notes or wrong_schema or missing_test:
+    if missing_release_notes or wrong_schema or is_changed_id or missing_test:
         sys.exit(1)
 
 
