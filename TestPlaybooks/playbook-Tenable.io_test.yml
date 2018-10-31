@@ -1,6 +1,6 @@
-id: Tenable.io test
+id: Tenable_io test
 version: -1
-name: Tenable.io test
+name: Tenable_io test
 starttaskid: "0"
 tasks:
   "0":
