@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: a1912c95-0e5e-458f-846c-33d8bd68bfd7
+    taskid: 670558f2-50d0-4e43-8bb0-95729b2301dd
     type: regular
     task:
-      id: a1912c95-0e5e-458f-846c-33d8bd68bfd7
+      id: 670558f2-50d0-4e43-8bb0-95729b2301dd
       version: -1
       name: TextFromHTML English
       description: Extract regular text from the given HTML
@@ -43,6 +43,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
+      extend-context:
+        simple: english=
       html:
         simple: |-
           <!DOCTYPE html>
@@ -82,10 +84,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 2acd90a5-2f10-49ec-8efd-199e77b62cd3
+    taskid: 2c78e250-95c3-4966-8cdf-5925f754bfe8
     type: regular
     task:
-      id: 2acd90a5-2f10-49ec-8efd-199e77b62cd3
+      id: 2c78e250-95c3-4966-8cdf-5925f754bfe8
       version: -1
       name: TextFromHTML Hebrew
       description: Extract regular text from the given HTML
@@ -97,6 +99,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      extend-context:
+        simple: hebrew=
       html:
         simple: |-
           <!DOCTYPE html>
@@ -116,10 +120,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 6cc28933-17a6-485d-8eb1-ea65d604bd9f
+    taskid: 462d07e9-2932-4ada-8c1f-c1685d63a153
     type: regular
     task:
-      id: 6cc28933-17a6-485d-8eb1-ea65d604bd9f
+      id: 462d07e9-2932-4ada-8c1f-c1685d63a153
       version: -1
       name: TextFromHTML Spanish
       description: Extract regular text from the given HTML
@@ -131,6 +135,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      extend-context:
+        simple: spanish=
       html:
         simple: |-
           <!DOCTYPE html>
