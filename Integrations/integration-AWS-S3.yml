@@ -605,3 +605,5 @@ script:
     description: Upload file to S3 bucket
   dockerimage: demisto/boto3
   runonce: false
+tests:
+  - Forgive me for my sins but I did not create any test
