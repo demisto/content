@@ -155,7 +155,7 @@
             "playbookID": "TestParseCSV"
         },
         {
-            "playbookID": "detonate_file_-_generic_test",
+            "playbookID": "Detonate File - Generic Test",
             "timeout": 2000,
             "nightly": true,
             "integrations": [
@@ -166,7 +166,7 @@
             ]
         },
         {
-            "playbookID": "detonate_url_-_generic_test",
+            "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
             "integrations": [
