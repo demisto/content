@@ -53,18 +53,11 @@ script:
     function callEpo(pCommand, pArgs) {
         var url = serverUrl + 'remote/' + pCommand;
 
-        log(String(Object.keys(pArgs)));
-        if ('execution-timeout' in pArgs) {
-          delete pArgs['execution-timeout'];
-        }
-        log(String(Object.keys(pArgs)));
+        delete pArgs["execution-timeout"];
 
         url += encodeToURLQuery(pArgs);
         url += (Object.keys(pArgs).length > 0) ? '&' : '?';
         url += ':output=json';
-
-        log(url);
-
         var result = http(
             url,
             {
@@ -707,6 +700,8 @@ script:
         OrionTaskLogTask.StartDate) )")'
     - name: group
       description: 'Group the results. Please use SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"'
+    - name: joinTables
+      description: Join a table to the query
     description: Queries an ePO table
   - name: epo-get-tables
     arguments:
@@ -716,4 +711,4 @@ script:
   runonce: false
 tests:
 - Test Playbook McAfee ePO
-releaseNotes: execution arg deletion
+releaseNotes: "Added joinTables argument for epo-query-table"
