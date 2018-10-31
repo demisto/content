@@ -26,9 +26,7 @@
           "playbookID": "devo_test_playbook"
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
+          "integrations": "VirusTotal",
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
         },
