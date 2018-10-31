@@ -23,11 +23,12 @@ tasks:
       - "9"
       - "11"
       - "13"
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 50
         }
       }
@@ -48,7 +49,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 370
         }
       }
@@ -106,7 +107,6 @@ tasks:
       id: c04567fa-641d-4b51-8c94-561516554b3d
       version: -1
       name: ATD - Detonate File
-      playbookName: ATD - Detonate File
       description: |-
         Detonates a File using the McAfee Advanced Threat Defense sandbox.
         Advanced Threat Defense supports the following File Types:
@@ -126,6 +126,7 @@ tasks:
         jpeg, png, gif
         Other file types
         cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+      playbookName: ATD - Detonate File
       type: playbook
       iscommand: false
       brand: ""
@@ -166,9 +167,10 @@ tasks:
       id: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
       version: -1
       name: Detonate File - ThreatGrid
+      description: Detonate one or more URLs using the Threat Grid integration. This
+        playbook returns relevant reports to the War Room and URL reputations to the
+        context data.
       playbookName: Detonate File - ThreatGrid
-      description: Detonate one or more URLs using the Threat Grid integration. This playbook
-        returns relevant reports to the War Room and URL reputations to the context data.
       type: playbook
       iscommand: false
       brand: ""
@@ -288,13 +290,53 @@ tasks:
         }
       }
     note: false
+  "14":
+    id: "14"
+    taskid: d8093197-7aa9-4b18-8774-563225e8c72b
+    type: playbook
+    task:
+      id: d8093197-7aa9-4b18-8774-563225e8c72b
+      version: -1
+      name: Detonate File - Lastline
+      description: |-
+        Detonates a File using the Lastline sandbox.
+        Lastline supports the following File Types:
+        EXE, SYS, DLL, COM, SCR, CPL, OCX, CGI, DOC, DOTM, DOCX, DOTX, XLS, PPAM, XSLX, PPS, XLSB, PPSX, XLSM, PPSM, PPT, PPTX, PPTM, RTF, SHS, XLTM, SLDM, XLTX, SLDX, XLAM, THMX, DOCM, XAR, JTD, JTDC, PDF, SWF, GZ, 7Z, TGZ, MSI, ZIP, LZH, CAB, LZMA, APK, JAR, CLASS, JPEG, PNG, GIF, CMD, ACE, BAT, ARJ, VBS, CHM, XML, LNK, URL, MOF, HTM, OCX, HTML, POTM, EML, POTX, MSG, PS, |VB, REG, VBA, WSC, VBE, WSF, VBS, WSH
+      playbookName: Detonate File - Lastline
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 195
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 2100,
+        "width": 2530,
         "x": 50,
         "y": 50
       }
@@ -303,15 +345,12 @@ view: |-
 inputs:
 - key: EntryID
   value:
-    complex:
-      root: File
-      accessor: EntryID
+    simple: ${File.EntryID}
   required: false
   description: Entry ID of file to be detonated
 - key: File
   value:
-    complex:
-      root: File
+    simple: ${File}
   required: false
   description: File object of file to be detonated
 outputs:
@@ -454,3 +493,6 @@ outputs:
 - contextPath: Joe.Analysis
   description: Thee Analysis object
   type: unknown
+releaseNotes: added Lastline Detonate File playbook
+tests:
+- detonate_file_-_generic_test

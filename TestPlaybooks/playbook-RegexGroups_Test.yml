@@ -1,0 +1,296 @@
+id: RegexGroups Test
+version: -1
+name: RegexGroups Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2811de25-b5ad-4a03-827d-63aca3323a87
+    type: start
+    task:
+      id: 2811de25-b5ad-4a03-827d-63aca3323a87
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 2ddcc746-ced2-459a-83d2-befbbfc60080
+    type: regular
+    task:
+      id: 2ddcc746-ced2-459a-83d2-befbbfc60080
+      version: -1
+      name: Set test data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: TestData
+      value:
+        simple: The quick brown fox
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 132d661c-ce05-403d-854d-a858fde5f2a3
+    type: regular
+    task:
+      id: 132d661c-ce05-403d-854d-a858fde5f2a3
+      version: -1
+      name: Set test 2 output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Output
+      value:
+        complex:
+          root: TestData
+          transformers:
+          - operator: RegexGroups
+            args:
+              groups:
+                value:
+                  simple: 0,1
+              keys:
+                value:
+                  simple: article,noun
+              regex:
+                value:
+                  simple: (The)\s(quick).*(fox)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1185
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: c353bdf3-f255-4a3b-80a3-1e68f2f755da
+    type: regular
+    task:
+      id: c353bdf3-f255-4a3b-80a3-1e68f2f755da
+      version: -1
+      name: Verify test 2 output
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '{"article":"The","noun":"quick"}'
+      fields: {}
+      path:
+        simple: Output
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 93a24aac-e74c-460b-8350-523995de3ec0
+    type: title
+    task:
+      id: 93a24aac-e74c-460b-8350-523995de3ec0
+      version: -1
+      name: Test 2 - with groups and keys
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: e08265c1-8839-4323-83a6-45c3f7e58cd0
+    type: title
+    task:
+      id: e08265c1-8839-4323-83a6-45c3f7e58cd0
+      version: -1
+      name: Test 1 - without groups and keys
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 3d31efcc-818e-467f-8506-a1ed52a7f2b9
+    type: regular
+    task:
+      id: 3d31efcc-818e-467f-8506-a1ed52a7f2b9
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: TestData
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1010
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 018beadd-9618-42c5-838e-6a62b3495933
+    type: regular
+    task:
+      id: 018beadd-9618-42c5-838e-6a62b3495933
+      version: -1
+      name: Set test 1 output
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Output
+      value:
+        complex:
+          root: TestData
+          transformers:
+          - operator: RegexGroups
+            args:
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: (The)\s(quick)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 187747aa-2039-4ac6-8d01-673ad8513c73
+    type: regular
+    task:
+      id: 187747aa-2039-4ac6-8d01-673ad8513c73
+      version: -1
+      name: Verify test 1 output
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: '["The","quick"]'
+      fields: {}
+      path:
+        simple: Output
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 380,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
