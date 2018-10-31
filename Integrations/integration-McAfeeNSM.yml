@@ -35,7 +35,7 @@ script:
     var base_url = params.url.slice(0, params.url.length - params.url.match('/*$')[0].length) + '/sdkapi/';
     var proxy = params.proxy;
 
-    function sendRequest(method, url_suffix, headers, body) {
+    function sendRequest(method, url_suffix, headers, body, params) {
         // add default headers
         if (!("Accept" in headers)) {
             headers["Accept"] = ['application/vnd.nsm.v1.0+json', 'application/vnd.nsm.v2.0+json'];
@@ -47,8 +47,14 @@ script:
             headers['NSM-SDK-API'] = [session_credentials];
         }
 
+        var path = base_url + url_suffix;
+
+        if(params){
+            path += encodeToURLQuery(params);
+        }
+
         var res = http(
-            base_url + url_suffix,
+            path,
             {
                 Method: method,
                 Headers: headers,
@@ -334,9 +340,12 @@ script:
         return get_alerts(state, time_period, start_time, end_time);
     }
 
-    function get_alert_details(alert_id) {
+    function get_alert_details(alert_id, sensor_id) {
         var cmd_url = 'alerts/' + alert_id;
-        var res = sendRequest('GET', cmd_url, {}, '');
+        var query_params = {
+            'sensorId': sensor_id
+        };
+        var res = sendRequest('GET', cmd_url, {}, '', query_params);
         return alert_to_entry('Alert ' + res.name, res);
     }
 
@@ -368,7 +377,7 @@ script:
             }
             return get_alerts(args.state, args.time_period, args.start_time, args.end_time, args.search, args.filter);
         case 'nsm-get-alert-details':
-            return get_alert_details(args.alert_id);
+            return get_alert_details(args.alert_id, args.sensor_id);
         case 'nsm-update-alerts':
             if (!validateTimeArgs(args.time_period, args.start_time, args.end_time)) {
                 throw 'Error! In CUSTOM mode, You must specify both start time and end time';
@@ -567,6 +576,8 @@ script:
       required: true
       default: true
       description: Alert ID
+    - name: sensor_id
+      description: Sensor ID
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID
@@ -684,3 +695,4 @@ script:
       type: string
     description: Get all available attack definitions in NSM
   runonce: false
+releaseNotes: "Added sensor id to get-alert-details command"
