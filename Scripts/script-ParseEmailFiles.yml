@@ -1,6 +1,7 @@
 commonfields:
   id: ParseEmailFiles
   version: -1
+rolename: []
 name: ParseEmailFiles
 releaseNotes: "-"
 script: |-
@@ -523,11 +524,23 @@ script: |-
           headers = parser.parsestr(fileData)
 
           header_list = []
+          encodings = set(['utf-8', 'iso8859-1'])
           for item in headers.items():
               item_dict = {}
               item_dict['name'] = item[0]
-              item_dict['value'] = item[1]
-
+              val = item[1]
+              try:
+                  subjenc, encoding = decode_header(val)[0]
+                  val = subjenc.decode(encoding).strip()
+                  encodings.add(encoding)
+              except Exception as e:
+                  for encoding in encodings:
+                      try:
+                          val = val.decode(encoding).encode('utf-8').strip()
+                          break
+                      except:
+                          pass
+              item_dict['value'] = val
               header_list.append(item_dict)
 
           eml = message_from_string(fileData)
@@ -556,7 +569,12 @@ script: |-
               subjenc, encoding = decode_header(eml['Subject'])[0]
               subj = subjenc.decode(encoding).strip()
           except:
-              subj = eml['Subject']
+              for encoding in encodings:
+                  try:
+                      subj = eml['Subject'].decode(encoding)
+                      break
+                  except:
+                      pass
           subj = unicode(subj).encode('utf-8').strip()
 
           emailData = {
@@ -570,6 +588,7 @@ script: |-
               'Attachments': '' if not attachments else ','.join(attachments),
               'Format': eml.get_content_type()
           }
+
           return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
               'EntryContext': {'Email': emailData}}]
 
