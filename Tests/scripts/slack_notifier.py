@@ -161,15 +161,6 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
             attachments=content_team_attachments
         )
 
-        sc.api_call(
-            "chat.postMessage",
-            channel="content",
-            username="Content CircleCI",
-            as_user="False",
-            attachments=content_attachments
-        )
-
-
 if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
