@@ -114,7 +114,7 @@ def get_modified_files(files_string):
         file_status = file_data[0]
         file_path = file_data[1]
 
-        if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
+        if (file_status.lower() == 'm' or file_status.lower() == 'a') and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.append(file_path)
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.append(file_path)
@@ -122,6 +122,8 @@ def get_modified_files(files_string):
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
 
     return modified_files_list, added_files_list
+
+    return modified_files_list
 
 
 def validate_file_release_notes(file_path):
