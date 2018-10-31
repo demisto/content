@@ -100,7 +100,7 @@ def copy_test_files(bundle_test):
             NonCircleTests = glob.glob(os.path.join(path, '*'))
             for new_path in NonCircleTests:
                 print "copying path %s" % (new_path,)
-                shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(new_path)))
+                shutil.copyfile(new_path, os.path.join(bundle_test, os.path.basename(new_path)))
 
         else:
             print "copying path %s" % (path,)
