@@ -3,7 +3,7 @@ commonfields:
   version: 5
 name: BlockIP
 script: |-
-  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorame'})[0].Contents;
+  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorama'})[0].Contents;
   var blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname': 'check point'})[0].Contents;
 
   if (args['using-brand']) {

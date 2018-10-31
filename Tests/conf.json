@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": [
-                "Panorama"
+                "Panorama",
+                "Check Point"
             ],
             "playbookID": "blockip_test_playbook"
         },
