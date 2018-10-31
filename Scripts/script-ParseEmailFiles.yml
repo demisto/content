@@ -1,7 +1,6 @@
 commonfields:
   id: ParseEmailFiles
   version: -1
-rolename: []
 name: ParseEmailFiles
 releaseNotes: "-"
 script: |-
