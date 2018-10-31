@@ -151,6 +151,7 @@ def slack_notifier(build_url, build_number, slack_token, circleci_token):
         print("Extracting build status")
         content_team_attachments, content_attachments = get_attachments(build_url)
 
+        print("Sending Slack messages to #content and #content-team")
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
