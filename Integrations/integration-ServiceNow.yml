@@ -158,6 +158,15 @@ script:
          "severity", "sla_due", "state", "subcategory", "sys_tags", "time_worked", "urgency", "user_input", "watch_list", "work_end", "work_notes", "work_notes_list",
          "work_start", "impact", "incident_state", "title", "type", "category", "state"]
 
+
+    DEFAULT_RECORD_FIELDS = {
+        'sys_id': 'ID',
+        'sys_updated_by': 'UpdatedBy',
+        'sys_updated_on': 'UpdatedAt',
+        'sys_created_by': 'CreatedBy',
+        'sys_created_on': 'CreatedAt'
+        }
+
     ''' HELPER FUNCTIONS '''
 
     def send_request(path, method='get', body=None, params=None, headers=None, file=None):
@@ -282,6 +291,8 @@ script:
         return result
 
     def get_ticket_fields(template):
+        inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
+        inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
         body = {}
         for arg in SNOW_ARGS:
             input_arg = demisto.args().get(arg)
@@ -299,8 +310,6 @@ script:
 
     def get_body(template, fields, custom_fields):
         body = {}
-        inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
-        inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
 
         if fields:
             for field in fields:
@@ -366,7 +375,7 @@ script:
         number = demisto.args().get('number')
         get_attachments = demisto.args().get('get_attachments', 'false')
 
-        res = get_ticket(ticket_id, number, ticket_type)
+        res = get(ticket_type, ticket_id, number)
         if not res or 'result' not in res:
             return 'Cannot find ticket'
 
@@ -399,14 +408,59 @@ script:
 
         return entries
 
+    def get_record_command():
+        table_name = demisto.args()['table_name']
+        record_id = demisto.args()['id']
+        fields = demisto.args().get('fields')
 
-    def get_ticket(ticket_id, number, ticket_type):
+        res = get(table_name, record_id)
+
+        if not res or 'result' not in res:
+            return 'Cannot find record'
+
+        if isinstance(res['result'], list):
+            if len(res['result']) == 0:
+                return 'Cannot find ticket'
+            record = res['result'][0]
+        else:
+            record = res['result']
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json']
+        }
+
+        if fields:
+            fields = argToList(fields)
+            record = dict(filter(lambda kv_pair: kv_pair[0] in fields, record.items()))
+            if record:
+                entry['ReadableContentsFormat'] = formats['markdown']
+                entry['HumanReadable'] = tableToMarkdown('ServiceNow details for record', record, removeNull=True)
+                entry['EntryContext'] = {
+                    'ServiceNow.Record': createContext(record)
+                }
+            else:
+                entry['ReadableContentsFormat'] = formats['text']
+                entry['HumanReadable'] = 'No such fields were found in the result'
+        else:
+            mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS}
+            entry['ReadableContentsFormat'] = formats['markdown']
+            entry['HumanReadable'] = tableToMarkdown('ServiceNow details for record' + record_id, mapped_record, removeNull=True)
+            entry['EntryContext'] = {
+                'ServiceNow.Record': createContext(mapped_record)
+            }
+
+        return entry
+
+
+    def get(table_name, record_id, number = None):
         path = None
         query_params = {}
-        if ticket_id:
-            path = 'table/' + ticket_type + '/' + ticket_id
+        if record_id:
+            path = 'table/' + table_name + '/' + record_id
         elif number:
-            path = 'table/' + ticket_type
+            path = 'table/' + table_name
             query_params = {
                 'number': number
             }
@@ -414,7 +468,6 @@ script:
             raise ValueError('servicenow-get requires either ticket ID (sys_id) or ticket number')
 
         return send_request(path, 'get', params = query_params)
-
 
     def get_ticket_attachments(ticket_id):
         path = 'attachment'
@@ -464,10 +517,44 @@ script:
 
         return entry
 
+    def update_record_command():
+        table_name = demisto.args()['table_name']
+        record_id = demisto.args()['id']
+        fields = demisto.args().get('fields')
+        custom_fields = demisto.args().get('custom_fields')
 
-    def update(ticket_type, ticket_id, fields, custom_fields, template):
+        if fields:
+            fields = split_fields(fields)
+        if custom_fields:
+            custom_fields = split_fields(custom_fields)
+
+        res = update(table_name, record_id, fields, custom_fields)
+
+        if not res or 'result' not in res:
+            return 'Cannot find record'
+
+        result = res['result']
+
+        mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS}
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow updated record', mapped_record, removeNull=True),
+            'EntryContext': {
+                'ServiceNow.Record': createContext(mapped_record)
+            }
+        }
+
+        return entry
+
+        res = update(table_name, record_id, fields, custom_fields)
+
+
+    def update(table_name, record_id, fields, custom_fields, template=None):
         body = get_body(template, fields, custom_fields)
-        path = 'table/' + ticket_type + '/' + ticket_id
+        path = 'table/' + table_name + '/' + record_id
 
         return send_request(path, 'patch', body = body)
 
@@ -497,9 +584,42 @@ script:
 
         return entry
 
-    def create(ticket_type, fields, custom_fields, template):
+    def create_record_command():
+        table_name = demisto.args()['table_name']
+        fields = demisto.args().get('fields')
+        custom_fields = demisto.args().get('custom_fields')
+        template = demisto.args().get('template')
+
+        if fields:
+            fields = split_fields(fields)
+        if custom_fields:
+            custom_fields = split_fields(custom_fields)
+
+        res = create(table_name, fields, custom_fields, template)
+
+        if not res or 'result' not in res:
+            return 'Cannot find record'
+
+        result = res['result']
+
+        mapped_record = {DEFAULT_RECORD_FIELDS[k]: result[k] for k in DEFAULT_RECORD_FIELDS}
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow created record', mapped_record, removeNull=True),
+            'EntryContext': {
+                'ServiceNow.Record': createContext(mapped_record)
+            }
+        }
+
+        return entry
+
+
+    def create(table_name, fields, custom_fields, template):
         body = get_body(template, fields, custom_fields)
-        path = 'table/' + ticket_type
+        path = 'table/' + table_name
 
         return send_request(path, 'post', body = body)
 
@@ -519,11 +639,27 @@ script:
 
         return entry
 
-    def delete(ticket_type, ticket_id):
-        path = 'table/' + ticket_type + '/' + ticket_id
+    def delete_record_command():
+        record_id = demisto.args()['id']
+        table_name = demisto.args().get('table_name')
+
+        res = delete(table_name, record_id)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Record with ID ' + record_id + ' was succesfully deleted.'
+        }
+
+        return entry
+
+
+    def delete(table_name, record_id):
+        path = 'table/' + table_name + '/' + record_id
 
         return send_request(path, 'delete')
-
 
 
     def add_link_command():
@@ -631,17 +767,22 @@ script:
         if fields:
             fields = argToList(fields)
             result = [dict(filter(lambda kv_pair: kv_pair[0] in fields, r.iteritems())) for r in res['result']]
-
-        if any(result):
-            entry['ReadableContentsFormat'] = formats['markdown']
-            entry['HumanReadable'] = tableToMarkdown('ServiceNow query results for table: ' + table_name, result, removeNull=True)
-            entry['EntryContext'] = {
-                'ServiceNow.Results': createContext(result)
-            }
+            if any(result):
+                entry['ReadableContentsFormat'] = formats['markdown']
+                entry['HumanReadable'] = tableToMarkdown('ServiceNow query results', result, removeNull=True)
+                entry['EntryContext'] = {
+                    'ServiceNow.Results': createContext(result)
+                }
+            else:
+                entry['ReadableContentsFormat'] = formats['text']
+                entry['HumanReadable'] = 'No such fields were found in the result'
         else:
-            entry['ReadableContentsFormat'] = formats['text']
-            entry['HumanReadable'] = 'No such fields were found in the result'
-
+            mapped_records = [{DEFAULT_RECORD_FIELDS[k]: r[k] for k in DEFAULT_RECORD_FIELDS} for r in result]
+            entry['ReadableContentsFormat'] = formats['markdown']
+            entry['HumanReadable'] = tableToMarkdown('ServiceNow query results', mapped_records, removeNull=True)
+            entry['EntryContext'] = {
+                'ServiceNow.Results': createContext(mapped_records)
+            }
 
         return entry
 
@@ -712,10 +853,10 @@ script:
 
 
     def get_computer_command():
-        ticket_type = 'cmdb_ci_computer'
+        table_name = 'cmdb_ci_computer'
         computer_name = demisto.args()['computerName']
 
-        res = get_computer(ticket_type, computer_name)
+        res = query(table_name, None, 'u_code=' + computer_name)
 
         if not res or 'result' not in res:
             return 'Cannot find computer'
@@ -755,19 +896,10 @@ script:
         return entry
 
 
-    def get_computer(ticket_type, computer_name):
-        path = 'table/' + ticket_type
-
-        query_params = {
-            'sysparm_query': 'u_code=' + computer_name
-        }
-
-        return send_request(path, 'get', params=query_params)
-
     def get_groups_command():
-        ticket_type = 'sys_user_group'
+        table_name = 'sys_user_group'
         group_name = demisto.args()['name']
-        res = get_groups(ticket_type, group_name)
+        res = query(table_name, None, 'name=' + group_name)
 
         if not res or 'result' not in res:
             return 'Cannot find groups'
@@ -803,14 +935,6 @@ script:
 
         return entry
 
-    def get_groups(ticket_type, group_name):
-        path = 'table/' + ticket_type
-
-        query_params = {
-            'sysparm_query': 'name=' + group_name
-        }
-
-        return send_request(path, 'get', params=query_params)
 
     def fetch_incidents():
         query_params = {}
@@ -887,7 +1011,7 @@ script:
             demisto.results('ok')
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
-        elif demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update':
+        elif demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-get-ticket':
             demisto.results(get_ticket_command())
         elif demisto.command() == 'servicenow-update' or demisto.command() == 'servicenow-incident-update' or demisto.command() == 'servicenow-update-ticket':
             demisto.results(update_ticket_command())
@@ -907,6 +1031,14 @@ script:
             demisto.results(get_computer_command())
         elif demisto.command() == 'servicenow-get-groups':
             demisto.results(get_groups_command())
+        elif demisto.command() == 'servicenow-get-record':
+            demisto.results(get_record_command())
+        elif demisto.command() == 'servicenow-update-record':
+            demisto.results(update_record_command())
+        elif demisto.command() == 'servicenow-create-record':
+            demisto.results(create_record_command())
+        elif demisto.command() == 'servicenow-delete-record':
+            demisto.results(delete_record_command())
         if demisto.command() == 'servicenow-query-table':
             demisto.results(query_table_command())
     except Exception as e:
@@ -1076,7 +1208,8 @@ script:
     - contextPath: File.MD5
       description: Attachment file MD5
       type: string
-    description: Retrieve ticket information by specific ticket ID
+    description: Deprecated. Please use servicenow-get-ticket or servicenow-get-record
+      instead
   - name: servicenow-incident-get
     deprecated: true
     arguments:
@@ -1130,23 +1263,23 @@ script:
     - name: urgency
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket urgency
     - name: severity
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket severity
     - name: impact
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket impact
     - name: active
       auto: PREDEFINED
@@ -1283,11 +1416,11 @@ script:
     - name: priority
       auto: PREDEFINED
       predefined:
-      - Planning
-      - Low
-      - Moderate
-      - High
-      - Critical
+      - 5 - Planning
+      - 4 - Low
+      - 3 - Moderate
+      - 2 - High
+      - 1 - Critical
       description: Priority of the ticket (number)
     - name: template
       description: Template name to use as a base to create new tickets.
@@ -1341,23 +1474,23 @@ script:
     - name: urgency
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket urgency
     - name: severity
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket severity
     - name: impact
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket impact
     - name: active
       auto: PREDEFINED
@@ -1494,11 +1627,11 @@ script:
     - name: priority
       auto: PREDEFINED
       predefined:
-      - Planning
-      - Low
-      - Moderate
-      - High
-      - Critical
+      - 5 - Planning
+      - 4 - Low
+      - 3 - Moderate
+      - 2 - High
+      - 1 - Critical
       description: Priority of the ticket (number)
     - name: template
       description: Template name to use as a base to create new tickets.
@@ -1533,7 +1666,8 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Create new ServiceNow ticket
+    description: Deprecated. Please use servicenow-create-ticket or servicenow-create-record
+      instead
   - name: servicenow-incident-create
     deprecated: true
     arguments:
@@ -1726,23 +1860,23 @@ script:
     - name: urgency
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket urgency
     - name: severity
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket severity
     - name: impact
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket impact
     - name: active
       auto: PREDEFINED
@@ -1879,11 +2013,11 @@ script:
     - name: priority
       auto: PREDEFINED
       predefined:
-      - Planning
-      - Low
-      - Moderate
-      - High
-      - Critical
+      - 5 - Planning
+      - 4 - Low
+      - 3 - Moderate
+      - 2 - High
+      - 1 - Critical
       description: Priority of the ticket
     - name: id
       required: true
@@ -1919,23 +2053,23 @@ script:
     - name: urgency
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket urgency
     - name: severity
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket severity
     - name: impact
       auto: PREDEFINED
       predefined:
-      - Low
-      - Medium
-      - High
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
       description: Ticket impact
     - name: active
       auto: PREDEFINED
@@ -2072,11 +2206,11 @@ script:
     - name: priority
       auto: PREDEFINED
       predefined:
-      - Planning
-      - Low
-      - Moderate
-      - High
-      - Critical
+      - 5 - Planning
+      - 4 - Low
+      - 3 - Moderate
+      - 2 - High
+      - 1 - Critical
       description: Priority of the ticket
     - name: id
       required: true
@@ -2093,7 +2227,8 @@ script:
       defaultValue: normal
     - name: state
       description: State of the ticket
-    description: Update specific ticket by providing ticket id
+    description: Deprecated. Please use servicenow-update-ticket or servicenow-update-record
+      instead
   - name: servicenow-incident-update
     deprecated: true
     arguments:
@@ -2591,6 +2726,35 @@ script:
       description: Comments
       type: string
     description: query the cmdb_ci_computer table with a computer code
+  - name: servicenow-get-record
+    arguments:
+    - name: id
+      required: true
+      description: Record system ID
+    - name: fields
+      description: Table fields to display and output to the context
+    - name: table_name
+      required: true
+      description: The name of the table to get the record from
+    outputs:
+    - contextPath: ServiceNow.Record.ID
+      description: The unique record identifier for the record.
+      type: string
+    - contextPath: ServiceNow.Record.UpdatedBy
+      description: A string field that indicates the user who most recently updated
+        the record.
+      type: string
+    - contextPath: ServiceNow.Record.UpdatedAt
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
+      type: date
+    - contextPath: ServiceNow.Record.CreatedBy
+      description: A string field that indicates the user who created the record.
+      type: string
+    - contextPath: ServiceNow.Record.CreatedOn
+      description: time-stamp field that indicates when a record was created.
+      type: date
+    description: Retrieve record information by specific record ID
   - name: servicenow-query-table
     arguments:
     - name: table_name
@@ -2606,31 +2770,23 @@ script:
       description: Table fields to display and output to the context
       isArray: true
     outputs:
-    - contextPath: ServiceNow.Results.sys_id
+    - contextPath: ServiceNow.Results.ID
       description: The unique record identifier for the record.
       type: string
-    - contextPath: ServiceNow.Results.sys_updated_by
+    - contextPath: ServiceNow.Results.UpdatedBy
       description: A string field that indicates the user who most recently updated
         the record.
       type: string
-    - contextPath: ServiceNow.Results.sys_updated
+    - contextPath: ServiceNow.Results.UpdatedAt
       description: A time-stamp field that indicates the date and time of the most
         recent update.
       type: date
-    - contextPath: ServiceNow.Results.sys_created_by
+    - contextPath: ServiceNow.Results.CreatedBy
       description: A string field that indicates the user who created the record.
       type: string
-    - contextPath: ServiceNow.Results.sys_created_on
+    - contextPath: ServiceNow.Results.CreatedOn
       description: time-stamp field that indicates when a record was created.
       type: date
-    - contextPath: ServiceNow.Results.sys_mod_count
-      description: A numeric field that counts the number of updates for this record
-        since record creation.
-      type: number
-    - contextPath: ServiceNow.Results.sys_class_name
-      description: If the table is extensible, a string field that indicates which
-        child table contains the record.
-      type: string
     description: Query a specified table in ServiceNow
   - name: servicenow-create-record
     arguments:
@@ -2642,32 +2798,26 @@ script:
         fieldname1=value;fieldname2=value;...'
     - name: custom_fields
       description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
+    - name: template
+      description: Template name to use as a base to create new tickets.
     outputs:
-    - contextPath: ServiceNow.Record.sys_id
+    - contextPath: ServiceNow.Record.ID
       description: The unique record identifier for the record.
       type: string
-    - contextPath: ServiceNow.Record.sys_updated_by
+    - contextPath: ServiceNow.Record.UpdatedBy
       description: A string field that indicates the user who most recently updated
         the record.
       type: string
-    - contextPath: ServiceNow.Record.sys_updated
+    - contextPath: ServiceNow.Record.UpdatedAt
       description: A time-stamp field that indicates the date and time of the most
         recent update.
       type: date
-    - contextPath: ServiceNow.Record.sys_created_by
+    - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
       type: string
-    - contextPath: ServiceNow.Record.sys_created_on
+    - contextPath: ServiceNow.Record.CreatedOn
       description: time-stamp field that indicates when a record was created.
       type: date
-    - contextPath: ServiceNow.Record.sys_mod_count
-      description: A numeric field that counts the number of updates for this record
-        since record creation.
-      type: number
-    - contextPath: ServiceNow.Record.sys_class_name
-      description: If the table is extensible, a string field that indicates which
-        child table contains the record.
-      type: string
     description: Create a new record in a specified ServiceNow table
   - name: servicenow-update-record
     arguments:
@@ -2680,32 +2830,27 @@ script:
     - name: fields
       description: 'Fields and their values to update in the record, in the format:
         fieldname1=value;fieldname2=value;...'
+    - name: custom_fields
+      description: 'Custom(User defined) fields and their values to update in the
+        record, in the format: fieldname1=value;fieldname2=value;...'
     outputs:
-    - contextPath: ServiceNow.Record.sys_id
+    - contextPath: ServiceNow.Record.ID
       description: The unique record identifier for the record.
       type: string
-    - contextPath: ServiceNow.Record.sys_updated_by
+    - contextPath: ServiceNow.Record.UpdatedBy
       description: A string field that indicates the user who most recently updated
         the record.
       type: string
-    - contextPath: ServiceNow.Record.sys_updated
+    - contextPath: ServiceNow.Record.UpdatedAt
       description: A time-stamp field that indicates the date and time of the most
         recent update.
       type: date
-    - contextPath: ServiceNow.Record.sys_created_by
+    - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
       type: string
-    - contextPath: ServiceNow.Record.sys_created_on
+    - contextPath: ServiceNow.Record.CreatedOn
       description: time-stamp field that indicates when a record was created.
       type: date
-    - contextPath: ServiceNow.Record.sys_mod_count
-      description: A numeric field that counts the number of updates for this record
-        since record creation.
-      type: number
-    - contextPath: ServiceNow.Record.sys_class_name
-      description: If the table is extensible, a string field that indicates which
-        child table contains the record.
-      type: string
     description: Update a record in a specified ServiceNow table
   - name: servicenow-delete-record
     arguments:
