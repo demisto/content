@@ -221,13 +221,6 @@ script:
         res = requests.get(full_url, headers=AUTH_HEADERS, params=date_range_to_param(date_range))
         return res.json()
 
-    def verify_asset_exists(asset_id, date_range):
-        full_url = "{}assets/{}".format(BASE_URL, asset_id)
-        res = requests.get(full_url, headers=AUTH_HEADERS, params=date_range_to_param(date_range))
-        if res.status_code == 404:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not find asset: {}'.format(asset_id) } )
-            sys.exit(2)
-
     def send_asset_vuln_request(asset_id, date_range):
         full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
         res = requests.get(full_url, headers=AUTH_HEADERS, params=date_range_to_param(date_range))
@@ -252,6 +245,27 @@ script:
                 info.update(flatten(vuln_details['info']))
                 infos.append(info)
         return infos, errors
+
+    def get_assets():
+        full_url = "{}{}".format(BASE_URL, "assets/")
+        res = requests.get(full_url, headers=AUTH_HEADERS)
+        return res.json()
+
+    def get_asset_id(hostname=None, ip=None):
+        assets = get_assets()
+        if 'error' in assets:
+            return None, { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': assets['error'] }
+        assets = assets['assets']
+        if hostname:
+            assets = filter(lambda x: hostname in x['fqdn'] + x['netbios_name'], assets)
+            if not assets:
+                return None, { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'No assets found for hostname: {}'.format(hostname) }
+            return assets[0]['id'], hostname, False
+        if ip:
+            assets = filter(lambda x: ip in x['ipv4'] + x['ipv6'], assets)
+            if not assets:
+                return None, { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'No assets found for ip: {}'.format(ip) }
+            return assets[0]['id'], ip, False
 
     # Command methods
     def test_module():
@@ -310,13 +324,21 @@ script:
             return { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': info['error'] }
         return get_entry_for_object('Vulnerability details - {}'.format(plugin_id), 'Tenable.Vulnerabilities', replace_keys(flatten(info['info'])), VULNERABILITY_DETAILS_HEADERS)
 
-    def get_vulnerabilities_by_asset(asset_id, date_range):
-        verify_asset_exists(asset_id, date_range)
+    def get_vulnerabilities_by_asset(asset_id=None, hostname=None, ip=None, date_range=None):
+        if all(s is None for s in (asset_id, hostname, ip)):
+            return { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': "Please provide one of the following arguments: asset-id, hostname, ip" }
+        indicator = None
+        if asset_id is None:
+            asset_id, indicator, err = get_asset_id(hostname, ip)
+            if err:
+                return err
+        else:
+            indicator = asset_id
         info = send_asset_vuln_request(asset_id, date_range)
         if 'error' in info:
             return { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': info['error'] }
         vulns = replace_keys(info['vulnerabilities'], ASSET_VULNS_NAMES_MAP)
-        return get_entry_for_object('Vulnerabilities for asset {}'.format(asset_id), 'Tenable.Vulnerabilities', vulns, ASSET_VULNS_HEADERS)
+        return get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'Tenable.Vulnerabilities', vulns, ASSET_VULNS_HEADERS)
 
     def get_scan_status(scan_id):
         scan_details = send_scan_request(scan_id)
@@ -343,7 +365,7 @@ script:
     elif demisto.command() == 'tenable-get-vulnerability-details':
         demisto.results(get_vulnerability_details(demisto.getArg('vulnerability-id'), demisto.getArg('date-range')))
     elif demisto.command() == 'tenable-get-vulnerabilities-by-asset':
-        demisto.results(get_vulnerabilities_by_asset(demisto.getArg('asset-id'), demisto.getArg('date-range')))
+        demisto.results(get_vulnerabilities_by_asset(demisto.getArg('asset-id'), demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('date-range')))
     elif demisto.command() == 'tenable-get-scan-status':
         demisto.results(get_scan_status(demisto.getArg('scan-id')))
     elif demisto.command() == 'tenable-get-scan-editor-templates':
@@ -616,9 +638,11 @@ script:
   - name: tenable-get-vulnerabilities-by-asset
     arguments:
     - name: asset-id
-      required: true
-      default: true
       description: The unique ID of the Asset.
+    - name: hostname
+      description: Hostname of the asset.
+    - name: ip
+      description: IP of the asset.
     - name: date-range
       description: The number of days of data prior to and including today that should
         be returned.
