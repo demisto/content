@@ -97,7 +97,7 @@ def copy_test_files(bundle_test):
     scan_files = glob.glob(os.path.join(TEST_DIR, '*'))
     for path in scan_files:
         if os.path.isdir(path):
-            NonCircleTests = glob.glob(path)
+            NonCircleTests = glob.glob(os.path.join(path, '*'))
             for new_path in NonCircleTests:
                 print "copying path %s" % (new_path,)
                 shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(new_path)))
