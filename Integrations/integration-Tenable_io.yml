@@ -720,4 +720,4 @@ script:
   runonce: false
 releaseNotes: "-"
 tests:
-  - Tenable_io test
+  - Tenable.io test

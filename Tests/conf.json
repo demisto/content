@@ -638,6 +638,14 @@
         {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
+        },
+        {
+            "integrations": "Tenable.io",
+            "playbookID": "Tenable.io test"
+        },
+        {
+            "integrations": "Tenable.io",
+            "playbookID": "Tenable.io Scan Test"
         }
     ],
     "skipped_tests": {
