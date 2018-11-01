@@ -1255,8 +1255,8 @@ script:
 
     config = prepare()
     args = prepare_args(demisto.args())
-    fix_2010()
     try:
+        fix_2010()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
@@ -1908,11 +1908,11 @@ script:
       description: Total count of emails in the folder.
       type: number
     - contextPath: EWS.Folders.childrenFolderCount
-      type: number
       description: Number of sub-folders.
-    - contextPath: EWS.Folders.unreadCount
       type: number
+    - contextPath: EWS.Folders.unreadCount
       description: Unread emails in the folder.
+      type: number
     description: Get a single specific folder.
   dockerimage: demisto/py-ews:2.0
   isfetch: true
