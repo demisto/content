@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
+            "playbookID": "Palo Alto MineMeld Test"
         },
         {
             "integrations": "IntSights",
@@ -19,7 +19,7 @@
                 "Palo Alto Minemeld",
                 "Panorama"
             ],
-            "playbookID": "block_indicators_-_generic_-_test"
+            "playbookID": "Block Indicators - Generic - Test"
         },
         {
           "integrations": "Signal Sciences WAF",
@@ -35,14 +35,14 @@
         },
         {
           "integrations": "Devo",
-          "playbookID": "devo_test_playbook"
+          "playbookID": "Devo test playbook"
         },
         {
             "integrations": [
                 "VirusTotal",
                 "urlscan.io"
             ],
-            "playbookID": "url_enrichment_-_generic_test",
+            "playbookID": "Url Enrichment Generic - Test",
             "timeout": 500
         },
         {
@@ -65,7 +65,7 @@
         },
         {
             "integrations": "activedir",
-            "playbookID": "calculate_severity_-_critical_assets_-_test"
+            "playbookID": "Calculate Severity - Critical assets - Test"
         },
         {
             "playbookID": "TextFromHTML_test_playbook"
@@ -79,7 +79,7 @@
         },
         {
             "integrations": "ThreatExchange",
-            "playbookID": "extract_indicators_-_generic_-_test",
+            "playbookID": "Extract Indicators - Generic - Test",
             "timeout": 240
         },
         {
@@ -94,7 +94,7 @@
         },
         {
             "integrations": "GRR",
-            "playbookID": "grr_test",
+            "playbookID": "GRR Test",
             "nightly": true
         },
         {
@@ -134,18 +134,18 @@
             "playbookID": "Preempt Test"
         },
         {   "integrations": "Gmail",
-            "playbookID": "get_original_email_-_gmail_-_test"
+            "playbookID": "Get Original Email - Gmail - Test"
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "get_original_email_-_ews-_test"
+            "playbookID": "Get Original Email - EWS - Test"
         },
         {
             "integrations": "PagerDuty v2",
             "playbookID": "PagerDuty Test"
         },
         {
-            "playbookID": "test_delete_context"
+            "playbookID": "Test Delete Context"
         },
         {
             "playbookID": "GmailTest",
@@ -183,7 +183,7 @@
             "playbookID": "Extract Indicators From File - test"
         },
         {
-            "playbookID": "dedup_-_generic_-_test"
+            "playbookID": "Dedup - Generic - Test"
         },
         {
             "integrations": "McAfee Advanced Threat Defense",
@@ -208,28 +208,28 @@
                 "Mail Sender (New)",
                 "google"
             ],
-            "playbookID": "Mail Sender (New) Test"
+            "playbookID": "Email Sender Python"
         },
         {
-            "playbookID": "buildewsquery_test"
+            "playbookID": "BuildEWSQuery Test"
         },
         {
             "integrations": "Rapid7 Nexpose",
-            "playbookID": "nexpose_test"
+            "playbookID": "Nexpose test"
         },
         {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
         {
-            "playbookID": "decodemimeheader_-_test"
+            "playbookID": "DecodeMimeHeader - Test"
         },
         {
             "integrations": "CVE Search",
-            "playbookID": "cve_enrichment_-_generic_-_test"
+            "playbookID": "CVE Enrichment - Generic - Test"
         },
         {
-            "playbookID": "test_url_regex"
+            "playbookID": "Test URL Regex"
         },
         {
             "integrations": "Skyformation",
@@ -237,7 +237,7 @@
         },
         {
             "integrations": "okta",
-            "playbookID": "okta_test_playbook",
+            "playbookID": "Okta test playbook",
             "timeout": 240
         },
         {
@@ -267,24 +267,24 @@
         },
         {
             "integrations": "Symantec Endpoint Protection",
-            "playbookID": "sep_-_test_endpoint_search"
+            "playbookID": "SEP - Test endpoint search"
         },
         {
             "integrations": "carbonblackprotection",
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
+            "playbookID": "Search Endpoints By Hash - Carbon Black Protection - Test",
             "timeout": 500
         },
         {
-            "playbookID": "process_email_-_generic_-_test",
+            "playbookID": "Process Email - Generic - Test",
             "timeout": 240
         },
         {
             "integrations": "activedir",
-            "playbookID": "account_enrichment_-_generic_test"
+            "playbookID": "Account Enrichment - Generic Test"
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test",
+            "playbookID": "Search Endpoints By Hash - CrowdStrike - Test",
             "timeout": 500
         },
         {
@@ -296,14 +296,14 @@
                 "VirusTotal",
                 "urlscan.io"
             ],
-            "playbookID": "ip_enrichment_generic_test"
+            "playbookID": "IP Enrichment - Generic - Test"
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
             "integrations": "OpenPhish",
-            "playbookID": "email_test"
+            "playbookID": "Email Address Enrichment - Generic - Test"
         },
         {
             "integrations": [],
@@ -311,7 +311,7 @@
         },
         {
             "integrations": "VirusTotal",
-            "playbookID": "domain_enrichment_generic_test"
+            "playbookID": "Domain Enrichment Generic - Test"
         },
         {
             "integrations": "PostgreSQL",
@@ -319,7 +319,7 @@
         },
         {
             "integrations": "google",
-            "playbookID": "GsuiteTest"
+            "playbookID": "test-Gsuite"
         },
         {
             "integrations": "OpenPhish",
@@ -384,7 +384,7 @@
         },
         {
             "integrations": "TCPIPUtils",
-            "playbookID": "TCPUtils-Test"
+            "playbookID": "Tcpiputlis Test Playbook"
         },
         {
             "playbookID": "ProofpointDecodeURL-Test",
@@ -430,7 +430,7 @@
         },
         {
             "integrations": "carbonblackliveresponse",
-            "playbookID": "CarbonBlackLiveResponseTest",
+            "playbookID": "Carbon Black Live Response Test",
             "nightly": true
         },
         {
@@ -514,12 +514,12 @@
         },
         {
             "integrations":"Cylance Protect",
-            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "playbookID": "Get File Sample By Hash - Cylance Protect - Test",
             "timeout": 240
         },
         {
             "integrations": "Cylance Protect",
-            "playbookID": "endpoint_enrichment_-_generic_test"
+            "playbookID": "Endpoint Enrichment - Generic Test"
         },
         {
             "integrations": "QRadar",
@@ -531,7 +531,7 @@
         },
         {
             "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
+            "playbookID": "Anomali ThreatStream Test"
         },
         {
             "integrations": "Farsight DNSDB",
@@ -539,7 +539,7 @@
         },
         {
             "integrations": "carbonblack-v2",
-            "playbookID": "CarbonBlackResponseTest"
+            "playbookID": "Carbon Black Response Test"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -584,7 +584,7 @@
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "search_endpoints_by_hash_-_tie_-_test",
+            "playbookID": "Search Endpoints By Hash - TIE - Test",
             "timeout": 500
         },
         {
@@ -615,7 +615,7 @@
         },
         {
             "integrations": "AlphaSOC Wisdom",
-            "playbookID": "AlphaSOC-Wisdom-Test"
+            "playbookID": "AlphaSOC Wisdom Test"
         },
         {
             "integrations": "Jask",
@@ -632,7 +632,7 @@
                 "urlscan.io",
                 "activedir"
             ],
-            "playbookID": "entity_enrichment_generic_test",
+            "playbookID": "Entity Enrichment - Generic - Test",
             "timeout": 240
         },
         {
@@ -642,7 +642,7 @@
                 "carbonblackprotection",
                 "carbonblack"
             ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "playbookID": "Search Endpoints By Hash - Generic - Test",
             "timeout": 500
         },
         {

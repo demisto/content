@@ -1,4 +1,4 @@
-id: fd93f620-9a2d-4fb6-85d1-151a6a72e46d
+id: AWS - SQS Test Playbook
 version: 5
 name: AWS - SQS Test Playbook
 starttaskid: "0"

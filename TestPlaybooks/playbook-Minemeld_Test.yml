@@ -1,4 +1,4 @@
-id: minemeld_test
+id: Palo Alto MineMeld Test
 version: 8
 name: Palo Alto MineMeld Test
 description: This is a playbook test for Palo Alto minemeld Node's indicators integration.

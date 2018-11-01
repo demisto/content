@@ -1,4 +1,4 @@
-id: okta_test_playbook
+id: Okta test playbook
 version: -1
 fromversion: 3.6.0
 name: Okta test playbook

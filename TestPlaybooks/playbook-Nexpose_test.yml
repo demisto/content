@@ -1,4 +1,4 @@
-id: nexpose_test
+id: Nexpose test
 version: -1
 name: Nexpose test
 description: Playbook test for Nexpose integration

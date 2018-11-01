@@ -1,4 +1,4 @@
-id: rsa_packets_and_logs_test
+id: RSA Packets And Logs test
 version: -1
 name: RSA Packets And Logs test
 description: Test RSA P&L integration
