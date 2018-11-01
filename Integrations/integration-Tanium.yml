@@ -1124,4 +1124,4 @@ script:
     description: Get detailed information about a given action.
   dockerimage: demisto/pytan
 tests:
-  - Tanium Demo Playbook
+  - TaniumDemoPlaybook
