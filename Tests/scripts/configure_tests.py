@@ -250,7 +250,7 @@ def get_test_from_conf():
     for obj in range(2, len(added_groups.groups()), 2):
         changed.add(obj)
 
-    deleted_groups = re.search('(\-[ ]+")(.*)(":)', change_string):
+    deleted_groups = re.search('(\-[ ]+")(.*)(":)', change_string)
     for obj in range(2, len(deleted_groups.groups()), 2):
         changed.add(obj)
 
