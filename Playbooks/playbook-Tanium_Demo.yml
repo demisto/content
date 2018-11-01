@@ -1,6 +1,6 @@
-id: Tanium Demo Playbook
+id: TaniumDemoPlaybook
 version: -1
-name: Tanium Demo Playbook
+name: TaniumDemoPlaybook
 description: This playbook shows how to use automation scripts to interact with Tanium.
 fromversion: 2.5.0
 starttaskid: "0"
