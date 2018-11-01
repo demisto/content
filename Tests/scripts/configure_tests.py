@@ -19,6 +19,7 @@ RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'Forgive me for my sins but I did not create any test'
 
 # file types regexes
+CONF_REGEX = "Tests/conf.json"
 SCRIPT_REGEX = "scripts.*script-.*.yml"
 PLAYBOOK_REGEX = "(?!Test)playbooks.*playbook-.*.yml"
 INTEGRATION_REGEX = "integrations.*integration-.*.yml"
@@ -35,7 +36,7 @@ SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
              "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
-             "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml", "Tests/conf.json"]
+             "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml"]
 
 
 class LOG_COLORS:
@@ -73,6 +74,7 @@ def checked_type(file_path, regex_list):
 
 def get_modified_files(files_string):
     """Get a string of the modified files"""
+    is_conf_json = False
     all_tests = []
     modified_files_list = []
     modified_tests_list = []
@@ -93,8 +95,10 @@ def get_modified_files(files_string):
                 modified_files_list.append(file_path)
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 modified_tests_list.append(file_path)
+            elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
+                is_conf_json = True
 
-    return modified_files_list, modified_tests_list, all_tests
+    return modified_files_list, modified_tests_list, all_tests, is_conf_json
 
 
 def collect_ids(file_path):
@@ -238,7 +242,7 @@ def find_tests_for_modified_files(modified_files):
     return tests
 
 
-def get_test_list(modified_files, modified_tests_list, all_tests):
+def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
     """Create a test list that should run"""
     tests = set([])
     if modified_files:
@@ -249,7 +253,7 @@ def get_test_list(modified_files, modified_tests_list, all_tests):
         if test not in tests:
             tests.add(test)
 
-    if all_tests:
+    if all_tests or (is_conf_json and not tests):
         tests.add("Run all tests")
 
     if not tests and (modified_files or modified_tests_list or all_tests):
@@ -270,8 +274,8 @@ def create_test_file():
     if branch_name != 'master':
         files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
 
-        modified_files, modified_tests_list, all_tests = get_modified_files(files_string)
-        tests = get_test_list(modified_files, modified_tests_list, all_tests)
+        modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
+        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json)
 
         tests_string = '\n'.join(tests)
         if tests_string:

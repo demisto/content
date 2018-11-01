@@ -1,0 +1,161 @@
+id: EWS Public Folders Test
+version: -1
+name: EWS Public Folders Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3ae4ee2b-2135-4207-8917-f0bed3a119d9
+    type: start
+    task:
+      id: 3ae4ee2b-2135-4207-8917-f0bed3a119d9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "1"
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: afa7fd40-59b1-4b4f-869e-266afabe5d05
+    type: regular
+    task:
+      id: afa7fd40-59b1-4b4f-869e-266afabe5d05
+      version: -1
+      name: ews-find-folders
+      description: Get folders information for a mailbox. Only folders with read permissions
+        will be return as a result. Notice that your visual folders on the mailbox
+        (like Inbox, etc) is under the folder "Top of Information Store".
+      script: '|||ews-find-folders'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      is-public: {}
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 5a19781c-491a-4e4b-810b-228cfbafee89
+    type: regular
+    task:
+      id: 5a19781c-491a-4e4b-810b-228cfbafee89
+      version: -1
+      name: ews-get-folder
+      description: Get a single specific folder.
+      script: '|||ews-get-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      folder-path:
+        simple: pub/sub
+      is-public:
+        simple: "True"
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: ee559217-5399-41b9-8778-abab57420f2f
+    type: regular
+    task:
+      id: ee559217-5399-41b9-8778-abab57420f2f
+      version: -1
+      name: ews-search-mailbox
+      description: Search items in a specific mailbox. Notice that a proper permissions
+        needed for this operation to search in another target mailbox than the default.
+      script: '|||ews-search-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      folder-path:
+        simple: pub/sub
+      is-public:
+        simple: "True"
+      limit: {}
+      query:
+        simple: From:demistoadmin@demisto.int AND Subject:ismyplaybookworking?
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 3affa4ea-b4a8-4ca8-823b-c9baa7619948
+    type: regular
+    task:
+      id: 3affa4ea-b4a8-4ca8-823b-c9baa7619948
+      version: -1
+      name: ews-get-items-from-folder
+      description: Get items from a specific folder in a mailbox. The items will return
+        order by created time, first item is the most recent item.
+      script: '|||ews-get-items-from-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      folder-path:
+        simple: pub/sub
+      is-public:
+        simple: "True"
+      limit: {}
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

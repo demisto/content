@@ -206,6 +206,12 @@ script:
         if (res.StatusCode === 200) {
             return 'ok';
         }
+        // 405 - Method Not Allowed.
+        // This error can raise when using CB Defence; This URL (which is used to list sessions) is theoretically not available for CB Defence. In practice it works for some cases.
+        // 401 is the status code used for 'UNAUTHORIZED' error
+        if (CB_PRODUCT === 'Defense' && res.StatusCode === 405) {
+            return 'ok';
+        }
         return `Test failed. Status Code: ${res.StatusCode}`
     }
 
@@ -2648,3 +2654,6 @@ script:
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
   runonce: false
+releaseNotes: "fix the authentication test"
+tests:
+  - CarbonBlackLiveResponseTest

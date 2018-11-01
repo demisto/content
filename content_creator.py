@@ -96,8 +96,15 @@ def copy_test_files(bundle_test):
     print 'copying test files to test bundle'
     scan_files = glob.glob(os.path.join(TEST_DIR, '*'))
     for path in scan_files:
-        print "copying path %s" % (path,)
-        shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
+        if os.path.isdir(path):
+            NonCircleTests = glob.glob(os.path.join(path, '*'))
+            for new_path in NonCircleTests:
+                print "copying path %s" % (new_path,)
+                shutil.copyfile(new_path, os.path.join(bundle_test, os.path.basename(new_path)))
+
+        else:
+            print "copying path %s" % (path,)
+            shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
 def main(circle_artifacts):
