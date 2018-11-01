@@ -1125,3 +1125,4 @@ script:
   dockerimage: demisto/pytan
 tests:
   - TaniumDemoTestPlaybook
+  - TaniumDemoPlaybook
