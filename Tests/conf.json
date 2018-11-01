@@ -681,7 +681,7 @@
 
     },
     "skipped_integrations": {
-        "Anomali_ThreatStream_Test": "Instance is down",
+        "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
