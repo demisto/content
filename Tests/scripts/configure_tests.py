@@ -242,6 +242,43 @@ def find_tests_for_modified_files(modified_files):
     return tests
 
 
+def get_test_from_conf():
+    tests = set([])
+    changed = set([])
+    change_string = run_git_command("git diff HEAD Tests/conf.json")
+    added_groups = re.search((\+[ ]+")(.*)(":)', change_string)
+    for obj in range(2, len(added_groups.groups()), 2):
+        changed.add(obj)
+
+    deleted_groups = re.search((\-[ ]+")(.*)(":)', change_string):
+    for obj in range(2, len(deleted_groups.groups()), 2):
+        changed.add(obj)
+
+    with open("./Tests/conf.json", 'r') as conf_file:
+        conf = json.load(conf_file)
+
+    conf_tests = conf['tests']
+    for t in conf_tests:
+        playbook_id = t['playbookID']
+        integrations_conf = t.get('integrations', [])
+        if playbook_id in changed:
+            tests.add(playbook_id)
+            continue
+
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
+
+        for integration in integrations_conf:
+            if integration in changed
+            tests.add(playbook_id)
+            continue
+
+    if not tests:
+        tests.add("Run all tests")
+
+    return tests
+
+
 def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
     """Create a test list that should run"""
     tests = set([])
@@ -253,7 +290,10 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
         if test not in tests:
             tests.add(test)
 
-    if all_tests or (is_conf_json and not tests):
+    if is_conf_json and not tests:
+        tests = get_test_from_conf()
+
+    if all_tests:
         tests.add("Run all tests")
 
     if not tests and (modified_files or modified_tests_list or all_tests):
