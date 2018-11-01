@@ -269,9 +269,8 @@ def get_test_from_conf():
             integrations_conf = [integrations_conf]
 
         for integration in integrations_conf:
-            if integration in changed
-            tests.add(playbook_id)
-            continue
+            if integration in changed:
+                tests.add(playbook_id)
 
     if not tests:
         tests.add("Run all tests")
