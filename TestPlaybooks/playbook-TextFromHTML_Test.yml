@@ -6,13 +6,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0bdda7da-b046-48c1-8efd-932842f29ad9
+    taskid: d2f0582e-13e8-4c58-8758-7ac4231b0f49
     type: start
     task:
-      id: 0bdda7da-b046-48c1-8efd-932842f29ad9
+      id: d2f0582e-13e8-4c58-8758-7ac4231b0f49
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -22,19 +21,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 377c2aa9-7562-4b8d-84e4-3a4a1acf796e
+    taskid: 670558f2-50d0-4e43-8bb0-95729b2301dd
     type: regular
     task:
-      id: 377c2aa9-7562-4b8d-84e4-3a4a1acf796e
+      id: 670558f2-50d0-4e43-8bb0-95729b2301dd
       version: -1
-      name: TextFromHTML
+      name: TextFromHTML English
       description: Extract regular text from the given HTML
       scriptName: TextFromHTML
       type: regular
@@ -42,8 +41,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
+      extend-context:
+        simple: english=
       html:
         simple: |-
           <!DOCTYPE html>
@@ -56,20 +57,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: da5dc287-dcac-478a-8f25-26728a177cbe
+    taskid: 307e44c4-21b5-4c40-8545-129db13f1ff7
     type: title
     task:
-      id: da5dc287-dcac-478a-8f25-26728a177cbe
+      id: 307e44c4-21b5-4c40-8545-129db13f1ff7
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -77,8 +77,176 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 403
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 2c78e250-95c3-4966-8cdf-5925f754bfe8
+    type: regular
+    task:
+      id: 2c78e250-95c3-4966-8cdf-5925f754bfe8
+      version: -1
+      name: TextFromHTML Hebrew
+      description: Extract regular text from the given HTML
+      scriptName: TextFromHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      extend-context:
+        simple: hebrew=
+      html:
+        simple: |-
+          <!DOCTYPE html>
+          <html>
+          <body>
+          <h1>משפט בעברית לבדיקה</h1>
+          </body>
+          </html>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 462d07e9-2932-4ada-8c1f-c1685d63a153
+    type: regular
+    task:
+      id: 462d07e9-2932-4ada-8c1f-c1685d63a153
+      version: -1
+      name: TextFromHTML Spanish
+      description: Extract regular text from the given HTML
+      scriptName: TextFromHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: spanish=
+      html:
+        simple: |-
+          <!DOCTYPE html>
+          <html>
+          <body>
+          <h1>Frase en español para revisión</h1>
+          </body>
+          </html>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 9454119c-168b-4c1a-8e09-a630d0902d1f
+    type: regular
+    task:
+      id: 9454119c-168b-4c1a-8e09-a630d0902d1f
+      version: -1
+      name: Verify context English
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue:
+        simple: |2
+
+          This is heading 1
+      fields: {}
+      path:
+        simple: english
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: e5a56030-0c1e-489b-8c6f-eef09272aea2
+    type: regular
+    task:
+      id: e5a56030-0c1e-489b-8c6f-eef09272aea2
+      version: -1
+      name: Verify context Hebrew
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: |2
+
+          משפט בעברית לבדיקה
+      fields: {}
+      path:
+        simple: hebrew
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: edef43b1-6b31-4df2-8afa-af4a0974cbdd
+    type: regular
+    task:
+      id: edef43b1-6b31-4df2-8afa-af4a0974cbdd
+      version: -1
+      name: Verify context Hebrew
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue:
+        simple: |2
+
+          Frase en español para revisión
+      fields: {}
+      path:
+        simple: spanish
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -87,9 +255,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 418,
+        "height": 1260,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
