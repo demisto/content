@@ -272,9 +272,6 @@ def get_test_from_conf():
             if integration in changed:
                 tests.add(playbook_id)
 
-    if not tests:
-        tests.add("Run all tests")
-
     return tests
 
 
@@ -289,8 +286,8 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
         if test not in tests:
             tests.add(test)
 
-    if is_conf_json and not tests:
-        tests = get_test_from_conf()
+    if is_conf_json:
+        tests = tests.union(get_test_from_conf())
 
     if all_tests:
         tests.add("Run all tests")
