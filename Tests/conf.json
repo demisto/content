@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
+        },
+        {
             "integrations": "IntSights",
             "playbookID": "IntSights Test"
         },
@@ -44,6 +48,11 @@
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
+        },
+        {
+
+            "integrations": "BigFix",
+            "playbookID": "BigFixTest"
         },
         {
             "integrations": "Lastline",
@@ -146,7 +155,7 @@
             "playbookID": "TestParseCSV"
         },
         {
-            "playbookID": "detonate_file_-_generic_test",
+            "playbookID": "Detonate File - Generic Test",
             "timeout": 2000,
             "nightly": true,
             "integrations": [
@@ -157,7 +166,7 @@
             ]
         },
         {
-            "playbookID": "detonate_url_-_generic_test",
+            "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
             "integrations": [
@@ -281,6 +290,10 @@
         {
             "integrations": "FalconHost",
             "playbookID": "CrowdStrike Endpoint Enrichment - Test"
+        },
+        {
+          "integrations": "FalconHost",
+          "playbookID": "crowdstrike_falconhost_test"
         },
         {
             "integrations": [
