@@ -47,6 +47,8 @@ script:
                 case '2 weeks':
                 case '2-weeks':
                 case '2weeks':
+                case 'biweekly':
+                case 'fortnightly':
                     res = 'I can\'t believe it! Everyone else is just pretending, you\'re the real legend in this town. Congratulations for conquering my little game. As a treat, run /demisto and sit back.\n\n---\n\By the way, there are many more Easter eggs to find within these digital walls. Just use the magic words "dbot I love you" and we can have a rematch.';
                     break;
                 case 'dbot i love you':
