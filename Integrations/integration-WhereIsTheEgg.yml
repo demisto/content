@@ -10,6 +10,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAABkCAIAAAA3wCqQAAA62Ul
 configuration: []
 scriptNotVisible: true
 defaultEnabled: true
+releaseNotes: "-"
 script:
   script: |
     switch (command) {
