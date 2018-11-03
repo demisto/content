@@ -11,6 +11,8 @@ configuration: []
 scriptNotVisible: true
 defaultEnabled: true
 releaseNotes: "-"
+tests:
+  - Forgive me for my sins but I did not create any test
 script:
   script: |
     switch (command) {
