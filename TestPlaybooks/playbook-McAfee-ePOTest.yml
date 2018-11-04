@@ -1,0 +1,562 @@
+id: Test Playbook McAfee ePO
+version: -1
+name: Test Playbook McAfee ePO
+description: Test the McAfee ePO integration by running basic commands
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5319798d-ac76-454f-8d77-99c345c3c074
+    type: start
+    task:
+      id: 5319798d-ac76-454f-8d77-99c345c3c074
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 0944d005-68cb-4d3a-8cb3-e95939fba9bd
+    type: regular
+    task:
+      id: 0944d005-68cb-4d3a-8cb3-e95939fba9bd
+      version: -1
+      name: epo-help
+      description: print help on ePO commands
+      script: epo|||epo-help
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      command: {}
+      search:
+        simple: agent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: faea1c06-6990-4ce0-8fa7-ad2a5bdc1ab2
+    type: regular
+    task:
+      id: faea1c06-6990-4ce0-8fa7-ad2a5bdc1ab2
+      version: -1
+      name: epo-get-current-dat
+      description: Check the existing DAT file version in ePO
+      script: epo|||epo-get-current-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: e1f8b4e3-59d8-41da-8bfe-7bb772107a88
+    type: regular
+    task:
+      id: e1f8b4e3-59d8-41da-8bfe-7bb772107a88
+      version: -1
+      name: epo-get-latest-dat
+      description: Check the latest DAT file in McAfee repository
+      script: epo|||epo-get-latest-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 101e2d00-bd3d-40fa-8d2f-84ab51edb87a
+    type: regular
+    task:
+      id: 101e2d00-bd3d-40fa-8d2f-84ab51edb87a
+      version: -1
+      name: epo-get-system-tree-group
+      description: Get System Tree groups
+      script: epo|||epo-get-system-tree-group
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      search: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 525174c5-7fce-4585-88d0-3674f68bf5a1
+    type: title
+    task:
+      id: 525174c5-7fce-4585-88d0-3674f68bf5a1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 0b850a8b-9822-49e7-86f9-5f8f5d2a511e
+    type: regular
+    task:
+      id: 0b850a8b-9822-49e7-86f9-5f8f5d2a511e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 18f5e691-f462-4035-859c-daa23848e853
+    type: regular
+    task:
+      id: 18f5e691-f462-4035-859c-daa23848e853
+      version: -1
+      name: epo-update-client-dat
+      description: Run client task to update the DAT file
+      script: epo|||epo-update-client-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      abortAfterMinutes: {}
+      randomizationInterval: {}
+      retryAttempts: {}
+      retryIntervalInSeconds: {}
+      stopAfterMinutes: {}
+      systems:
+        simple: ADMIN-PC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 5b6cbc55-4fe4-490e-8cec-8f1593dd9f17
+    type: regular
+    task:
+      id: 5b6cbc55-4fe4-490e-8cec-8f1593dd9f17
+      version: -1
+      name: epo-update-repository
+      description: Trigger a Server Task in specific ePO servers to pull latest signatures
+        from update server
+      script: epo|||epo-update-repository
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 71166c87-a1c4-44be-8e1d-3c4dfc7de8f0
+    type: regular
+    task:
+      id: 71166c87-a1c4-44be-8e1d-3c4dfc7de8f0
+      version: -1
+      name: epo-find-systems
+      description: Find systems in the System Tree - by group ID or by search
+      script: epo|||epo-find-systems
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      groupId:
+        simple: "5"
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 38138528-e3e2-471b-872f-7ed9412a6984
+    type: condition
+    task:
+      id: 38138528-e3e2-471b-872f-7ed9412a6984
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      left:
+        complex:
+          root: McAfee
+          filters:
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: McAfee.ePO.SystemTreeGroups.groupId
+                iscontext: true
+              right:
+                value:
+                  simple: "5"
+          accessor: ePO.SystemTreeGroups.groupId
+      right:
+        simple: "5"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: cfe64aa4-a054-482c-8cf7-6ea1049ab741
+    type: condition
+    task:
+      id: cfe64aa4-a054-482c-8cf7-6ea1049ab741
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    scriptarguments:
+      left:
+        complex:
+          root: McAfee
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: McAfee.ePO.Endpoint.Hostname
+                iscontext: true
+              right:
+                value:
+                  simple: mar
+          accessor: ePO.Endpoint.IPAddress
+      right:
+        simple: 192.168.1.103
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: e81e9ab4-e900-4299-8f73-78390593b7d0
+    type: regular
+    task:
+      id: e81e9ab4-e900-4299-8f73-78390593b7d0
+      version: -1
+      name: epo-advanced-command
+      description: 'Execute ePO command. Run ''epo-help'' command to see a list available
+        commands. e.g:  !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand".
+        You can also specify ''headers'' argument  to filter tables headers. e.g:
+        ''!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
+      script: epo|||epo-advanced-command
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      command:
+        simple: clienttask.find
+      commandArgs:
+        simple: searchText:On-demand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 872167dc-0bde-49ad-8e09-d2bb74f02cb6
+    type: regular
+    task:
+      id: 872167dc-0bde-49ad-8e09-d2bb74f02cb6
+      version: -1
+      name: epo-apply-tag
+      description: Applies a tag
+      script: epo|||epo-apply-tag
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      names:
+        simple: ADMIN-PC
+      tagName:
+        simple: Tag For Test Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 937420b5-cd75-4aa6-8339-daa9c9407fe8
+    type: regular
+    task:
+      id: 937420b5-cd75-4aa6-8339-daa9c9407fe8
+      version: -1
+      name: epo-clear-tag
+      description: Clears a tag
+      script: epo|||epo-clear-tag
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      names:
+        simple: ADMIN-PC
+      tagName:
+        simple: Tag For Test Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: cc6236d4-6041-4300-8b2f-9818963ae85c
+    type: regular
+    task:
+      id: cc6236d4-6041-4300-8b2f-9818963ae85c
+      version: -1
+      name: EPOFindSystem
+      description: |-
+        Return system info
+
+
+        *** USED TO TEST epo-command***
+      scriptName: EPOFindSystem
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      searchText:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 0ab9b554-948a-4fd1-8cb0-07bfbcbcfc69
+    type: regular
+    task:
+      id: 0ab9b554-948a-4fd1-8cb0-07bfbcbcfc69
+      version: -1
+      name: epo-get-tables
+      description: Get an ePO table
+      script: epo|||epo-get-tables
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      table: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: 24b02c16-80ab-4cd0-8b94-5ac8d60adf31
+    type: regular
+    task:
+      id: 24b02c16-80ab-4cd0-8b94-5ac8d60adf31
+      version: -1
+      name: epo-query-table
+      description: Retrieves a table from the ePO Database
+      script: epo|||epo-query-table
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      group: {}
+      order: {}
+      select:
+        simple: (select EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)
+      target:
+        simple: EPOLeafNode
+      where:
+        simple: (hasTag EPOLeafNode.AppliedTags 4)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

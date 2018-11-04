@@ -204,16 +204,28 @@ script:
             setLastRun({time: now});
             return JSON.stringify(incidents);
         case 'search':
-            var s = search(args.query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
+            query = args.query
+            var httpIndex = query.indexOf('http')
+            if (httpIndex != -1) {
+                var httpSubstring = query.substring(httpIndex)
+                var whitespaceIndex = httpSubstring.indexOf(' ')
+                var url = httpSubstring.substring(0, whitespaceIndex)
+                url = url.replace(/=/g, '\\\\=')
+                var beforeHttp = query.substring(0, httpIndex)
+                var afterWhitespace = query.substring(httpIndex + whitespaceIndex)
+                query = beforeHttp + url + afterWhitespace
+            }
+            var headers = 'headers' in args ? argToList(args.headers) : undefined;
+            var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
                 a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, a2i(params.sleepBetweenChecks, defaultSleep));
             var md = '';
             var ec = {};
             if (s.messages && s.messages.length > 0) {
-                md = tableToMarkdown('SumoLogic Search Messages', s.messages) + '\n';
+                md = tableToMarkdown('SumoLogic Search Messages', s.messages, headers) + '\n';
                 ec.Search = {Messages: s.messages.length > defaultLimit ? s.messages.slice(0, defaultLimit) : s.messages};
             }
             if (s.records && s.records.length > 0) {
-                md += tableToMarkdown('SumoLogic Search Records', s.records);
+                md += tableToMarkdown('SumoLogic Search Records', s.records, headers);
                 ec.Search = {Records: s.records.length > defaultLimit ? s.records.slice(0, defaultLimit) : s.records};
             }
             if (!md) {
@@ -255,6 +267,9 @@ script:
       description: Max amount of minutes to wait for search to end, default is 10
         minutes
       defaultValue: "10"
+    - name: headers
+      description: Table's headers to be shown by order given as comma-separated values,
+        e.g. _blockid,_collector,_format
     outputs:
     - contextPath: Search.Messages
       description: The array of raw message objects
@@ -262,3 +277,5 @@ script:
       description: The array of aggregate records
     description: Search SumoLogic for matching records to the given query
   isfetch: true
+tests:
+  - Forgive me for my sins but I did not create any test

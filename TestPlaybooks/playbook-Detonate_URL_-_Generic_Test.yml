@@ -1,0 +1,130 @@
+id: Detonate URL - Generic Test
+version: -1
+name: Detonate URL - Generic Test
+fromversion: 4.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ef5d0e6d-b753-49ca-81d2-e1ee5daec953
+    type: start
+    task:
+      id: ef5d0e6d-b753-49ca-81d2-e1ee5daec953
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 636adc72-71dd-4a27-880f-ff441ec8c753
+    type: regular
+    task:
+      id: 636adc72-71dd-4a27-880f-ff441ec8c753
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 229ba268-d425-4bb2-84c6-f6648cc34c17
+    type: playbook
+    task:
+      id: 229ba268-d425-4bb2-84c6-f6648cc34c17
+      version: -1
+      name: Detonate URL - Generic
+      description: Detonate file through active integrations that support file detonation
+      playbookName: Detonate URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      URL:
+        simple: ${URL}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 0007ecc5-28a9-41c8-85c6-11566d11631c
+    type: regular
+    task:
+      id: 0007ecc5-28a9-41c8-85c6-11566d11631c
+      version: -1
+      name: Set URL
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.facebook.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

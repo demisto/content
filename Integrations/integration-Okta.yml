@@ -76,6 +76,7 @@ script:
 
     var SERVER_URL = fixUrl(params.url) + 'api/v1/';
     var DEFAULT_SEARCH_LIMIT = 200;
+    var CLIENT_USERAGENT = 'Demisto/1.0'
 
     function createReadableLog(log){
         var logObject = {};
@@ -308,6 +309,7 @@ script:
             {
                 Method: method ? method : 'GET',
                 Headers: {
+                    'User-Agent': [CLIENT_USERAGENT],
                     Authorization: ['SSWS ' + params.apitoken],
                     Accept: ['application/json'],
                     'Content-Type': ['application/json']
@@ -353,6 +355,49 @@ script:
 
         return group[0].id;
     }
+
+    function suspendUserCommand(){
+        var userId = getUserId(args.username);
+
+        var res = suspendUser(userId);
+
+        var md = "### Okta user suspended: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
+    function suspendUser(userId){
+        var uri = 'users/' + userId + '/lifecycle/suspend';
+
+        return sendRequest(uri, 'POST');
+    }
+
+    function unSuspendUser(userId){
+        var uri = 'users/' + userId + '/lifecycle/unsuspend';
+
+        return sendRequest(uri, 'POST');
+    }
+
+    function unSuspendUserCommand(){
+        var userId = getUserId(args.username);
+
+        var res = unSuspendUser(userId);
+
+        var md = "### Okta user unsuspended: " + args.username + '\n';
+        md += 'User ID: ' + userId + '\n';
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
 
     function unlockUserCommand(){
         var userId = getUserId(args.username);
@@ -926,7 +971,7 @@ script:
 
 
     function test() {
-        var uri = 'users?limit=1';
+        var uri = 'users/me';
         var res = sendRequest(uri);
 
         return res ? 'ok' : 'not ok';
@@ -990,6 +1035,12 @@ script:
         case 'okta-get-group-members':
             entry = getGroupMembersCommand();
             break;
+        case 'okta-suspend-user':
+            entry = suspendUserCommand();
+            break;
+        case 'okta-unsuspend-user':
+            entry = unSuspendUserCommand();
+            break;
     }
 
 
@@ -1019,6 +1070,24 @@ script:
       default: true
       description: Username in Okta to activate
     description: Activate user
+    execution: true
+  - name: okta-suspend-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Username in Okta to suspend
+    description: Suspends a user.  This operation can only be performed on users with
+      an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
+    execution: true
+  - name: okta-unsuspend-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Username in Okta to unsuspend
+    description: Unsuspends a user and returns them to the ACTIVE state.  This operation
+      can only be performed on users that have a SUSPENDED status.
     execution: true
   - name: okta-get-groups
     arguments:
@@ -2091,5 +2160,4 @@ script:
       type: string
     description: Enumerates all users that are members of a group
   runonce: false
-releaseNotes: "Added list-groups and get-groups-members, also added arguments for other group commands"
 fromversion: 3.6.0

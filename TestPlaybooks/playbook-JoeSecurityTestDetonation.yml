@@ -40,8 +40,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
-      - "6"
+      - "9"
+      - "8"
       - "5"
     scriptarguments:
       all:
@@ -54,87 +54,6 @@ tasks:
         "position": {
           "x": 480,
           "y": 195
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 5657f7ff-af2e-417a-80a9-a8b711a68079
-    type: playbook
-    task:
-      id: 5657f7ff-af2e-417a-80a9-a8b711a68079
-      version: -1
-      name: JoeSecurity - Detonate URL
-      description: Detonates an URL using the Joe Security sandbox
-      playbookName: JoeSecurity - Detonate URL
-      type: playbook
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      URL:
-        simple: https://www.facebook.com
-      comments:
-        simple: this is detonation test
-      internet-access:
-        simple: "True"
-      interval:
-        simple: "1"
-      report-file-type:
-        simple: pdf
-      systems:
-        simple: w10
-      timeout:
-        simple: "20"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 01b7fa21-89b2-4bc7-84a7-4de09bc8e13d
-    type: playbook
-    task:
-      id: 01b7fa21-89b2-4bc7-84a7-4de09bc8e13d
-      version: -1
-      name: JoeSecurity - Detonate File
-      description: Detonates a File using the Joe Security sandbox
-      playbookName: JoeSecurity - Detonate File
-      type: playbook
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      EntryID:
-        simple: ${File.EntryID}
-      comments:
-        simple: file detonation
-      internet-access:
-        simple: "True"
-      interval:
-        simple: "1"
-      report-file-type: {}
-      systems:
-        simple: w10
-      timeout:
-        simple: "20"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
         }
       }
     note: false
@@ -152,7 +71,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       data:
         simple: this is a regular file
@@ -163,36 +82,118 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
     note: false
-  "6":
-    id: "6"
-    taskid: 3822349a-51f7-4c96-8f08-915c1ab769d1
+  "7":
+    id: "7"
+    taskid: c7d2db12-7ba9-44d7-8fd1-081a5bc12f8a
     type: playbook
     task:
-      id: 3822349a-51f7-4c96-8f08-915c1ab769d1
+      id: c7d2db12-7ba9-44d7-8fd1-081a5bc12f8a
       version: -1
-      name: JoeSecurity - Detonate File From URL
-      playbookName: JoeSecurity - Detonate File From URL
+      name: Detonate File - JoeSecurity
+      playbookName: Detonate File - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Comments:
+        simple: Detonation Testing
+      InternetAccess:
+        simple: "True"
+      Interval:
+        simple: "1"
+      ReportFileType: {}
+      Systems:
+        simple: w10
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: b39a9586-4e31-4ed2-82f6-238bff24bf51
+    type: playbook
+    task:
+      id: b39a9586-4e31-4ed2-82f6-238bff24bf51
+      version: -1
+      name: Detonate File From URL - JoeSecurity
+      playbookName: Detonate File From URL - JoeSecurity
       type: playbook
       iscommand: false
       brand: ""
     scriptarguments:
       FileUrl:
         simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
-      comments:
-        simple: File Detonation from url
-      internet-access:
+      Comments:
+        simple: Detonation Testing
+      Internet-access:
         simple: "True"
-      interval:
+      Interval:
         simple: "1"
-      report-file-type: {}
-      systems:
-        simple: w7_5
-      timeout:
+      ReportFileType: {}
+      Systems:
+        simple: w7_1
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 56f11659-1b0e-40b1-8daa-9dbc64490f91
+    type: playbook
+    task:
+      id: 56f11659-1b0e-40b1-8daa-9dbc64490f91
+      version: -1
+      name: Detonate URL - JoeSecurity
+      playbookName: Detonate URL - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+      Comments:
+        simple: Detonation Testing
+      InternetAccess:
+        simple: "True"
+      Interval:
+        simple: "1"
+      ReportFileType:
+        simple: html
+      Systems:
+        simple: w7
+      Timeout:
         simple: "15"
     separatecontext: true
     loop:

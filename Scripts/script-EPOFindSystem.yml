@@ -60,6 +60,7 @@ script: |2
 
 
   resp = demisto.executeCommand("epo-command", {"command":"system.find", "searchText": demisto.args()["searchText"]})
+  res_error=[]
   for res in resp:
       if isError(res):
           res_error.append(res)
@@ -91,3 +92,6 @@ outputs:
   description: Hostname
 scripttarget: 0
 timeout: 0s
+dependson:
+  must:
+  - epo-command

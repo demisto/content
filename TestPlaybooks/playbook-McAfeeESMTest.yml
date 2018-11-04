@@ -5,32 +5,34 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 01101142-e554-4d22-8067-42f788c08d66
+    taskid: 5985abd4-2661-4077-8f90-65dda191f955
     type: start
     task:
-      id: 01101142-e554-4d22-8067-42f788c08d66
+      id: 5985abd4-2661-4077-8f90-65dda191f955
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
       - "28"
+      - "32"
+      - "33"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 592.5,
           "y": 50
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: c6786fd3-10df-480e-84ac-bd35edc52e37
+    taskid: 308e35ee-825b-4990-8ed8-60ffc89013e6
     type: regular
     task:
-      id: c6786fd3-10df-480e-84ac-bd35edc52e37
+      id: 308e35ee-825b-4990-8ed8-60ffc89013e6
       version: -1
       name: esm-add-case
       description: Add a case to the system
@@ -52,16 +54,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 720
+          "x": 1452.5,
+          "y": 690
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: fa98304b-831a-430c-8c19-423cfba0ae25
+    taskid: 3ae4d425-f495-4933-83c9-1743b219cf71
     type: regular
     task:
-      id: fa98304b-831a-430c-8c19-423cfba0ae25
+      id: 3ae4d425-f495-4933-83c9-1743b219cf71
       version: -1
       name: Clear Context
       scriptName: DeleteContext
@@ -89,16 +92,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 195
+          "x": 1452.5,
+          "y": 340
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: 14c20347-e8bf-4580-8533-cc35a4853ef4
+    taskid: 5b144d8b-8570-4b8f-8b64-d9ee85136bef
     type: regular
     task:
-      id: 14c20347-e8bf-4580-8533-cc35a4853ef4
+      id: 5b144d8b-8570-4b8f-8b64-d9ee85136bef
       version: -1
       name: Edit severity, organization and summary
       script: McAfee ESM-v10|||esm-edit-case
@@ -130,16 +134,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 895
+          "x": 1452.5,
+          "y": 865
         }
       }
+    note: false
   "9":
     id: "9"
-    taskid: 26ebf7ad-afb5-4a8e-802c-2606abc734cb
+    taskid: cf5f24bd-5ac7-4d32-84fb-a6fb79eda330
     type: regular
     task:
-      id: 26ebf7ad-afb5-4a8e-802c-2606abc734cb
+      id: cf5f24bd-5ac7-4d32-84fb-a6fb79eda330
       version: -1
       name: Get case info after event assignment
       script: McAfee ESM-v10|||esm-get-case-detail
@@ -164,16 +169,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1770
+          "x": 1452.5,
+          "y": 1740
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: aba236ae-da58-46ea-89fb-2671bff1806e
+    taskid: 5ed048f9-e4cb-4749-8ef8-c6f970e635c0
     type: regular
     task:
-      id: aba236ae-da58-46ea-89fb-2671bff1806e
+      id: 5ed048f9-e4cb-4749-8ef8-c6f970e635c0
       version: -1
       name: Add new case with all parameters.
       script: McAfee ESM-v10|||esm-add-case
@@ -198,16 +204,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1420
+          "x": 1452.5,
+          "y": 1390
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 4e25910b-e854-4b62-8b62-b4911fc2ab11
+    taskid: d88b9072-9c2a-4301-8672-3bd1517a8db6
     type: regular
     task:
-      id: 4e25910b-e854-4b62-8b62-b4911fc2ab11
+      id: d88b9072-9c2a-4301-8672-3bd1517a8db6
       version: -1
       name: Edit the user name of last case to default
       script: McAfee ESM-v10|||esm-edit-case
@@ -231,16 +238,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1595
+          "x": 1452.5,
+          "y": 1565
         }
       }
+    note: false
   "16":
     id: "16"
-    taskid: a24ac1fa-55d6-4436-83f5-1e5d6202ce5a
+    taskid: cf9dae43-8c4c-41c6-8247-711a819694e0
     type: regular
     task:
-      id: a24ac1fa-55d6-4436-83f5-1e5d6202ce5a
+      id: cf9dae43-8c4c-41c6-8247-711a819694e0
       version: -1
       name: Change case status name from Research to Development
       script: McAfee ESM-v10|||esm-edit-case-status
@@ -260,16 +268,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1945
+          "x": 1452.5,
+          "y": 1915
         }
       }
+    note: false
   "17":
     id: "17"
-    taskid: 317f41a4-1a93-4b8c-8cbc-ce83fdbccb3c
+    taskid: ab491efa-5956-40bf-8b5c-492222572987
     type: regular
     task:
-      id: 317f41a4-1a93-4b8c-8cbc-ce83fdbccb3c
+      id: ab491efa-5956-40bf-8b5c-492222572987
       version: -1
       name: Remove additional case status
       script: McAfee ESM-v10|||esm-delete-case-status
@@ -286,16 +295,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2470
+          "x": 1452.5,
+          "y": 2440
         }
       }
+    note: false
   "18":
     id: "18"
-    taskid: bb653697-995d-4fcf-83ef-c078c31fda1d
+    taskid: 59ba0557-874b-45f9-8260-1cde3ebba3d3
     type: regular
     task:
-      id: bb653697-995d-4fcf-83ef-c078c31fda1d
+      id: 59ba0557-874b-45f9-8260-1cde3ebba3d3
       version: -1
       name: Set show case pane of new case status
       script: McAfee ESM-v10|||esm-add-case-status
@@ -314,16 +324,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2120
+          "x": 1452.5,
+          "y": 2090
         }
       }
+    note: false
   "19":
     id: "19"
-    taskid: ea8df99a-a2eb-4625-80e5-65d6bc2636cf
+    taskid: f48b645d-18b9-4d5d-84b5-b391e8c4e034
     type: regular
     task:
-      id: ea8df99a-a2eb-4625-80e5-65d6bc2636cf
+      id: f48b645d-18b9-4d5d-84b5-b391e8c4e034
       version: -1
       name: Change case status optional parameter
       script: McAfee ESM-v10|||esm-edit-case-status
@@ -344,16 +355,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2295
+          "x": 1452.5,
+          "y": 2265
         }
       }
+    note: false
   "20":
     id: "20"
-    taskid: ba52a20f-bdb6-4634-8fd1-94b224679020
+    taskid: b9bd2237-14eb-4cfe-8ceb-09af44759de4
     type: regular
     task:
-      id: ba52a20f-bdb6-4634-8fd1-94b224679020
+      id: b9bd2237-14eb-4cfe-8ceb-09af44759de4
       version: -1
       name: Remove additional case status2
       script: McAfee ESM-v10|||esm-delete-case-status
@@ -370,46 +382,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2645
+          "x": 1452.5,
+          "y": 2615
         }
       }
-  "21":
-    id: "21"
-    taskid: e547054f-a677-4a36-800e-a33bb5e6fc97
-    type: regular
-    task:
-      id: e547054f-a677-4a36-800e-a33bb5e6fc97
-      version: -1
-      name: Fetch Alarms
-      script: McAfee ESM-v10|||esm-fetch-alarms
-      type: regular
-      iscommand: true
-      brand: McAfee ESM-v10
-    scriptarguments:
-      assignedUser:
-        simple: ME
-      customEnd: {}
-      customStart: {}
-      filters: {}
-      maxWait: {}
-      queryType: {}
-      timeRange:
-        simple: CURRENT_WEEK
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2965
-        }
-      }
+    note: false
   "22":
     id: "22"
-    taskid: 391a8a71-aa59-4e28-88e8-c1271e240c53
+    taskid: d51965c9-43bc-44af-8a99-c4becd316916
     type: title
     task:
-      id: 391a8a71-aa59-4e28-88e8-c1271e240c53
+      id: d51965c9-43bc-44af-8a99-c4becd316916
       version: -1
       name: All listing commands
       type: title
@@ -417,7 +400,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
       - "23"
       - "25"
       - "26"
@@ -425,76 +407,89 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2820
+          "x": 1452.5,
+          "y": 2805
         }
       }
+    note: false
   "23":
     id: "23"
-    taskid: a711ed45-de5d-4876-8a07-48cbf5e2d79c
+    taskid: 7d222eac-395c-47ec-88f4-db036d572bbd
     type: regular
     task:
-      id: a711ed45-de5d-4876-8a07-48cbf5e2d79c
+      id: 7d222eac-395c-47ec-88f4-db036d572bbd
       version: -1
       name: Get status cases
       script: McAfee ESM-v10|||esm-get-case-statuses
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1882.5,
           "y": 2965
         }
       }
+    note: false
   "25":
     id: "25"
-    taskid: a91e63a8-972b-4437-8a8b-ac11a6bb60be
+    taskid: 40e5d7d2-1ea1-417f-8110-c78fff946029
     type: regular
     task:
-      id: a91e63a8-972b-4437-8a8b-ac11a6bb60be
+      id: 40e5d7d2-1ea1-417f-8110-c78fff946029
       version: -1
       name: Get users
       script: McAfee ESM-v10|||esm-get-user-list
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1452.5,
           "y": 2965
         }
       }
+    note: false
   "26":
     id: "26"
-    taskid: eb940493-ef22-407b-844f-56aeb6ae27d5
+    taskid: 6047d94f-2aa4-4313-8712-6cd570b5706c
     type: regular
     task:
-      id: eb940493-ef22-407b-844f-56aeb6ae27d5
+      id: 6047d94f-2aa4-4313-8712-6cd570b5706c
       version: -1
       name: Get organizations
       script: McAfee ESM-v10|||esm-get-organization-list
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1022.5,
           "y": 2965
         }
       }
+    note: false
   "27":
     id: "27"
-    taskid: 9a1c2365-7e25-4822-8b9a-3d724c29ec29
+    taskid: ef0596aa-cc23-4d2b-8376-e4a1909a7333
     type: regular
     task:
-      id: 9a1c2365-7e25-4822-8b9a-3d724c29ec29
+      id: ef0596aa-cc23-4d2b-8376-e4a1909a7333
       version: -1
       name: Close Case
       script: McAfee ESM-v10|||esm-edit-case
@@ -524,22 +519,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1245
+          "x": 1452.5,
+          "y": 1215
         }
       }
+    note: false
   "28":
     id: "28"
-    taskid: 33091f39-8bc6-44da-8d12-a14d5b70b293
+    taskid: 59b77a71-31e8-445a-84b8-f8502ea9a3fa
     type: regular
     task:
-      id: 33091f39-8bc6-44da-8d12-a14d5b70b293
+      id: 59b77a71-31e8-445a-84b8-f8502ea9a3fa
       version: -1
       name: Search by fields
       script: McAfee ESM-v10|||esm-search
       type: regular
       iscommand: true
       brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "37"
     scriptarguments:
       customEnd: {}
       customStart: {}
@@ -556,16 +555,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 195
+          "x": 660,
+          "y": 2470
         }
       }
+    note: false
   "29":
     id: "29"
-    taskid: 07f6fa53-f3b9-4222-876b-3d982e506f82
+    taskid: e4c94277-90dc-4b83-8553-202cdf791a0c
     type: regular
     task:
-      id: 07f6fa53-f3b9-4222-876b-3d982e506f82
+      id: e4c94277-90dc-4b83-8553-202cdf791a0c
       version: -1
       name: Add a new case status named with timestamp
       script: McAfee ESM-v10|||esm-add-case-status
@@ -583,16 +583,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1070
+          "x": 1452.5,
+          "y": 1040
         }
       }
+    note: false
   "30":
     id: "30"
-    taskid: 702d15b4-f7d9-4d09-8088-7de36e3acef1
+    taskid: 363dde45-3b64-4ef4-8ebf-2b4830341f9a
     type: regular
     task:
-      id: 702d15b4-f7d9-4d09-8088-7de36e3acef1
+      id: 363dde45-3b64-4ef4-8ebf-2b4830341f9a
       version: -1
       name: Setup
       scriptName: GetTime
@@ -614,17 +615,240 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 1452.5,
+          "y": 515
         }
       }
+    note: false
+  "31":
+    id: "31"
+    taskid: 042fcf01-2e7f-47c9-8c7f-6e570b018375
+    type: regular
+    task:
+      id: 042fcf01-2e7f-47c9-8c7f-6e570b018375
+      version: -1
+      name: Fetch Alarms
+      script: McAfee ESM-v10|||esm-fetch-alarms
+      type: regular
+      iscommand: true
+      brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      assignedUser: {}
+      customEnd: {}
+      customStart: {}
+      timeRange:
+        simple: LAST_3_DAYS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: 62f6307a-b8f5-4cae-8aec-4a465bb872b7
+    type: title
+    task:
+      id: 62f6307a-b8f5-4cae-8aec-4a465bb872b7
+      version: -1
+      name: Case Management
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 195
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: 392e98ab-9297-4248-88f7-8a76953ae881
+    type: title
+    task:
+      id: 392e98ab-9297-4248-88f7-8a76953ae881
+      version: -1
+      name: Alarm Management
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2105
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: 0d0d5658-85a3-4310-85db-0da3f51d9668
+    type: condition
+    task:
+      id: 0d0d5658-85a3-4310-85db-0da3f51d9668
+      version: -1
+      name: Check if we got results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "35"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Alarm.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 1f3e40a9-f6fb-47ee-8287-407ed886738a
+    type: regular
+    task:
+      id: 1f3e40a9-f6fb-47ee-8287-407ed886738a
+      version: -1
+      name: 'Get Event list of alarm '
+      script: McAfee ESM-v10|||esm-list-alarm-events
+      type: regular
+      iscommand: true
+      brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      alarmId:
+        complex:
+          root: Alarm
+          accessor: ID
+          transformers:
+          - operator: GetFirstObject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2615
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
+    type: regular
+    task:
+      id: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
+      version: -1
+      name: Get specific event details
+      script: McAfee ESM-v10|||esm-get-alarm-event-details
+      type: regular
+      iscommand: true
+      brand: McAfee ESM-v10
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      eventId:
+        complex:
+          root: EsmAlarmEvent
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2790
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: 2d666b32-9a98-4e65-84b2-f385d009fd16
+    type: title
+    task:
+      id: 2d666b32-9a98-4e65-84b2-f385d009fd16
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3140
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: ee474fc6-a791-447b-8dcf-2eff1c323ae4
+    type: regular
+    task:
+      id: ee474fc6-a791-447b-8dcf-2eff1c323ae4
+      version: -1
+      name: Validate event details context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: EsmAlarmEvent.SrcMac
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2965
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3010,
-        "width": 2100,
+        "height": 3155,
+        "width": 2212.5,
         "x": 50,
         "y": 50
       }

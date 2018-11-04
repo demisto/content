@@ -83,8 +83,8 @@ tasks:
     task:
       id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
       version: -1
-      name: Check if the polling task finished successfully
-      description: Wait For Polling Task To Finish
+      name: Waiting for polling to complete (Automated Task)
+      description: This task will complete automatically once the polling is done
       tags:
       - polling
       type: condition

@@ -65,16 +65,11 @@ script:
     """
 
     def set_proxies():
-
-        if demisto.params()['proxy']:
-            http = os.environ['http_proxy'] or os.environ['HTTP_PROXY']
-            https = os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-            proxies = {
-                'http': http,
-                'https': https
-            }
-            return proxies
-        return None
+        if not demisto.params().get('proxy', False):
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
 
     """
 
@@ -86,7 +81,6 @@ script:
     PASSWORD = demisto.params()['credentials']['password']
     USE_SSL = not demisto.params()['insecure']
     VERSION = demisto.params()['version']
-    PROXIES = set_proxies()
     GET_HEADERS = {
         'Accept': 'application/json'
     }
@@ -778,14 +772,17 @@ script:
         url = '{}/token'.format(BASE_PATH)
 
         #basic authentication
-        response = requests.request(
-            'GET',
-            url,
-            headers=GET_HEADERS,
-            verify=USE_SSL,
-            proxies=PROXIES,
-            auth=(USERNAME,PASSWORD)
-        )
+        try:
+            response = requests.request(
+                'GET',
+                url,
+                headers=GET_HEADERS,
+                verify=USE_SSL,
+                auth=(USERNAME,PASSWORD)
+            )
+        except requests.exceptions.SSLError as e:
+            LOG(e.message)
+            raise ValueError('An SSL error occurred when trying to connect to the server. Consider configuring unsecure connection in the integration settings')
 
         #handle request failure
         if response.status_code not in range(200,205):
@@ -1083,7 +1080,7 @@ script:
             headers=ALERT_MAIN_ATTRIBUTES
         )
 
-        event_type = re.sub("([a-z])([A-Z])","\g<1> \g<2>",alert.get('event_type')).title()
+        event_type = re.sub("([a-z])([A-Z])","\g<1> \g<2>",alert.get('event_type','NewEvent')).title()
         event_table = tableToMarkdown(
             event_type,
             alert.get('event_values')
@@ -1967,6 +1964,10 @@ script:
         #validate the host name or agent ID was passed
         if not args.get('hostName') and not args.get('agentId'):
             raise ValueError('Please provide either agentId or hostName')
+
+        if not args.get('defaultSystemScript') and not args.get('script'):
+            raise ValueError('If the script is not provided, defaultSystemScript must be specified.')
+
         if args.get('script') and not args.get('scriptName'):
             raise ValueError('If the script is provided, script name must be specified as well.')
 
@@ -2054,6 +2055,7 @@ script:
     def fetch_incidents():
 
         lastRun = demisto.getLastRun()
+        alerts = []
         if lastRun and lastRun.get('min_id'):
             #get all alerts with id greater than min_id
             alerts = get_all_alerts(
@@ -2061,7 +2063,7 @@ script:
                 sort='_id+ascending'
             )
             #results are sorted in ascending order - the last alert holds the greatest id
-            min_id = alerts[-1].get('_id')
+            min_id = alerts[-1].get('_id') if alerts else None
         else:
             #get the last 100 alerts
             alerts = get_all_alerts(
@@ -2069,16 +2071,17 @@ script:
                 limit=100
             )
             #results are sorted in descending order - the first alert holds the greatest id
-            min_id = alerts[0].get('_id')
+            min_id = alerts[0].get('_id') if alerts else None
 
         incidents = [parse_alert_to_incident(alert) for alert in alerts]
         demisto.incidents(incidents)
-        demisto.setLastRun({'min_id': min_id})
+        if min_id is not None:
+            demisto.setLastRun({'min_id': min_id})
 
 
     def parse_alert_to_incident(alert):
 
-        event_type = alert.get('event_type')
+        event_type = alert.get('event_type', 'NewEvent')
         event_values = alert.get('event_values', {})
         event_indicators_map = {
             'fileWriteEvent': 'fileWriteEvent/fileName',
@@ -2193,8 +2196,7 @@ script:
 
         request_kwargs = {
             'headers': headers,
-            'verify': USE_SSL,
-            'proxies': PROXIES
+            'verify': USE_SSL
         }
 
         #add optional arguments if specified
@@ -2205,11 +2207,15 @@ script:
             request_kwargs['params'] = url_params
 
         LOG('attempting {} request sent to {} with arguments:\n{}'.format(method, url, json.dumps(request_kwargs, indent=4)))
-        response = requests.request(
+        try:
+            response = requests.request(
             method,
             url,
             **request_kwargs
         )
+        except requests.exceptions.SSLError as e:
+            LOG(e.message)
+            raise ValueError('An SSL error occurred when trying to connect to the server. Consider configuring unsecure connection in the integration settings.')
 
         #handle request failure
         if response.status_code not in range(200,205):
@@ -2237,20 +2243,13 @@ script:
         except Exception as e:
             return ''
 
-    def return_error_entry(message):
-        error_entry = {
-            'Type': entryTypes['error'],
-            'Contents': message,
-            'ContentsFormat': formats['text']
-        }
-        demisto.results(error_entry)
-
     """
 
     EXECUTION
 
     """
 
+    set_proxies()
 
     command = demisto.command()
     LOG('Running command "{}"'.format(command))
@@ -2293,13 +2292,12 @@ script:
     except ValueError as e:
         LOG(e.message)
         LOG.print_log()
-        return_error_entry(e.message)
-        sys.exit(1)
+        return_error(e.message)
     finally:
         logout()
   type: python
   commands:
-  - name: fireeye-hx-host-containment
+  - name: fireeye-hx-host-containmentn
     arguments:
     - name: hostName
       description: The host name to be contained. If the hostName is not specified,
@@ -2772,3 +2770,5 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
+tests:
+  - FireEye HX Test

@@ -1,0 +1,955 @@
+commonfields:
+  id: RedCanary
+  version: -1
+name: RedCanary
+display: Red Canary
+category: Endpoint
+image: data:image/png;base64,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
+description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike
+  Falcon.  The collected data is standardized into a common schema which allows teams
+  to detect, analyze and respond to security incidents.
+detaileddescription: |-
+  In order to generate an API key, follow these step:
+  1) Login to your Red Canary instance.
+  2) Go to `profile` -> `Account`.
+  3) Scroll down to `Security Settings`.
+  4) Copy the API token under `API Authentication Token`.
+configuration:
+- display: Domain (for example, https://demisto.my.redcanary.co)
+  name: domain
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "False"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import requests
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    ''' GLOBAL VARS '''
+    BASE_URL = '{}/openapi/v3'.format(demisto.params()['domain'])
+    API_KEY = demisto.params()['api_key']
+    USE_SSL = not demisto.params().get('insecure', False)
+
+
+    ''' HELPER FUNCTIONS '''
+    def get_time_obj(t, time_format=None):
+        '''
+        convert a time string to datetime object
+
+        :type t: ``string`` or ``int``
+        :param t: time object as string or int for timestamp (required)
+
+        :type time_format: ``string``
+        :param time_format: time format string  (optional)
+
+        :return: datetime object
+        :rtype: ``datetime``
+        '''
+        if time_format is not None:
+            return datetime.strptime(t, time_format)
+        if isinstance(t, int):
+            return datetime.fromtimestamp(t)
+        elif isinstance(t, tuple(STRING_TYPES)):
+            if '.' in t:
+                # in case of "2018-09-14T13:27:18.123456Z"
+                return datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%fZ')
+            else:
+                # in case of "2018-09-14T13:27:18.123456Z"
+                return datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+
+
+    def get_time_str(time_obj, time_format=None):
+        '''
+        convert a datetime object to time format string
+
+        :type t: ``datetime``
+        :param t: time object (required)
+
+        :type time_format: ``string``
+        :param time_format: time format string (optional)
+
+        :return: time format string
+        :rtype: ``string``
+        '''
+        if time_format is None:
+            return time_obj.isoformat().split('.')[0] + 'Z'
+        else:
+            return datetime.strftime(t, time_format)
+
+
+    def http_request(requests_func, url_suffix, **kwargs):
+        params = kwargs.get('params')
+        headers = kwargs.get('headers', {})
+        data = kwargs.get('data', {})
+
+        res = requests_func(BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            headers=headers,
+            data=data
+        )
+
+        if res.status_code == 403:
+            raise Exception('API Key is incorrect')
+
+        if res.status_code not in [200, 201, ]:
+            LOG('result is: %s' % (res.json(), ))
+            error = res.json()
+            raise Exception('Your request failed with the following error: {}.\n'.format(error, ))
+
+        return res.json()
+
+
+    @logger
+    def http_get(url_suffix, params=None, data=None):
+        headers = {'X-Api-Key' : API_KEY}
+        return http_request(requests.get, url_suffix, headers=headers, params=params, data=data)
+
+
+    @logger
+    def http_patch(url_suffix, params=None, data=None):
+        headers = {'X-Api-Key' : API_KEY}
+        return http_request(requests.patch, url_suffix, headers=headers, params=params, data=data)
+
+
+    @logger
+    def http_post(url_suffix, params=None, data=None):
+        headers = {'X-Api-Key' : API_KEY}
+        return http_request(requests.post, url_suffix, headers=headers, params=params, data=data)
+
+
+    def playbook_name_to_id(name):
+        playbooks = http_get('/exec/playbooks')['data']
+        ids = [p['id'] for p in playbooks if p['name'] == name]
+        if len(ids) != 1:
+            raise ValueError('Could not find specific id for name "{}"'.format(name))
+
+        return ids[0]
+
+
+    def get_endpoint_context(res=None, endpoint_id=None):
+        if res is None:
+            res = http_get('/endpoints/{}'.format(endpoint_id))['data']
+
+        # Endpoint(val.Hostname == obj.Hostname)
+        return [{
+                'Hostname' : endpoint['attributes']['hostname'],
+                'ID' : endpoint['id'],
+                'IPAddress' : [addr['attributes']['ip_address']['attributes']['ip_address']
+                    for addr in endpoint['attributes']['endpoint_network_addresses']],
+                'MACAddress' : [addr['attributes']['mac_address']['attributes']['address']
+                    for addr in endpoint['attributes']['endpoint_network_addresses']],
+                'OS' : endpoint['attributes']['platform'],
+                'OSVersion' : endpoint['attributes']['operating_system'],
+                'IsIsolated' : endpoint['attributes']['is_isolated'],
+                'IsDecommissioned' : endpoint['attributes']['is_decommissioned'],
+            } for endpoint in res]
+
+    def get_endpoint_user_context(res=None, endpoint_user_id=None):
+        if res is None:
+            res = http_get('/endpoint_users/{}'.format(endpoint_user_id))['data']
+
+        return [{
+                'Username' : endpoint_user['attributes']['username'].split('\\')[1],
+                'Hostname' : endpoint_user['attributes']['username'].split('\\')[0],
+            } for endpoint_user in res]
+
+
+
+    def get_full_timeline(detection_id, per_page=100):
+        ''' iterate over all timeline  detections later then time t '''
+        page = 1
+        done = False
+        activities = []
+        while not done:
+            res = http_get('/detections/{}/timeline'.format(detection_id),
+                params={
+                    'page' : page,
+                    'per_page' : per_page,
+                })
+
+            if len(res['data']) == 0 or True:
+                done = True
+
+            activities.extend(res['data'])
+            page += 1
+
+        return activities
+
+
+    def process_timeline(detection_id):
+        res = get_full_timeline(detection_id)
+
+        activities = []
+        domains = []
+        files = []
+        ips = []
+        processes = []
+        for activity in res:
+            if activity['type'] != 'activity_timelines.ActivityOccurred':
+                continue
+
+            activity_time = get_time_str(get_time_obj(activity['attributes']['occurred_at']))
+            notes = activity['attributes']['analyst_notes']
+            additional_data = {}
+
+            if activity['attributes']['type'] == 'process_activity_occurred':
+                process = activity['attributes']['process_execution']['attributes']['operating_system_process']['attributes']
+                image = process['image']['attributes']
+                additional_data = {
+                    'MD5' : image['md5'],
+                    'SHA256' : image['sha256'],
+                    'Path' : image['path'],
+                    'Type' : image['file_type'],
+                    'CommandLine' : process['command_line']['attributes']['command_line'],
+                }
+                files.append({
+                    'Name' : os.path.basename(image['path']),
+                    'MD5' : image['md5'],
+                    'SHA256' : image['sha256'],
+                    'Path' : image['path'],
+                    'Extension' : os.path.splitext(image['path'])[-1],
+                })
+                processes.append({
+                    'Name' : os.path.basename(image['path']),
+                    'Path' : image['path'],
+                    'MD5' : image['md5'],
+                    'SHA256' : image['sha256'],
+                    'StartTime' : get_time_str(get_time_obj(process['started_at'])),
+                    'CommandLine' : process['command_line']['attributes']['command_line'],
+                })
+
+            elif activity['attributes']['type'] == 'network_connection_activity_occurred':
+                network = activity['attributes']['network_connection']['attributes']
+                additional_data = {
+                    'IP' : network['ip_address']['attributes']['ip_address'],
+                    'Port' : network['port'],
+                    'Domain' : network['domain']['attributes']['name'],
+                }
+                domains.append({'Name' : network['domain']['attributes']['name'],
+                    # 'DNS' :
+                })
+                ips.append({
+                    'Address' : network['ip_address']['attributes']['ip_address'],
+                    'Port' : network['port'],
+                })
+
+            activities.append({
+                'Time' : activity_time,
+                'Type' : activity['attributes']['type'].replace('_', ' '),
+                'Notes' : notes,
+                'Activity Details' : createContext(additional_data, removeNull=True),
+            })
+
+
+        return activities, domains, files, ips, processes
+
+
+    def detection_to_context(raw_detection):
+        return {
+            'Type' : 'RedCanaryDetection',
+            'ID' : raw_detection['id'],
+            'Headline' : raw_detection['attributes']['headline'],
+            'Severity' : raw_detection['attributes']['severity'],
+            'Summary' : raw_detection['attributes']['summary'],
+            'Classification' : raw_detection['attributes']['classification']['superclassification'],
+            'Subclassification' : raw_detection['attributes']['classification']['subclassification'],
+            'Time' : get_time_str(get_time_obj(raw_detection['attributes']['time_of_occurrence'])),
+            'Acknowledged' : raw_detection['attributes']['last_acknowledged_at'] is None and raw_detection['attributes']['last_acknowledged_by'] is None,
+            'RemediationStatus' : raw_detection['attributes'].get('last_remediated_status', {}).get('remediation_status', ''),
+        }
+
+
+    def detections_to_entry(detections, show_timeline=False):
+        fixed_detections = [detection_to_context(d) for d in detections]
+        endpoints = [get_endpoint_context(endpoint_id=d['relationships']['affected_endpoint']['data']['id'])
+            for d in detections]
+        endpoints = sum(endpoints, [])
+        endpoint_users = [get_endpoint_user_context(endpoint_user_id=d['relationships']['related_endpoint_user']['data']['id'])
+            for d in detections]
+        endpoint_users = sum(endpoint_users, [])
+
+        domains, files, ips, processes = [], [], [], []
+        activities = ''
+        title = 'Detections'
+        if show_timeline and len(detections) == 1:
+            title = 'Detection {}'.format(fixed_detections[0]['Headline'])
+            activities, domains, files, ips, processes = process_timeline(fixed_detections[0]['ID'])
+            activities = tableToMarkdown('Detection Timeline', activities, headers=['Time', 'Type', 'Activity Details', 'Notes'])
+
+        headers = ['ID', 'Headline', 'Severity', 'Time', 'Classification', 'Summary', ]
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': fixed_detections,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': '\n\n'.join([
+                tableToMarkdown(title, fixed_detections, headers=headers, removeNull=True),
+                activities,
+                ]),
+            'EntryContext' : {
+                'RedCanary.Detection(val.ID && val.ID == obj.ID)' : createContext(fixed_detections, removeNull=True),
+                'Account(val.Username == obj.Username)' : createContext(endpoint_users, removeNull=True),
+                'Domain(val.Username == obj.Username)' : createContext(domains, removeNull=True),
+                'Endpoint(val.Hostname == obj.Hostname)' : createContext(endpoints, removeNull=True),
+                'File(val.Name == obj.Name)' : createContext(files, removeNull=True),
+                'IP(val.Address == obj.Address)' : createContext(ips, removeNull=True),
+                'Process(val.Username == obj.Username)' : createContext(processes, removeNull=True),
+                }
+            }
+
+
+    def get_unacknowledge_detections(t, per_page=50):
+        ''' iterate over all unacknowledged detections later then time t'''
+        page = 1
+        passed = False
+        while not passed:
+            res = list_detections(page=page, per_page=per_page)
+
+            if len(res) == 0:
+                passed = True
+
+            for detection in res:
+                if get_time_obj(detection['attributes']['time_of_occurrence']) < t:
+                    passed = True
+                    break
+                if detection['attributes']['last_acknowledged_at'] is not None or detection['attributes']['last_acknowledged_by'] is not None:
+                    continue
+
+                yield detection
+
+            page += 1
+
+
+    @logger
+    def detection_to_incident(raw_detection):
+        detection = detection_to_context(raw_detection)
+        detection['Timeline'] = get_full_timeline(detection['ID'])
+
+        return {
+            'type' : 'RedCanaryDetection',
+            'name' : detection['Headline'],
+            'details' : detection['Summary'],
+            'occurred' : detection['Time'],
+            'rawJSON' : json.dumps(detection),
+        }
+
+
+    ''' FUNCTIONS '''
+    def list_detections_command():
+        args = demisto.args()
+        page = int(args.get('page', '1'))
+        per_page = int(args.get('per-page', '50'))
+
+        data = list_detections(page, per_page)
+        return detections_to_entry(data)
+
+
+    @logger
+    def list_detections(page, per_page):
+        res = http_get('/detections',
+            data={
+                'page' : page,
+                'per_page' : per_page
+            },
+        )
+        return res['data']
+
+
+    def get_detection_command():
+        args = demisto.args()
+        _id = args['id']
+
+        data = get_detection(_id)
+        return detections_to_entry(data, show_timeline=True)
+
+
+    @logger
+    def get_detection(_id):
+        res = http_get('/detections/{}'.format(_id))
+        return res['data']
+
+
+    def acknowledge_detection_command():
+        args = demisto.args()
+        _id = args['id']
+
+        acknowledge_detection(_id)
+        return 'detection acknowledged successfully.'
+
+
+    @logger
+    def acknowledge_detection(_id):
+        res = http_patch('/detections/{}/mark_acknowledged'.format(_id))
+        return res['data']
+
+
+    def remediate_detection_command():
+        args = demisto.args()
+        _id = args['id']
+        remediation_state = args['remediation-state']
+        comment = args.get('comment')
+
+        remediate_detection(_id, remediation_state, comment)
+        return 'Detection was updated to "{}" successfully.'.format(remediation_state.replace('_', ' '))
+
+
+    @logger
+    def remediate_detection(_id, remediation_state, comment):
+        res = http_patch('/detections/{}/update_remediation_state'.format(_id),
+            data={
+                'remediation_state' : remediation_state,
+                'comment' : comment,
+            }
+        )
+
+
+    def list_endpoints_command():
+        args = demisto.args()
+        page = int(args.get('page', '1'))
+        per_page = int(args.get('per-page', '50'))
+
+        data = list_endpoints(page, per_page)
+        endpoints = get_endpoint_context(res=data)
+        headers = ['ID', 'IPAddress', 'Hostname', 'MACAddress', 'IsIsolated', 'IsDecommissioned', 'OSVersion',]
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': endpoints,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('EndPoints', endpoints, headers=headers, removeNull=True),
+            'EntryContext' : {
+                'EndPoint(val.Hostname == obj.Hostname)' : createContext(endpoints, removeNull=True),
+                }
+            }
+
+
+    @logger
+    def list_endpoints(page, per_page):
+        res = http_get('/endpoints',
+            data={
+                'page' : page,
+                'per_page' : per_page
+            },
+        )
+
+        return res['data']
+
+
+    def get_endpoint_command():
+        args = demisto.args()
+        _id = args['id']
+
+        data = get_endpoint(_id)
+        endpoints = get_endpoint_context(res=data)
+        headers = ['ID', 'IPAddress', 'Hostname', 'MACAddress', 'IsIsolated', 'IsDecommissioned', 'OSVersion',]
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': endpoints,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('EndPoint {}'.format(endpoints[0]['Hostname']), endpoints, headers=headers, removeNull=True),
+            'EntryContext' : {
+                'EndPoint(val.Hostname == obj.Hostname)' : createContext(endpoints, removeNull=True),
+                }
+            }
+
+
+    @logger
+    def get_endpoint(_id):
+        res = http_get('/endpoints/{}'.format(_id))
+
+        return res['data']
+
+
+    def get_endpoint_detections_command():
+        args = demisto.args()
+        _id = args['id']
+
+        detections = get_endpoint_detections(_id)
+        return detections_to_entry(detections)
+
+    @logger
+    def get_endpoint_detections(_id):
+        endpoint = get_endpoint(_id)
+
+        detection_ids = [d['href'].split('detections/')[1] for d in endpoint[0]['links']['detections']]
+        detections = []
+        for detection_id in detection_ids:
+            detections.extend(get_detection(detection_id))
+
+        return detections
+
+
+    def execute_playbook_command():
+        args = demisto.args()
+        detection_id = args['detection-id']
+        playbook_id = args.get('playbook-id')
+        playbook_name = args.get('playbook-name')
+        if playbook_id is None:
+            if playbook_name is None:
+                raise ValueError('You must specify either playbook-id or playbook-name.')
+            playbook_id = playbook_name_to_id(args.get('playbook-name'))
+
+        execute_playbook(playbook_id, detection_id)
+
+        return 'playbook #{} execution started successfully.'.format(playbook_id)
+
+
+    def execute_playbook(playbook_id, detection_id):
+        res = http_post('/exec/playbooks/{}/execute'.format(playbook_id),
+            params={
+                'resource_type' : 'Detection',
+                'resource_id' : detection_id,
+            }
+        )
+
+        return res
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        last_fetch = last_run.get('time')
+
+        # handle first time fetch
+        if last_fetch is None:
+            last_fetch = datetime.now() - timedelta(days=5)
+        else:
+            last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+
+        LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
+        incidents = []
+        for raw_detection in get_unacknowledge_detections(last_fetch, per_page=2):
+            LOG('found detection #{}'.format(raw_detection['id']))
+            incident = detection_to_incident(raw_detection)
+
+            incidents.append(incident)
+
+        if len(incidents) != 0:
+            last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])
+            demisto.setLastRun({'time' : get_time_str(last_fetch + timedelta(seconds=1))})
+        demisto.incidents(incidents)
+
+
+    @logger
+    def test_integration():
+        list_detections(1, 1)
+        return 'ok'
+
+
+    ''' EXECUTION CODE '''
+    COMMANDS = {
+        'test-module' : test_integration,
+        'fetch-incidents' : fetch_incidents,
+        'redcanary-list-detections' : list_detections_command,
+        'redcanary-list-endpoints' : list_endpoints_command,
+        'redcanary-get-endpoint' : get_endpoint_command,
+        'redcanary-get-endpoint-detections' : get_endpoint_detections_command,
+        'redcanary-get-detection' : get_detection_command,
+        'redcanary-acknowledge-detection' : acknowledge_detection_command,
+        'redcanary-update-remediation-state' : remediate_detection_command,
+        'redcanary-execute-playbook' : execute_playbook_command,
+    }
+
+
+    try:
+        LOG('command is %s' % (demisto.command(), ))
+        command_func = COMMANDS.get(demisto.command())
+        if command_func is not None:
+            if demisto.command() == 'fetch-incidents':
+                demisto.incidents(command_func())
+            else:
+                demisto.results(command_func())
+
+    except Exception, e:
+        LOG(e.message)
+        if demisto.command() != 'test-module':
+            LOG.print_log()
+        return_error('error has occurred: {}'.format(e.message, ))
+  type: python
+  commands:
+  - name: redcanary-acknowledge-detection
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Detection ID. Can be obtained from the context.
+    description: Mark a detection as acknowledged to inform that it's being handled.
+  - name: redcanary-update-remediation-state
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Detection ID. Can be obtained from the context.
+    - name: remediation-state
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - remediated
+      - not_remediated_false_positive
+      - not_remediated_sanctioned_activity
+      - not_remediated_unwarranted
+      description: The way in which the detection was remediated.
+    - name: comment
+      description: Describe the reason why the detection was remediated in this manner.
+        This is ignored for 'remediated' state
+      defaultValue: remediated by Demisto.
+    description: Update the remediation state of a detection.
+  - name: redcanary-list-detections
+    arguments:
+    - name: page
+      description: What page of results to fetch. Defaults to first page.
+    - name: per-page
+      description: How many results to return per page.
+    outputs:
+    - contextPath: RedCanary.Detection.ID
+      description: Detection ID.
+      type: number
+    - contextPath: RedCanary.Detection.Headline
+      description: Human readable text about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Severity
+      description: The severity of the detection. High, medium, or low
+      type: string
+    - contextPath: RedCanary.Detection.Summary
+      description: A summary of information about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Classification
+      description: Detection Classification
+      type: string
+    - contextPath: RedCanary.Detection.Subclassification
+      description: Detection Subclassification
+      type: string
+    - contextPath: RedCanary.Detection.Time
+      description: The time the detection was confirmed as a threat by Red Canary
+      type: date
+    - contextPath: RedCanary.Detection.Acknowledged
+      description: Whether or not the detection is acknowledged.
+      type: boolean
+    - contextPath: RedCanary.Detection.RemediationStatus
+      description: The state the detection is currently in.
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    - contextPath: Account.Username
+      description: Endpoint user name
+      type: string
+    - contextPath: Account.Hostname
+      description: Endpoint host name
+      type: string
+    description: Get a list of confirmed detections.
+  - name: redcanary-list-endpoints
+    arguments:
+    - name: page
+      description: Page number in the query response. Default is 1.
+      defaultValue: "1"
+    - name: per-page
+      description: Number of returned results per page. Default is 50
+      defaultValue: "50"
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    description: Get a list of endpoints.
+  - name: redcanary-execute-playbook
+    arguments:
+    - name: playbook-id
+      description: Playbook ID for execution.
+    - name: detection-id
+      required: true
+      description: Detection to execute the playbook on. Can be retrieve from the
+        context
+    - name: playbook-name
+      description: Playbook name for execution. if playbook ID is specify, this is
+        ignored.
+    description: Execute a predefined playbook on a detection.
+  - name: redcanary-get-endpoint
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Endpoint ID
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    description: Get an endpoint by unique identifier.
+  - name: redcanary-get-endpoint-detections
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Endpoint ID
+    outputs:
+    - contextPath: RedCanary.Detection.ID
+      description: Detection ID.
+      type: number
+    - contextPath: RedCanary.Detection.Headline
+      description: Human readable text about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Severity
+      description: The severity of the detection. High, medium, or low
+      type: string
+    - contextPath: RedCanary.Detection.Summary
+      description: A summary of information about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Classification
+      description: Detection Classification
+      type: string
+    - contextPath: RedCanary.Detection.Subclassification
+      description: Detection Subclassification
+      type: string
+    - contextPath: RedCanary.Detection.Time
+      description: The time the detection was confirmed as a threat by Red Canary
+      type: date
+    - contextPath: RedCanary.Detection.Acknowledged
+      description: Whether or not the detection is acknowledged.
+      type: boolean
+    - contextPath: RedCanary.Detection.RemediationStatus
+      description: The state the detection is currently in.
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    - contextPath: Account.Username
+      description: Endpoint user name
+      type: string
+    - contextPath: Account.Hostname
+      description: Endpoint host name
+      type: string
+    description: Get a list of detections associated with the endpoint.
+  - name: redcanary-get-detection
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Detection ID
+    outputs:
+    - contextPath: RedCanary.Detection.ID
+      description: Detection ID.
+      type: number
+    - contextPath: RedCanary.Detection.Headline
+      description: Human readable text about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Severity
+      description: The severity of the detection. High, medium, or low
+      type: string
+    - contextPath: RedCanary.Detection.Summary
+      description: A summary of information about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Classification
+      description: Detection Classification
+      type: string
+    - contextPath: RedCanary.Detection.Subclassification
+      description: Detection Subclassification
+      type: string
+    - contextPath: RedCanary.Detection.Time
+      description: The time the detection was confirmed as a threat by Red Canary
+      type: date
+    - contextPath: RedCanary.Detection.Acknowledged
+      description: Whether or not the detection is acknowledged.
+      type: boolean
+    - contextPath: RedCanary.Detection.RemediationStatus
+      description: The state the detection is currently in.
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    - contextPath: Account.Username
+      description: Endpoint user name
+      type: string
+    - contextPath: Account.Hostname
+      description: Endpoint host name
+      type: string
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: File.Path
+      description: File path in the endpoint
+      type: string
+    - contextPath: File.Extension
+      description: File extension
+      type: string
+    - contextPath: IP.Address
+      description: IP Address
+      type: string
+    - contextPath: IP.Port
+      description: Port
+      type: string
+    - contextPath: Process.Name
+      description: Process name
+      type: string
+    - contextPath: Process.Path
+      description: process binary path
+      type: string
+    - contextPath: Process.MD5
+      description: Binary MD5
+      type: string
+    - contextPath: Process.SHA256
+      description: Binary SHA256
+      type: string
+    - contextPath: Process.StartTime
+      description: Process execution time
+      type: date
+    - contextPath: Process.CommandLine
+      description: Process command line
+      type: string
+    description: Get a detection by unique identifier.
+  isfetch: true
+  runonce: false
+tests:
+  - RedCanaryTest

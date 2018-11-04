@@ -28,3 +28,6 @@ args:
   description: Username in Okta to get groups for
 scripttarget: 0
 deprecated: true
+dependson:
+  must:
+  - okta-get-groups

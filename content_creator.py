@@ -20,11 +20,10 @@ ZIP_POST = 'content_new'
 ZIP_TEST = 'content_test'
 
 
-
 def is_ge_version(ver1, ver2):
     # fix the version to arrays of numbers
-    if isinstance(ver1, str): ver1 = [int(i) for i in ver1.split('.')]
-    if isinstance(ver2, str): ver2 = [int(i) for i in ver2.split('.')]
+    ver1 = [int(i) for i in str(ver1).split('.')]
+    ver2 = [int(i) for i in str(ver2).split('.')]
 
     for v1, v2 in zip(ver1, ver2):
         if v1 > v2:
@@ -76,6 +75,7 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
 
     print ' - total post files: %d' % (post_files, )
 
+
 def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     # handle *.json files
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
@@ -91,12 +91,20 @@ def copy_dir_files(*args):
     # handle *.yml files
     copy_dir_yml(*args)
 
+
 def copy_test_files(bundle_test):
     print 'copying test files to test bundle'
     scan_files = glob.glob(os.path.join(TEST_DIR, '*'))
     for path in scan_files:
-        print "copying path %s" % (path,)
-        shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
+        if os.path.isdir(path):
+            NonCircleTests = glob.glob(os.path.join(path, '*'))
+            for new_path in NonCircleTests:
+                print "copying path %s" % (new_path,)
+                shutil.copyfile(new_path, os.path.join(bundle_test, os.path.basename(new_path)))
+
+        else:
+            print "copying path %s" % (path,)
+            shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
 def main(circle_artifacts):
@@ -125,7 +133,7 @@ def main(circle_artifacts):
 
     print 'copying common server doc to bundles'
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
-        shutil.copyfile('./Docs/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
+        shutil.copyfile('./Documentation/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
 
     print 'compressing bundles ...'
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)

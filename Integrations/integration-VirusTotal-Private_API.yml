@@ -61,6 +61,12 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
+    if not demisto.params().get('useProxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     ''' GLOBAL VARS '''
     SERVER_URL='https://www.virustotal.com/vtapi/v2/'
     API_KEY=demisto.params()['APIKey']
@@ -73,16 +79,6 @@ script:
     }
 
     ''' HELPER FUNCTIONS '''
-
-    def load_proxy():
-        """ Loads the system configured proxy if enabled in configuration """
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
-    PROXY = load_proxy()
 
     def http_request(method, url_suffix, params_dict, headers):
         req_params = {
@@ -100,8 +96,7 @@ script:
                 url,
                 verify=USE_SSL,
                 params=req_params,
-                headers=headers,
-                proxies=PROXY
+                headers=headers
             )
             res.raise_for_status()
 
@@ -571,7 +566,7 @@ script:
                 outputPaths['url']: {
                     'Data': url,
                     'Malicious': {
-                        'Description': 'Detections / Total: ' + positives + ' / ' + response.get('total', ''),
+                        'Description': 'Detections / Total: ' + str(positives) + ' / ' + str(response.get('total', '')),
                         'Vendor': 'VirusTotal - Private API'
                     },
                 },
@@ -1392,4 +1387,5 @@ script:
       This call can be used in conjuction with the file searching call in order to
       download samples that match a given set of criteria.
   runonce: false
-releaseNotes: "Integration with Virus Total's private API"
+tests:
+  - virusTotalPrivateAPI-test-playbook

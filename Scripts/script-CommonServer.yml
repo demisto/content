@@ -273,7 +273,7 @@ script: |-
           }
           var sep = [];
           headers.forEach(function(h){
-              sep.push('-');
+              sep.push('---');
           });
           if (sep.length === 1) {
               sep[0] = sep[0]+'|';
@@ -633,8 +633,9 @@ script: |-
     return ok;
   }
 
-  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, entryInfoFile: 9, map: 15};
+  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, entryInfoFile: 9, map: 15, playgroundError: 8};
   var formats = {html: 'html', table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
+  var dbotscores = {critical : 4, high: 3, medium: 2, low: 1, informational: 0.5, unknown: 0};
 
   /**
    * Returns the name of the file as stored in our investigation artifacts on disk.
@@ -1957,4 +1958,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "-"
+releaseNotes: 'Fix separator line of MD tables'

@@ -195,7 +195,6 @@ script:
         ec[outputPaths.file] = [];
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal Hash Reputation for: ' + r[i].resource + '\n';
-            md += 'Scan ID: **' + r[i].scan_id + '**\n';
             md += 'Scan date: **' + r[i].scan_date + '**\n';
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
             md += 'VT Link: [' + r[i].resource + '](' + r[i].permalink + ')\n';
@@ -217,23 +216,54 @@ script:
             }
             ec.DBotScore.push({Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
-            if (longFormat === 'true' && r[i].scans) {
+            if (longFormat === 'true' && r[i].scans) { // add scans table
                 scansTable = createScansTable(r[i].scans);
-                md += tableToMarkdown('Scans', scansTable)
+                md += tableToMarkdown('Scans', scansTable);
                 if (ec[outputPaths.file]){
                     scans_ec = {
-                        "Scans": scansTable
+                        Scans: scansTable,
+                        ScanID: r[i].scan_id
+                    };
+                    if (typeof ec[outputPaths.file][i] === 'object') { // malicous
+                        ec[outputPaths.file][i].VirusTotal = scans_ec;
+                    } else { // not malicious
+                        ec[outputPaths.file][i] = {
+                            MD5: r[i].md5,
+                            VirusTotal: scans_ec
+                        };
                     }
-                    ec[outputPaths.file][0].VirusTotal = scans_ec;
                 } else {
                     scans_ec = {
                         MD5: r[i].md5,
                         SHA1: r[i].sha1,
                         SHA256: r[i].sha256,
-                        "VirusTotal": {
-                            "Scans": scansTable,
+                        VirusTotal: {
+                            Scans: scansTable,
+                            ScanID: r[i].scan_id
                         }
+                    };
+                    ec[outputPaths.file] = scans_ec;
+                }
+            } else { // short format
+                if (ec[outputPaths.file]){
+                    scans_ec = {
+                        ScanID: r[i].scan_id
+                    };
+                    if (typeof ec[outputPaths.file][i] === 'object') { // malicious
+                        ec[outputPaths.file][i].VirusTotal = scans_ec;
+                    } else { // not malicious
+                        ec[outputPaths.file][i] = {
+                            MD5: r[i].md5,
+                            VirusTotal: scans_ec
+                        };
                     }
+                } else {
+                    scans_ec = {
+                        MD5: r[i].md5,
+                        VirusTotal: {
+                            ScanID: r[i].scan_id
+                        }
+                    };
                     ec[outputPaths.file] = scans_ec;
                 }
             }
@@ -277,7 +307,7 @@ script:
         if (o.response_code === 0) {
             ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                HumanReadable: 'VirusTotal does not have details about ' + ip + '\n' + res.obj.verbose_msg};
+                HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg};
         }
         if (fullResponse === 'true'){
             maxLen = 1000;
@@ -306,9 +336,20 @@ script:
         md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
         md += 'Country: **' + o.country + '**\n';
         md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
-        var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
-            {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
-            {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions, t: 'Resolutions'}];
+
+        var detectedUrls = o.detected_urls || []
+        var detectedDownloadedSamples = o.detected_downloaded_samples || []
+        var undetectedDownloadedSamples = o.undetected_downloaded_samples || []
+        var detectedCommunicatingSamples = o.detected_communicating_samples || []
+        var undetectedCommunicatingSamples = o.undetected_communicating_samples || []
+        var detectedReferrerSamples = o.detected_referrer_samples || []
+        var undetectedReferrerSamples = o.undetected_referrer_samples || []
+        var resolutions = o.resolutions || []
+
+        var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
+            {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
+            {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
+            {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
         for (var i=0; i<arrTitle.length; i++) {
             if (arrTitle[i].a) {
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
@@ -317,28 +358,28 @@ script:
         ip_ec = {
             'Address': ip,
             "VirusTotal": {
-                'DownloadedHashes': o.detected_downloaded_samples.slice(0,maxLen),
-                'UnAVDetectedDownloadedHashes': o.undetected_downloaded_samples.slice(0,maxLen),
-                "DetectedURLs": o.detected_urls.slice(0,maxLen),
-                'CommunicatingHashes': o.detected_communicating_samples.slice(0,maxLen),
-                'UnAVDetectedCommunicatingHashes': o.undetected_communicating_samples.slice(0,maxLen),
-                'Resolutions': o.resolutions.slice(0,maxLen),
-                'ReferrerHashes': o.detected_referrer_samples.slice(0,maxLen),
-                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples.slice(0,maxLen)
+                'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
+                'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
+                "DetectedURLs": detectedUrls.slice(0,maxLen),
+                'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
+                'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
+                'Resolutions': resolutions.slice(0,maxLen),
+                'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
+                'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
             }
         };
-        if (ec[outputPaths.ip]){
-            ec[outputPaths.IP][0]['VirusTotal'] = {
-                'DownloadedHashes': o.detected_downloaded_samples.slice(0,maxLen),
-                'UnAVDetectedDownloadedHashes': o.undetected_downloaded_samples.slice(0,maxLen),
-                "DetectedURLs": o.detected_urls.slice(0,maxLen),
-                'CommunicatingHashes': o.detected_communicating_samples.slice(0,maxLen),
-                'UnAVDetectedCommunicatingHashes': o.undetected_communicating_samples.slice(0,maxLen),
-                'Resolutions': o.resolutions.slice(0,maxLen),
-                'ReferrerHashes': o.detected_referrer_samples.slice(0,maxLen),
-                'UnAVDetectedReferrerHashes': o.undetected_referrer_samples.slice(0,maxLen)
+        if (ec[outputPaths.ip]){ // malicious
+            ec[outputPaths.ip]['VirusTotal'] = {
+                'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
+                'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
+                "DetectedURLs": detectedUrls.slice(0,maxLen),
+                'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
+                'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
+                'Resolutions': resolutions.slice(0,maxLen),
+                'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
+                'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
             };
-        } else {
+        } else { // not malicious
             ec[outputPaths.ip] = ip_ec;
         }
         if (longFormat === 'true') {
@@ -358,6 +399,15 @@ script:
     };
 
     var doURL = function(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
+        //lowercase the URL protocol
+        //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
+        var protocol = url.match(/\b^[^:]+(?=:\/\/)\b/);
+        if (protocol != null) { // if url doesn't start with a protocol, ignore
+          protocol = protocol[0].toLowerCase();
+          var not_protocol = url.replace(/(^\w+:|^)\/\//, '');
+          url = protocol + '://' + not_protocol;
+        }
+
         if (!submitWait) {
             submitWait = 0;
         }
@@ -384,12 +434,16 @@ script:
             res = doReq('GET', 'url/report', {resource: url});
             o = res.obj;
         }
-        if (!o.scans) {
+        if (!o.scans) { // URL doesn't exist in VT
             md += 'URL submitted for scan. Please retry command later\n';
-            md += 'Scan ID: **' + o.scan_id + '**\n\n';
+            ec[outputPaths.url] = {
+                Data: url,
+                VirusTotal: {
+                    ScanID: o.scan_id
+                }
+            };
         } else {
             md += 'Last scan date: *' + o.scan_date + '*\n';
-            md += 'Scan ID: **' + o.scan_id + '**\n\n';
             md += 'Total scans: **' + o.total + '**\n';
             md += 'Positive scans: **' + o.positives + '**\n';
             md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
@@ -408,26 +462,41 @@ script:
             }
             ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
 
-            if (longFormat === 'true') {
-                md += '### Scans\n';
+            if (longFormat === 'true') { // add scans table
                 scansTable = createScansTable(o.scans);
                 md += tableToMarkdown('Scans', scansTable)
-                if (ec[outputPaths.url]){
+                if (ec[outputPaths.url]){ // malicious
                     scans_ec = {
-                        "Scans": scansTable
+                        Scans: scansTable,
+                        ScanID: o.scan_id
                     }
-                    ec[outputPaths.url][0].VirusTotal = scans_ec;
-                } else {
+                    ec[outputPaths.url].VirusTotal = scans_ec;
+                } else { // not malicious
                     scans_ec = {
                         Data: url,
                         "VirusTotal": {
-                            "Scans": scansTable,
+                            Scans: scansTable,
+                            ScanID: o.scan_id
                         }
                     }
                     ec[outputPaths.url] = scans_ec;
                 }
+            } else { // short format
+                if (ec[outputPaths.url]){ // malicious
+                    ec[outputPaths.url]['VirusTotal'] = {
+                        ScanID: o.scan_id,
+                    };
+                } else { // not malicious
+                    ec[outputPaths.url] = {
+                        Data: url,
+                        VirusTotal: {
+                            ScanID: o.scan_id,
+                        }
+                    };
+                }
             }
         }
+
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
@@ -470,9 +539,20 @@ script:
         md += '#### Domain categories: *' + o.categories + "*\n";
         md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
 
-        var arrTitle = [{a: o.detected_urls, t: 'Detected URL'}, {a: o.detected_downloaded_samples, t: 'Detected downloaded sample'}, {a: o.undetected_downloaded_samples, t: 'Undetected downloaded sample'},
-            {a: o.detected_communicating_samples, t: 'Detected communicating sample'}, {a: o.undetected_communicating_samples, t: 'Undetected communicating sample'},
-            {a: o.detected_referrer_samples, t: 'Detected referrer sample'}, {a: o.undetected_referrer_samples, t: 'Undetected referrer sample'}, {a: o.resolutions.slice(0,maxLen), t: 'Resolutions'}];
+        var detectedUrls = o.detected_urls || []
+        var detectedDownloadedSamples = o.detected_downloaded_samples || []
+        var undetectedDownloadedSamples = o.undetected_downloaded_samples || []
+        var detectedCommunicatingSamples = o.detected_communicating_samples || []
+        var undetectedCommunicatingSamples = o.undetected_communicating_samples || []
+        var detectedReferrerSamples = o.detected_referrer_samples || []
+        var undetectedReferrerSamples = o.undetected_referrer_samples || []
+        var resolutions = o.resolutions || []
+
+        var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
+            {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
+            {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
+            {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
+
         for (var i=0; i<arrTitle.length; i++) {
             if (arrTitle[i].a) {
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
@@ -582,8 +662,8 @@ script:
                 'Subdomains': domain_siblings,
             }
         };
-        if (ec[outputPaths.domain]){
-            ec['Domain(val.Name==obj.Name)'].VirusTotal = {
+        if (ec[outputPaths.domain]){ // malicious
+            ec[outputPaths.domain].VirusTotal = {
                 'DownloadedHashes': detected_downloaded_samples,
                 'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
                 "DetectedURLs": detected_urls,
@@ -595,7 +675,7 @@ script:
                 'Whois': o.whois,
                 'Subdomains': domain_siblings,
             }
-        } else {
+        } else { // not malicious
             ec[outputPaths.domain] = domain_ec;
         }
 
@@ -655,7 +735,6 @@ script:
         ec.vtScanID = obj.scan_id;
         var md = '## VirusTotal scan file for [' + entry + '](' + obj.permalink + ')\n';
         md += 'Resource: **' + obj.resource + '**\n';
-        md += 'Scan ID: **' + obj.scan_id + '**\n';
         md += 'MD5 / SHA1 / SHA256: **' + obj.md5 + ' / ' + obj.sha1 + ' / ' + obj.sha256 + '**\n';
         return {Type: entryTypes.note, Contents: result.Body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
@@ -779,6 +858,9 @@ script:
       description: Scan detection for this hash (True,False)
     - contextPath: File.VirusTotal.Scans.Result
       description: Scan result for this hash - signature, etc.
+    - contextPath: File.VirusTotal.ScanID
+      description: Scan ID for this hash
+      type: string
     description: Check file reputation of the given hash
   - name: ip
     arguments:
@@ -1047,4 +1129,5 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
-releaseNotes: "Enhanced outputs for ip,domain,file commands. Scans table is now available as output in file,url commands"
+tests:
+- virusTotal-test-playbook

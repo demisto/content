@@ -1,0 +1,201 @@
+id: Extract Indicators From File - test
+version: -1
+name: Extract Indicators From File - test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f13138d3-6319-46be-881d-d59d6acf7eea
+    type: start
+    task:
+      id: f13138d3-6319-46be-881d-d59d6acf7eea
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 904b78b9-da28-4904-8b26-44f2c47d51fa
+    type: regular
+    task:
+      id: 904b78b9-da28-4904-8b26-44f2c47d51fa
+      version: -1
+      name: Download file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
+      username: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: e96d25ac-a7d1-4778-8bff-34b43415f27d
+    type: playbook
+    task:
+      id: e96d25ac-a7d1-4778-8bff-34b43415f27d
+      version: -1
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 909fc4c2-bb66-49c3-8be6-9f641e86d59c
+    type: condition
+    task:
+      id: 909fc4c2-bb66-49c3-8be6-9f641e86d59c
+      version: -1
+      name: Did we get the right domain?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: demisto.com
+                    ignorecase: true
+                accessor: Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 89aced6d-84d3-4379-8e39-5b75beb50647
+    type: title
+    task:
+      id: 89aced6d-84d3-4379-8e39-5b75beb50647
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 313c367b-08d2-48bd-8c78-9cbed50c04c9
+    type: regular
+    task:
+      id: 313c367b-08d2-48bd-8c78-9cbed50c04c9
+      version: -1
+      name: RaiseError
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      actual:
+        simple: ${Domain.Name}
+      details: {}
+      error:
+        simple: 'Domain wasn''t extracted properly '
+      expected:
+        simple: demisto.com
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 338,
+          "y": 709
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 668,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

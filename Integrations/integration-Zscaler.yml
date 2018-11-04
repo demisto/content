@@ -47,12 +47,21 @@ script:
     DEFAULT_HEADERS = {
         'content-type': 'application/json'
     }
-
+    ERROR_CODES_DICT = {
+        400: 'Invalid or bad request',
+        401: 'Session is not authenticated or timed out',
+        403: 'One of the following permission errors occurred:\n-The API key was disabled by your service provider\n-User role has no access permissions or functional scope\n-A required SKU subscription is missing\nContact support or your account team for assistance.',
+        404: 'Resource does not exist',
+        409: 'Request could not be processed because of possible edit conflict occurred. Another admin might be saving a configuration change at the same time. In this scenario, the client is expected to retry after a short time period.',
+        415: 'Unsupported media type.',
+        429: 'Exceeded the rate limit or quota.',
+        500: 'Unexpected error',
+        503: 'Service is temporarily unavailable'
+    }
     ''' HELPER FUNCTIONS '''
     def http_request(method, url_suffix, data=None, headers=DEFAULT_HEADERS):
         data = {} if data is None else data
-        LOG('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
-            data, headers))
+        LOG('running request with url=%s\theaders=%s' % (BASE_URL + url_suffix, headers))
         try:
             res = requests.request(method,
                 BASE_URL + url_suffix,
@@ -60,9 +69,8 @@ script:
                 data=data,
                 headers=headers
             )
-
             if res.status_code not in (200, 204):
-                raise Exception('Your request failed with the following error: ' + res.reason)
+                raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
         except Exception, e:
             LOG(e)
             raise
@@ -286,10 +294,52 @@ script:
             listOfIps += '- ' + ip + '\n'
         return 'Removed the following IP addresses from the whitelist successfully:\n' + listOfIps
 
+    def get_blacklist_command():
+        blacklist = get_blacklist().get('blacklistUrls')
+        if blacklist:
+            hr = '### Zscaler blacklist\n'
+            for url in blacklist:
+                hr += '- ' + url + '\n'
+            ec = {
+                'Zscaler.Blacklist': blacklist
+            }
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': blacklist,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr,
+                'EntryContext': ec
+            }
+            return entry
+        else:
+            return 'No results found'
+
     def get_blacklist():
         cmd_url = '/security/advanced'
         result = http_request('GET', cmd_url, None, DEFAULT_HEADERS)
         return json.loads(result.content)
+
+    def get_whitelist_command():
+        whitelist = get_whitelist().get('whitelistUrls')
+        if whitelist:
+            hr = '### Zscaler whitelist\n'
+            for url in whitelist:
+                hr += '- ' + url + '\n'
+            ec = {
+                'Zscaler.Whitelist': whitelist
+            }
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': whitelist,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr,
+                'EntryContext': ec
+            }
+            return entry
+        else:
+            return 'No results found'
 
     def get_whitelist():
         cmd_url = '/security'
@@ -427,13 +477,15 @@ script:
             all_urls.extend(category_data['urls'])
             category_data['urls'] = all_urls
             response = category_ioc_update(category_data)
+            context = {
+                'ID': category_id,
+                'CustomCategory': category_data['customCategory'],
+                'URL': category_data['urls']
+            }
+            if 'description' in category_data and category_data['description']: # Custom categories might not have description
+                context['Description'] = category_data['description']
             ec = {
-                'Zscaler.Category(val.ID && val.ID === obj.ID)': {
-                    'ID': category_id,
-                    'CustomCategory': category_data['customCategory'],
-                    'Description': category_data['description'],
-                    'URL': category_data['urls']
-                }
+                'Zscaler.Category(val.ID && val.ID === obj.ID)': context
             }
             urls = ''
             for url in url_list:
@@ -441,7 +493,7 @@ script:
             hr = 'Added the following URL addresses to category {}:\n{}'.format(category_id, urls)
             entry = {
                 'Type': entryTypes['note'],
-                'Contents': response,
+                'Contents': ec,
                 'ContentsFormat': formats['json'],
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': hr,
@@ -465,13 +517,15 @@ script:
             all_ips.extend(category_data['urls'])
             category_data['urls'] = all_ips
             response = category_ioc_update(category_data)
+            context = {
+                'ID': category_id,
+                'CustomCategory': category_data['customCategory'],
+                'URL': category_data['urls']
+            }
+            if 'description' in category_data and category_data['description']: # Custom categories might not have description
+                context['Description'] = category_data['description']
             ec = {
-                'Zscaler.Category(val.ID && val.ID === obj.ID)': {
-                    'ID': category_id,
-                    'CustomCategory': category_data['customCategory'],
-                    'Description': category_data['description'],
-                    'URL': category_data['urls']
-                }
+                'Zscaler.Category(val.ID && val.ID === obj.ID)': context
             }
             ips = ''
             for ip in ip_list:
@@ -504,13 +558,15 @@ script:
                 return return_error('Could not find given URL in the category.')
             category_data['urls'] = updated_urls
             response = category_ioc_update(category_data)
+            context = {
+                'ID': category_id,
+                'CustomCategory': category_data['customCategory'],
+                'URL': category_data['urls']
+            }
+            if 'description' in category_data and category_data['description']: # Custom categories might not have description
+                context['Description'] = category_data['description']
             ec = {
-                'Zscaler.Category(val.ID && val.ID === obj.ID)': {
-                    'ID': category_id,
-                    'CustomCategory': category_data['customCategory'],
-                    'Description': category_data['description'],
-                    'URL': category_data['urls']
-                }
+                'Zscaler.Category(val.ID && val.ID === obj.ID)': context
             }
             urls = ''
             for url in url_list:
@@ -543,13 +599,15 @@ script:
                 return return_error('Could not find given IP in the category.')
             category_data['urls'] = updated_ips
             response = category_ioc_update(category_data)
+            context = {
+                'ID': category_id,
+                'CustomCategory': category_data['customCategory'],
+                'URL': category_data['urls']
+            }
+            if 'description' in category_data and category_data['description']: # Custom categories might not have description
+                context['Description'] = category_data['description']
             ec = {
-                'Zscaler.Category(val.ID && val.ID === obj.ID)': {
-                    'ID': category_id,
-                    'CustomCategory': category_data['customCategory'],
-                    'Description': category_data['description'],
-                    'URL': category_data['urls']
-                }
+                'Zscaler.Category(val.ID && val.ID === obj.ID)': context
             }
             ips = ''
             for ip in ip_list:
@@ -572,12 +630,49 @@ script:
         data = {
             'customCategory': category_data['customCategory'],
             'urls': category_data['urls'],
-            'description': category_data['description'],
             'id': category_data['id']
         }
+        if 'description' in category_data:
+            data['description'] = category_data['description']
+        if 'configuredName' in category_data:
+            data['configuredName'] = category_data['configuredName']
         jsondata = json.dumps(data)
         response = http_request('PUT', cmd_url, jsondata).json()
         return response
+
+    def get_categories_command():
+        display_urls = True if demisto.args()['displayURL'] == 'true' else False
+        raw_categories = get_categories()
+        categories = []
+        for raw_category in raw_categories:
+            category = {
+                'ID': raw_category['id'],
+                'CustomCategory': raw_category['customCategory']
+            }
+            if raw_category['urls']:
+                category['URL'] = raw_category['urls']
+            if 'description' in raw_category:
+                category['Description'] = raw_category['description']
+            if 'configuredName' in raw_category:
+                category['Name'] = raw_category['configuredName']
+            categories.append(category)
+        ec = {
+            'Zscaler.Category(val.ID && val.ID === obj.ID)': categories
+        }
+        if display_urls:
+            headers = ['ID', 'Description', 'URL', 'CustomCategory', 'Name']
+        else:
+            headers = ['ID', 'Description', 'CustomCategory', 'Name']
+        title = 'Zscaler Categories'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': raw_categories,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, categories, headers),
+            'EntryContext': ec
+        }
+        return entry
 
     def get_categories():
         cmd_url = '/urlCategories'
@@ -623,6 +718,12 @@ script:
             demisto.results(category_remove_url(demisto.args()['category-id'], demisto.args()['url']))
         elif demisto.command() == 'zscaler-category-remove-ip':
             demisto.results(category_remove_ip(demisto.args()['category-id'], demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-get-categories':
+            demisto.results(get_categories_command())
+        elif demisto.command() == 'zscaler-get-blacklist':
+            demisto.results(get_blacklist_command())
+        elif demisto.command() == 'zscaler-get-whitelist':
+            demisto.results(get_whitelist_command())
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -778,7 +879,8 @@ script:
     arguments:
     - name: category-id
       required: true
-      description: Category ID to add URL to, e.g. RADIO_STATIONS
+      description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived
+        by running the command zscaler-get-categories)
     - name: url
       required: true
       description: URL address to add. Comma separated values supported, e.g. pandora.com,spotify.com
@@ -793,13 +895,15 @@ script:
       description: Category ID
       type: string
     - contextPath: Zscaler.Category.URL
-      description: List of URL addresses in the category
+      description: List of category URL addresses
+      type: string
     description: Adds URL address to given category
   - name: zscaler-category-add-ip
     arguments:
     - name: category-id
       required: true
-      description: Category ID to add URL to, e.g. RADIO_STATIONS
+      description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived
+        by running the command zscaler-get-categories)
     - name: ip
       required: true
       description: IP address to add. Comma separated values supported, e.g. 1.2.3.4,8.8.8.8
@@ -814,13 +918,15 @@ script:
       description: Category ID
       type: string
     - contextPath: Zscaler.Category.URL
-      description: List of IP addresses in the category
+      description: List of category URL addresses
+      type: string
     description: Adds IP address to given category
   - name: zscaler-category-remove-url
     arguments:
     - name: category-id
       required: true
-      description: Category ID to remove URL from, e.g. RADIO_STATIONS
+      description: Category ID to remove URL from, e.g. RADIO_STATIONS (Could be retreived
+        by running the command zscaler-get-categories)
     - name: url
       required: true
       description: URL address to remove. Comma separated values supported, e.g. pandora.com,spotify.com
@@ -835,13 +941,15 @@ script:
       description: Category ID
       type: string
     - contextPath: Zscaler.Category.URL
-      description: List of URL addresses in the category
-    description: Removes URL address from given category
+      description: List of category URL addresses
+      type: string
+    description: Removes URL address to given category
   - name: zscaler-category-remove-ip
     arguments:
     - name: category-id
       required: true
-      description: Category ID to remove IP from, e.g. RADIO_STATIONS
+      description: Category ID to remove IP from, e.g. RADIO_STATIONS (Could be retreived
+        by running the command zscaler-get-categories)
     - name: ip
       required: true
       description: IP address to remove. Comma separated values supported, e.g. 1.2.3.4,8.8.8.8
@@ -856,7 +964,47 @@ script:
       description: Category ID
       type: string
     - contextPath: Zscaler.Category.URL
-      description: List of IP addresses in the category
-    description: Removes IP address from given category
+      description: List of category URL addresses
+      type: string
+    description: Removes IP address to given category
+  - name: zscaler-get-categories
+    arguments:
+    - name: displayURL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: True to display URLs of each category in the war room, else false.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Zscaler.Category.ID
+      description: Category ID
+      type: string
+    - contextPath: Zscaler.Category.CustomCategory
+      description: True if category is custom, else false.
+      type: boolean
+    - contextPath: Zscaler.Category.URL
+      description: List of category URL addresses
+      type: string
+    - contextPath: Zscaler.Category.Description
+      description: Category description
+      type: string
+    - contextPath: Zscaler.Category.Name
+      description: Category name
+      type: string
+    description: Returns a list of all categories
+  - name: zscaler-get-blacklist
+    arguments: []
+    outputs:
+    - contextPath: Zscaler.Blacklist
+      description: Zscaler blacklist
+      type: string
+    description: Returns Zscaler default blacklist
+  - name: zscaler-get-whitelist
+    arguments: []
+    outputs:
+    - contextPath: Zscaler.Whitelist
+      description: Zsclaer whitelist
+      type: string
+    description: Returns Zscaler default whitelist
   runonce: false
-releaseNotes: "Added the commands: zscaler-category-add-url, zscaler-category-add-ip, zscaler-category-remove-url, zscaler-category-remove-ip"

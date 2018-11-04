@@ -581,4 +581,3 @@ scripttarget: 0
 dockerimage: demisto/machine-learning
 fromversion: 3.5.0
 deprecated: true
-releaseNotes: "Deprecated - please use GetDuplicatesMlv2"

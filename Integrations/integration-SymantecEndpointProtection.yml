@@ -673,4 +673,5 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
-releaseNotes: "-"
+tests:
+- sep_-_test_endpoint_search
