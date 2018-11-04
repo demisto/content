@@ -3,6 +3,18 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": "IntSights",
+            "playbookID": "IntSights Test"
+        },
+        {
+            "integrations": "BitDam",
+            "playbookID": "Detonate File - BitDam Test"
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -10,8 +22,16 @@
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
+          "integrations": "Signal Sciences WAF",
+          "playbookID": "SignalSciences Test"
+        },
+        {
             "integrations": "RTIR",
             "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "RedCanary",
+            "playbookID": "RedCanaryTest"
         },
         {
           "integrations": "Devo",
@@ -28,6 +48,16 @@
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
+        },
+        {
+
+            "integrations": "BigFix",
+            "playbookID": "BigFixTest"
+        },
+        {
+            "integrations": "Lastline",
+            "playbookID": "Lastline - testplaybook",
+            "nightly": true
         },
         {
             "integrations": "epo",
@@ -125,22 +155,24 @@
             "playbookID": "TestParseCSV"
         },
         {
-            "playbookID": "detonate_file_-_generic_test",
+            "playbookID": "Detonate File - Generic Test",
             "timeout": 2000,
             "nightly": true,
             "integrations": [
                 "VxStream",
                 "McAfee Advanced Threat Defense",
-                "WildFire"
+                "WildFire",
+                "Lastline"
             ]
         },
         {
-            "playbookID": "detonate_url_-_generic_test",
+            "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
             "integrations": [
                 "McAfee Advanced Threat Defense",
-                "VxStream"
+                "VxStream",
+                "Lastline"
             ]
         },
         {
@@ -258,6 +290,10 @@
         {
             "integrations": "FalconHost",
             "playbookID": "CrowdStrike Endpoint Enrichment - Test"
+        },
+        {
+          "integrations": "FalconHost",
+          "playbookID": "crowdstrike_falconhost_test"
         },
         {
             "integrations": [
@@ -511,7 +547,7 @@
         },
         {
             "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
+            "playbookID": "Cisco Umbrella Test"
         },
         {
             "integrations": "icebrg",
@@ -623,38 +659,45 @@
         {
             "integrations": "ActiveMQ",
             "playbookID": "ActiveMQ Test"
+        },
+        {
+            "playbookID": "RegexGroups Test"
+        },
+        {
+            "integrations": "Cisco pxGrid ISE",
+            "playbookID": "cisco-ise-test-playbook"
         }
     ],
-    "skipped_tests": [
-        "File Enrichment - Generic Test",
-        "entity_enrichment_generic_test",
-        "search_endpoints_by_hash_-_generic_-_test"
-    ],
-    "skipped_integrations": [
-        "McAfee Advanced Threat Defense",
-        "Symantec Endpoint Protection",
-        "RedLock",
-        "Symantec Messaging Gateway",
-        "Cylance Protect",
-        "QRadar",
-        "VMware",
-        "Anomali ThreatStream",
-        "Farsight DNSDB",
-        "Cisco Umbrella Investigate",
-        "Symantec MSS",
-        "Remedy AR",
-        "McAfee Active Response",
-        "McAfee Threat Intelligence Exchange",
-        "ArcSight Logger",
-        "XFE",
-        "iDefense",
-        "LogRhythm",
-        "Phish.AI",
-        "Centreon",
-        "TruSTAR",
-        "AlphaSOC Wisdom",
-        "Jask",
-        "Qualys",
-        "Dell Secureworks"
-    ]
+    "skipped_tests": {
+        "File Enrichment - Generic Test": "Need to check the reason for skipping",
+        "entity_enrichment_generic_test": "Need to check the reason for skipping",
+        "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
+        "ArcSight Logger test": "Possibly outdated API calls",
+        "Centreon-Test-Playbook": "Need to check the reason for skipping",
+        "TruSTAR Test": "Need to check the reason for skipping",
+        "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
+        "Jask_Test": "Need to check the reason for skipping",
+        "Qualys-Test": "Need to check the reason for skipping"
+
+    },
+    "skipped_integrations": {
+        "Anomali ThreatStream": "Instance is down",
+        "McAfee Advanced Threat Defense": "No Credentials",
+        "Symantec Endpoint Protection": "DevOps investigation",
+        "RedLock": "Don't have alerts",
+        "Symantec Messaging Gateway": "DevOps investigation",
+        "Cylance Protect": "Under development",
+        "VMware": "DevOps investigation",
+        "Farsight DNSDB": "No instance",
+        "Symantec MSS": "No instance",
+        "Remedy AR": "DevOps investigation",
+        "McAfee Active Response": "DevOps investigation",
+        "McAfee Threat Intelligence Exchange": "DevOps investigation",
+        "XFE": "Need to check the reason for skipping",
+        "iDefense": "DevOps investigation",
+        "LogRhythm": "DevOps investigation",
+        "Phish.AI": "Need to check the reason for skipping",
+        "Dell Secureworks": "Instance locally installed on @liorblob PC",
+        "Service Manager": "Expired license"
+    }
 }
