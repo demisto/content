@@ -799,20 +799,8 @@ script:
 
         return scans
 
-    def get_scan_entry(scan):
-        scanHeaders = [
-            'Id',
-            'ScanType',
-            'ScanName',
-            'StartedBy',
-            'Assets',
-            'TotalTime',
-            'Completed',
-            'Status',
-            'Message'
-        ]
-
-        scanOutput = translate_object(scan, [
+    def map_scan(scan):
+        scan_output = translate_object(scan, [
             {'from': 'id', 'to': 'Id'},
             {'from': 'scanType', 'to': 'ScanType'},
             {'from': 'scanName', 'to': 'ScanName'},
@@ -824,40 +812,65 @@ script:
             {'from': 'message', 'to': 'Message'}
         ])
 
-        scanOutput['TotalTime'] = str(iso8601_duration_as_minutes(scanOutput['TotalTime'])) + ' minutes'
+        if isinstance(scan_output, list):
+            for scan in scan_output:
+                scan['TotalTime'] = str(iso8601_duration_as_minutes(scan['TotalTime'])) + ' minutes'
+        else:
+            scan_output['TotalTime'] = str(iso8601_duration_as_minutes(scan_output['TotalTime'])) + ' minutes'
 
-        vulnHeaders = [
+        return scan_output
+
+    def get_scan_human_readable(scan_output, title):
+        scan_headers = [
+            'Id',
+            'ScanType',
+            'ScanName',
+            'StartedBy',
+            'Assets',
+            'TotalTime',
+            'Completed',
+            'Status',
+            'Message'
+        ]
+
+        return tableToMarkdown(title, scan_output, scan_headers,removeNull=True)
+
+    def get_scan_entry(scan):
+        scan_output = map_scan(scan)
+
+        vuln_headers = [
             'Critical',
             'Severe',
             'Moderate',
             'Total'
         ]
 
-        vulnOutput = translate_object(scan['vulnerabilities'], [
+        vuln_output = translate_object(scan['vulnerabilities'], [
             {'from': 'critical', 'to': 'Critical'},
             {'from': 'severe', 'to': 'Severe'},
             {'from': 'moderate', 'to': 'Moderate'},
             {'from': 'total', 'to': 'Total'}
         ])
 
-        scanMd = tableToMarkdown('Nexpose scan ' + str(scan['id']), scanOutput, scanHeaders,removeNull=True)
-        vulnMd = tableToMarkdown('Vulnerabilities', vulnOutput, vulnHeaders, removeNull=True)
-        md = scanMd + vulnMd
+        scan_hr = get_scan_human_readable(scan_output, 'Nexpose scan ' + str(scan['id']))
+        vuln_hr = tableToMarkdown('Vulnerabilities', vuln_output, vuln_headers, removeNull=True)
+        hr = scan_hr + vuln_hr
 
-        scanOutput['Vulnerabilities'] = vulnOutput
+        scan_output['Vulnerabilities'] = vuln_output
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': scan,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': hr,
             'EntryContext': {
-                  'Nexpose.Scan(val.Id==obj.Id)': scanOutput,
+                  'Nexpose.Scan(val.Id==obj.Id)': scan_output,
             }
         }
 
         return entry
+
 
     def get_scan(scan_id):
         path = 'scans/' + str(scan_id)
@@ -1190,6 +1203,86 @@ script:
 
         return get_list_response(path)
 
+    def get_scans_command():
+        scans = get_scans(demisto.args().get('sort'), demisto.args().get('limit'), demisto.args().get('active'))
+
+        if not scans or len(scans) == 0:
+            return 'No scans found'
+
+        scan_output = map_scan(scans)
+        scan_hr = get_scan_human_readable(scan_output, 'Nexpose scans')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': scans,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': scan_hr,
+            'EntryContext': {
+                  'Nexpose.Scan(val.Id==obj.Id)': scan_output,
+            }
+        }
+
+        return entry
+
+
+    def get_scans(sort, limit, active):
+        path = 'scans'
+        params = {}
+        if sort is not None:
+            params['sort'] = sort.split(';')
+        if active is not None:
+            params['active'] = active
+
+        return get_list_response(path, method='get', limit=limit, params=params)
+
+    def stop_scan_command():
+        scan_id = demisto.args()['id']
+        res = set_scan_status(scan_id, 'stop')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Succesfully stopped the scan',
+        }
+
+        return entry
+
+    def pause_scan_command():
+        scan_id = demisto.args()['id']
+        res = set_scan_status(scan_id, 'pause')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Succesfully paused the scan',
+        }
+
+        return entry
+
+    def resume_scan_command():
+        scan_id = demisto.args()['id']
+        res = set_scan_status(scan_id, 'resume')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Succesfully resumed the scan',
+        }
+
+        return entry
+
+    def set_scan_status(scan_id, scan_status):
+        path = 'scans/' + str(scan_id) + '/' + scan_status
+
+        return send_request(path, 'post')
+
     try:
         if demisto.command() == 'test-module':
             get_assets(limit=1)
@@ -1222,6 +1315,14 @@ script:
             demisto.results(create_site_command())
         if demisto.command() == 'nexpose-delete-site':
             demisto.results(delete_site_command())
+        if demisto.command() == 'nexpose-stop-scan':
+            demisto.results(stop_scan_command())
+        if demisto.command() == 'nexpose-pause-scan':
+            demisto.results(pause_scan_command())
+        if demisto.command() == 'nexpose-resume-scan':
+            demisto.results(resume_scan_command())
+        if demisto.command() == 'nexpose-get-scans':
+            demisto.results(get_scans_command())
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
@@ -1933,7 +2034,63 @@ script:
       description: The total number of vulnerabilities.
       type: number
     description: Starts a scan for specified asset IP addresses and host names.
+  - name: nexpose-stop-scan
+    arguments:
+    - name: id
+      required: true
+      description: integer <int64> ID of the scan to stop.
+    description: Stop the specified scan
+  - name: nexpose-pause-scan
+    arguments:
+    - name: id
+      description: integer <int64> ID of the scan to pause.
+    description: Pause the specified scan
+  - name: nexpose-resume-scan
+    arguments:
+    - name: id
+      description: integer <int64> ID of the scan to resume.
+    description: Resume the specified scan
+  - name: nexpose-get-scans
+    arguments:
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: <boolean> Return active or past scans.
+      defaultValue: "true"
+    - name: limit
+      description: integer <int32> The number of records retrieve.
+      defaultValue: "10"
+    - name: sort
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+      type: number
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+      type: string
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+      type: date
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+      type: number
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+      type: string
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+      type: date
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+      type: string
+    description: Returns a list of scans.
   runonce: false
 fromversion: 3.6.0
-tests:
-    - nexpose_test
+releaseNotes: "Added ability to view, stop, pause and resume scans."
