@@ -215,3 +215,5 @@ view: |-
   }
 inputs: []
 releaseNotes: "-"
+tests:
+  - Tanium Demo Playbook
