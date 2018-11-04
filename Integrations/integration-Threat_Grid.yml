@@ -772,7 +772,7 @@ script:
                 'HumanReadable': None,
                 'Contents': r.json(),
                 'ContentsFormat': formats['json']
-            },
+            }
         ])
 
 
@@ -786,8 +786,7 @@ script:
                 'HumanReadable': None,
                 'Contents': r.json(),
                 'ContentsFormat': formats['json']
-            },
-            fileResult('metadata_' + sample_id, r.content)
+            }
         ])
 
 
@@ -805,8 +804,7 @@ script:
                 'HumanReadable': None,
                 'Contents': r.json(),
                 'ContentsFormat': formats['json']
-            },
-            fileResult(url, r.content)
+            }
         ])
 
 
@@ -825,7 +823,7 @@ script:
                 'Contents': r.json(),
                 'ContentsFormat': formats['json']
             },
-            fileResult(url, r.content)
+            fileResult(sample_id + '-sample.zip', r.content)
         ])
 
     if demisto.command() == 'test-module':
@@ -1143,6 +1141,8 @@ script:
     - contextPath: ThreatGrid.Sample.Id
       description: The sample Id
       type: string
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get the sample analysis video by id
   - name: threat-grid-get-analysis-by-id
     arguments:
@@ -1153,6 +1153,8 @@ script:
     outputs:
     - contextPath: ThreatGrid.Sample.Id
       description: The ID of the sample for which the report was downloaded.
+    - contextPath: Demisto.File
+      description: File containing result
     description: The detailed overview of dynamic and static analysis results for
       the sample
   - name: threat-grid-get-processes-by-id
@@ -1177,6 +1179,8 @@ script:
     - contextPath: ThreatGrid.Sample.Id
       description: The ID of the sample for which the PCAP needs to be downloaded.
       type: string
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get the tcpdump PCAP file for a specific Sample ID, with all the
       network activity of the sample
   - name: threat-grid-get-warnings-by-id
@@ -1189,6 +1193,8 @@ script:
     - contextPath: ThreatGrid.Sample.Id
       description: The sample ID
       type: string
+    - contextPath: Demisto.File
+      description: File containing result
     description: Gets a JSON structure describing any warnings that occured during
       the analysis
   - name: threat-grid-get-summary-by-id
@@ -1267,6 +1273,8 @@ script:
     - contextPath: ThreatGrid.Sample.Id
       description: The ID of the sample for which the report was downloaded.
       type: string
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get the report.html file for a specific Sample ID. This is a stand-alone
       file with a complete report on the sample run. It is designed to be emailed
       or printed.
@@ -1280,6 +1288,8 @@ script:
     - contextPath: ThreatGrid.DownloadedSamples.Id
       description: The ID of the downloaded sample
       type: string
+    - contextPath: Demisto.File
+      description: File containing result
     description: Download a sample by using its ID. The downloaded file is an archive
       of the sample itself, in a zip format as a form of quarantine.
   - name: threat-grid-get-analysis-iocs
@@ -1393,6 +1403,9 @@ script:
     - name: output-type
       description: The output type
       defaultValue: json
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Gets a specific threat feed
   - name: threat-grid-detonate-file
     deprecated: true
@@ -1642,6 +1655,9 @@ script:
     - name: sample
       description: A comma-separated list of sample IDs. Restrict results to these
         samples.
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get artifacts threat feed
   - name: threat-grid-feeds-domain
     arguments:
@@ -1668,6 +1684,9 @@ script:
     - name: sample
       description: A comma-separated list of sample IDs. Restrict results to these
         samples.
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get domain threat feed
   - name: threat-grid-feeds-ip
     arguments:
@@ -1694,6 +1713,9 @@ script:
     - name: sample
       description: A comma-separated list of sample IDs. Restrict results to these
         samples.
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get ips threat feed
   - name: threat-grid-feeds-network-stream
     arguments:
@@ -1722,6 +1744,9 @@ script:
     - name: sample
       description: A comma-separated list of sample IDs. Restrict results to these
         samples.
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get network stream threat feed
   - name: threat-grid-feeds-path
     arguments:
@@ -1748,6 +1773,9 @@ script:
     - name: sample
       description: A comma-separated list of sample IDs. Restrict results to these
         samples.
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get path threat feed
   - name: threat-grid-feeds-url
     arguments:
@@ -1774,6 +1802,9 @@ script:
     - name: sample
       description: A comma-separated list of sample IDs. Restrict results to these
         samples.
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Get url threat feed
   - name: threat-grid-get-analysis-artifact
     arguments:
@@ -1841,6 +1872,9 @@ script:
     - name: pid
       required: true
       description: the process id requested
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Returns data regarding the specifiic process id in the analysis
   - name: threat-grid-get-analysis-processes
     arguments:
@@ -1848,6 +1882,9 @@ script:
       required: true
       default: true
       description: the sample id
+    outputs:
+    - contextPath: Demisto.File
+      description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
 releaseNotes: "-"
