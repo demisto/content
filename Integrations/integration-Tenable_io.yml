@@ -314,7 +314,7 @@ script:
             assets = replace_keys(scan_details['hosts'] + scan_details['comphosts'])
             results.append(get_entry_for_object('Assets', 'Tenable.Assets', assets, SCAN_REPORT_HOSTS_HEADERS))
             if 'remediations' in scan_details and 'remediations' in scan_details['remediations'] and len(scan_details['remediations']['remediations']) > 0:
-                remediations = replace_keys(remediations, REMEDIATIONS_NAMES_MAP)
+                remediations = replace_keys(scan_details['remediations']['remediations'], REMEDIATIONS_NAMES_MAP)
                 results.append(get_entry_for_object('Remediations', 'Tenable.Remediations', remediations, SCAN_REPORT_REMEDIATIONS_HEADERS))
         return results
 
