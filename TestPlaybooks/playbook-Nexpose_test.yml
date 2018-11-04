@@ -12,7 +12,6 @@ tasks:
       id: e6ba65d5-7562-4f51-8ff1-f0a5468b8880
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -22,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -51,7 +50,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -65,10 +64,10 @@ tasks:
       version: -1
       name: nexpose-get-assets
       description: Returns all assets for which you have access.
-      script: Rapid7 Nexpose|||nexpose-get-assets
+      script: Rapid7 Nexpose_v2|||nexpose-get-assets
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
       - "3"
@@ -80,7 +79,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 370
         }
       }
@@ -95,10 +94,10 @@ tasks:
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
         search criteria.
-      script: Rapid7 Nexpose|||nexpose-search-assets
+      script: Rapid7 Nexpose_v2|||nexpose-search-assets
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
       - "10"
@@ -117,7 +116,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 545
         }
       }
@@ -131,10 +130,10 @@ tasks:
       version: -1
       name: nexpose-get-asset
       description: Returns the specified asset.
-      script: Rapid7 Nexpose|||nexpose-get-asset
+      script: Rapid7 Nexpose_v2|||nexpose-get-asset
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
       - "5"
@@ -145,7 +144,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 895
         }
       }
@@ -181,7 +180,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1070
         }
       }
@@ -196,10 +195,10 @@ tasks:
       name: nexpose-create-assets-report
       description: Generates a new report on given assets according to a template
         and arguments.
-      script: Rapid7 Nexpose|||nexpose-create-assets-report
+      script: Rapid7 Nexpose_v2|||nexpose-create-assets-report
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
       - "11"
@@ -213,7 +212,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1595
         }
       }
@@ -228,10 +227,10 @@ tasks:
       name: nexpose-get-asset-vulnerability
       description: Returns the details and possible remediations for an asset's given
         vulnerability.
-      script: Rapid7 Nexpose|||nexpose-get-asset-vulnerability
+      script: Rapid7 Nexpose_v2|||nexpose-get-asset-vulnerability
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
       - "9"
@@ -244,7 +243,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1245
         }
       }
@@ -280,7 +279,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1420
         }
       }
@@ -295,10 +294,10 @@ tasks:
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
         search criteria.
-      script: Rapid7 Nexpose|||nexpose-search-assets
+      script: Rapid7 Nexpose_v2|||nexpose-search-assets
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
       - "4"
@@ -317,7 +316,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 720
         }
       }
@@ -332,10 +331,10 @@ tasks:
       name: nexpose-create-assets-report-xml
       description: Generates a new report on given assets according to a template
         and arguments.
-      script: Rapid7 Nexpose|||nexpose-create-assets-report
+      script: Rapid7 Nexpose_v2|||nexpose-create-assets-report
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
       - "13"
@@ -350,7 +349,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1770
         }
       }
@@ -386,7 +385,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1945
         }
       }
@@ -400,10 +399,10 @@ tasks:
       version: -1
       name: nexpose-create-site
       description: Creates a new site with the specified configuration.
-      script: Rapid7 Nexpose|||nexpose-create-site
+      script: Rapid7 Nexpose_v2|||nexpose-create-site
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
       - "15"
@@ -427,7 +426,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2295
         }
       }
@@ -441,13 +440,13 @@ tasks:
       version: -1
       name: nexpose-delete-site
       description: Delete a site
-      script: Rapid7 Nexpose|||nexpose-delete-site
+      script: Rapid7 Nexpose_v2|||nexpose-delete-site
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
-      - "17"
+      - "23"
     scriptarguments:
       id:
         simple: ${Nexpose.Site.Id}
@@ -455,7 +454,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2470
         }
       }
@@ -480,71 +479,213 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2120
         }
       }
     note: false
-  "17":
-    id: "17"
-    taskid: 67b1aeaf-0c21-47eb-86db-5585ebf01295
+  "20":
+    id: "20"
+    taskid: 2563dd4c-0769-4c53-8aba-aba25f366536
     type: regular
     task:
-      id: 67b1aeaf-0c21-47eb-86db-5585ebf01295
+      id: 2563dd4c-0769-4c53-8aba-aba25f366536
+      version: -1
+      name: nexpose-pause-scan
+      description: Pause the specified scan
+      script: Rapid7 Nexpose_v2|||nexpose-pause-scan
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose_v2
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Scan.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: a762ae65-c8e6-4b71-8b29-5914debaab83
+    type: regular
+    task:
+      id: a762ae65-c8e6-4b71-8b29-5914debaab83
+      version: -1
+      name: nexpose-resume-scan
+      description: Resume the specified scan
+      script: Rapid7 Nexpose_v2|||nexpose-resume-scan
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose_v2
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Scan.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: b3193656-0bab-4218-8091-140a2f12a23b
+    type: regular
+    task:
+      id: b3193656-0bab-4218-8091-140a2f12a23b
+      version: -1
+      name: nexpose-stop-scan
+      description: Stop the specified scan
+      script: Rapid7 Nexpose_v2|||nexpose-stop-scan
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose_v2
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Scan.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3695
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: 87b52f76-ede9-4640-885a-b42d97efe4d0
+    type: regular
+    task:
+      id: 87b52f76-ede9-4640-885a-b42d97efe4d0
+      version: -1
+      name: nexpose-start-site-scan
+      description: Starts a scan for the specified site.
+      script: Rapid7 Nexpose_v2|||nexpose-start-site-scan
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose_v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      hosts:
+        simple: 127.0.0.1
+      name: {}
+      site:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2645
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: afe985d5-ddde-4f53-80ce-bde87027f15f
+    type: regular
+    task:
+      id: afe985d5-ddde-4f53-80ce-bde87027f15f
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 285f7696-6dcb-46b1-891b-0b1eb4f4f9ba
+    type: condition
+    task:
+      id: 285f7696-6dcb-46b1-891b-0b1eb4f4f9ba
+      version: -1
+      name: is-paused
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Nexpose.Scan.Status
+            iscontext: true
+          right:
+            value:
+              simple: paused
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 820f5d4d-148f-4fda-87ff-147454ba5a34
+    type: regular
+    task:
+      id: 820f5d4d-148f-4fda-87ff-147454ba5a34
       version: -1
       name: nexpose-get-scans
       description: Returns a list of scans.
-      script: Rapid7 Nexpose|||nexpose-get-scans
+      script: Rapid7 Nexpose_v2|||nexpose-get-scans
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: Rapid7 Nexpose_v2
     nexttasks:
       '#none#':
-      - "18"
+      - "26"
     scriptarguments:
-      active:
-        simple: "false"
+      active: {}
       limit: {}
       sort: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-  "18":
-    id: "18"
-    taskid: bee88825-e84c-4060-8fa8-097ecc803e26
-    type: regular
-    task:
-      id: bee88825-e84c-4060-8fa8-097ecc803e26
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Scan
-      path:
-        simple: Nexpose
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
+          "x": 162.5,
+          "y": 3170
         }
       }
     note: false
@@ -553,8 +694,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2865,
-        "width": 380,
+        "height": 3740,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }

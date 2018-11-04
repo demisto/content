@@ -2043,11 +2043,13 @@ script:
   - name: nexpose-pause-scan
     arguments:
     - name: id
+      required: true
       description: integer <int64> ID of the scan to pause.
     description: Pause the specified scan
   - name: nexpose-resume-scan
     arguments:
     - name: id
+      required: true
       description: integer <int64> ID of the scan to resume.
     description: Resume the specified scan
   - name: nexpose-get-scans
