@@ -2166,4 +2166,3 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added support for Public Folders. Added support for compliance search in office365."
