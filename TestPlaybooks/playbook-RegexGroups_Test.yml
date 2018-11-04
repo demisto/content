@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2811de25-b5ad-4a03-827d-63aca3323a87
+    taskid: 30f8460b-5a57-45ad-80ee-311122ca6816
     type: start
     task:
-      id: 2811de25-b5ad-4a03-827d-63aca3323a87
+      id: 30f8460b-5a57-45ad-80ee-311122ca6816
       version: -1
       name: ""
       iscommand: false
@@ -27,10 +27,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 2ddcc746-ced2-459a-83d2-befbbfc60080
+    taskid: cb35c1a2-af3b-4965-8a78-e80c0581b25a
     type: regular
     task:
-      id: 2ddcc746-ced2-459a-83d2-befbbfc60080
+      id: cb35c1a2-af3b-4965-8a78-e80c0581b25a
       version: -1
       name: Set test data
       description: Sets a value into the context with the given context key
@@ -58,10 +58,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 132d661c-ce05-403d-854d-a858fde5f2a3
+    taskid: 261af029-dddb-4183-8354-eff3f0fada49
     type: regular
     task:
-      id: 132d661c-ce05-403d-854d-a858fde5f2a3
+      id: 261af029-dddb-4183-8354-eff3f0fada49
       version: -1
       name: Set test 2 output
       description: Sets a value into the context with the given context key
@@ -71,7 +71,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     scriptarguments:
       append: {}
       key:
@@ -100,45 +100,12 @@ tasks:
         }
       }
     note: false
-  "3":
-    id: "3"
-    taskid: c353bdf3-f255-4a3b-80a3-1e68f2f755da
-    type: regular
-    task:
-      id: c353bdf3-f255-4a3b-80a3-1e68f2f755da
-      version: -1
-      name: Verify test 2 output
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue:
-        simple: '{"article":"The","noun":"quick"}'
-      fields: {}
-      path:
-        simple: Output
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1360
-        }
-      }
-    note: false
   "4":
     id: "4"
-    taskid: 93a24aac-e74c-460b-8350-523995de3ec0
+    taskid: e4e72a77-65bb-4855-837f-34ddfac9450d
     type: title
     task:
-      id: 93a24aac-e74c-460b-8350-523995de3ec0
+      id: e4e72a77-65bb-4855-837f-34ddfac9450d
       version: -1
       name: Test 2 - with groups and keys
       type: title
@@ -158,10 +125,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: e08265c1-8839-4323-83a6-45c3f7e58cd0
+    taskid: b8922c3d-ba0f-4bcf-8173-e012d39ee19c
     type: title
     task:
-      id: e08265c1-8839-4323-83a6-45c3f7e58cd0
+      id: b8922c3d-ba0f-4bcf-8173-e012d39ee19c
       version: -1
       name: Test 1 - without groups and keys
       type: title
@@ -181,10 +148,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: 3d31efcc-818e-467f-8506-a1ed52a7f2b9
+    taskid: 1a8ca9ce-cd6c-4749-8450-5617ff7f33b7
     type: regular
     task:
-      id: 3d31efcc-818e-467f-8506-a1ed52a7f2b9
+      id: 1a8ca9ce-cd6c-4749-8450-5617ff7f33b7
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -213,10 +180,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 018beadd-9618-42c5-838e-6a62b3495933
+    taskid: 3d8629e7-ac5a-4c39-821c-66bc68af8556
     type: regular
     task:
-      id: 018beadd-9618-42c5-838e-6a62b3495933
+      id: 3d8629e7-ac5a-4c39-821c-66bc68af8556
       version: -1
       name: Set test 1 output
       scriptName: Set
@@ -252,10 +219,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 187747aa-2039-4ac6-8d01-673ad8513c73
+    taskid: e902bac7-ab6a-4539-8e70-87d8c229b6e1
     type: regular
     task:
-      id: 187747aa-2039-4ac6-8d01-673ad8513c73
+      id: e902bac7-ab6a-4539-8e70-87d8c229b6e1
       version: -1
       name: Verify test 1 output
       scriptName: VerifyContext
@@ -280,14 +247,105 @@ tasks:
         }
       }
     note: false
+  "9":
+    id: "9"
+    taskid: ab1fd458-eeb9-4f77-8ddf-2f4af4f0f079
+    type: condition
+    task:
+      id: ab1fd458-eeb9-4f77-8ddf-2f4af4f0f079
+      version: -1
+      name: Verify test 2 output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Passesd:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Passesd
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Output.article
+            iscontext: true
+          right:
+            value:
+              simple: The
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Output.noun
+            iscontext: true
+          right:
+            value:
+              simple: quick
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: a34c587a-2f40-49e6-8d1a-ebf9789adb92
+    type: title
+    task:
+      id: a34c587a-2f40-49e6-8d1a-ebf9789adb92
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1550
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 7c7b79e3-b7f9-4f45-897b-350dffb01fef
+    type: regular
+    task:
+      id: 7c7b79e3-b7f9-4f45-897b-350dffb01fef
+      version: -1
+      name: Failure
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual: {}
+      details: {}
+      error:
+        simple: Test 2 output verification failed
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1535
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1405,
-        "width": 380,
-        "x": 265,
+        "height": 1580,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
