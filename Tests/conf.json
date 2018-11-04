@@ -485,7 +485,7 @@
         },
         {
             "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
+            "playbookID": "Tanium Test Playbook",
             "nightly": true,
             "timeout": 1200
         },
