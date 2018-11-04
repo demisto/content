@@ -271,11 +271,12 @@ script:
 
     # Exchange 2010 Fixes
     def fix_2010():
+        version = get_build(VERSION_STR)
         if 'target-mailbox' in demisto.args():
-            account = get_account(demisto.args()['target-mailbox'])
-        else:
-            account = get_account(ACCOUNT_EMAIL)
-        if account.protocol.version.build <= EXCHANGE_2010_SP2:
+            version = get_account(demisto.args()['target-mailbox']).protocol.version.build
+        elif demisto.command() != 'fetch-incidents':
+            version = get_account(ACCOUNT_EMAIL).protocol.version.build
+        if version <= EXCHANGE_2010_SP2:
             for m in (Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact, exchangelib.items.DistributionList, exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest, exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
                 for i,f in enumerate(m.FIELDS):
                     if f.name == 'text_body':
