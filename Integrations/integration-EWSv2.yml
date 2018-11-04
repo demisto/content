@@ -769,11 +769,12 @@ script:
         return incident
 
 
-    def fetch_emails_as_incidents(account, folder_name):
+    def fetch_emails_as_incidents(account_email, folder_name):
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
 
         try:
+            account = get_account(account_email)
             last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
             ids = []
@@ -1401,7 +1402,7 @@ script:
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
-            incidents = fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
+            incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
             demisto.incidents(str_to_unicode(incidents))
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
@@ -2166,4 +2167,4 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added support for Public Folders. Added support for compliance search in office365."
+releaseNotes: "-"

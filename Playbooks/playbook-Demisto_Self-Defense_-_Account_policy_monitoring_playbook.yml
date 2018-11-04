@@ -346,4 +346,6 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Get list of Demisto users through the REST API, and alert if any non-SAML user accounts are found."
+tests:
+  - Forgive me for my sins but I did not create any test
+releaseNotes: "-"

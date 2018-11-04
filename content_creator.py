@@ -4,6 +4,7 @@ import yaml
 import json
 import glob
 import shutil
+import zipfile
 
 CONTENT_DIRS = ['Integrations', 'Misc', 'Playbooks', 'Reports', 'Dashboards', 'Widgets', 'Scripts',
                 'Classifiers', 'Layouts', 'IncidentFields', 'Connections']
@@ -37,7 +38,12 @@ def is_ge_version(ver1, ver2):
 
 def add_tools_to_bundle(bundle):
     for d in glob.glob(os.path.join('Tools', '*')):
-        shutil.make_archive(os.path.join(bundle, 'tools-%s' % (os.path.basename(d), )), 'zip', d)
+        zipf = zipfile.ZipFile(os.path.join(bundle, 'tools-%s.zip' % (os.path.basename(d), )), 'w', zipfile.ZIP_DEFLATED)
+        zipf.comment = '{ "system": true }'
+        for root, _, files in os.walk(d):
+            for file in files:
+                zipf.write(os.path.join(root, file), file)
+        zipf.close()
 
 
 # modify incident fields file to contain only `incidentFields` field (array)
