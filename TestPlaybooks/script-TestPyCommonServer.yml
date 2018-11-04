@@ -295,6 +295,11 @@ script: |-
 
       returned.append((flatten_text, expected_flatten_string))
 
+      # special char test
+      special_char = u'会'
+      list_of_special = [special_char, special_char]
+      flattenCell(list_of_special)
+
       results = [actual == expected for actual, expected in returned]
 
       if all(results):
