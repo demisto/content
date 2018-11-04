@@ -493,6 +493,5 @@ outputs:
 - contextPath: Joe.Analysis
   description: Thee Analysis object
   type: unknown
-releaseNotes: added Lastline Detonate File playbook
 tests:
 - detonate_file_-_generic_test

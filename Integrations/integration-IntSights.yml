@@ -1215,4 +1215,3 @@ script:
     description: Close an alert
   isfetch: true
   runonce: false
-releaseNotes: "Adding new intSights integration"
