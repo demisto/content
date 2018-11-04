@@ -275,13 +275,47 @@ script: |-
           demisto.results(str(results))
           demisto.results(return_error('failure'))
 
+
+  def test_flatten_cell():
+      returned = []
+
+      # sanity
+      utf8_to_flatten = 'abcdefghijklmnopqrstuvwxyz1234567890!'.decode('utf8')
+      flatten_text = flattenCell(utf8_to_flatten)
+      expected_string = 'abcdefghijklmnopqrstuvwxyz1234567890!'
+
+      returned.append((flatten_text, expected_string))
+
+      # list of uft8 and string to flatten
+      str_a = 'abcdefghijklmnopqrstuvwxyz1234567890!'
+      utf8_b = str_a.decode('utf8')
+      list_to_flatten = [str_a, utf8_b]
+      flatten_text = flattenCell(list_to_flatten)
+      expected_flatten_string = 'abcdefghijklmnopqrstuvwxyz1234567890!,\nabcdefghijklmnopqrstuvwxyz1234567890!'
+
+      returned.append((flatten_text, expected_flatten_string))
+
+      results = [actual == expected for actual, expected in returned]
+
+      if all(results):
+          demisto.results('ok')
+      else:
+          for result, (actual, expected) in zip(results, returned):
+              if not result:
+                  demisto.results(toEntry(actual))
+                  demisto.results(toEntry(expected))
+
+          demisto.results(str(results))
+          demisto.results(return_error('failure'))
+
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
       # 'XML' : test_xml,
       'ENTRY' : test_entry,
-      'TBLMD' : test_tbl_to_md
-  }
+      'TBLMD' : test_tbl_to_md,
+      'FLTNCL': test_flatten_cell
+}
 
   test_type = demisto.args()['test_type']
   if test_type not in TESTS:
