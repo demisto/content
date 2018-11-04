@@ -247,12 +247,14 @@ def get_test_from_conf():
     changed = set([])
     change_string = run_git_command("git diff HEAD Tests/conf.json")
     added_groups = re.search('(\+[ ]+")(.*)(":)', change_string)
-    for obj in range(2, len(added_groups.groups()), 2):
-        changed.add(obj)
+    if added_groups:
+        for i in range(2, len(added_groups.groups()), 2):
+            changed.add(added_groups.group(i))
 
     deleted_groups = re.search('(\-[ ]+")(.*)(":)', change_string)
-    for obj in range(2, len(deleted_groups.groups()), 2):
-        changed.add(obj)
+    if deleted_groups:
+        for obj in range(2, len(deleted_groups.groups()), 2):
+            changed.add(obj)
 
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)

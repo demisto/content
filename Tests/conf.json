@@ -682,7 +682,7 @@
 
     },
     "skipped_integrations": {
-        "McAfee Advanced Threat Defense": "No  Credentials",
+        "McAfee Advanced Threat Defense": "No Credentials",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
         "Symantec Messaging Gateway": "DevOps investigation",
