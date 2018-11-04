@@ -1,4 +1,4 @@
-id: playbook15
+id: Tanium Demo Playbook
 version: -1
 name: Tanium Demo Playbook
 description: This playbook shows how to use automation scripts to interact with Tanium.
@@ -214,3 +214,4 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "-"
