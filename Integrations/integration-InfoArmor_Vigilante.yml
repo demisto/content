@@ -1212,3 +1212,4 @@ script:
     description: Returns the usage data for your account.
   dockerimage: demisto-crypto
   runonce: false
+releaseNotes: "-"
