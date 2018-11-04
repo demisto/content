@@ -186,11 +186,11 @@ tasks:
       iscommand: true
       brand: ""
     scriptarguments:
-      asset-id:
-        complex:
-          root: Tenable
-          accessor: Assets.[0].AssetId
+      asset-id: {}
       date-range: {}
+      hostname:
+        simple: debian8628.aspadmin.net
+      ip: {}
     separatecontext: false
     view: |-
       {
