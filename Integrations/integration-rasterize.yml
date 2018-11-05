@@ -7,7 +7,6 @@ category: Utilities
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAA10lEQVR4Ae3TYQ3CQAwFYCQgAQlIOCmTMAnnYBJOAhImYRImYRJKSfrrBXoXDkrJtcnLEtaQr9fdiYhcJ4AugAHkIgdJAfwrYAC/eTO51nGAv1x7AAPoH2h4w02AXFdOfjyVngtnNQdyTdC3vOgr8j5ZA/dan5weSbYuICdLWoFHA3CBnqkHiKkBcZgbvD8/GWI3AcJ3mDmzrHPGATAmQDwpWGXBT8AcKKgkzw378bd3gFmJCpRVHtXBOoBq9D/FE/MHLBxyCfx0RgDaJ4AB9AJ0nAAOALwDFV7f8k1w4yAAAAAASUVORK5CYII=
 description: Rasterize URLs or emails given to it
 detaileddescription: Take a URL or HTML body and create an image or PDF out of it
-defaultEnabled: true
 configuration:
 - display: Use system proxy settings
   name: proxy
@@ -16,7 +15,7 @@ configuration:
   required: false
 script:
   script: |-
-    import os, subprocess,sys
+    import os, subprocess,sys, base64
     reload(sys)
     sys.setdefaultencoding("utf-8")
     proxy = demisto.get(demisto.params(),"proxy")
@@ -54,6 +53,45 @@ script:
             demisto.results('ok')
         else:
             demisto.results(error_message)
+        sys.exit(0)
+
+    if demisto.command() == 'rasterize-image':
+        res = demisto.getFilePath(demisto.args()['EntryID'])
+        # demisto.results({'res':res})
+        # res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
+        with open(res['path'], 'r') as f:
+            data = f.read()
+        b64 = base64.b64encode(data)
+        html = '<img src="data:image/png;base64, ' + b64 + '">'
+
+        return_code = 0
+        error_message = ''
+
+        friendlyName = 'image.png'
+        f = open('htmlImage.html','w')
+        f.write('<html style="background:white";>' + html + '</html>')
+        f.close()
+
+        proxy_flag = ""
+        if proxy:
+            proxy_flag = "--proxy=" + http_proxy
+        demisto.debug('rasterize proxy settings: ' + proxy_flag)
+
+        command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlImage.html', friendlyName]
+        if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
+            command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
+        try:
+            error_message = subprocess.check_output(command)
+        except Exception as e:
+            return_code = -1
+            error_message = e.output
+
+        if return_code == 0:
+            filename = demisto.uniqueFile()
+            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+        else:
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
 
     if demisto.command() == 'rasterize-email':
@@ -136,5 +174,13 @@ script:
     - name: type
       description: pdf or png. Default is png.
     description: Rasterize an email body into an image
+  - name: rasterize-image
+    arguments:
+    - name: EntryID
+      required: true
+      default: true
+      description: Entry ID of image file
+    description: Rasterize an image file
   dockerimage: demisto/rasterize
-hidden: false
+  runonce: false
+releaseNotes: "Added rasterize-image command to securely display images in war room"
