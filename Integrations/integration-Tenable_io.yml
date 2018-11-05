@@ -29,8 +29,8 @@ configuration:
   required: false
 script:
   script: |-
-    import sys, os, requests, traceback
-    from time import sleep
+    import sys, os, requests, traceback, time
+    from datetime import datetime
     from requests.exceptions import HTTPError
 
     # Header names transformation maps
@@ -39,7 +39,6 @@ script:
     LAUNCH_SCAN_NAMES_MAP = {'ScanUuid': 'Uuid'}
     REMEDIATIONS_NAMES_MAP = {'Value': 'Id', 'Vulns': 'AssociatedVulnerabilities', 'Hosts': 'AffectedHosts', 'Remediation': 'Description'}
     ASSET_VULNS_NAMES_MAP = {'PluginId': 'Id', 'PluginFamily': 'Family', 'PluginName': 'Name'}
-    TEMPLATE_NAMES_MAP = {'Desc': 'Description', 'IsWas': 'WebApplicationScanning', 'IsAgent': 'IsForAgent'}
 
     # Output Headers / Context Keys
     GET_SCANS_HEADERS = ['Id', 'Uuid', 'Name', 'Type', 'Owner', 'Enabled', 'Status', 'UserPermissions', 'CreationDate', 'LastModificationDate', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId']
@@ -50,7 +49,6 @@ script:
     SCAN_REPORT_REMEDIATIONS_HEADERS = ['Id', 'Description', 'AffectedHosts', 'AssociatedVulnerabilities']
     VULNERABILITY_DETAILS_HEADERS = ['Name', 'Type', 'Synopsis', 'Description', 'FirstSeen', 'LastSeen', 'Solution', 'Count', 'Severity', 'Family', 'ModificationDate', 'PublicationDate', 'RiskFactor', 'CvssVector', 'CvssBaseScore', 'Cvss3Vector', 'Cvss3BaseScore']
     ASSET_VULNS_HEADERS = ['Count', 'Family', 'Id', 'Name', 'VulnerabilityState', 'Severity']
-    TEMPLATE_HEADERS = ['Unsupported', 'CloudOnly', 'Description', 'SubscriptionOnly', 'WebApplicationScanning', 'Title', 'IsForAgent', 'Uuid', 'ManagerOnly', 'Name']
 
     BASE_URL = 'https://cloud.tenable.com/'
     ACCESS_KEY = demisto.params()['access-key']
@@ -227,12 +225,6 @@ script:
         res.raise_for_status()
         return res.json()
 
-    def send_templates_request():
-        full_url = "{}editor/scan/templates".format(BASE_URL)
-        res = requests.get(full_url, headers=AUTH_HEADERS)
-        res.raise_for_status()
-        return res.json()
-
     def get_vuln_info(vulns):
         vulns_info = {v['plugin_id']: v for v in vulns}
         infos = []
@@ -273,6 +265,8 @@ script:
         return 'ok'
 
     def get_scans(folder_id, last_modification_date):
+        if last_modification_date:
+            last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')], "%Y-%m-%d").timetuple()))   # str(YYYY-MM-DD) to int(timestamp)
         response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
         scan_entries = map(get_scan_info, response['scans'])
         valid_scans = filter(lambda x: x is not None, scan_entries)
@@ -345,13 +339,6 @@ script:
         scan_status = { 'Id': scan_id, 'Status': scan_details['info']['status'] }
         return get_entry_for_object('Scan status for {}'.format(scan_id), 'Tenable.Scan', scan_status)
 
-    def get_templates():
-        info = send_templates_request()
-        if 'error' in info:
-            return { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': info['error'] }
-        templates = replace_keys(info['templates'], TEMPLATE_NAMES_MAP)
-        return get_entry_for_object('Scan editor templates', 'Tenable.ScanEditorTemplates', templates, TEMPLATE_HEADERS)
-
 
     # Command selector
     if demisto.command() == 'test-module':
@@ -368,8 +355,6 @@ script:
         demisto.results(get_vulnerabilities_by_asset(demisto.getArg('asset-id'), demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('date-range')))
     elif demisto.command() == 'tenable-get-scan-status':
         demisto.results(get_scan_status(demisto.getArg('scan-id')))
-    elif demisto.command() == 'tenable-get-scan-editor-templates':
-        demisto.results(get_templates())
   type: python
   commands:
   - name: tenable-get-scans
@@ -377,9 +362,9 @@ script:
     - name: folder-id
       description: 'The ID of the folder whose scans should be listed. Scans are stored
         in specific folders on Tenable. e.g : folderId=8'
-    - name: last-modified-date
+    - name: last-modification-date
       description: 'Limit the results to those that have only changed since this time.
-        Time in the following format -  MM/DD/YYYY. e.g : lastModifiedDate=08/12/2018'
+        Format: YYYY-MM-DD'
     outputs:
     - contextPath: Tenable.Scan.Id
       description: The unique id of the scan.
@@ -682,41 +667,6 @@ script:
       type: string
     description: 'Check the status of a specific scan using its ID. The status can
       hold following possible values : Running, Completed and Empty (Ready to run).'
-  - name: tenable-get-scan-editor-templates
-    arguments: []
-    outputs:
-    - contextPath: Tenable.ScanEditorTemplate.Unsupported
-      description: If true, template is not supported.
-      type: boolean
-    - contextPath: Tenable.ScanEditorTemplate.CloudOnly
-      description: If true, template is only available on the cloud.
-      type: boolean
-    - contextPath: Tenable.ScanEditorTemplate.Description
-      description: The description of the template.
-      type: string
-    - contextPath: Tenable.ScanEditorTemplate.SubscriptionOnly
-      description: If true, the template is only available for subscribers.
-      type: boolean
-    - contextPath: Tenable.ScanEditorTemplate.WebApplicationScanning
-      description: If true, the template is for Web Application Scanning.
-      type: boolean
-    - contextPath: Tenable.ScanEditorTemplate.Title
-      description: The long name of the template.
-      type: string
-    - contextPath: Tenable.ScanEditorTemplate.IsForAgents
-      description: If true, the template is for agent scans.
-      type: boolean
-    - contextPath: Tenable.ScanEditorTemplate.Uuid
-      description: The uuid for the template.
-      type: string
-    - contextPath: Tenable.ScanEditorTemplate.ManagerOnly
-      description: If true, can only be used by manager.
-      type: boolean
-    - contextPath: Tenable.ScanEditorTemplate.Name
-      description: The short name of the template.
-      type: string
-    description: Get the list of available scanning editor templates to create new
-      scans.
   runonce: false
 releaseNotes: "-"
 tests:
