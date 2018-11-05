@@ -680,6 +680,9 @@
         {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
+        },
+        {
+            "playbookID": "ExifReadTest"
         }
     ],
     "skipped_tests": {
