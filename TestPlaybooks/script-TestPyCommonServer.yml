@@ -275,12 +275,16 @@ script: |-
           demisto.results(str(results))
           demisto.results(return_error('failure'))
 
+  def test_hash_djb2():
+      assert hash_djb2("test") == 2090756197, "Invalid value of hash_djb2"
+
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
       # 'XML' : test_xml,
       'ENTRY' : test_entry,
-      'TBLMD' : test_tbl_to_md
+      'TBLMD' : test_tbl_to_md,
+      'HASH'  : test_hash_djb2
   }
 
   test_type = demisto.args()['test_type']
@@ -302,8 +306,9 @@ args:
   - ENTRY
   - XML
   - TBLMD
+  - HASH
   description: one of python common server testing features
   defaultValue: dq
 scripttarget: 0
 runonce: false
-releaseNotes: "Fixed table separator"
+releaseNotes: "1.Add hash djb2 test. 2.Fixed table separator"
