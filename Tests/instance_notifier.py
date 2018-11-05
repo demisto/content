@@ -148,6 +148,6 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password):
 if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
-        pass
+        slack_notifier(options.slack, options.secret, options.server, options.user, options.password)
     else:
         print_color("Not nightly build, stopping Slack Notifications about instances", LOG_COLORS.RED)

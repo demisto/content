@@ -1,4 +1,4 @@
-id: pyews_test
+id: pyEWS_Test
 version: -1
 name: pyEWS_Test
 description: ""
@@ -69,10 +69,9 @@ tasks:
       version: -1
       description: ""
       name: Get searchable mailboxes
-      script: EWS v2|||ews-get-searchable-mailboxes
+      script: "|||ews-get-searchable-mailboxes"
       type: regular
       iscommand: true
-      brand: EWS v2
     nexttasks:
       '#none#':
       - "3"
@@ -120,10 +119,9 @@ tasks:
       version: -1
       description: ""
       name: Search mailboxes
-      script: EWS v2|||ews-search-mailboxes
+      script: "|||ews-search-mailboxes"
       type: regular
       iscommand: true
-      brand: EWS v2
     nexttasks:
       '#none#':
       - "5"
@@ -179,10 +177,9 @@ tasks:
       version: -1
       description: ""
       name: Get contacts
-      script: EWS v2|||ews-get-contacts
+      script: "|||ews-get-contacts"
       type: regular
       iscommand: true
-      brand: EWS v2
     nexttasks:
       '#none#':
       - "7"
@@ -235,10 +232,9 @@ tasks:
       version: -1
       description: ""
       name: Get item attachment
-      script: EWS v2|||ews-get-attachment
+      script: "|||ews-get-attachment"
       type: regular
       iscommand: true
-      brand: EWS v2
     nexttasks:
       '#none#':
       - "9"
@@ -291,10 +287,9 @@ tasks:
       version: -1
       description: ""
       name: Get file attachment
-      script: EWS v2|||ews-get-attachment
+      script: "|||ews-get-attachment"
       type: regular
       iscommand: true
-      brand: EWS v2
     nexttasks:
       '#none#':
       - "11"
@@ -378,10 +373,9 @@ tasks:
       version: -1
       description: ""
       name: Get out of office status
-      script: EWS v2|||ews-get-out-of-office
+      script: "|||ews-get-out-of-office"
       type: regular
       iscommand: true
-      brand: EWS v2
     nexttasks:
       '#none#':
       - "14"
@@ -432,10 +426,9 @@ tasks:
       version: -1
       description: ""
       name: Find folders
-      script: EWS v2|||ews-find-folders
+      script: "|||ews-find-folders"
       type: regular
       iscommand: true
-      brand: EWS v2
     nexttasks:
       '#none#':
       - "16"
@@ -485,10 +478,9 @@ tasks:
       version: -1
       description: ""
       name: Get items
-      script: EWS v2|||ews-get-items
+      script: "|||ews-get-items"
       type: regular
       iscommand: true
-      brand: EWS v2
     nexttasks:
       '#none#':
       - "18"

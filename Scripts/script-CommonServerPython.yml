@@ -452,6 +452,44 @@ script: |-
   LOG = IntegrationLogger()
 
 
+  def formatAllArgs(args, kwds):
+      """
+      makes a nice string representation of all the arguments
+
+      :type args: ``list``
+      :param args: function arguments (required)
+
+      :type kwds: ``dict``
+      :param kwds: function keyword arguments (required)
+
+      :return: string representation of all the arguments
+      :rtype: ``string``
+      """
+      allargs = [repr(a) for a in args]
+      for key,item in kwds.items():
+          allargs.append('{}={}'.format(key, item))
+      formattedArgs = ', '.join(allargs)
+
+      return formattedArgs
+
+
+  def logger(func):
+      """
+      decorator function to log the function call using LOG
+
+      :type func: ``function``
+      :param func: function to call (required)
+
+      :return: returns the func return value.
+      :rtype: ``any``
+      """
+      def func_wrapper(*args, **kwargs):
+          LOG('calling {}({})'.format(func.func_name, formatAllArgs(args, kwargs)))
+          return func(*args, **kwargs)
+
+      return func_wrapper
+
+
   def formatCell(data, is_pretty=True):
       """
          Convert a given object to md while decending multiple levels
@@ -562,7 +600,7 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False):
+  def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
       """
          Converts a demisto table in JSON form to a Markdown table
 
@@ -581,6 +619,9 @@ script: |-
          :type removeNull: ``bool``
          :keyword removeNull: Remove empty columns from the table. Deafult is False
 
+         :type metadata: ``str``
+         :param metadata: Metadata about the table contents
+
          :return: A string representation of the markdown table
          :rtype: ``str``
       """
@@ -588,6 +629,9 @@ script: |-
       mdResult = ''
       if name:
           mdResult = '### ' + name + '\n'
+
+      if metadata:
+          mdResult += metadata + '\n'
 
       if not t or len(t) == 0:
           mdResult += '**No entries.**\n'
@@ -630,7 +674,7 @@ script: |-
           else:
               mdResult += '|'.join(newHeaders)
           mdResult += '|\n'
-          sep = '-'
+          sep = '---'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
               vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''), True, True) for h in headers]

@@ -186,7 +186,7 @@ tasks:
       brand: Gmail
     nexttasks:
       '#none#':
-      - "6"
+      - "21"
     scriptarguments:
       email:
         simple: JohnS${TimeNowUnix}@demistodev.com
@@ -249,7 +249,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1390
         }
       }
     note: false
@@ -406,7 +406,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1565
         }
       }
     note: false
@@ -679,12 +679,62 @@ tasks:
         }
       }
     note: false
+  "21":
+    id: "21"
+    taskid: 017f0872-122e-4bdc-8b68-aa1a5c7bfb3b
+    type: regular
+    task:
+      id: 017f0872-122e-4bdc-8b68-aa1a5c7bfb3b
+      version: -1
+      name: block the admin
+      script: Gmail|||gmail-add-delete-filter
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      email-address:
+        complex:
+          root: Account
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: Account.Email.Address
+                iscontext: true
+              right:
+                value:
+                  simple: JohnS
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Email
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Address
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 2100,
         "x": 50,
         "y": 50
