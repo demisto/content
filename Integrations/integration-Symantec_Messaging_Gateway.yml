@@ -95,7 +95,15 @@ script:
         }
         login_url = 'login.do'
         login_response = http_request('post', login_url, cookies=cookies, data=data)
-        jsession = login_response.cookies.get_dict()['JSESSIONID']
+
+        # check if status is valid
+        login_response.raise_for_status()
+
+        #if JSESSIONID doesn't exist - creds may be invalid
+        try:
+            jsession = login_response.cookies.get_dict()['JSESSIONID']
+        except:
+            raise Exception("Failed to login. Username or password may be invalid")
 
         # Add Jsession ID to the cookies
         COOKIES['JSESSIONID'] = jsession
@@ -564,3 +572,4 @@ script:
     arguments: []
     description: Returns a list of all blocked IP addresses.
   dockerimage: demisto/bs4
+releaseNotes: "-"
