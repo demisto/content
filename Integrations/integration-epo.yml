@@ -495,6 +495,16 @@ script:
             args.command = 'system.clearTag';
             return epoCommand(undefined);
 
+        case 'epo-get-tables':
+            args.command = 'core.listTables';
+            var result = epoCommand(undefined);
+            return result;
+
+        case 'epo-query-table':
+            args.command = 'core.executeQuery';
+            var result = epoCommand(undefined);
+            return result;
+
         default:
             throw 'ePO Error: unknown command';
     }
@@ -671,7 +681,28 @@ script:
       required: true
       description: Tag name
     description: Clears a tag
+  - name: epo-query-table
+    arguments:
+    - name: target
+      required: true
+      description: Table name
+    - name: select
+      description: 'Which columns to select. Please use SQUID syntax. Example: "(select
+        EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)"'
+    - name: where
+      description: 'Filter results. Please use SQUID syntax. Example: "(where ( eq
+        ( OrionTaskLogTask .UserName "ga" )))"'
+    - name: order
+      description: 'Order the results. Please use SQUID syntax. Example: "(order (asc
+        OrionTaskLogTask.StartDate) )")'
+    - name: group
+      description: 'Group the results. Please use SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"'
+    description: Queries an ePO table
+  - name: epo-get-tables
+    arguments:
+    - name: table
+      description: Name of the table
+    description: Get an ePO table
   runonce: false
 tests:
 - Test Playbook McAfee ePO
-releaseNotes: Added epo-advanced-command for playbooks use. Also added epo-clear-tag,epo-apply-tag,epo-wakeup-agent
