@@ -4,11 +4,32 @@ commonfields:
 name: ReadPDFFile
 script: |-
   import pdfx
+  from pdfminer.psparser import PSEOF
   import sys
   reload(sys)
   sys.setdefaultencoding('utf-8')
 
   entryID = demisto.args()['entryID']
+
+  def mark():
+      """Missing EOF, file may be corrupted or suspicious file"""
+
+      dbot = {
+          'DBotScore(val.Indicator == obj.Indicator)':
+          {
+              'Indicator': entryID,
+              'Type': 'file',
+              'Vendor': 'PDFx',
+              'Score': 2
+          }
+      }
+      demisto.results({
+          'EntryContext': dbot,
+          'Type': entryTypes["error"],
+          'ContentsFormat': formats["text"],
+          'Contents': "Missing EOF, file may be corrupted or suspicious file in id: {}".format(entryID),
+          })
+
 
   #File entity
   pdfFile = {
@@ -29,9 +50,18 @@ script: |-
   else:
       path = demisto.get(res[0],'Contents.path')
       if path:
-          pdf = pdfx.PDFx(path)
+          try:
+              pdf = pdfx.PDFx(path)
+          except PSEOF:
+              mark()
+              sys.exit(0)
+
           if not pdf:
-              demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Could not load pdf file in EntryID {0}".format(entryID) } )
+              demisto.results({
+                  "Type": entryTypes["error"],
+                  "ContentsFormat": formats["text"],
+                  "Contents" : "Could not load pdf file in EntryID {0}".format(entryID)
+              })
               sys.exit(0)
 
           metadata = pdf.get_metadata()
@@ -108,3 +138,4 @@ outputs:
   description: The PDF File CreationDate
 - contextPath: File.Pages
   description: Number of pages in PDF file
+releaseNotes: "-"
