@@ -815,6 +815,18 @@ script: |-
 
 
   def hash_djb2(s, seed=5381):
+    """
+     Hash string with djb2 hash function
+
+     :type s: ``str``
+     :param s: The input string to hash
+
+     :type seed: ``int``
+     :param seed: The seed for the hash function (default is 5381)
+
+     :return: The hashed value
+     :rtype: ``int``
+    """
     hash = seed
     for x in s:
         hash = (( hash << 5) + hash) + ord(x)
