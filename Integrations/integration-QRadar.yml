@@ -886,8 +886,8 @@ script:
     - contextPath: QRadar.Search.ID
       description: Search ID
       type: number
-    - contextPath: QRadar.Search.State
-      description: The state of the search.
+    - contextPath: QRadar.Search.Status
+      description: The status of the search.
       type: string
     description: Searches in QRadar using AQL. It is highly recommended to use the
       playbook 'QRadarFullSearch' instead of this command - it will execute the search,
@@ -905,10 +905,10 @@ script:
     - contextPath: QRadar.Search.ID
       description: Search ID
       type: number
-    - contextPath: QRadar.Search.State
-      description: The state of the search.
+    - contextPath: QRadar.Search.Status
+      description: The status of the search.
       type: string
-    description: Gets a specific search id and state
+    description: Gets a specific search id and status
   - name: qradar-get-search-results
     arguments:
     - name: search_id
