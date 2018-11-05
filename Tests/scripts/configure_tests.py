@@ -228,6 +228,7 @@ def find_tests_for_modified_files(modified_files):
 
                 missing_ids = missing_ids - set([id])
                 tests.add(test)
+
             else:
                 message = "The test '{0}' does not exist, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
