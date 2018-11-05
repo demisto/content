@@ -425,6 +425,5 @@ outputs:
 - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
   description: Yara signature of the executable of the process
   type: string
-releaseNotes: New detonation playbook
 tests:
 - Lastline - testplaybook

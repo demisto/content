@@ -741,7 +741,7 @@ script:
     - name: file
       required: true
       default: true
-      description: File hash to be checked (supporting MD5, SHA1, SHA256)
+      description: File hash to check (MD5, SHA-1 or SHA-256)
     - name: threshold
       description: Score threshold to identify file as malicious
       defaultValue: "70"
@@ -810,7 +810,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: 'URL to be analyzed. Example: https://www.demisto.com'
+      description: 'URL to analyze. Example: https://www.demisto.com'
     - name: threshold
       description: Score threshold to identify file as malicious. Lastline default
         is 70.
@@ -830,7 +830,7 @@ script:
     arguments:
     - name: EntryID
       required: true
-      description: Entry ID of the file to be uploaded
+      description: Entry ID of the file to upload
     - name: threshold
       description: Score threshold to identify file as malicious. Lastline default
         is 70.
@@ -850,9 +850,9 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: Task UUID of submitted Lastline analysis
+      description: Task UUID of the submitted Lastline analysis
     - name: threshold
-      description: Score threshold to identify file as malicious.  Lastline default
+      description: Score threshold to identify file as malicious. Lastline default
         is 70.
     outputs:
     - contextPath: URL.Data
@@ -946,15 +946,14 @@ script:
   - name: lastline-get-task-list
     arguments:
     - name: before
-      description: 'Tasks before in UTC. format: %Y-%m-%d %H:%M:%S. example: 2018-07-08
+      description: 'Tasks before in UTC. format: %Y-%m-%d %H:%M:%S. Example: 2018-07-08
         12:00:00'
     - name: after
       required: true
-      description: 'Tasks after in UTC. format: %Y-%m-%d %H:%M:%S. example: 2018-07-10
+      description: 'Tasks after in UTC. format: %Y-%m-%d %H:%M:%S. Example: 2018-07-10
         12:00:00'
-    description: Get a list of tasks
+    description: Gets a list of tasks
   runonce: false
-releaseNotes: added outputs, support multiple inputs for get-report, handle errors gracefully, code readability
 tests:
 - Lastline - testplaybook
 - detonate_url_-_generic_test

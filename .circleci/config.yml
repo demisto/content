@@ -4,8 +4,8 @@ jobs:
     docker:
       - image: ronykoz/content-build-node911:latest
     environment:
-      CONTENT_VERSION: "18.10.1"
-      GIT_SHA1: "ef73b78e1cb1749298a7d419f6d157a5643db33e"
+      CONTENT_VERSION: "18.10.3"
+      GIT_SHA1: "3495efce78eb05e926ef719993fa69ffd1861fb5"
     steps:
       - checkout
       - run:

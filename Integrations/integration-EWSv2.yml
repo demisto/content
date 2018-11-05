@@ -197,6 +197,114 @@ script:
             exit(3)
         raise Exception(PUBLIC_FOLDERS_ERROR)
 
+
+    # Prep Functions
+    def get_auth_method(auth_method):
+        auth_method = auth_method.lower()
+        if auth_method == 'ntlm':
+            return NTLM
+        elif auth_method == 'basic':
+            return BASIC
+        elif auth_method == 'digest':
+            return DIGEST
+        raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
+
+
+    def get_build(version_str):
+        if version_str not in VERSIONS:
+            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
+        return VERSIONS[version_str]
+
+
+    def get_version(version_str):
+        if version_str not in VERSIONS:
+            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
+        return Version(VERSIONS[version_str])
+
+
+    def prepare():
+        if NON_SECURE:
+            BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+
+        if not USE_PROXY:
+            def remove_from_dict(d, key):
+                if key in d:
+                    del d[key]
+
+            remove_from_dict(os.environ, 'HTTP_PROXY')
+            remove_from_dict(os.environ, 'http_proxy')
+            remove_from_dict(os.environ, 'HTTPS_PROXY')
+            remove_from_dict(os.environ, 'https_proxy')
+
+            os.environ['NO_PROXY'] = EWS_SERVER
+
+        version = get_version(VERSION_STR)
+        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
+        config_args = {
+            'credentials': credentials,
+            'auth_type': get_auth_method(AUTH_METHOD_STR),
+            'version': version
+        }
+        if 'http' in EWS_SERVER.lower():
+            config_args['service_endpoint'] = EWS_SERVER
+        else:
+            config_args['server'] = EWS_SERVER
+        config = Configuration(**config_args)
+        return config
+
+
+    def get_account(account_email, access_type=ACCESS_TYPE):
+        return Account(
+            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
+        )
+
+
+    # LOGGING
+    log_stream = None
+
+    def start_logging():
+        global log_stream
+        if log_stream is not None:
+            log_stream = StringIO()
+            logging.basicConfig(stream=log_stream, level=logging.DEBUG)
+
+
+    # Exchange 2010 Fixes
+    def fix_2010():
+        if 'target-mailbox' in demisto.args():
+            account = get_account(demisto.args()['target-mailbox'])
+        else:
+            account = get_account(ACCOUNT_EMAIL)
+        if account.protocol.version.build <= EXCHANGE_2010_SP2:
+            for m in (Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact, exchangelib.items.DistributionList, exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest, exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+                for i,f in enumerate(m.FIELDS):
+                    if f.name == 'text_body':
+                        m.FIELDS.pop(i)
+                        break
+            for m in (exchangelib.Folder, exchangelib.folders.Inbox):
+                for i,f in enumerate(m.FIELDS):
+                    if f.name == 'unread_count':
+                        m.FIELDS.pop(i)
+                        break
+
+            def repr1(self):
+                return self.__class__.__name__ + \
+                    repr((self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.id, self.changekey))
+
+            def repr2(self):
+                return self.__class__.__name__ + \
+                    repr((self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey))
+
+            def repr3(self):
+                return self.__class__.__name__ + \
+                       repr((self.account, '[self]', self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey))
+
+            exchangelib.Folder.__repr__ = repr1
+            exchangelib.folders.Inbox.__repr__ = repr2
+            exchangelib.folders.Root.__repr__ = repr3
+
+        start_logging()
+
     def str_to_unicode(obj):
         if isinstance(obj, dict):
             obj = {k: str_to_unicode(v) for k,v in obj.iteritems()}
@@ -238,17 +346,6 @@ script:
         }
 
 
-    def get_auth_method(auth_method):
-        auth_method = auth_method.lower()
-        if auth_method == 'ntlm':
-            return NTLM
-        elif auth_method == 'basic':
-            return BASIC
-        elif auth_method == 'digest':
-            return DIGEST
-        raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
-
-
     def get_items_from_mailbox(account, item_ids):
         if type(item_ids) is not list:
             item_ids = [item_ids]
@@ -268,17 +365,6 @@ script:
         if len(result) == 0:
             raise Exception("ItemId %s not found" % str(item_id))
         return result[0]
-
-
-    def get_build(version_str):
-        if version_str not in VERSIONS:
-            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
-        return VERSIONS[version_str]
-
-    def get_version(version_str):
-        if version_str not in VERSIONS:
-            raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
-        return Version(VERSIONS[version_str])
 
 
     def is_default_folder(folder_path, is_public):
@@ -316,37 +402,6 @@ script:
             folder_result = folder_filter_by_name[0]
 
         return folder_result
-
-
-    def prepare():
-        if NON_SECURE:
-            BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
-
-        if not USE_PROXY:
-            def remove_from_dict(d, key):
-                if key in d:
-                    del d[key]
-
-            remove_from_dict(os.environ, 'HTTP_PROXY')
-            remove_from_dict(os.environ, 'http_proxy')
-            remove_from_dict(os.environ, 'HTTPS_PROXY')
-            remove_from_dict(os.environ, 'https_proxy')
-
-            os.environ['NO_PROXY'] = EWS_SERVER
-
-        version = get_version(VERSION_STR)
-        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
-        config_args = {
-            'credentials': credentials,
-            'auth_type': get_auth_method(AUTH_METHOD_STR),
-            'version': version
-        }
-        if 'http' in EWS_SERVER.lower():
-            config_args['service_endpoint'] = EWS_SERVER
-        else:
-            config_args['server'] = EWS_SERVER
-        config = Configuration(**config_args)
-        return config
 
 
     class MarkAsJunk(EWSAccountService):
@@ -495,12 +550,6 @@ script:
                                     search_results)
 
 
-    def get_account(account_email, access_type=ACCESS_TYPE):
-        return Account(
-            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
-        )
-
-
     def get_last_run():
         last_run = demisto.getLastRun()
         if not last_run or last_run.get(LAST_RUN_FOLDER) != FOLDER_NAME:
@@ -523,10 +572,7 @@ script:
             if not FETCH_ALL_HISTORY:
                 last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
                 qs = qs.filter(datetime_received__gte=last_10_min)
-        fields = map(lambda x: x.name, Message.FIELDS)
-        if account.protocol.version.build <= EXCHANGE_2010_SP2:
-            fields = filter(lambda x: x != 'text_body', fields)
-        qs = qs.filter().only(*fields)
+        qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
         result = qs.all()
         result = [x for x in result if isinstance(x, Message)]
         if exclude_ids and len(exclude_ids) > 0:
@@ -769,11 +815,12 @@ script:
         return incident
 
 
-    def fetch_emails_as_incidents(account, folder_name):
+    def fetch_emails_as_incidents(account_email, folder_name):
         start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
         last_run = get_last_run()
 
         try:
+            account = get_account(account_email)
             last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
             ids = []
@@ -1250,20 +1297,6 @@ script:
             f_entry['unreadCount'] = f.unread_count
         return f_entry
 
-    def fix_unread_count():
-        try:
-            account = get_account(ACCOUNT_EMAIL)
-            get_folder_by_path(account, FOLDER_NAME, IS_PUBLIC_FOLDER)
-        except ErrorInvalidPropertyRequest as e:
-            if 'FieldURI="folder:UnreadCount"' in e.message:
-                for i,f in enumerate(Folder.FIELDS):
-                    if f.name == 'unread_count':
-                        Folder.FIELDS.pop(i)
-                        break
-        except:
-            raise  # Let the other error hadling logic deal with it
-
-
     def check_cs_prereqs():
         if not 'outlook.office365.com' in EWS_SERVER:
             raise Exception("This command is only supported for Office 365")
@@ -1393,15 +1426,15 @@ script:
     def encode_and_submit_results(obj):
         demisto.results(str_to_unicode(obj))
 
-    try:
-        config = prepare()
-        args = prepare_args(demisto.args())
-        fix_unread_count()
 
+    config = prepare()
+    args = prepare_args(demisto.args())
+    try:
+        fix_2010()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
-            incidents = fetch_emails_as_incidents(get_account(ACCOUNT_EMAIL), FOLDER_NAME)
+            incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
             demisto.incidents(str_to_unicode(incidents))
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
@@ -2166,4 +2199,4 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Added support for Public Folders. Added support for compliance search in office365."
+releaseNotes: "-"

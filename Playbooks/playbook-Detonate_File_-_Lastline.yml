@@ -535,6 +535,5 @@ outputs:
 - contextPath: Lastline.Submission.YaraSignatures.internal
   description: True if the signature is only for internal usage
   type: boolean
-releaseNotes: new detonate playbook using the pooling mechanism.
 tests:
 - Lastline - testplaybook

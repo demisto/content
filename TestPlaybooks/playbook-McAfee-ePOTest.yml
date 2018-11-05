@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9c17a635-9e99-417a-8c68-880d51d249ea
+    taskid: 5319798d-ac76-454f-8d77-99c345c3c074
     type: start
     task:
-      id: 9c17a635-9e99-417a-8c68-880d51d249ea
+      id: 5319798d-ac76-454f-8d77-99c345c3c074
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 9d782edf-e520-4aea-89f0-4fdc5a62717d
+    taskid: 0944d005-68cb-4d3a-8cb3-e95939fba9bd
     type: regular
     task:
-      id: 9d782edf-e520-4aea-89f0-4fdc5a62717d
+      id: 0944d005-68cb-4d3a-8cb3-e95939fba9bd
       version: -1
       name: epo-help
       description: print help on ePO commands
@@ -57,10 +57,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: cc7909c6-5df1-4ed1-8f99-03c27d0589a8
+    taskid: faea1c06-6990-4ce0-8fa7-ad2a5bdc1ab2
     type: regular
     task:
-      id: cc7909c6-5df1-4ed1-8f99-03c27d0589a8
+      id: faea1c06-6990-4ce0-8fa7-ad2a5bdc1ab2
       version: -1
       name: epo-get-current-dat
       description: Check the existing DAT file version in ePO
@@ -82,10 +82,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: f894f664-e25c-4c41-85ad-3c33cd6c648a
+    taskid: e1f8b4e3-59d8-41da-8bfe-7bb772107a88
     type: regular
     task:
-      id: f894f664-e25c-4c41-85ad-3c33cd6c648a
+      id: e1f8b4e3-59d8-41da-8bfe-7bb772107a88
       version: -1
       name: epo-get-latest-dat
       description: Check the latest DAT file in McAfee repository
@@ -107,10 +107,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 69c6da75-438d-456f-8206-82543ec88da7
+    taskid: 101e2d00-bd3d-40fa-8d2f-84ab51edb87a
     type: regular
     task:
-      id: 69c6da75-438d-456f-8206-82543ec88da7
+      id: 101e2d00-bd3d-40fa-8d2f-84ab51edb87a
       version: -1
       name: epo-get-system-tree-group
       description: Get System Tree groups
@@ -134,10 +134,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 09f0aa2b-df1d-45a7-84dc-09f127a28095
+    taskid: 525174c5-7fce-4585-88d0-3674f68bf5a1
     type: title
     task:
-      id: 09f0aa2b-df1d-45a7-84dc-09f127a28095
+      id: 525174c5-7fce-4585-88d0-3674f68bf5a1
       version: -1
       name: Done
       type: title
@@ -148,16 +148,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2995
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: 9fd03fcd-40bb-42e0-856e-b491869b6a1f
+    taskid: 0b850a8b-9822-49e7-86f9-5f8f5d2a511e
     type: regular
     task:
-      id: 9fd03fcd-40bb-42e0-856e-b491869b6a1f
+      id: 0b850a8b-9822-49e7-86f9-5f8f5d2a511e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -186,10 +186,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 0611ceaf-3264-45cd-817d-e8bc928e0380
+    taskid: 18f5e691-f462-4035-859c-daa23848e853
     type: regular
     task:
-      id: 0611ceaf-3264-45cd-817d-e8bc928e0380
+      id: 18f5e691-f462-4035-859c-daa23848e853
       version: -1
       name: epo-update-client-dat
       description: Run client task to update the DAT file
@@ -199,7 +199,7 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     scriptarguments:
       abortAfterMinutes: {}
       randomizationInterval: {}
@@ -219,10 +219,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 1cb1bd51-d39a-4fc3-89e2-4e91de885a43
+    taskid: 5b6cbc55-4fe4-490e-8cec-8f1593dd9f17
     type: regular
     task:
-      id: 1cb1bd51-d39a-4fc3-89e2-4e91de885a43
+      id: 5b6cbc55-4fe4-490e-8cec-8f1593dd9f17
       version: -1
       name: epo-update-repository
       description: Trigger a Server Task in specific ePO servers to pull latest signatures
@@ -245,10 +245,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: bd51bc8b-e4d9-4716-8378-c90d72c79f76
+    taskid: 71166c87-a1c4-44be-8e1d-3c4dfc7de8f0
     type: regular
     task:
-      id: bd51bc8b-e4d9-4716-8378-c90d72c79f76
+      id: 71166c87-a1c4-44be-8e1d-3c4dfc7de8f0
       version: -1
       name: epo-find-systems
       description: Find systems in the System Tree - by group ID or by search
@@ -274,10 +274,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: 41943e01-12d0-4689-884c-88607cb93ddc
+    taskid: 38138528-e3e2-471b-872f-7ed9412a6984
     type: condition
     task:
-      id: 41943e01-12d0-4689-884c-88607cb93ddc
+      id: 38138528-e3e2-471b-872f-7ed9412a6984
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -318,10 +318,10 @@ tasks:
     note: false
   "17":
     id: "17"
-    taskid: 5bc47760-eb7d-4928-831d-119dbc38c328
+    taskid: cfe64aa4-a054-482c-8cf7-6ea1049ab741
     type: condition
     task:
-      id: 5bc47760-eb7d-4928-831d-119dbc38c328
+      id: cfe64aa4-a054-482c-8cf7-6ea1049ab741
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -360,12 +360,198 @@ tasks:
         }
       }
     note: false
+  "18":
+    id: "18"
+    taskid: e81e9ab4-e900-4299-8f73-78390593b7d0
+    type: regular
+    task:
+      id: e81e9ab4-e900-4299-8f73-78390593b7d0
+      version: -1
+      name: epo-advanced-command
+      description: 'Execute ePO command. Run ''epo-help'' command to see a list available
+        commands. e.g:  !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand".
+        You can also specify ''headers'' argument  to filter tables headers. e.g:
+        ''!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
+      script: epo|||epo-advanced-command
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      command:
+        simple: clienttask.find
+      commandArgs:
+        simple: searchText:On-demand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 872167dc-0bde-49ad-8e09-d2bb74f02cb6
+    type: regular
+    task:
+      id: 872167dc-0bde-49ad-8e09-d2bb74f02cb6
+      version: -1
+      name: epo-apply-tag
+      description: Applies a tag
+      script: epo|||epo-apply-tag
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      names:
+        simple: ADMIN-PC
+      tagName:
+        simple: Tag For Test Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 937420b5-cd75-4aa6-8339-daa9c9407fe8
+    type: regular
+    task:
+      id: 937420b5-cd75-4aa6-8339-daa9c9407fe8
+      version: -1
+      name: epo-clear-tag
+      description: Clears a tag
+      script: epo|||epo-clear-tag
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      names:
+        simple: ADMIN-PC
+      tagName:
+        simple: Tag For Test Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: cc6236d4-6041-4300-8b2f-9818963ae85c
+    type: regular
+    task:
+      id: cc6236d4-6041-4300-8b2f-9818963ae85c
+      version: -1
+      name: EPOFindSystem
+      description: |-
+        Return system info
+
+
+        *** USED TO TEST epo-command***
+      scriptName: EPOFindSystem
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      searchText:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 0ab9b554-948a-4fd1-8cb0-07bfbcbcfc69
+    type: regular
+    task:
+      id: 0ab9b554-948a-4fd1-8cb0-07bfbcbcfc69
+      version: -1
+      name: epo-get-tables
+      description: Get an ePO table
+      script: epo|||epo-get-tables
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      table: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: 24b02c16-80ab-4cd0-8b94-5ac8d60adf31
+    type: regular
+    task:
+      id: 24b02c16-80ab-4cd0-8b94-5ac8d60adf31
+      version: -1
+      name: epo-query-table
+      description: Retrieves a table from the ePO Database
+      script: epo|||epo-query-table
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      group: {}
+      order: {}
+      select:
+        simple: (select EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)
+      target:
+        simple: EPOLeafNode
+      where:
+        simple: (hasTag EPOLeafNode.AppliedTags 4)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 3010,
         "width": 380,
         "x": 50,
         "y": 50

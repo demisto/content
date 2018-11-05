@@ -389,57 +389,122 @@ script:
         }
     }
 
+    function parseCommandArgs(command, commandArgs) {
+        //commandArgs should be in the format of:  keyName1:keyValue1, keyName2:KeyValue2
+        if (!commandArgs) {
+            return null;
+        }
+        var commandArgsDict = {};
+        commandArgsDict["command"] = command;
+        var commandArgsList = commandArgs.split(',');
+        var temp = [];
+        for (i=0; i < commandArgsList.length; i++) {
+            //commandArgsVal in commandArgsList:
+            temp = commandArgsList[i].split(':');
+            commandArgsDict[temp[0]] = temp[1];
+        }
+        return commandArgsDict;
+    }
+
+    function epoCommand(parsedArgs) {
+        if (parsedArgs) {
+            args = parsedArgs;
+        }
+        var pArgs = {};
+        for (var key in args) {
+            if (key != 'command' && key != 'headers') {
+                pArgs[key] = args[key];
+            }
+        }
+        var result = callEpo(args.command,pArgs);
+
+        var md;
+        var contents;
+        if (typeof result === 'string') {
+            md = "#### ePO command *"+args.command+"* results:\n" + result;
+            contents = { result: result };
+        } else {
+
+            md = tableToMarkdown(
+                'ePO command *'+args.command+'* results:',
+                Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
+                args.headers && args.headers.split(',')
+            );
+            contents = result;
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: contents,
+            ContentsFormat: formats.json,
+            HumanReadable: md
+        };
+    }
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
             epoHelp();
             return 'ok';
+
         case 'epo-help':
             return epoHelp();
+
         case 'epo-get-latest-dat':
             return epoGetLatestDat();
+
         case 'epo-get-current-dat':
             return epoGetCurrentDat();
+
         case 'epo-update-client-dat':
             return epoUpdateClientDat();
+
         case 'epo-update-repository':
             return epoUpdateRepository();
+
         case 'epo-get-system-tree-group':
             return epoGetSystemTreeGroups();
+
         case 'epo-find-systems':
             return epoFindSystems();
+
         case 'epo-command':
             if (!args.command) {
                 throw 'ePO error: command argument is missing';
             }
-            var pArgs = {};
-            for (var key in args) {
-                if (key != 'command' && key != 'headers') {
-                    pArgs[key] = args[key];
-                }
-            }
-            var result = callEpo(args.command,pArgs);
+            return epoCommand(undefined);
 
-            var md;
-            var contents;
-            if (typeof result === 'string') {
-                md = "#### ePO command *"+args.command+"* results:\n" + result;
-                contents = { result: result };
-            } else {
-
-                md = tableToMarkdown(
-                    'ePO command *'+args.command+'* results:',
-                    Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
-                    args.headers && args.headers.split(',')
-                );
-                contents = result;
+        case 'epo-advanced-command':
+            if (!args.command) {
+                throw 'ePO error: command argument is missing';
             }
-            return {
-                Type: entryTypes.note,
-                Contents: contents,
-                ContentsFormat: formats.json,
-                HumanReadable: md
-            };
+            if (!args.commandArgs) {
+                throw 'ePO error: commandArgs argument is missing';
+            }
+            var parsedArgs = parseCommandArgs(args.command, args.commandArgs);
+            return epoCommand(parsedArgs);
+
+        case 'epo-wakeup-agent':
+            args.command = 'system.wakeupAgent';
+            return epoCommand(undefined);
+
+        case 'epo-apply-tag':
+            args.command = 'system.applyTag';
+            return epoCommand(undefined);
+
+        case 'epo-clear-tag':
+            args.command = 'system.clearTag';
+            return epoCommand(undefined);
+
+        case 'epo-get-tables':
+            args.command = 'core.listTables';
+            var result = epoCommand(undefined);
+            return result;
+
+        case 'epo-query-table':
+            args.command = 'core.executeQuery';
+            var result = epoCommand(undefined);
+            return result;
+
         default:
             throw 'ePO Error: unknown command';
     }
@@ -578,7 +643,66 @@ script:
       specific commands other arguments - Run 'epo-help' command to see a list available
       commands. You can also specify 'headers' argument  to filter tables headers.
       e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
+  - name: epo-advanced-command
+    arguments:
+    - name: command
+      required: true
+      description: Command to execute. Run a core.help command or !epo-help to identify
+        all possible commands.
+    - name: commandArgs
+      required: true
+      description: Comma separated key value pairs as additional arguments to pass.  E.g.
+        argName1:argValue1,argName2:argValue2
+    description: 'Execute ePO command. Run ''epo-help'' command to see a list available
+      commands. e.g:  !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand".
+      You can also specify ''headers'' argument  to filter tables headers. e.g: ''!epo-command
+      command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
+  - name: epo-wakeup-agent
+    arguments:
+    - name: names
+      required: true
+      description: Agent hostname
+    description: Wakeup an agent
+  - name: epo-apply-tag
+    arguments:
+    - name: names
+      required: true
+      description: Hostnames to apply tags on
+    - name: tagName
+      required: true
+      description: Tag name
+    description: Applies a tag
+  - name: epo-clear-tag
+    arguments:
+    - name: names
+      required: true
+      description: Hostnames to clear tags from
+    - name: tagName
+      required: true
+      description: Tag name
+    description: Clears a tag
+  - name: epo-query-table
+    arguments:
+    - name: target
+      required: true
+      description: Table name
+    - name: select
+      description: 'Which columns to select. Please use SQUID syntax. Example: "(select
+        EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)"'
+    - name: where
+      description: 'Filter results. Please use SQUID syntax. Example: "(where ( eq
+        ( OrionTaskLogTask .UserName "ga" )))"'
+    - name: order
+      description: 'Order the results. Please use SQUID syntax. Example: "(order (asc
+        OrionTaskLogTask.StartDate) )")'
+    - name: group
+      description: 'Group the results. Please use SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"'
+    description: Queries an ePO table
+  - name: epo-get-tables
+    arguments:
+    - name: table
+      description: Name of the table
+    description: Get an ePO table
   runonce: false
 tests:
 - Test Playbook McAfee ePO
-releaseNotes: Fixes for epo-command
