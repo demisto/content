@@ -86,7 +86,8 @@ script:
 
     OFFENSES_NAMES_MAP = {
         'follow_up': 'Followup',
-        'id': 'ID', 'description': 'Description',
+        'id': 'ID',
+        'description': 'Description',
         'source_address_ids': 'SourceAddress',
         'local_destination_address_ids': 'DestinationAddress',
         'start_time': 'StartTime',
@@ -260,7 +261,7 @@ script:
         res = get_offense_type(offense_type_id)
         if 'name' in res:
             return res['name']
-        return offense_id
+        return offense_type_id
 
     ''' Request/Response methods '''
 
@@ -419,8 +420,10 @@ script:
 
     # Creates incidents from offense
     def create_incident_from_offense(offense):
-        keys = offense.keys()
         occured = epoch_to_ISO(offense['start_time'])
+        enrich_offense_result(offense, full_enrichment=True)
+        offense = unicode_to_str_recur(offense)
+        keys = offense.keys()
         labels = []
         for i in range(len(keys)):
             labels.append({'type': keys[i], 'value': str(offense[keys[i]])})
@@ -742,17 +745,18 @@ script:
   - name: qradar-offenses
     arguments:
     - name: filter
-      description: "Query to filter offenses. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html"
+      description: 'Query to filter offenses. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
     - name: fields
-      description: "If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
-        The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html"
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
     - name: range
-      description: "Range of results to return. e.g.: 0-20"
+      description: 'Range of results to return. e.g.: 0-20'
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Offense.Followup
       description: Offense followup.
@@ -780,7 +784,8 @@ script:
       description: The time (ISO) when the offense was last updated.
       type: date
     - contextPath: QRadar.Offense.OffenseType
-      description: The offense type (due to API limitations if username and password were not provided, this value will be the id of offense type)
+      description: The offense type (due to API limitations if username and password
+        were not provided, this value will be the id of offense type)
       type: string
     description: Gets offenses from QRadar
   - name: qradar-offense-by-id
@@ -790,15 +795,16 @@ script:
       default: true
       description: Offense ID
     - name: filter
-      description: "Query to filter offense. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html"
+      description: 'Query to filter offense. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
     - name: fields
-      description: "If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
-        The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html"
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Offense.Credibility
       description: The credibility of the offense
@@ -871,10 +877,11 @@ script:
     - name: query_expression
       required: true
       default: true
-      description: 'The query expressions in AQL (for more information about Ariel
-        Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")'
+      description: The query expressions in AQL (for more information about Ariel
+        Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Search.ID
       description: Search ID
@@ -882,7 +889,9 @@ script:
     - contextPath: QRadar.Search.State
       description: The state of the search.
       type: string
-    description: Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.
+    description: Searches in QRadar using AQL. It is highly recommended to use the
+      playbook 'QRadarFullSearch' instead of this command - it will execute the search,
+      and will return the result.
   - name: qradar-get-search
     arguments:
     - name: search_id
@@ -890,7 +899,8 @@ script:
       default: true
       description: The search id
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Search.ID
       description: Search ID
@@ -906,9 +916,10 @@ script:
       default: true
       description: The search id
     - name: range
-      description: "Range of results to return. e.g.: 0-20"
+      description: 'Range of results to return. e.g.: 0-20'
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Search.Result
       description: The result of the search
@@ -947,10 +958,10 @@ script:
     - name: headers
       description: Table headers
     - name: fields
-      description: 'Use this parameter to specify which fields you would like to get
+      description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
         in brackets and multiple fields in the same object are separated by commas.
-        Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html'
+        Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
     outputs:
     - contextPath: QRadar.Offense.Credibility
       description: The credibility of the offense
@@ -1023,15 +1034,16 @@ script:
     - name: filter
       description: 'Query to filter assets. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
     - name: fields
-      description: "If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
-        The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html"
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
     - name: range
       description: 'Range of results to return. e.g.: 0-20'
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Assets.ID
       description: The ID of the asset
@@ -1140,8 +1152,8 @@ script:
     - name: query_expression
       required: true
       default: true
-      description: 'The query expressions in AQL (for more information about Ariel
-        Query Language please review https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html)'
+      description: The query expressions in AQL (for more information about Ariel
+        Query Language please review https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html)
     - name: headers
       description: Table headers
     outputs:
@@ -1348,11 +1360,11 @@ script:
     - name: filter
       description: 'Query to filter results. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
     - name: fields
-      description: "If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
-        The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html"
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
     - name: range
       description: 'Range of results to return. e.g.: 0-20'
     outputs:
@@ -1373,13 +1385,14 @@ script:
       required: true
       description: The note text
     - name: fields
-      description: "If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
-        The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html"
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Note.ID
       description: Note ID
@@ -1404,13 +1417,14 @@ script:
       required: true
       description: The note ID
     - name: fields
-      description: "If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
-        The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object are separated by commas. The filter
+        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Note.ID
       description: Note ID
@@ -1432,7 +1446,8 @@ script:
       default: true
       description: The name of the requestered reference.
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers)
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference.
@@ -1450,12 +1465,11 @@ script:
       description: Reference time to live.
       type: string
     - contextPath: QRadar.Reference.TimeoutType
-      description: "Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN"
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
       type: string
     description: Information about the reference set that had data added or updated.
       This returns information set but not the contained data. This feature is supported
       from version 8.1 and upward.
   isfetch: true
   runonce: false
-tests:
-  - test_Qradar
+releaseNotes: "-"
