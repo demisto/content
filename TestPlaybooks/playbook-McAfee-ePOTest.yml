@@ -12,7 +12,6 @@ tasks:
       id: 5319798d-ac76-454f-8d77-99c345c3c074
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -141,7 +140,6 @@ tasks:
       id: 525174c5-7fce-4585-88d0-3674f68bf5a1
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -150,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2995
         }
       }
     note: false
@@ -474,7 +472,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "22"
     scriptarguments:
       searchText:
         simple: "5"
@@ -487,12 +485,73 @@ tasks:
         }
       }
     note: false
+  "22":
+    id: "22"
+    taskid: 0ab9b554-948a-4fd1-8cb0-07bfbcbcfc69
+    type: regular
+    task:
+      id: 0ab9b554-948a-4fd1-8cb0-07bfbcbcfc69
+      version: -1
+      name: epo-get-tables
+      description: Get an ePO table
+      script: epo|||epo-get-tables
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      table: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: 24b02c16-80ab-4cd0-8b94-5ac8d60adf31
+    type: regular
+    task:
+      id: 24b02c16-80ab-4cd0-8b94-5ac8d60adf31
+      version: -1
+      name: epo-query-table
+      description: Retrieves a table from the ePO Database
+      script: epo|||epo-query-table
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      group: {}
+      order: {}
+      select:
+        simple: (select EPOLeafNode.NodeName EPOLeafNode.Tags EPOBranchNode.NodeName)
+      target:
+        simple: EPOLeafNode
+      where:
+        simple: (hasTag EPOLeafNode.AppliedTags 4)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
+        "height": 3010,
         "width": 380,
         "x": 50,
         "y": 50
