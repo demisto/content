@@ -523,7 +523,6 @@ script:
             var ts = (new Date()).getTime() / 1000;
             ec_key = 'McAfee.ePO.Query.' + ts;
         }
-        log(ec_key);
         ec[ec_key] = result;
 
         return {
