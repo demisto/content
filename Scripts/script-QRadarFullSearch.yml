@@ -78,6 +78,7 @@ tags:
 - QRadar
 comment: This Script runs a QRadar query and return its results to the war-room.
 system: true
+deprecated: true
 args:
 - name: query_expression
   required: true
