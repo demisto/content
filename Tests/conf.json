@@ -3,6 +3,17 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": [
+                "Panorama",
+                "Check Point"
+            ],
+            "playbookID": "blockip_test_playbook"
+        },
+        {
+          "integrations": "IntSights",
+          "playbookID": "IntSights Test"
+        },
+        {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
         },
