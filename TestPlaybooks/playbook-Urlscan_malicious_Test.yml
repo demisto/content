@@ -27,10 +27,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: c4f7e285-e758-4327-8aeb-51de5f2f7aaa
+    taskid: 1af7c3fb-a179-456b-8505-c1c4084f3ba2
     type: regular
     task:
-      id: c4f7e285-e758-4327-8aeb-51de5f2f7aaa
+      id: 1af7c3fb-a179-456b-8505-c1c4084f3ba2
       version: -1
       name: Check Malicious url
       description: Check if file MD5 is malicious
@@ -42,6 +42,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      searchParameter:
+        simple: malware.wicar.org
       url:
         simple: http://malware.wicar.org/data/eicar.com
     separatecontext: false
@@ -151,10 +153,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: 6ec652a3-5300-4871-83e6-1b1a22937d1e
+    taskid: b90c2d4b-80f0-46f5-8f1e-47e10b77d36f
     type: regular
     task:
-      id: 6ec652a3-5300-4871-83e6-1b1a22937d1e
+      id: b90c2d4b-80f0-46f5-8f1e-47e10b77d36f
       version: -1
       name: Check non-malicious url
       description: Check if file MD5 is malicious
@@ -166,6 +168,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      searchParameter:
+        simple: https://urlscan.io/
       url:
         simple: https://google.com
     separatecontext: false
@@ -179,10 +183,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 1244a37a-cba4-4a2f-8582-360db375fbd0
+    taskid: 141c0d90-0ad9-4727-88b6-cca6ff7a132f
     type: condition
     task:
-      id: 1244a37a-cba4-4a2f-8582-360db375fbd0
+      id: 141c0d90-0ad9-4727-88b6-cca6ff7a132f
       version: -1
       name: Get result
       description: Filter context keys by applying one of the various available manipulations
@@ -212,7 +216,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              simple: urlscan.io
     view: |-
       {
         "position": {
