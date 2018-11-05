@@ -23,7 +23,8 @@ script: |
       'EntryContext': {'Exif':arr}
   })
 type: python
-tags: []
+tags:
+- Utility
 comment: Read image files metadata and provide Exif tags
 enabled: true
 args:
