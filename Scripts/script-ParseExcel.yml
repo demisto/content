@@ -38,12 +38,12 @@ script: |-
       })
 type: python
 tags: []
-comment: The automation get a file entry id and return the content in markdown table
+comment: The automation takes Excel file (entryID) as an input and parses its content to the war room and context
 enabled: true
 args:
 - name: entryId
   required: true
-  description: The entry id of the xml file
+  description: The entry id of the excel file
 outputs:
 - contextPath: ParseExcel
   description: ParseExcel
