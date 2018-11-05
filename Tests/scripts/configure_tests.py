@@ -15,6 +15,7 @@ import json
 from subprocess import Popen, PIPE
 
 # Search Keyword for the changed file
+TANIUM_PLAYBOOK_ID = 'playbook15'
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'Forgive me for my sins but I did not create any test'
 
@@ -211,6 +212,7 @@ def find_tests_for_modified_files(modified_files):
 
     tests, test_names, missing_ids = collect_tests(script_ids, playbook_ids, intergration_ids)
 
+    test_names.append(TANIUM_PLAYBOOK_ID)
     test_names.append(NO_TESTS_FORMAT)
     test_names.append(RUN_ALL_TESTS_FORMAT)
     # Search for tests section
