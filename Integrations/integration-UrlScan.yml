@@ -37,6 +37,7 @@ script:
     import json
     import time
     import collections
+    from urlparse import urlparse
     from requests.utils import quote
     import datetime
     # disable insecure warnings
@@ -83,6 +84,18 @@ script:
     def makehash():
         return collections.defaultdict(makehash)
 
+
+    def is_valid_ip(s):
+        a = s.split('.')
+        if len(a) != 4:
+            return False
+        for x in a:
+            if not x.isdigit():
+                return False
+            i = int(x)
+            if i < 0 or i > 255:
+                return False
+        return True
 
 
 
@@ -299,9 +312,18 @@ script:
                     })
 
 
-    def urlscan_search_command(search_type, query_type):
+    def urlscan_search_command():
+
         HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date', 'File']
-        raw_query = demisto.args().get(query_type)
+        raw_query = demisto.args().get('searchParameter')
+        if is_valid_ip(raw_query) is True:
+            search_type = 'ip'
+        o = urlparse(raw_query)
+        if o[1] is '' and len(raw_query) == 64:
+            search_type = 'hash'
+        else:
+            search_type = 'page.url'
+
         query = quote(raw_query, safe='')
         r = http_request('GET', 'search/?q='+search_type+':"'+query+'"')
 
@@ -380,19 +402,19 @@ script:
         urlscan_submit_command()
         sys.exit(0)
     if demisto.command() == 'url':
-        urlscan_search_command('page.url', 'url')
+        urlscan_search_command()
         sys.exit(0)
     if demisto.command() == 'urlscan-search':
-        urlscan_search_command('page.url', 'url')
+        urlscan_search_command()
         sys.exit(0)
   type: python
   commands:
   - name: urlscan-search
     arguments:
-    - name: url
+    - name: searchParameter
       required: true
       default: true
-      description: Url to check
+      description: Enter a parameter to search as a string (IP, File name, sha256, url, domain)
     outputs:
     - contextPath: URLScan.URL
       description: Bad URLs found
@@ -422,7 +444,7 @@ script:
       default: true
       description: Url to scan
     - name: timeout
-      description: How many seconds to wait to the scan id result
+      description: How many seconds to wait for the scan id result
       defaultValue: "30"
     - name: public
       auto: PREDEFINED
