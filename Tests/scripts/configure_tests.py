@@ -214,7 +214,6 @@ def find_tests_for_modified_files(modified_files):
 
     tests, test_names, missing_ids = collect_tests(script_ids, playbook_ids, intergration_ids)
 
-    test_names.append(TANIUM_PLAYBOOK_ID)
     test_names.append(NO_TESTS_FORMAT)
     test_names.append(RUN_ALL_TESTS_FORMAT)
     # Search for tests section
