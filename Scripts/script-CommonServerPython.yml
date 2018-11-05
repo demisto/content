@@ -1223,6 +1223,41 @@ script: |-
       else:
           raise Exception('The key is not a string: {}'.format(string))
 
+  def parse_date_range(date_range, date_format = None, to_timestamp = False):
+      """
+        Argument date_range must be in format 'number date_range_unit'
+        Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
+      """
+      range_split = date_range.split(' ')
+      if len(range_split) != 2:
+          return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)')
+
+      number = int(range_split[0])
+      if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
+          return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
+
+      end_time = datetime.now()
+      start_time = datetime.now()
+      unit = range_split[1]
+      if 'minute' in unit:
+          start_time = end_time - timedelta(minutes=number)
+      elif 'hour' in unit:
+          start_time = end_time - timedelta(hours=number)
+      elif 'day' in unit:
+          start_time = end_time - timedelta(days=number)
+      elif 'month' in unit:
+          start_time = end_time - timedelta(days=number*30)
+      elif 'year' in unit:
+          start_time = end_time - timedelta(days=number*365)
+
+      if to_timestamp:
+          return datestring_to_timestamp(start_time), datestring_to_timestamp(end_time)
+
+      if date_format:
+          return datetime.strftime(start_time, date_format), datetime.strftime(end_time, date_format)
+
+      return start_time, end_time
+
 type: python
 tags:
 - infra
@@ -1234,4 +1269,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "Add djb2 hash function"
+releaseNotes: "-"
