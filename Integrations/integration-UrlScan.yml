@@ -414,7 +414,7 @@ script:
       description: File size of the file scanned
     - contextPath: URLScan.FileType
       description: File type of the file scanned
-    description: Check URL Reputation
+    description: Search for an indicator that is related to former urlscan.io scans.
   - name: urlscan-submit
     arguments:
     - name: url
@@ -429,7 +429,7 @@ script:
       predefined:
       - public
       - private
-      description: Does the submit will be public or private
+      description: Will the submission be public or private
       defaultValue: public
     outputs:
     - contextPath: URLScan.URLs
@@ -469,14 +469,14 @@ script:
       required: true
       description: Url to scan
     - name: timeout
-      description: How many seconds to wait to the scan id result
+      description: How many seconds to wait for the scan id result
       defaultValue: "30"
     - name: public
       auto: PREDEFINED
       predefined:
       - public
       - private
-      description: Does the submit will be public or private
+      description: Will the submission be public or private
       defaultValue: public
     outputs:
     - contextPath: URLScan.URLs
@@ -511,7 +511,7 @@ script:
       description: Certificates found for the URL scanned
     description: Submit a url to scan
   runonce: false
-releaseNotes: Deprecated ip, url and file commands. Reformatted context outputs.
+releaseNotes: Deprecated ip and file commands. Reformatted context outputs.
 fromversion: 3.5.0
 tests:
   - urlscan_malicious_Test
