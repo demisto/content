@@ -682,6 +682,7 @@
             "playbookID": "cisco-ise-test-playbook"
         },
         {
+            "integration": "Rasterize",
             "playbookID": "RasterizeImageTest"
         }
     ],
