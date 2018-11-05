@@ -452,7 +452,7 @@ script:
             'names': args.names,
             'tagName': args.tagName
         };
-        var result = callEpo('system.ClearTag', pArgs);
+        var result = callEpo('system.clearTag', pArgs);
 
         var md = "ePO cleared the tags from the hostnames successfully.\n";
         md += result;
@@ -470,10 +470,9 @@ script:
         var pArgs = {};
         if (args.table) {
             pArgs.table = args.table;
-            result = callEpo('core.listTables', pArgs);
-        } else {
-            result = callEpo('core.listTables', pArgs);
         }
+
+        result = callEpo('core.listTables', pArgs);
 
         md = tableToMarkdown(
                 'ePO tables:',
