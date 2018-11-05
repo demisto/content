@@ -15,9 +15,6 @@ import json
 from subprocess import Popen, PIPE
 
 # Search Keyword for the changed file
-TANIUM_PLAYBOOK_ID = 'playbook15'
-TANIUM_PLAYBOOK_NAME = 'Tanium Demo Playbook'
-
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'Forgive me for my sins but I did not create any test'
 
@@ -231,10 +228,6 @@ def find_tests_for_modified_files(modified_files):
 
                 missing_ids = missing_ids - set([id])
                 tests.add(test)
-
-            elif test == TANIUM_PLAYBOOK_ID:
-                missing_ids = missing_ids - set([TANIUM_PLAYBOOK_ID])
-                tests.add(TANIUM_PLAYBOOK_NAME)
 
             else:
                 message = "The test '{0}' does not exist, please re-check your code".format(test)
