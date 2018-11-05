@@ -684,6 +684,9 @@
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest"
+	},
+	{
+            "playbookID": "ExifReadTest"
         }
     ],
     "skipped_tests": {
