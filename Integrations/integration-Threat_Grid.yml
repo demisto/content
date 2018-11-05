@@ -1,8 +1,8 @@
 commonfields:
-  id: Threat Grid
+  id: Threat Grid new
   version: -1
-name: Threat Grid
-display: Cisco Threat Grid
+name: Threat Grid new
+display: Cisco Threat Grid new
 category: Forensics & Malware Analysis
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEkAAAAyCAYAAAAQlvbeAAAGx0lEQVR42u1Za2xURRTeOzPbYikPeWgRWx7y8JXwQ/3HDw2JxldMBDXGBIhiFF+AihDFhJDwA8KjElhLd/c+lkIRQhtRjPKIKIokCshD9s7c3S0FSgVFnilQlPW77ez2lr3VLs0uNt6TnGxzz8ycc78558w3tz5PPPHEE0888cQTTzz5T4lini5jYb6IBPaPy4c/svz4WKYfWqys/mNYtwGJ1tRNZypPUt38nFRxJdf+WDCxnmlmkhqHZ3cbkFgoGmEaT0KPMNUsyKkvwyRMN0WrP3N99wFJM8MSpDhTo7kFSecEfn6R/tZ4IHU3kJSTF4uZJl6hmrgvG5AUPT6QRaJTybLfR2bVnCPx4SitqUr5uZJsQKJqbAyLiFd9FaJP/pvzuvgc9Bs7sDqqix6dBQnAaraNquL7rPxFxJbWwyBe3VmQaFXMz3TBW2xBMT//JRU2y2VgJxB8n86DxDdK28Gs/Kn8R9mcv+o0SCrviWdHbZtf4ytzWPOiyL3v8MUysEa8QO8sQKqVtn3u68aKO/C3S877otMgabwIz+olSAF3+mAWdY2kaYeegoMGqlobSDDuzzVIROfT7MwkRnRmzkHad4rSDXVrWMg8Tqri47uSRZp0ftFviJJcg0Q1sd22Uc36IdcgsUqzH1rGOTlP78JRzivlImcKInkASRWbZVPfnnOQNN4P+pucF+wC3Td1uUhTgSEGXWNbJm2nsCPZgLRJNuBoZibx1kwK8Z0uIO2xbSiPrVk0bhukxhaQVB5yAemsbUPFXH8m0W3HJiNLLlJd7FAisUKnjXzZ+BzAuUxXWZuU2nraWZBomM9kutlMVyYqM/yFjsxj4egVUlu/IMMWjn4Ef1fop/UfdhYkpcok1OA1eN5MDGtyO9ta4YdtK2yX6MfRKV3jQ4Y1mEbMm9zvaKKUVNcVuJDJVC9L4KUz7dW8jCw9QdyzN1rmSl6D+xVaaWbYALgN0iHpb23GYbDGAhhWqTtB5YXYtNt9+RbZgCta05gnsFsst5fpuMJUgUwy0csso/t8Tyo/PZyFogHyTeOj+fBHIsfHoa8ElKW7R/k88cST/7XQtYlCNOk7QBVGM8O6uf2lNKrYXAXaE3a/+5dFPhDz74IOw0lT9M+XXDGAaeJOrDWE6ryg43Exmx+NxPgRYO89bhg4RKvrhWa5iBnCZrR/Qq9CT0Ofd1CBUnkLP+nX+evtj/QDJZi/ATZ5NcB8jFUCP5W5nJYPws82x9hmALXbt1IUt4uppqE/C/EVsDdA/5JxHcXYxcRI9M7v6bWsaQBTrT0AwQ74Wp3hAGmYDDQJkGal56+wCA2LzY45l6EXoEkltHd0uxff1jCJhfnVDD8gub6KeN/0mocvDGZVsShT3WICPdCtvT7twoD8lZgki5LSJ1hEvI/fl1AKS/FsggOkoTajlSDNbCsxMVTudJIaYiPIXn/7mgBONUZZuCOdHUq4bjiuP02Ol11HVfNlAPQmSrgSmZQGiYVFbRogne/F70yMm50mmlDMieSnzEL8Njhskrt5hKjWIPeRHYMEBl8GptySYQDsAPrGw3RVLIPV09XxeekX1OILOy59MSoFOjZrD10dK3LY+lKNR+U6l4gaL805SHD0UDrwsFjig2QFkhQarF/NdEdp6LyRRsSsa75+bkyVI0Ac2pEfZNf4tmwTUzLt/N10zFXWI7kHaV18XNqhYS24XpCUJacLmWHOha3e0WeSxDj8hmNDPktlAPpShxlAdfOZdEy6mOTydWF62l6dyP0tgFYfHtLSaFUbpFiMVB/rkz1IzheI+QH2E/JkRPnxXY4MWJgCj0ZiczqMqfLg3ehHV5GNSYD5HQ1y0lZuvDD1mQXaTLTYsPw07gCvcZweaJJiMvQx/D0Lp8jj/wYSCe4rpmHzAezwLZhXzHTrXvSSRll236bHreT3sJB5JU0RjNhyNPonMW8C+th8X6h1g8iGOoWtsbY4Trav4fsFgD8R6+1s62uiJn8UYMeZUpxocTh2pwDtQWqWIL2Xeu7XrFFy7AXoqfRcvCSJ1L/Yrilv+nUGelPShQI0+SqsNgpQe34EaMkxaXfTuBL4uTS/TLs6VoLgNTg/4wjkCnSyA6Qh0n4RIM1oA0nY/On8NS/RQMOJd9x7jvU01tqbOsGkWuBJvdoBqteVoT99kuJcUs9CI0S3Snw3QgDSrfZ/cZnewnIrqc4/AIca4biW9EZfmQZ9G/b7HeD1sjMOWg4NQZeghJ4l4Xp/x9wsOhbj5kKDyKJyGrEm+gIxlkEHDA6gxFsYVwENUFW8hrgG+TzxxBNPPPHEE0888eRGyN8R98jGg6pa+wAAAABJRU5ErkJggg==
 description: Query and upload samples to Cisco threat grid.
@@ -557,9 +557,11 @@ script:
             'IOC': demisto.get(k, 'ioc'),
             'Tags': demisto.get(k, 'tags'),
             'IOCCategory': demisto.get(k, 'category'),
-            'Data.Path': [demisto.get(data, 'Path') for data in (demisto.get(k, 'data') or [])],
-            'Data.SHA256': [demisto.get(data, 'SHA256') for data in (demisto.get(k, 'data') or [])],
-            'Data.URL': [demisto.get(data, 'URL') for data in (demisto.get(k, 'data') or [])],
+            'Data': {
+                'Path': [demisto.get(data, 'Path') for data in (demisto.get(k, 'data') or [])],
+                'SHA256': [demisto.get(data, 'SHA256') for data in (demisto.get(k, 'data') or [])],
+                'URL': [demisto.get(data, 'URL') for data in (demisto.get(k, 'data') or [])],
+            }
         }
 
 
@@ -585,7 +587,7 @@ script:
         else:
             for k in items:
                 append_to_analysis_iocs_arrays(iocs, dbots, k)
-        md = tableToMarkdown('ThreatGrid Behavioral Indicators for sample: ' + demisto.getArg('id'), iocs, ['Title', 'Confidence', 'Severity', 'IOC', 'Tags', 'IOCCategory', 'Data.Path', 'Data.SHA256', 'Data.URL'])
+        md = tableToMarkdown('ThreatGrid Behavioral Indicators for sample: ' + demisto.getArg('id'), iocs, ['Title', 'Confidence', 'Severity', 'IOC', 'Tags', 'IOCCategory', 'Data'])
         md += tableToMarkdown('DBot', dbots, ['Indicator', 'Score', 'Type', 'Vendor'])
         demisto.results({
             'Type': entryTypes['note'],
@@ -670,12 +672,12 @@ script:
         samples = []
         for sample in demisto.get(r.json(), 'data.items'):
             samples.append({
-                'Result': demisto.get(sample, 'result'),
+                'ID': demisto.get(sample, 'result'),
                 'Details': demisto.get(sample, 'details')
             })
         demisto.results({
             'Type': entryTypes['note'],
-            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': samples},
+            'EntryContext': {'ThreatGrid.Sample': samples},
             'HumanReadable': tableToMarkdown('ThreatGrid - Sample Search', samples, ['Result', 'Details']),
             'ContentsFormat': formats['json'],
             'Contents': r.json()
@@ -1397,9 +1399,9 @@ script:
     - name: feed-name
       required: true
       default: true
-      description: The feed name
+      description: The feed name. For a list of possible feed names and how to use them please see - https://panacea.threatgrid.com/doc/main/feeds.html
     - name: feed-period
-      description: Feed daily date (YYYY-MM-DD)
+      description: Feed daily date (YYYY-MM-DD). Alternatively, you may also write in free text (e.g. '2 days ago')
     - name: output-type
       description: The output type
       defaultValue: json
@@ -1574,9 +1576,9 @@ script:
     - name: tag
       description: search by sample tag
     outputs:
-    - contextPath: ThreatGrid.Samples.Result
+    - contextPath: ThreatGrid.Sample.ID
       description: Result ID
-    - contextPath: ThreatGrid.Samples.Details
+    - contextPath: ThreatGrid.Sample.Details
       description: Detail of sample
     description: Search Samples. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
   - name: threat-grid-search-urls
@@ -1836,8 +1838,36 @@ script:
       required: true
       description: the ioc requested
     outputs:
-    - contextPath: ThreatGrid.Sample.Analysis
-      description: Analysis datat of the sample
+    - contextPath: ThreatGrid.IOCs.Title
+      description: The title of the IOC
+    - contextPath: ThreatGrid.IOCs.Confidence
+      description: The confidence of the IOC
+    - contextPath: ThreatGrid.IOCs.Severity
+      description: The severity of the IOC
+    - contextPath: ThreatGrid.IOCs.IOC
+      description: Threat grid's IOC
+    - contextPath: ThreatGrid.IOCs.IOCCategory
+      description: The IOC category of the IOC
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+    - contextPath: DBotScore.Vendor
+      description: The indicator vendor
+    - contextPath: DBotScore.Type
+      description: The indicator type
+    - contextPath: DBotScore.Score
+      description: The indicator score
+    - contextPath: ThreatGrid.IOCs.Data.IP
+      description: The IP of the IOC
+    - contextPath: ThreatGrid.IOCs.Data.URL
+      description: The URL of the IOC
+    - contextPath: ThreatGrid.IOCs.Data.Domain
+      description: The domain of the IOC
+    - contextPath: ThreatGrid.IOCs.Data.Path
+      description: The path of the IOC
+    - contextPath: ThreatGrid.IOCs.Data.SHA256
+      description: The SHA256 value of the IOC
+    - contextPath: ThreatGrid.IOCs.Tags
+      description: The tags of the IOC
     description: Returns data regarding the specified Indicator of Compromise
   - name: threat-grid-get-analysis-metadata
     arguments:
