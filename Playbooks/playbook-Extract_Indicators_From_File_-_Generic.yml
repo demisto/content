@@ -340,6 +340,7 @@ tasks:
         }
       }
     note: false
+view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
