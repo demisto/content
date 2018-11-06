@@ -539,12 +539,14 @@ script:
         result = callEpo('epo.getVersion', pArgs);
 
         var md = "### ePO version is:\n" + result;
+        var ec = {"McAfee.ePO.Version": result};
 
         return {
             Type: entryTypes.note,
             Contents: result,
             ContentsFormat: formats.text,
-            HumanReadable: md
+            HumanReadable: md,
+            EntryContext: ec
         };
 
     }
@@ -910,25 +912,38 @@ script:
       type: number
     - contextPath: McAfee.ePO.Endpoint.Name
       description: Endpoint name
+      type: string
     - contextPath: McAfee.ePO.Endpoint.Domain
       description: Endpoint domain
+      type: string
     - contextPath: McAfee.ePO.Endpoint.Hostname
       description: Endpoint hostname
+      type: string
     - contextPath: McAfee.ePO.Endpoint.IPAddress
       description: Endpoint IP address
+      type: string
     - contextPath: McAfee.ePO.Endpoint.OS
       description: Endpoint operation system
+      type: string
     - contextPath: McAfee.ePO.Endpoint.OSVersion
       description: Endpoint operation system version
+      type: string
     - contextPath: McAfee.ePO.Endpoint.Processor
       description: Model of the processor
+      type: string
     - contextPath: McAfee.ePO.Endpoint.Processors
       description: Number of processors
+      type: number
     - contextPath: McAfee.ePO.Endpoint.Memory
       description: 'Amount of memory on this endpoint '
+      type: number
     description: Finds systems in the System Tree
   - name: epo-get-version
     arguments: []
+    outputs:
+    - contextPath: McAfee.ePO.Version
+      description: ePO version
+      type: string
     description: Gets the ePO version. This requires global admin permissions.
   runonce: false
 releaseNotes: add epo-find-system, epo-get-version commands and output for epo-query-table
