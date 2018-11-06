@@ -652,3 +652,6 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
   type: string
+tests:
+  - Phishing test - attachment
+  - Phishing test - Inline
