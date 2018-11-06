@@ -320,7 +320,7 @@ script: |-
       'ENTRY' : test_entry,
       'TBLMD' : test_tbl_to_md,
       'FLTNCL': test_flatten_cell
-}
+  }
 
   test_type = demisto.args()['test_type']
   if test_type not in TESTS:
