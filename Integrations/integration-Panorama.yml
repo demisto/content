@@ -1,4 +1,3 @@
-versionedfields: {}
 commonfields:
   id: Panorama
   version: -1
@@ -42,10 +41,13 @@ configuration:
   required: false
 script:
   script: |-
-    var sendRequest = function(url) {
-        url.replace(/[\/]+$/, '');
-        var res = http(
-            url,
+    var URL = params.server.replace(/[\/]+$/, '') + ':'+params.port+'/api/';
+    var API_KEY = params.key;
+
+    function sendRequest (uri) {
+        uri.replace(/[\/]+$/, '');
+        var result = http(
+            uri,
             {
                 Method: 'POST',
                 Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
@@ -54,20 +56,20 @@ script:
             params.proxy
         );
 
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        if (result.StatusCode < 200 || result.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + result.StatusCode + '.\nBody: ' + JSON.stringify(result) + '.';
         }
 
-        var jRes = JSON.parse(x2j(res.Body));
-        if(jRes.response['-status'] !== 'success'){
-            throw 'Request Failed.\nStatus code: '+jRes.response['-code']+'\nBody: ' + res.Body;
+        var jResult = JSON.parse(x2j(result.Body));
+        if(jResult.response['-status'] !== 'success'){
+            throw 'Request Failed.\nStatus code: ' + jResult.response['-code'] + '\nBody: ' + result.Body;
         }
-        return jRes;
-    };
+        return jResult;
+    }
 
-    var sendMultipartRequest = function(url, file, apikey){
-        var res = httpMultipart(
-          url,
+    function sendMultipartRequest (uri, file, apikey) {
+        var result = httpMultipart(
+          uri,
           file,
           {
             Method: 'POST',
@@ -80,39 +82,58 @@ script:
           params.proxy
         );
 
-        if (res.StatusCode !==200) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode +' '+errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
+        if (result.StatusCode !== 200) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + ' ' + errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
         }
+
         var jRes = JSON.parse(x2j(res.Body));
         if(jRes.response['-status'] !== 'success'){
-            throw 'Request Failed.\nStatus code: '+jRes.response['-code']+'\nBody: ' + res.Body;
+            throw 'Request Failed.\nStatus code: ' + jRes.response['-code'] + '\nBody: ' + res.Body;
         }
         return jRes;
-    };
+    }
 
-    var url = params.server.replace(/[\/]+$/, '') + ':'+params.port+'/api/';
+    function panoramaMove() {
+        var req = {
+            type: 'config',
+            action: 'move',
+            key: 'keyvalue',
+            xpath: args.xpath || '/config/devices/entry/vsys/entry/rulebase/security/rules/entry[@name=\'' + args.src +'\']',
+            where: args.where,
+        };
+        if (args.dst) {
+            req.dst = args.dst;
+        }
+        var raw = sendRequest(URL + encodeToURLQuery(req) + '&key=' + API_KEY);
+        return raw[0].Contents.response['-status'];
+    }
 
     switch (command) {
         case 'test-module':
-            res = sendRequest(url + encodeToURLQuery({type:'config', action: 'show', key: params.key}));
+            var result = sendRequest(URL + encodeToURLQuery({type:'config', action: 'show', key: API_KEY}));
             return 'ok';
+
         case 'panorama-dynamic-block-list':
-            return sendMultipartRequest(url+encodeToURLQuery({'type':'user-id'}), args.file, params.key);
+            return sendMultipartRequest(URL + encodeToURLQuery({'type':'user-id'}), args.file, API_KEY);
+
         case 'panorama':
-            res = sendRequest(url+encodeToURLQuery(args)+'&key='+params.key);
-            return res;
+            return sendRequest(URL + encodeToURLQuery(args) + '&key=' + API_KEY);
+
+        case 'panorama-move':
+            return panoramaMove();
     }
   type: javascript
   commands:
   - name: panorama
-    description: Run any panorama command supported in api.
     arguments:
     - name: action
       description: Choose an available  actio(show,get,set,edit, delete,rename,clone,move,override)
     - name: category
-      description: Category parameter. e.g. when exporting a configuration file use category=configuration
+      description: Category parameter. e.g. when exporting a configuration file use
+        category=configuration
     - name: cmd
-      description: Used for operations commands cmd specifies the xml struct that defines the command.
+      description: Used for operations commands cmd specifies the xml struct that
+        defines the command.
     - name: command
       description: Run a command. e.g. command =<show><arp><entry name='all'/></arp></show>
     - name: dst
@@ -128,7 +149,8 @@ script:
     - name: log-type
       description: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: where
-      description: Specifies the type of a move operation (e.g. where=after, where=before, where=top, where=bottom)
+      description: Specifies the type of a move operation (e.g. where=after, where=before,
+        where=top, where=bottom)
     - name: period
       description: Describe a time period. E.g. period=last-24-hrs
     - name: xpath
@@ -146,11 +168,33 @@ script:
     - name: type
       description: The request type (e.g. export, import, log, config)
     - name: search-time
-      description: Used for threat PCAPs, the time that the PCAP was received on the firewall.
+      description: Used for threat PCAPs, the time that the PCAP was received on the
+        firewall.
+    description: Run any panorama command supported in api.
   - name: panorama-dynamic-block-list
-    description: Create a dynamic block list
     arguments:
     - name: file
       required: true
-      description: The dynamic block list file. Can be created using PanoramaDynamicAddressGroup script
-hidden: false
+      description: The dynamic block list file. Can be created using PanoramaDynamicAddressGroup
+        script
+    description: Create a dynamic block list
+  - name: panorama-move
+    arguments:
+    - name: xpath
+      description: Usually not required as "src" is sufficient. Full XPath to the
+        source rule to be moved.
+    - name: src
+      description: Source value for the request. For further information, see the
+        Panorama XML API Documentation.
+    - name: where
+      required: true
+      description: Values for the "where" parameter include "before", "after", "top"
+        or "bottom". For further information, see the Panorama XML API Documentation.
+    - name: dst
+      description: Destination xpath to move the rule. For further information, see
+        the Panorama XML API Documentation.
+    description: Move panorama rules
+  runonce: false
+releaseNotes: ""
+tests:
+- Not Yet
