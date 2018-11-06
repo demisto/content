@@ -1229,13 +1229,13 @@ script: |-
         Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
 
         :type date_range: ``str``
-        :param string: The date range to be parsed (required)
+        :param date_range: The date range to be parsed (required)
 
         :type date_format: ``str``
         :param date_format: Date format to convert the date_range to. (optional)
 
         :type to_timestamp: ``bool``
-        :param date_format: If set to True, then will return time stamp rather than a datetime.datetime. (optional)
+        :param to_timestamp: If set to True, then will return time stamp rather than a datetime.datetime. (optional)
 
         :return: The parsed date range.
         :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
