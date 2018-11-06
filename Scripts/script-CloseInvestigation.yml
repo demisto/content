@@ -27,4 +27,3 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 deprecated: true
-releaseNotes: "CloseInvestigation script is now deprecated, use closeInvestigation command instead. Note: you can still use this script, and everything will keep working."

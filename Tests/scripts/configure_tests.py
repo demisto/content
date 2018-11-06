@@ -228,6 +228,7 @@ def find_tests_for_modified_files(modified_files):
 
                 missing_ids = missing_ids - set([id])
                 tests.add(test)
+
             else:
                 message = "The test '{0}' does not exist, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
@@ -238,6 +239,41 @@ def find_tests_for_modified_files(modified_files):
         message = "You've failed to provide tests for:\n{0}".format(test_string)
         print_color(message, LOG_COLORS.RED)
         sys.exit(1)
+
+    return tests
+
+
+def get_test_from_conf():
+    tests = set([])
+    changed = set([])
+    change_string = run_git_command("git diff HEAD Tests/conf.json")
+    added_groups = re.search('(\+[ ]+")(.*)(":)', change_string)
+    if added_groups:
+        for i in range(2, len(added_groups.groups()), 2):
+            changed.add(added_groups.group(i))
+
+    deleted_groups = re.search('(\-[ ]+")(.*)(":)', change_string)
+    if deleted_groups:
+        for obj in range(2, len(deleted_groups.groups()), 2):
+            changed.add(obj)
+
+    with open("./Tests/conf.json", 'r') as conf_file:
+        conf = json.load(conf_file)
+
+    conf_tests = conf['tests']
+    for t in conf_tests:
+        playbook_id = t['playbookID']
+        integrations_conf = t.get('integrations', [])
+        if playbook_id in changed:
+            tests.add(playbook_id)
+            continue
+
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
+
+        for integration in integrations_conf:
+            if integration in changed:
+                tests.add(playbook_id)
 
     return tests
 
@@ -253,7 +289,10 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json):
         if test not in tests:
             tests.add(test)
 
-    if all_tests or (is_conf_json and not tests):
+    if is_conf_json:
+        tests = tests.union(get_test_from_conf())
+
+    if all_tests:
         tests.add("Run all tests")
 
     if not tests and (modified_files or modified_tests_list or all_tests):
