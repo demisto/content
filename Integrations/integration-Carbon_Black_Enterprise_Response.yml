@@ -500,7 +500,10 @@ script:
             {to: 'OtherProcessBinary', from: ".=(val.split('|')[4])"}
         ];
         headers = crossProcDataMap.map(cn => cn.to);
-        translatedData = mapObjFunction(crossProcDataMap)(result.process.crossproc_complete);
+        translatedData = [];
+        if (result.process.crossproc_complete) {
+            translatedData = mapObjFunction(crossProcDataMap)(result.process.crossproc_complete);
+        }
         humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['CrossProc'] = translatedData;
         entries.push({
@@ -552,12 +555,15 @@ script:
 
         title = 'Binaries';
         headers = ['MD5', 'Publisher', 'Result'];
-        let keys = Object.keys(result.process.binaries);
-        translatedData = keys.map(md5 => ({
-            'MD5': md5,
-            'Publisher': result.process.binaries[md5]['digsig_publisher'],
-            'Result': result.process.binaries[md5]['digsig_result']
-        }));
+        translatedData = [];
+        if (result.process.binaries) {
+            let keys = Object.keys(result.process.binaries);
+            translatedData = keys.map(md5 => ({
+                'MD5': md5,
+                'Publisher': result.process.binaries[md5]['digsig_publisher'],
+                'Result': result.process.binaries[md5]['digsig_result']
+            }));
+        }
         humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['Binaries'] = translatedData.map(binary => ({
             'MD5': binary.MD5,
@@ -1822,5 +1828,6 @@ script:
     description: Retrieve watchlist in Carbon black Response.
   isfetch: true
   runonce: false
+releaseNotes: prevent failiure for cb-process-events in case the information returned is partial
 tests:
   - CarbonBlackResponseTest
