@@ -392,6 +392,5 @@ outputs:
 - contextPath: InfoFile
   description: The report file's object
   type: unknown
-releaseNotes: added Lastline Detonate URL playbook
 tests:
 - detonate_url_-_generic_test

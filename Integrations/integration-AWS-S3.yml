@@ -605,4 +605,6 @@ script:
     description: Upload file to S3 bucket
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Added command aws-s3-upload-file."
+tests:
+  - Forgive me for my sins but I did not create any test
+releaseNotes: "-"
