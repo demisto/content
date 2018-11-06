@@ -1130,7 +1130,7 @@ script:
 
     def start_assets_scan_command():
         ips = demisto.args().get('IPs')
-        host_names = demisto.args().get('host_names')
+        host_names = demisto.args().get('hostNames')
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
 
         text_filters = None
@@ -1949,7 +1949,7 @@ script:
       description: integer <int32> The identifier of the site.
     - name: hosts
       description: Multiple criteria of <string> The hosts that should be included
-        as a part of the scan. This should be a mixture of IP Addresses and Hostnames
+        as a part of the scan. This should be a mixture of IP Addresses and host names
         as a comma separated string array.
       isArray: true
     - name: name
@@ -1994,7 +1994,7 @@ script:
     arguments:
     - name: IPs
       description: Multiple criteria of <string> IP addresses of assets, comma separated.
-    - name: host_names
+    - name: hostNames
       description: Multiple criteria of <string> Host names of assets, comma separated.
     - name: name
       description: <string> The user-driven scan name for the scan.
