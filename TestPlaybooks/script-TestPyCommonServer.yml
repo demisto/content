@@ -299,6 +299,7 @@ script: |-
       special_char = u'会'
       list_of_special = [special_char, special_char]
       flattenCell(list_of_special)
+      flattenCell2(special_char)
 
       results = [actual == expected for actual, expected in returned]
 
@@ -341,8 +342,11 @@ args:
   - ENTRY
   - XML
   - TBLMD
+  - FLTNCL
   description: one of python common server testing features
   defaultValue: dq
 scripttarget: 0
 runonce: false
 releaseNotes: "Fixed table separator"
+tests:
+  - Test CommonServer
