@@ -21,6 +21,10 @@
             "playbookID": "minemeld_test"
         },
         {
+            "integrations": "Alexa Rank Indicator",
+            "playbookID": "Alexa Test Playbook"
+        },
+        {
             "integrations": "IntSights",
             "playbookID": "IntSights Test"
         },
