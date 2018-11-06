@@ -437,7 +437,6 @@ script:
         var result = callEpo('system.applyTag', pArgs);
 
         var md = "ePO applied the tags on the hostnames successfully.\n";
-        md += result;
 
         return {
             Type: entryTypes.note,
@@ -455,7 +454,6 @@ script:
         var result = callEpo('system.clearTag', pArgs);
 
         var md = "ePO cleared the tags from the hostnames successfully.\n";
-        md += result;
 
         return {
             Type: entryTypes.note,
@@ -474,7 +472,7 @@ script:
 
         result = callEpo('core.listTables', pArgs);
 
-        md = tableToMarkdown(
+        var md = tableToMarkdown(
                 'ePO tables:',
                 Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
                 args.headers && args.headers.split(',')
@@ -511,7 +509,7 @@ script:
 
         result = callEpo('core.executeQuery', pArgs);
 
-        md = tableToMarkdown(
+        var md = tableToMarkdown(
                 'ePO Table Query:',
                 Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
                 args.headers && args.headers.split(',')
@@ -523,7 +521,6 @@ script:
             var ts = (new Date()).getTime() / 1000;
             ec_key = 'McAfee.ePO.Query.' + ts;
         }
-
         ec[ec_key] = result;
 
         return {
@@ -533,6 +530,23 @@ script:
             HumanReadable: md,
             EntryContext: ec
         };
+    }
+
+    function epoGetVersion() {
+        var pArgs = {};
+        var result;
+
+        result = callEpo('epo.getVersion', pArgs);
+
+        var md = "### ePO version is:\n" + result;
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.text,
+            HumanReadable: md
+        };
+
     }
 
     function parseCommandArgs(command, commandArgs) {
@@ -562,17 +576,17 @@ script:
                 pArgs[key] = args[key];
             }
         }
-        var result = callEpo(args.command,pArgs);
+        var result = callEpo(args.command, pArgs);
 
         var md;
         var contents;
         if (typeof result === 'string') {
-            md = "#### ePO command *"+args.command+"* results:\n" + result;
-            contents = { result: result };
+            md = "#### ePO command *" + args.command + "* results:\n" + result;
+            contents = {result: result};
         } else {
 
             md = tableToMarkdown(
-                'ePO command *'+args.command+'* results:',
+                'ePO command *' + args.command + '* results:',
                 Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
                 args.headers && args.headers.split(',')
             );
@@ -630,6 +644,9 @@ script:
 
         case 'epo-query-table':
             return epoQueryTable();
+
+        case 'epo-get-version':
+            return epoGetVersion();
 
         case 'epo-command':
             if (!args.command) {
@@ -845,7 +862,7 @@ script:
       description: Name for the query to appear in the context
     outputs:
     - contextPath: McAfee.ePO.Query
-      description: Query results
+      description: Query result
     description: Queries an ePO table
   - name: epo-get-tables
     arguments:
@@ -855,7 +872,6 @@ script:
   - name: epo-find-system
     arguments:
     - name: searchText
-      required: true
       description: Hostname to search
     - name: verbose
       auto: PREDEFINED
@@ -894,33 +910,27 @@ script:
       type: number
     - contextPath: McAfee.ePO.Endpoint.Name
       description: Endpoint name
-      type: string
     - contextPath: McAfee.ePO.Endpoint.Domain
       description: Endpoint domain
-      type: string
     - contextPath: McAfee.ePO.Endpoint.Hostname
       description: Endpoint hostname
-      type: string
     - contextPath: McAfee.ePO.Endpoint.IPAddress
       description: Endpoint IP address
-      type: string
     - contextPath: McAfee.ePO.Endpoint.OS
       description: Endpoint operation system
-      type: string
     - contextPath: McAfee.ePO.Endpoint.OSVersion
       description: Endpoint operation system version
-      type: string
     - contextPath: McAfee.ePO.Endpoint.Processor
       description: Model of the processor
-      type: string
     - contextPath: McAfee.ePO.Endpoint.Processors
       description: Number of processors
-      type: number
     - contextPath: McAfee.ePO.Endpoint.Memory
-      description: 'Amount of memory on this endpoint'
-      type: number
+      description: 'Amount of memory on this endpoint '
     description: Finds systems in the System Tree
+  - name: epo-get-version
+    arguments: []
+    description: Gets the ePO version. This requires global admin permissions.
   runonce: false
-releaseNotes: add epo-find-system command and output for epo-query-table
+releaseNotes: add epo-find-system, epo-get-version commands and output for epo-query-table
 tests:
 - Test Playbook McAfee ePO
