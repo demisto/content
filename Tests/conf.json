@@ -700,7 +700,7 @@
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
-        "McAfee Advanced Threat Defense": "No Credentials",
+        "McAfee Advanced Threat Defense": "Instance is still missing vm and internet access",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
         "Symantec Messaging Gateway": "DevOps investigation",
