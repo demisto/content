@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 22b1677f-8e21-46e0-800f-d5eb0bc3c982
+    taskid: 7a403f17-f707-46c9-8134-abf52a305ea8
     type: start
     task:
-      id: 22b1677f-8e21-46e0-800f-d5eb0bc3c982
+      id: 7a403f17-f707-46c9-8134-abf52a305ea8
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 1d4d8b96-34f7-4469-8733-fd02eb296ba9
+    taskid: 88853ada-9cee-4bb1-8a66-d117190ba437
     type: regular
     task:
-      id: 1d4d8b96-34f7-4469-8733-fd02eb296ba9
+      id: 88853ada-9cee-4bb1-8a66-d117190ba437
       version: -1
       name: smg-block-email
       description: Adds email address to the Local Bad Sender Domains.
@@ -51,12 +52,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: fc69005b-bdd8-4fff-8e14-c4fb19c9e38c
+    taskid: 342d2edb-c911-4555-89de-4a57867ce6b7
     type: regular
     task:
-      id: fc69005b-bdd8-4fff-8e14-c4fb19c9e38c
+      id: 342d2edb-c911-4555-89de-4a57867ce6b7
       version: -1
       name: smg-unblock-email
       description: Removes email address from the Local Bad Sender Domains.
@@ -78,12 +80,13 @@ tasks:
           "y": 895
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 46caef04-5680-4d42-81ad-eeaa62c1364f
+    taskid: e16a6779-b4e8-409c-8408-b004d7aacbef
     type: regular
     task:
-      id: 46caef04-5680-4d42-81ad-eeaa62c1364f
+      id: e16a6779-b4e8-409c-8408-b004d7aacbef
       version: -1
       name: smg-block-domain
       description: Adds domain to the Local Bad Sender Domains group.
@@ -93,7 +96,7 @@ tasks:
       brand: Symantec Messaging Gateway
     nexttasks:
       '#none#':
-      - "11"
+      - "20"
     scriptarguments:
       domain:
         simple: www.${GeneratedUUID}.com
@@ -105,12 +108,13 @@ tasks:
           "y": 1245
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 8aa3bb88-5d02-4112-85ba-9d65a0942df9
+    taskid: 9225af21-869b-4db2-8a52-ec0e5724a47e
     type: regular
     task:
-      id: 8aa3bb88-5d02-4112-85ba-9d65a0942df9
+      id: 9225af21-869b-4db2-8a52-ec0e5724a47e
       version: -1
       name: smg-unblock-domain
       description: Removes domain from the Local Bad Sender Domains group.
@@ -132,12 +136,13 @@ tasks:
           "y": 1770
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: d752290e-6ffe-4793-8b7a-ba3a92dbe639
+    taskid: 7c24e54c-8333-4504-88b8-eecda694599e
     type: regular
     task:
-      id: d752290e-6ffe-4793-8b7a-ba3a92dbe639
+      id: 7c24e54c-8333-4504-88b8-eecda694599e
       version: -1
       name: smg-block-ip
       description: Adds IP address to the Local Bad Sender IPs  group.
@@ -159,12 +164,13 @@ tasks:
           "y": 2295
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: 22d423e1-120e-4d9d-88c7-1ea856f2f7d0
+    taskid: 9542a8d6-d3e9-475f-8a50-e5c105ed7b35
     type: title
     task:
-      id: 22d423e1-120e-4d9d-88c7-1ea856f2f7d0
+      id: 9542a8d6-d3e9-475f-8a50-e5c105ed7b35
       version: -1
       name: Done
       type: title
@@ -178,12 +184,13 @@ tasks:
           "y": 3170
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: b89a5c41-5ed7-4eaf-89a2-cb6b9a4f79f4
+    taskid: 656c1514-9b15-49eb-87b9-27587b01c490
     type: regular
     task:
-      id: b89a5c41-5ed7-4eaf-89a2-cb6b9a4f79f4
+      id: 656c1514-9b15-49eb-87b9-27587b01c490
       version: -1
       name: Verify Email Address
       description: |-
@@ -213,12 +220,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "9":
     id: "9"
-    taskid: ef7b123d-8f48-4187-8db5-7c471fab470c
+    taskid: c3ed1375-077e-4c45-8b83-218a7c596a4b
     type: regular
     task:
-      id: ef7b123d-8f48-4187-8db5-7c471fab470c
+      id: c3ed1375-077e-4c45-8b83-218a7c596a4b
       version: -1
       name: Verify Blocked
       description: |-
@@ -248,12 +256,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "10":
     id: "10"
-    taskid: 1ad308c6-4c45-437c-8d26-17916e6a0f8e
+    taskid: 1b11c649-c1cc-4134-8097-df1739247ea9
     type: regular
     task:
-      id: 1ad308c6-4c45-437c-8d26-17916e6a0f8e
+      id: 1b11c649-c1cc-4134-8097-df1739247ea9
       version: -1
       name: Verify Unblocked
       description: |-
@@ -283,47 +292,13 @@ tasks:
           "y": 1070
         }
       }
-  "11":
-    id: "11"
-    taskid: 54ba84a1-126e-49c5-85fe-66ce35bdab42
-    type: regular
-    task:
-      id: 54ba84a1-126e-49c5-85fe-66ce35bdab42
-      version: -1
-      name: Verify Domain
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      expectedValue:
-        simple: www.${GeneratedUUID}.com
-      fields: {}
-      path:
-        simple: Domain.Name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
+    note: false
   "12":
     id: "12"
-    taskid: fe4ee2fd-cb4d-4fad-8d0f-9c5002734566
+    taskid: 2543540e-eecd-45b0-8e96-74e9d2c09030
     type: regular
     task:
-      id: fe4ee2fd-cb4d-4fad-8d0f-9c5002734566
+      id: 2543540e-eecd-45b0-8e96-74e9d2c09030
       version: -1
       name: Verify Blocked
       description: |-
@@ -353,12 +328,13 @@ tasks:
           "y": 1595
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: fba5b92f-cbe7-42a2-8af7-ea4d083c731a
+    taskid: 837aadf5-47c1-4e6c-8b60-7642d350d5a1
     type: regular
     task:
-      id: fba5b92f-cbe7-42a2-8af7-ea4d083c731a
+      id: 837aadf5-47c1-4e6c-8b60-7642d350d5a1
       version: -1
       name: Verify Unblocked
       description: |-
@@ -388,12 +364,13 @@ tasks:
           "y": 1945
         }
       }
+    note: false
   "14":
     id: "14"
-    taskid: 430873f6-25d0-4965-816f-1ce438d39e21
+    taskid: b417bd31-7752-4285-8d07-5f673afef6ba
     type: regular
     task:
-      id: 430873f6-25d0-4965-816f-1ce438d39e21
+      id: b417bd31-7752-4285-8d07-5f673afef6ba
       version: -1
       name: Verify IP Address
       description: |-
@@ -423,12 +400,13 @@ tasks:
           "y": 2470
         }
       }
+    note: false
   "15":
     id: "15"
-    taskid: 370ccbc5-2de4-4816-8457-0236e6605679
+    taskid: eff52808-7595-4321-82e5-a311b812e081
     type: regular
     task:
-      id: 370ccbc5-2de4-4816-8457-0236e6605679
+      id: eff52808-7595-4321-82e5-a311b812e081
       version: -1
       name: Verify Blocked
       description: |-
@@ -458,12 +436,13 @@ tasks:
           "y": 2645
         }
       }
+    note: false
   "16":
     id: "16"
-    taskid: eac73899-bfb2-46a3-8259-d45b89e62cc1
+    taskid: 72201ccb-e417-48a4-8bde-adb633f8eb46
     type: regular
     task:
-      id: eac73899-bfb2-46a3-8259-d45b89e62cc1
+      id: 72201ccb-e417-48a4-8bde-adb633f8eb46
       version: -1
       name: Verify Unblocked
       description: |-
@@ -493,12 +472,13 @@ tasks:
           "y": 2995
         }
       }
+    note: false
   "17":
     id: "17"
-    taskid: 65a6a859-ec28-45d2-8746-2f923c64a365
+    taskid: 55b39c7d-bb63-4d42-8038-0d97f958ff88
     type: regular
     task:
-      id: 65a6a859-ec28-45d2-8746-2f923c64a365
+      id: 55b39c7d-bb63-4d42-8038-0d97f958ff88
       version: -1
       name: smg-unblock-ip
       description: Removes IP address from the Local Bad Sender IPs  group.
@@ -520,12 +500,13 @@ tasks:
           "y": 2820
         }
       }
+    note: false
   "18":
     id: "18"
-    taskid: 38241dd3-f8af-42d5-8682-98712ff151a7
+    taskid: b2b9b6c6-3b90-4635-8eaa-306b20a17a9c
     type: regular
     task:
-      id: 38241dd3-f8af-42d5-8682-98712ff151a7
+      id: b2b9b6c6-3b90-4635-8eaa-306b20a17a9c
       version: -1
       name: GenerateUUID
       scriptName: GenerateUUID
@@ -543,12 +524,13 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "19":
     id: "19"
-    taskid: dca5a26d-8575-447b-8d45-c0cddc77f9af
+    taskid: 6547327f-76ef-4b7e-834f-031263a895fd
     type: regular
     task:
-      id: dca5a26d-8575-447b-8d45-c0cddc77f9af
+      id: 6547327f-76ef-4b7e-834f-031263a895fd
       version: -1
       name: GenerateIP
       scriptName: GenerateIP
@@ -566,6 +548,46 @@ tasks:
           "y": 2120
         }
       }
+    note: false
+  "20":
+    id: "20"
+    taskid: 75aa5faf-1068-4f6e-8f8e-52bce1ab1bd5
+    type: condition
+    task:
+      id: 75aa5faf-1068-4f6e-8f8e-52bce1ab1bd5
+      version: -1
+      name: Verify Domain
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      left:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      right:
+        simple: www.${GeneratedUUID}.com
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
