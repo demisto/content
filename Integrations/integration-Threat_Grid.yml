@@ -549,21 +549,37 @@ script:
         ])
 
 
-    def ioc_to_readable(k):
-        return {
-            'Title': demisto.get(k, 'title'),
-            'Confidence': demisto.get(k, 'confidence'),
-            'Severity': demisto.get(k, 'severity'),
-            'IOC': demisto.get(k, 'ioc'),
-            'Tags': demisto.get(k, 'tags'),
-            'IOCCategory': demisto.get(k, 'category'),
-            'Data': {
-                'Path': [demisto.get(data, 'Path') for data in (demisto.get(k, 'data') or [])],
-                'SHA256': [demisto.get(data, 'SHA256') for data in (demisto.get(k, 'data') or [])],
-                'URL': [demisto.get(data, 'URL') for data in (demisto.get(k, 'data') or [])],
-            }
+    def ioc_to_readable(ioc):
+        ioc_key_to_path_dict = {
+            'Title': 'title',
+            'Confidence': 'confidence',
+            'Severity': 'severity',
+            'IOC': 'ioc',
+            'Tags': 'tags',
+            'IOCCategory': 'category'
         }
-
+        ioc_data_keys_set = {
+            'URL',
+            'Path',
+            'SHA256',
+            'IP'
+        }
+        res = {}
+        # add ioc_key_to_path_dict values to result
+        for k,v in ioc_key_to_path_dict.iteritems():
+            val = demisto.get(ioc, v)
+            if val:
+                res[k] = val
+        # add ioc_data_keys_set values to result.Data
+        res['Data'] = {}
+        for key in ioc_data_keys_set:
+            res['Data'][key] = []
+        if demisto.get(ioc, 'data'):
+            for item in demisto.get(ioc, 'data'):
+                for key in ioc_data_keys_set:
+                    if demisto.get(item, key):
+                        res['Data'][key].append(demisto.get(item, key))
+        return res
 
     def get_analysis_iocs():
         """
