@@ -275,6 +275,9 @@ def get_test_from_conf():
             if integration in changed:
                 tests.add(playbook_id)
 
+    if not tests:
+        tests.add('changed skip section')
+
     return tests
 
 
