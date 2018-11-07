@@ -212,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1595
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -268,7 +268,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "16"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -349,8 +349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1770
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
@@ -374,7 +374,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "27"
     scriptarguments:
       expectedValue:
         simple: '["pdf","xml"]'
@@ -385,8 +385,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1945
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -427,7 +427,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2295
+          "y": 1770
         }
       }
     note: false
@@ -446,7 +446,7 @@ tasks:
       brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
-      - "23"
+      - "28"
     scriptarguments:
       id:
         simple: ${Nexpose.Site.Id}
@@ -455,7 +455,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2470
+          "y": 1945
         }
       }
     note: false
@@ -480,7 +480,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2120
+          "y": 1595
         }
       }
     note: false
@@ -499,7 +499,7 @@ tasks:
       brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
-      - "24"
+      - "6"
     scriptarguments:
       id:
         simple: ${Nexpose.Scan.Id}
@@ -507,8 +507,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2820
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
@@ -536,7 +536,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3695
         }
       }
     note: false
@@ -561,7 +561,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3695
+          "y": 3870
         }
       }
     note: false
@@ -591,36 +591,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2645
-        }
-      }
-    note: false
-  "24":
-    id: "24"
-    taskid: afe985d5-ddde-4f53-80ce-bde87027f15f
-    type: regular
-    task:
-      id: afe985d5-ddde-4f53-80ce-bde87027f15f
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      seconds:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 2995
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -656,7 +628,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3345
+          "y": 3520
         }
       }
     note: false
@@ -684,8 +656,70 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: 37f5fac0-fd86-4a23-8c4d-fcf76754d048
+    type: regular
+    task:
+      id: 37f5fac0-fd86-4a23-8c4d-fcf76754d048
+      version: -1
+      name: check for active scans
+      description: Returns a list of scans.
+      script: Rapid7 Nexpose|||nexpose-get-scans
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      active: {}
+      limit: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 162.5,
-          "y": 3170
+          "y": 2120
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: 73a28940-e5c9-404b-8d7d-278d53b8240e
+    type: condition
+    task:
+      id: 73a28940-e5c9-404b-8d7d-278d53b8240e
+      version: -1
+      name: scan-running
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Nexpose.Scan
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
         }
       }
     note: false
@@ -694,7 +728,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3740,
+        "height": 3915,
         "width": 492.5,
         "x": 50,
         "y": 50
