@@ -112,28 +112,6 @@
             "nightly": true
         },
         {
-            "playbookID": "Phishing test - attachment",
-            "timeout": 500,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ],
-            "nightly": true
-        },
-        {
-            "playbookID": "Phishing test - Inline",
-            "timeout": 500,
-            "integrations": [
-                "EWS Mail Sender",
-                "Pwned",
-                "VirusTotal - Private API",
-                "Demisto REST API"
-            ],
-            "nightly": true
-        },
-        {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
         },
@@ -167,27 +145,6 @@
         },
         {
             "playbookID": "TestParseCSV"
-        },
-        {
-            "playbookID": "Detonate File - Generic Test",
-            "timeout": 2000,
-            "nightly": true,
-            "integrations": [
-                "VxStream",
-                "McAfee Advanced Threat Defense",
-                "WildFire",
-                "Lastline"
-            ]
-        },
-        {
-            "playbookID": "Detonate URL - Generic Test",
-            "timeout": 2000,
-            "nightly": true,
-            "integrations": [
-                "McAfee Advanced Threat Defense",
-                "VxStream",
-                "Lastline"
-            ]
         },
         {
             "integrations": "Shodan",
@@ -646,25 +603,6 @@
             "nightly": true
         },
         {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io",
-                "activedir"
-            ],
-            "playbookID": "entity_enrichment_generic_test",
-            "timeout": 240
-        },
-        {
-            "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                "carbonblackprotection",
-                "carbonblack"
-            ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
-        },
-        {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
         },
@@ -684,9 +622,72 @@
         },
         {
             "playbookID": "ExifReadTest"
-        }
+        },
+        {
+           "playbookID": "Detonate File - Generic Test",
+           "timeout": 2000,
+           "nightly": true,
+           "integrations": [
+             "VxStream",
+             "McAfee Advanced Threat Defense",
+             "WildFire",
+             "Lastline"
+           ]
+        },
+        {
+           "playbookID": "Detonate URL - Generic Test",
+           "timeout": 2000,
+           "nightly": true,
+           "integrations": [
+             "McAfee Advanced Threat Defense",
+             "VxStream",
+             "Lastline"
+           ]
+        },
+        {
+            "playbookID": "Phishing test - attachment",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
+        },
+        {
+            "playbookID": "Phishing test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
+        },
+        {
+            "integrations": [
+              "VirusTotal",
+              "urlscan.io",
+              "activedir"
+            ],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
+            "integrations": [
+              "FalconHost",
+              "McAfee Threat Intelligence Exchange",
+              "carbonblackprotection",
+              "carbonblack"
+            ],
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "timeout": 500
+      }
     ],
     "skipped_tests": {
+        "blockip_test_playbook": "No Check Point FW license",
         "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
@@ -700,7 +701,7 @@
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
-        "McAfee Advanced Threat Defense": "No Credentials",
+        "McAfee Advanced Threat Defense": "Instance is still missing vm and internet access",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
         "Cylance Protect": "Under development",
