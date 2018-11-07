@@ -1,0 +1,337 @@
+id: ZipFile-Test
+version: 38
+name: ZipFile-Test
+description: Test ZipFile and UnzipFile scripts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 03783473-e075-4ca8-8de8-9dbad47fa8df
+    type: start
+    task:
+      id: 03783473-e075-4ca8-8de8-9dbad47fa8df
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -200
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: e0abbdd7-6fff-4431-8aad-c291d5fd11fd
+    type: regular
+    task:
+      id: e0abbdd7-6fff-4431-8aad-c291d5fd11fd
+      version: -1
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test.zip
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/blob/master/TestData/TestImage.jpg.zip?raw=true
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 90
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: e826184f-b29b-403b-8123-a97431eb6812
+    type: regular
+    task:
+      id: e826184f-b29b-403b-8123-a97431eb6812
+      version: -1
+      name: UnzipFile
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password:
+        simple: '{ENCRYPTED}Agrn7bHc9tA+Or7VMAcjoLRn0giBKLTnDkqtL8yrmoFHmUZorGAUgGAmB+z3trwEn9e5AMpYGLyWpE4slO7pHw=='
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: f0586d3e-9846-4d34-8949-83390e6d9899
+    type: regular
+    task:
+      id: f0586d3e-9846-4d34-8949-83390e6d9899
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 30c92aa8-4bfb-4795-828f-f76201ca4a30
+    type: regular
+    task:
+      id: 30c92aa8-4bfb-4795-828f-f76201ca4a30
+      version: -1
+      name: ZipFile
+      description: Zip a file and upload to war room
+      scriptName: ZipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entryID:
+        simple: ${File.[1].EntryID}
+      password: {}
+      zipName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 8cedc47f-3567-412e-8a94-ab88e5d9408d
+    type: regular
+    task:
+      id: 8cedc47f-3567-412e-8a94-ab88e5d9408d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -70
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: e271f1cb-3e1d-418a-8145-88b8a551ba09
+    type: regular
+    task:
+      id: e271f1cb-3e1d-418a-8145-88b8a551ba09
+      version: -1
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test.tar
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/blob/master/TestData/TestImage.jpg.tar?raw=true
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 90
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: bac708d2-63c9-488a-8c35-8c19b931fa8a
+    type: regular
+    task:
+      id: bac708d2-63c9-488a-8c35-8c19b931fa8a
+      version: -1
+      name: UnzipFile
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password:
+        simple: '{ENCRYPTED}lmXEAbAk72OuXO7HJ1SJoUuXtf2fP0jyApmi/BK3o47AN2IV5wrFjEw4XLEmxDGf8QbntRgP6O/9jIApbzix2Q=='
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 400
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 4a0a616f-fbec-4f6a-8134-1386ecb7b0e5
+    type: regular
+    task:
+      id: 4a0a616f-fbec-4f6a-8134-1386ecb7b0e5
+      version: -1
+      name: CloseInvestigation
+      description: Close an investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 620
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: e0b1b420-6018-4036-8131-efe9f251dcff
+    type: regular
+    task:
+      id: e0b1b420-6018-4036-8131-efe9f251dcff
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 240
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 915,
+        "width": 830,
+        "x": 450,
+        "y": -200
+      }
+    }
+  }
+inputs: []
+outputs: []

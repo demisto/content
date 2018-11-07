@@ -73,6 +73,9 @@ mapping:
                 type: str
               script:
                 type: str
+              tags:
+                sequence:
+                - type: str
               type:
                 type: str
                 enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard']
@@ -86,6 +89,8 @@ mapping:
                 type: bool
               clonedfrom:
                 type: str
+          note:
+            type: bool
           nexttasks:
             type: map
             mapping:
@@ -124,16 +129,23 @@ mapping:
               - type: str
           continueonerror:
             type: bool
+          reputationcalc:
+            type: int
           separatecontext:
             type: bool
   system:
     type: bool
   fromversion:
     type: text
+    required: yes
   toversion:
     type: text
   releaseNotes:
     type: str
+  tests:
+    type: seq
+    sequence:
+    - type: str
 
 
 # playbook->tasks

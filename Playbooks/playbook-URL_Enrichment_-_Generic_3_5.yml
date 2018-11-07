@@ -1,0 +1,438 @@
+id: url_enrichment_-_generic
+version: -1
+name: URL Enrichment - Generic
+description: Enrich URL using one or more integrations
+fromversion: 3.5.0
+toversion: 3.5.1
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5bb202fa-1827-4e39-8a73-316bf8ef7ad4
+    type: start
+    task:
+      id: 5bb202fa-1827-4e39-8a73-316bf8ef7ad4
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+  "16":
+    id: "16"
+    taskid: e3b6529a-31c3-4a37-8a9f-8982ce2bd1aa
+    type: condition
+    task:
+      id: e3b6529a-31c3-4a37-8a9f-8982ce2bd1aa
+      version: -1
+      name: Do we have URLs?
+      description: do we have a url to check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    scriptarguments:
+      value:
+        simple: inputs.url
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 22884d3e-bf75-482f-8dcf-514787f23c6f
+    type: regular
+    task:
+      id: 22884d3e-bf75-482f-8dcf-514787f23c6f
+      version: -1
+      name: Get URLs reputation
+      description: Run reputation for the given url
+      scriptName: URLReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      file:
+        simple: ${File.SHA256}
+      ip: {}
+      url:
+        simple: ${inputs.url}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 684,
+          "y": 1010
+        }
+      }
+  "24":
+    id: "24"
+    taskid: ffb0e416-85ae-486b-8cea-2979aca56172
+    type: title
+    task:
+      id: ffb0e416-85ae-486b-8cea-2979aca56172
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -176,
+          "y": 1170
+        }
+      }
+  "25":
+    id: "25"
+    taskid: a1a1913e-52b1-4cc2-86e0-2e7ce6ede739
+    type: condition
+    task:
+      id: a1a1913e-52b1-4cc2-86e0-2e7ce6ede739
+      version: -1
+      name: 'Is Rasterize integration enabled? '
+      description: Check if we can use rasterize
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: Rasterize
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 835
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 16e5f31f-47e2-4ffc-81d7-700415cd78aa
+    type: regular
+    task:
+      id: 16e5f31f-47e2-4ffc-81d7-700415cd78aa
+      version: -1
+      name: Get URL screenshot
+      description: Get the screenshot of the url page
+      script: Rasterize|||rasterize
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        simple: ${inputs.url}
+      width: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 283,
+          "y": 1010
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 9f59abc9-ab60-46a5-8c76-39a044a6b8e9
+    type: condition
+    task:
+      id: 9f59abc9-ab60-46a5-8c76-39a044a6b8e9
+      version: -1
+      name: Should the system take the URLs screenshots?
+      description: 'Check if the Rasterize input equals to "True" '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: 'inputs.Rasterize'
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 50dca04a-9bf6-4f56-8d3d-50d87a1b7df2
+    type: title
+    task:
+      id: 50dca04a-9bf6-4f56-8d3d-50d87a1b7df2
+      version: -1
+      name: Enrich URLs
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+      - "30"
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 551589fe-87f8-4b47-8865-304283d81363
+    type: title
+    task:
+      id: 551589fe-87f8-4b47-8865-304283d81363
+      version: -1
+      name: Take Screenshots
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 524
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 3e51b603-c5de-478f-8364-86280835b671
+    type: title
+    task:
+      id: 3e51b603-c5de-478f-8364-86280835b671
+      version: -1
+      name: URL reputation
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 684,
+          "y": 524
+        }
+      }
+  "31":
+    id: "31"
+    taskid: f752ee26-6b8a-4bff-836b-21d8e3c803ec
+    type: title
+    task:
+      id: f752ee26-6b8a-4bff-836b-21d8e3c803ec
+      version: -1
+      name: Verify URLs
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1122,
+          "y": 524
+        }
+      }
+  "32":
+    id: "32"
+    taskid: fc2d0d25-7f80-4202-8c44-7444ad0959cd
+    type: regular
+    task:
+      id: fc2d0d25-7f80-4202-8c44-7444ad0959cd
+      version: -1
+      name: URL SSL Verification
+      description: Verify URL SSL certificate
+      scriptName: URLSSLVerification
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1122,
+          "y": 1010
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 270fb89c-f46b-4a8d-8a97-2e091fb422fd
+    type: condition
+    task:
+      id: 270fb89c-f46b-4a8d-8a97-2e091fb422fd
+      version: -1
+      name: Should the system verify the URLs?
+      description: 'Check if the VerifyURL input equals to "True" '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.VerifyURL
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1122,
+          "y": 680
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1185,
+        "width": 1678,
+        "x": -176,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value:
+    simple: ${URL.Data}
+  required: false
+  description: url to enrich
+- key: 'Rasterize'
+  value:
+    simple: False
+  required: false
+  description: Should the system take safe screenshots of input URLs?
+- key: VerifyURL
+  value:
+    simple: "False"
+  required: false
+  description: Should the system verify the input URLs?
+outputs:
+- contextPath: URL
+  description: The URL's object
+  type: uknown
+- contextPath: URL.Data
+  description: The enriched URL
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore
+  type: unknown
+- contextPath: URL.Malicious
+  description: whether url was detected as malicious
+  type: unknown
+- contextPath: URL.Vendor
+  description: name of vendor who labeled as malicious
+  type: string
+- contextPath: URL.Description
+  description: additional info on the url
+  type: string

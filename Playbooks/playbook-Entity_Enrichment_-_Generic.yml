@@ -1,7 +1,7 @@
 id: entity_enrichment_generic
 version: -1
-fromversion: 3.5.0
 name: Entity Enrichment - Generic
+fromversion: 3.6.0
 description: Enrich entities using one or more integrations
 starttaskid: "0"
 tasks:
@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       IP:
         simple: ${inputs.IP}
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       url:
         simple: ${inputs.url}
@@ -111,7 +111,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       Domain: {}
       Email:
@@ -143,7 +143,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       Hostname:
         simple: ${inputs.Hostname}
@@ -174,7 +174,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       Domain:
         simple: ${inputs.Domain}
@@ -205,7 +205,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       Username:
         simple: ${inputs.Username}
@@ -236,7 +236,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       MD5:
         simple: ${inputs.MD5}
@@ -256,30 +256,6 @@ tasks:
           "y": 225
         }
       }
-  "14":
-    id: "14"
-    taskid: a362425a-64c2-4d6c-8f5e-fcd9db4c4870
-    type: playbook
-    task:
-      id: a362425a-64c2-4d6c-8f5e-fcd9db4c4870
-      version: -1
-      name: ""
-      description: "Get indicators internal Dbot score"
-      playbookName: DBot Indicator Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 926
-        }
-      }
   "15":
     id: "15"
     taskid: 38007764-1687-47b1-8490-0f3cded9dc95
@@ -297,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1106
+          "y": 881
         }
       }
 view: |-
@@ -305,7 +281,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1104,
+        "height": 879,
         "width": 810,
         "x": 50,
         "y": 67

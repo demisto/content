@@ -3,8 +3,14 @@ commonfields:
   version: -1
 name: EmailReputation
 script: |-
-  return executeCommand('email', {email: args.email});
-type: javascript
+  results = demisto.executeCommand('email', {'email': demisto.get(demisto.args(),'email')})
+
+  for item in results:
+      if isError(item):
+          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+
+  demisto.results(results)
+type: python
 tags:
 - enhancement
 comment: A context script for Email entities
@@ -15,3 +21,4 @@ args:
   default: true
   description: Email address to look up
 scripttarget: 0
+runonce: false

@@ -1,0 +1,371 @@
+id: FireEye HX Test
+version: 9
+name: FireEye HX Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 33073e43-8e63-4e77-8657-e046083ad65f
+    type: start
+    task:
+      id: 33073e43-8e63-4e77-8657-e046083ad65f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 025c55bc-1ba3-43dc-895b-ee5b7e8f2037
+    type: regular
+    task:
+      id: 025c55bc-1ba3-43dc-895b-ee5b7e8f2037
+      version: -1
+      name: List the last alert
+      script: FireEye HX|||fireeye-hx-get-alerts
+      type: regular
+      iscommand: true
+      brand: FireEye HX
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      EXDsource: {}
+      IOCsource: {}
+      MALsource: {}
+      agentId: {}
+      alertId: {}
+      conditionId: {}
+      eventAt: {}
+      hasShareMode: {}
+      limit:
+        simple: "1"
+      matchedAt: {}
+      minId: {}
+      reportedAt: {}
+      resolution: {}
+      sort:
+        simple: id
+      sortOrder:
+        simple: descending
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: cb53f1e4-d36d-4c1f-817f-66289c065485
+    type: regular
+    task:
+      id: cb53f1e4-d36d-4c1f-817f-66289c065485
+      version: -1
+      name: Get alert information
+      script: FireEye HX|||fireeye-hx-get-alert
+      type: regular
+      iscommand: true
+      brand: FireEye HX
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alertId:
+        simple: ${FireEyeHX.Alerts._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 865
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 193600eb-2c37-40f8-8586-cbd5d45745a8
+    type: regular
+    task:
+      id: 193600eb-2c37-40f8-8586-cbd5d45745a8
+      version: -1
+      name: Get information on the host associated with the alert
+      script: FireEye HX|||fireeye-hx-get-host-information
+      type: regular
+      iscommand: true
+      brand: FireEye HX
+    scriptarguments:
+      agentId:
+        simple: ${FireEyeHX.Alerts.agent._id}
+      hostName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1040
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: c7f15d77-f24d-4bd2-8f2a-5a83d340a73c
+    type: regular
+    task:
+      id: c7f15d77-f24d-4bd2-8f2a-5a83d340a73c
+      version: -1
+      name: Get alerted indicators
+      script: FireEye HX|||fireeye-hx-get-indicators
+      type: regular
+      iscommand: true
+      brand: FireEye HX
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alerted:
+        simple: "yes"
+      category:
+        simple: Custom
+      createdBy:
+        simple: admin
+      limit: {}
+      searchTerm: {}
+      shareMode: {}
+      sort:
+        simple: activeSince
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: cc624265-8459-48f8-8e04-dc254fa66b01
+    type: regular
+    task:
+      id: cc624265-8459-48f8-8e04-dc254fa66b01
+      version: -1
+      name: 'Get information on a specific indicator '
+      script: FireEye HX|||fireeye-hx-get-indicator
+      type: regular
+      iscommand: true
+      brand: FireEye HX
+    scriptarguments:
+      category:
+        simple: ${FireEyeHX.Indicators.[0].category.name}
+      name:
+        simple: ${FireEyeHX.Indicators.[0].name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 9fb468fd-2552-4e70-8806-aa81da8a0383
+    type: regular
+    task:
+      id: 9fb468fd-2552-4e70-8806-aa81da8a0383
+      version: -1
+      name: File acquisition - get blob.txt
+      script: FireEye HX|||fireeye-hx-file-acquisition
+      type: regular
+      iscommand: true
+      brand: FireEye HX
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      acquireUsing: {}
+      agentId: {}
+      fileName:
+        simple: blob.txt
+      filePath:
+        simple: C:\Users\demistodev\Documents
+      hostName:
+        simple: DESKTOP-TF35B9B
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: c2c1f775-5d93-42b3-8ef6-23eb24e14fe8
+    type: regular
+    task:
+      id: c2c1f775-5d93-42b3-8ef6-23eb24e14fe8
+      version: -1
+      name: Delete the acquisition
+      script: FireEye HX|||fireeye-hx-delete-file-acquisition
+      type: regular
+      iscommand: true
+      brand: FireEye HX
+    scriptarguments:
+      acquisitionId:
+        simple: ${FireEyeHX.Acquisitions.Files._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: b237a531-c9d6-40a4-817c-96f219a061bd
+    type: regular
+    task:
+      id: b237a531-c9d6-40a4-817c-96f219a061bd
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "4"
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 84d3a2bc-91ca-46e6-8832-462cc3e6c815
+    type: condition
+    task:
+      id: 84d3a2bc-91ca-46e6-8832-462cc3e6c815
+      version: -1
+      name: Alert exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: a4074bf7-bec8-4880-80c1-44b68d526047
+    type: title
+    task:
+      id: a4074bf7-bec8-4880-80c1-44b68d526047
+      version: -1
+      name: 'No alerts found '
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: fbb630fa-23d7-478a-8483-2fbf5152b683
+    type: title
+    task:
+      id: fbb630fa-23d7-478a-8483-2fbf5152b683
+      version: -1
+      name: Alert detected - get more information
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 1455,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

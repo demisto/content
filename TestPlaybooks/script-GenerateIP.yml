@@ -1,0 +1,25 @@
+commonfields:
+  id: GenerateIP
+  version: -1
+name: GenerateIP
+script: |-
+  import random
+  ip = ".".join(str(random.randint(0, 255)) for _ in range(4))
+  demisto.results({
+      'Type': entryTypes['note'],
+      'Contents': ip,
+      'ContentsFormat': formats['json'],
+      'ReadableContentsFormat': formats['markdown'],
+      'HumanReadable': ip,
+      'EntryContext': {'GeneratedIP': ip}
+  })
+type: python
+tags: []
+comment: Generates random IP address
+enabled: true
+outputs:
+- contextPath: GeneratedIP
+  description: Generated IP
+  type: string
+scripttarget: 0
+runonce: false

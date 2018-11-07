@@ -1,0 +1,34 @@
+commonfields:
+  id: SplunkPySearch
+  version: -1
+name: SplunkPySearch
+script: |-
+  query = demisto.args()['query']
+  rows = demisto.args()['rows']
+
+  query = query + ' | head ' + rows
+  res = demisto.executeCommand('splunk-search',{'using-brand': 'splunkpy', 'query': query})
+
+  if (res and len(res)>0 and res[0]['Contents']):
+      demisto.results({"Type": 1, "Contents": res[0]['Contents'], "ContentsFormat": "json", "EntryContext": {},
+          "HumanReadable": tableToMarkdown("Splunk Search results for: " + query, res[0]['Contents'], "")})
+  else:
+      demisto.results('No results.')
+type: python
+tags:
+- enhancement
+- splunk
+comment: Run a query through Splunk and format the results as a table
+enabled: true
+args:
+- name: query
+  required: true
+  default: true
+  description: Splunk query to execute
+- name: rows
+  description: Return up to X first rows. If omitted, defaults to 10.
+  defaultValue: "10"
+scripttarget: 0
+dependson:
+  must:
+  - splunk-search

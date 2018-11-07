@@ -1,14 +1,14 @@
 id: TestCommonPython
-version: 8
+version: -1
 name: TestCommonPython
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c3abef67-7252-42da-8ebb-f76e0f0c8620
+    taskid: 3e125f96-9572-4238-82bb-8156f7d704d8
     type: start
     task:
-      id: c3abef67-7252-42da-8ebb-f76e0f0c8620
+      id: 3e125f96-9572-4238-82bb-8156f7d704d8
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: a40520f0-59f1-4be7-8fcf-af5e1102aa8e
+    taskid: 6398bbcc-ac42-4468-8693-489d0e6a037f
     type: regular
     task:
-      id: a40520f0-59f1-4be7-8fcf-af5e1102aa8e
+      id: 6398bbcc-ac42-4468-8693-489d0e6a037f
       version: -1
       name: Test DQ
       scriptName: TestPYCommonServer
@@ -41,6 +43,7 @@ tasks:
     scriptarguments:
       test_type:
         simple: DQ
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -48,22 +51,27 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: b97e22a1-1d13-4c9e-81b2-86bc8c5593f6
+    taskid: adbd4194-10e5-4f0d-8331-01b250983002
     type: regular
     task:
-      id: b97e22a1-1d13-4c9e-81b2-86bc8c5593f6
+      id: adbd4194-10e5-4f0d-8331-01b250983002
       version: -1
       name: Test MarkDown
+      description: Tests for common functions createEntry and TableToMarkDown
       scriptName: TestPYCommonServer
-      description: 'Tests for common functions createEntry and TableToMarkDown'
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
     scriptarguments:
       test_type:
         simple: MD
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -71,16 +79,17 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: b41c3542-9a1b-4114-80fb-e761d369fae1
+    taskid: 286eab76-1d7f-4653-8b62-9e92051f900f
     type: regular
     task:
-      id: b41c3542-9a1b-4114-80fb-e761d369fae1
+      id: 286eab76-1d7f-4653-8b62-9e92051f900f
       version: -1
       name: Test XML JSON relations
-      scriptName: TestPYCommonServer
       description: 'Tests for common functions xml2json and json2xml '
+      scriptName: TestPYCommonServer
       type: regular
       iscommand: false
       brand: ""
@@ -90,6 +99,7 @@ tasks:
     scriptarguments:
       test_type:
         simple: XML
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -97,12 +107,67 @@ tasks:
           "y": 195
         }
       }
+    note: false
+  "5":
+    id: "5"
+    taskid: 8d2c15bc-13be-4c1d-81b5-5e1044e4b97e
+    type: regular
+    task:
+      id: 8d2c15bc-13be-4c1d-81b5-5e1044e4b97e
+      version: -1
+      name: Test tableToMarkdown
+      description: Tests underscoreToCamelCase and tableToMarkDown with and without
+        headerTransform
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      extend-context: {}
+      test_type:
+        simple: TBLMD
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: ba3f0206-8e60-49ca-8deb-f4d7e46d23fe
+    type: regular
+    task:
+      id: ba3f0206-8e60-49ca-8deb-f4d7e46d23fe
+      version: -1
+      name: Test hash function
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      test_type:
+        simple: HASH
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 940,
         "width": 380,
         "x": 50,
         "y": 50
@@ -110,3 +175,5 @@ view: |-
     }
   }
 inputs: []
+outputs: []
+releaseNotes: "Add hash djb2 test"

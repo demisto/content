@@ -1,14 +1,14 @@
-id: 9c94b383-893a-42fd-8c41-d99b0a6e5492
-version: 15
+id: Cybereason Test
+version: -1
 name: Cybereason Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7da45d65-8da3-416d-8e7a-9f625aaead92
+    taskid: 55de9b19-3e78-45d3-8b95-e0594179a57e
     type: start
     task:
-      id: 7da45d65-8da3-416d-8e7a-9f625aaead92
+      id: 55de9b19-3e78-45d3-8b95-e0594179a57e
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,66 +24,18 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 593b7702-e9a6-4c3b-8126-dd46eedc7d19
+    taskid: e64b04fa-85eb-44cf-842e-33c3b04b02ed
     type: regular
     task:
-      id: 593b7702-e9a6-4c3b-8126-dd46eedc7d19
+      id: e64b04fa-85eb-44cf-842e-33c3b04b02ed
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      all: "yes"
-      key: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 35e28e44-dd9f-47f3-8aff-65b3e8f8cca7
-    type: regular
-    task:
-      id: 35e28e44-dd9f-47f3-8aff-65b3e8f8cca7
-      version: -1
-      name: cybereason-is-probe-connected (osboxes)
-      description: Checks if the given hostname exists in Cybereason.
+      name: cybereason-is-probe-connected
+      description: Checks if the machine is currently connected to the Cybereason
+        server
       script: Cybereason|||cybereason-is-probe-connected
-      type: regular
-      iscommand: true
-      brand: Cybereason
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      machine: osboxes
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 0397738f-d2ce-407b-83e9-37149ebba12b
-    type: regular
-    task:
-      id: 0397738f-d2ce-407b-83e9-37149ebba12b
-      version: -1
-      name: cybereason-login
-      script: Cybereason|||cybereason-login
       type: regular
       iscommand: true
       brand: Cybereason
@@ -90,7 +43,45 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      machine: ""
+      machine:
+        simple: ip-172-16-3-7.ec2.internal
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: f48abf9b-cc3e-4797-89d9-2a25a05a40ea
+    type: regular
+    task:
+      id: f48abf9b-cc3e-4797-89d9-2a25a05a40ea
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: isConnected,Name
+      path:
+        simple: Cybereason.Machine
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -98,29 +89,66 @@ tasks:
           "y": 370
         }
       }
-  "4":
-    id: "4"
-    taskid: 214d0aad-bb53-4766-8d2b-a9c7466fbcb2
+    note: false
+  "3":
+    id: "3"
+    taskid: e770a435-6b28-40b3-8aff-07fc067d94f6
     type: regular
     task:
-      id: 214d0aad-bb53-4766-8d2b-a9c7466fbcb2
+      id: e770a435-6b28-40b3-8aff-07fc067d94f6
       version: -1
-      name: cybereason-query-processes (hasIncomingConnections=true)
-      script: Cybereason|||cybereason-query-processes
+      name: cybereason-query-connections
+      description: Searches for connections.
+      script: Cybereason|||cybereason-query-connections
       type: regular
       iscommand: true
       brand: Cybereason
     nexttasks:
       '#none#':
+      - "4"
+    scriptarguments:
+      ip: {}
+      machine:
+        simple: ${Cybereason.Machine.Name}
+      saveToContext:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 90f11a9b-02e5-42e0-800d-c30af04de849
+    type: regular
+    task:
+      id: 90f11a9b-02e5-42e0-800d-c30af04de849
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
       - "5"
     scriptarguments:
-      hasIncomingConnection: "true"
-      hasOutgoingConnection: ""
-      limit: ""
-      machine: ""
-      onlySuspicious: ""
-      processName: ""
-      saveToContext: "true"
+      expectedValue: {}
+      fields:
+        simple: Name,Direction,ServerAddress,OwnerMachine,OwnerProcess,ServerPort,CreationTime,
+      path:
+        simple: Connection
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -128,25 +156,35 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: 1498bffd-0f81-4486-8251-fd1d4b203778
+    taskid: ad6fa381-adbb-419f-832a-9f7c941747f5
     type: regular
     task:
-      id: 1498bffd-0f81-4486-8251-fd1d4b203778
+      id: ad6fa381-adbb-419f-832a-9f7c941747f5
       version: -1
-      name: VerifyContext (Process)
-      scriptName: VerifyContext
+      name: cybereason-query-processes
+      description: Searches for processes with various filters.
+      script: Cybereason|||cybereason-query-processes
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Cybereason
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      expectedValue: ""
-      fields: Name,User,CreationTime,SignedAndVerified,CommandLine
-      path: Process
+      hasIncomingConnection: {}
+      hasOutgoingConnection: {}
+      limit:
+        simple: "5"
+      machine:
+        simple: ${Cybereason.Machine.Name}
+      onlySuspicious: {}
+      processName: {}
+      saveToContext:
+        simple: "true"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -154,66 +192,195 @@ tasks:
           "y": 895
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: ae8b4b7a-8627-476e-8481-22c3f5d05be2
+    taskid: faab8d5c-8fd1-4881-874c-6c1df0ae2917
     type: regular
     task:
-      id: ae8b4b7a-8627-476e-8481-22c3f5d05be2
+      id: faab8d5c-8fd1-4881-874c-6c1df0ae2917
       version: -1
-      name: cybereason-query-connections (machine=osboxes)
-      script: Cybereason|||cybereason-query-connections
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Name,CreationTime,EndTime,OwnerMachine,User
+      path:
+        simple: Process
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 7ca1237c-6fe9-4590-850a-73e953afee1e
+    type: title
+    task:
+      id: 7ca1237c-6fe9-4590-850a-73e953afee1e
+      version: -1
+      name: Success!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 7332e3c9-b256-4152-8696-587278081b48
+    type: regular
+    task:
+      id: 7332e3c9-b256-4152-8696-587278081b48
+      version: -1
+      name: cybereason-query-malops
+      description: Returns a list of all Malops and details on the Malops.
+      script: Cybereason|||cybereason-query-malops
       type: regular
       iscommand: true
       brand: Cybereason
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     scriptarguments:
-      hasIncomingConnection: "true"
-      hasOutgoingConnection: ""
-      ip: ""
-      limit: ""
-      machine: osboxes
-      onlySuspicious: ""
-      processName: ""
-      saveToContext: "true"
+      filters: {}
+      perGroupLimit: {}
+      templateContext: {}
+      totalResultLimit:
+        simple: "1"
+      withinLastDays: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1071
+          "y": 1420
         }
       }
-  "7":
-    id: "7"
-    taskid: d7be6d1a-3494-46c4-89db-13d46985b57e
+    note: false
+  "9":
+    id: "9"
+    taskid: ccc36dbf-1d79-4684-86db-82eb834d5598
     type: regular
     task:
-      id: d7be6d1a-3494-46c4-89db-13d46985b57e
+      id: ccc36dbf-1d79-4684-86db-82eb834d5598
       version: -1
-      name: VerifyContext (Connection)
+      name: cybereason-malop-processes
+      description: Returns a list of malops
+      script: Cybereason|||cybereason-malop-processes
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      malopGuids:
+        simple: ${Cybereason.Malops.[0].GUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: c3f13b3e-7889-4c37-88a6-b9a715c65de3
+    type: regular
+    task:
+      id: c3f13b3e-7889-4c37-88a6-b9a715c65de3
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
     scriptarguments:
-      expectedValue: ""
-      fields: ServerPort,EndTime,TransmittedBytes,ReceivedBytes,Name,CreationTime,RemoteCountry,ServerAddress,OwnerMachine,OwnerProcess,Direction
-      path: Connection
+      expectedValue: {}
+      fields:
+        simple: SHA1,Parent,Name,User,CreationTime,OwnerMachine,Malicious,ImageFile,ProductName,MD5,CommandLine
+      path:
+        simple: Process
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1241
+          "y": 1770
         }
       }
+    note: false
+  "11":
+    id: "11"
+    taskid: 6578e8e9-16e7-47fa-8f2f-87532a92ad74
+    type: regular
+    task:
+      id: 6578e8e9-16e7-47fa-8f2f-87532a92ad74
+      version: -1
+      name: DeleteContext - Process
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all: {}
+      key:
+        simple: Process
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1286,
+        "height": 1960,
         "width": 380,
         "x": 50,
         "y": 50
@@ -221,3 +388,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []

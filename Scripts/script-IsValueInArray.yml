@@ -10,13 +10,22 @@ script: |-
     return 'no';
   }
 
+  if (typeof array === 'string') {
+      try {
+          array = JSON.parse(array);
+      } catch(e) {
+          return (array === value) ? 'yes' : 'no';
+      }
+  }
+
   if (!Array.isArray(array)) {
     return (array === value) ? 'yes' : 'no';
   }
 
   var res = 'no';
-  array.forEach(function(item){
-    if (item === value) {
+  value = value.toString();
+  array.forEach(function(item) {
+    if (item.toString() === value) {
         res = 'yes';
     }
   });
@@ -25,7 +34,7 @@ script: |-
 type: javascript
 tags:
 - Condition
-comment: Look for value in an array
+comment: Indicates whether a given value is a member of given array
 enabled: true
 args:
 - name: array
@@ -39,3 +48,4 @@ outputs:
 - contextPath: "no"
   description: The list does not contain the value
 scripttarget: 0
+runonce: false

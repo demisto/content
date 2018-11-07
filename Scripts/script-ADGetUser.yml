@@ -2,7 +2,10 @@ commonfields:
   id: ADGetUser
   version: -1
 name: ADGetUser
+releaseNotes: Improve display formatting of UserAccountControl flags
 script: |-
+  import re
+
   UserAccountControlFlags = {
       'SCRIPT': 0x0001,
       'ACCOUNTDISABLE': 0x0002,
@@ -31,6 +34,11 @@ script: |-
   limit = 20
   if demisto.get(demisto.args(), 'limit'):
       limit = demisto.args()['limit']
+
+
+  def escapeSpecialCharacters(s):
+      return re.sub(r'([\()])', lambda r : '\\' + r.group(), s)
+
 
   def createAccountEntities(t,attrs):
       accounts = []
@@ -83,8 +91,11 @@ script: |-
               if 'UserAccountControl' not in m['Contents'][0] or m['Contents'][0]['UserAccountControl'] == "":
                   continue
               if userAccountControlOut:
+                  accountControlFlags = []
                   for flag, mask in UserAccountControlFlags.iteritems():
-                      m['Contents'][0][flag] = int(m['Contents'][0]['UserAccountControl'],10) & mask != 0
+                      if int(m['Contents'][0]['UserAccountControl'],10) & mask != 0:
+                          accountControlFlags.append(flag)
+                  m['Contents'][0]['UserAccountControl'] = ', '.join(accountControlFlags)
               else:
                   m['Contents'][0]['ACCOUNTDISABLE'] = int(m['Contents'][0]['UserAccountControl'],10) & 2 != 0
           return resAD
@@ -112,7 +123,7 @@ script: |-
       if using:
           args['using'] = using
       if not queryType == "distinguishedName":
-          filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType,queryValue)
+          filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType, queryValue)
           args['filter'] = filterstr
           resp = demisto.executeCommand('ad-search', args)
           if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
@@ -124,7 +135,7 @@ script: |-
               except Exception as ex:
                   return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) }
               queryType = "distinguishedName"
-              queryValue = userDN
+              queryValue = escapeSpecialCharacters(userDN)
 
       filterstr = r"(&(objectClass=User)(distinguishedName=" + queryValue + "))"
       args['filter'] = filterstr
@@ -180,7 +191,7 @@ script: |-
           queryType = demisto.args()['customFieldType']
   resp = None
   if queryValue and queryType:
-      resp = queryBuilder(queryType,queryValue,attrs,nestedSearch,demisto.get(demisto.args(),'using'), userAccountControlOut)
+      resp = queryBuilder(queryType,escapeSpecialCharacters(queryValue),attrs,nestedSearch,demisto.get(demisto.args(),'using'), userAccountControlOut)
   else:
       resp = listAll(attrs, demisto.get(demisto.args(),'using'), userAccountControlOut)
 
@@ -224,6 +235,7 @@ tags:
 comment: |-
   Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
   If no filter is provided, the result will show all users.
+enabled: true
 system: true
 args:
 - name: dn
@@ -256,7 +268,6 @@ args:
   description: mail attribute of desire user
 - name: userAccountControlOut
   auto: PREDEFINED
-  description: Get translated user acount control flags
   predefined:
   - "true"
   - "false"
@@ -302,6 +313,7 @@ outputs:
   description: The indicator's score
   type: number
 scripttarget: 0
+runonce: false
 dependson:
   must:
   - ad-search

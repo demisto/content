@@ -1,52 +1,64 @@
 # Content Contribution Guide
 
+![Content logo](demisto_content_logo.png)
+
+Welcome to Demisto content repo!
+
+## How to contribute
+
+Demisto content is MIT Licensed and accepts contributions via GitHub pull requests.
+If you are a first time GitHub contributor, please look at these links explaining on how to create a Pull Request to a GitHub repo:
+* https://guides.github.com/activities/forking/
+* https://help.github.com/articles/creating-a-pull-request-from-a-fork/
+
+**Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
+
 ## Contributing Playbooks
 
-Our playbooks are described in an open format called [COPS](https://github.com/demisto/COPS) which we released as an initiative to drive collaboration and interoperability within the InfoSec community.
-
-In order to contribute playbooks you need to save them in the COPS format (as a yaml file) and create a Pull Request.
-
-You can also edit them visually inside the Demisto Platform and then export to a yaml file.
+You can edit or create playbooks visually inside the Demisto Platform and then export to a yaml file.
 
 To add a new playbook, or modify and enhance an existing playbook - just open a Pull Request in this repo.
 
+Some requirements for playbooks yaml are:
+1. Change playbook version to `-1`
+2. Make sure all tasks (including 'Title' task) have a description
+3. If the playbook is dependant on some sub-playbook not part of this repo, please add it too in same Pull Request
+4. It should be added under the Playbooks folder, using the naming convention starting with prefix `playbook-`
+
 ## Contributing Scripts
 
-Each of our scripts comes as a self-contained yml file that includes the script itself (in Python or Javascript) as well as its description, arguments, and more.
+Each of our scripts comes as a self-contained yaml file that includes the script itself (in Python or Javascript) as well as its description, arguments, and more.
 
-Here is a description of the script yml format's fields and structure:
+Here is a description of the script yaml format's fields and structure:
 
 ``` yaml
 commonfields:
-  id: MyScript
-  version: -1
-name: MyScript
+  id: TextFromHTML
+  version: 1
+name: TextFromHTML
 script: |-
-  //Execute a command on a remote machine
-  var entries = executeCommand("ssh", args);
-  if (entries[0].Contents === null) {
-      output.push({ContentsFormat: formats.text, Type: entryTypes.error, Contents: "Failed to execute remote command."});
-  } else {
-      return entries[0];     
-  }
-  return output;
-type: javascript
+  import re
+  body = re.search(r'<body.*/body>', demisto.args()['html'], re.M + re.S + re.I)
+  if body and body.group(0):
+      data = re.sub(r'<.*?>', '', body.group(0))
+      entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ', 'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
+      for e in entities:
+          data = data.replace('&' + e + ';', entities[e])
+      demisto.results(data)
+  else:
+      demisto.results('Could not extract text')
+type: python
 tags:
-- endpoint
-- ssh
-comment: Execute a command via ssh
+- Utility
+comment: Extract regular text from the given HTML
+system: true
 args:
-- name: system
+- name: html
   required: true
-  description: Name of system on which to run the command
-- name: cmd
-  required: true
-  description: Command to run
+  default: true
+  description: The HTML to strip tags from
 scripttarget: 0
-dependson:
-  must:
-  - ssh
-system: false
+dependson: {}
 timeout: 0s
 ```
 
@@ -56,14 +68,32 @@ timeout: 0s
 * type: `javascript` or `python`
 * tags: array of tags of the script
 * comment: A brief description of the script's purpose and any other important things to know - appears in the Automation page and in the CLI autocomplete.
-* arguments: array of script arguments
+* args: array of script arguments
 	* name: argument name
     * description: argument description - appears in automation page and in the CLI autocomplete
-    * required: Whether the user must provide this argument to run the script - yes for mandatory, no for optional
-    * default: (Only one "yes" per script) Argument can be provided without its name - e.g. `!whois google.com` instead of `!whois domain=google.com`
-* system: "yes" if the script is provided with the platform and is locked and unmodifiable - set to "no" for scripts user creates from within the product.
+    * required: Whether the user must provide this argument to run the script - true for mandatory, false for optional
+    * default: (Only one "true" per script) Argument can be provided without its name - e.g. `!whois google.com` instead of `!whois domain=google.com`
+* system: "yes" if the script is provided with the platform and is locked and unmodifiable - set to "false" for scripts user creates from within the product.
 * scriptTarget: 0 for server script, 1 for agent script (to be run by the Demisto d2 dissolvable agent on the endpoint side)
 * dependsOn: The commands required for the script to be used - if these commands are unavailable (e.g. because no integration that implements them has been configured) then the script will not appear in the CLI's autocomplete (it can still be viewed and edited on the Automation page).
+* dockerimage: The Docker image name the automation needs to run on, if empty will use default demisto docker image (demisto/python)
+
+Some requirements for scripts yaml are:
+1. Make sure it has a description
+2. It should be added under the Script folder, using the naming convention starting with prefix `script-`
+3. If the script uses some Docker image, make sure it's publicly available on docker hub
+
+## Contributing Integrations
+
+Integrations are build with BYOI feature inside demisto platform, to be later exported to yaml format.
+
+Some requirements for integrations yaml are:
+1. Change integration version to `-1`
+2. Make sure the integration and each of its commands, inputs and outputs have a description
+3. If the integrations uses some Docker image, make sure it's publicly available on docker hub
+4. It should be added under the Integrations folder, using the naming convention starting with prefix `integration-`
+
+------------
 
 If you have a suggestion or an opportunity for improvement that you've identified, please open an issue in this repo.
-Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
+Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](http://go.demisto.com/join-our-slack-community), or at [info@demisto.com](mailto:info@demisto.com)

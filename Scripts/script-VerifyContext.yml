@@ -43,7 +43,7 @@ script: |-
 type: javascript
 tags:
 - context
-- Utilities
+- Utility
 comment: |-
   Verifies path in context:
   - Verifies path existence

@@ -1,0 +1,2213 @@
+id: d66e5f86-e045-403f-819e-5058aa603c32
+version: 10
+name: AWS - EC2 Test Playbook actions
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: beb9e3f7-e982-4b36-8e24-76b309a29c2b
+    type: start
+    task:
+      id: beb9e3f7-e982-4b36-8e24-76b309a29c2b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: ea1664c9-3d2d-4e1c-8ef5-ef5fafaf1558
+    type: regular
+    task:
+      id: ea1664c9-3d2d-4e1c-8ef5-ef5fafaf1558
+      version: -1
+      name: aws-ec2-allocate-address
+      description: Allocates an Elastic IP address.
+      script: AWS - EC2|||aws-ec2-allocate-address
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "31"
+      - "30"
+      - "32"
+    scriptarguments:
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 788d0946-b8a1-4cef-85ca-361877f33754
+    type: regular
+    task:
+      id: 788d0946-b8a1-4cef-85ca-361877f33754
+      version: -1
+      name: aws-ec2-associate-address
+      description: Associates an Elastic IP address with an instance or a network
+        interface.
+      script: AWS - EC2|||aws-ec2-associate-address
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      allocationId:
+        simple: ${AWS.EC2.ElasticIPs.AllocationId}
+      allowReassociation: {}
+      instanceId:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      networkInterfaceId: {}
+      privateIpAddress: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2295
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c1f7ead8-7b2d-494e-8093-2e4aeeac1824
+    type: regular
+    task:
+      id: c1f7ead8-7b2d-494e-8093-2e4aeeac1824
+      version: -1
+      name: aws-ec2-create-snapshot
+      description: Creates a snapshot of an EBS volume and stores it in Amazon S3.
+        You can use snapshots for backups, to make copies of EBS volumes, and to save
+        data before shutting down an instance.
+      script: AWS - EC2|||aws-ec2-create-snapshot
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "46"
+      - "45"
+      - "47"
+    scriptarguments:
+      description:
+        simple: test
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      tags: {}
+      volumeId:
+        simple: ${AWS.EC2.Instances.BlockDeviceMappings.Ebs.VolumeId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2645
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 6dbc4a3e-23ea-4f99-816c-8c6d6beed69c
+    type: regular
+    task:
+      id: 6dbc4a3e-23ea-4f99-816c-8c6d6beed69c
+      version: -1
+      name: aws-ec2-delete-snapshot
+      description: Deletes the specified snapshot.
+      script: AWS - EC2|||aws-ec2-delete-snapshot
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      snapshotId:
+        simple: ${AWS.EC2.Snapshots.SnapshotId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3170
+        }
+      }
+  "5":
+    id: "5"
+    taskid: b6d3f586-90ea-49d1-8d97-3e9a141f02d0
+    type: regular
+    task:
+      id: b6d3f586-90ea-49d1-8d97-3e9a141f02d0
+      version: -1
+      name: aws-ec2-create-image
+      description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
+        that is either running or stopped.
+      script: AWS - EC2|||aws-ec2-create-image
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "52"
+      - "51"
+    scriptarguments:
+      description:
+        simple: test
+      instanceId:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      name:
+        simple: Test
+      noReboot:
+        simple: "True"
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3695
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 187eef3e-38bd-4b1e-8173-b08a6c7abd3a
+    type: regular
+    task:
+      id: 187eef3e-38bd-4b1e-8173-b08a6c7abd3a
+      version: -1
+      name: aws-ec2-deregister-image
+      description: Deregisters the specified AMI.
+      script: AWS - EC2|||aws-ec2-deregister-image
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      imageId:
+        simple: ${AWS.EC2.Images.[1].ImageId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4220
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 263f24c2-5f2c-495d-89ce-ae0eba350327
+    type: regular
+    task:
+      id: 263f24c2-5f2c-495d-89ce-ae0eba350327
+      version: -1
+      name: aws-ec2-modify-volume
+      description: You can modify several parameters of an existing EBS volume, including
+        volume size, volume type, and IOPS capacity.
+      script: AWS - EC2|||aws-ec2-modify-volume
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "48"
+      - "49"
+      - "50"
+    scriptarguments:
+      iops: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      size:
+        simple: "60"
+      volumeId:
+        simple: ${AWS.EC2.Instances.BlockDeviceMappings.Ebs.VolumeId}
+      volumeType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3345
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 760e306b-8acb-4d63-87d3-9bfc394da1c0
+    type: regular
+    task:
+      id: 760e306b-8acb-4d63-87d3-9bfc394da1c0
+      version: -1
+      name: aws-ec2-create-tags
+      description: Adds or overwrites one or more tags for the specified Amazon EC2
+        resource or resources.
+      script: AWS - EC2|||aws-ec2-create-tags
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      region: {}
+      resources:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      tags:
+        simple: key=Usage,value=Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 006ebd46-cc2e-4fd0-82f5-800f2a25eb66
+    type: regular
+    task:
+      id: 006ebd46-cc2e-4fd0-82f5-800f2a25eb66
+      version: -1
+      name: aws-ec2-disassociate-address
+      description: Disassociates an Elastic IP address from the instance or network
+        interface its associated with.
+      script: AWS - EC2|||aws-ec2-disassociate-address
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      associationId:
+        simple: ${AWS.EC2.ElasticIPs.AssociationId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5620
+        }
+      }
+  "10":
+    id: "10"
+    taskid: b0e6d39c-688d-49f0-822b-2990f1122fd9
+    type: regular
+    task:
+      id: b0e6d39c-688d-49f0-822b-2990f1122fd9
+      version: -1
+      name: aws-ec2-release-address
+      description: Releases the specified Elastic IP address.
+      script: AWS - EC2|||aws-ec2-release-address
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      allocationId:
+        simple: ${AWS.EC2.ElasticIPs.AllocationId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5795
+        }
+      }
+  "11":
+    id: "11"
+    taskid: e7cb5396-d9b3-45e4-8591-66036df8b4b7
+    type: regular
+    task:
+      id: e7cb5396-d9b3-45e4-8591-66036df8b4b7
+      version: -1
+      name: aws-ec2-start-instances
+      description: Starts an Amazon EBS-backed instance that you have previously stopped.
+      script: AWS - EC2|||aws-ec2-start-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6320
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 8c47f9c5-7f35-4264-8600-0bbb9b2264ca
+    type: regular
+    task:
+      id: 8c47f9c5-7f35-4264-8600-0bbb9b2264ca
+      version: -1
+      name: aws-ec2-stop-instances
+      description: Stops an Amazon EBS-backed instance.
+      script: AWS - EC2|||aws-ec2-stop-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5970
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 0c3e564a-0500-44e4-8e17-ae9fae894877
+    type: regular
+    task:
+      id: 0c3e564a-0500-44e4-8e17-ae9fae894877
+      version: -1
+      name: aws-ec2-terminate-instances
+      description: Shuts down one or more instances. This operation is idempotent;
+        if you terminate an instance more than once, each call succeeds.
+      script: AWS - EC2|||aws-ec2-terminate-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6670
+        }
+      }
+  "14":
+    id: "14"
+    taskid: f925a723-51ba-44ac-8866-cea0c398b780
+    type: regular
+    task:
+      id: f925a723-51ba-44ac-8866-cea0c398b780
+      version: -1
+      name: aws-ec2-create-volume
+      description: Creates an EBS volume that can be attached to an instance in the
+        same Availability Zone.
+      script: AWS - EC2|||aws-ec2-create-volume
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "55"
+      - "53"
+      - "54"
+    scriptarguments:
+      availabilityZone:
+        simple: ${AWS.EC2.Instances.Placement.AvailabilityZone}
+      encrypted: {}
+      iops: {}
+      kmsKeyId: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      size:
+        simple: "20"
+      snapshotId: {}
+      tags: {}
+      volumeType:
+        simple: gp2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4395
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 16309c07-8586-442f-80fe-a961bdfc3d43
+    type: regular
+    task:
+      id: 16309c07-8586-442f-80fe-a961bdfc3d43
+      version: -1
+      name: aws-ec2-attach-volume
+      description: Attaches an EBS volume to a running or stopped instance and exposes
+        it to the instance with the specified device name.
+      script: AWS - EC2|||aws-ec2-attach-volume
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "58"
+      - "56"
+      - "57"
+    scriptarguments:
+      device:
+        simple: /dev/xvdb
+      instanceId:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      volumeId:
+        simple: ${AWS.EC2.Volumes.VolumeId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4745
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 8e0d5377-d8a5-4b61-8e5a-90e3815ede0c
+    type: regular
+    task:
+      id: 8e0d5377-d8a5-4b61-8e5a-90e3815ede0c
+      version: -1
+      name: aws-ec2-detach-volume
+      description: Detaches an EBS volume from an instance.
+      script: AWS - EC2|||aws-ec2-detach-volume
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "61"
+      - "60"
+      - "59"
+    scriptarguments:
+      device: {}
+      force: {}
+      instanceId: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      volumeId:
+        simple: ${AWS.EC2.Volumes.VolumeId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5095
+        }
+      }
+  "17":
+    id: "17"
+    taskid: f49af2b2-4b3b-49ac-85ce-aef09cab2ff6
+    type: regular
+    task:
+      id: f49af2b2-4b3b-49ac-85ce-aef09cab2ff6
+      version: -1
+      name: aws-ec2-delete-volume
+      description: Deletes the specified EBS volume. The volume must be in the available
+        state (not attached to an instance).
+      script: AWS - EC2|||aws-ec2-delete-volume
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      volumeId:
+        simple: ${AWS.EC2.Volumes.VolumeId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5445
+        }
+      }
+  "18":
+    id: "18"
+    taskid: d010d4c1-0f71-4135-8ea3-f12ae8ce6a59
+    type: regular
+    task:
+      id: d010d4c1-0f71-4135-8ea3-f12ae8ce6a59
+      version: -1
+      name: aws-ec2-run-instances
+      description: Launches the specified number of instances using an AMI for which
+        you have permissions. You can create a launch template , which is a resource
+        that contains the parameters to launch an instance. When you launch an instance
+        using RunInstances , you can specify the launch template instead of specifying
+        the launch parameters. An instance is ready for you to use when its in the
+        running state. You can check the state of your instance using DescribeInstances.
+      script: AWS - EC2|||aws-ec2-run-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "41"
+      - "40"
+      - "39"
+      - "43"
+      - "42"
+    scriptarguments:
+      count:
+        simple: "1"
+      deviceName:
+        simple: /dev/xvda
+      disableApiTermination: {}
+      ebsDeleteOnTermination:
+        simple: "True"
+      ebsEncrypted: {}
+      ebsIops: {}
+      ebsKmsKeyId: {}
+      ebsOptimized: {}
+      ebsSnapshotId: {}
+      ebsVolumeSize:
+        simple: "50"
+      ebsVolumeType:
+        simple: gp2
+      iamInstanceProfileArn: {}
+      iamInstanceProfileName: {}
+      imageId:
+        simple: ${AWS.EC2.Images.ImageId}
+      instanceType:
+        simple: t2.small
+      keyName:
+        simple: frankfurt-test
+      launchTemplateId: {}
+      launchTemplateName: {}
+      launchTemplateVersion: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      securityGroupIds:
+        simple: ${AWS.EC2.SecurityGroups.GroupId}
+      securityGroups: {}
+      subnetId: {}
+      tags:
+        simple: key=Name,Value=PlaybookTest
+      userData: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 38338691-f682-416c-84be-e42160b4ec26
+    type: regular
+    task:
+      id: 38338691-f682-416c-84be-e42160b4ec26
+      version: -1
+      name: aws-ec2-waiter-instance-running
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached.
+      script: AWS - EC2|||aws-ec2-waiter-instance-running
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      filter: {}
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6495
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 79b45b77-a95f-4e94-8012-e4268546f11c
+    type: regular
+    task:
+      id: 79b45b77-a95f-4e94-8012-e4268546f11c
+      version: -1
+      name: aws-ec2-waiter-instance-status-ok
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached
+      script: AWS - EC2|||aws-ec2-waiter-instance-status-ok
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      filter: {}
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+  "21":
+    id: "21"
+    taskid: 0b614353-bbda-4a0d-87c4-2e5bfc6a579f
+    type: regular
+    task:
+      id: 0b614353-bbda-4a0d-87c4-2e5bfc6a579f
+      version: -1
+      name: aws-ec2-waiter-instance-stopped
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached
+      script: AWS - EC2|||aws-ec2-waiter-instance-stopped
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      filter: {}
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6145
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 500f4ee4-3069-428d-8d32-92fb22176520
+    type: regular
+    task:
+      id: 500f4ee4-3069-428d-8d32-92fb22176520
+      version: -1
+      name: aws-ec2-waiter-instance-terminated
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached
+      script: AWS - EC2|||aws-ec2-waiter-instance-terminated
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      filter: {}
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6845
+        }
+      }
+  "23":
+    id: "23"
+    taskid: ca2033d2-e089-4cfa-8a73-17a3f384bd17
+    type: regular
+    task:
+      id: ca2033d2-e089-4cfa-8a73-17a3f384bd17
+      version: -1
+      name: aws-ec2-waiter-image-available
+      description: A waiter function that waits until image is avilable
+      script: AWS - EC2|||aws-ec2-waiter-image-available
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      executableUsers: {}
+      filters: {}
+      imageIds:
+        simple: ${AWS.EC2.Images.[1].ImageId}
+      owners: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4045
+        }
+      }
+  "24":
+    id: "24"
+    taskid: df7ed2fe-827c-4ae0-860c-c8eb1f15a41e
+    type: regular
+    task:
+      id: df7ed2fe-827c-4ae0-860c-c8eb1f15a41e
+      version: -1
+      name: aws-ec2-waiter-snapshot_completed
+      description: A waiter function that waits until the snapshot is complate
+      script: AWS - EC2|||aws-ec2-waiter-snapshot_completed
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filters: {}
+      ownerIds: {}
+      region: {}
+      restorableByUserIds: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      snapshotIds:
+        simple: ${AWS.EC2.Snapshots.SnapshotId}
+      waiterDelay: {}
+      waiterMaxAttempts: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2995
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 4d4d74dc-59cd-4483-8c63-495868225a4a
+    type: regular
+    task:
+      id: 4d4d74dc-59cd-4483-8c63-495868225a4a
+      version: -1
+      name: aws-ec2-get-latest-ami
+      description: Get The latest AMI
+      script: AWS - EC2|||aws-ec2-get-latest-ami
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "34"
+      - "35"
+      - "33"
+    scriptarguments:
+      executableUsers: {}
+      filters:
+        simple: Name=name,Values=CentOS Linux 7 x86_64 HVM EBS*
+      owners:
+        simple: aws-marketplace
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 3f20a62e-da27-4cbf-8332-25ba2f152308
+    type: regular
+    task:
+      id: 3f20a62e-da27-4cbf-8332-25ba2f152308
+      version: -1
+      name: aws-ec2-create-security-group
+      description: Creates a security group.
+      script: AWS - EC2|||aws-ec2-create-security-group
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "38"
+      - "37"
+      - "36"
+    scriptarguments:
+      description:
+        simple: Demisto-PlaybookTest
+      groupName:
+        simple: Demisto-PlaybookTest
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      vpcId:
+        simple: vpc-7bfc8e10
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 7f6707cd-f894-4148-8e7d-370680691b8b
+    type: regular
+    task:
+      id: 7f6707cd-f894-4148-8e7d-370680691b8b
+      version: -1
+      name: aws-ec2-delete-security-group
+      description: Deletes a security group.
+      script: AWS - EC2|||aws-ec2-delete-security-group
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    scriptarguments:
+      groupId:
+        simple: ${AWS.EC2.SecurityGroups.GroupId}
+      groupName: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7195
+        }
+      }
+  "28":
+    id: "28"
+    taskid: a890cea5-8061-4e4c-8126-4851f44c6ef0
+    type: regular
+    task:
+      id: a890cea5-8061-4e4c-8126-4851f44c6ef0
+      version: -1
+      name: aws-ec2-authorize-security-group-ingress-rule
+      description: Adds ingress rule to a security group.
+      script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      cidrIp:
+        simple: 0.0.0.0/0
+      fromPort:
+        simple: "22"
+      groupId:
+        simple: ${AWS.EC2.SecurityGroups.GroupId}
+      ipProtocol:
+        simple: TCP
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sourceSecurityGroupName: {}
+      toPort:
+        simple: "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+  "29":
+    id: "29"
+    taskid: bb5ab42f-b68d-49d9-863a-fa5eef4cb823
+    type: regular
+    task:
+      id: bb5ab42f-b68d-49d9-863a-fa5eef4cb823
+      version: -1
+      name: aws-ec2-revoke-security-group-ingress-rule
+      description: Removes egress rule from a security group. To remove a rule, the
+        values that you specify (for example, ports) must match the existing rule's
+        values exactly.
+      script: AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      cidrIp:
+        simple: 0.0.0.0/0
+      fromPort:
+        simple: "22"
+      groupId:
+        simple: ${AWS.EC2.SecurityGroups.GroupId}
+      ipProtocol:
+        simple: TCP
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sourceSecurityGroupName: {}
+      toPort:
+        simple: "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7020
+        }
+      }
+  "30":
+    id: "30"
+    taskid: c0faae7d-ad7d-437f-8360-4fb5a532ef9a
+    type: regular
+    task:
+      id: c0faae7d-ad7d-437f-8360-4fb5a532ef9a
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.ElasticIPs.AllocationId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "31":
+    id: "31"
+    taskid: 998bebfa-9354-4122-8167-0e6762b309a6
+    type: regular
+    task:
+      id: 998bebfa-9354-4122-8167-0e6762b309a6
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.ElasticIPs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "32":
+    id: "32"
+    taskid: b23e7234-ac94-44fe-839d-232af90346a2
+    type: regular
+    task:
+      id: b23e7234-ac94-44fe-839d-232af90346a2
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.ElasticIPs.PublicIp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 8c65d0f0-49ec-4c9b-8a61-68f894d69aba
+    type: regular
+    task:
+      id: 8c65d0f0-49ec-4c9b-8a61-68f894d69aba
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Images.CreationDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "34":
+    id: "34"
+    taskid: b0bafea8-34cd-4462-8728-fbc7078eb557
+    type: regular
+    task:
+      id: b0bafea8-34cd-4462-8728-fbc7078eb557
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Images.ImageId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+  "35":
+    id: "35"
+    taskid: b38a5cae-8f82-41a5-8645-407311110010
+    type: regular
+    task:
+      id: b38a5cae-8f82-41a5-8645-407311110010
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Images.ImageType
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+  "36":
+    id: "36"
+    taskid: 4aac4674-f9c3-49ce-837d-7ca38ecaec2d
+    type: regular
+    task:
+      id: 4aac4674-f9c3-49ce-837d-7ca38ecaec2d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.SecurityGroups.VpcId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "37":
+    id: "37"
+    taskid: be8f464b-258c-4d72-8fe0-c04e6114dd61
+    type: regular
+    task:
+      id: be8f464b-258c-4d72-8fe0-c04e6114dd61
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.SecurityGroups.Description
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+  "38":
+    id: "38"
+    taskid: b4392bdb-7c34-4f06-8902-ab41da666562
+    type: regular
+    task:
+      id: b4392bdb-7c34-4f06-8902-ab41da666562
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.SecurityGroups.GroupName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1070
+        }
+      }
+  "39":
+    id: "39"
+    taskid: 4913e766-6ab9-4490-8a5b-0c0200ba8391
+    type: regular
+    task:
+      id: 4913e766-6ab9-4490-8a5b-0c0200ba8391
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Instances.InstanceType
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "40":
+    id: "40"
+    taskid: d934d408-90c0-4402-828d-dcabbe2ea336
+    type: regular
+    task:
+      id: d934d408-90c0-4402-828d-dcabbe2ea336
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Instances.SecurityGroups.GroupId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+  "41":
+    id: "41"
+    taskid: f36a7c64-c62c-4133-8983-1fa2333ce593
+    type: regular
+    task:
+      id: f36a7c64-c62c-4133-8983-1fa2333ce593
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Instances.InstanceId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
+  "42":
+    id: "42"
+    taskid: 1a42d949-5d4a-4cf7-812a-a269d2be8a6e
+    type: regular
+    task:
+      id: 1a42d949-5d4a-4cf7-812a-a269d2be8a6e
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Instances.Monitoring.State
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1595
+        }
+      }
+  "43":
+    id: "43"
+    taskid: 616c31c0-4e44-4319-8f2d-431ca798618f
+    type: regular
+    task:
+      id: 616c31c0-4e44-4319-8f2d-431ca798618f
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Instances.SubnetId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1595
+        }
+      }
+  "44":
+    id: "44"
+    taskid: 7df4d0b3-a4de-461d-8476-374351e1dcd8
+    type: regular
+    task:
+      id: 7df4d0b3-a4de-461d-8476-374351e1dcd8
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.ElasticIPs.AssociationId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2470
+        }
+      }
+  "45":
+    id: "45"
+    taskid: 121bcd37-247b-4d50-86f4-dfdf1313e8e4
+    type: regular
+    task:
+      id: 121bcd37-247b-4d50-86f4-dfdf1313e8e4
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Snapshots.SnapshotId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
+  "46":
+    id: "46"
+    taskid: a0fc4d4a-6fcf-4ec3-8390-6d68bffa5b29
+    type: regular
+    task:
+      id: a0fc4d4a-6fcf-4ec3-8390-6d68bffa5b29
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Snapshots.State
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2820
+        }
+      }
+  "47":
+    id: "47"
+    taskid: 0db5d86f-8961-4536-8772-5f25388c4217
+    type: regular
+    task:
+      id: 0db5d86f-8961-4536-8772-5f25388c4217
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Snapshots.StartTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2820
+        }
+      }
+  "48":
+    id: "48"
+    taskid: a08cf570-6cdf-45ed-856c-62cfa52e5a48
+    type: regular
+    task:
+      id: a08cf570-6cdf-45ed-856c-62cfa52e5a48
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Modification.VolumeId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3520
+        }
+      }
+  "49":
+    id: "49"
+    taskid: a0ef2184-adc0-4ec3-8b00-5c9642c5b4cc
+    type: regular
+    task:
+      id: a0ef2184-adc0-4ec3-8b00-5c9642c5b4cc
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Modification.ModificationState
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3520
+        }
+      }
+  "50":
+    id: "50"
+    taskid: 5a7d1519-65ee-4e2c-8796-c480c4cd6940
+    type: regular
+    task:
+      id: 5a7d1519-65ee-4e2c-8796-c480c4cd6940
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Modification.OriginalSize
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3520
+        }
+      }
+  "51":
+    id: "51"
+    taskid: 3e51a3c4-1740-4ce8-8475-2cce8ef85449
+    type: regular
+    task:
+      id: 3e51a3c4-1740-4ce8-8475-2cce8ef85449
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Images.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3870
+        }
+      }
+  "52":
+    id: "52"
+    taskid: 1ab4659d-16d6-421b-87ca-f1100a2d7555
+    type: regular
+    task:
+      id: 1ab4659d-16d6-421b-87ca-f1100a2d7555
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Images.ImageId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3870
+        }
+      }
+  "53":
+    id: "53"
+    taskid: ddee90c9-8dac-4177-8f52-b921f2b094ae
+    type: regular
+    task:
+      id: ddee90c9-8dac-4177-8f52-b921f2b094ae
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Iops
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4570
+        }
+      }
+  "54":
+    id: "54"
+    taskid: 0a5a8edb-bed2-428b-85e3-9f29d975300a
+    type: regular
+    task:
+      id: 0a5a8edb-bed2-428b-85e3-9f29d975300a
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.VolumeId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4570
+        }
+      }
+  "55":
+    id: "55"
+    taskid: 23b9217f-8f3d-47e6-8dc8-e83d389d0d70
+    type: regular
+    task:
+      id: 23b9217f-8f3d-47e6-8dc8-e83d389d0d70
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Size
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4570
+        }
+      }
+  "56":
+    id: "56"
+    taskid: d244f43c-d951-406b-82e9-0d5098d72726
+    type: regular
+    task:
+      id: d244f43c-d951-406b-82e9-0d5098d72726
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Attachments.Device
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4920
+        }
+      }
+  "57":
+    id: "57"
+    taskid: 995af8ff-b70d-49a6-83b2-4ad5edd8d5f9
+    type: regular
+    task:
+      id: 995af8ff-b70d-49a6-83b2-4ad5edd8d5f9
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Attachments.VolumeId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4920
+        }
+      }
+  "58":
+    id: "58"
+    taskid: de423f76-952d-48ed-89e3-031a485a26c4
+    type: regular
+    task:
+      id: de423f76-952d-48ed-89e3-031a485a26c4
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Attachments.AttachTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4920
+        }
+      }
+  "59":
+    id: "59"
+    taskid: b26216c8-40f1-41c8-848c-b5995d1a7634
+    type: regular
+    task:
+      id: b26216c8-40f1-41c8-848c-b5995d1a7634
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Attachments.InstanceId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5270
+        }
+      }
+  "60":
+    id: "60"
+    taskid: e1577099-05e2-4614-804a-d643a7c709e3
+    type: regular
+    task:
+      id: e1577099-05e2-4614-804a-d643a7c709e3
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Attachments.AttachTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5270
+        }
+      }
+  "61":
+    id: "61"
+    taskid: 9ee32eed-2033-4e59-8d86-30fe515c8c29
+    type: regular
+    task:
+      id: 9ee32eed-2033-4e59-8d86-30fe515c8c29
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.EC2.Volumes.Attachments.Device
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5270
+        }
+      }
+  "62":
+    id: "62"
+    taskid: 71cf959c-899a-41ad-8444-08519900e650
+    type: regular
+    task:
+      id: 71cf959c-899a-41ad-8444-08519900e650
+      version: -1
+      name: aws-ec2-describe-instances
+      description: Describes one or more of your instances.
+      script: AWS - EC2|||aws-ec2-describe-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      filters: {}
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1939
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7240,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

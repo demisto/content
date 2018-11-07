@@ -188,9 +188,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Tanium
-    nexttasks:
-      '#none#':
-      - "10"
     scriptarguments:
       action_filters: ""
       action_options: ""
@@ -204,56 +201,12 @@ tasks:
           "y": 1152
         }
       }
-  "10":
-    id: "10"
-    taskid: b34ca7a6-2cd0-4a2d-8f15-2c972b6c752f
-    type: title
-    task:
-      description: ""
-      id: b34ca7a6-2cd0-4a2d-8f15-2c972b6c752f
-      version: -1
-      name: Actions pending approval - Viewing and approving
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1337
-        }
-      }
-  "11":
-    id: "11"
-    taskid: 57bece2b-2d4c-4c85-8c7c-f7e5e7c8e3bd
-    type: regular
-    task:
-      id: 57bece2b-2d4c-4c85-8c7c-f7e5e7c8e3bd
-      version: -1
-      name: Approve pending "USB Write On" Tanium action
-      description: Approve saved actions
-      script: Tanium|||tn-approve-pending-action
-      type: regular
-      iscommand: true
-      brand: Tanium
-    scriptarguments:
-      action_id: ${Tanium.SavedActions.Id}
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1517
-        }
-      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1558,
+        "height": 1193,
         "width": 380,
         "x": 450,
         "y": 54
@@ -261,3 +214,6 @@ view: |-
     }
   }
 inputs: []
+releaseNotes: "-"
+tests:
+  - Forgive me for my sins but I did not create any test

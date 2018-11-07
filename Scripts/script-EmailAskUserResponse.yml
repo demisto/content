@@ -7,7 +7,8 @@ script: |
 
   if (res[0].Type==entryTypes.note) {
       text = res[0].Contents;
-      text = text.replace(/\n/g,'__NL__')
+      text = text.replace(/<br\/?>/gi,'\n')
+                  .replace(/\n/g,'__NL__')
                   .replace(/<script .+?<\/script>/g,'')
                   .replace(/<style .+?<\/style>/g,'')
                   .replace(/__NL____NL__/g,'')

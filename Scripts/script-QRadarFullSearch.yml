@@ -32,7 +32,7 @@ script: |-
   if (isError(query_res[0])) {
       return query_res;
   } else {
-      search_id = dq(query_res[0], "Contents.search_id");
+      search_id = dq(query_res[0], "Contents.ID");
       search_args.search_id = search_id;
 
       //polling stage
@@ -43,10 +43,10 @@ script: |-
               return status_res;
           }
 
-          var q_status = dq(status_res[0], "Contents.status");
+          var q_status = dq(status_res[0], "Contents.Status");
 
           if (q_status && ['WAIT', 'EXECUTE', 'SORTING'].indexOf(q_status) !== -1) {
-              log('search id is {0} search status is {1}'.format(search_id,q_status));
+              // Not finished
           } else if (q_status && q_status == 'COMPLETED') {
               search_done = true;
           } else {
@@ -78,6 +78,7 @@ tags:
 - QRadar
 comment: This Script runs a QRadar query and return its results to the war-room.
 system: true
+deprecated: true
 args:
 - name: query_expression
   required: true
@@ -94,3 +95,11 @@ args:
 - name: headers
   description: Table headers
 scripttarget: 0
+dependson:
+  must:
+  - qradar-searches
+  - qradar-get-search
+  - qradar-get-search-results
+releaseNotes: "-"
+tests:
+- Forgive me for my sins but I did not create any test

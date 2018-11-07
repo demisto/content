@@ -1,0 +1,101 @@
+commonfields:
+  id: nexpose_create_incidents_from_assets
+  version: -1
+name: NexposeCreateIncidentsFromAssets
+script: |-
+  SEVERITIES = ['Moderate','Severe','Critical']
+
+  incident_type = demisto.args().get("incidentType", "Vulnerability")
+  min_severity = demisto.args().get("minSeverity", "Moderate")
+  asset_ids = argToList(demisto.args().get("assetID",""))
+  if not isinstance(asset_ids, list):
+      asset_ids = [asset_ids]
+
+  severity_index = SEVERITIES.index(min_severity)
+
+  if not asset_ids:
+      demisto.results( {
+          "Type" : entryTypes["note"],
+          "ContentsFormat" : formats["text"],
+          "Contents" : 'No assets were found'
+      } )
+      sys.exit(0)
+
+  incident_name = []
+
+  for asset_id in asset_ids:
+      resp = demisto.executeCommand("nexpose-get-asset", {"id" : asset_id })
+      if isError(resp[0]):
+          demisto.results(resp)
+          sys.exit(0)
+
+      # Need to get it from raw-output not context
+      vulnerabilities = resp[0]['EntryContext']['Nexpose.Asset(val.AssetId==obj.AssetId)']['Vulnerability']
+      # Creates a list of all the vulnerabilites' IDs when their severity is equal/higher to the min_severity
+      vulnerability_ids = [vul['Id'] for vul in vulnerabilities if vul['Severity'] in SEVERITIES[severity_index:]]
+
+      for vulnerability_id in vulnerability_ids:
+          # Search for existing open incidents with the same Vendor ID and Asset ID. Will open a new incident only if such an incident not exists.
+          resp = demisto.executeCommand("getIncidents", {"query" : "vendorid: {0} and assetid: {1} and --status:Closed".format(vulnerability_id,asset_id)})
+          if isError(resp[0]):
+              demisto.results(resp)
+              sys.exit(0)
+
+          incident_number = demisto.get(resp[0],"Contents.total")
+
+          try:
+              incident_number = int(incident_number)
+          except:
+              demisto.results( {
+                  "Type" : entryTypes["error"],
+                  "ContentsFormat" : formats["text"],
+                  "Contents" : 'Error while searching the incident repository'
+              } )
+              sys.exit(0)
+
+          if incident_number == 0:
+              name = "Vulnerability - Asset {0} ID \"{1}\"".format(asset_id,vulnerability_id)
+              #Create incident
+              demisto.executeCommand("createNewIncident", {
+                  "name": name,
+                  "vendorid" : str(vulnerability_id),
+                  "type": incident_type,
+                  "assetid" : str(asset_id)
+              })
+              incident_name.append({'Name' : name})
+
+  if incident_name:
+      demisto.results({
+          'Type' : entryTypes['note'],
+          'Contents': tableToMarkdown('New incidents:', incident_name),
+          'ContentsFormat' : formats['markdown']
+      })
+  else:
+      demisto.results("No new incidents were created.")
+type: python
+tags:
+- nexpose
+comment: |-
+  Create incidents based on the Nexpose asset ID and vulnerability ID.
+  Duplicate incidents are not created for the same asset ID and vulnerability ID.
+system: true
+args:
+- name: assetID
+  required: true
+  description: List of Nexpose assets' IDs
+  isArray: true
+- name: minSeverity
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Moderate
+  - Severe
+  - Critical
+  description: The minimum Nexpose severity to create incidents for
+- name: incidentType
+  description: The incident type to create incidents for. Default is "Vulnerability".
+scripttarget: 0
+runonce: false
+dependson:
+  must:
+  - nexpose-get-asset

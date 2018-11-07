@@ -22,5 +22,6 @@
   },
   "params": {
   	"currencySign" : "$"
-  }
+  },
+  "description": ""
 }

@@ -24,9 +24,6 @@ script: |-
           while c != '':
               if c in string.printable:
                   buff += c
-                  if len(buff) >= 32 * 1024:
-                      matches.append('File is a regular text file')
-                      break
               else:
                   if len(buff) >= chars:
                       if regex:
@@ -38,6 +35,12 @@ script: |-
                           break
                   buff = ''
               c = f.read(1)
+          if len(buff) >= chars and len(matches) < size:
+              if regex:
+                  if regex.match(buff):
+                      matches.append(buff)
+              else:
+                  matches.append(buff)
       if matches:
           demisto.results('\n'.join(matches))
       else:

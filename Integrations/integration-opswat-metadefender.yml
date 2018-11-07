@@ -3,8 +3,8 @@ commonfields:
   version: -1
 name: OPSWAT-Metadefender
 display: OPSWAT-Metadefender
-category: Data Enrichment
-image: data:image/png;base64,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
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
 description: At the heart of the solution, the Metadefender multi-scanning engine
   uses 30+ anti-malware engines to scan files for threats, significantly increasing
   malware detection.
@@ -19,7 +19,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: "true"
   type: 8
@@ -39,42 +39,83 @@ configuration:
   defaultvalue: "66"
   type: 0
   required: true
+- display: Cloud based
+  name: cloud
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |
     var sendRequest = function(url,param, fileId) {
+        if (params.url[params.url.length - 1] !== '/') {
+            params.url += '/';
+        }
         var requestUrl = params.url + url + param;
         var res;
-
-        if (fileId) {
-            var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
-            res = httpMultipart(
-                requestUrl,
-                fileId,
-                {
-                    Method: 'POST',
-                    Headers: {
-                        Accept: ['application/json'],
-                        filename: fileName
+        if (params.cloud) {
+            if (fileId) {
+                var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
+                res = httpMultipart(
+                    requestUrl,
+                    fileId,
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            Accept: ['application/json'],
+                            filename: fileName,
+                            apikey: [params.api]
+                        }
+                    },
+                    {},
+                    params.insecure,
+                    params.proxy,
+                    undefined,
+                    'file',
+                    fileName);
+            } else {
+                res = http(
+                    requestUrl,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            Accept: ['application/json'],
+                            apikey: [params.api]
+                        }
                     }
-                },
-                {},
-                params.insecure,
-                params.proxy,
-                undefined,
-                'file',
-                fileName);
+                    );
+                return res;
+            }
         } else {
-            res = http(
-                requestUrl,
-                {
-                    Method: 'GET',
-                    Headers: {
-                        Accept: ['application/json']
+            if (fileId) {
+                var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
+                res = httpMultipart(
+                    requestUrl,
+                    fileId,
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            Accept: ['application/json'],
+                            filename: fileName
+                        }
+                    },
+                    {},
+                    params.insecure,
+                    params.proxy,
+                    undefined,
+                    'file',
+                    fileName);
+            } else {
+                res = http(
+                    requestUrl,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            Accept: ['application/json']
+                        }
                     }
-                }
-                );
+                    );
+            }
         }
-
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
@@ -87,7 +128,7 @@ script:
     var searchHash = function() {
         var res;
         try {
-            res = JSON.parse(sendRequest('/hash/', args.hash).Body);
+            res = JSON.parse(sendRequest('hash/', args.hash).Body);
         } catch (err) {
             throw 'Error in JSON parsing\n';
         }
@@ -241,7 +282,10 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            var res = sendRequest('/hash/', 'BED12FDA073BB386B54700138FB47EEA');
+            var res = sendRequest('hash/', '66DA1A91E1ED5D59BECFAD85F53C05F9');
+            if (res.StatusCode !== 200) {
+                return res
+            }
             return 'ok';
         case 'opswat-hash':
             return searchHash();
@@ -280,3 +324,4 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
+  runonce: false

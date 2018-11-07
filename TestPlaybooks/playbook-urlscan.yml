@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3ac0ffed-5825-478e-8f02-2e598e146ba1
+    taskid: 5a5a7da6-76bb-4039-8245-1fc023172078
     type: start
     task:
-      id: 3ac0ffed-5825-478e-8f02-2e598e146ba1
+      id: 5a5a7da6-76bb-4039-8245-1fc023172078
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 9ecb9bc6-9b1b-4051-865c-274153d8182b
+    taskid: 0aaf7e56-a20c-4b46-8e6e-bf9d9385a487
     type: regular
     task:
-      id: 9ecb9bc6-9b1b-4051-865c-274153d8182b
+      id: 0aaf7e56-a20c-4b46-8e6e-bf9d9385a487
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -40,8 +42,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -49,12 +53,13 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 155c603c-f083-4eec-86a6-8a23a3e2e688
+    taskid: b8429f71-205e-4ac7-876e-0bc036342e2f
     type: regular
     task:
-      id: 155c603c-f083-4eec-86a6-8a23a3e2e688
+      id: b8429f71-205e-4ac7-876e-0bc036342e2f
       version: -1
       name: Check IP command
       script: urlscan.io|||ip
@@ -65,7 +70,9 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      ip: 8.8.8.8
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -73,14 +80,15 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: f603e0a0-e89b-4330-82bc-a065e682c29f
+    taskid: 5db17ca4-07d5-4778-8ab6-f7ed6bbded67
     type: condition
     task:
-      id: f603e0a0-e89b-4330-82bc-a065e682c29f
+      id: 5db17ca4-07d5-4778-8ab6-f7ed6bbded67
       version: -1
-      name: Check if DBot score is 0
+      name: Check if DBot score exists
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -89,26 +97,31 @@ tasks:
       "yes":
       - "5"
     scriptarguments:
-      chars: ""
-      distance: ""
-      dn: ""
-      domain: ""
-      email: ""
-      entry: ""
-      filter: ""
-      groupname: ""
-      key: ""
-      left: ${DBotScore.Score}
-      name: ""
-      nestedSearch: ""
-      right: "0"
-      sender: ""
-      size: ""
-      string: ${DBotScore.Score}
-      substring: "0"
-      value: ""
+      chars: {}
+      distance: {}
+      dn: {}
+      domain: {}
+      email: {}
+      entry: {}
+      filter: {}
+      groupname: {}
+      key: {}
+      left:
+        simple: ${DBotScore(val.Vendor=='urlscan.io').Type}
+      name: {}
+      nestedSearch: {}
+      right:
+        simple: ip
+      sender: {}
+      size: {}
+      string:
+        simple: ${DBotScore.Score}
+      substring:
+        simple: "0"
+      value: {}
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -116,12 +129,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 4385fbf2-6ab8-48b4-83e4-e0397ecf83e2
+    taskid: e972a93c-8484-4c01-8954-4d8e56d97053
     type: regular
     task:
-      id: 4385fbf2-6ab8-48b4-83e4-e0397ecf83e2
+      id: e972a93c-8484-4c01-8954-4d8e56d97053
       version: -1
       name: Check URL command
       script: urlscan.io|||url
@@ -132,7 +146,9 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      url: www.google.com
+      url:
+        simple: https://vendretshirt.bid/_-/Microsoft/index2.php?l=_JeHFUq_VJOXK0QWHtoGYDw1774256418&fid.13InboxLight.aspxn.1774256418&fid.125289964252813InboxLight99642_Product-email&email=http://www.goanywhere.com/
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -140,12 +156,13 @@ tasks:
           "y": 895
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: b42b4b2e-f74b-4693-868a-a96374c0558c
+    taskid: 714c8866-e857-4771-8958-94ded6cc99bd
     type: regular
     task:
-      id: b42b4b2e-f74b-4693-868a-a96374c0558c
+      id: 714c8866-e857-4771-8958-94ded6cc99bd
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -157,8 +174,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -166,12 +185,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: 8a164b0d-a3ba-458f-8806-26047b017306
+    taskid: 8abfcdc9-e4f9-40fa-82c8-12a742a1983c
     type: condition
     task:
-      id: 8a164b0d-a3ba-458f-8806-26047b017306
+      id: 8abfcdc9-e4f9-40fa-82c8-12a742a1983c
       version: -1
       name: Check if DBot score is 0
       scriptName: AreValuesEqual
@@ -182,16 +202,21 @@ tasks:
       "yes":
       - "7"
     scriptarguments:
-      chars: ""
-      entry: ""
-      filter: ""
-      left: ${DBotScore.Score}
-      right: "1"
-      size: ""
-      string: ${DBotScore.Score}
-      substring: "0"
+      chars: {}
+      entry: {}
+      filter: {}
+      left:
+        simple: ${DBotScore(val.Vendor=='urlscan.io').Type}
+      right:
+        simple: url
+      size: {}
+      string:
+        simple: ${DBotScore.Score}
+      substring:
+        simple: "0"
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -199,12 +224,13 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: 76d48448-3907-4b1c-8916-2eeca8d602fe
+    taskid: 3357588f-454f-4e4c-8425-37d0ef9068b0
     type: regular
     task:
-      id: 76d48448-3907-4b1c-8916-2eeca8d602fe
+      id: 3357588f-454f-4e4c-8425-37d0ef9068b0
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -215,8 +241,10 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -224,12 +252,13 @@ tasks:
           "y": 1245
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 532ed6d2-0143-4365-82b1-b0b6508a362f
+    taskid: ccbdfec0-70d2-4428-866e-be4c1c4c3ef6
     type: regular
     task:
-      id: 532ed6d2-0143-4365-82b1-b0b6508a362f
+      id: ccbdfec0-70d2-4428-866e-be4c1c4c3ef6
       version: -1
       name: Check submit command
       script: urlscan.io|||urlscan-submit
@@ -240,9 +269,12 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      timeout: "30"
-      url: www.demisto.com
-      wait: ""
+      timeout:
+        simple: "30"
+      url:
+        simple: https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a8.8.8.8&run=toolpage
+      wait: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -250,12 +282,13 @@ tasks:
           "y": 1420
         }
       }
+    note: false
   "10":
     id: "10"
-    taskid: 6129fe0c-24ac-4ea6-8f36-a491f0642777
+    taskid: fa0b4229-c096-4c87-8307-d692103569fe
     type: regular
     task:
-      id: 6129fe0c-24ac-4ea6-8f36-a491f0642777
+      id: fa0b4229-c096-4c87-8307-d692103569fe
       version: -1
       name: Close Investigation
       scriptName: CloseInvestigation
@@ -263,8 +296,9 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: ""
-      reason: ""
+      notes: {}
+      reason: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -272,14 +306,15 @@ tasks:
           "y": 1770
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: 9fb6c544-a827-480d-8482-7cf472afb017
+    taskid: 0b0f7fbe-4e95-4b54-8bf1-ebed5d64e1bb
     type: condition
     task:
-      id: 9fb6c544-a827-480d-8482-7cf472afb017
+      id: 0b0f7fbe-4e95-4b54-8bf1-ebed5d64e1bb
       version: -1
-      name: Check if DBot score is 0
+      name: Check if DBot score object
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -288,26 +323,31 @@ tasks:
       "yes":
       - "10"
     scriptarguments:
-      chars: ""
-      distance: ""
-      dn: ""
-      domain: ""
-      email: ""
-      entry: ""
-      filter: ""
-      groupname: ""
-      key: ""
-      left: ${DBotScore.Score}
-      name: ""
-      nestedSearch: ""
-      right: "1"
-      sender: ""
-      size: ""
-      string: ${DBotScore.Score}
-      substring: "0"
-      value: ""
+      chars: {}
+      distance: {}
+      dn: {}
+      domain: {}
+      email: {}
+      entry: {}
+      filter: {}
+      groupname: {}
+      key: {}
+      left:
+        simple: ${DBotScore(val.Vendor=='urlscan.io').Vendor}
+      name: {}
+      nestedSearch: {}
+      right:
+        simple: urlscan.io
+      sender: {}
+      size: {}
+      string:
+        simple: ${DBotScore.Score}
+      substring:
+        simple: "0"
+      value: {}
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -315,6 +355,7 @@ tasks:
           "y": 1595
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {

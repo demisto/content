@@ -37,10 +37,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 58adf1e3-dbee-46b1-86b3-c8f9c3e2dff8
+    taskid: f96c54b2-b8fa-48b8-8a56-56555a749c10
     type: condition
     task:
-      id: 58adf1e3-dbee-46b1-86b3-c8f9c3e2dff8
+      id: f96c54b2-b8fa-48b8-8a56-56555a749c10
       version: -1
       name: Is TIE enabled?
       description: Is TIE enabled?
@@ -74,13 +74,6 @@ tasks:
                     right:
                       value:
                         simple: McAfee Threat Intelligence Exchange
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
                 - - operator: string.isEqual
                     left:
                       value:
@@ -89,6 +82,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                accessor: brand
             iscontext: true
     view: |-
       {
@@ -99,10 +93,10 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 66b478c8-4b31-47a6-8832-1b45e71a331d
+    taskid: b098fed0-d1ae-418c-8a37-756e1ae0cb37
     type: condition
     task:
-      id: 66b478c8-4b31-47a6-8832-1b45e71a331d
+      id: b098fed0-d1ae-418c-8a37-756e1ae0cb37
       version: -1
       name: Is ePO enabled?
       description: Is ePO enabled?
@@ -155,13 +149,6 @@ tasks:
                     right:
                       value:
                         simple: epo
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
                 - - operator: string.isEqual
                     left:
                       value:
@@ -170,6 +157,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                accessor: brand
             iscontext: true
     view: |-
       {

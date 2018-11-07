@@ -3,8 +3,8 @@ commonfields:
   version: -1
 name: Anomali ThreatStream
 display: Anomali ThreatStream
-category: Forensics & Malware Analysis
-image: data:image/png;base64,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
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
 description: Use Anomali ThreatStream to query and submit threats
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -22,7 +22,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -34,9 +34,9 @@ configuration:
   required: false
 script:
   script: |
-    var base = params.server.replace(/[\/]+$/, '') + '/api/';
-    args.username = params.username;
-    args.api_key = params.apikey;
+    var BASE_URL = params.server.replace(/[\/]+$/, '') + '/api/';
+    var USERNAME = params.username;
+    var API_KEY = params.apikey;
 
     var commandDict = {
         'test-module': {
@@ -52,22 +52,22 @@ script:
     }
 
     var sendRequest = function(method, url, version, args, headers, multipart) {
-        url = base + version + '/' + url;
+        var fullurl = BASE_URL + version + '/' + url;
         if (method === 'GET') {
-            url += encodeToURLQuery(args);
+            args.username = USERNAME;
+            args.api_key = API_KEY;
+            fullurl += encodeToURLQuery(args);
         } else {
             var cred = {
-                username: args.username,
-                api_key: args.api_key,
+                username: USERNAME,
+                api_key: API_KEY
             };
-            delete(args.username);
-            delete(args.api_key);
-            url += encodeToURLQuery(cred);
+            fullurl += encodeToURLQuery(cred);
         }
 
         var res = !multipart ?
             http(
-                url,
+                fullurl,
                 {
                     Method: method,
                     Headers: headers,
@@ -77,7 +77,7 @@ script:
                 params.proxy
             ) :
             httpMultipart(
-                url,
+                fullurl,
                 args.file_id,
                 {
                     Method: method,
@@ -95,7 +95,8 @@ script:
             if (res.StatusCode === -1) {
                 throw res.Status;
             }
-            throw 'Failed to reach ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            var urlWithoutApiKey = fullurl.replace(API_KEY, '*******');
+            throw 'Failed to reach ' + urlWithoutApiKey + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
 
         return JSON.parse(res.Body);
@@ -265,7 +266,15 @@ script:
         return entries;
     }
 
+    function isObjectEmpty (obj) {
+        return Object.keys(obj).length === 0;
+    }
+
     var parseResult = function(command, result) {
+        if(result && !(isObjectEmpty(result)) && !(result['objects'] instanceof Array)){
+            result['objects'] = [result['objects']];
+        }
+
         if (dq(result, 'objects').length == 0) {
             return 'Anomali ThreatStream - No records found.';
         }
@@ -339,6 +348,10 @@ script:
         return 'ok';
     }
 
+    if (result && result.meta && result.meta.next) {
+        // hide the api key
+        result.meta.next = result.meta.next.replace(API_KEY, '*******');
+    }
     return parseResult(command, result);
   type: javascript
   commands:
@@ -452,6 +465,33 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: Domain.DNS
+      description: Domain IP Address
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: IP.Address
+      description: Domain IP Address
+    - contextPath: IP.Geo.Country
+      description: Country associated with the indicator.
+    - contextPath: IP.Geo.Location
+      description: Longitude and Latitude of the IP address
+    - contextPath: IP.Geo.Organization
+      description: Registered owner (organization) of the IP address associated with
+        the indicator.
+    - contextPath: IP.Hostname
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator.
+    - contextPath: IP.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: IP.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
     description: Checks the reputation of the given IP or domain name
   - name: file
     arguments:
@@ -475,6 +515,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: File.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
     description: Checks the reputation of the given checksum
   - name: threatstream-email-reputation
     arguments:
@@ -498,6 +547,33 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: ThreatStream.EmailReputation.Itype
+      description: The indicator type.
+    - contextPath: ThreatStream.EmailReputation.Created
+      description: When the indicator was first seen on the ThreatStream cloud platform.
+        For example, 2014-10-02T20:44:35
+    - contextPath: ThreatStream.EmailReputation.Modified
+      description: When the indicator was last updated on the ThreatStream cloud platform
+    - contextPath: ThreatStream.EmailReputation.Confidence
+      description: Confidence value assigned to the indicator. Confidence score can
+        range from 0-100, in increasing order of confidence.
+    - contextPath: ThreatStream.EmailReputation.Details1
+      description: A string that contains a tag associated with the indicator; the
+        tag can be used to search for related indicators.
+    - contextPath: ThreatStream.EmailReputation.Details2
+      description: Additional details associated with state of an indicator. For example,
+        details such as why is an indicator marked false positive.
+    - contextPath: ThreatStream.EmailReputation.Status
+      description: Status assigned to the indicator
+    - contextPath: ThreatStream.EmailReputation.ThreatScore
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: ThreatStream.EmailReputation.Email
+      description: The email address
+    - contextPath: ThreatStream.EmailReputation.Severity
+      description: 'Severity assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Possible values: low, medium, high, very high'
     description: Checks the reputation of the given email
   - name: ip
     arguments:
@@ -521,6 +597,26 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: IP.ASN
+      description: Autonomous System (AS) number associated with the indicator
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.Geo.Country
+      description: Country associated with the indicator.
+    - contextPath: IP.Geo.Organization
+      description: Registered owner (organization) of the IP address associated with
+        the indicator.
+    - contextPath: IP.Geo.Location
+      description: Longitude and Latitude of the IP address
+    - contextPath: IP.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: IP.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: IP.Hostname
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator.
     description: Checks the reputation of the given IP
 hidden: false
-releaseNotes: "Added DBot Score support"

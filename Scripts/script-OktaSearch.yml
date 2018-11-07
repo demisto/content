@@ -28,3 +28,6 @@ args:
   description: Term to search for, this term can be first name, last name or email
 scripttarget: 0
 deprecated: true
+dependson:
+  must:
+  - okta-search

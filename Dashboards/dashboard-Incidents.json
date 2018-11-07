@@ -13,6 +13,7 @@
   },
   "fromDateLicense": "0001-01-01T00:00:00Z",
   "name": "Incidents",
+  "description": "",
   "layout": [
     {
       "id": "8efbf5c0-e4ff-11e7-b60b-df7995291baf",

@@ -6,7 +6,7 @@ script: |-
   from email import message_from_string
   from email.header import decode_header
   from base64 import b64decode
-  from re import match
+  import re
 
   # --- LICENSE -----------------------------------------------------------------
   #
@@ -27,13 +27,14 @@ script: |-
   import os
   import sys
   import glob
+  import string
+  import random
   import traceback
-  from email.parser import Parser as EmailParser
   import email.utils
   import olefile as OleFile
-  import random
-  import string
-  
+  from email.parser import HeaderParser
+  from email.parser import Parser as EmailParser
+
   reload(sys)
   sys.setdefaultencoding('utf8')
 
@@ -435,26 +436,26 @@ script: |-
                   print("Directory: " + str(dir))
                   print("Contents: " + self._getStream(dir))
   ########################################################################################################################
-  REGEX_EXTRACT_EMAIL = '.*<([^>]*)>.*'
-
+  REGEX_EXTRACT_EMAIL = r'[\w\.-]+@[\w\.-]+'
 
 
   def extractAddress(s):
       if type(s) not in [str, unicode]:
           return s
-      m = match(REGEX_EXTRACT_EMAIL, s)
-      if m and m.groups():
-          return m.group(1)
       else:
-          return s
+          return re.findall(REGEX_EXTRACT_EMAIL,s)
 
   def dataToMD(emailData):
       md = "### Results:\n"
+
       md += "* {0}:\t{1}\n".format('From', emailData['From'])
       md += "* {0}:\t{1}\n".format('To',emailData['To'])
       md += "* {0}:\t{1}\n".format('CC', emailData['CC'])
       md += u"* {0}:\t{1}\n".format('Subject', emailData['Subject'])
-      md += u"* {0}:\t{1}\n".format('Body', emailData['Text'])
+      if emailData['Text']:
+          md += u"* {0}:\t{1}\n".format('Body/Text', emailData['Text'])
+      if emailData['HTML']:
+          md += u"* {0}:\t{1}\n".format('Body/HTML', emailData['HTML'])
       md += "* {0}:\t{1}\n".format('Attachments', emailData['Attachments'])
       md += "* {0}:\t{1}\n".format('Headers', emailData['Headers'])
       return md
@@ -476,22 +477,39 @@ script: |-
           elif a.shortFilename:
               fname = a.shortFilename
           if fname and a.data:
-              fname = fname.encode('utf-8')
+              fname = getUtfString(fname, 'fname')
               attachments.append(fname)
               r.append(fileResult(fname, a.data))
+
+      body = getUtfString(msg.body, 'Body')
 
       emailData = {
           'To': extractAddress(msg.to),
           'CC': extractAddress(msg.cc),
           'From': extractAddress(msg.sender),
-          'Subject': msg.subject,
-          'HTML': msg.body,
-          'Text': msg.body,
+          'Subject': getUtfString(msg.subject, 'Subject'),
+          'HTML': body,
+          'Text': body,
           'Headers': '\n'.join(headers),
           'Attachments': '' if not attachments else ','.join(attachments)
       }
+
       return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
           'EntryContext': {'Email': emailData}}]
+
+  def getUtfString(text, field):
+      if text is None:
+        text = ''
+      try:
+          utfString = text.encode('utf-8')
+      except Exception as ex:
+          utfString = text.decode('utf-8','ignore').encode('utf-8')
+          temp = demisto.uniqueFile()
+          with open(demisto.investigation()['id'] + '_' + temp,'wb') as f:
+              f.write(text)
+          demisto.results({'Contents': str(ex) + '\n\nOpen HEX viewer to review.', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'], 'File': field, 'FileID': temp})
+
+      return utfString
 
   def handleEml(filePath, b64 = False):
       r = []
@@ -499,7 +517,18 @@ script: |-
           fileData = emlFile.read()
           if b64:
               fileData = b64decode(fileData)
-          headers = fileData.split('\r\n\r\n')[0]
+
+          parser = HeaderParser()
+          headers = parser.parsestr(fileData)
+
+          header_list = []
+          for item in headers.items():
+              item_dict = {}
+              item_dict['name'] = item[0]
+              item_dict['value'] = item[1]
+
+              header_list.append(item_dict)
+
           eml = message_from_string(fileData)
           if not eml:
               r += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Could not parse eml file!"}]
@@ -517,17 +546,17 @@ script: |-
                   demisto.setContext('AttachmentName', part.get_filename())
                   r.append(fileResult(part.get_filename(), part.get_payload(decode=True)))
               elif part.get_content_type() == 'text/html':
-                  html = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
+                  html = getUtfString(part.get_payload(decode=True),'HTML')
               elif part.get_content_type() == 'text/plain':
-                  text = unicode(part.get_payload(decode=True),part.get_content_charset(),'ignore').encode('utf8','replace').strip()
-                  
+                  text = getUtfString(part.get_payload(decode=True),'TEXT')
+
 
           try:
               subjenc, encoding = decode_header(eml['Subject'])[0]
-              subj = subjenc.decode(encoding)
+              subj = subjenc.decode(encoding).strip()
           except:
               subj = eml['Subject']
-          subj = unicode(subj).encode('utf-8')
+          subj = unicode(subj).encode('utf-8').strip()
 
           emailData = {
               'To': extractAddress(eml['To']),
@@ -536,7 +565,7 @@ script: |-
               'Subject': subj,
               'HTML': html,
               'Text': text,
-              'Headers': headers,
+              'Headers': header_list,
               'Attachments': '' if not attachments else ','.join(attachments),
               'Format': eml.get_content_type()
           }
@@ -551,15 +580,15 @@ script: |-
   except Exception, ex:
       res += [{"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)}]
 
-  if 'Composite Document File V2 Document'.lower() in fileType.lower():
-      temp1, temp2 =  handleMsg(filePath)
+  if 'Composite Document File V2 Document'.lower() in fileType.lower() or 'CDFV2 Microsoft Outlook Message'.lower() in fileType.lower():
+      temp1, temp2 = handleMsg(filePath)
       res += temp1
       res += temp2
   elif 'rfc 822 mail' in fileType.lower():
       temp1, temp2 = handleEml(filePath)
       res += temp1
       res += temp2
-  elif 'ASCII text, with CRLF line terminators' in fileType or 'ASCII text, with very long lines, with CRLF line terminators' in fileType or 'ASCII text, with CRLF, LF line terminators' in fileType:
+  elif 'ASCII text' in fileType:
       try:
           # Try to open the email as-is
           with open(filePath, 'rb') as f:
@@ -595,7 +624,7 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   only the "Label/x" context items that originated from the labels, and the best practice
   is to rely on these for the remainder of the playbook. Requires pip and access to
   python repository to install "olefile" package.
-system: true
+enabled: true
 args:
 - name: entryid
   required: true
@@ -621,5 +650,6 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
 scripttarget: 0
-dependson: {}
-timeout: 0s
+runonce: false
+tests:
+  - Forgive me for my sins but I did not create any test

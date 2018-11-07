@@ -60,7 +60,7 @@ script: |
   demisto.results({'Type': entryTypes['note'], 'Contents': pyResults, 'EntryContext': {'pcap_results': pyResults}, 'ContentsFormat': formats['json'], 'HumanReadable': displayData})
 type: python
 tags:
-- Utilities
+- Utility
 - file
 - pcap
 comment: PCAPMiner is a tool to parse PCAP files and will return things like extracted

@@ -1,0 +1,151 @@
+id: test_url_regex
+version: 3
+name: Test URL Regex
+description: Test the URL regex
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2135d445-3df4-4fb9-8c23-9a4beb6c742e
+    type: start
+    task:
+      id: 2135d445-3df4-4fb9-8c23-9a4beb6c742e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: ea3987cd-ec64-4f6e-88c3-b8c911e8780d
+    type: regular
+    task:
+      id: ea3987cd-ec64-4f6e-88c3-b8c911e8780d
+      version: -1
+      name: Print URL
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-2540
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 395
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: e3e22eff-5098-4586-8eb2-b09096ec1fdd
+    type: regular
+    task:
+      id: e3e22eff-5098-4586-8eb2-b09096ec1fdd
+      version: -1
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue:
+        simple: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-2540
+      fields: {}
+      path:
+        simple: URL.Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 0a65e9fd-99b5-4207-88fd-2ee8d85b28bd
+    type: title
+    task:
+      id: 0a65e9fd-99b5-4207-88fd-2ee8d85b28bd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 745
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: b99e2862-da90-4a34-80e6-57057c37f9cb
+    type: regular
+    task:
+      id: b99e2862-da90-4a34-80e6-57057c37f9cb
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 760,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -7,10 +7,57 @@ script: |-
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
+  /**
+   * Returns true if string starts with search string
+   * @param {String} search - The string to be searched
+   * @param {Integer} pos - The position in this string at which to begin searching for search string; defaults to 0. 
+   * @return {Boolean} true if string starts with <search> string
+   */
+  if (!String.prototype.startsWith) {
+      String.prototype.startsWith = function(search, pos) {
+          return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+      };
+  }
+
+  /**
+   * Returns true if string ends with search string
+   * @param {String} search - The string to be searched
+   * @param {Integer} this_len - Optional. If provided it is used as the length of search string. If omitted, the default value is the length of the string.
+   * @return {Boolean} true if string ends with <search> string
+   */
+  if (!String.prototype.endsWith) {
+      String.prototype.endsWith = function(search, this_len) {
+          if (this_len === undefined || this_len > this.length) {
+              this_len = this.length;
+          }
+          return this.substring(this_len - search.length, this_len) === search;
+      };
+  }
+
+  /**
+   * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
+   *
+   * @param {String} url - e.g https://some_url.com:8080/ or https://some_url.com:8080
+   * @return {String} url without slash in the end - e.g https://some_url.com:8080
+   */
+  function fixUrl(url) {
+      if (url.endsWith('/')) {
+          return url.slice(0, -1);
+      }
+
+      return url;
+  }
+  /**
+   * Removes the final slash / from the given url. This function should be used to prevent double slash situations such as https://192.12.12.3:8443//api/
+   *
+   * @param {String} url - e.g https://some_url.com:8080/ or https://some_url.com:8080
+   * @return {String} url without slash in the end - e.g https://some_url.com:8080
+   */
+  var removeLastSlash = fixUrl;
 
   /**
    * Formats a string in place
-   * @returns {String} the formatted string
+   * @return {String} The formatted string
    */
   String.prototype.format = function() {
      var content = this;
@@ -35,7 +82,8 @@ script: |-
 
   /**
    * Clean an object from empty fields
-   * @returns {Object} the clean object
+   * @param {Object} obj - The object to be cleaned
+   * @return {Object} The cleaned object
    */
   var cleanObject = function(obj) {
       if (obj instanceof Array) {
@@ -48,10 +96,12 @@ script: |-
       return cleanSingleObject(obj);
   }
 
-  /*
-  Merge a list of objects into a single object.
-  Note: to avoid loss of data, use only on objects with foreign properties.
-  */
+  /**
+    * Merge a list of objects into a single object.
+    * Note: to avoid loss of data, use only on objects with foreign properties.
+    * @param {Array} objs - An array of arrays to be merged
+    * @return {Object} the merged array
+    */
   function mergeForeignObjects(objs) {
       var merged = {};
       for (var i in objs) {
@@ -64,8 +114,9 @@ script: |-
 
   /**
    * Creates a string from an object
-   * @param {JSON or String} o - the object to create the string from
-   * @returns {String} a string which represents the object
+   * @param {JSON | String} o - The object to create the string from
+   * @param {String} [delimiter] - The delimiter of the string representation of arrays
+   * @return {String} A string which represents the object
    */
   function objToStr(o, delimiter) {
       if(!delimiter || typeof(delimiter) !== 'string') {
@@ -88,30 +139,35 @@ script: |-
 
   /**
    * Escapes markdown characters in a string
-   * @param {String} st - the string to fix
-   * @returns {String} a string with the markdown characters escaped
+   * @param {String} st - The string to fix
+   * @param {Boolean} [replaceNewlines] - Should newlines be replaced with '<br>'
+   * @return {String} A string with the markdown characters escaped
    */
-  var stringEscapeMD = function(st, replaceNewlines) {
+  var stringEscapeMD = function(st, replaceNewlines, minimal_escaping) {
       if (typeof(st) != 'string') {
           return st;
       }
 
       if (replaceNewlines) {
-        st = st.replace(/\r\n/g, '<br>')
-        st = st.replace(/\n/g, '<br>')
-        st = st.replace(/\r/g, '<br>')
+        st = st.replace(/\r\n/g, '<br>');
+        st = st.replace(/\n/g, '<br>');
+        st = st.replace(/\r/g, '<br>');
       }
 
-      escapedSt = '';
-      for (var i = 0; i < st.length; i++) {
-          if (MARKDOWN_CHARS.indexOf(st[i]) > -1) {
-              escapedSt += '\\';
+      var escapedSt = '';
+      if (minimal_escaping) {
+          escapedSt = st.replace(/\|/g, '\|');
+      } else {
+          for (var i = 0; i < st.length; i++) {
+              if (MARKDOWN_CHARS.indexOf(st[i]) > -1) {
+                  escapedSt += '\\';
+              }
+              escapedSt += st[i];
           }
-          escapedSt += st[i];
       }
 
       return escapedSt;
-  }
+  };
 
   var HTML_ENTITY_MAP = {
     '&': '&amp;',
@@ -126,8 +182,8 @@ script: |-
 
   /**
    * Escapes html characters in a string
-   * @param {String} st - the string to fix
-   * @returns {String} a string with the html characters escaped
+   * @param {String} st - The string to fix
+   * @return {String} A string with the html characters escaped
    */
   var stringEscapeHTML = function(st) {
       return String(st).replace(/[&<>"'`=\/]/g, function (s) {
@@ -136,9 +192,9 @@ script: |-
   }
 
   /**
-   * converts textual keys to pascal format (e.g. "Threat Score" -> "ThreatScore")
-   * @param {Dictionary} dict - only the keys matter
-   * @return {Dictionary} the same dictionary which the keys converted
+   * Converts textual keys to pascal format (e.g. "Threat Score" -> "ThreatScore")
+   * @param {Object} dict - The object to be converted
+   * @return {Object} The converted object
    */
   var convertKeysToPascalCase = function(dict) {
       var pascalDict = {};
@@ -151,9 +207,9 @@ script: |-
   }
 
   /**
-   * Gets a parameter that can be either a list or a JSON list or a list separated by ',' and returns a regular list
-   * @param {Object} arg the argument to convert to list
-   * @returns {Array} of strings
+   * Gets a parameter that can be either an array, a JSON array or a string list separated by ',' and returns an array
+   * @param {Object} [arg] - The object to be converted
+   * @return {Array} An array representing the given object
    */
   function argToList(arg) {
       if (!arg) {
@@ -172,23 +228,29 @@ script: |-
   }
 
   /**
-   * Converts a demisto table in JSON form to a Markdown table
-   * @param {String} name - the name of the table
+   * Converts a JSON demisto table to a Markdown table
+   * @param {String} name - The name of the table
    * @param {Object} t - the JSON table - Array of objects with the same keys
-   * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
-   * @returns {Array} array from the original string-list
+   * @param {Array|String} [headers] - The output markdown table will show only these headers (by order). Use a single string in case of a value type array (Optional).
+   * @param {String} [cellDelimiter] - The delimiter of the string representation of arrays (Optional).
+   * @param {Function} [headerTransform] - A transformation function for the header keys in the markdown table (Optional).
+   * @return {String} A string representing the markdown table
    */
   function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
       if (t && !(t instanceof Array)){
           t = [t];
       }
 
+      if(headers && !(headers instanceof Array) && typeof(headers) !== 'object'){
+          headers = [headers];
+      }
+
       //in case of headers was not provided (backward compatibility)
-      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0){
+      if ((!(headers) || !(headers instanceof Array) || headers.length === 0) && t && t.length > 0 && typeof(t[0]) === 'object') {
           headers = GetAllObjectsProperties(t);
       }
 
-      if(!headers || !headers instanceof Array || headers.length === 0) {
+      if(!headers || !(headers instanceof Array) || headers.length === 0) {
           return 'No data returned\n';
       }
 
@@ -211,7 +273,7 @@ script: |-
           }
           var sep = [];
           headers.forEach(function(h){
-              sep.push('-');
+              sep.push('---');
           });
           if (sep.length === 1) {
               sep[0] = sep[0]+'|';
@@ -219,11 +281,16 @@ script: |-
           mdResults += sep.join('|') + '\n';
           t.forEach(function(entry){
               var vals = [];
+              if(typeof(entry) !== 'object' && !(entry instanceof Array)){
+                var obj = {};
+                obj[headers[0]] = entry;
+                entry = obj;
+              }
               headers.forEach(function(h){
                   if(entry[h] === null || entry[h] === undefined) {
                       vals.push(' ');
                   } else {
-                      vals.push(stringEscapeMD(formatCell(entry[h], cellDelimiter),true) || ' ');
+                      vals.push(stringEscapeMD(formatCell(entry[h], cellDelimiter), true, true) || ' ');
                   }
               });
               if (vals.length === 1) {
@@ -239,11 +306,12 @@ script: |-
 
   var tblToMd = tableToMarkdown;
 
+
   /**
-   * Converts a array of stings to markdown table
-   * @param {Array} arr - from stings
-   * @param {String} header - optinal, the output markdown table will show only these headers (by order)
-   * @returns {String} markdown string of table. Can be also 'No results' string if there are no items in arr
+   * Converts an array of stings to markdown table
+   * @param {Array} arr - from strings
+   * @param {String} [header] - The output markdown table will show only these headers (by order) (Optional).
+   * @return {String} A markdown string of tables. If input array was empty, will return "No results" instead.
    */
   function arrayToMarkdownTable(arr, header) {
     if (!arr) {
@@ -255,34 +323,36 @@ script: |-
     if (arr.length === 0) {
         return 'No results';
     }
-    
+
     if (typeof arr[0] === 'object') {
         throw 'arrayToMarkdownTable should receive arr which contain objects but simple types like string, int, bool'
     }
     if (!header) {
         throw 'header is required for arrayToMarkdownTable';
     }
-    
+
     var md = '|' + header + '|\n-';
     arr.forEach(function(item) {
         md += '\n|' + item + '|';
     });
-    
+
     return md;
   }
 
   /**
    * Converts underscore case strings to camel case
-   * @param {String} string - string to be converted - i.e. hello_world
-   * @returns {String} - converted string - i.e. HelloWorld
+   * @param {String} string - The string to be converted - i.e. hello_world
+   * @return {String} - The converted string - i.e. HelloWorld
   */
   var underscoreToCamelCase = function(string) {
       var ret_string = '_'+string;
       return ret_string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
   };
-  
+
   /**
    * Converts dots into spaces and capitalizes
+   * @param {String} string - The string to be converted - i.e. hello.world
+   * @return {String} - The converted string - i.e. Hello World
   */
   var dotToSpace = function(string) {
       var ret_string = '.'+string;
@@ -291,11 +361,13 @@ script: |-
 
   /**
    * Converts pascal strings to human readable (e.g. "ThreatScore" -> "Threat Score")
+   * @param {String} string - The string to be converted
+   * @return {String} - The converted string
   */
   var pascalToSpace = function(string) {
       return string.replace(/([a-z][A-Z])/g, function (g) { return g[0] + ' ' + g.slice(1); });
   };
-  
+
   function mapObjFunction(mapFields, filter) {
       var transformSingleObj= function(obj) {
           var res = {};
@@ -356,11 +428,11 @@ script: |-
   }
 
   /**
-   * Creates a dq query string
+   * Creates a dq query string. Used by easyDQ.
    * @param {string} path - the path to be parsed
-   * @param {function or string} filter - filter string (e.g. 'val.id===<some id>'') or filter function (e.g. function(obj){return obj.name === 'name';} )
-   * @param {function or string} returnValue - string or function that defines returned data format (e.g. '{Name : val.name}' or function(val){return {Name:val.name};} )
-   * @returns {string} - the query string to pass to dq function
+   * @param {function | string} filter - filter string (e.g. 'val.id===<some id>'') or filter function (e.g. function(obj){return obj.name === 'name';} )
+   * @param {function | string} returnValue - string or function that defines returned data format (e.g. '{Name : val.name}' or function(val){return {Name:val.name};} )
+   * @return {string} - the query string to pass to dq function
   */
   var dqQueryBuilder = function(path, filter, returnValue){
       var query = path;
@@ -388,11 +460,11 @@ script: |-
 
   /**
    * Creates a dq query from arguments and calls dq
-   * @param {Object} raw - the raw data
-   * @param {string} path - the path to be parsed
-   * @param {function or string} filter - filter string (e.g. 'val.id===<some id>'') or filter function (e.g. function(obj){return obj.name === 'name';} )
-   * @param {function or string} returnValue - string or function that defines returned data format (e.g. '{Name : val.name}' or function(val){return {Name:val.name};} )
-   * @returns {Object} - the value returned from the dq function
+   * @param {Object} data - The raw data object
+   * @param {String} path - The path to be parsed
+   * @param {Function | String} filter - A filter string (e.g. 'val.id===<some id>'') or a filter function (e.g. function(obj){return obj.name === 'name';} )
+   * @param {Function | String} returnValue - string or function that defines the returned data format (e.g. '{Name : val.name}' or function(val){return {Name:val.name};} )
+   * @return {Object} - The value returned from the dq function
   */
   easyDQ = function(data, path, filter, returnValue){
       return dq(data, dqQueryBuilder(path, filter, returnValue));
@@ -406,24 +478,26 @@ script: |-
   };
 
   /**
-   * Creates war room entry
-   * @param {Object} result - the raw result to be parsed
-   * @param {Object} translator - maps raw data to war room output. Should be of the following format:
+   * Creates a war room entry
+   * @param {Object} result - The raw result to be parsed
+   * @param {Object} translator - Maps raw data to the war room output. Should be of the following format:
+   * ```
    * {
-          contextPath: <context-path>,
-          title: <war-room-title>,
-          data: [
-              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
-              {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
-              ...
-          ]
-      }
-   * * dest-key/orig-key should be sparated with '.' (e.g. 'File.Malicious')
-   * * dest-key is also used for war room table headers
-   * * humanReadable states whether field should appear in war room table. Default is true.
-   * @param {function} MDfilter - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
-   * @param {function} headerTransform - transform mark down headers to readable format.
-   * @returns {Object} - the war room entry
+   *   contextPath: <context-path>,
+   *   title: <war-room-title>,
+   *   data: [
+   *     {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+   *     {to: <dest-key>, from: <orig-key>, (optional) humanReadable: <true/false>},
+   *     ...
+   *   ]
+   * }
+   * ```
+   * - dest-key/orig-key should be sparated with '.' (e.g. 'File.Malicious')
+   * - dest-key is also used for war room table headers
+   * - humanReadable states whether field should appear in war room table. Default is true.
+   * @param {function} [MDfilter] - (optional) filters out fields that shouldn't be displayed in warroom (returns true/false). Default uses humanReadable field.
+   * @param {function} [headerTransform] - transform mark down headers to readable format.
+   * @return {Object} - the war room entry
   */
   var createEntry = function(result, translator, MDfilter, headerTransform) {
       /* filters out all fields where humanReadable is false */
@@ -458,8 +532,9 @@ script: |-
    * Converts a demisto table in JSON form to a HTML table
    * @param {String} name - the name of the table
    * @param {Object} t - the JSON table - Array of objects with the same keys
-   * @param {Array} headers - optinal, the output markdown table will show only these headers (by order)
-   * @returns {Array} array from the original string-list
+   * @param {Array} [headers] - optional, the output markdown table will show only these headers (by order)
+   * @param {String} [cellDelimiter] - The delimiter of the string representation of arrays (Optional).
+   * @return {String} A string representation of the html result
    */
   function tableToHTML(name, t, headers, cellDelimiter) {
       if (t && !(t instanceof Array)){
@@ -500,8 +575,8 @@ script: |-
   * Verifies that the given fields exists in the content and verifies its value
   * @param {String} fieldName - the name of the field (dq format)
   * @param {Object} expectedValue - the value to verify
-  * @param {Array} headers - optinal, the output markdown table will show only this headers (by order)
-  * @returns {Array} array from the original string-list
+  * @param {String} [comparisonType] - 'stringContains' or 'stringEquals'. Default is 'stringEquals'
+  * @return {Object} Returns the value if value at the field matches, throws an error an exeption otherwise
   */
   function verifyContextField(fieldName, expectedValue, comparisonType) {
       value = dq(invContext, fieldName);
@@ -524,11 +599,11 @@ script: |-
 
       return value;
   }
-  
+
   /**
-   * Get all properties of objects in array.
-   * @param t - Array of elements to get properties
-   * @returns {Array} - Array of objects properties
+   * Get all properties of objects in an array.
+   * @param {Array} t - Array of elements
+   * @return {Array} - Array of object properties
   */
   function GetAllObjectsProperties(t) {
       var properties = {};
@@ -544,7 +619,7 @@ script: |-
    * Checks if the given string represents a valid IPv4 address
    * @deprecated please use isValidIP which really checks IP for validity
    * @param {String} ip - the string to check
-   * @returns {Boolean} true if valid IPv4 address
+   * @return {Boolean} true if valid IPv4 address
    */
   function isIp(ip) {
     var d = ip.split('.'), i = d.length;
@@ -558,14 +633,15 @@ script: |-
     return ok;
   }
 
-  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, entryInfoFile: 9, map: 15};
+  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, entryInfoFile: 9, map: 15, playgroundError: 8};
   var formats = {html: 'html', table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
+  var dbotscores = {critical : 4, high: 3, medium: 2, low: 1, informational: 0.5, unknown: 0};
 
   /**
    * Returns the name of the file as stored in our investigation artifacts on disk.
    * This should be used when sending files to d2 scripts as you can see in StaticAnalyze.
-   * @param {String} entryId - the entry ID containing the file
-   * @returns {String} the name of the file in our artifact repository
+   * @param {String} entryId - The entry ID containing the file
+   * @return {String} The name of the file in our artifact repository
    */
   function fileNameFromEntry(entryId) {
     var parts = entryId.split('@');
@@ -581,8 +657,8 @@ script: |-
 
   /**
    * Closes the current investigation
-   * @param {Object} args - arguments for the close (what happened, damange, etc.)
-   * @returns {Array} an array with error entry if there is an error or empty array
+   * @param {Object} args - Closing details (what happened, damage, etc.)
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function closeInvestigation(args) {
     return executeCommand('closeInvestigation', args);
@@ -590,8 +666,8 @@ script: |-
 
   /**
    * Sets severity an incident. The incident must be related to current investigation.
-   * @param {Object} arg - has 2 keys, 'id' - the incident id, 'severity' - the new severity value (Critical, High, Medium etc.).
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * @param {Object} arg - Has 2 keys, 'id' - the incident id, 'severity' - the new severity value (Critical, High, Medium etc.).
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function setSeverity(arg) {
     return executeCommand('setSeverity', arg);
@@ -599,9 +675,9 @@ script: |-
 
   /**
    * Sets fields of the incident. The incident must be related to current investigation and be the only incident in it.
-   * @param {Object} args - has 5 optional keys: type, severity, details, name and systems of the incident.
+   * @param {Object} args - Has 5 optional keys: type, severity, details, name and systems of the incident.
    *                        systems should follow this string template: '1.1.1.1,10.10.10.10'
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function setIncident(args) {
     return executeCommand('setIncident', args);
@@ -610,8 +686,8 @@ script: |-
   /**
    * Create a new incident with the fields specified, only if an incident with the same name does not exist as an active incident.
    * If an active incident with the same name exists, ignore the request.
-   * @param {Object} args - has 5 optional keys: type, severity, details, name and system of the incident.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * @param {Object} args - Has 5 optional keys: type, severity, details, name and system of the incident.
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function createNewIncident(args) {
     return executeCommand('createNewIncident', args);
@@ -619,8 +695,8 @@ script: |-
 
   /**
    * Sets playbook according to type.
-   * @param {String} type - the incident type, which the playbook is set accordingly.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * @param {String} type - The incident type, according to which the playbook is chosen
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function setPlaybookAccordingToType(type) {
     return executeCommand('setPlaybookAccordingToType', {type: type});
@@ -628,8 +704,8 @@ script: |-
 
   /**
    * Sets Owner to an incident. The incident must be related to current investigation.
-   * @param {Object} name - the owner user name.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * @param {Object} name - The user name of the owner
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function setOwner(name) {
     return executeCommand('setOwner', { owner: name });
@@ -637,8 +713,8 @@ script: |-
 
   /**
    * Assigns a playbook task to a user.
-   * @param {Object} arg - has 2 keys, 'id' - the task id, 'assignee' - assignee user name.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * @param {Object} arg - Has 2 keys, 'id' - the task id, 'assignee' - the user name of the assignee.
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function taskAssign(arg) {
     return executeCommand('taskAssign', arg);
@@ -646,8 +722,8 @@ script: |-
 
   /**
    * Sets task due date.
-   * @param {Object} arg - has 2 keys, 'id' - the task id, 'dueDate' - time string in UTC format (To get current time use: 'new Date().toUTCString()').
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * @param {Object} arg - Has 2 keys, 'id' - the task id, 'dueDate' - time string in UTC format (To get current time use: 'new Date().toUTCString()').
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function setTaskDueDate(arg) {
     return executeCommand('setTaskDueDate', arg);
@@ -655,8 +731,8 @@ script: |-
 
   /**
    * Sets investigation playbook
-   * @param {String} name - the playbook name.
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * @param {String} name - The playbook name.
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function setPlaybook(name) {
     return executeCommand('setPlaybook', { name: name });
@@ -665,21 +741,21 @@ script: |-
   /**
    * Adds task to Workplan
    * @param {Object} arg - has 5 keys:
-   * 'name' - (mandatory) The new task's name.
-   * 'description' - (optional) The new task's description.
-   * 'script' - (optional) Name of script to be run by task.
-   * 'addBefore' - (optional, refers to task id) Insert new task before specified task (when using this argument do not use afterTask)
-   * 'addAfter' - (optional, refers to task id) Insert new task after specified task (when using this argument do not use beforeTask)
-   * @returns {Array} in case of error will contain the error entry. In Case of success will return an empty array.
+   * - 'name' - (mandatory) The new task's name.
+   * - 'description' - (optional) The new task's description.
+   * - 'script' - (optional) Name of script to be run by task.
+   * - 'addBefore' - (optional, refers to task id) Insert new task before specified task (when using this argument do not use afterTask)
+   * - 'addAfter' - (optional, refers to task id) Insert new task after specified task (when using this argument do not use beforeTask)
+   * @return {Array} An array with an error entry if an error occurred, an empty array otherwise
    */
   function addTask(arg) {
     return executeCommand('addTask', arg);
   }
 
   /**
-   * Encode json object to URL. Supports multiple same arguments if value is array.
-   * @param {Object} args - the object to encode.
-   * @returns {String} in case of error will be empty. In Case of success will return the URL string.
+   * Encode json object to URL. Supports multiple arguments of the same value if input is an array.
+   * @param {Object} args - The object to encode.
+   * @return {String} in case of error will be empty. In Case of success will return the URL string.
    */
   function encodeToURLQuery(args) {
         var query = '';
@@ -710,7 +786,7 @@ script: |-
   /**
    * Translate ThreatConnect rating to score
    * @param {rating} TC rating as int
-   * @returns {score} int (between 0 and 3)
+   * @return {score} Int (between 0 and 3)
    */
   function threatConnectRatingToScore(rating) {
       var tcScore = 0;
@@ -725,8 +801,8 @@ script: |-
 
   /**
   * Check the list of available modules to see whether a command is currently available to be run.
-  * @param {Object} cmd - the command to check.
-  * @returns {bool} Whether the command is available or not.
+  * @param {Object} cmd - The command to check.
+  * @return {bool} True if command is available, false otherwise
   */
   function isCommandAvailable(cmd) {
       var all = getAllSupportedCommands();
@@ -746,17 +822,17 @@ script: |-
 
   /**
    * Check if the given entry is an error entry
-   * @param {Object} entry - the entry to check
-   * @returns {Boolean} true if this is an error entry, false otherwise
+   * @param {Object} entry - The entry to check
+   * @return {Boolean} True if this is an error entry, false otherwise
    */
   function isError(entry) {
     return entry && typeof entry === 'object' && entry.Type === entryTypes.error;
   }
 
   /**
-   * Check if the given res is an array and is not an error
-   * @param {Array} res - the result from the execute to check
-   * @returns {Boolean} true if this is a valid result
+   * Check if the given result entry is an array and is not an error
+   * @param {Array} res - The result from the execute to check
+   * @return {Boolean} True if this is a valid result
    */
   function isValidRes(res) {
     return res && Array.isArray(res) && res.length && !isError(res[0]);
@@ -764,9 +840,9 @@ script: |-
 
   /**
    * If the given value exists, return it. Otherwise, return default and if not provided 'Unknown'
-   * @param {Object} v - value that can be anything
-   * @param {Object} def - default value. If not provided will be 'Unknown'
-   * @return {Object} value if exists or default otherwise
+   * @param {Object} v - Value that can be anything
+   * @param {Object} [def] - Default value. If not provided will be 'Unknown'
+   * @return {Object} Value if exists, default otherwise
    */
   function nvl(v, def) {
     return v ? v : def ? def : 'Unknown';
@@ -774,10 +850,10 @@ script: |-
 
   /**
    * Flatten the fields into a map of dot notation key and value
-   * @param {Object} obj - the object to iterate on
-   * @param {String} path - (optional) the path so far in dot notation
-   * @param {Object} flat - the collected object result
-   * @returns {Object} an object with keys that are dot notation and values
+   * @param {Object} obj - The object to iterate on
+   * @param {String} [path] - (optional) The path so far in dot notation
+   * @param {Object} flat - The collected object result
+   * @return {Object} An object with keys that are dot notation and values
    */
   function flattenFields(obj, path, flat) {
     if (obj) {
@@ -799,9 +875,9 @@ script: |-
   var formatCell = objToStr;
 
   /**
-   * Convert a given object to md while decending multiple levels
-   * @param {Object} o - the object to convert - can be an array as well
-   * @returns {String} - the converted md string
+   * Convert a given object to md while descending multiple levels
+   * @param {Object} o - The object to convert - can be an array as well
+   * @return {String} - The converted markdown string
    */
   function objToMd(o) {
       var flat = {};
@@ -816,10 +892,10 @@ script: |-
   }
 
   /**
-   * Convert a given object to md list (-) while each value is converted to simple str
-   * @param {Object} o - the object to convert
-   * @param {String} t - the title of the list
-   * @returns {String} the returned md
+   * Convert a given object to md list (-) while each value is converted to a simple string
+   * @param {Object} o - The object to convert
+   * @param {String} t - The title of the list
+   * @return {String} The markdown string
    */
   function objToList(o, t) {
     var md = '';
@@ -835,8 +911,8 @@ script: |-
 
   /**
   * Converts the given timestamp to a string
-  * @param {int} timestamp - the timestamp in UNIX format
-  * @returns {String} e.g. 'Thu, 11 May 2017 11:18:56 UTC'
+  * @param {int} timestamp - The timestamp in UNIX format
+  * @return {String} A string representing the time - e.g. 'Thu, 11 May 2017 11:18:56 UTC'
   */
   function convertTimestampToString(timestamp) {
     return (new Date(parseInt(timestamp))).toISOString();
@@ -844,8 +920,8 @@ script: |-
 
   /**
   * Converts the given number (uint32) to an IP address string
-  * @param {int} num: the number to convert
-  * @returns {String} e.g. '192.168.2.1'
+  * @param {int} num -  The number to convert
+  * @return {String} A string representing the IP address - e.g. '192.168.2.1'
   */
   var numToIp = function(num) {
     var ip = num % 256;
@@ -859,9 +935,9 @@ script: |-
   }
 
   /**
-   * Convert a given array to md table
-   * @param {Array} arr - the array to convert
-   * @returns {String} - the converted md string
+   * Convert a given array to a markdown table
+   * @param {Array} arr - The array to convert
+   * @return {String} - The converted markdown string
    */
   function arrToMd(arr) {
       if (!arr || arr.length === 0) {
@@ -873,9 +949,9 @@ script: |-
   /**
    * Query the given object with the given path and retrive it
    * @deprecated please use dq which has the full functionality
-   * @param {Object} obj - the object to query
-   * @param {String} path - the path to retrieve from the object
-   * @returns {Object} if path is found, then the value at the path, null otherwise
+   * @param {Object} obj - The object to query
+   * @param {String} path - The path to retrieve from the object
+   * @return {Object} The value of the path if the path exists, null otherwise
    */
   function jq(obj, path) {
     if (!obj || !path || (typeof obj !== 'object' && !Array.isArray(obj))) {
@@ -914,9 +990,9 @@ script: |-
 
   /**
    * Replace the given args with the actual values in the input template
-   * @param {String} input - the template to replace values in
-   * @param {Object} args - the map of values to use
-   * @returns {String} the template with the values filled in
+   * @param {String} input - The template to replace values in
+   * @param {Object} args - The map of values to use
+   * @return {String} The template with the values filled in
    */
   function replaceInTemplates(input, args) {
     var res = input;
@@ -929,9 +1005,9 @@ script: |-
 
   /**
    * Replace the given args with the actual values in the input template and remove from args
-   * @param {String} input - the template to replace values in
-   * @param {Object} args - the map of values to use
-   * @returns {String} the template with the values filled in
+   * @param {String} input - The template to replace values in
+   * @param {Object} args - The map of values to use
+   * @return {String} the template with the values filled in
    */
   function replaceInTemplatesAndRemove(input, args) {
       var res = input;
@@ -955,8 +1031,8 @@ script: |-
 
   /**
    * Escape reserved XML chars in the input
-   * @param {String} input - the input to escape
-   * @returns {String} the escaped input
+   * @param {String} input - The input to escape
+   * @return {String} The escaped input
    */
   function escapeXMLChars(input) {
       var res = input;
@@ -968,9 +1044,9 @@ script: |-
   }
 
   /**
-   * Get list data which is comma-separated into an array
-   * @param {String} listName - the name of the list
-   * @returns {Array} the list as an array
+   * Convert a string representing a comma separated list into an array
+   * @param {String} listName - The name of the list
+   * @return {Array} The list as an array
    */
   function getCSVListAsArray(listName) {
       var res = executeCommand('getList', {listName: listName});
@@ -982,9 +1058,9 @@ script: |-
   }
 
   /**
-   * Get list data which is JSON format into an object that can be an array as well
-   * @param {String} listName - the name of the list
-   * @returns {Object} the list as an object
+   * Convert a JSON list/array into an object
+   * @param {String} listName - The name of the list
+   * @return {Object} The JSON as an object
    */
   function getJSONListAsObject(listName) {
       var res = executeCommand('getList', {listName: listName});
@@ -1007,7 +1083,7 @@ script: |-
    * Checks if the given entry from a URL reputation query is positive (known bad)
    * @deprecated
    * @param {Object} entry - reputation entry
-   * @returns {Boolean} true if positive, false otherwise
+   * @return {Boolean} true if positive, false otherwise
    */
   function positiveUrl(entry) {
     if (entry.Type !== entryTypes.error && entry.ContentsFormat === formats.json) {
@@ -1027,7 +1103,7 @@ script: |-
    * Checks if the given entry from a file reputation query is positive (known bad)
    * @deprecated
    * @param {Object} entry - reputation entry
-   * @returns {Boolean} true if positive, false otherwise
+   * @return {Boolean} true if positive, false otherwise
    */
   function positiveFile(entry) {
     if (entry.Type !== entryTypes.error && entry.ContentsFormat === formats.json) {
@@ -1057,7 +1133,7 @@ script: |-
    * Checks if the given entry from an IP reputation query is positive (known bad)
    * @deprecated
    * @param {Object} entry - reputation entry
-   * @returns {Boolean} true if positive, false otherwise
+   * @return {Boolean} true if positive, false otherwise
    */
   function positiveIP(entry) {
     if (entry.Type !== entryTypes.error && entry.ContentsFormat === formats.json) {
@@ -1083,7 +1159,7 @@ script: |-
    * Display CrowdStrike Intel results in Markdown
    * @deprecated
    * @param {Object} entry - reputation entry
-   * @returns {Object} the markdown entry
+   * @return {Object} the markdown entry
    */
   function shortCrowdStrike(entry) {
     if (entry.Type !== entryTypes.error && entry.ContentsFormat === formats.json) {
@@ -1117,7 +1193,7 @@ script: |-
    * Formats a URL reputation entry into a short table
    * @deprecated
    * @param {Object} entry - reputation entry
-   * @returns {Object} the table entry
+   * @return {Object} the table entry
    */
   function shortUrl(entry) {
     if (entry.Type !== entryTypes.error && entry.ContentsFormat === formats.json) {
@@ -1150,7 +1226,7 @@ script: |-
    * Formats a file reputation entry into a short table
    * @deprecated
    * @param {Object} entry - reputation entry
-   * @returns {Object} the table entry
+   * @return {Object} the table entry
    */
   function shortFile(entry) {
     if (entry.Type !== entryTypes.error && entry.ContentsFormat === formats.json) {
@@ -1200,7 +1276,7 @@ script: |-
    * Formats an ip reputation entry into a short table
    * @deprecated
    * @param {Object} entry - reputation entry
-   * @returns {Object} the table entry
+   * @return {Object} the table entry
    */
   function shortIP(entry) {
     if (entry.Type !== entryTypes.error && entry.ContentsFormat === formats.json) {
@@ -1238,7 +1314,7 @@ script: |-
    * Formats a domain reputation entry into a short table
    * @deprecated
    * @param {Object} entry - reputation entry
-   * @returns {Object} the table entry
+   * @return {Object} the table entry
    */
   function shortDomain(entry) {
     if (entry.Type !== entryTypes.error && entry.ContentsFormat === formats.json) {
@@ -1259,10 +1335,14 @@ script: |-
   }
 
   /**
-     * Flat all Json tree object to key-value format
-     * @returns {Object} the formatted object (key-value format)
-     */
+   * Flatten a JSON tree object to key-value format
+   * @param {Object} object - The object to be flattened
+   * @return {Object} the formatted object (key-value format)
+   */
   var treeToFlattenObject = function(object) {
+      if(typeof object !== 'object' && !(Array.isArray(object))){
+          return object;
+      }
       var retVal = {};
 
       for (var i in object) {
@@ -1282,8 +1362,8 @@ script: |-
 
 
   /**
-   * Base64 encode utiliy
-   * @returns Base64 encoded string
+   * Base64 encode utiliy. Use Base64.encode(<value>) to encode a string into base64
+   * @return A base64 encoded string
    */
   var Base64 = {
         _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
@@ -1310,11 +1390,19 @@ script: |-
           return output;
         }
   };
-  // Add the given obj to the path while making sure to append Malicious property
+
+  /**
+   * Add the given obj to the path while making sure to append Malicious property
+   * @param {Object} context - The current war room context, to which the value should be added
+   * @param {String} path - The context path in which the object shoud be added
+   * @param {Object} obj - The object to be flattened
+   * @return {Undefined} The function does not return a value
+   */
   function addMalicious(context, path, obj) {
       obj['properties_to_append'] = ['Malicious'];
       context[path] = obj;
   }
+
   // Constants for common merge paths
   var outputPaths = {
       file: 'File(val.MD5 && val.MD5 === obj.MD5 || val.SHA1 && val.SHA1 === obj.SHA1 || val.SHA256 && val.SHA256 === obj.SHA256)',
@@ -1326,7 +1414,11 @@ script: |-
   };
 
 
-  // Converts score (in number format) to human readable reputation format
+  /**
+   * Converts score (in number format) to human readable reputation format
+   * @param {Int} score - The score to be formatted
+   * @return {String} The formatted score
+   */
   function scoreToReputation(score) {
       if (score === 3){
           return 'Bad';
@@ -1340,7 +1432,12 @@ script: |-
       return 'None';
   };
 
-  //Check if ip is in subnet
+  /**
+   * Check if the given IP address is in the given subnet
+   * @param {String} ip - The IP address
+   * @param {String} subnet - The subnet
+   * @return {String} True if IP is in the subnet, false otherwise
+   */
   function isIPInSubnet(ip, subnet) {
       function IPnumber(IPaddress) {
           var parsedIp = IPaddress.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
@@ -1365,9 +1462,9 @@ script: |-
   }
 
   /**
-   * Converts all cells in a Demisto table in JSON form to human-readable strings
-   * @param {Object} obj - the Demisto table
-   * @returns {Object} - a new Demisto table containing the same fields as formatted strings
+   * Converts all cells in a JSON form Demisto table to human-readable strings
+   * @param {Object} obj - The Demisto table
+   * @return {Object} - A new Demisto table containing the same fields as formatted strings
    */
   function formatTableValues(obj) {
 
@@ -1454,11 +1551,11 @@ script: |-
   };
 
   /**
-   * Formats date object to string according to format. 
+   * Formats a date object to a string according to the given format.
    * @deprecated
-   * @param {Date} date
-   * @param {Date} format - format should be followed to python datetime formats. 
-   * @returns {string} string representation of date object according to format
+   * @param {Date} date - The date object to be formatted
+   * @param {Date} format - The format string. Should be a legal python datetime format (e.g. "%d %Y %H:%M:%S")
+   * @return {string} A string representation of date object according to format
    */
   function dateToString(date, format) {
       if (!date || !(date instanceof Date) || typeof date.getMonth !== 'function' || String(date.getDate()) === 'NaN') {
@@ -1525,12 +1622,12 @@ script: |-
   }
 
   /**
-   * Parses date string to date object. 
+   * Parses date string to date object.
    * @deprecated
    * @param {string} dateString - date as string
-   * @param {string} format - the dateString must fit the format. 
+   * @param {string} format - the dateString must fit the format.
    * format is according to date format of python datetime library
-   * @returns {Date} parsed date object
+   * @return {Date} parsed date object
    */
   function stringToDate(dateString, format) {
       if (typeof dateString !== 'string') {
@@ -1589,7 +1686,7 @@ script: |-
 
       return newDate;
   }
-  
+
   /********************************** Date Formatting end **************************************/
 
   /********************************** HMAC_SHA256 **************************************/
@@ -1841,8 +1938,8 @@ script: |-
 
     /**************************** REGEX FORMATTING *******************************/
 
-      var ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
-      var emailRegex =/[a-z0-9]+[_a-z0-9\.-]*[a-z0-9]+@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})/;
+      var ipRegex = /\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b/;
+      var emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
       var hashRegex = /[a-fA-F0-9]/;
       var md5Regex = /\b[a-fA-F\d]{32}\b/gm;
       var sha1Regex = /\b[a-fA-F\d]{40}\b/gm;
@@ -1861,3 +1958,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: 'Fix separator line of MD tables'

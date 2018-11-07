@@ -65,7 +65,7 @@ script: |-
                           "ContentsFormat" : formats["markdown"],
                           "Contents" : md,
                           "HumanReadable": md,
-                          "EntryContext": {"File(val.EntryID = obj.EntryID)" : pdfFile, "URL" : URLs}
+                          "EntryContext": {"File(val.EntryID == obj.EntryID)" : pdfFile, "URL" : URLs}
                           })
 
       else:
@@ -83,9 +83,6 @@ args:
   description: War room entryID of the file to read.
 - name: maxFileSize
   description: Maximal file size to load, in bytes. Default is 1MB.
-outputs:
-- contextPath: FileData
-  description: Data read from war room file
 scripttarget: 0
 dockerimage: demisto/pdfx
 outputs:

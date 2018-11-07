@@ -1,0 +1,757 @@
+commonfields:
+  id: Dell Secureworks
+  version: -1
+name: Dell Secureworks
+display: Dell Secureworks
+category: IT Services
+image: data:image/png;base64,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
+description: Handle tickets in SecureWorks
+detaileddescription: |-
+  In the SecureWorks web UI, under the API Credential, You can generate your API password.
+  The API Key is provided by SecureWorks.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Do not validate server certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Filter tickets by SERVICE_REQUEST, INCIDENT or CHANGE
+  name: ticketType
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: |-
+    var base = params.server.replace(/[\/]+$/, '') + '/api/ticket/v3/';
+
+    var commands = {
+        'secure-works-create-ticket': {
+            url: 'tickets',
+            method: 'POST',
+            translator: [
+                {to: 'CreationStatusCode', from: 'code'},
+                {to: 'ID', from: 'ticketID'}
+            ],
+            title: 'Secure works create ticket response',
+            contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
+            extended: true,
+        },
+        'secure-works-update-ticket': {
+            url: 'tickets/%id%',
+            method: 'POST',
+            translator: [
+                {to: 'UpdateStatusCode', from: 'code'},
+                {to: 'ID', from: 'ticketID'}
+            ],
+            title: 'Secure works update ticket response',
+            contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
+            extended: true,
+        },
+        'secure-works-get-ticket-count': {
+            url: 'tickets/count',
+            method: 'POST',
+            translator: [
+                {to: 'TicketCount', from: 'ticketCount'}
+            ],
+            title: 'Secure works get ticket count response',
+            extended: true,
+        },
+        'secure-works-assign-ticket': {
+            url: 'tickets/%id%/assign',
+            method: 'POST',
+            translator: [
+                {to: 'AssignStatusCode', from: 'code'},
+                {to: 'ID', from: 'ticketID'}
+            ],
+            title: 'Secure works assign ticket response',
+            contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
+            extended: true,
+        },
+        'secure-works-close-ticket': {
+            url: 'tickets/%id%/close',
+            method: 'POST',
+            translator: [
+                {to: 'ClosureStatusCode', from: 'code'},
+                {to: 'ID', from: 'ticketID'}
+            ],
+            title: 'Secure works close ticket response',
+            contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
+            extended: true,
+        },
+        'secure-works-add-worklogs-ticket': {
+            url: 'tickets/%id%/worklogs',
+            method: 'POST',
+            translator: [
+                {to: 'WorklogAdditionStatusCode', from: 'code'},
+                {to: 'ID', from: 'ticketID'}
+            ],
+            title: 'Secure works add worklog ticket response',
+            extended: true,
+        },
+        'secure-works-get-ticket': {
+            url: 'tickets/%id%',
+            method: 'GET',
+            translator: [
+                {to: 'ChangeApproval', from: 'changeApproval'},
+                {to: 'AttachmentInfo', from: 'attachmentInfo'},
+                {to: 'ChangeSlo', from: 'changeSlo'},
+                {to: 'ChangeWindowStart', from: 'changeWindowStart'},
+                {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
+                {to: 'Client-ID', from: 'client.id'},
+                {to: 'Client-ID', from: 'client.name'},
+                {to: 'Contact-ID', from: 'contact.id'},
+                {to: 'Contact-ID', from: 'contact.name'},
+                {to: 'Created', from: 'dateCreated'},
+                {to: 'Closed', from: 'dateClosed'},
+                {to: 'Modified', from: 'dateModified'},
+                {to: 'Description', from: 'detailedDescription'},
+                {to: 'Devices-ID', from: 'devices.id'},
+                {to: 'Devices-Name', from: 'devices.name'},
+                {to: 'Impact', from: 'impact'},
+                {to: 'Location', from: 'location'},
+                {to: 'Partner', from: 'partner'},
+                {to: 'Priority', from: 'priority'},
+                {to: 'Reason', from: 'reason'},
+                {to: 'RequestType', from: 'requestType'},
+                {to: 'RiskAssessment', from: 'riskAssessment'},
+                {to: 'Service', from: 'service'},
+                {to: 'Status', from: 'status'},
+                {to: 'Status', from: 'status'},
+                {to: 'SymptomDescription', from: 'symptomDescription'},
+                {to: 'ID', from: 'ticketId'},
+                {to: 'Type', from: 'ticketType'},
+                {to: 'Urgency', from: 'urgency'},
+                {to: 'Watchers', from: 'watchers'},
+            ],
+            title: 'Secure works get ticket response',
+            contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
+            extended: true,
+        },
+        'secure-works-get-tickets-ids': {
+            url: 'tickets/ids',
+            method: 'POST',
+             translator: [
+                {to: 'IDs', from: 'ticketIds'}
+            ],
+            title: 'Secure works get IDs',
+            extended: true,
+        },
+        'secure-works-get-tickets-updates':{
+          url: 'tickets/updates',
+          method: 'POST',
+           translator: [
+                {to: 'ChangeApproval', from: 'changeApproval'},
+                {to: 'AttachmentInfo', from: 'attachmentInfo'},
+                {to: 'ChangeSlo', from: 'changeSlo'},
+                {to: 'ChangeWindowStart', from: 'changeWindowStart'},
+                {to: 'ChangeWindowEnd', from: 'changeWindowEnd'},
+                {to: 'Client-ID', from: 'client.id'},
+                {to: 'Client-ID', from: 'client.name'},
+                {to: 'Contact-ID', from: 'contact.id'},
+                {to: 'Contact-ID', from: 'contact.name'},
+                {to: 'Created', from: 'dateCreated'},
+                {to: 'Closed', from: 'dateClosed'},
+                {to: 'Modified', from: 'dateModified'},
+                {to: 'Description', from: 'detailedDescription'},
+                {to: 'Devices-ID', from: 'devices.id'},
+                {to: 'Devices-Name', from: 'devices.name'},
+                {to: 'Impact', from: 'impact'},
+                {to: 'Location', from: 'location'},
+                {to: 'Partner', from: 'partner'},
+                {to: 'Priority', from: 'priority'},
+                {to: 'Reason', from: 'reason'},
+                {to: 'RequestType', from: 'requestType'},
+                {to: 'RiskAssessment', from: 'riskAssessment'},
+                {to: 'Service', from: 'service'},
+                {to: 'Status', from: 'status'},
+                {to: 'Status', from: 'status'},
+                {to: 'SymptomDescription', from: 'symptomDescription'},
+                {to: 'ID', from: 'ticketId'},
+                {to: 'Type', from: 'ticketType'},
+                {to: 'Urgency', from: 'urgency'},
+                {to: 'Watchers', from: 'watchers'},
+            ],
+            title: 'Secure works get updated tickets',
+            contextPath: 'SecureWorks.Tickets(val.ID==obj.ID)',
+            extended: true,
+        },
+        'secure-works-acknowledge': {
+          url: '/tickets/acknowledge',
+          method: 'POST'
+        },
+    }
+
+    function createContext(data) {
+        var createContextSingle = function(obj) {
+            var res = {};
+            var keys = Object.keys(obj);
+            keys.forEach(function(k) {
+                var values = k.split('-');
+                var current = res;
+                for (var i = 0; i<values.length - 1; i++) {
+                    if (!current[values[i]]) {
+                        current[values[i]] = {};
+                    }
+                    current = current[values[i]];
+                }
+               current[values[values.length - 1]] = obj[k];
+            });
+            return res;
+        };
+        if (data instanceof Array) {
+            var res = [];
+            for (var j=0; j < data.length; j++) {
+                res.push(createContextSingle(data[j]));
+            }
+            return res;
+        }
+        return createContextSingle(data);
+    }
+
+    function sendRequest(commandData) {
+        for (var k in commandData.defaultArgs) {
+            if (!args[k]) {
+                args[k] = commandData.defaultArgs[k];
+            }
+        }
+
+        var res = http(
+            base + replaceInTemplatesAndRemove(commandData.url, args) + (commandData.method === 'GET' ? encodeToURLQuery(args || commandData.defaultArgs) : ''),
+            {
+                Method: commandData.method,
+                Headers: {
+                    'Authorization': [ 'APIKEY ' + params.credentials.identifier + ':' + params.credentials.password ],
+                    'Content-Type': ['application/json'],
+                },
+                Body: commandData.method !== 'GET' ? JSON.stringify(args || commandData.defaultArgs) : undefined
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed on request ' + commandData.url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        return JSON.parse(res.Body);
+    }
+
+    if (command === 'test-module') {
+        var countCommand = commands['secure-works-get-ticket-count'];
+         var countObject = sendRequest(countCommand);
+
+        if(!countObject){
+            return 'not ok';
+        }
+
+        return countObject.ticketCount ? 'ok' : 'not ok';
+    }
+
+    if(command === 'fetch-incidents'){
+        var countCommand = commands['secure-works-get-ticket-count'];
+
+        if(params.ticketType){
+            args = {ticketType: params.ticketType}
+        }
+
+        var countObject = sendRequest(countCommand);
+
+        if(!countObject){
+            return [];
+        }
+
+        var count = countObject.ticketCount;
+
+        var idsCommand = commands['secure-works-get-tickets-ids'];
+        var currentIds;
+        args = {limit: count};
+        var ticketIdsObject = sendRequest(idsCommand);
+        if(ticketIdsObject){
+            currentIds = ticketIdsObject.ticketIds;
+        }
+
+        if(!currentIds){
+            return [];
+        }
+
+        var incidents = [];
+        var lastRun = getLastRun();
+        if(!lastRun || !lastRun.ids){
+            lastRun = { ids: [] };
+        }
+
+        var idsToFetch = currentIds.filter(function(id){
+            return lastRun.ids.indexOf(id) === -1;
+        });
+
+        if (idsToFetch && idsToFetch.length > 0) {
+            var tickets = [];
+            var getTicketCommand = commands['secure-works-get-ticket'];
+            idsToFetch.forEach(function(id){
+               var ticket =  sendRequest(getTicketCommand);
+               if(ticket.status != "CLOSED" && ticket.categoryClass != "HEALTH"){
+                    tickets.push(ticket);
+               }
+            });
+            // convert tickets to demisto incidents
+            if (tickets.length > 0) {
+                tickets.forEach(function(ticket){
+                    var incident = {
+                        name: 'Secureworks - Ticket - ' + ticket.id,
+                        rawJSON: JSON.stringify(ticket)
+                    };
+
+                    incidents.push(incident);
+                });
+            }
+
+            setLastRun({
+                ids: currentIds
+            });
+        }
+
+        return JSON.stringify(incidents);
+    }
+
+    var commandData = commands[command];
+    var result = sendRequest(commandData);
+
+    var entry = {
+        Type: entryTypes.note,
+        Contents: result,
+        ContentsFormat: formats.json,
+    };
+    if (commandData.extended) {
+        var translated = mapObjFunction(commandData.translator)(result);
+        entry.ReadableContentsFormat = formats.markdown;
+        entry.HumanReadable = tableToMarkdown(commandData.title,translated);
+        if (commandData.contextKey) {
+            entry.EntryContext = {};
+            entry.EntryContext[commandData.contextKey] = createContext(translated);
+        }
+    }
+    return entry;
+  type: javascript
+  commands:
+  - name: secure-works-create-ticket
+    arguments:
+    - name: clientRef
+      required: true
+      description: Client reference
+    - name: clientLocationRef
+      description: Client location reference
+    - name: requestType
+      required: true
+      description: Request type
+    - name: title
+      description: Ticket title
+    - name: externalTicket
+      description: External ticket
+    - name: deviceRef
+      description: Device reference
+    - name: title
+      description: Ticket title
+    - name: pocContactRef
+      required: true
+      description: Ticket POC contact reference
+    - name: watchers
+      description: Ticket watchers
+    - name: attachments
+      description: Ticket attachments
+    - name: source
+      description: Ticket source
+    - name: assignedGroupId
+      description: Ticket assigned group dd
+    - name: assignedTicket2
+      description: Ticket assigned ticket 2
+    - name: partner
+      description: Ticket partner
+    - name: vendor
+      description: Ticket vendor
+    - name: risk assessment
+      auto: PREDEFINED
+      predefined:
+      - UNDEFINED
+      - NON
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: Ticket risk assessment
+    - name: changeSlo
+      auto: PREDEFINED
+      predefined:
+      - STANDARD
+      - SHARP
+      - EXPEDITE
+      - EMERGENCY
+      - SHARP_EXPEDITE
+      description: Ticket change slo
+    - name: changeWindowStart
+      description: Ticket change window start
+    - name: changeWindowEnd
+      description: Ticket change window end
+    - name: impact
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      description: Ticket impact
+    - name: urgency
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      description: Ticket urgency
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - UNKNOWN
+      description: Ticket priority
+    - name: customerMiscellaneous1
+      description: Ticket custom field No.1
+    - name: customerMiscellaneous2
+      description: Ticket custom field No.2
+    - name: customerMiscellaneous3
+      description: Ticket custom field No.3
+    - name: customerMiscellaneous4
+      description: Ticket custom field No.4
+    - name: categorizationClass
+      description: Ticket categorization class
+    - name: categorizationCategory
+      description: Ticket categorization category
+    - name: categorizationType
+      description: Ticket categorization type
+    - name: categorizationItem
+      description: Ticket categorization item
+    outputs:
+    - contextPath: SecureWorks.Ticket.ID
+      description: Ticket ID in secure works
+    - contextPath: SecureWorks.Ticket.CreationStatusCode
+      description: Ticket creation status code
+    description: Allows creation of a new ticket
+  - name: secure-works-update-ticket
+    arguments:
+    - name: id
+      description: The Ticket ID of the ticket that you want the details for.
+    - name: externalTicketNum
+      description: External ticket number
+    - name: externalTicketNum2
+      description: External ticket number 2
+    - name: externalGrouptNum
+      description: External group name
+    - name: watchers
+      description: ticket watchers
+    - name: vendor
+      description: ticket vendor
+    - name: watchers
+      description: ticket watchers
+    - name: customerMiscellaneous1
+      description: Ticket custom field No.1
+    - name: customerMiscellaneous2
+      description: Ticket custom field No.2
+    - name: customerMiscellaneous3
+      description: Ticket custom field No.3
+    - name: customerMiscellaneous4
+      description: Ticket custom field No.4
+    outputs:
+    - contextPath: SecureWorks.Ticket.ID
+      description: Ticket ID in secure works
+    - contextPath: SecureWorks.Ticket.UpdateStatusCode
+      description: Ticket update status code
+    description: Allows creation of a new ticket
+  - name: secure-works-close-ticket
+    arguments:
+    - name: id
+      description: The Ticket ID of the ticket that you want the details for.
+    - name: worklog
+      description: The work log message describing why you are closing the ticket
+    - name: reason
+      auto: PREDEFINED
+      predefined:
+      - AUTHORIZED_EXPECTED
+      - DUPLICATE_PREVIOUSLY_ESCALATED
+      - FALSE_POSITIVE
+      - INCONCLUSIVE
+      - MITIGATED_BY_SECURITY_CONTROLS
+      - NOT_RELEVANT
+      - TRUE_POSITIVE
+      - WORK_COMPLETED
+      description: The reason code to use when closing the ticket
+    - name: Explanation
+      auto: PREDEFINED
+      predefined:
+      - LEAVE_UNTIL_OPEN_DATE
+      - AUTO_RESOLVE_FUTURE_ACTIVITY
+      - ALERT_ON_FUTURE_OCCURENCES
+      - INCIDENT_MISIDENTIFIED
+      - EVENTS_ARE_FALSE_POSITIVE
+      - ALERT_ON_FUTURE_OCCURENCES
+      - APPLICATION_NOT_IN_ENVIRONMENT_DO_NOT_ALERT
+      - APPLICATION_PRESENT_BUT_NOT_VULNERABLE_DO_NOT_ALERT
+      - ALERT_ON_FUTURE_OCCURENCES
+      description: The explanation for closing the ticket
+    outputs:
+    - contextPath: SecureWorks.Ticket.ID
+      description: Ticket ID in secure works
+    - contextPath: SecureWorks.Ticket.ClosureStatusCode
+      description: Ticket closure status code
+    description: Close a ticket
+  - name: secure-works-add-worklogs-ticket
+    arguments:
+    - name: worklog
+      description: The work log message
+    - name: id
+      description: The Ticket ID of the ticket that you want the details for.
+    description: Add worklog to a ticket
+  - name: secure-works-get-ticket-count
+    arguments:
+    - name: ticketType
+      auto: PREDEFINED
+      predefined:
+      - SERVICE_REQUEST
+      - INCIDENT
+      - CHANGE
+      description: The ticket type to filter
+    description: Retrieve a count of tickets that have been updated and not yet acknowledged
+  - name: secure-works-get-ticket
+    arguments:
+    - name: id
+      description: The Ticket ID of the ticket that you want the details for.
+    - name: includeWorklogs
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether or not to include ticket worklogs, default is true
+    outputs:
+    - contextPath: SecureWorks.Ticket.ChangeApproval
+      description: Ticket change approval
+    - contextPath: SecureWorks.Ticket.AttachmentInfo
+      description: Ticket attachment info
+    - contextPath: SecureWorks.Ticket.ChangeSlo
+      description: Ticket change slo
+    - contextPath: SecureWorks.Ticket.ChangeWindowStart
+      description: Ticket change window start
+    - contextPath: SecureWorks.Ticket.ChangeWindowEnd
+      description: Ticket window end
+    - contextPath: SecureWorks.Ticket.Client.ID
+      description: Ticket client id
+    - contextPath: SecureWorks.Ticket.Client.Name
+      description: Ticket client name
+    - contextPath: SecureWorks.Ticket.Contact.ID
+      description: Ticket contact id
+    - contextPath: SecureWorks.Ticket.Contact.ID
+      description: Ticket contact id
+    - contextPath: SecureWorks.Ticket.Created
+      description: Ticket created
+    - contextPath: SecureWorks.Ticket.Closed
+      description: Ticket closed
+    - contextPath: SecureWorks.Ticket.Modified
+      description: Ticket modified
+    - contextPath: SecureWorks.Ticket.Description
+      description: Ticket description
+    - contextPath: SecureWorks.Ticket.Devices.ID
+      description: Ticket device id
+    - contextPath: SecureWorks.Ticket.Devices.Name
+      description: Ticket device name
+    - contextPath: SecureWorks.Ticket.Impact
+      description: Ticket impact
+    - contextPath: SecureWorks.Ticket.Location
+      description: Ticket location
+    - contextPath: SecureWorks.Ticket.Partner
+      description: Ticket partner
+    - contextPath: SecureWorks.Ticket.Priority
+      description: Ticket priority
+    - contextPath: SecureWorks.Ticket.Reason
+      description: Ticket reason
+    - contextPath: SecureWorks.Ticket.RequestType
+      description: Ticket request type
+    - contextPath: SecureWorks.Ticket.RiskAssessment
+      description: Ticket risk assessment
+    - contextPath: SecureWorks.Ticket.Service
+      description: Ticket service
+    - contextPath: SecureWorks.Ticket.Status
+      description: Ticket status
+    - contextPath: SecureWorks.Ticket.SymptomDescription
+      description: Ticket symptom description
+    - contextPath: SecureWorks.Ticket.ID
+      description: Ticket id
+    - contextPath: SecureWorks.Ticket.Type
+      description: Ticket type
+    - contextPath: SecureWorks.Ticket.Urgency
+      description: Ticket urgency
+    - contextPath: SecureWorks.Ticket.Watchers
+      description: Ticket watchers
+    description: Get the details of a specific ticket, by ID
+  - name: secure-works-assign-ticket
+    arguments:
+    - name: id
+      description: The Ticket ID of the ticket that you want the details for.
+    - name: worklog
+      required: true
+      description: Ticket worklog
+    - name: riskAssessment
+      auto: PREDEFINED
+      predefined:
+      - UNDEFINED
+      - NONE
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: Valid for Change tickets only
+    - name: changeApproval
+      auto: PREDEFINED
+      predefined:
+      - PM_FULLY_APPROVED
+      - PM_RFC
+      - PM_RFC_NON_EP
+      - PM_COST_NON_EP
+      - PM_PEND_COST
+      - PM_COST
+      - PM_PEND_RFC
+      - PM_PEND_RFC_AND_COST
+      description: Valid for Change tickets only
+    outputs:
+    - contextPath: SecureWorks.Tickets.AssignStatusCode
+      description: Assignment status code
+    - contextPath: SecureWorks.Tickets.ID
+      description: The ticket ID
+    description: Assign a ticket to the SecureWorks Counter Threat Operations Center
+  - name: secure-works-get-tickets-updates
+    arguments:
+    - name: limit
+      description: A maximum number of tickets to be returned (default 10), between
+        1 and 500
+    - name: ticketType
+      auto: PREDEFINED
+      predefined:
+      - SERVICE_REQUEST
+      - INCIDENT
+      - CHANGE
+      description: The ticket type to filter
+    - name: includeWorklogs
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether or not to include ticket worklogs, default is true
+    outputs:
+    - contextPath: SecureWorks.Ticket.ChangeApproval
+      description: Ticket change approval
+    - contextPath: SecureWorks.Ticket.AttachmentInfo
+      description: Ticket attachment info
+    - contextPath: SecureWorks.Ticket.ChangeSlo
+      description: Ticket change slo
+    - contextPath: SecureWorks.Ticket.ChangeWindowStart
+      description: Ticket change window start
+    - contextPath: SecureWorks.Ticket.ChangeWindowEnd
+      description: Ticket window end
+    - contextPath: SecureWorks.Ticket.Client.ID
+      description: Ticket client id
+    - contextPath: SecureWorks.Ticket.Client.Name
+      description: Ticket client name
+    - contextPath: SecureWorks.Ticket.Contact.ID
+      description: Ticket contact id
+    - contextPath: SecureWorks.Ticket.Contact.ID
+      description: Ticket contact id
+    - contextPath: SecureWorks.Ticket.Created
+      description: Ticket created
+    - contextPath: SecureWorks.Ticket.Closed
+      description: Ticket closed
+    - contextPath: SecureWorks.Ticket.Modified
+      description: Ticket modified
+    - contextPath: SecureWorks.Ticket.Description
+      description: Ticket description
+    - contextPath: SecureWorks.Ticket.Devices.ID
+      description: Ticket device id
+    - contextPath: SecureWorks.Ticket.Devices.Name
+      description: Ticket device name
+    - contextPath: SecureWorks.Ticket.Impact
+      description: Ticket impact
+    - contextPath: SecureWorks.Ticket.Location
+      description: Ticket location
+    - contextPath: SecureWorks.Ticket.Partner
+      description: Ticket partner
+    - contextPath: SecureWorks.Ticket.Priority
+      description: Ticket priority
+    - contextPath: SecureWorks.Ticket.Reason
+      description: Ticket reason
+    - contextPath: SecureWorks.Ticket.RequestType
+      description: Ticket request type
+    - contextPath: SecureWorks.Ticket.RiskAssessment
+      description: Ticket risk assessment
+    - contextPath: SecureWorks.Ticket.Service
+      description: Ticket service
+    - contextPath: SecureWorks.Ticket.Status
+      description: Ticket status
+    - contextPath: SecureWorks.Ticket.SymptomDescription
+      description: Ticket symptom description
+    - contextPath: SecureWorks.Ticket.ID
+      description: Ticket id
+    - contextPath: SecureWorks.Ticket.Type
+      description: Ticket type
+    - contextPath: SecureWorks.Ticket.Urgency
+      description: Ticket urgency
+    - contextPath: SecureWorks.Ticket.Watchers
+      description: Tickets matching the ticketType. If not specified, tickets of all
+        types are returned.
+    description: retrieves 10 tickets from 24 hours prior to when the POST /tickets/updates
+      endpoint is executed. If the limit is specified, it will retrieve up to that
+      many tickets (max is 500 tickets). Tickets must be updated within the last 24
+      hours to be visible in POST /tickets/updates. When accessing this endpoint you
+      also receive the ticket worklogs. It is recommended that you access POST /tickets/updates
+      on a regular basis. NOTE ­ It is important that you send a POST to /tickets/acknowledge
+      after you receive updated frmo POST /tickets/updates to inform SecureWorks that
+      you have received the latest version of the ticket. Please note that ticket
+      attachments are not visible via this endpoint. In order to view the attachment
+      information of a specific ticket, you must use the GET /tickets/{id} endpoint.
+      This endpoint will return the list of attachments available for that particular
+      ticket.
+  - name: secure-works-get-tickets-ids
+    arguments:
+    - name: ticketType
+      auto: PREDEFINED
+      predefined:
+      - SERVICE_REQUEST
+      - INCIDENT
+      - CHANGE
+      description: 'If provided, limit response to tickets matching the ticket type
+        identified '
+    - name: limit
+      description: If provided, limit response to that number of tickets. If not provided,
+        a maximum of 10 tickets are returned
+    description: Get a list of ticket IDs in the same order as the tickets returned
+      by the GET /tickets/updates endpoint.
+  isfetch: true
+fromversion: 3.1.0
+toversion: 3.5.1

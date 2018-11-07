@@ -33,10 +33,12 @@ script: |-
       indicator_type = entry["indicator_type"]
       score = entry["score"]
       source = entry["source"]
+      if hasattr(INDICATOR_TYPE_DICTIONARY,indicator_type):
+          indicator_type = INDICATOR_TYPE_DICTIONARY[indicator_type]
 
       ec["DBotScore"].append({
           "Indicator" : indicator,
-          "Type": INDICATOR_TYPE_DICTIONARY[indicator_type],
+          "Type": indicator_type,
           "Vendor": source,
           "Score": score
       })

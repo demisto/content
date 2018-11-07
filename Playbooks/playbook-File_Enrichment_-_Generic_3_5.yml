@@ -1,0 +1,341 @@
+id: File Enrichment - Generic
+version: -1
+name: File Enrichment - Generic
+fromversion: 3.5.0
+toversion: 3.5.1
+description: Get file reputation using one or more integrations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 214ebf34-1312-43ec-873d-41d45094ba22
+    type: start
+    task:
+      id: 214ebf34-1312-43ec-873d-41d45094ba22
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 4f88c305-19b2-4d29-8284-0fe706b0b516
+    type: title
+    task:
+      id: 4f88c305-19b2-4d29-8284-0fe706b0b516
+      version: -1
+      name: Hash reputation
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 6e38288d-5ef5-4291-8b4b-286c7101a2b8
+    type: regular
+    task:
+      id: 6e38288d-5ef5-4291-8b4b-286c7101a2b8
+      version: -1
+      name: Check MD5s
+      description: Checks reputation of MD5
+      scriptName: FileReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.MD5
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 49,
+          "y": 515
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 66d74bf4-438c-40a8-840f-58052c181d0f
+    type: title
+    task:
+      id: 66d74bf4-438c-40a8-840f-58052c181d0f
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 690
+        }
+      }
+  "14":
+    id: "14"
+    taskid: e7b3a313-8f11-45ab-8b4d-2373184ed873
+    type: condition
+    task:
+      id: e7b3a313-8f11-45ab-8b4d-2373184ed873
+      version: -1
+      name: Do we have MD5 hashes?
+      description: Checks if there MD5 hashes to check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 201f454e-7e43-4b7a-86c1-cf184c3f4034
+    type: condition
+    task:
+      id: 201f454e-7e43-4b7a-86c1-cf184c3f4034
+      version: -1
+      name: Do we have SHA256 hashes?
+      description: Checks if there SHA256 hashes to check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "16"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 340
+        }
+      }
+  "16":
+    id: "16"
+    taskid: fa195b67-af7f-4d2c-8539-801984ffd27a
+    type: regular
+    task:
+      id: fa195b67-af7f-4d2c-8539-801984ffd27a
+      version: -1
+      name: Check SHA256s
+      description: Checks reputation of SHA256
+      scriptName: FileReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.SHA256
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 515
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 3e168b3e-a583-4ebb-8b82-5a0924d6a204
+    type: condition
+    task:
+      id: 3e168b3e-a583-4ebb-8b82-5a0924d6a204
+      version: -1
+      name: Do we have SHA1 hashes?
+      description: Checks if there SHA1 hashes to check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "18"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 340
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 689b03e9-186f-4edd-8ae2-859b957487d7
+    type: regular
+    task:
+      id: 689b03e9-186f-4edd-8ae2-859b957487d7
+      version: -1
+      name: Check SHA1s
+      description: Checks reputation of SHA1
+      scriptName: FileReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.SHA1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 515
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_7_#default#": 0.52,
+      "15_7_#default#": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1486,
+        "x": 49,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: File MD5 to enrich
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: File SHA256 to enrich
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: File SHA1 to enrich
+outputs:
+- contextPath: File
+  description: The file's object
+  type: unknown
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore's object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The tested indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number

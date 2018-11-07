@@ -1,0 +1,77 @@
+id: EWSv2_empty_attachment_test
+version: -1
+name: EWSv2_empty_attachment_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4398b442-0e88-4a0b-8f69-5d6704628f22
+    type: start
+    task:
+      id: 4398b442-0e88-4a0b-8f69-5d6704628f22
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "1":
+    id: "1"
+    taskid: 9ee95d9f-d075-44e9-80c6-5796b2b5e0d6
+    type: regular
+    task:
+      id: 9ee95d9f-d075-44e9-80c6-5796b2b5e0d6
+      version: -1
+      name: Verify getting empty attachment does not return error
+      script: EWS v2|||ews-get-attachment
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    scriptarguments:
+      attachment-ids: {}
+      item-id:
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAhcA3jAAA=
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 222
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 267,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,383 @@
+id: fd93f620-9a2d-4fb6-85d1-151a6a72e46d
+version: 5
+name: AWS - SQS Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ac9d0975-25da-49fe-8bd4-6a08d9ab6eb6
+    type: start
+    task:
+      id: ac9d0975-25da-49fe-8bd4-6a08d9ab6eb6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 18e64d5b-4cdb-49f8-8604-2da81abc16cc
+    type: regular
+    task:
+      id: 18e64d5b-4cdb-49f8-8604-2da81abc16cc
+      version: -1
+      name: aws-sqs-create-queue
+      description: Creates a new standard or FIFO queue. You can pass one or more
+        attributes in the request.
+      script: AWS - SQS|||aws-sqs-create-queue
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      contentBasedDeduplication: {}
+      delaySeconds: {}
+      fifoQueue: {}
+      kmsDataKeyReusePeriodSeconds: {}
+      kmsMasterKeyId: {}
+      maximumMessageSize: {}
+      messageRetentionPeriod: {}
+      policy: {}
+      queueName:
+        simple: testplaybook
+      receiveMessageWaitTimeSeconds: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      visibilityTimeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: e450ef3d-bca7-495d-83ec-11b19cc14f98
+    type: regular
+    task:
+      id: e450ef3d-bca7-495d-83ec-11b19cc14f98
+      version: -1
+      name: aws-sqs-get-queue-url
+      description: Returns the URL of an existing queue. To access a queue that belongs
+        to another AWS account, use the queueOwnerAWSAccountId parameter to specify
+        the account ID of the queues owner. The queues owner must grant you permission
+        to access the queue.
+      script: AWS - SQS|||aws-sqs-get-queue-url
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      queueName:
+        simple: testplaybook
+      queueOwnerAWSAccountId: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 95d58bf1-44f2-4dbc-8932-34c21d97aa99
+    type: regular
+    task:
+      id: 95d58bf1-44f2-4dbc-8932-34c21d97aa99
+      version: -1
+      name: aws-sqs-list-queues
+      description: Returns a list of your queues. The maximum number of queues that
+        can be returned is 1,000. If you specify a value for the optional QueueNamePrefix
+        parameter, only queues with a name that begins with the specified value are
+        returned.
+      script: AWS - SQS|||aws-sqs-list-queues
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      queueNamePrefix:
+        simple: testplaybook
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: fb6ebb26-fc01-48e5-8d2f-4d5f1e9ca408
+    type: regular
+    task:
+      id: fb6ebb26-fc01-48e5-8d2f-4d5f1e9ca408
+      version: -1
+      name: aws-sqs-send-message
+      description: Delivers a message to the specified queue.
+      script: AWS - SQS|||aws-sqs-send-message
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      delaySeconds: {}
+      messageBody:
+        simple: test
+      messageGroupId: {}
+      queueUrl:
+        simple: ${AWS.SQS.Queues.QueueUrl}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 2b4e9990-f560-421c-8a7f-a1f46a1e3e39
+    type: regular
+    task:
+      id: 2b4e9990-f560-421c-8a7f-a1f46a1e3e39
+      version: -1
+      name: aws-sqs-purge-queue
+      description: Deletes the messages in a queue specified by the QueueURL parameter.
+      script: AWS - SQS|||aws-sqs-purge-queue
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      queueUrl:
+        simple: ${AWS.SQS.Queues.QueueUrl}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 6f59ad66-3365-47c6-845c-1538f331cdaf
+    type: regular
+    task:
+      id: 6f59ad66-3365-47c6-845c-1538f331cdaf
+      version: -1
+      name: aws-sqs-delete-queue
+      description: Deletes the queue specified by the QueueUrl , regardless of the
+        queue's contents. If the specified queue doesn't exist, Amazon SQS returns
+        a successful response.
+      script: AWS - SQS|||aws-sqs-delete-queue
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    scriptarguments:
+      queueUrl:
+        simple: ${AWS.SQS.Queues.QueueUrl}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+  "7":
+    id: "7"
+    taskid: c30e45da-8103-4ec4-89ad-abf73e820cd4
+    type: regular
+    task:
+      id: c30e45da-8103-4ec4-89ad-abf73e820cd4
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.SQS.Queues.QueueUrl
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "8":
+    id: "8"
+    taskid: c5817be2-cdec-499f-8ace-cc177a2554e8
+    type: regular
+    task:
+      id: c5817be2-cdec-499f-8ace-cc177a2554e8
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.SQS.Queues.QueueUrl
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 06dbf427-bc71-468e-8700-3487e9470b56
+    type: regular
+    task:
+      id: 06dbf427-bc71-468e-8700-3487e9470b56
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.SQS.Queues.QueueUrl
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 19adb9d7-629c-438e-8bab-a075b58b4cd9
+    type: regular
+    task:
+      id: 19adb9d7-629c-438e-8bab-a075b58b4cd9
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.SQS.Queues.SentMessages.MessageId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 274,
+          "y": 1420
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 389,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

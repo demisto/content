@@ -2,9 +2,9 @@ commonfields:
   id: Incapsula
   version: -1
 name: Incapsula
-display: Incapsula
+display: Imperva Incapsula
 category: Network Security
-image: data:image/png;base64,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
+image: data:image/png;base64,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
 description: Uses incapsula to manage sites and IPs
 configuration:
 - display: API ID
@@ -44,39 +44,105 @@ script:
             throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
         var response = JSON.parse(res.Body);
-        if (response.res) {
+
+        if (parseInt(response.res)) {
             throw 'Got error response from incapsula for ' + queryName + '\nerror code: ' + response.res +'\nmessage: ' + response['res_message'] + '\ndebug info: ' + JSON.stringify(response['debug_info']);
         }
         return response;
     }
 
     var urlDict = {
-        'incap-get-site-status': '/api/prov/v1/sites/status',
-        'incap-get-ip-ranges': '/api/integration/v1/ips',
-        'incap-get-texts':'/api/integration/v1/texts',
-        'incap-list-sites':'/api/prov/v1/sites/list',
+        /*
+            Account Management
+         */
+        'incap-add-managed-account': '/api/prov/v1/accounts/add',
+        'incap-list-managed-accounts': '/api/prov/v1/accounts/list',
+        'incap-add-subaccount': '/api/prov/v1/subaccounts/add',
+        'incap-list-subaccounts': '/api/prov/v1/accounts/listSubAccounts',
+        'incap-get-account-status': '/api/prov/v1/account',
+        'incap-modify-account-configuration': '/api/prov/v1/accounts/configure',
+        'incap-set-account-log-level': '/api/prov/v1/accounts/setlog',
+        'incap-test-account-s3-connection': '/api/prov/v1/accounts/testS3Connection',
+        'incap-test-account-sftp-connection': '/api/prov/v1/accounts/testSftpConnection',
+        'incap-set-account-s3-log-storage': '/api/prov/v1/accounts/setAmazonSiemStorage',
+        'incap-set-account-sftp-log-storage': '/api/prov/v1/accounts/setSftpSiemStorage',
+        'incap-set-account-default-log-storage': '/api/prov/v1/accounts/setDefaultSiemStorage',
+        'incap-get-account-login-token': '/api/prov/v1/accounts/gettoken',
+        'incap-delete-managed-account': '/api/prov/v1/accounts/delete',
+        'incap-delete-subaccount': '/api/prov/v1/subaccounts/delete',
+        'incap-get-account-audit-events': '/api/prov/v1/accounts/audit',
+        'incap-set-account-default-data-storage-region': '/api/prov/v1/accounts/data-privacy/set-region-default',
+        'incap-get-account-default-data-storage-region': '/api/prov/v1/accounts/data-privacy/show',
+        /*
+            Site Management - Site Configuration
+         */
         'incap-add-site':'/api/prov/v1/sites/add',
+        'incap-get-site-status': '/api/prov/v1/sites/status',
         'incap-get-domain-approver-email':'/api/prov/v1/domain/emails',
         'incap-modify-site-configuration':'/api/prov/v1/sites/configure',
         'incap-modify-site-log-level':'/api/prov/v1/sites/setlog',
+        'incap-modify-site-tls-support': '/api/prov/v1/sites/tls',
         'incap-modify-site-scurity-config':'/api/prov/v1/sites/configure/security',
         'incap-modify-site-acl-config':'/api/prov/v1/sites/configure/acl',
         'incap-modify-site-wl-config':'/api/prov/v1/sites/configure/whitelists',
         'incap-delete-site':'/api/prov/v1/sites/delete',
+        'incap-list-sites':'/api/prov/v1/sites/list',
         'incap-get-site-report':'/api/prov/v1/sites/report',
+        'incap-get-site-html-injection-rules': '/api/prov/v1/sites/htmlinjections',
+        'incap-add-site-html-injection-rule': '/api/prov/v1/sites/configure/htmlInjections',
+        'incap-delete-site-html-injection-rule': '/api/prov/v1/sites/configure/htmlInjections',
+        'incap-create-new-csr': '/api/prov/v1/sites/customCertificate/csr',
+        'incap-upload-certificate':'/api/prov/v1/sites/customCertificate/upload',
+        'incap-remove-custom-integration':'/api/prov/v1/sites/customCertificate/remove',
+        'incap-move-site': '/api/prov/v1/sites/moveSite',
+        'incap-check-compliance': '/api/prov/v1/caa/check-compliance',
+        'incap-set-site-data-storage-region': '/api/prov/v1/sites/data-privacy/region-change',
+        'incap-get-site-data-storage-region': '/api/prov/v1/sites/data-privacy/show',
+        'incap-set-site-data-storage-region-geo-override': '/api/prov/v1/sites/data-privacy/override-by-geo',
+        'incap-get-site-data-storage-region-geo-override': '/api/prov/v1/sites/data-privacy/show-override-by-geo',
+        /*
+            Site Management - Caching
+        */
         'incap-purge-site-cache':'/api/prov/v1/sites/cache/purge',
         'incap-modify-cache-mode':'/api/prov/v1/sites/performance/cache-mode',
         'incap-purge-resources':'/api/prov/v1/sites/performance/purge',
         'incap-modify-caching-rules':'/api/prov/v1/sites/performance/caching-rules',
         'incap-set-advanced-caching-settings':'/api/prov/v1/sites/performance/advanced',
         'incap-purge-hostname-from-cache':'/api/prov/v1/sites/hostname/purge',
-        'incap-upload-certificate':'/api/prov/v1/sites/customCertificate/upload',
-        'incap-remove-custom-integration':'/api/prov/v1/sites/customCertificate/remove',
+        'incap-site-get-xray-link': '/api/prov/v1/sites/xray/get-link',
+        /*
+            Site Management - Rules
+         */
+        'incap-list-site-rule-revisions': '/api/prov/v1/sites/incapRules/revisions',
+        'incap-add-site-rule': '/api/prov/v1/sites/incapRules/add',
+        'incap-edit-site-rule': '/api/prov/v1/sites/incapRules/edit',
+        'incap-enable-site-rule': '/api/prov/v1/sites/incapRules/enableDisable',
+        'incap-delete-site-rule': '/api/prov/v1/sites/incapRules/delete',
+        'incap-list-site-rules': '/api/prov/v1/sites/incapRules/list',
+        'incap-revert-site-rule': '/api/prov/v1/sites/incapRules/revert',
+        'incap-set-site-rule-priority': '/api/prov/v1/sites/incapRules/priority/set',
+        /*
+            Site Management - Data Centers
+         */
+        'incap-add-site-datacenter':'/api/prov/v1/sites/dataCenters/add',
+        'incap-edit-site-datacenter':'/api/prov/v1/sites/dataCenters/edit',
+        'incap-delete-site-datacenter':'/api/prov/v1/sites/dataCenters/delete',
+        'incap-list-site-datacenters':'/api/prov/v1/sites/dataCenters/list',
+        'incap-add-site-datacenter-server':'/api/prov/v1/sites/dataCenters/servers/add',
+        'incap-edit-site-datacenter-server':'/api/prov/v1/sites/dataCenters/servers/edit',
+        'incap-delete-site-datacenter-server':'/api/prov/v1/sites/dataCenters/servers/delete',
+        /*
+            Traffic Statistics and Details
+         */
         'incap-get-statistics':'/api/stats/v1',
         'incap-get-visits':'/api/visits/v1',
+        'incap-upload-public-key': '/api/logscollector/upload/publickey',
         'incap-change-logs-collector-configuration':'/api/logscollector/change/status',
-        'incap-get-geo-info':'/api/integration/v1/geo',
-        'incap-get-app-info':'/api/integration/v1/clapps',
+        'incap-get-infra-protection-statistics': '/api/v1/infra/stats',
+        'incap-get-infra-protection-events': '/api/v1/infra/events',
+        /*
+            Login Protect
+         */
         'incap-add-login-protect':'/api/prov/v1/sites/lp/add-user',
         'incap-edit-login-protect':'/api/prov/v1/sites/lp/edit-user',
         'incap-get-login-protect':'/api/prov/v1/sites/lp/users',
@@ -84,6 +150,26 @@ script:
         'incap-send-sms-to-user':'/api/prov/v1/sites/lp/send-sms',
         'incap-modify-login-protect':'/api/prov/v1/sites/lp/configure',
         'incap-configure-app':'/api/prov/v1/sites/lp/configure-app',
+        /*
+            Integration
+         */
+        'incap-get-ip-ranges': '/api/integration/v1/ips',
+        'incap-get-texts':'/api/integration/v1/texts',
+        'incap-get-geo-info':'/api/integration/v1/geo',
+        'incap-get-app-info':'/api/integration/v1/clapps',
+        /*
+            Infrastructure Protection Test Alerts
+         */
+        'incap-test-alert-ddos-start': '/api/v1/infra-protect/test-alerts/ddos/start',
+        'incap-test-alert-ddos-stop': '/api/v1/infra-protect/test-alerts/ddos/stop',
+        'incap-test-alert-connection-up': '/api/v1/infra-protect/test-alerts/connection/up',
+        'incap-test-alert-connection-down': '/api/v1/infra-protect/test-alerts/connection/down',
+        'incap-test-alert-ip-protection-status-up': '/api/v1/infra-protect/test-alerts/ip-protection-status/up',
+        'incap-test-alert-ip-protection-status-down': '/api/v1/infra-protect/test-alerts/ip-protection-status/down',
+        'incap-test-alert-netflow-monitoring-start': '/api/v1/infra-protect/test-alerts/monitoring/start',
+        'incap-test-alert-netflow-monitoring-stop': '/api/v1/infra-protect/test-alerts/monitoring/stop',
+        'incap-test-alert-bad-data-monitoring': '/api/v1/infra-protect/test-alerts/monitoring/bad-data',
+        'incap-test-alert-attack-monitoring-start': '/api/v1/infra-protect/test-alerts/monitoring/attack-start'
     }
 
     args['api_id'] = apiid;
@@ -100,34 +186,296 @@ script:
     }
   type: javascript
   commands:
-  - name: incap-get-site-status
+  # Account Management
+  - name: incap-add-managed-account
     arguments:
-    - name: site_id
+    - name: email
       required: true
       default: true
-      description: Numeric identifier of the site to operate on
-    - name: tests
-      description: 'List of tests to run on site before returning its status. A comma
-        separated list of one of: domain_validation, services, dns'
-    description: Use this operation to get the status of a site
-  - name: incap-get-ip-ranges
-    arguments: []
-    description: Use this operation to get the updated list of Incapsula IP ranges
-  - name: incap-get-texts
-    arguments: []
-    description: Use this operation to retrieve a list of all text messages that may
-      be part of API responses
-  - name: incap-list-sites
+      description: 'Email address. For example: "joe@example.com".'
+    - name: parent_id
+      description: The newly created account's parent id. If not specified, the invoking account will be assigned as the parent.
+    - name: user_name
+      description: "The account owner's name. For example: 'John Doe'."
+    - name: plan_id
+      description: An identifier of the plan to assign to the new account. For example, ent100 for the Enterprise 100 plan.
+    - name: ref_id
+      description: Customer specific identifier for this operation.
+    - name: account_name
+      description: Account name.
+    - name: log_level
+      description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Sets the log reporting level for the site. Options are
+        “full”, “security”, “none” and "default"
+    - name: logs_account_id
+      description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Numeric identifier of the account that purchased the
+        logs integration SKU and which collects the logs. If not specified, operation
+        will be performed on the account identified by the authentication parameters
+    description: Use this operation to add a new account that should be managed by the account of the API client (the parent account). The new account will be configured according to the preferences set for the parent account by Incapsula.
+        Depending on these preferences, an activation e-mail will be sent to the specified e-mail address. The user responds to the activation e-mail, selects a password, and can then log directly into the Incapsula console. The same e-mail address can also be used to send system notifications to the account. The new account is identified by a numeric value as provided by Incapsula in the response in the field account_id.
+  - name: incap-list-managed-accounts
     arguments:
     - name: account_id
-      description: Numeric identifier of the account to operate on. If not specified,
-        operation will be performed on the account identified by the authentication
-        parameters
+      default: true
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
     - name: page_size
-      description: The number of objects to return in the response. Defaults to 50
+      description: 'The number of objects to return in the response.
+
+        Default: 50
+
+        Maximum: 100'
     - name: page_num
-      description: The page to return starting from 0. Default to 0
-    description: List sites for an account
+      description: "The page to return starting from 0. Default: 0"
+    description: Use this operation to get the list of accounts that are managed by account of the API client (the parent account).
+  - name: incap-add-subaccount
+    arguments:
+    - name: sub_account_name
+      required: true
+      default: true
+      description: The name of the sub account.
+    - name: parent_id
+      description: The newly created account's parent id. If not specified, the invoking account will be assigned as the parent.
+    - name: user_name
+      description: "The account owner's name. For example: 'John Doe'."
+    - name: ref_id
+      description: Customer specific identifier for this operation.
+    - name: log_level
+      description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Sets the log reporting level for the site. Options are
+        “full”, “security”, “none” and "default"
+    - name: logs_account_id
+      description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Numeric identifier of the account that purchased the
+        logs integration SKU and which collects the logs. If not specified, operation
+        will be performed on the account identified by the authentication parameters
+    description: Use this operation to add a new sub account to be managed by the account of the API client (the parent account).
+  - name: incap-list-subaccounts
+    arguments:
+    - name: account_id
+      default: true
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    - name: page_size
+      description: 'The number of objects to return in the response.
+
+        Default: 50
+
+        Maximum: 100'
+    - name: page_num
+      description: "The page to return starting from 0. Default: 0"
+    description: Use this operation to get a list of sub accounts that are managed by the account of the API client (the parent account).
+  - name: incap-get-account-status
+    arguments:
+    - name: account_id
+      default: true
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    description: Use this operation to get information about the account of the API client or one of its managed accounts.
+  - name: incap-modify-account-configuration
+    arguments:
+    - name: account_id
+      default: true
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    - name: param
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "name"
+      - "email"
+      - "plan_id"
+      - "error_page_template"
+      - "support_all_tls_versions"
+      description: 'Name of the configuration parameter to set.
+
+        Possible values: name | email | plan_id | error_page_template | support_all_tls_versions'
+    - name: value
+      required: true
+      description: 'According to the configuration paramater used.
+
+        For name - the updated name, for e-mail - the updated e-mail address.
+
+        For plan_id - a plan id.
+
+        For error_page_template - a Base64 encoded template for an error page.
+
+        For log_level - Available only for Enterprise Plan customers that purchased the Logs Integration SKU. Sets the log reporting level for the site. Possible values: full, security, none, default
+
+        For support_all_tls_versions - Use this operation to allow sites in the account to support all TLS versions for connectivity between clients (visitors) and the Incapsula service. When this option is set, you can then enable the option per site to support all TLS versions. Possible values: true, false. Note: To remain PCI-compliant, do not enable this option.'
+    description: Use this operation to change the configuration of the account of the API client or one of its managed accounts.
+  - name: incap-set-account-log-level
+    arguments:
+    - name: account_id
+      default: true
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    - name: log_level
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "full"
+      - "security"
+      - "none"
+      - "default"
+      - "support_all_tls_versions"
+      description: 'Sets the log reporting level for the site.
+
+        Possible values: full, security, none, default
+
+        Available only for Enterprise Plan customers that purchased the Log Integration SKU.'
+    description: Use this operation to change the account log configuration.
+  - name: incap-test-account-s3-connection
+    arguments:
+    - name: account_id
+      default: true
+      required: true
+      description: Numeric identifier of the account to operate on.
+    - name: bucket_name
+      required: true
+      description: S3 bucket name.
+    - name: access_key
+      required: true
+      description: S3 access key.
+    - name: secret_key
+      required: true
+      description: 3 secret key.
+    - name: save_on_success
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: 'Save this configuration if the test connection was successful. Default value: false'
+    description: Use this operation to check that a connection can be created with your Amazon S3 bucket.
+  - name: incap-test-account-sftp-connection
+    arguments:
+    - name: account_id
+      default: true
+      required: true
+      description: Numeric identifier of the account to operate on.
+    - name: host
+      required: true
+      description: The IP address of your SFTP server.
+    - name: user_name
+      required: true
+      description: A user name that will be used to log in to the SFTP server.
+    - name: password
+      required: true
+      description: A corresponding password for the user account used to log in to the SFTP server.
+    - name: destination_folder
+      required: true
+      description: The path to the directory on the SFTP server.
+    - name: save_on_success
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: 'Save this configuration if the test connection was successful. Default value: false'
+    description: Use this operation to check that a connection can be created with your SFTP storage.
+  - name: incap-set-account-s3-log-storage
+    arguments:
+    - name: account_id
+      default: true
+      required: true
+      description: Numeric identifier of the account to operate on.
+    - name: bucket_name
+      required: true
+      description: S3 bucket name.
+    - name: access_key
+      required: true
+      description: S3 access key.
+    - name: secret_key
+      required: true
+      description: 3 secret key.
+    description: Use this operation to configure your Amazon cloud storage. Once configured, Incapsula logs will be uploaded to the selected location.
+  - name: incap-set-account-sftp-log-storage
+    arguments:
+    - name: account_id
+      default: true
+      required: true
+      description: Numeric identifier of the account to operate on.
+    - name: host
+      required: true
+      description: The IP address of your SFTP server.
+    - name: user_name
+      required: true
+      description: A user name that will be used to log in to the SFTP server.
+    - name: password
+      required: true
+      description: A corresponding password for the user account used to log in to the SFTP server.
+    - name: destination_folder
+      required: true
+      description: The path to the directory on the SFTP server.
+    description: Use this operation to configure your SFTP server storage. Once configured, Incapsula logs will be uploaded to the selected location.
+  - name: incap-set-account-default-log-storage
+    arguments:
+    - name: account_id
+      default: true
+      required: true
+      description: Numeric identifier of the account to operate on.
+    description: Use this operation to have your logs saved on Incapsula servers. Once configured, the logs can be retrieved by API calls.
+  - name: incap-get-account-login-token
+    arguments:
+    - name: account_id
+      default: true
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    description: 'Tokens are used instead of user/password based authentication to log in to the Incapsula management console.  Use this operation to generate a token for an account. The token is valid for 15 minutes.
+
+        In order to use the token, the user must use the following link:  https://my.incapsula.com/?token={generated_token}'
+  - name: incap-delete-managed-account
+    arguments:
+    - name: account_id
+      default: true
+      description: Numeric identifier of the account to operate on.
+    description: Use this operation to delete an account.
+  - name: incap-delete-subaccount
+    arguments:
+    - name: sub_account_id
+      default: true
+      required: true
+      description: Numeric identifier of the sub account to operate on.
+    description: Use this operation to delete a sub account.
+  - name: incap-get-account-audit-events
+    arguments:
+    - name: account_id
+      default: true
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    - name: time_range
+      description: 'Time range to fetch data for. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm'
+    - name: start
+      description: 'Start date in milliseconds since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm'
+    - name: end
+      description: 'End date in milliseconds since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm'
+    - name: type
+      description: The api key of the event type, such as audit.account_login.
+    - name: page_size
+      description: 'The number of objects to return in the response.
+
+        Default: 50.
+
+        Maximum: 100'
+    - name: page_num
+      description: 'The page to return starting from 0. Default: 0.'
+    description: Use this operation to get audit events for an account.
+  - name: incap-set-account-default-data-storage-region
+    arguments:
+    - name: account_id
+      default: true
+      required: true
+      description: Numeric identifier of the account to operate on.
+    - name: data_storage_region
+      auto: PREDEFINED
+      predefined:
+      - "APAC"
+      - "EU"
+      - "US"
+      - "DEFAULT"
+      description: The data region to use.
+    description: Use this operation to set the default data region of the account for newly created sites.
+  - name: incap-get-account-default-data-storage-region
+    arguments:
+    - name: account_id
+      default: true
+      required: true
+      description: Numeric identifier of the account to operate on.
+    description: Use this operation to get the default data region of the account.
+  # Site Management - Site Configuration
   - name: incap-add-site
     arguments:
     - name: domain
@@ -162,6 +510,16 @@ script:
         will be performed on the account identified by the authentication parameters
     description: Add a new site to an account. If the site already exists, its status
       is returned
+  - name: incap-get-site-status
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on
+    - name: tests
+      description: 'List of tests to run on site before returning its status. A comma
+        separated list of one of: domain_validation, services, dns'
+    description: Use this operation to get the status of a site
   - name: incap-get-domain-approver-email
     arguments:
     - name: domain
@@ -194,6 +552,20 @@ script:
         Logs Integration SKU. Sets the log reporting level for the site. Options are
         “full”, “security”, “none” and "default"
     description: Use this operation to change the site log configuration
+  - name: incap-modify-site-tls-support
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: support_all_tls_versions
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: 'Support all TLS versions. Default value: false'
+    description: Use this operation to support all TLS versions for the site for connectivity between clients (visitors) and the Incapsula service. To remain PCI-compliant, do not enable this option.
   - name: incap-modify-site-scurity-config
     arguments:
     - name: site_id
@@ -214,7 +586,7 @@ script:
         if site is under a DDoS attack), auto (security measures will be activated
         automatically when the system suspects site is under a DDoS attack), on (security
         measures are enabled even if site is not under a DDoS attack). The syntax
-        is as follows: api.threats.ddos.activation_mode.( e.g. for ''off'', use ''api.threats.ddos.activation_mode.off''
+        is as follows: api.threats.ddos.activation_mode.( e.g. for "off", use "api.threats.ddos.activation_mode.off"
         )'
     - name: security_rule_action
       description: 'The action that should be taken when a threat is detected, for
@@ -237,7 +609,7 @@ script:
     - name: rule_id
       required: true
       description: "The id of the acl, e.g api.acl.blacklisted_ips. One of: api.acl.blacklisted_countries,
-        api.acl.blacklisted_urls\t, api.acl.blacklisted_ips, api.acl.whitelisted_ips"
+        api.acl.blacklisted_urls, api.acl.blacklisted_ips, api.acl.whitelisted_ips"
     - name: urls
       description: A comma separated list of resource paths. For example, /home and
         /admin/index.html are resource paths, however http://www.example.com/home
@@ -249,9 +621,9 @@ script:
         | prefix | suffix | not_equals | not_contain | not_prefix | not_suffix. The
         patterns should be in accordance with the matching urls sent by the urls parameter'
     - name: countries
-      description: "A comma seperated list of country codes\t"
+      description: "A comma seperated list of country codes"
     - name: continents
-      description: "A comma seperated list of continent codes\t"
+      description: "A comma seperated list of continent codes"
     - name: ips
       description: 'A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1,
         192.168.1.1-192.168.1.100 or 192.168.1.1/24'
@@ -306,6 +678,17 @@ script:
       default: true
       description: Numeric identifier of the site to operate on
     description: Delete the site
+  - name: incap-list-sites
+    arguments:
+    - name: account_id
+      description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters
+    - name: page_size
+      description: The number of objects to return in the response. Defaults to 50
+    - name: page_num
+      description: The page to return starting from 0. Default to 0
+    description: List sites for an account
   - name: incap-get-site-report
     arguments:
     - name: site_id
@@ -330,6 +713,183 @@ script:
         API documentation for a detailed description
     description: Use this operation to get a report for a site. Reports are sent using
       Base64 encoding
+  - name: incap-get-site-html-injection-rules
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on
+    description: Use this operation to list all the HTML Injection rules.
+  - name: incap-add-site-html-injection-rule
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: url
+      required: true
+      description: The URL where the content is injected.
+    - name: url_pattern
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "contains"
+      - "not_contains"
+      - "equals"
+      - "not_equals"
+      - "prefix"
+      - "suffix"
+      - "not_prefix"
+      - "not_suffix"
+      description: 'The url pattern. One of: contains | not_contains | equals | not_equals | prefix | suffix | not_prefix | not_suffix'
+    - name: location
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "head"
+      - "body_end"
+      description: The location of the injection inside the URL ('head' or 'body_end').
+    - name: content
+      description: The injected HTML snippet, Base64-encoded.
+    description: Use this operation to add a new HTML injection rule or to replace an existing rule.
+  - name: incap-delete-site-html-injection-rule
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: url
+      required: true
+      description: The URL where the content is injected.
+    - name: url_pattern
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "contains"
+      - "not_contains"
+      - "equals"
+      - "not_equals"
+      - "prefix"
+      - "suffix"
+      - "not_prefix"
+      - "not_suffix"
+      description: 'The url pattern. One of: contains | not_contains | equals | not_equals | prefix | suffix | not_prefix | not_suffix'
+    - name: location
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "head"
+      - "body_end"
+      description: The location of the injection inside the URL ('head' or 'body_end').
+    - name: delete_content
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: 'Whether or not to delete existing HTML content.  Possible values: true/false'
+    description: Use this operation to removes an existing HTML injection rule. To confirm the removal, set the parameter delete_content to true.
+  - name: incap-create-new-csr
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: email
+      description: 'Email address. For example: joe@example.com'
+    - name: organization
+      description: The legal name of your organization. This should not be abbreviated or include suffixes such as Inc., Corp., or LLC.
+    - name: organization_unit
+      description: The division of your organization handling the certificate. For example, "IT Department".
+    - name: country
+      description: The two-letter ISO code for the country where your organization is located.
+    - name: state
+      description: The state/region where your organization is located. This should not be abbreviated.
+    - name: city
+      description: The city where your organization is located.
+    description: Use this operation to create a certificate signing request (CSR) for your site
+  - name: incap-upload-certificate
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate o
+    - name: certificate
+      required: true
+      description: The new certificate
+    - name: private_key
+      description: The private key of the certificate in base64 format. Optional in
+        case of PFX certificate file format
+    - name: passphrase
+      description: The passphrase used to protect your SSL certificate
+    description: 'Use this operation to upload custom certificate for your site. The
+      following SSL certificate file formats are supported: PFX, PEM, CER'
+  - name: incap-remove-custom-integration
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on
+    description: Use this operation to remove custom certificate
+  - name: incap-move-site
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: destination_account_id
+      required: true
+      description: The numeric identifier of the account which the site will be moved to.
+    description: Use this operation to move a site from one account to another. You can move a site from a master account to one of its sub accounts, or from one sub account to another.
+  - name: incap-check-compliance
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    description: 'Check site’s associated SANs for CAA compliance. If a given SAN is compliant, its SSL domain validation status is updated accordingly.
+
+        This operation returns an updated list of the site’s associated SANs that are not compliant. An empty list indicates that all SANs are compliant.'
+  - name: incap-set-site-data-storage-region
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: data_storage_region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "APAC"
+      - "EU"
+      - "US"
+      description: The data region to use.
+    description: Use this operation to set the site's data storage region.
+  - name: incap-get-site-data-storage-region
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    description: Use this operation to get the site's data storage region.
+  - name: incap-set-site-data-storage-region-geo-override
+    arguments:
+    - name: override_site_regions_by_geo
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: A boolean parameter. If it is set to "true", the data storage region for each new site will be based on the geolocation of the origin server.
+    - name: account_id
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    description: Use this operation to set the data storage region for each new site based on the geolocation of the origin server.
+  - name: incap-get-site-data-storage-region-geo-override
+    arguments:
+    - name: account_id
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    description: Use this operation to check if the data storage region for each new site is based on the geolocation of the origin server.
+  # Site Management - Caching
   - name: incap-purge-site-cache
     arguments:
     - name: site_id
@@ -360,9 +920,9 @@ script:
         Static_Only'
     - name: dynamic_cache_duration
       description: 'Profile dynamic pages and cache duration, pass number followed
-        by ''_'' and one of: hr | min | sec | days | weeks: default: 5_min'
+        by "_" and one of: hr | min | sec | days | weeks: default: 5_min'
     - name: aggressive_cache_duration
-      description: 'Cache resource duration, pass number followed by ''_'' and one
+      description: 'Cache resource duration, pass number followed by "_" and one
         of: hr | min | sec | days | weeks: default: 1_hr'
     description: Use this operation to edit basic site caching settings
   - name: incap-purge-resources
@@ -386,14 +946,14 @@ script:
       default: true
       description: Numeric identifier of the site to operate on
     - name: always_cache_resource_url
-      description: "Comma seperated list of always cache resources url\t"
+      description: "Comma seperated list of always cache resources url"
     - name: always_cache_resource_pattern
       description: 'Comma seperated list of always cache resources pattern, one of:
         contains | equals | prefix | suffix | not_equals | not_contains | not_prefix
         | not_suffix'
     - name: always_cache_resource_duration
       description: 'Duration that resources will be in cache, pass number followed
-        by ''_'' and one of: hr | min | sec | days | weeks. Either provide a comma
+        by "_" and one of: hr | min | sec | days | weeks. Either provide a comma
         seperated list of duration expressions, matching the number of always cache
         rules, or a single duration expression to be used for all always cache rules'
     - name: never_cache_resource_url
@@ -432,29 +992,364 @@ script:
       is for customers who use the same CNAME provided by Incapsula for multiple hostnames
       and would like to change the CNAME for a particular hostname. Purging the hostname
       is required for the CNAME change to take effect
-  - name: incap-upload-certificate
+  - name: incap-site-get-xray-link
     arguments:
     - name: site_id
       required: true
       default: true
-      description: Numeric identifier of the site to operate o
-    - name: certificate
+      description: Numeric identifier of the site to operate on.
+    description: Use this operation to get a URL that enables debug headers on a specific site.
+  # Site Management - Rules
+  - name: incap-list-site-rule-revisions
+    arguments:
+    - name: site_id
       required: true
-      description: The new certificate
-    - name: private_key
-      description: The private key of the certificate in base64 format. Optional in
-        case of PFX certificate file format
-    - name: passphrase
-      description: The passphrase used to protect your SSL certificate
-    description: 'Use this operation to upload custom certificate for your site. The
-      following SSL certificate file formats are supported: PFX, PEM, CER'
-  - name: incap-remove-custom-integration
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: rule_id
+      required: true
+      description: Rule ID.
+    description: Use this operation to list revisions of a rule (Delivery Rules or IncapRules).
+  - name: incap-add-site-rule
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: name
+      description: Rule name.
+    - name: action
+      auto: PREDEFINED
+      predefined:
+      - "RULE_ACTION_REDIRECT"
+      - "RULE_ACTION_REWRITE_URL"
+      - "RULE_ACTION_REWRITE_HEADER"
+      - "RULE_ACTION_REWRITE_COOKIE"
+      - "RULE_ACTION_DELETE_HEADER"
+      - "RULE_ACTION_DELETE_COOKIE"
+      - "RULE_ACTION_FORWARD_TO_DC"
+      - "RULE_ACTION_ALERT"
+      - "RULE_ACTION_BLOCK"
+      - "RULE_ACTION_BLOCK_USER"
+      - "RULE_ACTION_BLOCK_IP"
+      - "RULE_ACTION_RETRY"
+      - "RULE_ACTION_INTRUSIVE_HTML"
+      - "RULE_ACTION_CAPTCHA"
+      description: Rule action.
+    - name: filter
+      description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
+
+        The filter may contain up to 400 characters.'
+    - name: response_code
+      auto: PREDEFINED
+      predefined:
+      - "301"
+      - "302"
+      - "303"
+      - "307"
+      - "308"
+      description: Redirect rule's response code.
+    - name: protocol
+      description: Protocol
+    - name: add_missing
+      description: Add cookie or header if it doesn't exist (Rewrite cookie rule only)
+    - name: from
+      description: 'The pattern to rewrite.
+
+        RULE_ACTION_REWRITE_URL - The URL to rewrite.
+
+        RULE_ACTION_REWRITE_HEADER - The header value to rewrite.
+
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to rewrite.'
+    - name: to
+      description: 'The pattern to change to.
+
+        RULE_ACTION_REWRITE_URL - The URL to change to.
+
+        RULE_ACTION_REWRITE_HEADER - The header value to change to.
+
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.'
+    - name: rewrite_name
+      description: 'Name of cookie or header to rewrite. Applies only for RULE_ACTION_REWRITE_COOKIE and RULE_ACTION_REWRITE_HEADER.'
+    - name: dc_id
+      description: Data center to forward request to. Applies only for RULE_ACTION_FORWARD_TO_DC.
+    - name: is_test_mode
+      description: Make rule apply only for IP address the API request was sent from.
+    - name: lb_algorithm
+      auto: PREDEFINED
+      predefined:
+      - "LB_LEAST_PENDING_REQUESTS"
+      - "LB_LEAST_OPEN_CONNECTIONS"
+      - "LB_SOURCE_IP_HASH"
+      - "RANDOM"
+      description: Data center load balancing algorithm
+    description: Use this operation to add a rule (Delivery Rules or IncapRules).
+  - name: incap-edit-site-rule
+    arguments:
+    - name: rule_id
+      required: true
+      default: true
+      description: Rule ID.
+    - name: name
+      description: Rule name.
+    - name: action
+      auto: PREDEFINED
+      predefined:
+      - "RULE_ACTION_REDIRECT"
+      - "RULE_ACTION_REWRITE_URL"
+      - "RULE_ACTION_REWRITE_HEADER"
+      - "RULE_ACTION_REWRITE_COOKIE"
+      - "RULE_ACTION_DELETE_HEADER"
+      - "RULE_ACTION_DELETE_COOKIE"
+      - "RULE_ACTION_FORWARD_TO_DC"
+      - "RULE_ACTION_ALERT"
+      - "RULE_ACTION_BLOCK"
+      - "RULE_ACTION_BLOCK_USER"
+      - "RULE_ACTION_BLOCK_IP"
+      - "RULE_ACTION_RETRY"
+      - "RULE_ACTION_INTRUSIVE_HTML"
+      - "RULE_ACTION_CAPTCHA"
+      description: Rule action.
+    - name: filter
+      description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
+
+        The filter may contain up to 400 characters.'
+    - name: response_code
+      auto: PREDEFINED
+      predefined:
+      - "301"
+      - "302"
+      - "303"
+      - "307"
+      - "308"
+      description: Redirect rule's response code.
+    - name: protocol
+      description: Protocol
+    - name: add_missing
+      description: Add cookie or header if it doesn't exist (Rewrite cookie rule only)
+    - name: from
+      description: 'The pattern to rewrite.
+
+        RULE_ACTION_REWRITE_URL - The URL to rewrite.
+
+        RULE_ACTION_REWRITE_HEADER - The header value to rewrite.
+
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to rewrite.'
+    - name: to
+      description: 'The pattern to change to.
+
+        RULE_ACTION_REWRITE_URL - The URL to change to.
+
+        RULE_ACTION_REWRITE_HEADER - The header value to change to.
+
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.'
+    - name: rewrite_name
+      description: 'Name of cookie or header to rewrite. Applies only for RULE_ACTION_REWRITE_COOKIE and RULE_ACTION_REWRITE_HEADER.'
+    - name: dc_id
+      description: Data center to forward request to. Applies only for RULE_ACTION_FORWARD_TO_DC.
+    - name: is_test_mode
+      description: Make rule apply only for IP address the API request was sent from.
+    - name: lb_algorithm
+      auto: PREDEFINED
+      predefined:
+      - "LB_LEAST_PENDING_REQUESTS"
+      - "LB_LEAST_OPEN_CONNECTIONS"
+      - "LB_SOURCE_IP_HASH"
+      - "RANDOM"
+      description: Data center load balancing algorithm
+    description: Use this operation to edit an existing rule (Delivery Rules or IncapRules).
+  - name: incap-enable-site-rule
+    arguments:
+    - name: rule_id
+      required: true
+      default: true
+      description: Rule ID.
+    - name: name
+      description: Rule name.
+    - name: enable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: When true, the rule will be enabled. Set to false to disable.
+    description: Use this operation to enable or disable a rule (Delivery Rules or IncapRules).
+  - name: incap-delete-site-rule
+    arguments:
+    - name: rule_id
+      required: true
+      default: true
+      description: Rule ID.
+    - name: name
+      description: Rule name.
+      description: When true, the rule will be enabled. Set to false to disable.
+    description: Use this operation to delete a rule (Delivery Rules or IncapRules).
+  - name: incap-list-site-rules
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: include_ad_rules
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Whether or not delivery rules should be included. Defaults to "Yes".
+    - name: include_incap_rules
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      description: Whether or not security rules be included. Defaults to "Yes".
+    - name: page_size
+      description: 'The number of objects to return in the response.
+
+        Default is 50.
+
+        Maximum: 100'
+    - name: page_num
+      description: The page to return starting from 0. Default is 0.
+    description: Use this operation to list rules (Delivery Rules and IncapRules) for a given site.
+  - name: incap-revert-site-rule
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    - name: rule_id
+      required: true
+      description: Rule ID.
+    - name: revision_id
+      required: true
+      description: ID of the revision to revert to. Revision ID can be found using !incap-list-site-rule-revisions.
+    description: Revert a rule (Delivery Rule or IncapRule) using an existing revision.
+  - name: incap-set-site-rule-priority
+    arguments:
+    - name: rule_id
+      required: true
+      default: true
+      description: Rule ID.
+    - name: priority
+      required: true
+      description: New priority for the selected rule.
+    description: Use this operation to change a Delivery Rule's priority.
+  # Site Management - Data Centers
+  - name: incap-add-site-datacenter
     arguments:
     - name: site_id
       required: true
       default: true
       description: Numeric identifier of the site to operate on
-    description: Use this operation to remove custom certificate
+    - name: name
+      required: true
+      description: The new data center's name.
+    - name: server_address
+      required: true
+      description: "The server's address. Possible values: IP, CNAME"
+    - name: is_enabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enables the data center
+    - name: is_content
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: The data center will be available for specific resources (Forward Delivery Rules).
+    description: Use this operation to add a data center to a site.
+  - name: incap-edit-site-datacenter
+    arguments:
+    - name: dc_id
+      required: true
+      default: true
+      description: The data center's ID.
+    - name: name
+      description: The new data center's name.
+    - name: is_enabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enables the data center
+    - name: is_standby
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Defines the data center as standby for failover.
+    - name: is_content
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: The data center will be available for specific resources (Forward Delivery Rules).
+    description: Use this operation to edit a site's data center.
+  - name: incap-delete-site-datacenter
+    arguments:
+    - name: dc_id
+      required: true
+      default: true
+      description: The data center's ID.
+    description: Use this operation to delete a site's data center.
+  - name: incap-list-site-datacenters
+    arguments:
+    - name: site_id
+      required: true
+      default: true
+      description: Numeric identifier of the site to operate on.
+    description: Use this operation to list a site's data centers including the data centers' servers.
+  - name: incap-add-site-datacenter-server
+    arguments:
+    - name: dc_id
+      required: true
+      default: true
+      description: The data center's ID.
+    - name: server_address
+      required: true
+      description: "The server's address. Possible values: IP, CNAME"
+    - name: name
+      description: The new data center's name.
+    - name: is_standby
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set the server as Active (P0) or Standby (P1) (Boolean).
+    description: Use this operation to add a server to a data center.
+  - name: incap-edit-site-datacenter-server
+    arguments:
+    - name: server_id
+      required: true
+      default: true
+      description: Server ID.
+    - name: server_address
+      required: true
+      description: "The server's address. Possible values: IP, CNAME"
+    - name: name
+      description: The new data center's name.
+    - name: is_enabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable or disable the server (Boolean).
+    - name: is_standby
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set the server as Active (P0) or Standby (P1) (Boolean).
+    description: Use this operation to add a server to a data center.
+  - name: incap-delete-site-datacenter-server
+    arguments:
+    - name: server_id
+      required: true
+      default: true
+      description: Server ID.
+    description: Use this operation to delete a data center's server.
+  # Traffic Statistics and Details
   - name: incap-get-statistics
     arguments:
     - name: account_id
@@ -504,9 +1399,9 @@ script:
         specifications. Multiple values are supported, e.g.: "api.threats.action.block_ip,
         api.threats.sql_injection"'
     - name: country
-      description: "Filter the sessions coming from the specified country\t"
+      description: "Filter the sessions coming from the specified country"
     - name: ip
-      description: "Filter the sessions coming from the specified IP\t"
+      description: "Filter the sessions coming from the specified IP"
     - name: visit_id
       description: Comma separated list of visit IDs to load
     - name: list_live_visits
@@ -519,7 +1414,7 @@ script:
       etc. A visit may still be updated even after it was retrieved. To avoid retrieving
       such visits and to retrieve only visits that will no longer be updated use the
       list_live_visits parameter
-  - name: in-cap-upload-public-key
+  - name: incap-upload-public-key
     arguments:
     - name: config_id
       required: true
@@ -528,7 +1423,7 @@ script:
     - name: public_key
       required: true
       description: "The public key file(2048bit) in base64 format (without password
-        protection)\t"
+        protection)"
     description: Organizations that purchased the Security Logs Integration SKU can
       download security events created for their account and archive or push those
       events into their SIEM solution
@@ -545,13 +1440,50 @@ script:
     description: Available only for Enterprise Plan customers that purchased the Security
       Logs Integration SKU.  Use this operation to change the status of the Logs Collector
       configuration
-  - name: incap-get-geo-info
-    arguments: []
-    description: Use this operation to retrieve a list of all the countries and continents
-      codes
-  - name: incap-get-app-info
-    arguments: []
-    description: Use this operation to retrieve a list of all the client applications
+  - name: incap-get-infra-protection-statistics
+    arguments:
+    - name: account_id
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    - name: ip_prefix
+      description: Specific Protected IP or IP range. For example, 1.1.1.0/24.
+    - name: traffic
+      auto: PREDEFINED
+      predefined:
+      - "Total"
+      - "Passed"
+      - "Blocked"
+      description: 'Specific traffic. One of: Total, Passed, Blocked.'
+    - name: traffic_type
+      description: 'A comma separated list of specific traffic types. Any of: UDP, TCP, DNS, DNS_RESPONSE, ICMP, SYN, FRAG, LARGE_SYN, NTP, NETFLOW, SSDP, GENERAL. Cannot be used together with the pop parameter.'
+    - name: pop
+      description: 'A comma separated list of specific PoP names. For example: iad, tko. Cannot be used together with the traffic_type parameter. For the list of PoP codes and locations, see https://docs.incapsula.com/Content/read-more/pops.htm'
+    - name: start
+      description: The start date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+    - name: end
+      description: The end date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+    description: Use this operation to get Infrastructure Protection statistics for an account or IP range.
+  - name: incap-get-infra-protection-events
+    arguments:
+    - name: account_id
+      description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
+    - name: event_type
+      description: 'A comma separated list of specific event types. Any of: GRE_TUNNEL_UP, GRE_TUNNEL_DOWN, ORIGIN_CONNECTION_GRE_UP, ORIGIN_CONNECTION_GRE_DOWN, ORIGIN_CONNECTION_ECX_UP, ORIGIN_CONNECTION_ECX_DOWN, ORIGIN_CONNECTION_CROSS_CONNECT_UP, ORIGIN_CONNECTION_CROSS_CONNECT_DOWN, DDOS_START_IP_RANGE, DDOS_STOP_IP_RANGE, DDOS_QUIET_TIME_IP_RANGE, EXPORTER_NO_DATA, EXPORTER_BAD_DATA, EXPORTER_GOOD_DATA, MONITORING_CRITICAL_ATTACK, PROTECTED_IP_STATUS_UP, PROTECTED_IP_STATUS_DOWN, PER_IP_DDOS_START_IP_RANGE.'
+    - name: ip_prefix
+      description: Specific Protected IP or IP range. For example, 1.1.1.0/24.
+    - name: page_size
+      description: 'The number of objects to return in the response.
+
+        Default: 50
+
+        Maximum: 100'
+    - name: page_num
+      description: 'The page to return starting from 0. Default: 0'
+    - name: start
+      description: The start date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+    - name: end
+      description: The end date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+    description: Use this operation to get Infrastructure Protection event information for an account.
+  # Login Protect
   - name: incap-add-login-protect
     arguments:
     - name: account_id
@@ -590,7 +1522,7 @@ script:
     - name: is_phone_verified
       description: Whether or not to skip phone address verificaion
     - name: should_send_activation_email
-      description: "Whether or not to send activation E-Mail to user\t"
+      description: "Whether or not to send activation E-Mail to user"
     description: Use this operation to edit Login Protect user's settings
   - name: incap-get-login-protect
     arguments:
@@ -666,4 +1598,21 @@ script:
       description: Protect admin areas of joomla | wordpress | phpBB
     description: Use this operation to configure Login Protect on wordpress | joomla
       | phpbb admin areas
+  # Integration
+  - name: incap-get-ip-ranges
+    arguments: []
+    description: Use this operation to get the updated list of Incapsula IP ranges
+  - name: incap-get-texts
+    arguments: []
+    description: Use this operation to retrieve a list of all text messages that may
+      be part of API responses
+  - name: incap-get-geo-info
+    arguments: []
+    description: Use this operation to retrieve a list of all the countries and continents
+      codes
+  - name: incap-get-app-info
+    arguments: []
+    description: Use this operation to retrieve a list of all the client applications
+  # Infrastructure Protection Test Alerts
+
 system: true

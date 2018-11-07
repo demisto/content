@@ -50,3 +50,4 @@ dependson:
   must:
   - googleapps-get-user
 timeout: 0s
+deprecated: true

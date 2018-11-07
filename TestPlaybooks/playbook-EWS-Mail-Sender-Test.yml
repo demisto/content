@@ -1,0 +1,114 @@
+id: EWS Mail Sender Test
+version: -1
+name: EWS Mail Sender Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bcacb15a-7c55-4381-824b-aba975179594
+    type: start
+    task:
+      id: bcacb15a-7c55-4381-824b-aba975179594
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 226d8115-969b-4a17-8370-e39948fc951d
+    type: regular
+    task:
+      id: 226d8115-969b-4a17-8370-e39948fc951d
+      version: -1
+      name: Test send mail
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS Mail Sender
+    scriptarguments:
+      attachIDs:
+        simple: ${File.EntryID}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: test
+      to:
+        simple: buildtests@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 7db5b1b3-aae0-46d8-88e3-963f84c286cf
+    type: regular
+    task:
+      id: 7db5b1b3-aae0-46d8-88e3-963f84c286cf
+      version: -1
+      name: Get file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test_file
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password:
+        simple: '{ENCRYPTED}iyMzr5l9JLzg6ThLOlDRxAU7CU3ePLL2BwDWBf3t3wmTZvUbSvo8oPO5vcqeDDHvgB+hx+7G8D7iRQTv/E8UIg=='
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

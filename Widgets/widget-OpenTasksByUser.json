@@ -5,7 +5,7 @@
   "name": "Open Tasks Per User",
   "dataType": "tasks",
   "widgetType": "column",
-  "query": "replaced:f and -assignee:\"\" and (state:Waiting or state:inprogress)" ,
+  "query": "replaced:f and -assignee:\"\" and (state:Waiting or state:inprogress or state:error)" ,
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
@@ -22,5 +22,6 @@
     "groupBy": [
       "assignee"
     ]
-  }
+  },
+  "description": ""
 }

@@ -1,0 +1,346 @@
+id: urlscan_malicious_Test
+version: 10
+name: urlscan_malicious_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 54a7866e-76fb-4581-826b-fc957a6c5865
+    type: start
+    task:
+      id: 54a7866e-76fb-4581-826b-fc957a6c5865
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -92
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 6e4ce97f-0947-431d-8bdb-a3b69e07515d
+    type: regular
+    task:
+      id: 6e4ce97f-0947-431d-8bdb-a3b69e07515d
+      version: -1
+      name: Check Malicious file
+      description: Check if file MD5 is malicious
+      script: urlscan.io|||file
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file:
+        simple: 3490a0d675ffaadccd935cb0f91c19aee89643d7a0df6d7b0949ee6137d283a0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 204
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 5a23df1b-7cfa-4dfe-8ffc-53f63a89528c
+    type: regular
+    task:
+      id: 5a23df1b-7cfa-4dfe-8ffc-53f63a89528c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 41
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 9ebd7861-d32c-4c1a-825d-979acbf2adc0
+    type: condition
+    task:
+      id: 9ebd7861-d32c-4c1a-825d-979acbf2adc0
+      version: -1
+      name: Get result
+      description: Filter context keys by applying one of the various available manipulations
+        and storing in a new context key. Please notice that the resulting context
+        key will not be available automatically as an option but you can still specify
+        it.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    scriptarguments:
+      additional: {}
+      data: {}
+      filter: {}
+      filterType: {}
+      out: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 3490a0d675ffaadccd935cb0f91c19aee89643d7a0df6d7b0949ee6137d283a0
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: urlscan.io
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: hash
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 369
+        }
+      }
+  "8":
+    id: "8"
+    taskid: ec47941e-e671-45e3-84bd-d7d5c4e78070
+    type: title
+    task:
+      id: ec47941e-e671-45e3-84bd-d7d5c4e78070
+      version: -1
+      name: Malicious
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 595
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 078cef99-5003-4519-8069-80b0e9da56c2
+    type: regular
+    task:
+      id: 078cef99-5003-4519-8069-80b0e9da56c2
+      version: -1
+      name: Not Malicious
+      script: Exception
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -95,
+          "y": 580
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 1d5668da-cf3b-4d7b-846d-961bc24a2d1e
+    type: regular
+    task:
+      id: 1d5668da-cf3b-4d7b-846d-961bc24a2d1e
+      version: -1
+      name: Check non-malicious url
+      description: Check if file MD5 is malicious
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      extend-context: {}
+      url:
+        simple: http://schemas.microsoft.com/office/2004/12/omml
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1007,
+          "y": 204
+        }
+      }
+  "11":
+    id: "11"
+    taskid: b72e60de-cfde-4d71-813b-959db17175c6
+    type: condition
+    task:
+      id: b72e60de-cfde-4d71-813b-959db17175c6
+      version: -1
+      name: Get result
+      description: Filter context keys by applying one of the various available manipulations
+        and storing in a new context key. Please notice that the resulting context
+        key will not be available automatically as an option but you can still specify
+        it.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "12"
+    scriptarguments:
+      additional: {}
+      data: {}
+      filter: {}
+      filterType: {}
+      out: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isNotEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://schemas.microsoft.com/office/2004/12/omml
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: urlscan.io
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: url
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 1007,
+          "y": 369
+        }
+      }
+  "12":
+    id: "12"
+    taskid: e8110519-128a-4146-8ba9-51ef3789a0ba
+    type: title
+    task:
+      id: e8110519-128a-4146-8ba9-51ef3789a0ba
+      version: -1
+      name: Not Malicious
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1007,
+          "y": 595
+        }
+      }
+  "14":
+    id: "14"
+    taskid: c831c582-0d9b-4e9a-80e7-27b7c71b2543
+    type: regular
+    task:
+      id: c831c582-0d9b-4e9a-80e7-27b7c71b2543
+      version: -1
+      name: Malicious
+      script: Exception
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1486,
+          "y": 580
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 767,
+        "width": 1961,
+        "x": -95,
+        "y": -92
+      }
+    }
+  }
+inputs: []
+outputs: []

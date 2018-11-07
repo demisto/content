@@ -1,0 +1,75 @@
+id: LogRhythm-Test-Playbook
+version: -1
+name: LogRhythm-Test-Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fa144299-d57c-4bbc-8e32-ae5a386ab0bd
+    type: start
+    task:
+      id: fa144299-d57c-4bbc-8e32-ae5a386ab0bd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: c0c05089-2362-4458-8b0c-1e131f084589
+    type: regular
+    task:
+      id: c0c05089-2362-4458-8b0c-1e131f084589
+      version: -1
+      name: lr-get-alarms
+      description: Retrieve alarms in a given time period, optionally filtered by
+        the alarm status or entity
+      script: LogRhythm|||lr-get-alarms
+      type: regular
+      iscommand: true
+      brand: LogRhythm
+    scriptarguments:
+      all-users:
+        simple: "true"
+      count: {}
+      end-date:
+        simple: 2018-03-30
+      extend-context: {}
+      start-date:
+        simple: 2018-03-27
+      status:
+        simple: New
+      using:
+        simple: LogRhythm_instance_1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

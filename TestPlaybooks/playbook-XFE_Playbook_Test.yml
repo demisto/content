@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 41dcb735-e333-4c4b-8252-a96941196a59
+    taskid: bc16f811-666d-4675-8f31-91dd505b3f0b
     type: start
     task:
-      id: 41dcb735-e333-4c4b-8252-a96941196a59
+      id: bc16f811-666d-4675-8f31-91dd505b3f0b
       version: -1
       name: ""
       iscommand: false
@@ -17,6 +17,7 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -26,10 +27,10 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: 4bc7bebd-5b7f-4167-8223-0022f3f73a89
+    taskid: 765e219e-d970-4e40-85e3-7a4d1a51737a
     type: regular
     task:
-      id: 4bc7bebd-5b7f-4167-8223-0022f3f73a89
+      id: 765e219e-d970-4e40-85e3-7a4d1a51737a
       version: -1
       name: url
       description: Check the given URL reputation
@@ -41,9 +42,11 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      long: ""
-      threshold: ""
-      url: biicqwfvqiec.click/images/info.php
+      long: {}
+      threshold: {}
+      url:
+        simple: http://www.iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com/
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -53,29 +56,52 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 3a8745c7-1711-4a79-8493-8f165b09feb5
-    type: regular
+    taskid: eabfa049-5bba-412f-85c4-4e238d2f0da5
+    type: condition
     task:
-      id: 3a8745c7-1711-4a79-8493-8f165b09feb5
+      id: eabfa049-5bba-412f-85c4-4e238d2f0da5
       version: -1
-      name: VerifyContext
+      name: AreValuesEqual
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      scriptName: AreValuesEqual
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "17"
     scriptarguments:
-      expectedValue: "3"
-      fields: ""
-      path: DBotScore.Score
+      left:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: XFE
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: http://www.iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com/
+          accessor: Score
+      right:
+        simple: "3"
+    results:
+    - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -85,10 +111,10 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 23249eac-b6ba-462e-84a0-27e26762a409
+    taskid: 93edb301-ce27-4b2f-8650-d3979b029afd
     type: regular
     task:
-      id: 23249eac-b6ba-462e-84a0-27e26762a409
+      id: 93edb301-ce27-4b2f-8650-d3979b029afd
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -100,8 +126,10 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -111,10 +139,10 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: 5c95a71e-7546-4600-8461-c7c82fd7ab7c
+    taskid: f6657238-012d-4f1f-846a-ec82b8c96005
     type: regular
     task:
-      id: 5c95a71e-7546-4600-8461-c7c82fd7ab7c
+      id: f6657238-012d-4f1f-846a-ec82b8c96005
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -126,8 +154,10 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -137,10 +167,10 @@ tasks:
       }
   "5":
     id: "5"
-    taskid: 24cee891-c1af-4bf3-80db-c13a2677d72f
+    taskid: 9b30665b-d93b-4617-82ba-9a5954bd2142
     type: regular
     task:
-      id: 24cee891-c1af-4bf3-80db-c13a2677d72f
+      id: 9b30665b-d93b-4617-82ba-9a5954bd2142
       version: -1
       name: ip
       description: Check the given URL reputation
@@ -152,10 +182,11 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      ip: 103.225.52.112
-      long: ""
-      threshold: ""
-      url: https://www.demisto.com
+      ip:
+        simple: 103.225.52.112
+      long: {}
+      threshold: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -165,10 +196,10 @@ tasks:
       }
   "6":
     id: "6"
-    taskid: 2fc4eb69-5cef-4d32-8080-f89c20fab879
+    taskid: 2cc6d6eb-a168-4023-8506-94ccc243c442
     type: regular
     task:
-      id: 2fc4eb69-5cef-4d32-8080-f89c20fab879
+      id: 2cc6d6eb-a168-4023-8506-94ccc243c442
       version: -1
       name: VerifyContext
       description: |-
@@ -177,7 +208,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      scriptName: AreValuesEqual
       type: regular
       iscommand: false
       brand: ""
@@ -185,9 +216,13 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      expectedValue: XFE
-      fields: ""
-      path: IP.Malicious.Vendor
+      left:
+        simple: ${IP.Malicious.Vendor}
+      right:
+        simple: XFE
+    results:
+    - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -197,10 +232,10 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: b5c8e01a-215c-4167-829a-f896eb52641d
+    taskid: 2e44786a-9527-4e34-850d-6a6109204ee7
     type: regular
     task:
-      id: b5c8e01a-215c-4167-829a-f896eb52641d
+      id: 2e44786a-9527-4e34-850d-6a6109204ee7
       version: -1
       name: domain
       description: Check domain reputation
@@ -213,9 +248,11 @@ tasks:
       - "8"
       - "10"
     scriptarguments:
-      domain: https://www.demisto.com
-      long: ""
-      threshold: ""
+      domain:
+        simple: https://www.demisto.com
+      long: {}
+      threshold: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -225,29 +262,52 @@ tasks:
       }
   "8":
     id: "8"
-    taskid: 854edff0-1395-4c8c-88fc-0b84e80d8899
-    type: regular
+    taskid: 44e05ef5-c22c-4c70-8870-56a17ec53509
+    type: condition
     task:
-      id: 854edff0-1395-4c8c-88fc-0b84e80d8899
+      id: 44e05ef5-c22c-4c70-8870-56a17ec53509
       version: -1
-      name: VerifyContext
+      name: AreValuesEqual
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      scriptName: AreValuesEqual
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "12"
     scriptarguments:
-      expectedValue: "1"
-      fields: ""
-      path: DBotScore.Score
+      left:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: XFE
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: https://www.demisto.com
+          accessor: Score
+      right:
+        simple: "1"
+    results:
+    - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -257,10 +317,10 @@ tasks:
       }
   "9":
     id: "9"
-    taskid: 7979da72-a5ac-4d63-8343-76fc3af37aaa
+    taskid: 24419001-1034-4471-8c26-c9b85b85ad5f
     type: regular
     task:
-      id: 7979da72-a5ac-4d63-8343-76fc3af37aaa
+      id: 24419001-1034-4471-8c26-c9b85b85ad5f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -272,21 +332,23 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1945
+          "y": 1975
         }
       }
   "10":
     id: "10"
-    taskid: 247bc241-8aa2-4b96-8349-af3e03af5a1d
+    taskid: 8078ae4b-e637-4230-86a6-6aa8d77fbef3
     type: condition
     task:
-      id: 247bc241-8aa2-4b96-8349-af3e03af5a1d
+      id: 8078ae4b-e637-4230-86a6-6aa8d77fbef3
       version: -1
       name: Check No Malicious found
       scriptName: Exists
@@ -297,7 +359,20 @@ tasks:
       "no":
       - "12"
     scriptarguments:
-      value: ${URL.Malicious}
+      value:
+        complex:
+          root: URL
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: URL.Data
+                iscontext: true
+              right:
+                value:
+                  simple: https://www.demisto.com
+          accessor: Malicious
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -307,10 +382,10 @@ tasks:
       }
   "12":
     id: "12"
-    taskid: f5eda1de-ba9e-48f2-8641-986880914246
+    taskid: b5ffdbc1-840b-48ee-815a-944403c9487d
     type: regular
     task:
-      id: f5eda1de-ba9e-48f2-8641-986880914246
+      id: b5ffdbc1-840b-48ee-815a-944403c9487d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -322,8 +397,10 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -333,10 +410,10 @@ tasks:
       }
   "13":
     id: "13"
-    taskid: f38f08ff-7c9c-48b0-87ff-c7e4b12984e1
+    taskid: 71ed45de-c953-4854-8145-2a0efe6cea40
     type: regular
     task:
-      id: f38f08ff-7c9c-48b0-87ff-c7e4b12984e1
+      id: 71ed45de-c953-4854-8145-2a0efe6cea40
       version: -1
       name: cve-latest
       description: Return the latest vulnerabilities found
@@ -348,7 +425,9 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      limit: "1"
+      limit:
+        simple: "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -358,10 +437,10 @@ tasks:
       }
   "14":
     id: "14"
-    taskid: b3d6aa4d-3575-4090-8c65-dbf3abb5b77e
+    taskid: e68ca2ce-3dc5-4239-8b7b-fc63eb1f04b7
     type: regular
     task:
-      id: b3d6aa4d-3575-4090-8c65-dbf3abb5b77e
+      id: e68ca2ce-3dc5-4239-8b7b-fc63eb1f04b7
       version: -1
       name: cve-search
       description: Search for details about the given CVE
@@ -370,7 +449,9 @@ tasks:
       iscommand: true
       brand: XFE
     scriptarguments:
-      cveId: ${CVE.ID}
+      cveId:
+        simple: ${CVE.ID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -380,10 +461,10 @@ tasks:
       }
   "16":
     id: "16"
-    taskid: 6ef50ed3-0c52-4d38-8945-c1b2e6386c59
+    taskid: 74889031-2b1d-42db-8cd6-4922e31a8a82
     type: condition
     task:
-      id: 6ef50ed3-0c52-4d38-8945-c1b2e6386c59
+      id: 74889031-2b1d-42db-8cd6-4922e31a8a82
       version: -1
       name: VerifyContext
       description: |-
@@ -400,12 +481,17 @@ tasks:
       "yes":
       - "14"
     scriptarguments:
-      array: ${ArraySize}
-      contextKey: ""
-      expectedValue: "3"
-      fields: ""
-      path: CVE
-      value: ${CVE}
+      array:
+        simple: ${ArraySize}
+      contextKey: {}
+      expectedValue:
+        simple: "3"
+      fields: {}
+      path:
+        simple: CVE
+      value:
+        simple: ${CVE}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -415,29 +501,44 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: 8e8f9460-029b-4b59-8324-e974e22bd9ea
-    type: regular
+    taskid: a347e578-be56-446f-8be4-3e0faa5236ab
+    type: condition
     task:
-      id: 8e8f9460-029b-4b59-8324-e974e22bd9ea
+      id: a347e578-be56-446f-8be4-3e0faa5236ab
       version: -1
-      name: VerifyContext
+      name: AreValuesEqual
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      scriptName: AreValuesEqual
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "4"
     scriptarguments:
-      expectedValue: XFE
-      fields: ""
-      path: URL.Malicious.Vendor
+      left:
+        complex:
+          root: URL
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: URL.Malicious.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "10"
+          accessor: Malicious.Vendor
+      right:
+        simple: XFE
+    results:
+    - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -447,10 +548,10 @@ tasks:
       }
   "18":
     id: "18"
-    taskid: fa7b29c7-43e3-4fda-8961-68e507f57db4
+    taskid: 8f03df06-05d0-4d9e-8f64-c3dabc66a4da
     type: regular
     task:
-      id: fa7b29c7-43e3-4fda-8961-68e507f57db4
+      id: 8f03df06-05d0-4d9e-8f64-c3dabc66a4da
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -461,8 +562,10 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -472,10 +575,10 @@ tasks:
       }
   "19":
     id: "19"
-    taskid: aee475f6-88d4-4f3f-87a8-01111f811b7d
+    taskid: fcdfb086-afc6-4c93-871f-313e7ae60d66
     type: regular
     task:
-      id: aee475f6-88d4-4f3f-87a8-01111f811b7d
+      id: fcdfb086-afc6-4c93-871f-313e7ae60d66
       version: -1
       name: file
       description: Check file reputation
@@ -489,8 +592,10 @@ tasks:
       - "21"
       - "22"
     scriptarguments:
-      file: 37c919f28798a886ec7202cc39818b8ce641ae83
-      long: ""
+      file:
+        simple: 37c919f28798a886ec7202cc39818b8ce641ae83
+      long: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -500,29 +605,44 @@ tasks:
       }
   "20":
     id: "20"
-    taskid: 6cc82bad-c0fd-4fc7-85a1-34bfe46e512b
-    type: regular
+    taskid: 6b3a1cc8-b924-4899-8043-27318dd66ce9
+    type: condition
     task:
-      id: 6cc82bad-c0fd-4fc7-85a1-34bfe46e512b
+      id: 6b3a1cc8-b924-4899-8043-27318dd66ce9
       version: -1
-      name: VerifyContext
+      name: AreValuesEqual
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      scriptName: AreValuesEqual
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "9"
     scriptarguments:
-      expectedValue: XFE
-      fields: ""
-      path: File.Malicious.Vendor
+      left:
+        complex:
+          root: File
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: File.Malicious.Score
+                iscontext: true
+              right:
+                value:
+                  simple: high
+          accessor: Malicious.Vendor
+      right:
+        simple: XFE
+    results:
+    - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -532,29 +652,52 @@ tasks:
       }
   "21":
     id: "21"
-    taskid: c054ce1f-5f3d-41b2-89d1-664c62e25010
-    type: regular
+    taskid: 6d56941b-1503-4065-8d2a-f641a4dcad48
+    type: condition
     task:
-      id: c054ce1f-5f3d-41b2-89d1-664c62e25010
+      id: 6d56941b-1503-4065-8d2a-f641a4dcad48
       version: -1
-      name: VerifyContext
+      name: AreValuesEqual
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      scriptName: AreValuesEqual
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "9"
     scriptarguments:
-      expectedValue: "3"
-      fields: ""
-      path: DBotScore.Score
+      left:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: 37c919f28798a886ec7202cc39818b8ce641ae83
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: XFE
+          accessor: Score
+      right:
+        simple: "3"
+    results:
+    - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -564,10 +707,10 @@ tasks:
       }
   "22":
     id: "22"
-    taskid: 9a69412a-ce62-45f6-84f3-e8762801da47
+    taskid: 66e7b4f6-bd51-4ef8-8b4c-426d651d472d
     type: regular
     task:
-      id: 9a69412a-ce62-45f6-84f3-e8762801da47
+      id: 66e7b4f6-bd51-4ef8-8b4c-426d651d472d
       version: -1
       name: VerifyContext
       description: |-
@@ -584,9 +727,12 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      expectedValue: 37c919f28798a886ec7202cc39818b8ce641ae83
-      fields: ""
-      path: File.SHA1
+      expectedValue:
+        simple: 37c919f28798a886ec7202cc39818b8ce641ae83
+      fields: {}
+      path:
+        simple: File.SHA1
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -596,7 +742,9 @@ tasks:
       }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "21_9_yes": 0.31
+    },
     "paper": {
       "dimensions": {
         "height": 3040,
@@ -607,3 +755,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []

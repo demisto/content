@@ -17,6 +17,7 @@ tags:
 - Condition
 comment: The script returns a value from context
 system: true
+deprecated: true
 args:
 - name: key
   required: true

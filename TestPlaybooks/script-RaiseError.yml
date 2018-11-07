@@ -1,0 +1,33 @@
+commonfields:
+  id: RaiseError
+  version: -1
+name: RaiseError
+script: |-
+  contents = demisto.args()["error"]
+
+  for arg_name in ["expected", "actual", "details"]:
+      arg_val = demisto.args().get(arg_name)
+      if (arg_val):
+          contents = "%s\n%s - %s" % (contents, arg_name.title(), arg_val, )
+
+  demisto.results({
+      "Type" : entryTypes["error"],
+      "ContentsFormat" : formats["text"],
+      "Contents" : contents
+  })
+type: python
+tags: []
+comment: raise error
+enabled: true
+args:
+- name: error
+  required: true
+  description: error to raise
+- name: expected
+  description: Expected value
+- name: actual
+  description: Actual value
+- name: details
+  description: Details
+scripttarget: 0
+runonce: false

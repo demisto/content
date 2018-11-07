@@ -1,0 +1,347 @@
+id: IBM Resilient Systems Test
+version: -1
+name: IBM Resilient Systems Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 151ade90-a2af-441e-8d80-26ced1472592
+    type: start
+    task:
+      id: 151ade90-a2af-441e-8d80-26ced1472592
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: b51c45ea-ed7d-40b4-870a-2728ee3461c5
+    type: regular
+    task:
+      id: b51c45ea-ed7d-40b4-870a-2728ee3461c5
+      version: -1
+      name: rs-search-incidents
+      description: Query for incidents
+      script: IBM Resilient Systems|||rs-search-incidents
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      date-created-after: {}
+      date-created-before: {}
+      date-created-within-the-last: {}
+      date-occurred-after: {}
+      date-occurred-before: {}
+      date-occurred-within-the-last: {}
+      due-in: {}
+      incident-type: {}
+      nist: {}
+      severity:
+        simple: Low,Medium,High
+      status: {}
+      timeframe: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 192364b7-ec92-42ab-832e-2b5bf3065fd2
+    type: regular
+    task:
+      id: 192364b7-ec92-42ab-832e-2b5bf3065fd2
+      version: -1
+      name: rs-incident-artifacts
+      description: Gets incident artifacts
+      script: IBM Resilient Systems|||rs-incident-artifacts
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      incident-id:
+        simple: ${Resilient.Incidents.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 3978baee-59b6-45a0-8018-4fcd9d0714cd
+    type: regular
+    task:
+      id: 3978baee-59b6-45a0-8018-4fcd9d0714cd
+      version: -1
+      name: rs-incident-attachments
+      description: Gets incident attachments
+      script: IBM Resilient Systems|||rs-incident-attachments
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      incident-id:
+        simple: ${Resilient.Incidents.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: bef8360a-812d-4e18-8cdf-76141bfa0b25
+    type: regular
+    task:
+      id: bef8360a-812d-4e18-8cdf-76141bfa0b25
+      version: -1
+      name: rs-related-incidents
+      description: Gets related incidents
+      script: IBM Resilient Systems|||rs-related-incidents
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      incident-id:
+        simple: ${Resilient.Incidents.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    taskid: d188dc47-8a2d-4750-87fa-f3602d7c057d
+    type: regular
+    task:
+      id: d188dc47-8a2d-4750-87fa-f3602d7c057d
+      version: -1
+      name: rs-incidents-get-tasks
+      description: Gets tasks of incidents
+      script: IBM Resilient Systems|||rs-incidents-get-tasks
+      type: regular
+      iscommand: true
+      brand: IBM Resilient Systems
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      incident-id:
+        simple: ${Resilient.Incidents.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "6":
+    id: "6"
+    taskid: f143297a-b0df-4a80-8c45-82a933a6982a
+    type: regular
+    task:
+      id: f143297a-b0df-4a80-8c45-82a933a6982a
+      version: -1
+      name: Verify Artifacts Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      extend-context: {}
+      fields:
+        simple: CreatedDate,Creator,ID,Type,Value
+      path:
+        simple: Resilient.Incidents.Artifacts
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 3933828b-af80-44ea-8dab-53ec87db7dbe
+    type: regular
+    task:
+      id: 3933828b-af80-44ea-8dab-53ec87db7dbe
+      version: -1
+      name: Verify Attachments Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      extend-context: {}
+      fields:
+        simple: ContentType,CreatedDate,Creator,ID,Name,Size
+      path:
+        simple: Resilient.Incidents.Attachments
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "8":
+    id: "8"
+    taskid: b5478c17-e5cc-4d8b-89fd-d37f6858f243
+    type: regular
+    task:
+      id: b5478c17-e5cc-4d8b-89fd-d37f6858f243
+      version: -1
+      name: Verify Related Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: CreatedDate,Name,ID,Status
+      path:
+        simple: Resilient.Incidents.Related
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    taskid: a3affe43-f533-4123-84ca-b2f045d99085
+    type: regular
+    task:
+      id: a3affe43-f533-4123-84ca-b2f045d99085
+      version: -1
+      name: Verify Tasks Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Category,Creator,ID,Status
+      path:
+        simple: Resilient.Incidents.Tasks
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "10":
+    id: "10"
+    taskid: c811f430-0823-4c8f-89d2-f5a3924da407
+    type: title
+    task:
+      id: c811f430-0823-4c8f-89d2-f5a3924da407
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,25 @@
+commonfields:
+  id: GenerateUUID
+  version: -1
+name: GenerateUUID
+script: |-
+  import uuid
+  uuid = uuid.uuid4().hex
+  demisto.results({
+      'Type': entryTypes['note'],
+      'Contents': uuid,
+      'ContentsFormat': formats['json'],
+      'ReadableContentsFormat': formats['markdown'],
+      'HumanReadable': uuid,
+      'EntryContext': {'GeneratedUUID': uuid}
+  })
+type: python
+tags: []
+comment: Generates random UUID
+enabled: true
+outputs:
+- contextPath: GeneratedUUID
+  description: Generated UUID
+  type: string
+scripttarget: 0
+runonce: false

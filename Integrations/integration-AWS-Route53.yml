@@ -1,0 +1,762 @@
+commonfields:
+  id: AWS - Route53
+  version: -1
+name: AWS - Route53
+display: AWS - Route53
+category: IT Services
+image: data:image/png;base64,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
+description: Amazon Web Services Managed Cloud DNS Service.
+configuration:
+- display: Role Arn
+  name: roleArn
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |-
+    import boto3
+    import datetime
+
+    AWS_DEFAULT_REGION = None
+    AWS_roleArn = demisto.params()['roleArn']
+    AWS_roleSessionName = demisto.params()['roleSessionName']
+    AWS_roleSessionDuration = demisto.params()['sessionDuration']
+    AWS_rolePolicy = None
+
+    def aws_session(service='route53',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':roleArn,
+                'RoleSessionName':roleSessionName,
+                })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':AWS_roleArn,
+                'RoleSessionName':AWS_roleSessionName,
+                })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':int(roleSessionDuration)})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':int(AWS_roleSessionDuration)})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy':rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy':AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service,region_name=region)
+            else:
+                client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+
+        return client
+    class DatetimeEncoder(json.JSONEncoder):
+      def default(self, obj):
+        if isinstance (obj, datetime.datetime):
+            return obj.strftime ('%Y-%m-%dT%H:%M:%S')
+        elif isinstance (obj, datetime.date):
+            return obj.strftime ('%Y-%m-%d')
+        elif isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S')
+        elif isinstance(obj, date):
+            return obj.strftime('%Y-%m-%d')
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
+
+    def create_entry(title,data, ec):
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
+            'EntryContext': ec
+        }
+
+    def raise_error(error):
+        return {
+            'Type' : entryTypes['error'],
+            'ContentsFormat' : formats['text'],
+            'Contents' : str(error)
+        }
+
+    def create_record(args):
+        try:
+            client = aws_session(
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'HostedZoneId':args.get('hostedZoneId'),
+                'ChangeBatch':{
+                            'Changes': [
+                                {
+                                    'Action': 'CREATE',
+                                    'ResourceRecordSet': {
+                                        'Name': args.get('source'),
+                                        'Type': args.get('type'),
+                                        'TTL': int(args.get('ttl')),
+                                        'ResourceRecords': [{'Value': args.get('target')}]
+                                }
+                            }
+                        ]
+                }
+            }
+
+            if args.get('comment') is not None:
+                kwargs['ChangeBatch'].update({'Comment':args.get('comment')})
+
+            response = client.change_resource_record_sets(**kwargs)
+            record = response['ChangeInfo']
+            data = ({
+                'Id': record['Id'],
+                'Status': record['Status']
+            })
+
+            output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            ec = {'AWS.Route53.RecordSetsChange': raw}
+            return  create_entry('AWS Route53 record created',data, ec)
+
+
+        except Exception as e:
+            return raise_error(e)
+
+    def delete_record(args):
+        try:
+            client = aws_session(
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'HostedZoneId':args.get('hostedZoneId'),
+                'ChangeBatch':{
+                            'Changes': [
+                                {
+                                    'Action': 'DELETE',
+                                    'ResourceRecordSet': {
+                                        'Name': args.get('source'),
+                                        'Type': args.get('type'),
+                                        'TTL': int(args.get('ttl')),
+                                        'ResourceRecords': [{'Value': args.get('target')}]
+                                }
+                            }
+                        ]
+                }
+            }
+
+            response = client.change_resource_record_sets(**kwargs)
+            record = response['ChangeInfo']
+            data = ({
+                'Id': record['Id'],
+                'Status': record['Status']
+            })
+
+            output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            ec = {'AWS.Route53.RecordSetsChange': raw}
+            return  create_entry('AWS Route53 record deleted',data, ec)
+
+
+        except Exception as e:
+            return raise_error(e)
+
+    def upsert_record(args):
+        try:
+            client = aws_session(
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'HostedZoneId':args.get('hostedZoneId'),
+                'ChangeBatch':{
+                            'Changes': [
+                                {
+                                    'Action': 'UPSERT',
+                                    'ResourceRecordSet': {
+                                        'Name': args.get('source'),
+                                        'Type': args.get('type'),
+                                        'TTL': int(args.get('ttl')),
+                                        'ResourceRecords': [{'Value': args.get('target')}]
+                                }
+                            }
+                        ]
+                }
+            }
+
+            if args.get('comment') is not None:
+                kwargs['ChangeBatch'].update({'Comment':args.get('comment')})
+
+            response = client.change_resource_record_sets(**kwargs)
+            record = response['ChangeInfo']
+            data = ({
+                'Id': record['Id'],
+                'Status': record['Status']
+            })
+
+            output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            ec = {'AWS.Route53.RecordSetsChange': raw}
+            return  create_entry('AWS Route53 record Upsert',data, ec)
+
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_hosted_zones(args):
+        try:
+            client = aws_session(
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            data = []
+            response = client.list_hosted_zones()
+            for hostedzone in response['HostedZones']:
+                data.append ({
+                    'Name': hostedzone['Name'],
+                    'Id': hostedzone['Id'],
+                    'ResourceRecordSetCount': hostedzone['ResourceRecordSetCount'],
+                })
+            output = json.dumps(response['HostedZones'], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            ec = {'AWS.Route53.HostedZones': raw}
+            return create_entry('AWS Route53 Hosted Zones', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_resource_record_sets(args):
+        try:
+            client = aws_session(
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            kwargs = {'HostedZoneId':args.get('hostedZoneId')}
+            if args.get('startRecordName') is not None:
+                kwargs.update({'StartRecordName':args.get('startRecordName')})
+            if args.get('startRecordType') is not None:
+                kwargs.update({'StartRecordType':args.get('startRecordType')})
+            if args.get('startRecordIdentifier') is not None:
+                kwargs.update({'StartRecordIdentifier':args.get('startRecordIdentifier')})
+
+            data = []
+            response = client.list_resource_record_sets(**kwargs)
+            records = response['ResourceRecordSets']
+            for record in records:
+                data.append({
+                    'Name': record['Name'],
+                    'Type': record['Type'],
+                    'TTL': record['TTL'],
+                    'ResourceRecords': record['ResourceRecords'][0]['Value']
+                })
+            output = json.dumps(response['ResourceRecordSets'], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            ec = {'AWS.Route53.RecordSets': raw}
+            return create_entry('AWS Route53 Record Sets', data, ec)
+
+        except Exception as error:
+            return error
+
+    def waiter_resource_record_sets_changed(args):
+        try:
+            client = aws_session(
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {'Id':args.get('id')}
+            if args.get('waiterDelay') is not None:
+                kwargs.update({'WaiterConfig':{'Delay':int(args.get('waiterDelay'))}})
+            if args.get('waiterMaxAttempts') is not None:
+                kwargs.update({'WaiterConfig':{'MaxAttempts':int(args.get('waiterMaxAttempts'))}})
+
+            waiter = client.get_waiter('resource_record_sets_changed')
+            waiter.wait(**kwargs)
+            return "success"
+
+        except Exception as e:
+            return raise_error
+
+    def test_dns_answer(args):
+        try:
+            client = aws_session(
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            kwargs = {
+                'HostedZoneId':args.get('hostedZoneId'),
+                'RecordName':args.get('recordName'),
+                'RecordType':args.get('recordType'),
+                }
+            if args.get('resolverIP') is not None:
+                kwargs.update({'ResolverIP':args.get('resolverIP')})
+
+            response = client.test_dns_answer(**kwargs)
+            data = ({
+                'Nameserver': response['Nameserver'],
+                'RecordName': response['RecordName'],
+                'RecordType': response['RecordType'],
+                'ResponseCode': response['ResponseCode'],
+                'Protocol': response['Protocol']
+            })
+
+            ec = {'AWS.Route53.TestDNSAnswer': response}
+            return create_entry('AWS Route53 Test DNS Answer', data, ec)
+
+        except Exception as error:
+            return error
+
+    def test_function():
+        try:
+            client = aws_session()
+            response = client.list_hosted_zones()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return 'ok'
+
+        except Exception as error:
+            return error
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        result = test_function()
+
+    if demisto.command() == 'aws-route53-create-record':
+        result = create_record(demisto.args())
+
+    if demisto.command() == 'aws-route53-upsert-record':
+        result = upsert_record(demisto.args())
+
+    if demisto.command() == 'aws-route53-delete-record':
+        result = delete_record(demisto.args())
+
+    if demisto.command() == 'aws-route53-list-hosted-zones':
+        result = list_hosted_zones(demisto.args())
+
+    if demisto.command() == 'aws-route53-list-resource-record-sets':
+        result = list_resource_record_sets(demisto.args())
+
+    if demisto.command() == 'aws-route53-waiter-resource-record-sets-changed':
+        result = waiter_resource_record_sets_changed(demisto.args())
+
+    if demisto.command() == 'aws-route53-test-dns-answer':
+        result = test_dns_answer(demisto.args())
+
+    demisto.results(result)
+    sys.exit(0)
+  type: python
+  commands:
+  - name: aws-route53-create-record
+    arguments:
+    - name: source
+      required: true
+      description: The name of the domain you want to Create. i.e. www.example.com
+    - name: target
+      required: true
+      description: The DNS record value
+    - name: ttl
+      required: true
+      description: The resource record cache time to live (TTL), in seconds.
+    - name: hostedZoneId
+      required: true
+      description: Specify the hosted zone ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TX
+      description: The type of the record to create
+    - name: comment
+      description: Any comments you want to include.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the request.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that this request
+        has not yet been applied to all Amazon Route 53 DNS servers.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: A complex type that describes change information about changes
+        made to your hosted zone.
+      type: string
+    description: Creates a resource record set. Creates a resource record set that
+      has the specified values.
+  - name: aws-route53-delete-record
+    arguments:
+    - name: source
+      required: true
+      description: The name of the domain you want to Create. i.e. www.example.com
+    - name: target
+      required: true
+      description: The DNS record value
+    - name: ttl
+      required: true
+      description: The resource record cache time to live (TTL), in seconds.
+    - name: hostedZoneId
+      required: true
+      description: Specify the hosted zone ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TX
+      description: The type of the record to create
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the request.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that this request
+        has not yet been applied to all Amazon Route 53 DNS servers.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: A complex type that describes change information about changes
+        made to your hosted zone.
+      type: string
+    description: Deletes a resource record set. Deletes an existing resource record
+      set that has the specified values.
+  - name: aws-route53-list-hosted-zones
+    arguments:
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.HostedZones.Id
+      description: The ID that Amazon Route 53 assigned to the hosted zone when you
+        created it.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.Name
+      description: The name of the domain.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.CallerReference
+      description: The value that you specified for CallerReference when you created
+        the hosted zone.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.Config.Comment
+      description: Any comments that you want to include about the hosted zone.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.Config.PrivateZone
+      description: A value that indicates whether this is a private hosted zone.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.ResourceRecordSetCount
+      description: The number of resource record sets in the hosted zone.
+      type: number
+    - contextPath: AWS.Route53.HostedZones.LinkedService.ServicePrincipal
+      description: 'If the health check or hosted zone was created by another service,
+        the service that created the resource. '
+      type: string
+    - contextPath: AWS.Route53.HostedZones.LinkedService.Description
+      description: 'If the health check or hosted zone was created by another service,
+        an optional description that can be provided by the other service. '
+      type: string
+    description: 'Retrieves a list of the public and private hosted zones that are
+      associated with the current AWS account. '
+  - name: aws-route53-list-resource-record-sets
+    arguments:
+    - name: hostedZoneId
+      required: true
+      description: The ID of the hosted zone that contains the resource record sets
+        that you want to list.
+    - name: startRecordName
+      description: ' The first name in the lexicographic ordering of resource record
+        sets that you want to list.'
+    - name: startRecordType
+      auto: PREDEFINED
+      predefined:
+      - SOA
+      - A
+      - TXT
+      - NS
+      - CNAME
+      - MX
+      - NAPTR
+      - PTR
+      - SRV
+      - SPF
+      - AAAA
+      - CAA
+      description: The type of resource record set to begin the record listing from.
+    - name: startRecordIdentifier
+      description: Weighted resource record sets only.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSets.Name
+      description: The name of the domain.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.Type
+      description: The DNS record type.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.SetIdentifier
+      description: 'An identifier that differentiates among multiple resource record
+        sets that have the same combination of DNS name and type. '
+      type: string
+    - contextPath: AWS.Route53.RecordSets.Weight
+      description: Weighted resource record sets only.
+      type: number
+    - contextPath: AWS.Route53.RecordSets.Region
+      description: Latency-based resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.ContinentCode
+      description: The two-letter code for the continent.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.CountryCode
+      description: The two-letter code for the country.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.SubdivisionCode
+      description: The code for the subdivision, for example, a state in the United
+        States or a province in Canada.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.Failover
+      description: Failover resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.MultiValueAnswer
+      description: Multivalue answer resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.TTL
+      description: The resource record cache time to live (TTL), in seconds.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.ResourceRecords.Value
+      description: The current  record value.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.HostedZoneId
+      description: Alias resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.DNSName
+      description: Alias resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.EvaluateTargetHealth
+      description: Alias resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.HealthCheckId
+      description: ID of the applicable health check.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.TrafficPolicyInstanceId
+      description: the ID of the traffic policy instance that Amazon Route 53 created
+        this resource record set for.
+      type: string
+    description: Lists the resource record sets in a specified hosted zone.
+  - name: aws-route53-waiter-resource-record-sets-changed
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the change.
+    - name: waiterDelay
+      description: 'The amount of time in seconds to wait between attempts. Default:
+        30'
+    - name: waiterMaxAttempts
+      description: 'The maximum number of attempts to be made. Default: 60'
+    description: A waiter function that waits until record set change is successful
+  - name: aws-route53-test-dns-answer
+    arguments:
+    - name: hostedZoneId
+      required: true
+      description: The ID of the hosted zone that you want Amazon Route 53 to simulate
+        a query for.
+    - name: recordName
+      required: true
+      description: The name of the resource record set that you want Amazon Route
+        53 to simulate a query for.
+    - name: recordType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - SOA
+      - A
+      - TXT
+      - NS
+      - CNAME
+      - MX
+      - NAPTR
+      - PTR
+      - SRV
+      - SPF
+      - AAAA
+      - CAA
+      description: The type of the resource record set.
+    - name: resolverIP
+      description: If you want to simulate a request from a specific DNS resolver,
+        specify the IP address for that resolver. If you omit this value, TestDnsAnswer
+        uses the IP address of a DNS resolver in the AWS US East (N. Virginia) Region
+        (us-east-1 ).
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.TestDNSAnswer.Nameserver
+      description: The Amazon Route 53 name server used to respond to the request.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordName
+      description: The name of the resource record set that you submitted a request
+        for.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordType
+      description: The type of the resource record set that you submitted a request
+        for.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.ResponseCode
+      description: A list that contains values that Amazon Route 53 returned for this
+        resource record set.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.Protocol
+      description: A code that indicates whether the request is valid or not.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordData
+      description: The protocol that Amazon Route 53 used to respond to the request,
+        either UDP or TCP .
+      type: string
+    description: Gets the value that Amazon Route 53 returns in response to a DNS
+      request for a specified record name and type. You can optionally specify the
+      IP address of a DNS resolver, an EDNS0 client subnet IP address, and a subnet
+      mask.
+  - name: aws-route53-upsert-record
+    arguments:
+    - name: source
+      required: true
+      description: The name of the domain you want to Create. i.e. www.example.com
+    - name: target
+      required: true
+      description: The DNS record value
+    - name: ttl
+      required: true
+      description: The resource record cache time to live (TTL), in seconds.
+    - name: hostedZoneId
+      required: true
+      description: Specify the hosted zone ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TX
+      description: The type of the record to create
+    - name: comment
+      description: Any comments you want to include.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the request.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that this request
+        has not yet been applied to all Amazon Route 53 DNS servers.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: A complex type that describes change information about changes made to your hosted zone.
+      type: string
+    description: Upsert a resource record set. If a resource record set does not already
+      exist, AWS creates it. If a resource set does exist, Amazon Route 53 updates
+      it with the values in the request.
+  dockerimage: demisto/boto3
+  runonce: false

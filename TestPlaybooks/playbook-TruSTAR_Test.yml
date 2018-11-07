@@ -1,0 +1,212 @@
+id: TruSTAR Test
+version: -1
+name: TruSTAR Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9cab348f-c3db-47bf-8f35-653b0d7a89d2
+    type: start
+    task:
+      id: 9cab348f-c3db-47bf-8f35-653b0d7a89d2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: d7e4d09a-8ed7-4df4-8029-438d8cbfb07e
+    type: regular
+    task:
+      id: d7e4d09a-8ed7-4df4-8029-438d8cbfb07e
+      version: -1
+      name: Trending Indicators
+      description: Returns the 10 indicators that have recently appeared in the most
+        community reports. This is analogous to the Community Trends section of the
+        dashboard on Station.
+      script: TruSTAR|||trustar-trending-indicators
+      type: regular
+      iscommand: true
+      brand: TruSTAR
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      days-back: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 387e8a11-8d6d-40a0-8d29-da5a39ddcc7f
+    type: regular
+    task:
+      id: 387e8a11-8d6d-40a0-8d29-da5a39ddcc7f
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 9e088e2f-df91-4f4f-8e65-7ddae43f450c
+    type: regular
+    task:
+      id: 9e088e2f-df91-4f4f-8e65-7ddae43f450c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 9d276059-570d-4858-8d10-5de86416d76e
+    type: regular
+    task:
+      id: 9d276059-570d-4858-8d10-5de86416d76e
+      version: -1
+      name: Search Indicators with the term http
+      description: Searches for all indicators that contain the given search term.
+      script: TruSTAR|||trustar-search-indicators
+      type: regular
+      iscommand: true
+      brand: TruSTAR
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      enclave-ids: {}
+      page-number: {}
+      page-size: {}
+      search-term:
+        simple: http
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 40e023a1-4752-4369-88ad-7c51e94ab277
+    type: regular
+    task:
+      id: 40e023a1-4752-4369-88ad-7c51e94ab277
+      version: -1
+      name: Get correlated reports of a URL indicator
+      description: Returns a paginated list of all reports that contain any of the
+        provided indicator values.
+      script: TruSTAR|||trustar-correlated-reports
+      type: regular
+      iscommand: true
+      brand: TruSTAR
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      distribution-type: {}
+      enclave-ids: {}
+      indicators:
+        simple: https://medium.com
+      page-number: {}
+      page-size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 2be18922-0ae8-4f8e-826a-105aa33c2608
+    type: title
+    task:
+      id: 2be18922-0ae8-4f8e-826a-105aa33c2608
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
