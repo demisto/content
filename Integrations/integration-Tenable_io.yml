@@ -343,26 +343,26 @@ script:
     # Command selector
     if demisto.command() == 'test-module':
         demisto.results(test_module())
-    elif demisto.command() == 'tenable-get-scans':
-        demisto.results(get_scans(demisto.getArg('folder-id'), demisto.getArg('last-modification-date')))
-    elif demisto.command() == 'tenable-launch-scan':
-        demisto.results(launch_scan(demisto.getArg('scan-id'), demisto.getArg('scan-tartgets')))
-    elif demisto.command() == 'tenable-get-scan-report':
-        demisto.results(get_report(demisto.getArg('scan-id'), demisto.getArg('info'), demisto.getArg('detailed')))
-    elif demisto.command() == 'tenable-get-vulnerability-details':
-        demisto.results(get_vulnerability_details(demisto.getArg('vulnerability-id'), demisto.getArg('date-range')))
-    elif demisto.command() == 'tenable-get-vulnerabilities-by-asset':
-        demisto.results(get_vulnerabilities_by_asset(demisto.getArg('asset-id'), demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('date-range')))
-    elif demisto.command() == 'tenable-get-scan-status':
-        demisto.results(get_scan_status(demisto.getArg('scan-id')))
+    elif demisto.command() == 'tenable-io-list-scans':
+        demisto.results(get_scans(demisto.getArg('folderId'), demisto.getArg('lastModificationDate')))
+    elif demisto.command() == 'tenable-io-launch-scan':
+        demisto.results(launch_scan(demisto.getArg('scanId'), demisto.getArg('scanTartgets')))
+    elif demisto.command() == 'tenable-io-get-scan-report':
+        demisto.results(get_report(demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')))
+    elif demisto.command() == 'tenable-io-get-vulnerability-details':
+        demisto.results(get_vulnerability_details(demisto.getArg('vulnerabilityId'), demisto.getArg('dateRange')))
+    elif demisto.command() == 'tenable-io-get-vulnerabilities-by-asset':
+        demisto.results(get_vulnerabilities_by_asset(demisto.getArg('assetId'), demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')))
+    elif demisto.command() == 'tenable-io-get-scan-status':
+        demisto.results(get_scan_status(demisto.getArg('scanId')))
   type: python
   commands:
-  - name: tenable-get-scans
+  - name: tenable-io-list-scans
     arguments:
-    - name: folder-id
+    - name: folderId
       description: 'The ID of the folder whose scans should be listed. Scans are stored
         in specific folders on Tenable. e.g : folderId=8'
-    - name: last-modification-date
+    - name: lastModificationDate
       description: 'Limit the results to those that have only changed since this time.
         Format: YYYY-MM-DD'
     outputs:
@@ -413,13 +413,13 @@ script:
       description: The unique id of the folder where the scan has been stored.
       type: number
     description: Retrive scans from the Tenable platform.
-  - name: tenable-launch-scan
+  - name: tenable-io-launch-scan
     arguments:
-    - name: scan-id
+    - name: scanId
       required: true
       default: true
       description: The id of the scan to launch.
-    - name: scan-targets
+    - name: scanTargets
       description: If specified, these targets will be scanned instead of the default.
         Value can be an array where each index is a target, or an array with a single
         index of comma separated targets.
@@ -435,9 +435,9 @@ script:
       type: string
     description: Lauch a scan with existing or custom targets. (You can specify custom
       targets in the arguements of this command.)
-  - name: tenable-get-scan-report
+  - name: tenable-io-get-scan-report
     arguments:
-    - name: scan-id
+    - name: scanId
       required: true
       default: true
       description: The uuid of the scan to retrieve. While scan uuid is preferred,
@@ -555,13 +555,13 @@ script:
       description: The number of vulnerabilities associated with the remedy.
       type: number
     description: Retrive scan-report for the given scan.
-  - name: tenable-get-vulnerability-details
+  - name: tenable-io-get-vulnerability-details
     arguments:
-    - name: vulnerability-id
+    - name: vulnerabilityId
       required: true
       default: true
       description: The unique ID of the vulnerability.
-    - name: date-range
+    - name: dateRange
       description: The number of days of data prior to and including today that should
         be returned.
     outputs:
@@ -620,15 +620,15 @@ script:
         score.
       type: string
     description: Retrieve details for the given vulnerability.
-  - name: tenable-get-vulnerabilities-by-asset
+  - name: tenable-io-get-vulnerabilities-by-asset
     arguments:
-    - name: asset-id
+    - name: assetId
       description: The unique ID of the Asset.
     - name: hostname
       description: Hostname of the asset.
     - name: ip
       description: IP of the asset.
-    - name: date-range
+    - name: dateRange
       description: The number of days of data prior to and including today that should
         be returned.
     outputs:
@@ -654,9 +654,9 @@ script:
       type: number
     description: Get a list of up to 5000 of the vulnerabilities recorded for a given
       asset. By default, this list is sorted by vulnerability count, descending.
-  - name: tenable-get-scan-status
+  - name: tenable-io-get-scan-status
     arguments:
-    - name: scan-id
+    - name: scanId
       description: The unique ID of the Scan.
     outputs:
     - contextPath: TenableIO.Scan.Id
