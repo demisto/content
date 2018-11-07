@@ -176,10 +176,8 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     integrations = []
     has_skipped_integration = False
     for integration in integrations_conf:
-        if integration in skipped_integrations_conf:
-            if integration not in skipped_integration:
-                skipped_integration.append(integration)
-
+        if integration in skipped_integrations_conf.keys():
+            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             has_skipped_integration = True
             break
 
@@ -265,10 +263,10 @@ def main():
         print('no integrations are configured for test')
         return
 
-    skipped_tests = []
     failed_playbooks = []
     succeed_playbooks = []
-    skipped_integration = []
+    skipped_tests = set([])
+    skipped_integration = set([])
     for t in tests:
         playbook_id = t['playbookID']
         nightly_test = t.get('nightly', False)
@@ -302,8 +300,8 @@ def main():
                 continue
 
         # Skip bad test
-        if playbook_id in skipped_tests_conf:
-            skipped_tests.append(playbook_id)
+        if playbook_id in skipped_tests_conf.keys():
+            skipped_tests.add("{0} - reason: {1}".format(playbook_id, skipped_tests_conf[playbook_id]))
             continue
 
         # Skip integration
