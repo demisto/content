@@ -2,10 +2,10 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: circleci/node:9.11
+      - image: ronykoz/content-build-node911:latest
     environment:
-      CONTENT_VERSION: "18.10.1"
-      GIT_SHA1: "ef73b78e1cb1749298a7d419f6d157a5643db33e"
+      CONTENT_VERSION: "18.10.3"
+      GIT_SHA1: "3495efce78eb05e926ef719993fa69ffd1861fb5"
     steps:
       - checkout
       - run:
@@ -17,16 +17,6 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-              sudo apt-get install -y python-dev libxml2-dev libxslt1-dev zlib1g-dev python-setuptools jq
-              sudo easy_install pip
-              sudo npm install npm -g
-              sudo pip install pykwalify
-              sudo pip install awscli
-              sudo pip install requests
-              sudo pip install slackclient
-              sudo pip install git+https://github.com/demisto/demisto-py.git@test-content
-              sudo npm install -g jsdoc-to-markdown
-              sudo pip install git+https://github.com/rahulrrixe/parinx.git@master
               chmod +x ./Tests/scripts/*
       - add_ssh_keys:
           fingerprints:
@@ -52,10 +42,6 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - run:
-          name: Download Artifacts
-          command: |
-              ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
       - run:
           name: Download Configuration
           command: |

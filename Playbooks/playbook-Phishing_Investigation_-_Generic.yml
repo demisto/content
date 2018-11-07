@@ -1,8 +1,7 @@
-id: phishing_investigation_-_generic
+id: Phishing Investigation - Generic
 version: -1
 name: Phishing Investigation - Generic
 fromversion: 4.0.0
-releaseNotes: "Added support for blocking malicious indicators in relevant integrations"
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 

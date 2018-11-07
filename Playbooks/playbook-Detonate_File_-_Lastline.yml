@@ -1,0 +1,539 @@
+id: Detonate File - Lastline
+version: -1
+name: Detonate File - Lastline
+description: |-
+  Detonates a File using the Lastline sandbox.
+  Lastline supports the following File Types:
+  EXE, SYS, DLL, COM, SCR, CPL, OCX, CGI, DOC, DOTM, DOCX, DOTX, XLS, PPAM, XSLX, PPS, XLSB, PPSX, XLSM, PPSM, PPT, PPTX, PPTM, RTF, SHS, XLTM, SLDM, XLTX, SLDX, XLAM, THMX, DOCM, XAR, JTD, JTDC, PDF, SWF, GZ, 7Z, TGZ, MSI, ZIP, LZH, CAB, LZMA, APK, JAR, CLASS, JPEG, PNG, GIF, CMD, ACE, BAT, ARJ, VBS, CHM, XML, LNK, URL, MOF, HTM, OCX, HTML, POTM, EML, POTX, MSG, PS, |VB, REG, VBA, WSC, VBE, WSF, VBS, WSH
+fromversion: 4.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2251b2ee-5743-45f5-81bf-7da8693c7b61
+    type: start
+    task:
+      id: 2251b2ee-5743-45f5-81bf-7da8693c7b61
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: b22f116d-2041-4a0e-832d-3ff0e9dfbff5
+    type: regular
+    task:
+      id: b22f116d-2041-4a0e-832d-3ff0e9dfbff5
+      version: -1
+      name: Lastline Upload File
+      description: Uploads the submission to Lastline.
+      script: Lastline|||lastline-upload-file
+      type: regular
+      iscommand: true
+      brand: Lastline
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.File
+          accessor: EntryID
+      entryID:
+        complex:
+          root: inputs.File
+          accessor: EntryID
+      pushToPortal: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 895
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 3a6ac4c3-7fc4-4af3-87e7-ae5c78160d11
+    type: playbook
+    task:
+      id: 3a6ac4c3-7fc4-4af3-87e7-ae5c78160d11
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        complex:
+          root: Lastline
+          accessor: Submission.UUID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: uuid
+      PollingCommandName:
+        simple: lastline-get-report
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: Lastline.Submission(val.Status != 'Completed').UUID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1245
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: d372022a-88a0-4312-8ee7-6f0ebe64533e
+    type: regular
+    task:
+      id: d372022a-88a0-4312-8ee7-6f0ebe64533e
+      version: -1
+      name: Lastline Get Report
+      description: Retrieve the report from Lastline.
+      script: Lastline|||lastline-get-report
+      type: regular
+      iscommand: true
+      brand: Lastline
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      threshold: {}
+      uuid:
+        complex:
+          root: Lastline
+          accessor: Submission.UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1420
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 6185e7bf-d4ea-428f-84f3-8f69c900e8e8
+    type: title
+    task:
+      id: 6185e7bf-d4ea-428f-84f3-8f69c900e8e8
+      version: -1
+      name: Done
+      description: finished
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 5c234487-81fd-4b4f-8ae1-0b8fd37b942c
+    type: condition
+    task:
+      id: 5c234487-81fd-4b4f-8ae1-0b8fd37b942c
+      version: -1
+      name: Is LastLine sandbox enabled?
+      description: |
+        Verify that there is a valid instance of Lastline enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Lastline
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: fea8caab-2280-4b3a-81ca-0477bc5d1854
+    type: condition
+    task:
+      id: fea8caab-2280-4b3a-81ca-0477bc5d1854
+      version: -1
+      name: Is File type supported?
+      description: Check if file type is supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 720
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 880a4474-6ff0-4426-83c3-38bbf36f090e
+    type: regular
+    task:
+      id: 880a4474-6ff0-4426-83c3-38bbf36f090e
+      version: -1
+      name: Set File to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 545
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 823f4f10-b0d8-4c6b-8bc0-b7ec01897534
+    type: condition
+    task:
+      id: 823f4f10-b0d8-4c6b-8bc0-b7ec01897534
+      version: -1
+      name: Is there a File to Detonate?
+      description: Checks that there is a file in the playbook’s input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: cec4ac98-aed7-4400-824b-2244a72dcc1a
+    type: condition
+    task:
+      id: cec4ac98-aed7-4400-824b-2244a72dcc1a
+      version: -1
+      name: Filter UUIDs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Lastline
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: Lastline.Submission.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Completed
+                accessor: Submission.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 830,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: The file to detonate. File is taken from the context.
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+outputs:
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file
+  type: number
+- contextPath: InfoFile.Type
+  description: The type of the report file
+  type: string
+- contextPath: URL.Data
+  description: List of malicious URLs identified by Lastline analysis
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision
+  type: string
+- contextPath: URL.Malicious.Score
+  description: For malicious URLs, the score from the vendor
+  type: number
+- contextPath: File.MD5
+  description: Bad hash MD5
+  type: string
+- contextPath: File.SHA1
+  description: Bad hash SHA1
+  type: string
+- contextPath: File.SHA256
+  description: Bad hash SHA256
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Score
+  description: For malicious files, the score from the vendor
+  type: number
+- contextPath: Lastline.Submission.Status
+  description: Status of the submission
+  type: string
+- contextPath: Lastline.Submission.DNSqueries
+  description: List of DNS queries done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.NetworkConnections
+  description: ist of network connections done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.DownloadedFiles
+  description: List of files that were downloaded using the Microsoft Windows file-download
+    API functions. Each element is a tuple of file-origin URL and a File element.
+  type: string
+- contextPath: Lastline.Submission.UUID
+  description: Task UUID of submitted sample
+  type: number
+- contextPath: Lastline.Submission.YaraSignatures.name
+  description: Yara signatures name
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.score
+  description: The score according to the yara signatures. from 0 to 100.
+  type: number
+- contextPath: Lastline.Submission.Process.arguments
+  description: Argument of the process
+  type: string
+- contextPath: Lastline.Submission.Process.process_id
+  description: The process ID
+  type: string
+- contextPath: Lastline.Submission.Process.executable.abs_path
+  description: Absolute path of the executable of the process
+  type: string
+- contextPath: Lastline.Submission.Process.executable.filename
+  description: Filename of the executable
+  type: string
+- contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+  description: Yara signature of the executable of the process
+  type: string
+- contextPath: Lastline.Submission.Process.executable.ext_info
+  description: Executable info of the process
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.internal
+  description: True if the signature is only for internal usage
+  type: boolean
+tests:
+- Lastline - testplaybook

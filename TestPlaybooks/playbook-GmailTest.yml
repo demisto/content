@@ -186,7 +186,7 @@ tasks:
       brand: Gmail
     nexttasks:
       '#none#':
-      - "6"
+      - "21"
     scriptarguments:
       email:
         simple: JohnS${TimeNowUnix}@demistodev.com
@@ -249,7 +249,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1390
         }
       }
     note: false
@@ -398,6 +398,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Gmail
+    nexttasks:
+      '#none#':
+      - "22"
     scriptarguments:
       user-id:
         simple: admin@demistodev.com
@@ -406,7 +409,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1565
         }
       }
     note: false
@@ -492,8 +495,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 515
+          "x": 50,
+          "y": 1885
         }
       }
     note: false
@@ -536,8 +539,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 690
+          "x": 50,
+          "y": 2060
         }
       }
     note: false
@@ -579,7 +582,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1340,
           "y": 515
         }
       }
@@ -628,7 +631,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1340,
           "y": 690
         }
       }
@@ -679,13 +682,86 @@ tasks:
         }
       }
     note: false
+  "21":
+    id: "21"
+    taskid: 017f0872-122e-4bdc-8b68-aa1a5c7bfb3b
+    type: regular
+    task:
+      id: 017f0872-122e-4bdc-8b68-aa1a5c7bfb3b
+      version: -1
+      name: block the admin
+      script: Gmail|||gmail-add-delete-filter
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      email-address:
+        complex:
+          root: Account
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: Account.Email.Address
+                iscontext: true
+              right:
+                value:
+                  simple: JohnS
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Email
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Address
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 16f2b73a-5a91-4ecf-89f5-e254ceea8f93
+    type: title
+    task:
+      id: 16f2b73a-5a91-4ecf-89f5-e254ceea8f93
+      version: -1
+      name: Check all mailboxes
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 2100,
+        "height": 2105,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
