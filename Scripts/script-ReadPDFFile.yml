@@ -11,7 +11,7 @@ script: |-
 
   entryID = demisto.args()['entryID']
 
-  def mark():
+  def mark_suspicious():
       """Missing EOF, file may be corrupted or suspicious file"""
 
       dbot = {
