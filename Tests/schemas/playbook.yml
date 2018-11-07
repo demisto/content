@@ -142,6 +142,10 @@ mapping:
     type: text
   releaseNotes:
     type: str
+  tests:
+    type: seq
+    sequence:
+    - type: str
 
 
 # playbook->tasks

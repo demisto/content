@@ -113,9 +113,10 @@ script:
             to_recipients=to,
             reply_to=reply_to
         )
+        m.save()
         for attachment in attachments:
             m.attach(attachment)
-        m.send_and_save()
+        m.send()
         return m
 
 
@@ -205,7 +206,7 @@ script:
             os.environ['NO_PROXY'] = EWS_SERVER
 
         version = get_version(VERSION_STR)
-        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
+        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=300)
         config_args = {
             'credentials': credentials,
             'auth_type': get_auth_method(AUTH_METHOD_STR),

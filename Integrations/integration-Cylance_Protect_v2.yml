@@ -90,20 +90,18 @@ script:
         url = re.sub('\/$', '', url)
         return url
 
-    def load_proxy():
-        ''' Loads the system configured proxy if enabled in configuration '''
-        proxy = {}
-        if demisto.params()['proxy']:
-            proxy['http'] = os.environ['http_proxy']
-            proxy['https'] = os.environ['https_proxy']
-        return proxy
+    # remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     # GLOBALS
     APP_ID = demisto.params()['app_id']
     APP_SECRET = demisto.params()['app_secret']
     TID = demisto.params()['tid']
     SERVER_URL = load_server_url()
-    PROXY = load_proxy()
     FILE_THRESHOLD = demisto.params()['file_threshold']
 
 
@@ -121,13 +119,14 @@ script:
         return epoch_time, epoch_timeout
 
 
-    def api_call(uri, method = 'post', headers = {}, body = {}, params = {}):
+    def api_call(uri, method = 'post', headers = {}, body = {}, params = {}, accept_404 = False):
         '''
         Makes an API call to the server URL with the supplied uri, method, headers, body and params
         '''
         url = '%s/%s' % (SERVER_URL, uri)
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params)
         if res.status_code < 200 or res.status_code >= 300:
+            if not res.status_code == 404 and not accept_404:
                 raise Exception('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return json.loads(res.text) if res.text else res.ok
 
@@ -702,7 +701,7 @@ script:
             'Authorization': 'Bearer ' + access_token
         }
         uri = '%s/%s' % (URI_THREATS, hash)
-        res = api_call(uri=uri, method='get', headers=headers)
+        res = api_call(uri=uri, method='get', headers=headers, body = {}, params = {}, accept_404 = True)
         return res
 
     def get_threats():
@@ -1580,3 +1579,6 @@ script:
     description: Gets a list of global list resources for a tenant
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
+  runonce: false
+tests:
+  - Cylance Protect v2 Test

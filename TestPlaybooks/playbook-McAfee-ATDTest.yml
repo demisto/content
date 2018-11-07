@@ -6,13 +6,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1695be4e-86eb-460d-8f57-1c6fb1da76c8
+    taskid: 04198bae-8295-434f-88c8-25db1edc72a2
     type: start
     task:
-      id: 1695be4e-86eb-460d-8f57-1c6fb1da76c8
+      id: 04198bae-8295-434f-88c8-25db1edc72a2
       version: -1
       name: ""
-      description: "-"
+      description: '-'
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,10 +29,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 090ff599-33a9-4364-8ed2-b5d3b3554e57
+    taskid: 48efed92-ae0d-48af-8f87-d56d6f0a54b2
     type: regular
     task:
-      id: 090ff599-33a9-4364-8ed2-b5d3b3554e57
+      id: 48efed92-ae0d-48af-8f87-d56d6f0a54b2
       version: -1
       name: atd-login
       description: Returns a logon result for ATD
@@ -54,10 +54,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 0364ee54-17ad-4f94-85be-c832da7680d0
+    taskid: a3f8ce43-0f84-4810-8ad1-cc46e8d0f3e9
     type: regular
     task:
-      id: 0364ee54-17ad-4f94-85be-c832da7680d0
+      id: a3f8ce43-0f84-4810-8ad1-cc46e8d0f3e9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -83,10 +83,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: a3af1124-c93a-4418-82b5-a04e68ed0390
+    taskid: 15ebe28e-5230-4d00-821a-67deb15f65bb
     type: title
     task:
-      id: a3af1124-c93a-4418-82b5-a04e68ed0390
+      id: 15ebe28e-5230-4d00-821a-67deb15f65bb
       version: -1
       name: Test Playbook McAfee ATD
       type: title
@@ -106,10 +106,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 205d1e49-816d-4cb2-8d5a-9b38a901ffcf
+    taskid: 65dbdf66-a784-4adb-8411-9c886d7a9e3b
     type: condition
     task:
-      id: 205d1e49-816d-4cb2-8d5a-9b38a901ffcf
+      id: 65dbdf66-a784-4adb-8411-9c886d7a9e3b
       version: -1
       name: atd-login AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -139,10 +139,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 19aa3680-2d8c-4554-84ba-e50ee421f145
+    taskid: c63c25f2-cbda-4431-87cb-9fcc78f15d47
     type: regular
     task:
-      id: 19aa3680-2d8c-4554-84ba-e50ee421f145
+      id: c63c25f2-cbda-4431-87cb-9fcc78f15d47
       version: -1
       name: atd-list-user
       description: ' displays the user profile information present on the McAfee Advanced
@@ -167,10 +167,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: e7b0d713-fe33-4e8f-8031-deb06d75059e
+    taskid: 30d86cf7-8d27-43df-8e8f-068f8db3cd23
     type: condition
     task:
-      id: e7b0d713-fe33-4e8f-8031-deb06d75059e
+      id: 30d86cf7-8d27-43df-8e8f-068f8db3cd23
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -211,10 +211,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: b8694360-700f-432c-8638-e5aa7871f12b
+    taskid: 9ef49262-294c-45e0-8fb1-db823f0c9090
     type: regular
     task:
-      id: b8694360-700f-432c-8638-e5aa7871f12b
+      id: 9ef49262-294c-45e0-8fb1-db823f0c9090
       version: -1
       name: atd-list-analyzer-profiles
       description: ' display the analyzer profiles. Only the analyzer profiles to
@@ -237,10 +237,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 716b76f9-2b49-44bd-8ac8-6747c1e38f51
+    taskid: 3e736727-b8ac-45c5-8c52-cfb62f009b9e
     type: condition
     task:
-      id: 716b76f9-2b49-44bd-8ac8-6747c1e38f51
+      id: 3e736727-b8ac-45c5-8c52-cfb62f009b9e
       version: -1
       name: Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -252,7 +252,7 @@ tasks:
     nexttasks:
       "yes":
       - "16"
-      - "20"
+      - "22"
     scriptarguments:
       value:
         simple: ${ATD.ListAnalyzerProfiles}
@@ -267,10 +267,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: b1f199db-9238-4932-88c9-3f25a408aba3
+    taskid: 41bce0df-8756-4b88-8c99-e5d3d8e7354d
     type: regular
     task:
-      id: b1f199db-9238-4932-88c9-3f25a408aba3
+      id: 41bce0df-8756-4b88-8c99-e5d3d8e7354d
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -281,7 +281,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       data:
         simple: jmyetnrhk96lktrshfdghj74
@@ -292,17 +292,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1565
         }
       }
     note: false
   "18":
     id: "18"
-    taskid: 1f689e94-7938-46d0-817c-96e807b7ed45
+    taskid: bf75776e-db01-46df-843c-fc206177ec69
     type: title
     task:
-      id: 1f689e94-7938-46d0-817c-96e807b7ed45
+      id: bf75776e-db01-46df-843c-fc206177ec69
       version: -1
       name: Done
       description: finished
@@ -313,39 +313,44 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 186,
-          "y": 1969
+          "x": 265,
+          "y": 1915
         }
       }
     note: false
-  "19":
-    id: "19"
-    taskid: f95e5b13-ced2-41d4-89a1-dcccd1b4b10a
+  "21":
+    id: "21"
+    taskid: 6db1c6dc-0b1d-465b-86ab-eb5757a1de1f
     type: playbook
     task:
-      id: f95e5b13-ced2-41d4-89a1-dcccd1b4b10a
+      id: 6db1c6dc-0b1d-465b-86ab-eb5757a1de1f
       version: -1
-      name: McAfee ATD Detonate File
-      description: |-
-        Detonates a File using the McAfee Advanced Threat Defense sandbox.
-        Advanced Threat Defense supports the following File Types:
-        32-bit Portable Executables (PE)files; 64-bit PE+files
-        exe, sys, dll, com, scr, cpl, ocx, cgi
-        Microsoft Office Suite documents
-        doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
-        Just Systems Ichitaro documents
-        jtd, jtdc
-        Adobe
-        pdf, swf
-        Compressed files
-        gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
-        Android application package
-        apk, Java, JAR, CLASS, Java Script, Java bin files
-        Image files
-        jpeg, png, gif
-        Other file types
-        cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
-      playbookName: McAfee ATD Detonate File
+      name: ATD - Detonate File
+      playbookName: ATD - Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 3d12577d-a86a-486b-88b8-033baa2043fe
+    type: playbook
+    task:
+      id: 3d12577d-a86a-486b-88b8-033baa2043fe
+      version: -1
+      name: Detonate URL - McAfee ATD
+      playbookName: Detonate URL - McAfee ATD
       type: playbook
       iscommand: false
       brand: ""
@@ -353,11 +358,11 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      EntryID:
-        simple: ${File}
-      interval:
+      URL:
+        simple: https://www.demisto.com
+      Interval:
         simple: "1"
-      timeout:
+      Timeout:
         simple: "15"
     separatecontext: true
     loop:
@@ -372,48 +377,13 @@ tasks:
         }
       }
     note: false
-  "20":
-    id: "20"
-    taskid: cd7b3bed-45c6-40d9-86b2-392587db7d85
-    type: playbook
-    task:
-      id: cd7b3bed-45c6-40d9-86b2-392587db7d85
-      version: -1
-      name: McAfee ATD Detonate URL
-      playbookName: McAfee ATD Detonate URL
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      URL:
-        simple: https://www.demisto.com
-      interval:
-        simple: "1"
-      timeout:
-        simple: "15"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": 1645
-        }
-      }
-    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1984,
-        "width": 870,
+        "height": 1930,
+        "width": 810,
         "x": 50,
         "y": 50
       }

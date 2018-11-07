@@ -1,0 +1,1204 @@
+commonfields:
+  id: BigFix
+  version: -1
+name: BigFix
+display: BigFix
+category: Vulnerability Management
+image: data:image/png;base64,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
+description: IBM BigFix Patch provides an automated, simplified patching process that
+  is administered from a single console.
+configuration:
+- display: Server url (e.g https://192.168.10.1:52311)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |
+    import requests
+    requests.packages.urllib3.disable_warnings()
+
+    BASE_URL = demisto.params().get('url')
+    VERIFY_CERTIFICATE = not demisto.params().get('unsecure')
+
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    def get_first(iterable, default=None):
+        if iterable:
+            for item in iterable:
+                return item
+        return default
+
+    def get_sites():
+        fullurl = BASE_URL + '/api/sites'
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to get sites.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content))
+
+        raw_sites = json.loads(xml2json(res.content))
+
+        if (not raw_sites or not raw_sites.has_key('BESAPI')):
+            return []
+
+        sites = []
+        master_sites = demisto.get(raw_sites, 'BESAPI.ActionSite')
+
+        if master_sites and not isinstance(master_sites, list):
+            master_sites = [master_sites]
+        if master_sites:
+            for idx, site in enumerate(master_sites):
+                master_sites[idx]['Type'] = 'master'
+                master_sites[idx]['Resource'] = master_sites[idx]['@Resource']
+                del master_sites[idx]['@Resource']
+        else:
+            master_sites = []
+
+
+        external_sites = demisto.get(raw_sites, 'BESAPI.ExternalSite')
+        if external_sites and not isinstance(external_sites, list):
+            external_sites = [external_sites]
+        if external_sites:
+            for idx, site in enumerate(external_sites):
+                external_sites[idx]['Type'] = 'external'
+                external_sites[idx]['Resource'] = external_sites[idx]['@Resource']
+                del external_sites[idx]['@Resource']
+        else:
+            external_sites = []
+
+
+        operator_sites = demisto.get(raw_sites, 'BESAPI.OperatorSite')
+        if operator_sites and not isinstance(operator_sites, list):
+            operator_sites = [operator_sites]
+        if operator_sites:
+            for idx, site in enumerate(operator_sites):
+                operator_sites[idx]['Type'] = 'operator'
+                operator_sites[idx]['Resource'] = operator_sites[idx]['@Resource']
+                del operator_sites[idx]['@Resource']
+        else:
+            operator_sites = []
+
+
+        custom_sites = demisto.get(raw_sites, 'BESAPI.CustomSite')
+        if custom_sites and not isinstance(custom_sites, list):
+            custom_sites = [custom_sites]
+
+        if custom_sites:
+            for idx, site in enumerate(custom_sites):
+                custom_sites[idx]['Type'] = 'custom'
+                custom_sites[idx]['Resource'] = custom_sites[idx]['@Resource']
+                del custom_sites[idx]['@Resource']
+        else:
+            custom_sites = []
+
+        sites = master_sites + external_sites + operator_sites + custom_sites
+        for idx, site in enumerate(sites):
+            site_details = get_site(site['Type'], site['Name'])
+            sites[idx] = site_details
+
+        return sites
+
+    def get_sites_command():
+        sites = get_sites()
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': sites,
+            'HumanReadable': tableToMarkdown('BigFix Sites', sites, ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']),
+            'EntryContext': {
+                'Bigfix.Site(val.Resource==obj.Resource)': sites
+            }
+        })
+
+
+    def get_site(site_type, site_name):
+        fullurl = BASE_URL + '/api/site/' + site_type
+        if site_type != 'master':
+            # if site name is not empty the add to url
+            fullurl += '/' + site_name
+
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to get site {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(site_name, fullurl, res.status_code, res.content))
+
+        raw_site = json.loads(xml2json(res.content))
+
+        if (not raw_site or not raw_site.has_key('BES')):
+            return None
+
+        site = None
+        if site_type == 'master':
+            site = demisto.get(raw_site, 'BES.ActionSite')
+        elif site_type == 'external':
+            site = demisto.get(raw_site, 'BES.ExternalSite')
+        elif site_type == 'custom':
+            site = demisto.get(raw_site, 'BES.CustomSite')
+        elif site_type == 'operator':
+            site = demisto.get(raw_site, 'BES.OperatorSite')
+
+        if site is not None:
+            site['Type'] = site_type
+            site['Resource'] = BASE_URL + '/api/site/{}/{}'.format(site_type, site_name)
+
+        return site
+
+    def get_site_command():
+        site_name = demisto.args().get('site_name')
+        site_type = demisto.args().get('site_type')
+        site = get_site(site_type, site_name)
+
+        if site is None:
+            demisto.results('No site found')
+            sys.exit(0)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': site,
+            'HumanReadable': tableToMarkdown('BigFix Site: {} - {}'.format(site_type, site_name) , [site], ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']),
+            'EntryContext': {
+                'Bigfix.Site(val.Resource==obj.Resource)': site
+            }
+        })
+
+
+    def get_endpoints():
+        fullurl = BASE_URL + '/api/computers'
+
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to get endpoints.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content))
+
+        raw_endpoints = json.loads(xml2json(res.content))
+        if (not raw_endpoints or not raw_endpoints.has_key('BESAPI')):
+            return None
+
+        raw_endpoints = demisto.get(raw_endpoints, 'BESAPI.Computer')
+        if raw_endpoints and not isinstance(raw_endpoints, list):
+            raw_endpoints = [raw_endpoints]
+
+        for idx, endpoint in enumerate(raw_endpoints):
+            raw_endpoints[idx]['Resource'] = raw_endpoints[idx]['@Resource']
+            del raw_endpoints[idx]['@Resource']
+
+        endpoints_with_details = []
+        for raw_endpoint in raw_endpoints:
+            endpoint = get_endpoint_details(raw_endpoint.get('ID'))
+            endpoints_with_details.append(endpoint)
+
+        return endpoints_with_details
+
+    def get_endpoints_command():
+        endpoints = get_endpoints()
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': endpoints,
+            'HumanReadable': tableToMarkdown('BigFix Computers' , endpoints, headers = [
+                'ID',
+                'Resource',
+                'LastReportTime',
+                'ActiveDirectoryPath',
+                'AgentType',
+                'AgentVersion',
+                'BESRelaySelectionMethod',
+                'BESRelayServiceInstalled',
+                'BESRootServer',
+                'BIOS',
+                'CPU',
+                'ClientSettings',
+                'ComputerName',
+                'ComputerType',
+                'DNSName',
+                'DeviceType',
+                'DistancetoBESRelay',
+                'FreeSpaceonSystemDrive',
+                'IPAddress',
+                'LicenseType',
+                'Locked',
+                'OS',
+                'RAM',
+                'Relay',
+                'RelayNameOfClient',
+                'SubnetAddress',
+                'SubscribedSites',
+                'TotalSizeofSystemDrive',
+                'UserName'
+                ]),
+            'EntryContext': {
+                'Bigfix.Endpoint(val.ID==obj.ID)': endpoints
+            }
+        })
+
+    def get_endpoint_details(computer_id):
+        fullurl = BASE_URL + '/api/computer/{}'.format(computer_id)
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error(
+                'Failed to get computer {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(computer_id, fullurl, res.status_code, res.content)
+                )
+
+        raw_endpoint = json.loads(xml2json(res.content))
+        if (not raw_endpoint or not raw_endpoint.has_key('BESAPI')):
+            return None
+
+        raw_endpoint = demisto.get(raw_endpoint, 'BESAPI.Computer')
+
+        endpoint = {
+            'ID': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "ID")=val["#text"]')),
+            'Resource': demisto.get(raw_endpoint, '@Resource'),
+            'LastReportTime': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Last Report Time")=val["#text"]')),
+            'ActiveDirectoryPath': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Active Directory Path")=val["#text"]')),
+            'AgentType': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Agent Type")=val["#text"]')),
+            'AgentVersion': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Agent Version")=val["#text"]')),
+            'BESRelaySelectionMethod': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Relay Selection Method")=val["#text"]')),
+            'BESRelayServiceInstalled': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Relay Selection Method")=val["#text"]')),
+            'BESRootServer': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Root Server")=val["#text"]')),
+            'BIOS': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BIOS")=val["#text"]')),
+            'CPU': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "CPU")=val["#text"]')),
+            'ClientSettings': demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Client Settings")=val["#text"]'),
+            'ComputerName': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Computer Name")=val["#text"]')),
+            'ComputerType': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Computer Type")=val["#text"]')),
+            'DNSName': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "DNS Name")=val["#text"]')),
+            'IPAddress': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "IP Address")=val["#text"]')),
+            'DeviceType': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Device Type")=val["#text"]')),
+            'DistancetoBESRelay': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Distance to BES Relay")=val["#text"]')),
+            'FreeSpaceonSystemDrive': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Free Space on System Drive")=val["#text"]')),
+            'LicenseType': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "License Type")=val["#text"]')),
+            'Locked': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Locked")=val["#text"]')),
+            'OS': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "OS")=val["#text"]')),
+            'RAM': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "RAM")=val["#text"]')),
+            'Relay': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Relay")=val["#text"]')),
+            'RelayNameOfClient': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Relay Name of Client")=val["#text"]')),
+            'SubnetAddress': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Subnet Address")=val["#text"]')),
+            'SubscribedSites': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Subscribed Sites")=val["#text"]')),
+            'TotalSizeofSystemDrive': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Total Size of System Drive")=val["#text"]')),
+            'UserName': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "User Name")=val["#text"]'))
+        }
+
+        return endpoint
+
+    def get_endpoint_details_command():
+        computer_id = demisto.args().get('computer_id')
+
+        endpoint = get_endpoint_details(computer_id)
+        if endpoint is None:
+            demisto.results('Endpoint with id {} was not found'.format(computer_id))
+            sys.exit(0)
+
+        markdown = tableToMarkdown('BigFix Endpoint {}'.format(computer_id) , [endpoint], headers = [
+            'ID',
+            'Resource',
+            'LastReportTime',
+            'ActiveDirectoryPath',
+            'AgentType',
+            'AgentVersion',
+            'BESRelaySelectionMethod',
+            'BESRelayServiceInstalled',
+            'BESRootServer',
+            'BIOS',
+            'CPU',
+            'ClientSettings',
+            'ComputerName',
+            'ComputerType',
+            'DNSName',
+            'DeviceType',
+            'DistancetoBESRelay',
+            'FreeSpaceonSystemDrive',
+            'IPAddress',
+            'LicenseType',
+            'Locked',
+            'OS',
+            'RAM',
+            'Relay',
+            'RelayNameOfClient',
+            'SubnetAddress',
+            'SubscribedSites',
+            'TotalSizeofSystemDrive',
+            'UserName'
+            ])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': endpoint,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'Bigfix.Endpoint(val.ID==obj.ID)': endpoint
+            }
+        })
+
+
+
+    def get_patches(site_type='', site_name=''):
+        fullurl = BASE_URL + '/api/fixlets/{}'.format(site_type)
+        if site_type != 'master':
+            # if site name is not empty the add to url
+            fullurl += '/' + site_name
+
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error(
+                'Failed to get patches. Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content)
+                )
+
+        raw_patches = json.loads(xml2json(res.content))
+        if (not raw_patches or not raw_patches.has_key('BESAPI')):
+            return None
+
+        raw_patches = demisto.get(raw_patches, 'BESAPI.Fixlet')
+        if raw_patches and not isinstance(raw_patches, list):
+            raw_patches = [raw_patches]
+
+        patches_with_details = []
+        for raw_patch in raw_patches:
+            patch = get_patch_details(site_type, site_name, raw_patch.get('ID'))
+            patch['LastModified'] = raw_patch['@LastModified']
+            patches_with_details.append(patch)
+
+        return patches_with_details
+
+
+    def get_patches_command():
+        site_name = demisto.args().get('site_name')
+        site_type = demisto.args().get('site_type')
+        patches = get_patches(site_type, site_name)
+
+        markdown = tableToMarkdown('BigFix Patches' , patches, headers = [
+            'ID',
+            'Name',
+            'Description',
+            'LastModified',
+            'Resource',
+            'Relevance',
+            'Category',
+            'DownloadSize',
+            'Source',
+            'SourceID',
+            'SourceReleaseDate',
+            'SourceSeverity',
+            'ActionID',
+            'ActionScript'
+            ])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': patches,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'Bigfix.Patch(val.ID==obj.ID)': patches
+            }
+        })
+
+
+    def get_patch_details(site_type, site_name, patch_id):
+        fullurl = ''
+        if site_type == 'master':
+            fullurl = BASE_URL + '/api/fixlet/master/{}'.format(patch_id)
+        else:
+            fullurl = BASE_URL + '/api/fixlet/{}/{}/{}'.format(site_type, site_name, patch_id)
+
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to get patch/fixlet {}. Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(patch_id, fullurl, res.status_code, res.content))
+
+        raw_patch = json.loads(xml2json(res.content))
+        if (not raw_patch or not raw_patch.has_key('BES')):
+            return None
+
+        raw_patch = demisto.get(raw_patch, 'BES.Fixlet')
+        patch = {
+            'ID': patch_id,
+            'Name': demisto.get(raw_patch, 'Title'),
+            'Resource': fullurl,
+            'Description': demisto.get(raw_patch, 'Description'),
+            'Relevance': demisto.get(raw_patch, 'Relevance'),
+            'Category': demisto.get(raw_patch, 'Category'),
+            'DownloadSize': demisto.get(raw_patch, 'DownloadSize'),
+            'Source': demisto.get(raw_patch, 'Source'),
+            'SourceID': demisto.get(raw_patch, 'SourceID'),
+            'SourceReleaseDate': demisto.get(raw_patch, 'SourceReleaseDate'),
+            'SourceSeverity': demisto.get(raw_patch, 'SourceSeverity'),
+            'ActionID': demisto.get(raw_patch, 'DefaultAction.@ID'),
+            'ActionScript': demisto.get(raw_patch, 'DefaultAction.ActionScript')
+        }
+
+        return patch
+
+    def get_patch_details_command():
+        site_type = demisto.args().get('site_type')
+        site_name = demisto.args().get('site_name')
+        patch_id = demisto.args().get('id')
+
+        patch = get_patch_details(site_type, site_name, patch_id)
+        markdown = tableToMarkdown('BigFix Patch {}'.format(patch_id) , [patch], headers = [
+            'ID',
+            'Name',
+            'Resource',
+            'Description',
+            'Relevance',
+            'Category',
+            'DownloadSize',
+            'Source',
+            'SourceID',
+            'SourceReleaseDate',
+            'SourceSeverity',
+            'ActionID',
+            'ActionScript'
+            ])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': patch,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'Bigfix.Patch(val.ID==obj.ID)': patch
+            }
+        })
+
+    def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
+        target = ''
+        if 'all' in computer_ids:
+            target = '<AllComputers>true</AllComputers>'
+        else:
+            target = '\n'.join(['<ComputerID>{}</ComputerID>'.format(computer_id) for computer_id in computer_ids])
+
+        request_body = """<?xml version="1.0" encoding="UTF-8"?>
+        <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+         <SourcedFixletAction>
+           <SourceFixlet>
+             <Sitename>{}</Sitename>
+             <FixletID>{}</FixletID>
+             <Action>{}</Action>
+           </SourceFixlet>
+           <Target>
+             {}
+           </Target>
+          <Parameter Name="_BESClient_EMsg_Detail">1000</Parameter>
+         </SourcedFixletAction>
+        </BES>
+        """.format(site_name, fixlet_id, action_id, target)
+        LOG('deploy_patch - request: ' + request_body)
+
+        fullurl = BASE_URL + '/api/actions'
+        res = requests.post(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE,
+            data=request_body
+            )
+
+        LOG('deploy_patch - raw response: ' + res.content)
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to deploy patch {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fixlet_id, fullurl, res.status_code, res.content))
+
+        raw_action = json.loads(xml2json(res.content))
+        if (not raw_action or not raw_action.has_key('BESAPI')):
+            return None
+
+        raw_action = demisto.get(raw_action, 'BESAPI.Action')
+        raw_action['FixletID'] = fixlet_id
+        raw_action['ComputerIDs'] = computer_ids
+        raw_action['SiteName'] = site_name
+        raw_action['Resource'] = raw_action['@Resource']
+        del raw_action['@Resource']
+        if 'all' in computer_ids:
+            raw_action['AllComputers'] = True
+            del raw_action['ComputerIDs']
+
+        return raw_action
+
+    def deploy_patch_command():
+        site_name = demisto.args().get('site_name')
+        all_computers = False
+        computer_ids = argToList(demisto.args().get('computer_ids'))
+
+        fixlet_id = demisto.args().get('fixlet_id')
+        action_id = demisto.args().get('action_id')
+
+        action = deploy_patch(site_name, computer_ids, fixlet_id, action_id)
+
+        markdown = tableToMarkdown('BigFix Action {}'.format(action_id) , [action], headers = [
+            'ID',
+            'Name',
+            'FixletID',
+            'ComputerIDs',
+            'SiteName',
+            'Resource'
+            ])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': action,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'Bigfix.Action(val.ID==obj.ID)': action
+            }
+        })
+
+
+    def action_delete(action_id):
+        res = requests.delete(
+            BASE_URL + '/api/action/' + action_id,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to delete action {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(action_id, fullurl, res.status_code, res.content))
+
+
+    def action_delete_command():
+        action_id = demisto.args().get('action_id')
+
+        action_delete(action_id)
+
+        demisto.results('Action {} was deleted successfully'.format(action_id))
+
+
+    def get_action_status(action_id):
+        fullurl = BASE_URL + '/api/action/' + action_id + '/status'
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to get action {} status.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(action_id, fullurl, res.status_code, res.content))
+
+        raw_action = json.loads(xml2json(res.content))
+        if (not raw_action or not raw_action.has_key('BESAPI')):
+            return None
+
+        raw_action = demisto.get(raw_action, 'BESAPI.ActionResults')
+        return raw_action.get('Status')
+
+    def get_action_status_command():
+        action_id = demisto.args().get('action_id')
+
+        status = get_action_status(action_id)
+
+        output = {
+            'ID': action_id,
+            'Status': status
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': output,
+            'HumanReadable': 'Action {} status is {}'.format(action_id, status),
+            'EntryContext': {
+                'Bigfix.Action(val.ID==obj.ID)': output
+            }
+        })
+
+    def action_stop(action_id):
+        res = requests.post(
+            BASE_URL + '/api/action/' + action_id + '/stop',
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Failed to stop action {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(action_id, fullurl, res.status_code, res.content))
+
+
+    def action_stop_command():
+        action_id = demisto.args().get('action_id')
+
+        action_stop(action_id)
+
+        demisto.results('Action {} was stopped successfully'.format(action_id))
+
+    def query(relevance):
+        fullurl = BASE_URL + '/api/query'
+        params = {
+            'relevance': relevance
+        }
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE,
+            params=params
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Query failed.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(fullurl, res.status_code, res.content))
+
+        raw_action = json.loads(xml2json(res.content))
+        if (not raw_action or not raw_action.has_key('BESAPI')):
+            demisto.info('BigFix query has incorrect response format. Response Body: {}'.format(res.content))
+            return_error('The response has incorrect format. Check the logs')
+
+        if demisto.get(raw_action, 'BESAPI.Query.Error'):
+            error = demisto.get(raw_action, 'BESAPI.Query.Error')
+            return_error(error)
+
+        raw_query_results = demisto.get(raw_action, 'BESAPI.Query')
+        return raw_query_results
+
+    def query_command():
+        relevance = demisto.args().get('relevance')
+        results = query(relevance)
+
+        if results == None:
+            demisto.results('No results')
+            sys.exit(0)
+
+        output = demisto.dt(results, 'Result.Answer.#text')
+        if not isinstance(output, list):
+            output = [output]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'HumanReadable': tableToMarkdown('Query Results: {}'.format(relevance), output, ['Results']),
+            'EntryContext': {
+                'Bigfix.QueryResults': output
+            }
+        })
+
+    try:
+        # do requets to /api/help
+        # should be good indicator for test connectivity
+        def test():
+            fullurl = BASE_URL + '/api/help'
+            res = requests.get(
+                fullurl,
+                auth=(USERNAME, PASSWORD),
+                verify=VERIFY_CERTIFICATE
+                )
+            res.raise_for_status()
+
+        if demisto.command() == 'test-module':
+            # do requets to /api/help
+            # should be good indicator for test connectivity
+            test()
+            demisto.results('ok')
+
+        elif demisto.command() == 'bigfix-get-sites':
+            get_sites_command()
+
+        elif demisto.command() == 'bigfix-get-site':
+            get_site_command()
+
+        elif demisto.command() == 'bigfix-get-endpoints':
+            get_endpoints_command()
+
+        elif demisto.command() == 'bigfix-get-endpoint':
+            get_endpoint_details_command()
+
+        elif demisto.command() == 'bigfix-get-patches':
+            get_patches_command()
+
+        elif demisto.command() == 'bigfix-get-patch':
+            get_patch_details_command()
+
+        elif demisto.command() == 'bigfix-deploy-patch':
+            deploy_patch_command()
+
+        elif demisto.command() == 'bigfix-action-delete':
+            action_delete_command()
+
+        elif demisto.command() == 'bigfix-action-status':
+            get_action_status_command()
+
+        elif demisto.command() == 'bigfix-action-stop':
+            action_stop_command()
+
+        elif demisto.command():
+            query_command()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+  type: python
+  commands:
+  - name: bigfix-get-sites
+    arguments: []
+    outputs:
+    - contextPath: Bigfix.Site
+      description: Site
+      type: unknown
+    - contextPath: Bigfix.Site.Name
+      description: Name of the site
+      type: string
+    - contextPath: Bigfix.Site.Description
+      description: Description of the site
+      type: string
+    - contextPath: Bigfix.Site.Resource
+      description: Link to the endpoint resource.
+      type: string
+    - contextPath: Bigfix.Site.Type
+      description: Type of the site (master,custom,external,operator)
+      type: string
+    - contextPath: Bigfix.Site.Domain
+      description: Site domain
+      type: string
+    - contextPath: Bigfix.Site.GatherURL
+      description: Gather URL
+      type: string
+    - contextPath: Bigfix.Site.GlobalReadPermission
+      description: Global Read Permission available or not.
+      type: string
+    description: Retrieves all the sites
+  - name: bigfix-get-site
+    arguments:
+    - name: site_name
+      description: Name of the site. If the site is external or operator then site
+        must be provided
+    - name: site_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - external
+      - operator
+      - master
+      - custom
+      description: 'Type of the site. One of the following options: external,operator,master,custom'
+      defaultValue: master
+    outputs:
+    - contextPath: Bigfix.Site
+      description: Site
+      type: unknown
+    - contextPath: Bigfix.Site.Name
+      description: Name of the site
+      type: string
+    - contextPath: Bigfix.Site.Description
+      description: Description of the site
+      type: string
+    - contextPath: Bigfix.Site.Resource
+      description: Link to the endpoint resource.
+      type: string
+    - contextPath: Bigfix.Site.Type
+      description: Type of the site (master,custom,external,operator)
+      type: string
+    - contextPath: Bigfix.Site.Domain
+      description: Site domain
+      type: string
+    - contextPath: Bigfix.Site.GatherURL
+      description: Gather URL
+      type: string
+    - contextPath: Bigfix.Site.GlobalReadPermission
+      description: Global Read Permission available or not.
+      type: string
+    description: Retrieve single site by name and type
+  - name: bigfix-get-patches
+    arguments:
+    - name: site_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - external
+      - operator
+      - master
+      - custom
+      description: 'Type of the site. One of the following options: external,operator,master,custom'
+      defaultValue: master
+    - name: site_name
+      description: Name of the site. If the site is external or operator then site
+        must be provided
+    outputs:
+    - contextPath: Bigfix.Patch.ID
+      description: Patch (fixlet) ID
+      type: string
+    - contextPath: Bigfix.Patch.LastModified
+      description: Last modified Timestamp.
+      type: date
+    - contextPath: Bigfix.Patch.Name
+      description: Name of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.Resource
+      description: The link for the patch
+      type: string
+    - contextPath: Bigfix.Patch.Description
+      description: Description of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.Relevance
+      description: Relevance of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.Category
+      description: Category of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.DownloadSize
+      description: Download size.
+      type: string
+    - contextPath: Bigfix.Patch.Source
+      description: Source from where the patch is coming from.
+      type: string
+    - contextPath: Bigfix.Patch.SourceID
+      description: Source ID of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.SourceSeverity
+      description: Source Severity of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.SourceReleaseDate
+      description: Source Release Date of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.ActionID
+      description: Action ID of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.ActionScript
+      description: Action Script of the Patch requested.
+      type: string
+    description: Retrieve all the patches (fixlets) of site
+  - name: bigfix-get-endpoints
+    arguments: []
+    outputs:
+    - contextPath: Bigfix.Endpoint
+      description: Endpoint (computer)
+    - contextPath: Bigfix.Endpoint.ID
+      description: The if of the endpoint (computer ID)
+      type: string
+    - contextPath: Bigfix.Endpoint.Resource
+      description: URL to the endpoint details
+      type: string
+    - contextPath: Bigfix.Endpoint.LastReportTime
+      description: Last report time of the endpoint
+      type: date
+    - contextPath: Bigfix.Endpoint.ActiveDirectoryPath
+      description: Active directory path of the endpoint device.
+      type: string
+    - contextPath: Bigfix.Endpoint.AgentType
+      description: Agent Type of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.AgentVersion
+      description: Agent Version of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.BESRelaySelectionMethod
+      description: Relay selection method of the endpoint.
+    - contextPath: Bigfix.Endpoint.BESRelayServiceInstalled
+      description: Relay service installed of the endpoint.
+    - contextPath: Bigfix.Endpoint.BESRootServer
+      description: Root server of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.BIOS
+      description: BIOS of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.CPU
+      description: CPU of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.ClientSettings
+      description: Client settings of the endpoint.
+    - contextPath: Bigfix.Endpoint.ComputerName
+      description: Computer name of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.ComputerType
+      description: Computer Type of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.DNSName
+      description: DNS Name of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.DeviceType
+      description: Device Type of the endpoint device.
+      type: string
+    - contextPath: Bigfix.Endpoint.DistancetoBESRelay
+      description: Distance to BES Relay of the endpoint.
+    - contextPath: Bigfix.Endpoint.FreeSpaceonSystemDrive
+      description: Free space on sytem drive of the endpoint.
+    - contextPath: Bigfix.Endpoint.IPAddress
+      description: IP of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.LicenseType
+      description: License of the endpoint.
+    - contextPath: Bigfix.Endpoint.Locked
+      description: Locked of the endpoint.
+    - contextPath: Bigfix.Endpoint.OS
+      description: OS of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.RAM
+      description: RAM of the endpoint.
+      type: number
+    - contextPath: Bigfix.Endpoint.Relay
+      description: Relay of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.RelayNameOfClient
+      description: Relay Name of the client.
+      type: string
+    - contextPath: Bigfix.Endpoint.SubnetAddress
+      description: Subnet Address of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.SubscribedSites
+      description: Subscribed sites.
+      type: string
+    - contextPath: Bigfix.Endpoint.TotalSizeofSystemDrive
+      description: Total size of system drive.
+      type: number
+    - contextPath: Bigfix.Endpoint.UserName
+      description: User name.
+      type: string
+    description: Retrieve all the endpoints (computers)
+  - name: bigfix-get-endpoint
+    arguments:
+    - name: computer_id
+      required: true
+      description: Computer ID
+    outputs:
+    - contextPath: Bigfix.Endpoint
+      description: Endpoint (computer)
+    - contextPath: Bigfix.Endpoint.ID
+      description: The if of the endpoint (computer ID)
+      type: string
+    - contextPath: Bigfix.Endpoint.Resource
+      description: URL to the endpoint details
+      type: string
+    - contextPath: Bigfix.Endpoint.LastReportTime
+      description: Last report time of the endpoint
+      type: date
+    - contextPath: Bigfix.Endpoint.ActiveDirectoryPath
+      description: Active directory path of the endpoint device.
+      type: string
+    - contextPath: Bigfix.Endpoint.AgentType
+      description: Agent Type of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.AgentVersion
+      description: Agent Version of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.BESRelaySelectionMethod
+      description: Relay selection method of the endpoint.
+    - contextPath: Bigfix.Endpoint.BESRelayServiceInstalled
+      description: Relay service installed of the endpoint.
+    - contextPath: Bigfix.Endpoint.BESRootServer
+      description: Root server of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.BIOS
+      description: BIOS of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.CPU
+      description: CPU of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.ClientSettings
+      description: Client settings of the endpoint.
+    - contextPath: Bigfix.Endpoint.ComputerName
+      description: Computer name of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.ComputerType
+      description: Computer Type of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.DNSName
+      description: DNS Name of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.DeviceType
+      description: Device Type of the endpoint device.
+      type: string
+    - contextPath: Bigfix.Endpoint.DistancetoBESRelay
+      description: Distance to BES Relay of the endpoint.
+    - contextPath: Bigfix.Endpoint.FreeSpaceonSystemDrive
+      description: Free space on sytem drive of the endpoint.
+    - contextPath: Bigfix.Endpoint.IPAddress
+      description: IP of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.LicenseType
+      description: License of the endpoint.
+    - contextPath: Bigfix.Endpoint.Locked
+      description: Locked of the endpoint.
+    - contextPath: Bigfix.Endpoint.OS
+      description: OS of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.RAM
+      description: RAM of the endpoint.
+      type: number
+    - contextPath: Bigfix.Endpoint.Relay
+      description: Relay of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.RelayNameOfClient
+      description: Relay Name of the client.
+      type: string
+    - contextPath: Bigfix.Endpoint.SubnetAddress
+      description: Subnet Address of the endpoint.
+      type: string
+    - contextPath: Bigfix.Endpoint.SubscribedSites
+      description: Subscribed sites.
+      type: string
+    - contextPath: Bigfix.Endpoint.TotalSizeofSystemDrive
+      description: Total size of system drive.
+      type: number
+    - contextPath: Bigfix.Endpoint.UserName
+      description: User name.
+      type: string
+    description: Retrieve endpoint (computer) details
+  - name: bigfix-deploy-patch
+    arguments:
+    - name: site_name
+      required: true
+      description: Name of the site. If the site is external or operator then site
+        must be provided
+    - name: computer_ids
+      required: true
+      description: Provide ids of computers to deploy the patch. Pass 'all' to deploy
+        to all the computers
+      isArray: true
+    - name: fixlet_id
+      required: true
+      description: The Fixlet ID. To use the action script from the original Fixlet
+        or Task Message.
+    - name: action_id
+      required: true
+      description: The action ID. The specified action will run on target computers.
+    outputs:
+    - contextPath: Bigfix.Action.ID
+      description: Action ID
+      type: number
+    - contextPath: Bigfix.Action.Name
+      description: Action Name
+      type: string
+    - contextPath: Bigfix.Action.SiteName
+      description: Site name
+      type: string
+    - contextPath: Bigfix.Action.ComputerIDs
+      description: Computers IDs to which the patch was applied to
+    - contextPath: Bigfix.Action.AllComputers
+      description: true if patch was applied to all the computers
+      type: boolean
+    - contextPath: Bigfix.Action.Resource
+      description: Link to action in bigfix
+      type: string
+    description: Create an action on BigFix that will run the given action from the
+      given fixlet on target computers.  The computerID parameter takes a comma-separated
+      list of BigFix computer IDs. If no computers are given, the action will be run
+      on the default computers configured on BigFix. If the action should run on all
+      computers set the computerID parameter to all.
+  - name: bigfix-get-patch
+    arguments:
+    - name: id
+      required: true
+      description: Fixlet id
+    - name: site_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - external
+      - operator
+      - master
+      - custom
+      description: 'Type of the site. One of the following options: external,operator,master,custom'
+    - name: site_name
+      description: Name of the site. If the site is external or operator then site
+        must be provided
+    outputs:
+    - contextPath: Bigfix.Patch.ID
+      description: Patch(fixlet) id
+    - contextPath: Bigfix.Patch.Name
+      description: Patch name
+    - contextPath: Bigfix.Patch.Resource
+      description: Link (URL) to the patch
+    - contextPath: Bigfix.Patch.Description
+      description: Description
+    - contextPath: Bigfix.Patch.Relevance
+      description: Relevance of the Patch requested.
+    - contextPath: Bigfix.Patch.Category
+      description: Category of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.DownloadSize
+      description: Download size.
+    - contextPath: Bigfix.Patch.Source
+      description: Source from where the patch is coming from.
+    - contextPath: Bigfix.Patch.SourceID
+      description: Source ID of the Patch requested.
+    - contextPath: Bigfix.Patch.SourceSeverity
+      description: Source Severity of the Patch requested.
+    - contextPath: Bigfix.Patch.SourceReleaseDate
+      description: Source Release Date of the Patch requested.
+    - contextPath: Bigfix.Patch.ActionID
+      description: Action ID of the Patch requested.
+      type: string
+    - contextPath: Bigfix.Patch.ActionScript
+      description: Action Script of the Patch requested.
+      type: string
+    description: Retrieve patch (fixlet) by id
+  - name: bigfix-action-delete
+    arguments:
+    - name: action_id
+      required: true
+      description: Action ID
+    description: 'Stops and deletes the specified action. Note: You cannot delete
+      actions that are members of a Multiple Action Group. This note applies to IBM
+      BigFix V9.2 and later.'
+  - name: bigfix-action-status
+    arguments:
+    - name: action_id
+      required: true
+      description: Action ID
+    outputs:
+    - contextPath: Bigfix.Action.ID
+      description: Action ID
+      type: string
+    - contextPath: Bigfix.Action.Status
+      description: Action Status (e.g Open, Stopped)
+      type: string
+    description: Gets the status of an action against it's targets.
+  - name: bigfix-action-stop
+    arguments:
+    - name: action_id
+      required: true
+      description: Action ID
+    description: Stops the specified action.
+  - name: bigfix-query
+    arguments:
+    - name: relevance
+      required: true
+      description: 'Relevance query (example:  names of bes computers)'
+    outputs:
+    - contextPath: Bigfix.QueryResults
+      description: The results of the query
+      type: unknown
+    description: Evaluate a relevance expression and get the result. This runs request
+      is processed through the server to WebReports.
+  runonce: false

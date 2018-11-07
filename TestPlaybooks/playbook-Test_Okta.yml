@@ -29,10 +29,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 2641b750-0861-48c3-8720-6c23f6f5cc65
+    taskid: 6aa6b2d2-cbbf-4d0d-8db9-bdee5dc48ada
     type: regular
     task:
-      id: 2641b750-0861-48c3-8720-6c23f6f5cc65
+      id: 6aa6b2d2-cbbf-4d0d-8db9-bdee5dc48ada
       version: -1
       name: okta-get-group-assignments
       description: Get events for when a user was added to a group.
@@ -125,10 +125,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: d46a7cbe-f555-4ee0-8b38-911fcd1a5edb
+    taskid: 7314eebd-01b1-4f8f-821c-fe827a6302c5
     type: regular
     task:
-      id: d46a7cbe-f555-4ee0-8b38-911fcd1a5edb
+      id: 7314eebd-01b1-4f8f-821c-fe827a6302c5
       version: -1
       name: okta-get-groups
       description: Get all user groups
@@ -190,10 +190,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: 7f2814c5-1224-408f-8f8d-9148cc7a34c5
+    taskid: db909f79-6f7f-4cb9-8c5a-15c6643724a5
     type: regular
     task:
-      id: 7f2814c5-1224-408f-8f8d-9148cc7a34c5
+      id: db909f79-6f7f-4cb9-8c5a-15c6643724a5
       version: -1
       name: okta-remove-from-group
       description: Removes a user from a group with OKTA_GROUP type.
@@ -222,10 +222,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 9b08f8e9-9fff-435e-821a-74d150b1a91d
+    taskid: a7e6f06d-c2b9-4894-8556-6651f144f8c5
     type: regular
     task:
-      id: 9b08f8e9-9fff-435e-821a-74d150b1a91d
+      id: a7e6f06d-c2b9-4894-8556-6651f144f8c5
       version: -1
       name: okta-add-to-group
       description: Adds a user to a group with OKTA_GROUP type.
@@ -254,10 +254,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 19fef64c-c2f6-46c1-8a9a-1354e42adfcb
+    taskid: 8e4968f9-3931-48b3-8eda-66843a87b5b7
     type: regular
     task:
-      id: 19fef64c-c2f6-46c1-8a9a-1354e42adfcb
+      id: 8e4968f9-3931-48b3-8eda-66843a87b5b7
       version: -1
       name: okta-update-user
       description: Update user with a given login, all fields are optional, fields
@@ -268,7 +268,7 @@ tasks:
       brand: okta
     nexttasks:
       '#none#':
-      - "13"
+      - "22"
     scriptarguments:
       city: {}
       costCenter: {}
@@ -319,10 +319,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: cd24e47e-d198-4cad-853e-7612d3a5343d
+    taskid: 53329509-bb31-47b3-84db-39909a8ba522
     type: regular
     task:
-      id: cd24e47e-d198-4cad-853e-7612d3a5343d
+      id: 53329509-bb31-47b3-84db-39909a8ba522
       version: -1
       name: okta-get-failed-logins
       description: Get events for when Okta issued a session to a user who is authenticating
@@ -345,16 +345,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
   "14":
     id: "14"
-    taskid: 8479e2b4-56ed-4ad1-83fc-bb5dd55b607b
+    taskid: 7d9d88b1-9bbe-4c8d-8a29-4ca5fbd32bf4
     type: regular
     task:
-      id: 8479e2b4-56ed-4ad1-83fc-bb5dd55b607b
+      id: 7d9d88b1-9bbe-4c8d-8a29-4ca5fbd32bf4
       version: -1
       name: okta-get-application-authentication
       description: Get events for when a user attempted to SSO to an application managed
@@ -377,16 +377,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2995
         }
       }
     note: false
   "15":
     id: "15"
-    taskid: 9518b5eb-9729-4894-8b69-b897a47a45ed
+    taskid: 338e07ce-eb3a-4ec3-8eeb-33ae596f3591
     type: regular
     task:
-      id: 9518b5eb-9729-4894-8b69-b897a47a45ed
+      id: 338e07ce-eb3a-4ec3-8eeb-33ae596f3591
       version: -1
       name: okta-get-application-assignments
       description: Get events for when a user was assigned to an application.
@@ -394,6 +394,9 @@ tasks:
       type: regular
       iscommand: true
       brand: okta
+    nexttasks:
+      '#none#':
+      - "23"
     scriptarguments:
       limit:
         simple: "1"
@@ -405,16 +408,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3170
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 9c30f3e6-cdd6-43db-87bf-51fc22539513
+    taskid: d4c09dda-4e8b-4f85-8603-f5b47599f10d
     type: regular
     task:
-      id: 9c30f3e6-cdd6-43db-87bf-51fc22539513
+      id: d4c09dda-4e8b-4f85-8603-f5b47599f10d
       version: -1
       name: okta-remove-from-group
       description: Removes a user from a group with OKTA_GROUP type.
@@ -443,12 +446,12 @@ tasks:
     note: false
   "17":
     id: "17"
-    taskid: c17f0bd0-b707-4f8b-82a9-61e0ef03c0ee
+    taskid: 210e6984-9cd8-485a-8788-cc0146014493
     type: regular
     task:
-      id: c17f0bd0-b707-4f8b-82a9-61e0ef03c0ee
+      id: 210e6984-9cd8-485a-8788-cc0146014493
       version: -1
-      name: okta-add-to-group
+      name: okta-add-to-group with username
       description: Adds a user to a group with OKTA_GROUP type.
       script: okta|||okta-add-to-group
       type: regular
@@ -475,10 +478,10 @@ tasks:
     note: false
   "18":
     id: "18"
-    taskid: eed72cd4-0f0a-4de1-87c6-f4ae4a155baf
+    taskid: c8ba1fdf-77cc-4ca0-8059-dd4c34d78d01
     type: regular
     task:
-      id: eed72cd4-0f0a-4de1-87c6-f4ae4a155baf
+      id: c8ba1fdf-77cc-4ca0-8059-dd4c34d78d01
       version: -1
       name: okta-list-groups
       description: Enumerates groups in your organization. A subset of groups can
@@ -506,10 +509,10 @@ tasks:
     note: false
   "19":
     id: "19"
-    taskid: 65a21dc9-cab3-458d-8f2b-6d77e6567e64
+    taskid: 02b0ffa6-5712-4eda-86ab-eba9835b05e4
     type: regular
     task:
-      id: 65a21dc9-cab3-458d-8f2b-6d77e6567e64
+      id: 02b0ffa6-5712-4eda-86ab-eba9835b05e4
       version: -1
       name: okta-get-group-members
       description: Enumerates all users that are a member of a group
@@ -600,12 +603,68 @@ tasks:
         }
       }
     note: false
+  "22":
+    id: "22"
+    taskid: b809227c-4c57-4abe-8bdd-5761d007f8e2
+    type: regular
+    task:
+      id: b809227c-4c57-4abe-8bdd-5761d007f8e2
+      version: -1
+      name: okta-suspend-user
+      description: Suspends a user.  This operation can only be performed on users
+        with an ACTIVE status. The user has a status of SUSPENDED when the process
+        is complete.
+      script: okta|||okta-suspend-user
+      type: regular
+      iscommand: true
+      brand: okta
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: e366655c-1bde-4f87-8da7-8f3dc071b6c5
+    type: regular
+    task:
+      id: e366655c-1bde-4f87-8da7-8f3dc071b6c5
+      version: -1
+      name: okta-unsuspend-user
+      description: Unsuspends a user and returns them to the ACTIVE state.  This operation
+        can only be performed on users that have a SUSPENDED status.
+      script: okta|||okta-unsuspend-user
+      type: regular
+      iscommand: true
+      brand: okta
+    scriptarguments:
+      username:
+        simple: test@this.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3040,
+        "height": 3390,
         "width": 492.5,
         "x": 50,
         "y": 50

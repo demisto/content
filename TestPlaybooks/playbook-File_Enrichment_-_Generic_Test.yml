@@ -1,21 +1,22 @@
 id: File Enrichment - Generic Test
 version: -1
 name: File Enrichment - Generic Test
-starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9f4e0bef-a553-4f0b-8c1b-36064b43c33d
+    taskid: 10c4378f-44df-4293-8f72-874b0495a27a
     type: start
     task:
-      id: 9f4e0bef-a553-4f0b-8c1b-36064b43c33d
+      id: 10c4378f-44df-4293-8f72-874b0495a27a
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "1"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -26,12 +27,13 @@ tasks:
       }
   "1":
     id: "1"
-    taskid: a245dede-4863-4d7c-8a94-33579bf1092b
+    taskid: 573632f5-8257-4ae0-88c0-7fdfb169112a
     type: regular
     task:
-      id: a245dede-4863-4d7c-8a94-33579bf1092b
+      id: 573632f5-8257-4ae0-88c0-7fdfb169112a
       version: -1
       name: Add File MD5 to context
+      description: ""
       scriptName: Set
       type: regular
       iscommand: false
@@ -46,6 +48,7 @@ tasks:
         simple: File.MD5
       value:
         simple: 3f066dd1f1da052248aed5abc4a0c6a1
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -56,12 +59,13 @@ tasks:
       }
   "2":
     id: "2"
-    taskid: 74d919e0-fc11-4f5a-88af-d26a1fb097f0
+    taskid: 8035b34b-ba2c-49f9-833b-2212997f24ed
     type: regular
     task:
-      id: 74d919e0-fc11-4f5a-88af-d26a1fb097f0
+      id: 8035b34b-ba2c-49f9-833b-2212997f24ed
       version: -1
       name: Add File SHA1 to context
+      description: ""
       scriptName: Set
       type: regular
       iscommand: false
@@ -76,6 +80,7 @@ tasks:
         simple: File.SHA1
       value:
         simple: 795b33795f0308fc5e83abc2daff1d7129dfa400
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -86,12 +91,13 @@ tasks:
       }
   "3":
     id: "3"
-    taskid: 1792c7df-5e3d-4382-892c-71fcfa64471b
+    taskid: 44964bb9-b67c-4362-82f4-2f97a5f02d9f
     type: regular
     task:
-      id: 1792c7df-5e3d-4382-892c-71fcfa64471b
+      id: 44964bb9-b67c-4362-82f4-2f97a5f02d9f
       version: -1
       name: Add File SHA256 to context
+      description: ""
       scriptName: Set
       type: regular
       iscommand: false
@@ -106,6 +112,7 @@ tasks:
         simple: File.SHA256
       value:
         simple: 42dfb222ce97c7517bc0b6333a1881bfa91539f457d261e6626d662995b97df5
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -116,12 +123,13 @@ tasks:
       }
   "4":
     id: "4"
-    taskid: ea963204-d527-4cf4-8c1f-7950aca96f59
+    taskid: fa592e8a-ae87-4e21-8faf-dc5546c1fbe5
     type: playbook
     task:
-      id: File Enrichment - Generic
+      id: fa592e8a-ae87-4e21-8faf-dc5546c1fbe5
       version: -1
       name: File Enrichment - Generic
+      description: ""
       playbookName: File Enrichment - Generic
       type: playbook
       iscommand: false
@@ -129,6 +137,7 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -139,16 +148,20 @@ tasks:
       }
   "7":
     id: "7"
-    taskid: 142ef5b9-e95d-4239-8a69-9850fdf7881d
+    taskid: b909e9e8-301f-4e4c-8aa1-aa16d9ef165c
     type: regular
     task:
-      id: 142ef5b9-e95d-4239-8a69-9850fdf7881d
+      id: b909e9e8-301f-4e4c-8aa1-aa16d9ef165c
       version: -1
       name: Verify DBotScore context fields
+      description: ""
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
     scriptarguments:
       expectedValue: {}
       extend-context: {}
@@ -156,6 +169,7 @@ tasks:
         simple: Indicator,Type,Vendor,Score
       path:
         simple: DBotScore
+    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -164,12 +178,33 @@ tasks:
           "y": 895
         }
       }
+  "8":
+    id: "8"
+    taskid: f083cfd3-28ab-4f13-8692-32ae498df885
+    type: title
+    task:
+      id: f083cfd3-28ab-4f13-8692-32ae498df885
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 1085,
         "width": 380,
         "x": 50,
         "y": 50

@@ -90,8 +90,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
                 {to: 'StartedAt', from: 'started_at'},
                 {to: 'CompletedAt', from: 'completed_at'},
@@ -104,8 +102,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
             ],
         'threat-grid-get-samples': [
@@ -116,8 +112,6 @@ script:
                 {to: 'MD5', from: 'md5'},
                 {to: 'SHA1', from: 'sha1'},
                 {to: 'SHA256', from: 'sha256'},
-                {to: 'OS', from: 'os'},
-                {to: 'OSVer', from: 'osver'},
                 {to: 'SubmittedAt', from: 'submitted_at'},
                 {to: 'StartedAt', from: 'started_at'},
                 {to: 'CompletedAt', from: 'completed_at'},
@@ -249,14 +243,14 @@ script:
         'threat-grid-get-video-by-id': 'samples/%id%/video.webm',
         'threat-grid-get-analysis-by-id': 'samples/%id%/analysis.json',
         'threat-grid-get-processes-by-id': 'samples/%id%/processes.json',
-        'threat-grid-get-pcap-by-id': 'samples/%id%/network.json',
+        'threat-grid-get-pcap-by-id': 'samples/%id%/network.pcap',
         'threat-grid-get-warnings-by-id': 'samples/%id%/warnings.json',
         'threat-grid-get-summary-by-id': 'samples/%id%/summary',
         'threat-grid-get-threat-summary-by-id': 'samples/%id%/threat',
         'threat-grid-get-html-report-by-id': 'samples/%id%/report.html',
         'threat-grid-download-sample-by-id': 'samples/%id%/sample.zip',
         'threat-grid-get-analysis-iocs': 'samples/%id%/analysis/iocs',
-        'threat-grid-get-analysis-ioc': 'samples/%id%/analysis/%ioc%',
+        'threat-grid-get-analysis-ioc': 'samples/%id%/analysis/iocs/%ioc%',
         'threat-grid-get-analysis-network-streams': 'samples/%id%/analysis/network_streams',
         'threat-grid-get-analysis-network-stream': 'samples/%id%/analysis/network_streams/%nsid%',
         'threat-grid-get-analysis-artifacts': 'samples/%id%/analysis/artifacts',
@@ -679,10 +673,6 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
-      description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     - contextPath: ThreatGrid.Sample.StartedAt
@@ -711,10 +701,6 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
-      description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     - contextPath: ThreatGrid.Sample.StartedAt
@@ -744,9 +730,12 @@ script:
     - contextPath: Sample.State
       description: The sample state.
       type: string
+    - contextPath: Sample.Status
+      description: A detailed status of the sample.
+      type: string
     - contextPath: Sample.ID
       description: The sample ID.
-      type: unknown
+      type: string
     description: Get threat grid samples state
   - name: threat-grid-upload-sample
     arguments:
@@ -757,12 +746,31 @@ script:
     - name: filename
       required: true
       description: The real file name
-    - name: os
-      description: a string identifying the source OS
-    - name: osver
-      description: a string defining the OS version.
     - name: vm
+      auto: PREDEFINED
+      predefined:
+      - win7-x64
+      - win7-x64-2
+      - win7-x64-jp
+      - win7-x64-kr
+      - win10
       description: a string identifying a specific VM to use
+      defaultValue: win7-x64
+    - name: playbook
+      auto: PREDEFINED
+      predefined:
+      - none
+      - default
+      - alt_tab_programs
+      - open_word_embedded_object
+      - press_enter
+      - visit_site
+      - close_file
+      - run_dialog_box_ie
+      - open_attachment_msg
+      - run_dialog_box_dde
+      description: Name of a Threat Grid playbook to apply to this sample run
+      defaultValue: default
     - name: private
       description: if present, and set to any value but “false” the sample will be
         marked private
@@ -785,10 +793,6 @@ script:
       description: The sample sha1
     - contextPath: ThreatGrid.Sample.SHA256
       description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
-      description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
     - contextPath: ThreatGrid.Sample.SubmittedAt
       description: The sample submission time
     description: Submits a sample to threat grid for analysis

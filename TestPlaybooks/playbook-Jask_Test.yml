@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9dcf26d2-7b1e-4d56-8bad-9c9e0ea27413
+    taskid: 678f8187-a095-4d5f-83ae-e8e831a2a589
     type: start
     task:
-      id: 9dcf26d2-7b1e-4d56-8bad-9c9e0ea27413
+      id: 678f8187-a095-4d5f-83ae-e8e831a2a589
       version: -1
       name: ""
       iscommand: false
@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -25,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: f519d921-4333-498c-8ee2-c993792ab7a7
+    taskid: ca722df1-ae4c-4833-82b4-612a31a83782
     type: regular
     task:
-      id: f519d921-4333-498c-8ee2-c993792ab7a7
+      id: ca722df1-ae4c-4833-82b4-612a31a83782
       version: -1
       name: Get insights for a given date
       description: 'Search insights using the given filters. '
@@ -54,7 +54,6 @@ tasks:
         simple: 07/16/2018
       time-to:
         simple: 07/17/2018
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -63,12 +62,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 83d85b77-f815-4500-8f03-328a8c2333cb
+    taskid: 1ec3d686-e17f-4fe0-882e-0d757e18a625
     type: regular
     task:
-      id: 83d85b77-f815-4500-8f03-328a8c2333cb
+      id: 1ec3d686-e17f-4fe0-882e-0d757e18a625
       version: -1
       name: VerifyContext
       description: |-
@@ -91,7 +91,6 @@ tasks:
       fields: {}
       path:
         simple: Jask.Insight=>val.length == 4
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -100,12 +99,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 68cbb0f2-2b15-4d54-849c-35052085cdac
+    taskid: 7ddcfa71-18d1-4d9d-8f29-d301b6c15c4b
     type: regular
     task:
-      id: 68cbb0f2-2b15-4d54-849c-35052085cdac
+      id: 7ddcfa71-18d1-4d9d-8f29-d301b6c15c4b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -122,7 +122,6 @@ tasks:
       all:
         simple: "yes"
       key: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -131,12 +130,13 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 3a0db2ee-3518-4953-8d58-2da7f20d00f9
+    taskid: 635180e0-8791-410b-85d5-34ac802968ca
     type: regular
     task:
-      id: 3a0db2ee-3518-4953-8d58-2da7f20d00f9
+      id: 635180e0-8791-410b-85d5-34ac802968ca
       version: -1
       name: Get details for the first one
       description: Get Insight details for a specific Insight ID. Insight details
@@ -154,7 +154,6 @@ tasks:
     scriptarguments:
       insight-id:
         simple: ${Jask.Insight.[0].Id}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -163,12 +162,13 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: 00ec37c5-499f-4de7-8b83-508ab6e0fe60
+    taskid: dad73ec9-8ce3-4495-8481-5b515caa03b4
     type: regular
     task:
-      id: 00ec37c5-499f-4de7-8b83-508ab6e0fe60
+      id: dad73ec9-8ce3-4495-8481-5b515caa03b4
       version: -1
       name: Get entity details for first related entity
       description: Get entity details for a specific entity ID
@@ -182,21 +182,21 @@ tasks:
     scriptarguments:
       entity-id:
         simple: ${Jask.Insight.RelatedEntityList.[0].Id}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 895
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: 86166002-05af-4366-82f3-6d973362f329
+    taskid: b4aee240-34bd-4f39-8089-38b1f80b3cea
     type: regular
     task:
-      id: 86166002-05af-4366-82f3-6d973362f329
+      id: b4aee240-34bd-4f39-8089-38b1f80b3cea
       version: -1
       name: Get signal details for first related signal
       description: Get Signal details for a specific Signal ID. Signal details command
@@ -212,21 +212,21 @@ tasks:
     scriptarguments:
       signal-id:
         simple: ${Jask.Insight.SignalList.[0].Id}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 480,
+          "y": 1070
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: e352069c-6331-479e-8947-77a104903173
+    taskid: ea8ac176-6bb8-438c-8cff-e7be8730bac7
     type: regular
     task:
-      id: e352069c-6331-479e-8947-77a104903173
+      id: ea8ac176-6bb8-438c-8cff-e7be8730bac7
       version: -1
       name: Verify we have an entity
       description: |-
@@ -247,21 +247,21 @@ tasks:
       fields: {}
       path:
         simple: Jask.Entity.Id
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1070
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: d38d9437-4449-44b5-89c6-d6eef1a58a2b
+    taskid: f42ee86f-ae12-4353-88b3-42a191e2d6fb
     type: regular
     task:
-      id: d38d9437-4449-44b5-89c6-d6eef1a58a2b
+      id: f42ee86f-ae12-4353-88b3-42a191e2d6fb
       version: -1
       name: Verify we have a signal
       description: |-
@@ -282,21 +282,21 @@ tasks:
       fields: {}
       path:
         simple: Jask.Signal.Id
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 480,
+          "y": 1245
         }
       }
+    note: false
   "9":
     id: "9"
-    taskid: d7c11a21-4581-4e7f-8c73-c38f8baba563
+    taskid: 1d238657-12b3-4e75-8705-1de07404f1f3
     type: regular
     task:
-      id: d7c11a21-4581-4e7f-8c73-c38f8baba563
+      id: 1d238657-12b3-4e75-8705-1de07404f1f3
       version: -1
       name: Get entities related to the given entity
       description: Get entities related to a specific entity ID.
@@ -306,60 +306,25 @@ tasks:
       brand: Jask
     nexttasks:
       '#none#':
-      - "10"
+      - "20"
     scriptarguments:
       entity-id:
         simple: ${Jask.Entity.Id}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1245
         }
       }
-  "10":
-    id: "10"
-    taskid: 59e9019f-2d75-4735-85eb-017916300ce7
-    type: regular
-    task:
-      id: 59e9019f-2d75-4735-85eb-017916300ce7
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: Jask.RelatedEntityList.Id
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
+    note: false
   "11":
     id: "11"
-    taskid: 08ded6c5-59e7-470f-8793-47505f6f9ea7
+    taskid: 8def6ad7-7830-4e4a-87b0-3640f55cfdee
     type: regular
     task:
-      id: 08ded6c5-59e7-470f-8793-47505f6f9ea7
+      id: 8def6ad7-7830-4e4a-87b0-3640f55cfdee
       version: -1
       name: Get signals for a given date
       description: 'Search signals using the given filters. '
@@ -382,21 +347,21 @@ tasks:
         simple: 07/16/2018
       time-to:
         simple: 07/17/2018
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 1245
+          "y": 1070
         }
       }
+    note: false
   "12":
     id: "12"
-    taskid: eea07f2b-fb69-429f-8d9b-bda14781c5c7
+    taskid: 080435e0-c995-461b-853b-e192f8bff262
     type: regular
     task:
-      id: eea07f2b-fb69-429f-8d9b-bda14781c5c7
+      id: 080435e0-c995-461b-853b-e192f8bff262
       version: -1
       name: VerifyContext
       description: |-
@@ -417,22 +382,22 @@ tasks:
         simple: "true"
       fields: {}
       path:
-        simple: Jask.Signal=>val.length == 10
-    reputationcalc: 0
+        simple: Jask.Signal=>val.length >= 10
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 1420
+          "y": 1245
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 9009439a-1d16-4345-8bb4-152a4d8d2a52
+    taskid: 6277ceda-4a62-460f-8b2d-0b50e9e473c0
     type: regular
     task:
-      id: 9009439a-1d16-4345-8bb4-152a4d8d2a52
+      id: 6277ceda-4a62-460f-8b2d-0b50e9e473c0
       version: -1
       name: Get entities for a given date
       description: Search entities using the given filters.
@@ -454,21 +419,21 @@ tasks:
         simple: 07/16/2018
       time-to:
         simple: 07/17/2018
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 1245
+          "y": 1070
         }
       }
+    note: false
   "14":
     id: "14"
-    taskid: 1665f40e-7c01-4574-87c3-df87b2c2270b
+    taskid: 4363c2f7-8591-464f-83d2-6ee65a901afb
     type: regular
     task:
-      id: 1665f40e-7c01-4574-87c3-df87b2c2270b
+      id: 4363c2f7-8591-464f-83d2-6ee65a901afb
       version: -1
       name: VerifyContext
       description: |-
@@ -490,21 +455,21 @@ tasks:
       fields: {}
       path:
         simple: Jask.Entity=>val.length == 10
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 1420
+          "y": 1245
         }
       }
+    note: false
   "19":
     id: "19"
-    taskid: 9d021d86-47a3-463c-8d19-e0efb97f312c
+    taskid: 8d0d3eff-6517-484f-88a8-5b20ed6f38d6
     type: regular
     task:
-      id: 9d021d86-47a3-463c-8d19-e0efb97f312c
+      id: 8d0d3eff-6517-484f-88a8-5b20ed6f38d6
       version: -1
       name: jask-get-insight-comments
       description: Get comments for a specific Insight ID. (Users can post and update
@@ -519,21 +484,21 @@ tasks:
     scriptarguments:
       insight-id:
         simple: ${Jask.Insight.[0].Id}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1420
+          "y": 1245
         }
       }
+    note: false
   "20":
     id: "20"
-    taskid: 80d78add-8703-4463-8228-e8ef26c2dad3
+    taskid: a925e98a-4535-4d4b-840a-f72fd4863f81
     type: regular
     task:
-      id: 80d78add-8703-4463-8228-e8ef26c2dad3
+      id: a925e98a-4535-4d4b-840a-f72fd4863f81
       version: -1
       name: closeInvestigation
       description: Close the current investigation
@@ -546,21 +511,21 @@ tasks:
       closeNotes: {}
       closeReason: {}
       id: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1595
+          "y": 1420
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1640,
+        "height": 1465,
         "width": 2100,
         "x": 50,
         "y": 50

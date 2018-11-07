@@ -91,7 +91,7 @@ script: |-
   incident_text = get_texts_from_incident(incident, TEXT_FIELDS)
   if len(incident_text) < MIN_TEXT_LENGTH:
       demisto.results("The text is too short to compare - minimum of %d chars required" % MIN_TEXT_LENGTH)
-      exit(0)
+      sys.exit(0)
 
   # get initial candidates list
   candidates = get_incidents_by_time(incident[TIME_FIELD], incident['type'], incident['id'], HOURS_TIME_FRAME, IGNORE_CLOSED, INCIDENT_QUERY_SIZE)
@@ -114,9 +114,9 @@ script: |-
       similar_incidents_rows = sorted(similar_incidents_rows, key=lambda x: x['Time'])
       context = {
           'similarIncidentList': similar_incidents_rows[:MAX_CANDIDATES_IN_LIST],
-          'similarIncident': similar_incidents_rows[0]
+          'similarIncident': similar_incidents_rows[0],
+          'isSimilarIncidentFound': True
       }
-      demisto.setContext('isSimilarIncidentFound', True)
       markdown_result = tableToMarkdown("Similar incidents",
                                         similar_incidents_rows,
                                         headers=['id', 'name', 'closedTime', 'Time', 'similarity'])
@@ -125,8 +125,13 @@ script: |-
                        'Contents': markdown_result,
                        'EntryContext': context})
   else:
-      demisto.setContext('isSimilarIncidentFound', False)
-      demisto.results('No similar incidents has been found')
+      context = {
+          'isSimilarIncidentFound': False
+      }
+      demisto.results({'ContentsFormat': formats['markdown'],
+                       'Type': entryTypes['note'],
+                       'Contents': 'No similar incidents has been found',
+                       'EntryContext': context })
 type: python
 tags:
 - ml

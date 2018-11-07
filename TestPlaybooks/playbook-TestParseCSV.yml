@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8e36c909-2bc4-4709-88de-edae1b665afc
+    taskid: 2befe023-cd13-46c3-8ba0-4237f164505d
     type: start
     task:
-      id: 8e36c909-2bc4-4709-88de-edae1b665afc
+      id: 2befe023-cd13-46c3-8ba0-4237f164505d
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 7712d435-3667-4380-8256-83fc22eca1de
+    taskid: 76903ae0-c856-47e3-87f1-5ed626f3e692
     type: regular
     task:
-      id: 7712d435-3667-4380-8256-83fc22eca1de
+      id: 76903ae0-c856-47e3-87f1-5ed626f3e692
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -43,6 +45,7 @@ tasks:
       all:
         simple: "yes"
       key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -50,12 +53,13 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 7689ebb9-bf97-48a6-812a-dbfae0d0edc3
+    taskid: 9e875b9e-bfac-4f35-8e15-39ecd2739c40
     type: regular
     task:
-      id: 7689ebb9-bf97-48a6-812a-dbfae0d0edc3
+      id: 9e875b9e-bfac-4f35-8e15-39ecd2739c40
       version: -1
       name: Set array in context so we could export it to csv file
       description: Sets a value into the context with the given context key
@@ -72,6 +76,7 @@ tasks:
         simple: arr
       value:
         simple: '[{"sourceIP":"1.1.1.1","count":0},{"sourceIP":"2.2.2.2","count":1},{"sourceIP":"3.3.3.3","count":2}]'
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -79,12 +84,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 96dac9ff-2925-4885-8902-92ae8e8b66ff
+    taskid: f5174967-f6c4-4876-88fd-802b37737582
     type: regular
     task:
-      id: 96dac9ff-2925-4885-8902-92ae8e8b66ff
+      id: f5174967-f6c4-4876-88fd-802b37737582
       version: -1
       name: ExportToCSV to tata.csv
       description: Export given array to csv file
@@ -100,6 +106,7 @@ tasks:
         simple: ${arr}
       fileName:
         simple: tata.csv
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -107,12 +114,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: c39b0908-30d2-4f08-8062-9457c7949d6a
+    taskid: 7cb82eab-f88e-4602-8dae-9a590de588f1
     type: regular
     task:
-      id: c39b0908-30d2-4f08-8062-9457c7949d6a
+      id: 7cb82eab-f88e-4602-8dae-9a590de588f1
       version: -1
       name: ParseCSV tata.csv file
       description: This script will parse a CSV file and place the unique IPs, Domains
@@ -133,6 +141,7 @@ tasks:
         simple: "1"
       parseAll:
         simple: "yes"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -140,12 +149,13 @@ tasks:
           "y": 723
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: 41c7af77-51f6-4c71-81e6-ea5c711f8013
+    taskid: 498d1de9-9ac9-4a06-8651-b4b7cf5645e4
     type: regular
     task:
-      id: 41c7af77-51f6-4c71-81e6-ea5c711f8013
+      id: 498d1de9-9ac9-4a06-8651-b4b7cf5645e4
       version: -1
       name: VerifyContext
       description: |-
@@ -158,14 +168,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: ${ParseCSV.ParsedCSV}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -173,37 +181,14 @@ tasks:
           "y": 895
         }
       }
-  "6":
-    id: "6"
-    taskid: 39da3a4f-3043-41c7-8302-aeb05fd91e1e
-    type: regular
-    task:
-      id: 39da3a4f-3043-41c7-8302-aeb05fd91e1e
-      version: -1
-      name: Verify that IP exported to context
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: ${IP.Address}
-    view: |-
-      {
-        "position": {
-          "x": 56,
-          "y": 1125
-        }
-      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1170,
-        "width": 386,
+        "height": 940,
+        "width": 380,
         "x": 50,
         "y": 50
       }

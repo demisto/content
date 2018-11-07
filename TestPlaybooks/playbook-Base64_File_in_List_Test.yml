@@ -1,0 +1,148 @@
+id: Base64 File in List Test
+version: -1
+name: Base64 File in List Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 068a1bbe-927a-44d6-8e0c-30bf057bd57f
+    type: start
+    task:
+      id: 068a1bbe-927a-44d6-8e0c-30bf057bd57f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: bd8d3cd3-1241-48a5-8795-15c4170c629a
+    type: regular
+    task:
+      id: bd8d3cd3-1241-48a5-8795-15c4170c629a
+      version: -1
+      name: Set List with B64 test file
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      listData:
+        simple: iVBORw0KGgoAAAANSUhEUgAABO8AAAC/CAMAAACR+Qj+AAAC/VBMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////806J7///+soenzAAAA/XRSTlMAAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BR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
+      listName:
+        simple: demisto-logo.png
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 4eed96fc-77e5-484d-8419-9a3543d4ca26
+    type: regular
+    task:
+      id: 4eed96fc-77e5-484d-8419-9a3543d4ca26
+      version: -1
+      name: Get file from list and upload to warroom
+      scriptName: Base64ListToFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      filename: {}
+      listname:
+        simple: demisto-logo.png
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: a0e9343f-dde8-4475-8863-85d227b89bad
+    type: regular
+    task:
+      id: a0e9343f-dde8-4475-8863-85d227b89bad
+      version: -1
+      name: Verify Context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: demisto-logo.png
+      fields: {}
+      path:
+        simple: File.Name
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ad6b6b77-f268-4c63-8aa3-800bfe2907af
+    type: title
+    task:
+      id: ad6b6b77-f268-4c63-8aa3-800bfe2907af
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

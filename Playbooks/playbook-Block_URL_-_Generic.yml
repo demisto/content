@@ -1,0 +1,260 @@
+id: block_url_-_generic
+version: -1
+name: Block URL - Generic
+fromversion: 4.0.0
+description: |-
+  This playbook blocks malicious URLs using all integrations that you have enabled.
+
+  Supported integrations for this playbook:
+  * Palo Alto Networks Minemeld
+  * Zscaler
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    type: start
+    task:
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 40
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    type: title
+    task:
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 900
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: f414f4c2-03f8-4219-8428-048557b1758b
+    type: title
+    task:
+      id: f414f4c2-03f8-4219-8428-048557b1758b
+      version: -1
+      name: Block URLs
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: ad6bb4b2-ea87-4c6e-893c-a31e27e82e55
+    type: condition
+    task:
+      id: ad6bb4b2-ea87-4c6e-893c-a31e27e82e55
+      version: -1
+      name: Is there a URL to block?
+      description: Verify that the playbook input includes at least one URL to block.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 175
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 2d0fc7d4-b827-43c9-8b7a-bf592e7a1c1f
+    type: playbook
+    task:
+      id: 2d0fc7d4-b827-43c9-8b7a-bf592e7a1c1f
+      version: -1
+      name: Add Indicator to Miner - Minemeld
+      description: ""
+      playbookName: Add Indicator to Miner - Palo Alto MineMeld
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Indicator:
+        complex:
+          root: inputs.URL
+      MinerName:
+        complex:
+          root: inputs.URLBlacklistMiner
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 550
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: a2108a1a-7365-45e7-8c07-a5a6fcdd8b95
+    type: condition
+    task:
+      id: a2108a1a-7365-45e7-8c07-a5a6fcdd8b95
+      version: -1
+      name: Is Zscaler enabled?
+      description: Verify that there is a valid instance of Zscaler enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Zscaler
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 550
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: adb7b441-33c8-4fe9-8883-7af9a776e0d3
+    type: regular
+    task:
+      id: adb7b441-33c8-4fe9-8883-7af9a776e0d3
+      version: -1
+      name: Block URL with Zscaler
+      description: Block the URLS using Zscaler.
+      script: '|||zscaler-blacklist-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 720
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 1070,
+        "x": -80,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: URLBlacklistMiner
+  value: {}
+  required: false
+  description: The name of the URL blacklist Miner in  Minemeld.
+- key: URL
+  value: {}
+  required: false
+  description: Array of malicious URLs to block.
+outputs: []
+tests:
+  - block_indicators_-_generic_-_test

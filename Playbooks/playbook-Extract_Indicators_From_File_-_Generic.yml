@@ -44,7 +44,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
       - "3"
       "yes":
       - "2"

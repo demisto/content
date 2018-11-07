@@ -33,6 +33,47 @@ script: |-
       output += line[lastDigit:len(line)] + '\n'
       return output
 
+  def addErrorLines(scriptToScan, scriptType):
+      res = ''
+      if 'python' in scriptType:
+          errorKeys = ['return_error', 'raise ']
+      elif 'javascript' in scriptType:
+          errorKeys = ['throw ']
+      # Unsupported script type
+      else:
+          return res
+      linesToSkip = 0
+      scriptLines = scriptToScan.splitlines()
+      for idx in range(len(scriptLines)):
+          # Skip lines that were already scanned
+          if linesToSkip > 0:
+              linesToSkip -= 1
+              continue
+          line = scriptLines[idx]
+          if any(key in line for key in errorKeys):
+              if '(' in line:
+                  bracketOpenIdx = line.index('(') + 1
+                  if ')' in line:
+                      bracketCloseIdx = line.index(')')
+                      res += '* ' + line[bracketOpenIdx:bracketCloseIdx] + '\n'
+                  # Handle multi line error
+                  else:
+                      res += '*' + ('' if len(line[bracketOpenIdx:].lstrip()) < 1 else ' ' + line[bracketOpenIdx:] + '\n')
+                      while not ')' in scriptLines[idx + linesToSkip + 1]:
+                          linesToSkip += 1
+                          line = scriptLines[idx + linesToSkip]
+                          res += ' ' + line.lstrip() + '\n'
+                      # Adding last line of error
+                      linesToSkip += 1
+                      line = scriptLines[idx + linesToSkip]
+                      bracketCloseIdx = line.index(')')
+                      res += line[:bracketCloseIdx].lstrip() + '\n'
+              else:
+                  firstMatchingErrorKey = next((key for key in errorKeys if key in line), False)
+                  afterErrorKeyIdx = line.index(firstMatchingErrorKey) + len(firstMatchingErrorKey)
+                  res += '* ' + line[afterErrorKeyIdx:] + '\n'
+      return res
+
   name = dataMap['name']
   doc = ''
 
@@ -118,7 +159,7 @@ script: |-
                   doc += '| ' + dataMap['script']['commands'][i]['arguments'][j]['name'] + ' | '
                   if not (dataMap['script']['commands'][i]['arguments'][j].get('description', False)):
                       demisto.results("Error! You are missing description in input " + dataMap['script']['commands'][i]['arguments'][j]['name'] +\
-                      " of command " + dataMap['script']['commands'][i]['arguments'][j]['name'])
+                      " of command " + dataMap['script']['commands'][i]['name'])
                       sys.exit(0)
                   doc += dataMap['script']['commands'][i]['arguments'][j]['description'] + ' | '
                   doc += str(dataMap['script']['commands'][i]['arguments'][j].get('required', 'False'))  + ' | \n'
@@ -133,8 +174,8 @@ script: |-
                   doc += '| ' + dataMap['script']['commands'][i]['outputs'][k]['contextPath'] + ' | '
                   doc += str(dataMap['script']['commands'][i]['outputs'][k].get('type', 'unknown')) + ' | '
                   if not (dataMap['script']['commands'][i]['outputs'][k].get('description', False)):
-                      demisto.results("Error! You are missing description in input " + dataMap['script']['commands'][i]['arguments'][j]['name'] + \
-                      " of command " + dataMap['script']['commands'][i]['arguments'][j]['name'])
+                      demisto.results("Error! You are missing description in output " + dataMap['script']['commands'][i]['outputs'][j]['name'] + \
+                      " of command " + dataMap['script']['commands'][i]['name'])
                       sys.exit(0)
                   doc += dataMap['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
           else:
@@ -171,6 +212,12 @@ script: |-
   if 'troubleshooting' in demisto.args():
       doc +=addLines(demisto.args()['troubleshooting'])
 
+  # Possible Errors
+
+  if 'True' == demisto.args()['withErrors']:
+      doc += '\n## Possible Errors (DO NOT PUBLISH ON ZENDESK):\n'
+      doc += addErrorLines(dataMap['script']['script'], dataMap['script']['type'])
+
   filename = name + '-documantation.txt'
   demisto.results(fileResult(filename, doc))
 type: python
@@ -196,5 +243,13 @@ args:
   description: Additional information. Number the steps by 'x.' (i.e. '1.')
 - name: limit
   description: Known limitations. Number the steps by 'x.' (i.e. '1.')
+- name: withErrors
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: Flag for creating documentation with errors
+  defaultValue: "True"
 scripttarget: 0
 runonce: false
+dockerimage: demisto/docs

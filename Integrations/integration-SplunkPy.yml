@@ -262,6 +262,7 @@ script:
         if demisto.get(demisto.args(), 'event_limit'):
             kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
         searchquery_oneshot = demisto.args()['query']
+        searchquery_oneshot = searchquery_oneshot.encode('utf-8')
         if not searchquery_oneshot.startswith('search') and not searchquery_oneshot.startswith('Search') and not searchquery_oneshot.startswith('|'):
             searchquery_oneshot = 'search '+searchquery_oneshot
         oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
@@ -359,7 +360,9 @@ script:
             demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],'Contents':"Found no Splunk index: "+demisto.args()['index']})
             sys.exit(0)
         else:
-            r = index.submit(demisto.args()['data'], sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
+            data = demisto.args()['data']
+            data_formatted = data.encode('utf8')
+            r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
             demisto.results('Event was created in Splunk index: '+r.name)
         sys.exit(0)
     if demisto.command() == 'splunk-notable-event-edit':

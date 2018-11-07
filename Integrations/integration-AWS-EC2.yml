@@ -92,7 +92,7 @@ script:
 
     def parse_filter_field(filter_str):
         filters = []
-        regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d_,.\*-]+)', flags=re.I)
+        regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.\*-]+)', flags=re.I)
         for f in filter_str.split(';'):
             match = regex.match(f)
             if match is None:
@@ -108,7 +108,7 @@ script:
 
     def parse_tag_field(tags_str):
         tags = []
-        regex = re.compile(r'key=([\w\d_:.-]+),value=([/\w\d_,.\*-]+)', flags=re.I)
+        regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
         for f in tags_str.split(';'):
             match = regex.match(f)
             if match is None:
@@ -258,12 +258,12 @@ script:
                     'CreationDate': image['CreationDate'],
                     'ImageId': image['ImageId'],
                     'Public': image['Public'],
-                    'Name': image['Name'],
                     'State': image['State'],
                     'Region': obj['_user_provided_options']['region_name'],
                 })
                 if 'Description' in image: data[i].update({'Description': image['Description']})
                 if 'EnaSupport' in image: data[i].update({'EnaSupport': image['EnaSupport']})
+                if 'Name' in image: data[i].update({'Name': image['Name']})
                 if 'Tags' in image:
                     for tag in image['Tags']:
                         data[i].update ({
@@ -1618,8 +1618,8 @@ script:
             for i, reservation in enumerate(response['ReservedInstances']):
                 data.append({
                     'ReservedInstancesId': reservation['ReservedInstancesId'],
-                    'Start': atetime.datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ'),
-                    'End': atetime.datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ'),
+                    'Start': datetime.datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ'),
+                    'End': datetime.datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ'),
                     'Duration': reservation['Duration'],
                     'InstanceType':reservation['InstanceType'],
                     'InstanceCount': reservation['InstanceCount'],
@@ -1704,6 +1704,28 @@ script:
             response = client.reboot_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return "The Instances were rebooted"
+
+        except Exception as e:
+            return raise_error(e)
+
+    def get_password_data(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            response = client.get_password_data(InstanceId=args.get('instanceId'))
+            data = {
+                'InstanceId': response['InstanceId'],
+                'PasswordData': response['PasswordData'],
+                'Timestamp': datetime.datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
+                }
+
+            ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data}
+            return  create_entry('AWS EC2 Instances',data, ec)
 
         except Exception as e:
             return raise_error(e)
@@ -1858,6 +1880,8 @@ script:
     if demisto.command() == 'aws-ec2-reboot-instances':
         result = reboot_instances(demisto.args())
 
+    if demisto.command() == 'aws-ec2-get-password-data':
+        result = get_password_data(demisto.args())
 
     demisto.results(result)
     sys.exit(0)
@@ -2906,6 +2930,7 @@ script:
     - contextPath: AWS.EC2.ElasticIPs.Region
       description: The aws region where the elastic IP is located.
     description: Allocates an Elastic IP address.
+    execution: true
   - name: aws-ec2-associate-address
     arguments:
     - name: allocationId
@@ -2950,6 +2975,7 @@ script:
         with an instance.
       type: string
     description: Associates an Elastic IP address with an instance or a network interface.
+    execution: true
   - name: aws-ec2-create-snapshot
     arguments:
     - name: volumeId
@@ -3021,6 +3047,7 @@ script:
     description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You
       can use snapshots for backups, to make copies of EBS volumes, and to save data
       before shutting down an instance.
+    execution: true
   - name: aws-ec2-delete-snapshot
     arguments:
     - name: snapshotId
@@ -3037,6 +3064,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Deletes the specified snapshot.
+    execution: true
   - name: aws-ec2-create-image
     arguments:
     - name: name
@@ -3081,6 +3109,7 @@ script:
       type: string
     description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
       that is either running or stopped.
+    execution: true
   - name: aws-ec2-deregister-image
     arguments:
     - name: imageId
@@ -3096,6 +3125,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Deregisters the specified AMI.
+    execution: true
   - name: aws-ec2-modify-volume
     arguments:
     - name: volumeId
@@ -3159,6 +3189,7 @@ script:
       type: date
     description: You can modify several parameters of an existing EBS volume, including
       volume size, volume type, and IOPS capacity.
+    execution: true
   - name: aws-ec2-create-tags
     arguments:
     - name: resources
@@ -3177,6 +3208,7 @@ script:
         the role.
     description: Adds or overwrites one or more tags for the specified Amazon EC2
       resource or resources.
+    execution: true
   - name: aws-ec2-disassociate-address
     arguments:
     - name: associationId
@@ -3194,6 +3226,7 @@ script:
         the role.
     description: Disassociates an Elastic IP address from the instance or network
       interface its associated with.
+    execution: true
   - name: aws-ec2-release-address
     arguments:
     - name: allocationId
@@ -3210,6 +3243,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Releases the specified Elastic IP address.
+    execution: true
   - name: aws-ec2-start-instances
     arguments:
     - name: instanceIds
@@ -3226,6 +3260,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Starts an Amazon EBS-backed instance that you have previously stopped.
+    execution: true
   - name: aws-ec2-stop-instances
     arguments:
     - name: instanceIds
@@ -3242,6 +3277,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Stops an Amazon EBS-backed instance.
+    execution: true
   - name: aws-ec2-terminate-instances
     arguments:
     - name: instanceIds
@@ -3259,6 +3295,7 @@ script:
         the role.
     description: Shuts down one or more instances. This operation is idempotent; if
       you terminate an instance more than once, each call succeeds.
+    execution: true
   - name: aws-ec2-create-volume
     arguments:
     - name: availabilityZone
@@ -3350,6 +3387,7 @@ script:
       type: string
     description: Creates an EBS volume that can be attached to an instance in the
       same Availability Zone.
+    execution: true
   - name: aws-ec2-attach-volume
     arguments:
     - name: device
@@ -3393,6 +3431,7 @@ script:
       type: boolean
     description: Attaches an EBS volume to a running or stopped instance and exposes
       it to the instance with the specified device name.
+    execution: true
   - name: aws-ec2-detach-volume
     arguments:
     - name: volumeId
@@ -3436,6 +3475,7 @@ script:
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
     description: Detaches an EBS volume from an instance.
+    execution: true
   - name: aws-ec2-delete-volume
     arguments:
     - name: volumeId
@@ -3453,6 +3493,7 @@ script:
         the role.
     description: Deletes the specified EBS volume. The volume must be in the available
       state (not attached to an instance).
+    execution: true
   - name: aws-ec2-run-instances
     arguments:
     - name: count
@@ -3826,6 +3867,7 @@ script:
       using RunInstances , you can specify the launch template instead of specifying
       the launch parameters. An instance is ready for you to use when its in the running
       state. You can check the state of your instance using DescribeInstances.
+    execution: true
   - name: aws-ec2-waiter-instance-running
     arguments:
     - name: filter
@@ -4153,6 +4195,7 @@ script:
       description: The ID of the security group.
       type: string
     description: Creates a security group.
+    execution: true
   - name: aws-ec2-delete-security-group
     arguments:
     - name: groupId
@@ -4171,6 +4214,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Deletes a security group.
+    execution: true
   - name: aws-ec2-authorize-security-group-ingress-rule
     arguments:
     - name: groupId
@@ -4201,6 +4245,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Adds ingress rule to a security group.
+    execution: true
   - name: aws-ec2-revoke-security-group-ingress-rule
     arguments:
     - name: groupId
@@ -4231,6 +4276,7 @@ script:
     description: Removes egress rule from a security group. To remove a rule, the
       values that you specify (for example, ports) must match the existing rule's
       values exactly.
+    execution: true
   - name: aws-ec2-copy-image
     arguments:
     - name: name
@@ -4280,6 +4326,7 @@ script:
       type: string
     description: Initiates the copy of an AMI from the specified source region to
       the current region.
+    execution: true
   - name: aws-ec2-copy-snapshot
     arguments:
     - name: sourceSnapshotId
@@ -4322,6 +4369,7 @@ script:
     description: Copies a point-in-time snapshot of an EBS volume and stores it in
       Amazon S3. You can copy the snapshot within the same region or from one region
       to another.
+    execution: true
   - name: aws-ec2-describe-reserved-instances
     arguments:
     - name: filters
@@ -4435,6 +4483,7 @@ script:
         monitoring is enabled.
       type: string
     description: Enables detailed monitoring for a running instance.
+    execution: true
   - name: aws-ec2-unmonitor-instances
     arguments:
     - name: instancesIds
@@ -4454,8 +4503,10 @@ script:
     - contextPath: AWS.EC2.Instances.InstanceId
       description: The ID of the instance.
     - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
+        monitoring is enabled.
     description: Disables detailed monitoring for a running instance.
+    execution: true
   - name: aws-ec2-reboot-instances
     arguments:
     - name: instanceIds
@@ -4476,5 +4527,22 @@ script:
       if the instances are valid and belong to you. Requests to reboot terminated
       instances are ignored. If an instance does not cleanly shut down within four
       minutes, Amazon EC2 performs a hard reboot.
+    execution: true
+  - name: aws-ec2-get-password-data
+    arguments:
+    - name: instanceId
+      required: true
+      description: The ID of the Windows instance.
+    outputs:
+    - contextPath: AWS.EC2.Instances.PasswordData.PasswordData
+      description: The password of the instance. Returns an empty string if the password
+        is not available.
+      type: string
+    - contextPath: AWS.EC2.Instances.PasswordData.Timestamp
+      description: The time the data was last updated.
+      type: date
+    description: Retrieves the encrypted administrator password for a running Windows
+      instance.
+    execution: true
   dockerimage: demisto/boto3
   runonce: false

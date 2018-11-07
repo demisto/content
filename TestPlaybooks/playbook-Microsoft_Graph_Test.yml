@@ -1,0 +1,201 @@
+id: Microsoft Graph Test
+version: -1
+name: Microsoft Graph Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c8ff64e8-8ae7-4de3-86bb-f9c28cdcc8ce
+    type: start
+    task:
+      id: c8ff64e8-8ae7-4de3-86bb-f9c28cdcc8ce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: a9430872-d104-4a85-8bc8-3ca8a939a7b6
+    type: regular
+    task:
+      id: a9430872-d104-4a85-8bc8-3ca8a939a7b6
+      version: -1
+      name: msg-search-alerts
+      description: List alerts (security issues) within a customer's tenant that Microsoft
+        or partner security solutions have identified.
+      script: Microsoft Graph|||msg-search-alerts
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      category:
+        simple: General
+      filter: {}
+      last_modified: {}
+      severity: {}
+      time_from: {}
+      time_to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: f1abf1da-85f1-43b3-8595-df7e575ee722
+    type: regular
+    task:
+      id: f1abf1da-85f1-43b3-8595-df7e575ee722
+      version: -1
+      name: msg-get-alert-details
+      description: Get details for a specific alert.
+      script: Microsoft Graph|||msg-get-alert-details
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_id:
+        simple: ${MsGraph.Alert.ID}
+      fields_to_include: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: e2556b00-9b65-42cf-816d-5932b36d494e
+    type: regular
+    task:
+      id: e2556b00-9b65-42cf-816d-5932b36d494e
+      version: -1
+      name: msg-update-alert
+      description: Update an editable alert property within any integrated solution
+        to keep alert status and assignments in sync across solutions using its reference
+        ID.
+      script: Microsoft Graph|||msg-update-alert
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alert_id:
+        simple: ${MsGraph.Alert.ID}
+      assigned_to: {}
+      closed_date_time: {}
+      comments: {}
+      feedback:
+        simple: truePositive
+      provider_information:
+        simple: ${MsGraph.Alert.Provider}
+      status: {}
+      tags: {}
+      vendor_information:
+        simple: ${MsGraph.Alert.Vendor}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: bd7911e9-27a6-46da-805c-7cabd76341d1
+    type: regular
+    task:
+      id: bd7911e9-27a6-46da-805c-7cabd76341d1
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: EventDate,Vendor,Provider,Status,CreatedDate,Title,ID,Severity,Category
+      path:
+        simple: MsGraph.Alert
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 1762ff95-00cb-4076-8806-4af2d19f0623
+    type: title
+    task:
+      id: 1762ff95-00cb-4076-8806-4af2d19f0623
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
