@@ -240,6 +240,5 @@ script:
       description: The query results
     description: Perform a query.
   runonce: false
-releaseNotes: "Added a default results limit of 30"
 tests:
     - devo_test_playbook
