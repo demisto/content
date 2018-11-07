@@ -541,17 +541,17 @@ script:
     - contextPath: TenableIO.Assets.Low
       description: The number of low findings on the host.
       type: number
-    - contextPath: Remediations.Id
+    - contextPath: TenableIO.Remediations.Id
       description: The unique id of the remediation.
       type: string
-    - contextPath: Remediations.Description
+    - contextPath: TenableIO.Remediations.Description
       description: Specific information related to the vulnerability and steps to
         remedy.
       type: string
-    - contextPath: Remediations.AffectedHosts
+    - contextPath: TenableIO.Remediations.AffectedHosts
       description: The number of hosts affected.
       type: number
-    - contextPath: Remediations.AssociatedVulnerabilities
+    - contextPath: TenableIO.Remediations.AssociatedVulnerabilities
       description: The number of vulnerabilities associated with the remedy.
       type: number
     description: Retrive scan-report for the given scan.
