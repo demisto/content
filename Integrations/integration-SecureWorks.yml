@@ -1595,6 +1595,5 @@ script:
   isfetch: true
   runonce: false
 fromversion: 3.6.0
-releaseNotes: "Added option to get ticket attachments"
 tests:
     - Run all tests

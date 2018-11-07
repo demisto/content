@@ -1,10 +1,11 @@
 commonfields:
   id: TextFromHTML
-  version: 1
+  version: -1
 name: TextFromHTML
 script: |-
   import re
-  body = re.search(ur'<body.*/body>', demisto.args()['html'], re.M + re.S + re.I + re.U)
+  html = demisto.args()['html'].encode('utf-8')
+  body = re.search(ur'<body.*/body>', html, re.M + re.S + re.I + re.U)
   if body and body.group(0):
       data = re.sub(ur'<.*?>', '', body.group(0))
       entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ', 'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
@@ -17,12 +18,11 @@ type: python
 tags:
 - Utility
 comment: Extract regular text from the given HTML
-system: true
+enabled: true
 args:
 - name: html
   required: true
   default: true
   description: The HTML to strip tags from
 scripttarget: 0
-dependson: {}
-timeout: 0s
+runonce: false

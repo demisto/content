@@ -42,6 +42,7 @@ script: |
 
 
   except RuntimeError as e:
+      demisto.results({"Type":entryTypes["error"], "ContentsFormat":formats["text"], "Contents":str(e)})
       sys.exit(e)
 type: python
 tags: []
@@ -57,3 +58,4 @@ outputs:
   description: Decoded URLs
 scripttarget: 0
 dockerimage: demisto/python3
+releaseNotes: Better handling of error scenarios
