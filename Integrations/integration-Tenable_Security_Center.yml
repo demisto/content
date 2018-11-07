@@ -3,207 +3,598 @@ commonfields:
   version: -1
 name: Tenable Security Center
 display: Tenable Security Center
-category: Authentication
-image: data:image/png;base64,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
-description: API for Tenable SecurityCenter
+category: Vulnerability Management
+image: data:image/png;base64,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
+description: SecurityCenter® consolidates and evaluates vulnerability data across
+  your organization, prioritizing security risks and providing a clear view of your
+  security posture.
 configuration:
-- display: Server address
+- display: Server URL (e.g https://tenablesc.eastus.cloudapp.azure.com)
   name: server
-  defaultvalue: https://tenablesc.eastus.cloudapp.azure.com/rest
+  defaultvalue: ""
   type: 0
   required: true
-- display: Credentials
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
-- display: Do not validate certificate (insecure)
-  name: insecure
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
   defaultvalue: ""
   type: 8
   required: false
 script:
   script: |
-    var SERVER_URL = params.server;
-    var TOKEN;
-    var TNS_SESSION_ID_COOKIE;
-    if (SERVER_URL[SERVER_URL.length - 1] !== '/') {
-        SERVER_URL = SERVER_URL.concat('/');
-    }
+    import time
+    import re
+    from requests import Request, Session
+    import requests
+    import json
 
-    function getHeaders(token){
-        var headers = {};
-        headers['Accept'] = ['application/json'];
-        headers['Content-Type'] = ['application/json'];
-        if(token){
-            headers['X-SecurityCenter'] =  [token.toString()];
-            headers['Cookie'] = [TNS_SESSION_ID_COOKIE];
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' CONSTANTS '''
+
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    VERIFY_SSL = not demisto.params().get('unsecure', False)
+    SESSION = None
+
+    def get_server_url():
+        url = demisto.params()['server']
+        url = re.sub('/[\/]+$/', '', url)
+        url = re.sub('\/$', '', url)
+        return url
+
+
+    BASE_URL = get_server_url()
+    SERVER_URL = BASE_URL + '/rest'
+
+    def send_request(path, method = 'get', body=None, params=None, headers=None):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+
+        url = '{}/{}'.format(SERVER_URL, path)
+
+        headers = headers if headers is not None else get_headers()
+        res = SESSION.request(method, url, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
+        if res.status_code < 200 or res.status_code >= 300:
+            try:
+                error = res.json()
+            except:
+                raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+            raise Exception('Got an error from Security Center, code: {}, details: {}'.format(error['error_code'], error['error_msg']))
+        return res.json()
+
+
+    def get_headers():
+            headers = {}
+            headers['Accept'] = 'application/json'
+            headers['Content-Type'] = 'application/json'
+
+            return headers
+
+
+    def send_login_request(login_body):
+        path = 'token'
+        url = '{}/{}'.format(SERVER_URL, path)
+
+        headers = get_headers()
+        res = SESSION.request('post', url, headers=headers, data=json.dumps(login_body), verify=VERIFY_SSL)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
+
+        return res.json()
+
+
+    def login(user_name, password):
+        login_body = { 'username': user_name, 'password': password }
+        login_response = send_login_request(login_body)
+
+        if 'response' not in login_response:
+            raise Exception('Could not retrieve login token')
+
+        token = login_response['response'].get('token')
+        # There might be a case where the API does not return a token because there are too many sessions with the same user.
+        # In that case we need to add 'releaseSession = true';
+        if not token:
+            login_body['releaseSession'] = 'true'
+            login_response = send_login_request(login_body)
+            if 'response' not in login_response or 'token' not in login_response['response']:
+                raise Exception('Could not retrieve login token')
+            token = login_response['response']['token']
+
+        return token
+
+
+    def list_scans_command():
+        res = list_scans()
+
+        if not res or 'response' not in res or not res['response']:
+            return 'No scans found'
+
+        scans_arrays = (res['response'].get('usable') + res['response'].get('manageable'))
+        no_dups = list(set([tuple(s.items()) for s in scans_arrays]))
+        scans_dicts = [dict(s) for s in no_dups]
+
+        if len(scans_dicts) == 0:
+            return 'No scans found'
+
+        mapped_scans = [{'Name': s['name'], 'ID': s['id']} for s in scans_dicts]
+
+        headers = [
+        'ID',
+        'Name'
+        ]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter scans", mapped_scans, headers, removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Scan(val.ID==obj.ID)': createContext(mapped_scans, removeNull=True)
+            }
         }
 
-        return headers;
-    }
+        return entry
+
+    def list_scans():
+        path = 'scan'
+
+        return send_request(path)
+
+    def launch_scan_command():
+        scan_id = demisto.args()['scanID']
+        target_address = demisto.args().get('diagnosticTarget')
+        target_password = demisto.args().get('diagnosticPassword')
+
+        if (target_address and not target_password) or (target_password and not target_address):
+            raise ValueError('If a target is provided, both IP/Hostname and the password must be provided')
+
+        res = launch_scan(scan_id, {'address': target_address, 'password': target_password})
+
+        if not res or 'response' not in res or not res['response'] or 'scanResult' not in res['response']:
+            return 'Could not retrieve the scan'
+
+        scan_result = res['response']['scanResult']
+
+        headers = [
+            'Name',
+            'ID',
+            'OwnerID',
+            'JobID',
+            'Status'
+        ]
 
 
-    function getCookieFromResponse(response){
-        var cookieHeader = response.Headers['Set-Cookie'];
-        if(!(cookieHeader instanceof Array)) {
-            cookieHeader = [cookieHeader];
-        }
-        var cookies = cookieHeader[cookieHeader.length - 1];
-
-        // Gets the TNS_SESSION_ID part of the cookie
-        return cookies.split(';')[0];
-    }
-
-    function login(userName, password) {
-        var loginBody = { username: userName, password: password };
-        var loginResponse = sendLoginRequest(JSON.stringify(loginBody));
-        var token = loginResponse.response.token;
-        // There might be a case where the API does not return a token because there are too many sessions with the same user.
-        // In that case we need to add 'releaseSession = true';
-        if(!token) {
-            loginBody.releaseSession = "true";
-            loginResponse = sendLoginRequest(JSON.stringify(loginBody));
-            token = loginResponse.response.token;
-        }
-
-        TOKEN = token;
-
-    }
-
-    function sendLoginRequest(loginBody){
-        var requestUrl = SERVER_URL.concat('token');
-        var result = http(
-            requestUrl,
-            {
-                Headers: getHeaders(),
-                Method: 'POST',
-                Body: loginBody
-            },
-            params.insecure
-        );
-
-        if(result.StatusCode < 200 || result.StatusCode >= 300){
-            throw 'Request failed!\nStatus code:' + result.StatusCode + '.\nBody: ' + JSON.stringify(result) + '.';
+        mapped_scan = {
+            'Name': scan_result['name'],
+            'ID': scan_result['id'],
+            'OwnerID': scan_result['ownerID'],
+            'JobID': scan_result['jobID'],
+            'Status': scan_result['status']
         }
 
-        TNS_SESSION_ID_COOKIE = getCookieFromResponse(result);
-
-        return JSON.parse(result.Body);
-    }
-
-    function logout() {
-        sendRequest('token', 'DELETE');
-    }
-
-    function sendRequest(path, method, queryParams, body){
-        var requestUrl = SERVER_URL.concat(path, queryParams ? encodeToURLQuery(queryParams ) : '');
-        var result = http(
-            requestUrl,
-            {
-                Headers: getHeaders(TOKEN),
-                Method: method,
-                Body: body
-            },
-            params.insecure
-        );
-
-        if(result.StatusCode < 200 || result.StatusCode >= 300){
-            throw 'Request failed!\nStatus code:' + result.StatusCode + '.\nBody: ' + JSON.stringify(result) + '.';
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter scans", mapped_scan, headers, removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Scan(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
+            }
         }
 
-        return JSON.parse(result.Body);
-    }
+        return entry
 
-    function getRepositories() {
-        var repositories = getRepositoriesRequest();
-        var ec = {
-            Repositories : repositories
-        };
 
-        return {
-            Type: entryTypes.note,
-            Contents: repositories,
-            ContentsFormat: formats.json,
-            HumanReadable: tableToMarkdown('Available repositories', repositories, ['id', 'name', 'description']),
-            EntryContext: ec
-        };
-    }
-
-    function getRepositoriesRequest() {
-        var result = sendRequest('repository', 'GET');
-        var repositories = result.response;
-        return repositories;
-    }
-
-    function getTickets(){
-        var tickets = getTicketsRequest();
-
-        return{
-            Type: entryTypes.note,
-            Contents: tickets,
-            ContentsFormat: formats.json,
-            HumanReadable: tableToMarkdown('Available tickets', tickets, Object.keys(tickets)),
-            EntryContext: ec
-        };
-    }
-
-    function getTicketsRequest() {
-        var result = sendRequest('ticket', 'GET');
-        var tickets = result.response;
-
-        return tickets;
-    }
-
-    login(params.credentials.identifier, params.credentials.password);
-    var resultEntry;
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            // logout();
-            return TOKEN ? 'ok' : 'notok';
-        case 'fetch-incidents':
-            // JSON of the incident type created by this integration
-            // You can store the last run as a string using set last run.
-            setLastRun({'time': 'now'});
-            // And you can retrieve it in any other call...
-            var now = getLastRun();
-            // now is an object with field time, that has value 'now'.
-            return JSON.stringify([{"Name":"Incident #1"},{"Name":"Incident #2"}]);
-        case 'tsc-repositories':
-            try{
-                resultEntry = getRepositories();
+    def launch_scan(scan_id, scan_target):
+        path = 'scan/' + scan_id + '/launch'
+        body = None
+        if scan_target:
+            body = {
+                'diagnosticTarget': scan_target['address'],
+                'diagnosticPassword': scan_target['password']
             }
-            catch(e) {
-                throw "Could not get repositories, error: " + e;
-            }
-            finally {
-                logout();
-            }
-            break;
-        case 'tsc-tickets':
-            try{
-                resultEntry = getTickets();
-            }
-            catch(e){
-                throw "Could not get tickets, error: " + e;
-            }
-            finally {
-                logout();
-            }
-            break;
-        default:
-        // You can use args[argName] or args.argName to get a specific arg. args are strings.
-        // You can use params[paramName] or params.paramName to get a specific params.
-        // Params are of the type given in the integration page creation.
-    }
 
-    return resultEntry;
-  type: javascript
+        return send_request(path, 'post', body=body)
+
+    def get_scan_status_command():
+        scan_results_ids = argToList(demisto.args()['scanResultID'])
+
+        scans_results = []
+        for scan_results_id in scan_results_ids:
+            res = get_scan_results(scan_results_id)
+            if not res or 'response' not in res or not res['response']:
+                return 'Scan results not found'
+            scans_results.append(res['response'])
+
+        headers = [
+            'Name',
+            'Status',
+            'Description'
+        ]
+
+        mapped_scans_results = [{'Name': scan_result['name'],'Status': scan_result['status'], 'Description': scan_result['description']} for scan_result in scans_results]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter scan", mapped_scans_results, headers, removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Scan(val.ID==obj.ID)': createContext(mapped_scans_results, removeNull=True)
+            }
+        }
+
+        return entry
+
+
+    def get_scan_results(scan_results_id):
+        path = 'scanResult/' + scan_results_id
+
+        return send_request(path)
+
+    def get_scan_report_command():
+        scan_results_id = demisto.args()['scanResultsID']
+
+        res = get_scan_report(scan_results_id)
+
+        if not res or 'response' not in res or not res['response']:
+            return 'Scan results not found'
+
+        scan_results = res['response']
+
+        headers = [
+            'Name',
+            'Status',
+            'Description',
+            'ScannedIPs',
+            'StartTime',
+            'EndTime',
+            'Checks',
+            'ScannerName',
+            'OwnerName',
+            'RepositoryName'
+        ]
+
+        mapped_results = {
+            'Name': scan_results['name'],
+            'Status': scan_results['status'],
+            'Description': scan_results['description'],
+            'Status': scan_results['status'],
+            'Checks': scan_results['completedChecks'],
+            'StartTime': scan_results['startTime'],
+            'EndTime': scan_results['finishTime'],
+            'ScannedIPs': scan_results['scannedIPs'],
+            'OwnerName': scan_results['owner'].get('username'),
+            #'ScannerName': demisto.dt(scan_results['progress'], 'scanners.'
+            'RepositoryName': scan_results['repository'].get('name')
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter scan report", mapped_results, headers, removeNull=True),
+            'EntryContext': {
+                  'Nexpose.Scan(val.ID==obj.ID)': createContext(mapped_results, removeNull=True)
+            }
+        }
+
+        return entry
+
+    def get_scan_report(scan_results_id):
+        path = 'scanResult/' + scan_results_id
+
+        params = {
+            'fields': 'name,description,status,scannedIPs,progress,startTime,finishTime,completedChecks,owner,repository'
+        }
+
+        return send_request(path, params=params)
+
+    def logout():
+        send_request(path='token', method='delete')
+
+    SESSION = Session()
+    token = login(USERNAME, PASSWORD)
+    SESSION.headers.update({'X-SecurityCenter': str(token)})
+
+
+    #TOKEN = login_result[0]
+    #TNS_SESSION_ID_COOKIE = login_result[1]
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        demisto.results('ok')
+    elif demisto.command() == 'tenable-sc-list-scans':
+        demisto.results(list_scans_command())
+    elif demisto.command() == 'tenable-sc-launch-scan':
+        demisto.results(launch_scan_command())
+    elif demisto.command() == 'tenable-sc-get-scan-status':
+        demisto.results(get_scan_status_command())
+    elif demisto.command() == 'tenable-sc-get-scan-report':
+        demisto.results(get_scan_report_command())
+    logout()
+  type: python
   commands:
-  - name: tsc-repositories
+  - name: tenable-sc-list-scans
     arguments: []
-    description: List of repositories
-  - name: tsc-tickets
-    arguments: []
-    description: List of tickets
+    outputs:
+    - contextPath: TenableSC.Scan.Name
+      description: Scan name
+      type: string
+    - contextPath: TenableSC.Scan.ID
+      description: Scan ID
+      type: number
+    description: Get a list of Tenable Security Center existing scans
+  - name: tenable-sc-launch-scan
+    arguments:
+    - name: scanID
+      required: true
+      description: Scan ID
+    - name: diagnosticTarget
+      description: Valid IP/Hostname of a specific target to scan. Must be provided
+        with diagnosticPassword.
+    - name: diagnosticPassword
+      description: Non empty string password
+    outputs:
+    - contextPath: TenableSC.Scan.Name
+      description: Scan name
+      type: string
+    - contextPath: TenableSC.Scan.ResultID
+      description: Scan Result ID
+      type: string
+    - contextPath: TenableSC.Scan.OwnerID
+      description: Scan owner ID
+      type: string
+    - contextPath: TenableSC.JobID
+      description: Job ID
+      type: string
+    - contextPath: TenableSC.Scan.Status
+      description: Scan status
+      type: string
+    description: Launch an existing scan from Tenable Security Center
+  - name: tenable-sc-get-scan-status
+    arguments:
+    - name: scanResultID
+      required: true
+      description: Scan Result ID
+      isArray: true
+    outputs:
+    - contextPath: TenableSC.Scan.Status
+      description: Scan status
+      type: string
+    - contextPath: TenableSC.Scan.Name
+      description: Scan Name
+      type: string
+    - contextPath: TenableSC.Scan.Description
+      description: Scan description
+    description: Get the status of a specific scan
+  - name: tenable-sc-get-scan-report
+    arguments:
+    - name: scanResultsID
+      required: true
+      description: Scan Results ID
+    outputs:
+    - contextPath: TenableSC.Scan.Name
+      description: Scan name
+      type: string
+    - contextPath: TenableSC.Scan.Status
+      description: Scan status
+      type: string
+    - contextPath: TenableSC.Scan.ScannedIPs
+      description: Number of scanned IPs
+      type: number
+    - contextPath: TenableSC.Scan.StartTime
+      description: Scan start time
+      type: date
+    - contextPath: TenableSC.Scan.EndTime
+      description: Scan end time
+      type: date
+    - contextPath: TenableSC.Scan.Checks
+      description: Scan completed checks
+      type: number
+    - contextPath: TenableSC.Scan.ScannerName
+      description: Scanner engine name
+      type: string
+    - contextPath: TenableSC.Scan.OwnerName
+      description: Scan owner username
+      type: string
+    - contextPath: TenableSC.Scan.RepositoryName
+      description: Scan repository name
+      type: string
+    - contextPath: TenableSC.Scan.Description
+      description: Scan description
+    description: Get a report with the scan results
+  - name: tenable-sc-download-report
+    arguments:
+    - name: scanID
+      required: true
+      description: Scan's ID
+    outputs:
+    - contextPath: TenableSC.Scan.ID
+      description: Scan ID
+      type: string
+    description: Download a report with a given scan's results
+  - name: tenable-sc-stop-scan
+    arguments:
+    - name: scanID
+      required: true
+      description: Scan's ID
+    outputs:
+    - contextPath: TenableSC.Scan.ID
+      description: Scan's ID
+      type: string
+    description: Stop a scan on Tenable Security Center
+  - name: tenable-sc-pause-scan
+    arguments:
+    - name: scanID
+      required: true
+      description: Scan's ID
+    outputs:
+    - contextPath: TenableSC.Scan.ID
+      description: Scan's ID
+      type: string
+    description: Pause a scan on Tenable Security Center
+  - name: tenable-sc-resume-scan
+    arguments:
+    - name: scanID
+      required: true
+      description: Scan's ID
+    outputs:
+    - contextPath: TenableSC.Scan.ID
+      description: Scan's ID
+      type: string
+    description: Resume a scan on Tenable Security Center
+  - name: tenable-sc-create-scan
+    arguments:
+    - name: name
+      required: true
+      description: Scan name
+    - name: typeID
+      required: true
+      description: Scan type (plugin or policy) ID
+    - name: description
+      description: Scan description
+    - name: repositoryID
+      required: true
+      description: Repository ID for the scan
+    - name: zoneID
+      description: Zone ID for the scan (default is all zones)
+    - name: schedule
+      auto: PREDEFINED
+      predefined:
+      - dependent
+      - ical
+      - never
+      - rollover
+      - now
+      description: Schedule time for the scan
+      defaultValue: now
+    - name: assetID
+      description: Asset IDs to scan (Separated by comma)
+    - name: scanningVirtualHosts
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Decide if the scan includes virtual hosts
+      defaultValue: "false"
+    - name: ipList
+      description: IP list to scan
+    outputs:
+    - contextPath: TenableSC.Scan.ID
+      description: Scan ID
+      type: string
+    - contextPath: TenableSC.Scan.Creator.ID
+      description: Scan's creator ID
+      type: string
+    - contextPath: TenableSC.Scan.Name
+      description: Scan Name
+      type: string
+    - contextPath: TenableSC.Scan.Type
+      description: Scan type
+      type: string
+    - contextPath: TenableSC.Scan.Policy.ID
+      description: Policy ID
+      type: string
+    - contextPath: TenableSC.Scan.Plugin.ID
+      description: Plugin ID
+      type: string
+    - contextPath: TenableSC.Scan.Repository.ID
+      description: Scan's repository ID
+      type: string
+    - contextPath: TenableSC.Scan.CreatedTime
+      description: Scan's created time
+      type: date
+    - contextPath: TenableSC.Scan.Scedule.Type
+      description: Scan's schedule type
+      type: string
+    - contextPath: TenableSC.Scan.Owner.Name
+      description: Owner's Username
+      type: string
+    description: Create a scan on Tenable Security Center
+  - name: tenable-sc-delete-scan
+    arguments:
+    - name: scanID
+      required: true
+      description: Scan's ID
+    outputs:
+    - contextPath: TenableSC.Scan.ID
+      description: Scan's ID
+      type: string
+    description: Delete a scan from Tenable Security Center
+  - name: tenalbe-sc-list-assets
+    arguments:
+    - name: usable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Filter results by usable flag
+      defaultValue: "true"
+    - name: manageable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Filter results by manageable flag
+      defaultValue: "true"
+    outputs:
+    - contextPath: TenableSC.Asset.ID
+      description: Asset ID
+      type: string
+    - contextPath: TenableSC.Asset.Name
+      description: Asset Name
+      type: string
+    description: Get a list of Tenable Security Center Assets
+  - name: tenable-sc-create-asset
+    arguments:
+    - name: name
+      required: true
+      description: Asset Name
+    - name: description
+      description: Asset description
+    - name: ownerID
+      description: default is the Session User ID
+    - name: tags
+      description: Tag the Asset
+    - name: data
+      description: An ip, a list or a range of ip addresses
+    outputs:
+    - contextPath: TenableSC.Asset.Name
+      description: Asset Name
+      type: string
+    - contextPath: TenableSC.Asset.ID
+      description: Asset ID
+      type: string
+    - contextPath: TenableSC.Asset.owner,ID
+      description: Asset's owner ID
+      type: string
+    - contextPath: TenableSC.Asset.Tag
+      description: Asset's related tags
+      type: string
+    description: Create an Asset in Tenable Security Center. The Asset can be a single
+      ip address, a list or a range of ip addresses.
+  runonce: false
+releaseNotes: "-"
