@@ -1,7 +1,6 @@
-id: 0021dcfe-771f-4c45-8472-9b1356d4a4f1
-version: 84
-rolename: []
-name: test json
+id: JSONtoCSV-Test
+version: -1
+name: JSONtoCSV-Test
 starttaskid: "0"
 tasks:
   "0":

@@ -1,7 +1,6 @@
 commonfields:
-  id: a33335c6-cf6a-410a-8796-5c37f4c13e8f
-  version: 11
-rolename: []
+  id: LoadJSONWithArray
+  version: -1
 name: LoadJSONWithArray
 script: |-
   import json
@@ -29,4 +28,7 @@ outputs:
   description: The JSON object loaded from input
 scripttarget: 0
 runonce: false
-releaseNotes: "New function, works with variety of json structures"
+comment: Load JSON object from input
+releaseNotes: "-"
+tests:
+- Forgive me for my sins but I did not create any test
