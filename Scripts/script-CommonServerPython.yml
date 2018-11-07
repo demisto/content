@@ -1242,7 +1242,7 @@ script: |-
       """
       range_split = date_range.split(' ')
       if len(range_split) != 2:
-          return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)')
+          return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes, 6 months, 1 day, etc.)')
 
       number = int(range_split[0])
       if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
