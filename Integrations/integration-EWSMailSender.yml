@@ -113,9 +113,10 @@ script:
             to_recipients=to,
             reply_to=reply_to
         )
+        m.save()
         for attachment in attachments:
             m.attach(attachment)
-        m.send_and_save()
+        m.send()
         return m
 
 

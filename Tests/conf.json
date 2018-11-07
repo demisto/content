@@ -3,6 +3,28 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "ParseExcel-test"
+        },
+        {
+            "integrations": [
+                "Panorama",
+                "Check Point"
+            ],
+            "playbookID": "blockip_test_playbook"
+        },
+        {
+          "integrations": "IntSights",
+          "playbookID": "IntSights Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": "IntSights",
+            "playbookID": "IntSights Test"
+        },
+        {
             "integrations": "BitDam",
             "playbookID": "Detonate File - BitDam Test"
         },
@@ -27,6 +49,10 @@
             "playbookID": "RTIR Test"
         },
         {
+            "integrations": "RedCanary",
+            "playbookID": "RedCanaryTest"
+        },
+        {
           "integrations": "Devo",
           "playbookID": "devo_test_playbook"
         },
@@ -41,6 +67,16 @@
         {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
+        },
+        {
+
+            "integrations": "BigFix",
+            "playbookID": "BigFixTest"
+        },
+        {
+            "integrations": "Lastline",
+            "playbookID": "Lastline - testplaybook",
+            "nightly": true
         },
         {
             "integrations": "epo",
@@ -138,22 +174,24 @@
             "playbookID": "TestParseCSV"
         },
         {
-            "playbookID": "detonate_file_-_generic_test",
+            "playbookID": "Detonate File - Generic Test",
             "timeout": 2000,
             "nightly": true,
             "integrations": [
                 "VxStream",
                 "McAfee Advanced Threat Defense",
-                "WildFire"
+                "WildFire",
+                "Lastline"
             ]
         },
         {
-            "playbookID": "detonate_url_-_generic_test",
+            "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
             "integrations": [
                 "McAfee Advanced Threat Defense",
-                "VxStream"
+                "VxStream",
+                "Lastline"
             ]
         },
         {
@@ -196,7 +234,8 @@
         },
         {
             "integrations": "Rapid7 Nexpose",
-            "playbookID": "nexpose_test"
+            "playbookID": "nexpose_test",
+            "timeout": 240
         },
         {
             "integrations": "EWS Mail Sender",
@@ -271,6 +310,10 @@
         {
             "integrations": "FalconHost",
             "playbookID": "CrowdStrike Endpoint Enrichment - Test"
+        },
+        {
+          "integrations": "FalconHost",
+          "playbookID": "crowdstrike_falconhost_test"
         },
         {
             "integrations": [
@@ -462,7 +505,7 @@
         },
         {
             "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
+            "playbookID": "Tanium Test Playbook",
             "nightly": true,
             "timeout": 1200
         },
@@ -524,7 +567,7 @@
         },
         {
             "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
+            "playbookID": "Cisco Umbrella Test"
         },
         {
             "integrations": "icebrg",
@@ -643,6 +686,9 @@
         {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
+        },
+        {
+            "playbookID": "ExifReadTest"
         }
     ],
     "skipped_tests": {
@@ -650,7 +696,6 @@
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
         "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
         "ArcSight Logger test": "Possibly outdated API calls",
-        "Anomali_ThreatStream_Test": "Need to check the reason for skipping",
         "Centreon-Test-Playbook": "Need to check the reason for skipping",
         "TruSTAR Test": "Need to check the reason for skipping",
         "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
@@ -659,16 +704,13 @@
 
     },
     "skipped_integrations": {
-        "PhishTank": "Service problem - 500 internal server error",
+        "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Symantec Endpoint Protection": "DevOps investigation",
         "RedLock": "Don't have alerts",
-        "Symantec Messaging Gateway": "DevOps investigation",
         "Cylance Protect": "Under development",
-        "QRadar": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
-        "Cisco Umbrella Investigate": "Under development",
         "Symantec MSS": "No instance",
         "Remedy AR": "DevOps investigation",
         "McAfee Active Response": "DevOps investigation",
