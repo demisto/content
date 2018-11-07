@@ -350,7 +350,7 @@ script:
         ];
         // cb response - session will have 'active' value for 'status' field although status is 'closed'
         if (CB_PRODUCT === 'Response') {
-            // retrieving closed session info returns inconsistent results (axpected to return the updated info with correct status, but in practive this may return an error)
+            // retrieving closed session info returns inconsistent results (expected to return the updated info with correct status, but in practice this may return an error)
             // do not try to retrieve updated session info, simply change the session status in the result to avoid confusion
             // see https://developer.carbonblack.com/reference/enterprise-response/6.1/live-response-api/#close-sessions
             result.status = 'close'
