@@ -32,15 +32,15 @@ tasks:
     task:
       id: fd92b5cb-d7b2-4528-8fb2-b84eadffd3e2
       version: -1
-      name: tenable-get-scans
+      name: tenable-io-get-scans
       description: Retrive scans from the Tenable platform.
-      script: '|||tenable-get-scans'
+      script: '|||tenable-io-get-scans'
       type: regular
       iscommand: true
       brand: ""
     scriptarguments:
-      folder-id: {}
-      last-modified-date: {}
+      folderId: {}
+      lastModifiedDate: {}
     separatecontext: false
     view: |-
       {
@@ -57,15 +57,15 @@ tasks:
     task:
       id: 87f54f14-f8e1-4d4b-8130-a8cd84ac34cb
       version: -1
-      name: tenable-get-scan-status
+      name: tenable-io-get-scan-status
       description: 'Check the status of a specific scan using its ID. The status can
         hold following possible values : Running, Completed and Empty (Ready to run).'
-      script: '|||tenable-get-scan-status'
+      script: '|||tenable-io-get-scan-status'
       type: regular
       iscommand: true
       brand: ""
     scriptarguments:
-      scan-id:
+      scanId:
         simple: "10"
     separatecontext: false
     view: |-
@@ -83,9 +83,9 @@ tasks:
     task:
       id: 8aaab108-a1dd-422e-8df5-7a7d90c3df87
       version: -1
-      name: tenable-get-scan-report
+      name: tenable-io-get-scan-report
       description: Retrive scan-report for the given scan.
-      script: '|||tenable-get-scan-report'
+      script: '|||tenable-io-get-scan-report'
       type: regular
       iscommand: true
       brand: ""
@@ -98,7 +98,7 @@ tasks:
         simple: "yes"
       info:
         simple: "yes"
-      scan-id:
+      scanId:
         simple: "10"
     separatecontext: false
     view: |-
@@ -150,17 +150,17 @@ tasks:
     task:
       id: 8fd35fbd-2815-47f3-8d50-610833d3934e
       version: -1
-      name: tenable-get-vulnerability-details
+      name: tenable-io-get-vulnerability-details
       description: Retrieve details for the given vulnerability.
-      script: '|||tenable-get-vulnerability-details'
+      script: '|||tenable-io-get-vulnerability-details'
       type: regular
       iscommand: true
       brand: ""
     scriptarguments:
-      date-range: {}
-      vulnerability-id:
+      dateRange: {}
+      vulnerabilityId:
         complex:
-          root: Tenable
+          root: TenableIO
           accessor: Vulnerabilities.[0].Id
     separatecontext: false
     view: |-
@@ -178,16 +178,16 @@ tasks:
     task:
       id: e3f89e43-fdc7-40ba-8dfd-ed93eb0148ac
       version: -1
-      name: tenable-get-vulnerabilities-by-asset
+      name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
         given asset. By default, this list is sorted by vulnerability count, descending.
-      script: '|||tenable-get-vulnerabilities-by-asset'
+      script: '|||tenable-io-get-vulnerabilities-by-asset'
       type: regular
       iscommand: true
       brand: ""
     scriptarguments:
-      asset-id: {}
-      date-range: {}
+      assetId: {}
+      dateRange: {}
       hostname:
         simple: debian8628.aspadmin.net
       ip: {}

@@ -35,10 +35,10 @@ tasks:
     task:
       id: 31641027-ac88-46a3-8324-1c70cb265545
       version: -1
-      name: tenable-launch-scan
+      name: tenable-io-launch-scan
       description: Lauch a scan with existing or custom targets. (You can specify
         custom targets in the arguements of this command.)
-      script: '|||tenable-launch-scan'
+      script: '|||tenable-io-launch-scan'
       type: regular
       iscommand: true
       brand: ""
@@ -46,10 +46,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      scan-id:
+      scanId:
         complex:
           root: inputs.scan-id
-      scan-targets:
+      scanTargets:
         complex:
           root: inputs.targets
     separatecontext: false
@@ -91,13 +91,13 @@ tasks:
       Interval:
         simple: "1"
       PollingCommandArgName:
-        simple: scan-id
+        simple: scanId
       PollingCommandName:
-        simple: tenable-get-scan-status
+        simple: tenable-io-get-scan-status
       Timeout:
         simple: "60"
       dt:
-        simple: Tenable.Scan(val.Status !== "pending" && val.Status !== "running").Id
+        simple: TenableIO.Scan(val.Status !== "pending" && val.Status !== "running").Id
     separatecontext: true
     loop:
       iscommand: false
@@ -118,9 +118,9 @@ tasks:
     task:
       id: eb82b29d-6d43-4599-8953-19272e99be00
       version: -1
-      name: tenable-get-scan-status
+      name: tenable-io-get-scan-status
       description: 'Check the status of a specific scan using its ID.'
-      script: '|||tenable-get-scan-status'
+      script: '|||tenable-io-get-scan-status'
       type: regular
       iscommand: true
       brand: ""
@@ -128,7 +128,7 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      scan-id:
+      scanId:
         complex:
           root: inputs.scan-id
     separatecontext: false
@@ -147,9 +147,9 @@ tasks:
     task:
       id: 6e67b464-dd8f-4479-8ad7-017bf2c3aef1
       version: -1
-      name: tenable-get-scan-report
+      name: tenable-io-get-scan-report
       description: Retrive scan-report for the given scan.
-      script: '|||tenable-get-scan-report'
+      script: '|||tenable-io-get-scan-report'
       type: regular
       iscommand: true
       brand: ""
@@ -158,7 +158,7 @@ tasks:
         simple: "yes"
       info:
         simple: "yes"
-      scan-id:
+      scanId:
         complex:
           root: inputs.scan-id
     separatecontext: false
