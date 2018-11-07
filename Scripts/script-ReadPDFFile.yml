@@ -11,7 +11,7 @@ script: |-
 
   entryID = demisto.args()['entryID']
 
-  def mark():
+  def mark_suspicious():
       """Missing EOF, file may be corrupted or suspicious file"""
 
       dbot = {
@@ -53,7 +53,7 @@ script: |-
           try:
               pdf = pdfx.PDFx(path)
           except PSEOF:
-              mark()
+              mark_suspicious()
               sys.exit(0)
 
           if not pdf:
