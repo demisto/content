@@ -4,9 +4,15 @@ commonfields:
 name: JSONFileToCSV
 script: |-
   import json
+  import io
+  import csv
+
+  entry_id = demisto.args()['entryid']
+  if isinstance(entry_id, list):
+      entry_id = entry_id[0]
 
   outfilename = demisto.args()['filename']
-  res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryid']})
+  res = demisto.executeCommand('getFilePath', {'id': entry_id})
 
   # Check to see if valid file entryid was provided as input
   if res[0]['Type'] == entryTypes['error']:
@@ -24,30 +30,19 @@ script: |-
 
   dictlist = json.loads(data)
 
-  delim = demisto.args()['delimiter']
-  newline = "\n"
-  csv_out = ""
-  count = 0
+  def json_to_csv(data):
+      si = io.BytesIO()
+      cw = csv.writer(si)
+      keys = list(dictlist[0].iterkeys())
+      cw.writerow(keys)
+      for d in data:
+          val_lst = []
+          for k in keys:
+              val_lst.append(d[k])
+          cw.writerow(val_lst)
+      return si.getvalue().strip("\r\n")
 
-  for d in dictlist:
-
-  #get CSV column names and add delim
-      if count == 0:
-          for k, v in d.items():
-              csv_out += k + delim
-  #remove last delim
-          csv_out = csv_out[:-len(delim)]
-  #add newline for next row
-          csv_out += newline
-          count += 1
-
-  #get values and add delim
-      for k, v in d.items():
-          csv_out += v + delim
-  #remove last delim
-      csv_out = csv_out[:-len(delim)]
-  #add newline for next row
-      csv_out += newline
+  csv_out = json_to_csv(dictlist)
 
   #output cvs as a file to warroom
   demisto.results(fileResult(outfilename,csv_out.encode("utf-8")))
@@ -83,3 +78,4 @@ outputs:
 scripttarget: 0
 timeout: 600ns
 runonce: false
+releaseNotes: "-"

@@ -1,0 +1,32 @@
+commonfields:
+  id: a33335c6-cf6a-410a-8796-5c37f4c13e8f
+  version: 11
+rolename: []
+name: LoadJSONWithArray
+script: |-
+  import json
+  JSON_CONTEXT_KEY = "JsonObject"
+  json_str = demisto.args()['Input']
+  obj = json.loads(json_str)
+
+  demisto.results({
+      "EntryContext": {JSON_CONTEXT_KEY: obj},
+      "Type": entryTypes['note'],
+      "ContentsFormat": formats['json'],
+      "ReadableContentsFormat": formats['json'],
+      "HumanReadable": obj,
+      "Contents": obj})
+type: python
+tags: []
+enabled: true
+args:
+- name: Input
+  required: true
+  default: true
+  description: Input string to transform to JSON object
+outputs:
+- contextPath: JsonObject
+  description: The JSON object loaded from input
+scripttarget: 0
+runonce: false
+releaseNotes: "New function, works with variety of json structures"

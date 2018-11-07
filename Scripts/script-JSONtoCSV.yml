@@ -4,41 +4,63 @@ commonfields:
 name: JSONtoCSV
 script: |-
   import json
+  import io
+  import csv
 
-  json_ent = demisto.executeCommand('getEntry', {'id': demisto.args()['entryid']})
+  entry_id = demisto.args()['entryid']
+  if isinstance(entry_id, list):
+      entry_id = entry_id[0]
+
+  json_ent = demisto.executeCommand('getEntry', {'id': entry_id})
+
   dictlist = json_ent[0]['Contents']
   delim = demisto.args()['delimiter']
 
-  newline = "\n"
-  csv_out = ""
-  count = 0
+  def json_to_csv(data):
+      """
+      takes a list of dictionatiers and parsing them into csv.
+      json should be only list which contains dictionaries.
 
-  for d in dictlist:
+      json:
+          [
+              {
+                  "dn": "DC=demisto,DC=int",
+                  "provider": "activedir"
+              },
+              {
+                  "dn": "CN=Users,DC=demisto,DC=int",
+                  "provider": "activedir"
+              }
+          ]
 
-  #get CSV column names and add delim
-      if count == 0:
-          for k, v in d.items():
-              csv_out += k + delim
-  #remove last delim
-              csv_out = csv_out[:-len(delim)]
-  #add newline for next row
-          csv_out += newline
-          count += 1
+      csv:
+          "dn", "provider"
+          "DC=demisto,DC=int" , "activedir"
+          "CN=Users,DC=demisto, DC=int" ,"activedir"
+      """
+      si = io.BytesIO()
+      cw = csv.writer(si)
+      keys = list(dictlist[0].iterkeys())
 
-  #get values and add delim
-      for k, v in d.items():
-          csv_out += v + delim
-  #remove last delim
-      csv_out = csv_out[:-len(delim)]
-  #add newline for next row
-      csv_out += newline
+      cw.writerow(keys)
+      for d in data:
+          val_lst = []
+          for k in keys:
+              val_lst.append(d[k])
+          cw.writerow(val_lst)
+      return si.getvalue().strip('\r\n')
+
+  csv_final = json_to_csv(dictlist)
 
   if 'filename' in demisto.args():
-      #outout cvs to file in warrrom
-      demisto.results(fileResult(demisto.args()['filename'],csv_out.encode("utf-8")))
+      #outout cvs to file in warroom
+      demisto.results(fileResult(demisto.args()['filename'],csv_final.encode("utf-8")))
   else:
       #outout cvs to warrrom
-      demisto.results(csv_out.encode("utf-8"))
+      demisto.results(csv_final.encode("utf-8"))
+
+
+
 type: python
 tags: []
 comment: Convert a JSON warroom output via EntryID to a CSV file.
@@ -47,6 +69,7 @@ args:
 - name: entryid
   required: true
   description: entry id of json
+  isArray: true
 - name: delimiter
   default: true
   description: CSV Delimiter.
@@ -68,3 +91,4 @@ outputs:
   description: SHA256 hash of the file (only in case of report type=json)
 scripttarget: 0
 runonce: false
+releaseNotes: "-"
