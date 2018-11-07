@@ -40,89 +40,236 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
-    var URL = params.server.replace(/[\/]+$/, '') + ':'+params.port+'/api/';
-    var API_KEY = params.key;
+  script: |
+    ''' IMPORTS '''
+    import string
+    import requests
+    import json
+    import re
+    import uuid
 
-    function sendRequest (uri) {
-        uri.replace(/[\/]+$/, '');
-        var result = http(
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get("proxy", False):
+        del os.environ["HTTP_PROXY"]
+        del os.environ["HTTPS_PROXY"]
+        del os.environ["http_proxy"]
+        del os.environ["https_proxy"]
+
+    ''' GLOBALS '''
+    URL = demisto.params().get('server').rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
+    API_KEY = str(demisto.params().get('key'));
+    USE_SSL = not demisto.params()['insecure']
+    #HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+    ''' HELPERS '''
+    def http_request(uri, method, headers = {}, body = {}, params={}, files={}):
+        ''' Makes an API call with the gicen arguments '''
+        #demisto.log(uri)
+        #demisto.log('11111')
+        #demisto.log(method)
+        #demisto.log(str(headers))
+        #demisto.log('22222')
+        #demisto.log(str(body))
+        #demisto.log(str(params))
+        #demisto.log(str(USE_SSL))
+        #sys.exit(0)
+
+        result = requests.request(
+            method,
             uri,
-            {
-                Method: 'POST',
-                Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
-            },
-            params.insecure,
-            params.proxy
-        );
+            headers=headers,
+            data=body,
+            verify=USE_SSL,
+            params=params,
+            files=files
+        )
+        if result.status_code < 200 or result.status_code >= 300:
+            return_error('Request Failed.\nStatus code: ' + str(result.status_code) + ' with body ' + result.content + ' with headers ' + str(result.headers))
 
-        if (result.StatusCode < 200 || result.StatusCode >= 300) {
-            throw 'Request Failed.\nStatus code: ' + result.StatusCode + '.\nBody: ' + JSON.stringify(result) + '.';
+        jresult = json.loads(xml2json(result.text))
+        if jresult['response']['@status'] != 'success':
+            return_error('Request Failed.\nStatus code: ' + j_result.response['-code'] + '\nBody: ' + result.Body)
+
+        return jresult
+
+    def add_argument_open(arg, field_name, member):
+        if arg:
+            if member:
+                return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>' + arg + '</' + field_name + '>'
+        else:
+            return ''
+
+    def add_argument_yes_no(arg, field_name):
+        if arg:
+            return '<' + field_name + '>' + ('yes' if arg else 'no') + '</' + field_name + '>'
+        else:
+            return ''
+
+    def prepare_params(xpath = None, rulename = None, src_ip = None, dst_ip = None,
+                    negate_src = None, negate_dst = None, action = None, service = None,
+                    disable = None, application = None, src_user = None,
+                    fromm = None, to = None, disable_server_response_inspection = None,
+                    description = None):
+
+        rulename = rulename if rulename else uuid.uuid4()
+        params = {
+            'type': 'config',
+            'action': 'set',
+            'key': API_KEY,
+            'xpath': xpath if xpath else '/config/devices/entry/vsys/entry/rulebase/security/rules/entry[@name=\'' + rulename +'\']',
+            'element':
+                add_argument_open(action, 'action', False) +
+                add_argument_open(description, 'description', False) +
+                add_argument_open(src_ip, 'source', True) +
+                add_argument_open(dst_ip, 'destination', True) +
+                add_argument_open(application, 'application', True) +
+                add_argument_open(src_user, 'source-user', True) +
+                add_argument_open(fromm, 'from', True) +
+                add_argument_open(to, 'to', True) +
+                add_argument_open(service, 'service', True) +
+                add_argument_yes_no(negate_src, 'negate-source') +
+                add_argument_yes_no(negate_dst, 'negate-destination') +
+                add_argument_yes_no(disable, 'disabled') +
+                add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection')
+        }
+        return params
+
+    ''' FUNCTIONS'''
+    def panorama_test():
+        ''' test module '''
+        params = {
+            'type':'op',
+            'cmd': '<show><system><info></info></system></show>',
+            'key': API_KEY
+            }
+        result = http_request(
+            URL,
+            'GET',
+            params = params
+            )
+        demisto.results('ok')
+
+    def panorama_dynamic_list():
+        ''' Creates a dynamic list in panorama '''
+        params = {
+            'type':'user-id',
+            'key': API_KEY
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params = params,
+            files = demisto.args()['file'],
+            )
+        demisto.results(result['response']['@status'])
+
+    def panorama_move():
+        ''' Moves a rule'''
+        params = {
+            'type': 'config',
+            'action': 'move',
+            'key': API_KEY,
+            'where': demisto.args()['where']
         }
 
-        var jResult = JSON.parse(x2j(result.Body));
-        if(jResult.response['-status'] !== 'success'){
-            throw 'Request Failed.\nStatus code: ' + jResult.response['-code'] + '\nBody: ' + result.Body;
+        if 'xpath' in demisto.args():
+            params['xpath'] = demisto.args()['xpath']
+        else:
+            params['xpath'] = '/config/devices/entry/vsys/entry/rulebase/security/rules/entry[@name=\'' + demisto.args()['src'] + '\']'
+
+        if 'dst' in demiso.args():
+            params['dst'] = demisto.args()['dst']
+
+        result = http_request(URL, 'POST', params = params)
+        demisto.results(result['response']['@status'])
+
+    def panorama_block_ip():
+        ip = demisto.args()['ip']
+        direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
+        rule_name =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
+
+        block_destination = False if direction == 'from' else True
+        block_source =  False if direction == 'to' else True
+
+        if block_source:
+            params = prepare_params(action = 'drop', src_ip = ip, dst_ip = 'any', rulename = rule_name + '-from')
+            result = http_request(URL, 'POST', params = params)
+
+        if block_destination:
+            params = prepare_params(action = 'drop', dst_ip = ip, src_ip = 'any', rulename = rule_name + '-to')
+            result = http_request(URL, 'POST', params = params)
+
+    def panorama_block_application():
+        application = demisto.args()['application']
+        rule_name =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
+        params = prepare_params(action = 'drop', src_ip = 'any', dst_ip = 'any', rulename = rule_name, application = application)
+        result = http_request(URL, 'POST', params = params)
+
+    def panorama_command():
+        ''' Executes a command in panorama'''
+        params = {}
+        params['key'] = API_KEY
+        for arg in demisto.args().keys():
+            params[arg] = demisto.args()[arg]
+
+        result = http_request(
+                URL,
+                'POST',
+                params=params
+                )
+        demisto.results(result['response']['@status'])
+
+    def panorama_commit():
+        ''' Commit panorama '''
+        params = {
+            'type': 'commit',
+            'cmd': '<commit></commit>',
+            'key': API_KEY
         }
-        return jResult;
-    }
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+            )
+        demisto.results(result['response']['@status'])
 
-    function sendMultipartRequest (uri, file, apikey) {
-        var result = httpMultipart(
-          uri,
-          file,
-          {
-            Method: 'POST',
-          },
-          {
-            'key': apikey,
-            'file' : file
-          },
-          params.insecure,
-          params.proxy
-        );
+    ''' EXECUTION '''
+    LOG('command is %s' % (demisto.command(), ))
 
-        if (result.StatusCode !== 200) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + ' ' + errorDict[res.StatusCode]+ '.\nBody: ' + JSON.stringify(res) + '.';
-        }
+    try:
+        if demisto.command() == 'test-module':
+            panorama_test()
 
-        var jRes = JSON.parse(x2j(res.Body));
-        if(jRes.response['-status'] !== 'success'){
-            throw 'Request Failed.\nStatus code: ' + jRes.response['-code'] + '\nBody: ' + res.Body;
-        }
-        return jRes;
-    }
+        elif demisto.command() == 'panorama-dynamic-block-list':
+            panorama_dynamic_list()
 
-    function panoramaMove() {
-        var req = {
-            type: 'config',
-            action: 'move',
-            key: 'keyvalue',
-            xpath: args.xpath || '/config/devices/entry/vsys/entry/rulebase/security/rules/entry[@name=\'' + args.src +'\']',
-            where: args.where,
-        };
-        if (args.dst) {
-            req.dst = args.dst;
-        }
-        var raw = sendRequest(URL + encodeToURLQuery(req) + '&key=' + API_KEY);
-        return raw[0].Contents.response['-status'];
-    }
+        elif demisto.command() == 'panorama-move':
+            panorama_move()
 
-    switch (command) {
-        case 'test-module':
-            var result = sendRequest(URL + encodeToURLQuery({type:'config', action: 'show', key: API_KEY}));
-            return 'ok';
+        elif demisto.command() == 'panorama-block-ip':
+            panorama_block_ip()
+            panorama_commit()
 
-        case 'panorama-dynamic-block-list':
-            return sendMultipartRequest(URL + encodeToURLQuery({'type':'user-id'}), args.file, API_KEY);
+        elif demisto.command() == 'panorama-block-application':
+            panorama_block_application()
+            panorama_commit()
 
-        case 'panorama':
-            return sendRequest(URL + encodeToURLQuery(args) + '&key=' + API_KEY);
+        elif demisto.command() == 'panorama-commit':
+            panorama_commit()
 
-        case 'panorama-move':
-            return panoramaMove();
-    }
-  type: javascript
+        elif demisto.command() == 'panorama':
+            panorama_command()
+
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+  type: python
   commands:
   - name: panorama
     arguments:
@@ -194,6 +341,25 @@ script:
       description: Destination xpath to move the rule. For further information, see
         the Panorama XML API Documentation.
     description: Move panorama rules
+  - name: panorama-block-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP to block
+    - name: rulename
+      description: Rule name
+    - name: direction
+      description: Direction to block
+      defaultValue: to, from, both
+    description: Blocks IP with Panorama
+  - name: panorama-block-application
+    arguments:
+    - name: application
+      required: true
+      description: Application to block
+    - name: rukename
+      description: Rule name
+    description: Blocks an application with Panorama
   runonce: false
 releaseNotes: ""
 tests:
