@@ -229,7 +229,8 @@
         },
         {
             "integrations": "Rapid7 Nexpose",
-            "playbookID": "nexpose_test"
+            "playbookID": "nexpose_test",
+            "timeout": 240
         },
         {
             "integrations": "EWS Mail Sender",
