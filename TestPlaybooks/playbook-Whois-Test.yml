@@ -34,12 +34,12 @@ tasks:
     task:
       id: f2dd9724-004c-4f3e-8a28-32aea6aaa74e
       version: -1
-      name: Whois New
+      name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
-      script: Whois|||whois
+      script: whois|||whois
       type: regular
       iscommand: true
-      brand: Whois New
+      brand: whois
     nexttasks:
       '#none#':
       - "2"
