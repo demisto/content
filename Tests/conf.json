@@ -706,7 +706,6 @@
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
-        "RedLock": "Don't have alerts",
         "Cylance Protect": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
