@@ -678,4 +678,6 @@ script:
     description: scadafence-getAllConnections - fetches all connections from the CNM
   isfetch: true
   runonce: false
-
+tests:
+  - SCADAfence_test
+releaseNotes: "1. Added 2 commands: getAllConnections and createAlert 2. Added support to query by IP in getAlerts command"
