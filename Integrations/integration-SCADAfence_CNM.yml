@@ -367,7 +367,7 @@ script:
                         'id': alert['id'],
                         'remediation': alert['remediation']
                     })
-        md = tableToMarkdown('Alerts are: ', output)
+        md = tableToMarkdown('SCADAfence alerts', output)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': data,
@@ -675,7 +675,7 @@ script:
     - contextPath: SCADAfence.Connection.traffic
       description: total number of bytes sent in both directions
       type: number
-    description: scadafence-getAllConnections - fetches all connections from the CNM
+    description: Fetches all connections from the CNM
   isfetch: true
   runonce: false
 tests:
