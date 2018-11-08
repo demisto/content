@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "google-vault",
+            "playbookID": "Google-Vault-Generic-Test"
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {

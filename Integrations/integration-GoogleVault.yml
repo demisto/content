@@ -1,5 +1,5 @@
 commonfields:
-  id: Google Vault
+  id: google-vault
   version: -1
 name: Google Vault
 display: Google Vault
