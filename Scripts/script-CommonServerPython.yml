@@ -15,6 +15,7 @@ script: |-
   import os
   import re
   from collections import OrderedDict
+  import requests
 
   import xml.etree.cElementTree as ET
 
@@ -27,6 +28,15 @@ script: |-
   providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'WildFire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   dbotscores = {'Critical': 4, 'High': 3, 'Medium': 2,'Low': 1, 'Unknown': 0, 'Informational': 0.5}
+
+  # disable insecure warnings
+  requests.packages.urllib3.disable_warnings()
+
+  if not demisto.params().get('proxy'):
+      del os.environ['HTTP_PROXY']
+      del os.environ['HTTPS_PROXY']
+      del os.environ['http_proxy']
+      del os.environ['https_proxy']
 
   def urljoin(url, suffix=""):
       """
@@ -1165,6 +1175,61 @@ script: |-
       })
       sys.exit(0)
 
+  def http_request(method, url, integration_name='integration', status_codes=None, headers=None, cookies=None, data=None, json=None, params=None, verify=False):
+      """
+          Sends HTTP request using requests library
+
+          :type method: ``string``
+          :param method: HTTP requests method, e.g. GET
+
+          :type url: ``string``
+          :param url: Request URL address
+
+          :type integration_name: ``string``
+          :param integration_name: The integration name which calls the function to be raised in errors
+
+          :type status_codes: ``set``
+          :param status_codes: Set of status codes to be considered as valid, e.g. {200,204}
+
+          :type headers: ``dict``
+          :param headers: Request headers, e.g. {'Content-Type: 'application/json'}
+
+          :type cookies: ``dict``
+          :param cookies: Request cookies
+
+          :type data: ``dict``
+          :param data: Request data
+
+          :type json: ``dict``
+          :param json: Request json
+
+          :type params: ``dict``
+          :param params: Request params
+
+          :type verify: ``bool``
+          :param verify: SSL verification
+
+          :rtype: ``requests Reponse``
+          :return: Response object
+      """
+      if status_codes is None:
+          status_codes = {200}
+
+      response = requests.request(
+          method,
+          url,
+          headers=headers,
+          cookies=cookies,
+          data=data,
+          json=json,
+          params=params,
+          verify=verify
+      )
+      if response.status_code not in status_codes:
+          return_error('Error in API call to %s [%d] - %s' % (integration_name, response.status_code, response.reason))
+
+      return response
+
   # Constants for common merge paths
   outputPaths = {
     'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
@@ -1234,4 +1299,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "Add djb2 hash function"
+releaseNotes: "1. Add djb2 hash function 2. Added http_request function and common code"
