@@ -136,14 +136,7 @@ script:
 
         cur_t = time.time()
 
-        lastRunTime = demisto.getLastRun()
-
-        if lastRunTime is None:
-            lastRunTime = cur_t - fetch_interval
-
-        if cur_t - fetch_interval < lastRunTime:
-            demisto.incidents([])
-            sys.exit(0)
+        checkTime = cur_t - fetch_interval
 
         event = demisto.getParam('event_name')
         if event is None:
@@ -164,7 +157,9 @@ script:
         index_str = 'aella-ser*'
 
         query_str = 'event_name:{}  AND severity:>{}'.format(event, score)
-        ts_str = str(long(lastRunTime * 1000))
+
+        ts_str = str(long(checkTime * 1000))
+
         query_json = { 'query':
             { 'bool':
                 { 'must':
@@ -199,6 +194,14 @@ script:
                 return
             hits = data.get('hits', {}).get('hits', [])
             incidents = []
+
+            try:
+                cached_event = demisto.getLastRun().get("cached_event", {})
+            except:
+                cached_event = {}
+
+            new_cached_event = {}
+
             for hit in hits:
                 source = hit.get('_source', None)
                 if not source:
@@ -218,6 +221,11 @@ script:
                 if not event_name:
                     continue
                 eid = hit['_id']
+
+                new_cached_event[eid] = True
+                if cached_event.get(eid, False):
+                    continue
+
                 sdi = '{}_{}'.format(event_name, eid)
                 incident = {
                     'name' : sdi,
@@ -230,9 +238,9 @@ script:
                 }
                 incidents.append(incident)
             demisto.info('Incidents is {}'.format(incidents))
+            demisto.setLastRun({'cached_event': new_cached_event})
             demisto.incidents(incidents)
-            demisto.info('Set LastRun to be {}'.format(cur_t))
-            demisto.setLastRun(cur_t)
+
         else:
             demisto.info('Poll incidents failed {}'.format(action_result))
             demisto.incidents([])
