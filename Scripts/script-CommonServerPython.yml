@@ -15,7 +15,7 @@ script: |-
   import os
   import re
   from collections import OrderedDict
-  import requests
+
 
   import xml.etree.cElementTree as ET
 
@@ -29,8 +29,12 @@ script: |-
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   dbotscores = {'Critical': 4, 'High': 3, 'Medium': 2,'Low': 1, 'Unknown': 0, 'Informational': 0.5}
 
-  # disable insecure warnings
-  requests.packages.urllib3.disable_warnings()
+  try:
+      import requests
+      # disable insecure warnings
+      requests.packages.urllib3.disable_warnings()
+  except:
+      pass
 
   def urljoin(url, suffix=""):
       """
