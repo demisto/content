@@ -246,7 +246,7 @@ def find_tests_for_modified_files(modified_files):
 def get_test_from_conf():
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff HEAD Tests/conf.json")
+    change_string = run_git_command("git diff origin/master Tests/conf.json")
     added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
