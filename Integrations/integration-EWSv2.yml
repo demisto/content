@@ -183,7 +183,7 @@ script:
         raise Exception("Provide a valid email address")
     PASSWORD = demisto.params()['credentials']['password']
     FOLDER_NAME = demisto.params().get('folder', 'Inbox')
-    IS_PUBLIC_FOLDER = demisto.params()['isPublicFolder']
+    IS_PUBLIC_FOLDER = demisto.params()['isPublicFolder'] if 'isPublicFolder' in demisto.params() else False
     ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
     FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
     IS_TEST_MODULE = False
