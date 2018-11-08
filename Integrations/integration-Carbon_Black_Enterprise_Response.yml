@@ -587,7 +587,7 @@ script:
             to: 'Extension',
             from: '.=(val.original_filename.indexOf(".")>=0 ? val.original_filename.split(".")[1] : "")'
         },
-        {to: 'Hostname', from: ".=(val.endpoint ? val.endpoint[0] : '')"},
+        {to: 'Hostname', from: "endpoint"},
         {to: 'Path', from: 'observed_filename'},
         {to: 'LastSeen', from: 'last_seen'},
         {to: 'ServerAddedTimestamp', from: 'server_added_timestamp'},
@@ -656,6 +656,13 @@ script:
         let dataMap = binaryData;
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
+        // format results - "|" char disturbing markdown representation
+        for (let i = 0; i < translatedData.length; i++) {
+            let data = translatedData[i];
+            if (data['Hostname']) {
+                translatedData[i]['Hostname'] = data['Hostname'].join().replace(/\|/gi," ");
+            }
+        }
         let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'File(val.MD5==obj.MD5)': createContext(translatedData)
@@ -1822,5 +1829,6 @@ script:
     description: Retrieve watchlist in Carbon black Response.
   isfetch: true
   runonce: false
+releaseNotes: "cb-binary will now present full results for 'Hostname' field"
 tests:
   - CarbonBlackResponseTest
