@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "google-vault",
-            "playbookID": "Google-Vault-Generic-Test"
+            "playbookID": "Google-Vault-Generic-Test",
             "timeout": 500
         },
         {
