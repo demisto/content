@@ -194,7 +194,7 @@ script:
             res = requests.request(method, full_url, headers=AUTH_HEADERS, params=kwargs)
             res.raise_for_status()
         except HTTPError, e:
-            if ignore_license_error and res.status_code == 403:
+            if ignore_license_error and res.status_code in (403, 500):
                 return
             err_msg = get_scan_error_message(res, scan_id)
             if demisto.command() != 'test-module':
