@@ -5,6 +5,7 @@
         {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test"
+            "timeout": 500
         },
         {
             "playbookID": "ParseEmailFiles-test"
