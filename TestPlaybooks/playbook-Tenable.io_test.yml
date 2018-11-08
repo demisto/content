@@ -32,9 +32,9 @@ tasks:
     task:
       id: fd92b5cb-d7b2-4528-8fb2-b84eadffd3e2
       version: -1
-      name: tenable-io-get-scans
+      name: tenable-io-list-scans
       description: Retrive scans from the Tenable platform.
-      script: '|||tenable-io-get-scans'
+      script: '|||tenable-io-list-scans'
       type: regular
       iscommand: true
       brand: ""
