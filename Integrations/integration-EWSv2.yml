@@ -1327,7 +1327,7 @@ script:
         stdout, stderr = output.communicate()
 
         if stderr:
-            return get_cs_error(sterr)
+            return get_cs_error(stderr)
 
         prefix = '"Action status: '
         pref_ind = stdout.find(prefix)
@@ -1349,7 +1349,7 @@ script:
         stdout, stderr = output.communicate()
 
         if stderr:
-            return get_cs_error(sterr)
+            return get_cs_error(stderr)
 
         # Get search status
         stdout = stdout.split('\n', 1)
@@ -1378,7 +1378,7 @@ script:
         stdout, stderr = output.communicate()
 
         if stderr:
-            return get_cs_error(sterr)
+            return get_cs_error(stderr)
 
         return get_cs_status(search_name, 'Purging')
 
@@ -1389,7 +1389,7 @@ script:
         stdout, stderr = output.communicate()
 
         if stderr:
-            return get_cs_error(sterr)
+            return get_cs_error(stderr)
 
         return get_cs_status(search_name, 'Purged' if stdout.split('\n')[-2] == 'Completed' else 'Purging')
 
@@ -1400,7 +1400,7 @@ script:
         stdout, stderr = output.communicate()
 
         if stderr:
-            return get_cs_error(sterr)
+            return get_cs_error(stderr)
 
         return get_cs_status(search_name, 'Removed')
 
@@ -2200,4 +2200,4 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "-"
+releaseNotes: "Fixed typo in compliance search methods"
