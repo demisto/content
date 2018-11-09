@@ -20,6 +20,7 @@ try:
 except ImportError:
     print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
     sys.exit(1)
+import glob
 import json
 import re
 import os
@@ -178,10 +179,27 @@ def validate_schema(file_path, matching_regex=None):
 def changed_id(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
     if re.search("\+id: .*", change_string) or re.search("\-id: .*", change_string):
-        print_error("You've changed the ID of the playbook {0} please undo.".format(file_path))
+        print_error("You've changed the ID of the file {0} please undo.".format(file_path))
         return True
 
     return False
+
+
+def changed_integration_id(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    if re.search("\+  id: .*", change_string) or re.search("\-  id: .*", change_string):
+        print_error("You've changed the ID of the file {0} please undo.".format(file_path))
+        return True
+
+    return False
+
+
+def get_script_or_integration_id(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        commonfields = data_dictionary.get('commonfields', {})
+        return commonfields.get('id', ['-', ])
 
 
 def get_json(file_path):
@@ -223,6 +241,38 @@ def is_test_in_conf_json(file_path):
     return False
 
 
+def has_duplicated_ids(id_to_file):
+    has_duplicate = False
+    for script in glob.glob(os.path.join('Scripts', '*')):
+        if script in id_to_file.values():
+            continue
+
+        script_id = get_script_or_integration_id(script)
+        if script_id in id_to_file.keys():
+            print_error("The ID from the file {0} already exists".format(id_to_file[script_id]))
+            has_duplicate = True
+
+    for playbook in glob.glob(os.path.join('Playbooks', '*')):
+        if playbook in id_to_file.values():
+            continue
+
+        playbook_id = collect_ids(playbook)
+        if playbook_id in id_to_file.keys():
+            print_error("The ID from the file {0} already exists".format(id_to_file[playbook_id]))
+            has_duplicate = True
+
+    for integration in glob.glob(os.path.join('Integrations', '*')):
+        if integration in id_to_file.values():
+            continue
+
+        integration_id = get_script_or_integration_id(integration)
+        if integration_id in id_to_file.keys():
+            print_error("The ID from the file {0} already exists".format(id_to_file[integration_id]))
+            has_duplicate = True
+
+    return has_duplicate
+
+
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status --no-merges HEAD")
     modified_files, added_files = get_modified_files(files_string)
@@ -234,6 +284,9 @@ def validate_committed_files(branch_name):
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if changed_id(file_path):
                 is_changed_id = True
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if changed_integration_id(file_path):
+                is_changed_id = True
 
         print "Validating {}".format(file_path)
         if not validate_file_release_notes(file_path):
@@ -242,6 +295,7 @@ def validate_committed_files(branch_name):
         if not validate_schema(file_path):
             wrong_schema = True
 
+    id_to_file = {}
     for file_path in added_files:
         print "Validating {}".format(file_path)
         if not validate_schema(file_path):
@@ -251,6 +305,14 @@ def validate_committed_files(branch_name):
             if not is_test_in_conf_json(file_path):
                 missing_test = True
                 print_error("You've failed to add the {0} to conf.json".format(file_path))
+
+        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            id_to_file[get_script_or_integration_id(file_path)] = file_path
+        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            id_to_file[collect_ids(file_path)] = file_path
+
+    if has_duplicated_ids(id_to_file):
+        sys.exit(1)
 
     if missing_release_notes or wrong_schema or is_changed_id or missing_test:
         sys.exit(1)
