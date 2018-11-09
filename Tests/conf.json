@@ -3,6 +3,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test_Sagemaker",
+            "integrations": [
+                "AWS Sagemaker"
+            ]
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
