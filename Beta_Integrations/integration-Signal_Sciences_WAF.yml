@@ -503,4 +503,4 @@ script:
   runonce: false
 releaseNotes: "New integration with SignalSciences."
 tests:
-- SignalSciences Test
+  - SignalSciences Test
