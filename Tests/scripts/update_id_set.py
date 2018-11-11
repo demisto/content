@@ -120,6 +120,7 @@ def update_id_set():
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(id_list, id_set_file, indent=4)
 
+        res = run_git_command("git commit -m 'Updating id_set.json' --no-verify")
         print("Finished updating id_set.json")
 
 
