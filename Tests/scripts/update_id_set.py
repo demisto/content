@@ -102,8 +102,6 @@ def update_id_set():
     added_files = get_added_files(files_string)
 
     if added_files:
-        import logging
-        logging.basicConfig(level=logging.INFO)
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
@@ -113,14 +111,16 @@ def update_id_set():
             if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
                 id = get_script_or_integration_id(file_path)
                 id_list.append(id)
+                print("Adding {0} to id_set".format(id))
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
                 id_list.append(id)
+                print("Adding {0} to id_set".format(id))
 
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(id_list, id_set_file, indent=4)
 
-        res = run_git_command("git commit -m 'Updating id_set.json' --no-verify")
+        res = run_git_command("git commit --no-verify -m 'Updating_id_set.json'")
         print("Finished updating id_set.json")
 
 
