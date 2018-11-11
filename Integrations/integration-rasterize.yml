@@ -58,8 +58,6 @@ script:
 
     if demisto.command() == 'rasterize-image':
         res = demisto.getFilePath(demisto.args()['EntryID'])
-        # demisto.results({'res':res})
-        # res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
         with open(res['path'], 'r') as f:
             data = f.read()
         b64 = base64.b64encode(data)
@@ -70,7 +68,7 @@ script:
 
         friendlyName = 'image.png'
         f = open('htmlImage.html','w')
-        f.write('<html style="background:white";>' + html + '</html>')
+        f.write('<html style="background:white;"><body>' + html + '</body></html>')
         f.close()
 
         proxy_flag = ""
