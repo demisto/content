@@ -210,13 +210,13 @@ script:
                 try:
                     event_severity = int(source.get('severity', None))
                     if event_severity > 75:
-                        severity = 'high'
+                        severity = 3
                     elif event_severity > 50:
-                        severity = 'medium'
+                        severity = 2
                     else:
-                        severity = 'low'
+                        severity = 1
                 except:
-                    severity = 'unknown'
+                    severity = 0
 
                 if not event_name:
                     continue
@@ -229,11 +229,12 @@ script:
                 sdi = '{}_{}'.format(event_name, eid)
                 incident = {
                     'name' : sdi,
+                    'severity' : severity,
                     'rawJSON':json.dumps({  'name':sdi,
                                             'label':'Starlight event',
                                             'aella_eid': eid,
                                             'aella_event':event_name,
-                                            'event_severity': severity
+                                            'event_severity': event_severity
                                         })
                 }
                 incidents.append(incident)
@@ -437,6 +438,3 @@ script:
     description: Query the details for a specific Start Light event
   isfetch: true
   runonce: false
-releaseNotes: "-"
-tests:
-- Forgive me for my sins but I did not create any test
