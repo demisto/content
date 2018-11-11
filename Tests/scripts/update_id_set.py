@@ -97,6 +97,7 @@ def get_script_or_integration_id(file_path):
 
 
 def update_id_set():
+    print("Getting added files")
     files_string = run_git_command("git diff --name-status --no-merges HEAD")
     added_files = get_added_files(files_string)
 
@@ -116,6 +117,8 @@ def update_id_set():
 
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(id_list, id_set_file, indent=4)
+
+        print("Finished updating id_set.json")
 
 
 if __name__ == "__main__":
