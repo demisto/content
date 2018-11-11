@@ -163,7 +163,6 @@ script:
                 params['date_range'] = date_range
             except ValueError, e:
                 return_error("Invalid date range: {}".format(date_range))
-                sys.exit(2)
         return params
 
     def get_scan_error_message(response, scan_id):
@@ -241,17 +240,17 @@ script:
     def get_asset_id(hostname=None, ip=None):
         assets = get_assets()
         if 'error' in assets:
-            return None, { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': assets['error'] }
+            return None, assets['error']
         assets = assets['assets']
         if hostname:
             assets = filter(lambda x: hostname in x['fqdn'] + x['netbios_name'], assets)
             if not assets:
-                return None, { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'No assets found for hostname: {}'.format(hostname) }
+                return None, 'No assets found for hostname: {}'.format(hostname)
             return assets[0]['id'], hostname, False
         if ip:
             assets = filter(lambda x: ip in x['ipv4'] + x['ipv6'], assets)
             if not assets:
-                return None, { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'No assets found for ip: {}'.format(ip) }
+                return None, 'No assets found for ip: {}'.format(ip)
             return assets[0]['id'], ip, False
 
     # Command methods
@@ -314,27 +313,23 @@ script:
         plugin_id, date_range = demisto.getArg('vulnerabilityId'), demisto.getArg('dateRange')
         info = send_vuln_details_request(plugin_id, date_range)
         if 'error' in info:
-            return {
-                'Type': entryTypes['error'],
-                'ContentsFormat': formats['text'],
-                'Contents': info['error']
-            }
+            return_error(info['error'])
         return get_entry_for_object('Vulnerability details - {}'.format(plugin_id), 'TenableIO.Vulnerabilities', replace_keys(flatten(info['info'])), VULNERABILITY_DETAILS_HEADERS)
 
     def get_vulnerabilities_by_asset_command():
         asset_id, hostname, ip, date_range = demisto.getArg('assetId'), demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')
         if all(s is None for s in (asset_id, hostname, ip)):
-            return { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': "Please provide one of the following arguments: asset-id, hostname, ip" }
+            return_error("Please provide one of the following arguments: asset-id, hostname, ip")
         indicator = None
         if asset_id is None:
             asset_id, indicator, err = get_asset_id(hostname, ip)
             if err:
-                return err
+                return_error(err)
         else:
             indicator = asset_id
         info = send_asset_vuln_request(asset_id, date_range)
         if 'error' in info:
-            return { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': info['error'] }
+            return_error(info['error'])
         vulns = replace_keys(info['vulnerabilities'], ASSET_VULNS_NAMES_MAP)
         return get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities', vulns, ASSET_VULNS_HEADERS)
 
