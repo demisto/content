@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -51,7 +51,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -76,7 +76,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -101,7 +101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
@@ -128,7 +128,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
@@ -180,7 +180,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -268,7 +268,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 1245
         }
       }
@@ -308,51 +308,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
     note: false
   "17":
     id: "17"
-    taskid: 98392d93-ffac-4792-8f9a-8b58fda21d35
+    taskid: cf17e9dd-b48e-4e0e-86af-406c69e03c10
     type: condition
     task:
-      id: 98392d93-ffac-4792-8f9a-8b58fda21d35
+      id: cf17e9dd-b48e-4e0e-86af-406c69e03c10
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "26"
       "yes":
       - "8"
-    scriptarguments:
-      left:
-        complex:
-          root: McAfee
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: McAfee.ePO.Endpoint.Hostname
-                iscontext: true
-              right:
-                value:
-                  simple: mar
-          accessor: ePO.Endpoint.IPAddress
-      right:
-        simple: 192.168.1.103
-    results:
-    - AreValuesEqual
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: McAfee.ePO.Endpoint.IPAddress
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.1.103
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 1420
         }
       }
@@ -587,8 +581,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 1170
+          "x": 480,
+          "y": 1595
         }
       }
     note: false
@@ -598,7 +592,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3185,
-        "width": 850,
+        "width": 810,
         "x": 50,
         "y": 50
       }
