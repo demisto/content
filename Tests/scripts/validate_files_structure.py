@@ -124,8 +124,6 @@ def get_modified_files(files_string):
 
     return modified_files_list, added_files_list
 
-    return modified_files_list
-
 
 def validate_file_release_notes(file_path):
     data_dictionary = None
@@ -243,31 +241,12 @@ def is_test_in_conf_json(file_path):
 
 def has_duplicated_ids(id_to_file):
     has_duplicate = False
-    for script in glob.glob(os.path.join('Scripts', '*')):
-        if script in id_to_file.values():
-            continue
+    with open('./Tests/id_set.json', 'r') as id_set_file:
+        id_list = json.load(id_set_file)
 
-        script_id = get_script_or_integration_id(script)
-        if script_id in id_to_file.keys():
-            print_error("The ID from the file {0} already exists".format(id_to_file[script_id]))
-            has_duplicate = True
-
-    for playbook in glob.glob(os.path.join('Playbooks', '*')):
-        if playbook in id_to_file.values():
-            continue
-
-        playbook_id = collect_ids(playbook)
-        if playbook_id in id_to_file.keys():
-            print_error("The ID from the file {0} already exists".format(id_to_file[playbook_id]))
-            has_duplicate = True
-
-    for integration in glob.glob(os.path.join('Integrations', '*')):
-        if integration in id_to_file.values():
-            continue
-
-        integration_id = get_script_or_integration_id(integration)
-        if integration_id in id_to_file.keys():
-            print_error("The ID from the file {0} already exists".format(id_to_file[integration_id]))
+    for id in id_to_file.keys():
+        if id in id_list:
+            print_error("The ID {0} already exists, please update the file {1}".format(id, id_to_file[id]))
             has_duplicate = True
 
     return has_duplicate
@@ -319,7 +298,9 @@ def validate_committed_files(branch_name):
 
 
 def validate_all_files():
+    id_list = []
     found_wrong_name = False
+    duplicated_id = False
     wrong_schema = False
 
     for regex in CHECKED_TYPES_REGEXES:
@@ -330,21 +311,32 @@ def validate_all_files():
         for root, dirs, files in os.walk(directory):
             print_color("Validating {} directory:".format(directory), LOG_COLORS.GREEN)
             for file_name in files:
+                file_path = os.path.join(root, file_name)
                 # skipping hidden files
                 if file_name.startswith('.'):
                     continue
                 print "Validating " + file_name
                 if not file_name.lower().endswith(suffix):
-                     print_error("file " + os.path.join(root, file_name) + " should end with " + suffix)
+                     print_error("file " + file_path + " should end with " + suffix)
                      found_wrong_name = True
                 if not file_name.lower().startswith(prefix):
-                     print_error("file " + os.path.join(root, file_name) + " should start with " + prefix)
+                     print_error("file " + file_path + " should start with " + prefix)
                      found_wrong_name = True
-                if not validate_schema(os.path.join(root, file_name), regex):
-                    print_error("file " + os.path.join(root, file_name) + " schema is wrong.")
+                if not validate_schema(file_path, regex):
+                    print_error("file " + file_path + " schema is wrong.")
                     wrong_schema = True
+                if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                    id = get_script_or_integration_id(file_path)
+                    if id in id_list:
+                        print_error("ID {0} has appeared more than once, look at the file {1}".format(id, file_path))
+                        duplicated_id = True
+                if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                    id = collect_ids(file_path)
+                    if id in id_list:
+                        print_error("ID {0} has appeared more than once, look at the file {1}".format(id, file_path))
+                        duplicated_id = True
 
-    if wrong_schema or found_wrong_name:
+    if wrong_schema or found_wrong_name or duplicated_id:
         sys.exit(1)
 
 
