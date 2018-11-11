@@ -43,9 +43,8 @@ script:
     SCOPES = 'https://www.googleapis.com/auth/ediscovery'
     DEMISTO_MATTER = "test_search_phishing"
 
-    ''' GLOBAL VARS '''
-    ADMIN_EMAIL = ((demisto.params()["gsuite_credentials"])["identifier"]).encode("utf-8")
-    PRIVATE_KEY_CONTENT = (demisto.params()["auth_json"]).encode("utf-8")
+    ADMIN_EMAIL = demisto.params()["gsuite_credentials"]["identifier"].encode("utf-8")
+    PRIVATE_KEY_CONTENT = demisto.params()["auth_json"].encode("utf-8")
 
 
     # @@@@@@@@ HELPER FUNCS @@@@@@@@
@@ -92,28 +91,6 @@ script:
         return open_matters
 
 
-    def get_all_matters_ONE_WAY(service, state):  # Must be done in While(next page token)
-        matter_list = []
-        state = state.upper()
-        matter_state = 'STATE_UNSPECIFIED'
-        if state == 'OPEN':
-            matter_state = 'OPEN'
-        elif state == 'CLOSED':
-            matter_state = 'CLOSED'
-        elif state == 'DELETED':
-            matter_state = 'DELETED'
-        list_response1 = service.matters().list(
-            view='FULL', pageSize=10, state=matter_state).execute()
-        for matter in list_response1['matters']:
-            matter_list.append(matter)
-        if 'nextPageToken' in list_response1:
-            list_response2 = service.matters().list(
-                pageSize=10, state=matter_state, pageToken=list_response1['nextPageToken']).execute()
-            for matter in list_response2['matters']:
-                matter_list.append(matter)
-        return matter_list
-
-
     def get_matter_by_id(service, matter_id):
         matter = service.matters().get(matterId=matter_id).execute()
         return matter
@@ -121,13 +98,7 @@ script:
 
     def get_matters_by_state(service, state):
         state = state.upper()
-        matter_state = 'STATE_UNSPECIFIED'
-        if state == 'OPEN':
-            matter_state = 'OPEN'
-        elif state == 'CLOSED':
-            matter_state = 'CLOSED'
-        elif state == 'DELETED':
-            matter_state = 'DELETED'
+        matter_state = state if state in ('OPEN', 'CLOSED', 'DELETED') else 'STATE_UNSPECIFIED'
         matter_list = service.matters().list(state=matter_state).execute()
         return matter_list
 
@@ -143,40 +114,31 @@ script:
 
 
     def close_matter(service, matter_id):
-        try:
-            close_response = service.matters().close(
-                matterId=matter_id, body={}).execute()
-        except Exception, ex:
-            raise
+        close_response = service.matters().close(matterId=matter_id, body={}).execute()
         return close_response['matter']
 
 
     def reopen_matter(service, matter_id):
-        reopen_response = service.matters().reopen(
-            matterId=matter_id, body={}).execute()
+        reopen_response = service.matters().reopen(matterId=matter_id, body={}).execute()
         return reopen_response['matter']
 
 
     def undelete_matter(service, matter_id):
-        undeleted_matter = service.matters().undelete(
-            matterId=matter_id, body={}).execute()
+        undeleted_matter = service.matters().undelete(matterId=matter_id, body={}).execute()
         return undeleted_matter
 
 
     def add_held_account(service, matter_id, hold_id, account_id):
         held_account = {'accountId': account_id}
-        return service.matters().holds().accounts().create(
-            matterId=matter_id, holdId=hold_id, body=held_account).execute()
+        return service.matters().holds().accounts().create(matterId=matter_id, holdId=hold_id, body=held_account).execute()
 
 
     def remove_held_account(service, matter_id, hold_id, account_id):
-        return service.matters().holds().accounts().delete(
-            matterId=matter_id, holdId=hold_id, accountId=account_id).execute()
+        return service.matters().holds().accounts().delete(matterId=matter_id, holdId=hold_id, accountId=account_id).execute()
 
 
     def remove_hold(service, matter_id, hold_id):
-        return service.matters().holds().delete(
-            matterId=matter_id, holdId=hold_id).execute()
+        return service.matters().holds().delete(matterId=matter_id, holdId=hold_id).execute()
 
 
     def list_holds(service, matter_id):
@@ -531,23 +493,6 @@ script:
             } )
                 # demisto.results(u'{} ({})'.format(matter.get('name'), matter.get('matterId')))
 
-    def get_matter_by_name_or_id_command():
-        """
-        If both name and ID were given, it will search by ID by default.
-        """
-        service = connect()
-        matter_name = demisto.getArg('matterName')
-        matter_id = demisto.getArg('matterID')
-        results = []
-        if matter_id:
-            results.append(get_matter_by_id(matter_id))
-        elif matter_name:
-            results.append(get_matters_by_name(matter_name))
-        else:
-            demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                             "Contents": 'No input was given. Please enter either matter name or matter id.'})
-            sys.exit(2)
-
 
     def create_matter_command():
         service = connect()
@@ -569,7 +514,7 @@ script:
         'Matter Name': matter.get('name'),
         'Matter ID': matter.get('matterId'),
         'Matter State': matter.get('state')
-                            })
+        })
         markdown += tableToMarkdown(title, markdown_matter, ['Matter Name', 'Matter ID', 'Matter State']) #  Why is the title displayed in a weird way?
 
         output_context = []
@@ -577,7 +522,7 @@ script:
         'Name': matter.get('name'),
         'ID': matter.get('matterId'),
         'State': matter.get('state')
-                    })
+        })
 
         demisto.results( {
             'Type': entryTypes['note'],
@@ -586,7 +531,7 @@ script:
             'HumanReadable': markdown,
             'EntryContext': {
             'GoogleVault.Matter(val.ID == obj.ID)': output_context
-                             }
+           }
         })
 
 
@@ -989,49 +934,6 @@ script:
         })
 
 
-    def create_hangouts_export_command():
-        service = connect()
-        matter_id = demisto.getArg('matterID')
-        export_name = demisto.getArg('exportName')
-        data_scope = demisto.getArg('dataScope')
-        search_method = demisto.getArg('searchMethod')
-        emails = demisto.getArg('emails')
-        org_unit = demisto.getArg('ou')
-        team_drives = demisto.getArg('teamDrive')
-        include_teamdrives = demisto.getArg('includeTeamDrives')
-        time_frame = demisto.getArg('timeFrame')
-        start_time = demisto.getArg('startTime')
-        end_time = demisto.getArg('endTime')
-        terms = demisto.getArg('terms')
-
-        query =  create_drive_export_query(export_name, emails, team_drives, time_frame, start_time, end_time, terms, org_unit, search_method, include_teamdrives, data_scope)
-        response = ""
-        try:
-            response = create_export(service, matter_id, query)
-        except Exception, ex:
-            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to create export. Error: {}'.format(ex)})
-            sys.exit(2)
-        create_time = response.get('createTime')
-        export_id = response.get('id')
-
-        usr_msg = "An export named {}\nwith ID {}\nwas successfully created in matter {}\nat {}.".format(export_name, export_id, matter_id, create_time)
-        context_output = []
-        context_output.append({
-            'MatterID': matter_id,
-            'ID': export_id,
-            'Name': export_name,
-            'CreateTime': create_time
-        })
-        demisto.results( {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': usr_msg,
-            'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
-            }
-        })
-
-
     def create_groups_export_command():
         service = connect()
         matter_id = demisto.getArg('matterID')
@@ -1405,7 +1307,6 @@ script:
       - Mail
       - Drive
       - Groups
-      - Hangouts Chat
       description: New hold's corpus type
     - name: accountID
       required: true
