@@ -398,6 +398,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Gmail
+    nexttasks:
+      '#none#':
+      - "22"
     scriptarguments:
       user-id:
         simple: admin@demistodev.com
@@ -492,8 +495,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 515
+          "x": 50,
+          "y": 1885
         }
       }
     note: false
@@ -536,8 +539,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 690
+          "x": 50,
+          "y": 2060
         }
       }
     note: false
@@ -579,7 +582,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1340,
           "y": 515
         }
       }
@@ -628,7 +631,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1340,
           "y": 690
         }
       }
@@ -729,13 +732,36 @@ tasks:
         }
       }
     note: false
+  "22":
+    id: "22"
+    taskid: 16f2b73a-5a91-4ecf-89f5-e254ceea8f93
+    type: title
+    task:
+      id: 16f2b73a-5a91-4ecf-89f5-e254ceea8f93
+      version: -1
+      name: Check all mailboxes
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
-        "width": 2100,
+        "height": 2105,
+        "width": 1670,
         "x": 50,
         "y": 50
       }

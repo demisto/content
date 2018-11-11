@@ -674,7 +674,7 @@ script: |-
           else:
               mdResult += '|'.join(newHeaders)
           mdResult += '|\n'
-          sep = '-'
+          sep = '---'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
               vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''), True, True) for h in headers]
@@ -813,6 +813,24 @@ script: |-
           f.write(data)
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
+
+  def hash_djb2(s, seed=5381):
+    """
+     Hash string with djb2 hash function
+
+     :type s: ``str``
+     :param s: The input string to hash
+
+     :type seed: ``int``
+     :param seed: The seed for the hash function (default is 5381)
+
+     :return: The hashed value
+     :rtype: ``int``
+    """
+    hash = seed
+    for x in s:
+        hash = (( hash << 5) + hash) + ord(x)
+    return hash & 0xFFFFFFFF
 
   def file_result_existing_file(filename, saveFilename=None):
       """
@@ -1214,6 +1232,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "-"
 tests:
   - TestPYCommonServer
+releaseNotes: "Add djb2 hash function"
