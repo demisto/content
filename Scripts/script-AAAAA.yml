@@ -1,7 +1,7 @@
 commonfields:
-  id: sdfadsfadsf
+  id: BBBB
   version: -1
-name: ActiveUssdafsdafersD2
+name: BBBBB
 script: |-
   resp = executeCommand("D2ActiveUsers", {});
   if (isError(resp[0])) {
@@ -46,4 +46,3 @@ tags:
 comment: Get active users from a D2 agent and parsed them into context
 system: true
 scripttarget: 0
-releaseNotes: "/"
