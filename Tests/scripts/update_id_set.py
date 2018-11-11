@@ -102,6 +102,8 @@ def update_id_set():
     added_files = get_added_files(files_string)
 
     if added_files:
+        import logging
+        logging.basicConfig(level=logging.INFO)
         print("Updating id_set.json")
 
         with open('./Tests/id_set.json', 'r') as id_set_file:
