@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -51,7 +51,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -76,7 +76,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -101,7 +101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
@@ -128,7 +128,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
@@ -180,7 +180,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -268,95 +268,85 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 1245
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 00cdf2ed-8a10-4db6-816d-bddd53d81c6b
+    taskid: 8abf38ff-6352-42ec-8be7-31947c12f928
     type: condition
     task:
-      id: 00cdf2ed-8a10-4db6-816d-bddd53d81c6b
+      id: 8abf38ff-6352-42ec-8be7-31947c12f928
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "26"
       "yes":
       - "12"
-    scriptarguments:
-      left:
-        complex:
-          root: McAfee
-          filters:
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: McAfee.ePO.SystemTreeGroups.groupId
-                iscontext: true
-              right:
-                value:
-                  simple: "5"
-          accessor: ePO.SystemTreeGroups.groupId
-      right:
-        simple: "5"
-    results:
-    - AreValuesEqual
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: McAfee
+                accessor: ePO.SystemTreeGroups.groupId
+            iscontext: true
+          right:
+            value:
+              simple: "5"
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
     note: false
   "17":
     id: "17"
-    taskid: 98392d93-ffac-4792-8f9a-8b58fda21d35
+    taskid: cf17e9dd-b48e-4e0e-86af-406c69e03c10
     type: condition
     task:
-      id: 98392d93-ffac-4792-8f9a-8b58fda21d35
+      id: cf17e9dd-b48e-4e0e-86af-406c69e03c10
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "26"
       "yes":
       - "8"
-    scriptarguments:
-      left:
-        complex:
-          root: McAfee
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: McAfee.ePO.Endpoint.Hostname
-                iscontext: true
-              right:
-                value:
-                  simple: mar
-          accessor: ePO.Endpoint.IPAddress
-      right:
-        simple: 192.168.1.103
-    results:
-    - AreValuesEqual
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: McAfee.ePO.Endpoint.IPAddress
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.1.103
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 1420
         }
       }
@@ -569,13 +559,40 @@ tasks:
         }
       }
     note: false
+  "26":
+    id: "26"
+    taskid: 82424cff-f6f6-4db9-8bbe-3eb0a107ecd6
+    type: regular
+    task:
+      id: 82424cff-f6f6-4db9-8bbe-3eb0a107ecd6
+      version: -1
+      name: Error
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual: {}
+      details: {}
+      error:
+        simple: Can't find value
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 3185,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }
