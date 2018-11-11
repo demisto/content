@@ -754,7 +754,7 @@ tasks:
       - "27"
     scriptarguments:
       seconds:
-        simple: "61"
+        simple: "90"
     separatecontext: false
     view: |-
       {
@@ -782,13 +782,41 @@ tasks:
       - "20"
     scriptarguments:
       seconds:
-        simple: "61"
+        simple: "90"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -760,
           "y": 1930
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: e04909d3-eee7-4cf5-80b4-8cef73ae4897
+    type: regular
+    task:
+      id: e04909d3-eee7-4cf5-80b4-8cef73ae4897
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      seconds:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 1450
         }
       }
     note: false
