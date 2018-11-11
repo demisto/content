@@ -1,7 +1,8 @@
 commonfields:
-  id: bbb
+  id: aaa
   version: -1
 name: ActiveUsersD2
+releaseNotes: "-"
 script: |-
   resp = executeCommand("D2ActiveUsers", {});
   if (isError(resp[0])) {
@@ -46,4 +47,3 @@ tags:
 comment: Get active users from a D2 agent and parsed them into context
 system: true
 scripttarget: 0
-releaseNotes: "-"
