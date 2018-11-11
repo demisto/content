@@ -109,8 +109,6 @@ script:
         return d
 
     def get_entry_for_object(title, context_key, obj, headers=None, remove_null=False):
-        # Python program to illustrate the intersection
-        # of two lists in most simple way
         def intersection(lst1, lst2):
             return [value for value in lst1 if value in lst2]
 
@@ -164,7 +162,7 @@ script:
                 date_range = int(date_range)
                 params['date_range'] = date_range
             except ValueError, e:
-                demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Invalid date range: {}".format(date_range) })
+                return_error("Invalid date range: {}".format(date_range))
                 sys.exit(2)
         return params
 
@@ -198,12 +196,9 @@ script:
                 return
             err_msg = get_scan_error_message(res, scan_id)
             if demisto.command() != 'test-module':
-                err_msg = {
-                "Type": entryTypes["error"],
-                "ContentsFormat": formats["text"],
-                "Contents": err_msg
-                }
-            demisto.results(err_msg)
+                return_error(err_msg)
+            else:
+                demisto.results(err_msg)
             demisto.error(traceback.format_exc())
             sys.exit(0)
         return res.json()
@@ -264,7 +259,8 @@ script:
         send_scan_request()
         return 'ok'
 
-    def get_scans(folder_id, last_modification_date):
+    def get_scans_command():
+        folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
         if last_modification_date:
             last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')], "%Y-%m-%d").timetuple()))   # str(YYYY-MM-DD) to int(timestamp)
         response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
@@ -276,7 +272,8 @@ script:
             res.append(get_entry_for_object('Inactive Web Applications Scans - Renew WAS license to use these scans', 'TenableIO.Scan', replace_keys(invalid_scans), GET_SCANS_HEADERS, remove_null=True))
         return res
 
-    def launch_scan(scan_id, targets):
+    def launch_scan_command():
+        scan_id, targets = demisto.getArg('scanId'), demisto.getArg('scanTartgets')
         scan_info = send_scan_request(scan_id)['info']
         if not targets:
             targets = scan_info.get('targets', '')
@@ -288,7 +285,8 @@ script:
 
         return get_entry_for_object('The requested scan was launched successfully', 'TenableIO.Scan', replace_keys(res, LAUNCH_SCAN_NAMES_MAP), LAUNCH_SCAN_HEADERS)
 
-    def get_report(scan_id, info, detailed):
+    def get_report_command():
+        scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
         results = []
         scan_details = send_scan_request(scan_id)
 
@@ -312,13 +310,19 @@ script:
                 results.append(get_entry_for_object('Remediations', 'TenableIO.Remediations', remediations, SCAN_REPORT_REMEDIATIONS_HEADERS))
         return results
 
-    def get_vulnerability_details(plugin_id, date_range):
+    def get_vulnerability_details_command():
+        plugin_id, date_range = demisto.getArg('vulnerabilityId'), demisto.getArg('dateRange')
         info = send_vuln_details_request(plugin_id, date_range)
         if 'error' in info:
-            return { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': info['error'] }
+            return {
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': info['error']
+            }
         return get_entry_for_object('Vulnerability details - {}'.format(plugin_id), 'TenableIO.Vulnerabilities', replace_keys(flatten(info['info'])), VULNERABILITY_DETAILS_HEADERS)
 
-    def get_vulnerabilities_by_asset(asset_id=None, hostname=None, ip=None, date_range=None):
+    def get_vulnerabilities_by_asset_command():
+        asset_id, hostname, ip, date_range = demisto.getArg('assetId'), demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')
         if all(s is None for s in (asset_id, hostname, ip)):
             return { 'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': "Please provide one of the following arguments: asset-id, hostname, ip" }
         indicator = None
@@ -334,9 +338,13 @@ script:
         vulns = replace_keys(info['vulnerabilities'], ASSET_VULNS_NAMES_MAP)
         return get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities', vulns, ASSET_VULNS_HEADERS)
 
-    def get_scan_status(scan_id):
+    def get_scan_status_command():
+        scan_id = demisto.getArg('scanId')
         scan_details = send_scan_request(scan_id)
-        scan_status = { 'Id': scan_id, 'Status': scan_details['info']['status'] }
+        scan_status = {
+            'Id': scan_id,
+            'Status': scan_details['info']['status']
+        }
         return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan', scan_status)
 
 
@@ -344,17 +352,17 @@ script:
     if demisto.command() == 'test-module':
         demisto.results(test_module())
     elif demisto.command() == 'tenable-io-list-scans':
-        demisto.results(get_scans(demisto.getArg('folderId'), demisto.getArg('lastModificationDate')))
+        demisto.results(get_scans_command())
     elif demisto.command() == 'tenable-io-launch-scan':
-        demisto.results(launch_scan(demisto.getArg('scanId'), demisto.getArg('scanTartgets')))
+        demisto.results(launch_scan_command())
     elif demisto.command() == 'tenable-io-get-scan-report':
-        demisto.results(get_report(demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')))
+        demisto.results(get_report_command())
     elif demisto.command() == 'tenable-io-get-vulnerability-details':
-        demisto.results(get_vulnerability_details(demisto.getArg('vulnerabilityId'), demisto.getArg('dateRange')))
+        demisto.results(get_vulnerability_details_command())
     elif demisto.command() == 'tenable-io-get-vulnerabilities-by-asset':
-        demisto.results(get_vulnerabilities_by_asset(demisto.getArg('assetId'), demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')))
+        demisto.results(get_vulnerabilities_by_asset_command())
     elif demisto.command() == 'tenable-io-get-scan-status':
-        demisto.results(get_scan_status(demisto.getArg('scanId')))
+        demisto.results(get_scan_status_command())
   type: python
   commands:
   - name: tenable-io-list-scans
