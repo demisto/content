@@ -8,6 +8,10 @@
             "timeout": 500
         },
         {
+            "playbookID": "Luminate-TestPlaybook",
+            "integrations": "Luminate"
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -705,12 +709,12 @@
         "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix"
+        "sep_-_test_endpoint_search": "Failed test, need to fix",
+        "Cylance Protect v2 Test": "Currently being updated"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
-        "RedLock": "Don't have alerts",
         "Cylance Protect": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
@@ -723,6 +727,7 @@
         "LogRhythm": "DevOps investigation",
         "Phish.AI": "Need to check the reason for skipping",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "Service Manager": "Expired license"
+        "Service Manager": "Expired license",
+        "Signal Sciences WAF": "API problems, not returning the correct data"
     }
 }
