@@ -33,7 +33,9 @@ script: |-
       import requests
       # disable insecure warnings
       requests.packages.urllib3.disable_warnings()
+      imported_requests = True
   except:
+      imported_requests = False
       pass
 
   def urljoin(url, suffix=""):
@@ -1173,60 +1175,61 @@ script: |-
       })
       sys.exit(0)
 
-  def http_request(method, url, integration_name='integration', status_codes=None, headers=None, cookies=None, data=None, json=None, params=None, verify=False):
-      """
-          Sends HTTP request using requests library
+  if imported_requests:
+      def http_request(method, url, integration_name='integration', status_codes=None, headers=None, cookies=None, data=None, json=None, params=None, verify=False):
+          """
+              Sends HTTP request using requests library
 
-          :type method: ``string``
-          :param method: HTTP requests method, e.g. GET
+              :type method: ``string``
+              :param method: HTTP requests method, e.g. GET
 
-          :type url: ``string``
-          :param url: Request URL address
+              :type url: ``string``
+              :param url: Request URL address
 
-          :type integration_name: ``string``
-          :param integration_name: The integration name which calls the function to be raised in errors
+              :type integration_name: ``string``
+              :param integration_name: The integration name which calls the function to be raised in errors
 
-          :type status_codes: ``set``
-          :param status_codes: Set of status codes to be considered as valid, e.g. {200,204}
+              :type status_codes: ``set``
+              :param status_codes: Set of status codes to be considered as valid, e.g. {200,204}
 
-          :type headers: ``dict``
-          :param headers: Request headers, e.g. {'Content-Type: 'application/json'}
+              :type headers: ``dict``
+              :param headers: Request headers, e.g. {'Content-Type: 'application/json'}
 
-          :type cookies: ``dict``
-          :param cookies: Request cookies
+              :type cookies: ``dict``
+              :param cookies: Request cookies
 
-          :type data: ``dict``
-          :param data: Request data
+              :type data: ``dict``
+              :param data: Request data
 
-          :type json: ``dict``
-          :param json: Request json
+              :type json: ``dict``
+              :param json: Request json
 
-          :type params: ``dict``
-          :param params: Request params
+              :type params: ``dict``
+              :param params: Request params
 
-          :type verify: ``bool``
-          :param verify: SSL verification
+              :type verify: ``bool``
+              :param verify: SSL verification
 
-          :rtype: ``requests Reponse``
-          :return: Response object
-      """
-      if status_codes is None:
-          status_codes = {200}
+              :rtype: ``requests Reponse``
+              :return: Response object
+          """
+          if status_codes is None:
+              status_codes = {200}
 
-      response = requests.request(
-          method,
-          url,
-          headers=headers,
-          cookies=cookies,
-          data=data,
-          json=json,
-          params=params,
-          verify=verify
-      )
-      if response.status_code not in status_codes:
-          return_error('Error in API call to %s [%d] - %s' % (integration_name, response.status_code, response.reason))
+          response = requests.request(
+              method,
+              url,
+              headers=headers,
+              cookies=cookies,
+              data=data,
+              json=json,
+              params=params,
+              verify=verify
+          )
+          if response.status_code not in status_codes:
+              return_error('Error in API call to %s [%d] - %s' % (integration_name, response.status_code, response.reason))
 
-      return response
+          return response
 
   # Constants for common merge paths
   outputPaths = {
