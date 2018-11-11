@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Luminate-TestPlaybook",
+            "integrations": "Luminate"
+        },
+        {
             "playbookID": "Test_Sagemaker",
             "integrations": [
                 "AWS Sagemaker"
@@ -712,7 +716,6 @@
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
-        "RedLock": "Don't have alerts",
         "Cylance Protect": "Under development",
         "VMware": "DevOps investigation",
         "Farsight DNSDB": "No instance",
@@ -725,6 +728,7 @@
         "LogRhythm": "DevOps investigation",
         "Phish.AI": "Need to check the reason for skipping",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "Service Manager": "Expired license"
+        "Service Manager": "Expired license",
+        "Signal Sciences WAF": "API problems, not returning the correct data"
     }
 }
