@@ -46,7 +46,7 @@ script: |-
       maxFileSize = 1024**2
   res = demisto.executeCommand('getFilePath', {'id': entryID})
   if isError(res[0]):
-      demisto.results(resp)
+      demisto.results(res)
   else:
       path = demisto.get(res[0],'Contents.path')
       if path:
@@ -105,7 +105,7 @@ tags:
 - Utility
 - ingestion
 comment: Load the contents and metadata of a PDF file into context.
-system: true
+enabled: true
 args:
 - name: entryID
   required: true
@@ -113,8 +113,6 @@ args:
   description: War room entryID of the file to read.
 - name: maxFileSize
   description: Maximal file size to load, in bytes. Default is 1MB.
-scripttarget: 0
-dockerimage: demisto/pdfx
 outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
@@ -138,4 +136,9 @@ outputs:
   description: The PDF File CreationDate
 - contextPath: File.Pages
   description: Number of pages in PDF file
-releaseNotes: "-"
+scripttarget: 0
+runonce: false
+dockerimage: demisto/pdfx
+releaseNotes: '-'
+tests:
+  - ReadPDFFile-Test
