@@ -675,7 +675,6 @@ script:
         tmp_hr_str = ''
         for k in hr['Sample'].keys():
             if isinstance(hr['Sample'][k], dict) or (isinstance(hr['Sample'][k], list) and len(hr['Sample'][k]) > 0 and k in SAMPLE_ANALYSIS_HEADERS_MAP):
-                demisto.info("\n\n\n{0}\n\n\n".format(str(hr['Sample'][k])))
                 tmp_hr_str = tmp_hr_str + tableToMarkdown('{0}:'.format(str(k)), hr['Sample'][k], SAMPLE_ANALYSIS_HEADERS_MAP[k])
                 del hr['Sample'][k]
         return hr_str + tableToMarkdown('Sample analysis:', hr['Sample'], SAMPLE_ANALYSIS_HEADERS_MAP['Sample']) + tmp_hr_str + tableToMarkdown('Artifact analysis:', hr['Artifact'])
@@ -752,7 +751,7 @@ script:
         del res['Runtime']
         return res
 
-    def extract_network_from_analysis_networks(networks, full_extraction):
+    def extract_network_from_analysis_networks(networks, full_extraction=False):
         """
         Extract network representation from the networks arg
         """
