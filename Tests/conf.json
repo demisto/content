@@ -694,6 +694,9 @@
       },
       {
           "playbookID": "ReadPDFFile-Test"
+      },
+      {
+          "playbookID": "JSONtoCSV-Test"
       }
     ],
     "skipped_tests": {
