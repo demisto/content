@@ -1,16 +1,16 @@
 id: CrowdStrike Endpoint Enrichment - Test
 version: -1
+rolename: []
 name: CrowdStrike Endpoint Enrichment - Test
-description: ""
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 25df7ebc-1074-4325-8bb1-a0a3d4ad34cb
+    taskid: 82d14d08-e086-413e-8f6f-cb7c9309303a
     type: start
     task:
-      id: 25df7ebc-1074-4325-8bb1-a0a3d4ad34cb
+      id: 82d14d08-e086-413e-8f6f-cb7c9309303a
       version: -1
       name: ""
       description: ""
@@ -30,10 +30,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 070aa0b5-43ae-40a1-8ea7-0ed86ed52e0f
+    taskid: ed0336e2-778b-4c07-86ad-511d86cd520c
     type: regular
     task:
-      id: 070aa0b5-43ae-40a1-8ea7-0ed86ed52e0f
+      id: ed0336e2-778b-4c07-86ad-511d86cd520c
       version: -1
       name: cs-device-search
       description: Search for devices in your environment by platform, host name,
@@ -61,10 +61,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: fa76f81b-d55e-41af-8f39-2f08a71bfa22
+    taskid: e3edaafa-0d2a-44b8-8317-9d73ff3dcf0f
     type: regular
     task:
-      id: fa76f81b-d55e-41af-8f39-2f08a71bfa22
+      id: e3edaafa-0d2a-44b8-8317-9d73ff3dcf0f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -90,10 +90,10 @@ tasks:
     note: false
   "9":
     id: "9"
-    taskid: b41b5726-e981-448d-8a02-93ce27941a7a
+    taskid: 2cfb9559-43fb-4946-8822-e0fc4f96f192
     type: playbook
     task:
-      id: b41b5726-e981-448d-8a02-93ce27941a7a
+      id: 2cfb9559-43fb-4946-8822-e0fc4f96f192
       version: -1
       name: CrowdStrike Endpoint Enrichment
       playbookName: CrowdStrike Endpoint Enrichment
@@ -102,7 +102,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "13"
     separatecontext: true
     view: |-
       {
@@ -112,42 +112,12 @@ tasks:
         }
       }
     note: false
-  "11":
-    id: "11"
-    taskid: 485ef202-1272-4bcb-82bf-9980f530e21e
-    type: regular
-    task:
-      id: 485ef202-1272-4bcb-82bf-9980f530e21e
-      version: -1
-      name: ContextContains
-      description: This script searches for a value in a context path.
-      scriptName: ContextContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      path:
-        simple: ${Endpoint.OS}
-      value:
-        simple: Windows
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
   "12":
     id: "12"
-    taskid: 5d48508e-7c27-4b60-8bbb-66d34d0f3c76
+    taskid: afed1757-85c5-40a8-82ff-be7f8a00fb8e
     type: regular
     task:
-      id: 5d48508e-7c27-4b60-8bbb-66d34d0f3c76
+      id: afed1757-85c5-40a8-82ff-be7f8a00fb8e
       version: -1
       name: cs-detection-search
       description: String search through all Crowdstrike Detection fields.  For example,
@@ -167,6 +137,37 @@ tasks:
         "position": {
           "x": 50,
           "y": 900
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: c6a74b07-ee0d-4254-8653-891ada3d61fa
+    type: condition
+    task:
+      id: c6a74b07-ee0d-4254-8653-891ada3d61fa
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      value:
+        complex:
+          root: Endpoint
+          accessor: OS
+    separatecontext: fals
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false
