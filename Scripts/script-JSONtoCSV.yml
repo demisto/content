@@ -91,6 +91,6 @@ outputs:
   description: SHA256 hash of the file (only in case of report type=json)
 scripttarget: 0
 runonce: false
-releaseNotes: "-"
+releaseNotes: "Converts JSON to CSV from War room"
 tests:
-- Forgive me for my sins but I did not create any test
+- JSONtoCSV-Test

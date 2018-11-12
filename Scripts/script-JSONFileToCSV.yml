@@ -78,6 +78,6 @@ outputs:
 scripttarget: 0
 timeout: 600ns
 runonce: false
-releaseNotes: "-"
+releaseNotes: "Converts JSON to CSV from War room"
 tests:
-- Forgive me for my sins but I did not create any test
+- JSONtoCSV-Test

@@ -29,6 +29,6 @@ outputs:
 scripttarget: 0
 runonce: false
 comment: Load JSON object from input
-releaseNotes: "-"
+releaseNotes: "Can read complicated JSONs (list inside a list)"
 tests:
-- Forgive me for my sins but I did not create any test
+- JSONtoCSV-Test
