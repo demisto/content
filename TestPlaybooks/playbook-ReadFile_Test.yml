@@ -1,6 +1,6 @@
-id: ReadFile Test
+id: ReadPDFFile-Test
 version: -1
-name: ReadFile Test
+name: ReadPDFFile-Test
 description: Creates a text file and tests ReadFile script
 starttaskid: "0"
 tasks:
