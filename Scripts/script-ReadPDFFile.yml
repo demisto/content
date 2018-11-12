@@ -139,6 +139,6 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
-releaseNotes: 'Indicative error when gettin PSEOF'
+releaseNotes: 'Handling PSEOF error'
 tests:
   - ReadPDFFile-Test

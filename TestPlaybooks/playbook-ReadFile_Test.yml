@@ -74,7 +74,7 @@ tasks:
       version: -1
       name: Read PDF
       description: Load the contents and metadata of a PDF file into context.
-      scriptName: ReadPDFFile_copy
+      scriptName: ReadPDFFile
       type: regular
       iscommand: false
       brand: ""
