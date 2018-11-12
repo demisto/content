@@ -777,18 +777,25 @@ script:
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.upload_url, EntryContext: {vtUploadURL: res.obj.upload_url}};
     }
 
+    var test = function(){
+        // if getting "No content received. Possible API rate limit reached." it's means that the api key use not usable right now, but it's working
+        try
+        {
+            doFile('7657fcb7d772448a6d8504e4b20168b8'); // Check sample file - it will throw an error if not successful
+        } catch(err)
+        {
+            if (err == "No content received. Possible API rate limit reached."){
+                return true;
+            }
+            return err;
+        }
+        return true;
+    }
+
     try {
         switch (command) {
             case 'test-module':
-                try{
-                    doFile('7657fcb7d772448a6d8504e4b20168b8'); // Check sample file - it will throw an error if not successful
-                } catch(err){
-                    if (err == 'No content received. Possible API rate limit reached.'){
-                        return true;
-                  } else {
-                        throw err;
-                  }
-                return true;
+                return test();
             case 'file':
                 return doFile(args.file, args.long, args.threshold, args.wait, args.retries);
             case 'ip':
