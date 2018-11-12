@@ -399,13 +399,12 @@ script:
         if r['total'] > 0:
             demisto.results('{} results found for {}'.format(r['total'], raw_query))
 
-        ec = makehash()
-        file_context = makehash()
-
         # Opening empty string for url comparison
         last_url = ''
 
         for res in r['results'][:LIMIT]:
+            ec = makehash()
+            file_context = makehash()
             res_dict = res
             res_tasks = res_dict['task']
             res_stats = res_dict['stats']
