@@ -625,10 +625,8 @@ script:
         '''
         hr_asset = []
         for k,v in asset.iteritems():
-            hr_item = {}
             if isinstance(v, dict):
-                for ik, iv in v.iteritems():
-                    hr_item[ik] = iv
+                hr_item = v
                 hr_item['Property Name'] = k
                 hr_asset.append(hr_item)
         return hr_asset
