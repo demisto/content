@@ -281,7 +281,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "9"
+      - "65"
     scriptarguments:
       file:
         simple: 7657fcb7d772448a6d8504e4b20168b8
@@ -581,7 +581,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "25"
+      - "72"
     scriptarguments:
       file:
         simple: d41d8cd98f00b204e9800998ecf8427e
@@ -1157,9 +1157,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
     scriptarguments:
       all:
         simple: "yes"
@@ -1254,14 +1251,11 @@ tasks:
       '#none#':
       - "58"
     scriptarguments:
-      confidenceThreshold: {}
       file:
         complex:
           root: File
           accessor: SHA1
       long: {}
-      owners: {}
-      ratingThreshold: {}
       retries: {}
       threshold:
         simple: "1"
