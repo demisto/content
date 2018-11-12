@@ -229,7 +229,7 @@ tasks:
       version: -1
       name: Load JSON
       description: Load json obj
-      scriptName: LoadJSONWithArray
+      scriptName: LoadJSON
       type: regular
       iscommand: false
       brand: ""
