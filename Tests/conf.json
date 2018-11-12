@@ -643,6 +643,10 @@
             "playbookID": "cisco-ise-test-playbook"
         },
         {
+            "integrations": "Rasterize",
+            "playbookID": "RasterizeImageTest"
+        },
+        {
             "playbookID": "ExifReadTest"
         },
         {
