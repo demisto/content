@@ -71,12 +71,7 @@ script:
         f.write('<html style="background:white;"><body>' + html + '</body></html>')
         f.close()
 
-        proxy_flag = ""
-        if proxy:
-            proxy_flag = "--proxy=" + http_proxy
-        demisto.debug('rasterize proxy settings: ' + proxy_flag)
-
-        command = ['phantomjs', proxy_flag, '/usr/local/bin/rasterize.js', 'htmlImage.html', friendlyName]
+        command = ['phantomjs', '/usr/local/bin/rasterize.js', 'htmlImage.html', friendlyName]
         if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
             command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
         try:
