@@ -198,7 +198,7 @@ view: |-
 inputs:
 - key: timeout
   value:
-    simple: "600"
+    simple: "60"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 - key: interval
@@ -222,3 +222,5 @@ outputs:
 - contextPath: QRadar.Search.Result
   description: The result of the search
 releaseNotes: "-"
+tests:
+- Forgive me for my sins but I did not create any test
