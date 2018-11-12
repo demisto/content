@@ -397,46 +397,43 @@ script:
     - contextPath: TenableIO.Scan.Id
       description: The unique id of the scan.
       type: number
-    - contextPath: TenableIO.Scan.Uuid
-      description: The uuid for the scan.
-      type: string
     - contextPath: TenableIO.Scan.Name
       description: The name of the scan.
       type: string
+    - contextPath: TenableIO.Scan.Target
+      description: The targets to be scanned.
+      type: string
+    - contextPath: TenableIO.Scan.Status
+      description: The status of the scan (completed, aborted, imported, pending,
+        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      type: string
+    - contextPath: TenableIO.Scan.StartTime
+      description: The scheduled start time for the scan.
+      type: date
+    - contextPath: TenableIO.Scan.EndTime
+      description: The scan end time for the scan.
+      type: date
+    - contextPath: TenableIO.Scan.Enabled
+      description: If true, the schedule for the scan is enabled.
+      type: boolean
     - contextPath: TenableIO.Scan.Type
       description: The type of scan (local, remote, or agent).
       type: string
     - contextPath: TenableIO.Scan.Owner
       description: The owner of the scan.
       type: string
-    - contextPath: TenableIO.Scan.Enabled
-      description: If true, the schedule for the scan is enabled.
-      type: boolean
-    - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending,
-        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
-      type: string
-    - contextPath: TenableIO.Scan.UserPermissions
-      description: The sharing permissions for the scan.
-      type: number
-    - contextPath: TenableIO.Scan.CreationDate
-      description: The creation date for the scan in Unix time.
-      type: date
-    - contextPath: TenableIO.Scan.LastModificationDate
-      description: The last modification date for the scan in Unix time.
-      type: date
-    - contextPath: TenableIO.Scan.StartTime
-      description: The scheduled start time for the scan.
-      type: date
     - contextPath: TenableIO.Scan.Scanner
       description: The scanner assigned for the scan.
       type: string
     - contextPath: TenableIO.Scan.Policy
       description: The policy assigned for the scan.
       type: string
-    - contextPath: TenableIO.Scan.Target
-      description: The targets to be scanned.
-      type: string
+    - contextPath: TenableIO.Scan.CreationDate
+      description: The creation date for the scan in Unix time.
+      type: date
+    - contextPath: TenableIO.Scan.LastModificationDate
+      description: The last modification date for the scan in Unix time.
+      type: date
     description: Retrive scans from the Tenable platform.
   - name: tenable-io-launch-scan
     arguments:
@@ -452,11 +449,12 @@ script:
     - contextPath: TenableIO.Scan.Id
       description: The unique id of the scan.
       type: number
-    - contextPath: TenableIO.Scan.ScanUuid
-      description: The UUID of the scan.
-      type: string
     - contextPath: TenableIO.Scan.Targets
       description: The targets to be scanned.
+      type: string
+    - contextPath: TenableIO.Scan.Status
+      description: The status of the scan (completed, aborted, imported, pending,
+        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
     description: Lauch a scan with existing or custom targets. (You can specify custom
       targets in the arguements of this command.)
@@ -465,8 +463,7 @@ script:
     - name: scanId
       required: true
       default: true
-      description: The uuid of the scan to retrieve. While scan uuid is preferred,
-        scan id is supported.
+      description: The id of the scan to retrieve.
     - name: detailed
       auto: PREDEFINED
       predefined:
@@ -487,11 +484,11 @@ script:
     - contextPath: TenableIO.Scan.Id
       description: The unique id of the scan.
       type: number
-    - contextPath: TenableIO.Scan.Uuid
-      description: The uuid for the scan.
-      type: number
     - contextPath: TenableIO.Scan.Name
       description: The name of the scan.
+      type: string
+    - contextPath: TenableIO.Scan.Targets
+      description: The targets to be scanned.
       type: string
     - contextPath: TenableIO.Scan.Status
       description: The status of the scan (completed, aborted, imported, pending,
@@ -509,20 +506,23 @@ script:
     - contextPath: TenableIO.Scan.Policy
       description: The policy assigned for the scan.
       type: string
-    - contextPath: TenableIO.Scan.Targets
-      description: The targets to be scanned.
-      type: string
-    - contextPath: TenableIO.Scan.FolderId
-      description: The unique id of the folder where the scan has been stored.
-      type: string
     - contextPath: TenableIO.Vulnerabilities.Id
       description: The unique ID of the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Name
       description: The name of the vulnerability.
       type: string
+    - contextPath: TenableIO.Vulnerabilities.Severity
+      description: The severity level of the vulnerability.
+      type: number
     - contextPath: TenableIO.Vulnerabilities.Description
       description: The description of the vulnerability.
+      type: string
+    - contextPath: TenableIO.Vulnerabilities.Synopsis
+      description: A brief summary of the vulnerability.
+      type: string
+    - contextPath: TenableIO.Vulnerabilities.Solution
+      description: Information on how to fix the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.FirstSeen
       description: When the vulnerability was first seen.
@@ -530,23 +530,8 @@ script:
     - contextPath: TenableIO.Vulnerabilities.LastSeen
       description: When the vulnerability was last seen.
       type: date
-    - contextPath: TenableIO.Vulnerabilities.Solution
-      description: Information on how to fix the vulnerability.
-      type: string
-    - contextPath: TenableIO.Vulnerabilities.Synopsis
-      description: A brief summary of the vulnerability.
-      type: string
-    - contextPath: TenableIO.Vulnerabilities.Count
+    - contextPath: TenableIO.Vulnerabilities.VulnerabilityOccurences
       description: A count of the vulnerability occurrences.
-      type: number
-    - contextPath: TenableIO.Vulnerabilities.Severity
-      description: The severity level of the vulnerability.
-      type: number
-    - contextPath: TenableIO.Vulnerabilities.RiskFactor
-      description: String containing risk factor information.
-      type: string
-    - contextPath: TenableIO.Assets.AssetId
-      description: The unique id of the host.
       type: number
     - contextPath: TenableIO.Assets.Hostname
       description: The name of the host.
@@ -587,8 +572,28 @@ script:
       default: true
       description: The unique ID of the vulnerability.
     outputs:
+    - contextPath: TenableIO.Vulnerabilities.Name
+      description: The name of the vulnerability.
+      type: string
+    - contextPath: TenableIO.Vulnerabilities.Severity
+      description: Integer [0-4] indicating how severe the vulnerability is, where
+        0 is info only.
+      type: number
+    - contextPath: TenableIO.Vulnerabilities.Type
+      description: The type of the vulnerability.
+      type: string
+    - contextPath: TenableIO.Vulnerabilities.Family
+      description: Object containing plugin information such as family, type, and
+        publication and modification dates.
+      type: string
     - contextPath: TenableIO.Vulnerabilities.Description
       description: The description of the vulnerability.
+      type: string
+    - contextPath: TenableIO.Vulnerabilities.Synopsis
+      description: A brief summary of the vulnerability.
+      type: string
+    - contextPath: TenableIO.Vulnerabilities.Solution
+      description: Information on how to fix the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.FirstSeen
       description: When the vulnerability was first seen.
@@ -596,38 +601,15 @@ script:
     - contextPath: TenableIO.Vulnerabilities.LastSeen
       description: When the vulnerability was last seen.
       type: date
-    - contextPath: TenableIO.Vulnerabilities.Solution
-      description: Information on how to fix the vulnerability.
-      type: string
-    - contextPath: TenableIO.Vulnerabilities.Synopsis
-      description: A brief summary of the vulnerability.
-      type: string
-    - contextPath: TenableIO.Vulnerabilities.Count
-      description: A count of the vulnerability occurrences.
-      type: number
-    - contextPath: TenableIO.Vulnerabilities.Severity
-      description: Integer [0-4] indicating how severe the vulnerability is, where
-        0 is info only.
-      type: number
-    - contextPath: TenableIO.Vulnerabilities.Family
-      description: Object containing plugin information such as family, type, and
-        publication and modification dates.
-      type: string
-    - contextPath: TenableIO.Vulnerabilities.ModificationDate
-      description: The last modification date for the vulnerability in Unix time.
-      type: date
-    - contextPath: TenableIO.Vulnerabilities.Name
-      description: The name of the vulnerability.
-      type: string
-    - contextPath: TenableIO.Vulnerabilities.Type
-      description: The type of the vulnerability.
-      type: string
     - contextPath: TenableIO.Vulnerabilities.PublicationDate
       description: The publication date of the vulnerability.
       type: date
-    - contextPath: TenableIO.Vulnerabilities.RiskFactor
-      description: The risk factor of the vulnerability.
-      type: string
+    - contextPath: TenableIO.Vulnerabilities.ModificationDate
+      description: The last modification date for the vulnerability in Unix time.
+      type: date
+    - contextPath: TenableIO.Vulnerabilities.VulnerabilityOccurences
+      description: A count of the vulnerability occurrences.
+      type: number
     - contextPath: TenableIO.Vulnerabilities.CvssVector
       description: The Common Vulnerability Scoring System vector.
       type: string
@@ -652,28 +634,34 @@ script:
       description: The number of days of data prior to and including today that should
         be returned.
     outputs:
-    - contextPath: TenableIO.Vulnerabilities.Count
-      description: The number of times the vulnerability was found.
+    - contextPath: TenableIO.Assets.Hostname
+      description: Hostname of the asset.
       type: number
-    - contextPath: TenableIO.Vulnerabilities.Family
-      description: The vulnerability's family.
-      type: string
+    - contextPath: TenableIO.Assets.Vulnerabilities
+      description: A list of all the vuulnerability IDs associated with the asset.
+      type: number
     - contextPath: TenableIO.Vulnerabilities.Id
       description: The unique vulnerability's ID.
       type: number
     - contextPath: TenableIO.Vulnerabilities.Name
       description: The name of the vulnerability's.
       type: string
-    - contextPath: TenableIO.Vulnerabilities.VulnerabilityState
-      description: The current state of the reported vulnerability (Active, Fixed,
-        New, etc.)
-      type: string
     - contextPath: TenableIO.Vulnerabilities.Severity
       description: Integer [0-4] indicating how severe the vulnerability is, where
         0 is info only.
       type: number
+    - contextPath: TenableIO.Vulnerabilities.Family
+      description: The vulnerability's family.
+      type: string
+    - contextPath: TenableIO.Vulnerabilities.VulnerabilityOccurences
+      description: The number of times the vulnerability was found.
+      type: number
+    - contextPath: TenableIO.Vulnerabilities.VulnerabilityState
+      description: The current state of the reported vulnerability (Active, Fixed,
+        New, etc.)
+      type: string
     description: Get a list of up to 5000 of the vulnerabilities recorded for a given
-      asset. By default, this list is sorted by vulnerability count, descending.
+      asset.
   - name: tenable-io-get-scan-status
     arguments:
     - name: scanId
