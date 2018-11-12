@@ -1,0 +1,204 @@
+id: panorama_test_pb
+version: -1
+rolename: []
+name: panorama_test_pb
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b0937df9-2e57-4d78-8ba4-1e0764eb6da5
+    type: start
+    task:
+      id: b0937df9-2e57-4d78-8ba4-1e0764eb6da5
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 450fc058-b142-4ac8-8e76-7e09476fe394
+    type: regular
+    task:
+      id: 450fc058-b142-4ac8-8e76-7e09476fe394
+      version: -1
+      name: panorama
+      description: Run any panorama command supported in api.
+      script: Panorama|||panorama
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd: {}
+      command:
+        simple: <show></show>
+      dst: {}
+      element: {}
+      from: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: e68e7ae7-0c41-4d61-8b47-c03eff4fd7b0
+    type: regular
+    task:
+      id: e68e7ae7-0c41-4d61-8b47-c03eff4fd7b0
+      version: -1
+      name: panorama-block-ip
+      description: Blocks IP with Panorama
+      script: Panorama|||panorama-block-ip
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      direction: {}
+      ip:
+        simple: 10.10.10.10
+      rulename:
+        simple: test_pb_security_rule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 9aac5c44-e691-4386-87b6-f6e4d06baa75
+    type: regular
+    task:
+      id: 9aac5c44-e691-4386-87b6-f6e4d06baa75
+      version: -1
+      name: panorama-disable-rule
+      description: Disable a security rule
+      script: Panorama|||panorama-disable-rule
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      rulename:
+        simple: test_pb_security_rule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: ad299a32-18bb-4b83-81e7-e13286715240
+    type: regular
+    task:
+      id: ad299a32-18bb-4b83-81e7-e13286715240
+      version: -1
+      name: panorama-enable-rule
+      description: Enable a security rule
+      script: Panorama|||panorama-enable-rule
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      rulename:
+        simple: test_pb_security_rule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 7483daeb-6b88-4f04-8d62-f71b85fbd0f0
+    type: regular
+    task:
+      id: 7483daeb-6b88-4f04-8d62-f71b85fbd0f0
+      version: -1
+      name: panorama-block-application
+      description: Blocks an application with Panorama
+      script: Panorama|||panorama-block-application
+      type: regular
+      iscommand: true
+      brand: Panorama
+    scriptarguments:
+      application:
+        simple: fortnite
+      rulename:
+        simple: test_pb_security_rule_app
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 960
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1005,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

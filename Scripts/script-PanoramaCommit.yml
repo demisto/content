@@ -14,8 +14,12 @@ tags:
 - firewall
 comment: Commit configuration to panorama
 system: true
+deprecated: true
 scripttarget: 0
 dependson:
   must:
   - panorama
 timeout: 0s
+releaseNotes: ""
+tests:
+- panorama_test_pb

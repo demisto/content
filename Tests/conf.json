@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Panorama",
+            "playbookID": "panorama_test_pb"
+        },
+        {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
             "timeout": 500
