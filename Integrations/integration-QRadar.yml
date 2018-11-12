@@ -907,7 +907,7 @@ script:
       description: The status of the search.
       type: string
     description: Searches in QRadar using AQL. It is highly recommended to use the
-      playbook 'QRadarFullSearch' instead of this command - it will execute the search,
+      automation '!QRadarFullSearch' instead of this command - it will execute the search,
       and will return the result.
   - name: qradar-get-search
     arguments:
