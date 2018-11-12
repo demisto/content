@@ -246,16 +246,16 @@ def find_tests_for_modified_files(modified_files):
 def get_test_from_conf():
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff HEAD Tests/conf.json")
-    added_groups = re.search('(\+[ ]+")(.*)(":)', change_string)
+    change_string = run_git_command("git diff origin/master Tests/conf.json")
+    added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
-        for i in range(2, len(added_groups.groups()), 2):
-            changed.add(added_groups.group(i))
+        for group in added_groups:
+            changed.add(group[1])
 
-    deleted_groups = re.search('(\-[ ]+")(.*)(":)', change_string)
+    deleted_groups = re.findall('(\-[ ]+")(.*)(":)', change_string)
     if deleted_groups:
-        for obj in range(2, len(deleted_groups.groups()), 2):
-            changed.add(obj)
+        for group in deleted_groups:
+            changed.add(group[1])
 
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
@@ -274,6 +274,9 @@ def get_test_from_conf():
         for integration in integrations_conf:
             if integration in changed:
                 tests.add(playbook_id)
+
+    if not tests:
+        tests.add('changed skip section')
 
     return tests
 
