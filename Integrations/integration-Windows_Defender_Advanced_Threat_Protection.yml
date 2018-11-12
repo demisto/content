@@ -729,6 +729,7 @@ script:
       predefined:
       - Active
       - Inactive
+      description: Machine health status
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
       description: Machine ID
