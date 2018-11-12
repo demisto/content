@@ -147,15 +147,13 @@ script:
         response = service.matters().holds().list(
             matterId=matter_id).execute()
         # append first page:
-        for hold in response['holds']:
-            holds.append(hold)
+        holds = response['holds']
         # Keep paginating and appending:
         while not done_paginating:
             if 'nextPageToken' in response:
                 response = service.matters().holds.list(
                     pageSize=10, pageToken=response['nextPageToken']).execute()
-                for hold in list_response2['holds']:
-                    holds.append(hold)
+                holds.extend(list_response2['holds'])
             else:
                 done_paginating = True
         return holds
@@ -173,6 +171,7 @@ script:
         except Exception, ex:
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to parse date correctly: {}'.format(ex)})
             sys.exit(2)
+
 
     def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_time="", end_time=""):
         '''
@@ -209,24 +208,20 @@ script:
         request['accounts'] = accounts_for_query
         return request
 
+
     def create_hold_mail_accounts(service, matter_id, request_body):
         '''
         Creates a hold in Google Vault
         '''
-        try:
-            return service.matters().holds().create(
-                matterId=matter_id, body=request_body).execute()
-        except Exception, ex:
-            raise
+        return service.matters().holds().create(matterId=matter_id, body=request_body).execute()
+
 
     def create_export(service, matter, request_body):
         '''
         Creates an export in the given matter, with the given request_body (which is the actual JSON for the request).
         '''
-        try:
-            return service.matters().exports().create(matterId=matter, body=request_body).execute()
-        except Exception, ex:
-            raise
+        return service.matters().exports().create(matterId=matter, body=request_body).execute()
+
 
     def create_mail_export_query(export_name, emails, time_frame, start_time, end_time, terms, org_unit="", export_pst="True", export_mbox="False", search_method="All Accounts", include_drafts="True", data_scope="All Data"):
         '''
@@ -428,28 +423,16 @@ script:
 
 
     def get_export_by_id(service, matter_id, export_id):
-        try:
-          return service.matters().exports().get(
-          matterId=matter_id, exportId=export_id).execute()
-        except Exception, ex:
-            raise
+        return service.matters().exports().get(matterId=matter_id, exportId=export_id).execute()
 
     def list_held_accounts(service, matter_id, hold_id):
-        return service.matters().holds().accounts().list(
-            matterId=matter_id, holdId=hold_id).execute()['accounts']
+        return service.matters().holds().accounts().list(matterId=matter_id, holdId=hold_id).execute()['accounts']
 
     def remove_held_accounts(service, matter_id, hold_id):
         pass
-    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END HELPER FUNCS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-
-
-
-
-
-
-    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ BEGIN ACTUAL FUNCS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@ ACTUAL FUNCS @@@@@@@@
 
     def list_matters_command():
         '''
@@ -491,7 +474,6 @@ script:
                     'GoogleVault.Matter(val.ID == obj.ID)': context_output
                              }
             } )
-                # demisto.results(u'{} ({})'.format(matter.get('name'), matter.get('matterId')))
 
 
     def create_matter_command():
