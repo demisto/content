@@ -60,6 +60,12 @@ script:
     import datetime
     import time
 
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     # CONSTANTS
     SECURITY_INCIDENT_SUMMARY_NODE_XPATH = ".//SecurityIncidentSummary"
     SECURITY_INCIDENT_NODE_XPATH = ".//SecurityIncident"
@@ -98,15 +104,6 @@ script:
         return cert, passphrase
 
 
-    def load_proxy():
-        """ Loads the system configured proxy if enabled in configuration """
-        proxy = {}
-        if demisto.params()["proxy"]:
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
-
     def load_severities():
         POSSIBLE_SEVERITIES = ["Emergency", "Critical", "Warning", "Informational"]
         severities_list = None
@@ -122,15 +119,14 @@ script:
     # GLOBALS
     SERVER_URL = load_server_url()
     CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
-    PROXY = load_proxy()
     FETCH_SEVERITIES = load_severities()
     DST = 1 if time.daylight else 0
 
     # HELPERS
     def api_call(body, headers):
-        """ Makes an HTTP Post to the SWS incidents API using the configured certificate and proxy """
+        """ Makes an HTTP Post to the SWS incidents API using the configured certificate """
         with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
-            res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers, proxies=PROXY)
+            res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers)
             if res.status_code < 200 or res.status_code >= 300:
                 raise Exception("Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(res.headers))
         return xml.etree.ElementTree.fromstring(res.content)
@@ -566,3 +562,5 @@ script:
     description: Get a list of incidents
   dockerimage: demisto/symantec_mss
   isfetch: true
+tests:
+    - SymantecMSSTest

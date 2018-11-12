@@ -119,6 +119,29 @@ script:
         }
     };
 
+    var deleteIncidents = function(ids_to_delete) {
+        var body = {
+            ids: ids_to_delete,
+            all: false,
+            filter: {}
+        };
+
+        var res = sendRequest('POST', '/incident/batchDelete', JSON.stringify(body));
+        if (isError(res[0])) {
+            throw res[0].Contents;
+        }
+
+        var response = res['response']
+        var md = tableToMarkdown('Demisto delete incidents', response, ['data', 'total', "notUpdated"]);
+
+        return {
+            ContentsFormat: formats.json,
+            Type: entryTypes.note,
+            Contents: res,
+            HumanReadable: md
+        };
+    };
+
     switch (command) {
         case 'test-module':
             sendRequest('GET','user');
@@ -148,6 +171,9 @@ script:
             }
             var desc = args.description || '';
             return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
+        case 'demisto-delete-incidents':
+            var ids = argToList(args.ids);
+            return deleteIncidents(ids);
         default:
             throw 'Demisto REST APIs - unknown command';
     }
@@ -209,4 +235,11 @@ script:
     - name: body
       description: Request body
     description: Send HTTP Multipart request to upload files to Demisto server
+  - name: demisto-delete-incidents
+    arguments:
+    - name: ids
+      required: true
+      description: IDs of the incidents to delete
+    description: Delete Demisto incidents
+    execution: true
   runonce: false

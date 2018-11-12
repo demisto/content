@@ -18,7 +18,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: |-
     ''' IMPORTS '''
     import os
     import json
@@ -32,27 +32,32 @@ script:
     API_KEY = demisto.params()['APIKey']
     SERVICE_KEY = demisto.params()['ServiceKey']
 
-    SERVER_URL = "https://api.pagerduty.com/"
+    SERVER_URL = 'https://api.pagerduty.com/'
+    CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
 
     DEFAULT_HEADERS = {
                           'Authorization': 'Token token=' + API_KEY,
                           'Accept': 'application/vnd.pagerduty+json;version=2'
                       }
 
+
+    '''PARAMS'''
+    STATUSES = 'statuses%5B%5D'
+
     '''SUFFIX ENDPOINTS'''
-    GET_SCHEDULES_SUFFIX = "schedules/"
-    CREATE_INCIDENT_SUFFIX = "incidents"
-    ON_CALL_BY_SCHEDULE_SUFFIX = "schedules/{0}/users"
-    ON_CALLS_USERS_SUFFIX = "oncalls?include%5B%5D=users"
-    USERS_NOTIFICATION_RULE = "users/{0}/notification_rules"
-    GET_INCIDENTS_SUFFIX = "incidents?include%5B%5D=assignees"
-    USERS_CONTACT_METHODS_SUFFIX = "users/{0}/contact_methods"
+    GET_SCHEDULES_SUFFIX = 'schedules'
+    CREATE_INCIDENT_SUFFIX = 'incidents'
+    ON_CALL_BY_SCHEDULE_SUFFIX = 'schedules/{0}/users'
+    ON_CALLS_USERS_SUFFIX = 'oncalls?include%5B%5D=users'
+    USERS_NOTIFICATION_RULE = 'users/{0}/notification_rules'
+    GET_INCIDENTS_SUFFIX = 'incidents?include%5B%5D=assignees'
+    USERS_CONTACT_METHODS_SUFFIX = 'users/{0}/contact_methods'
 
     '''CONTACT_METHOD_TYPES'''
-    SMS_CONTACT_TYPE = "sms_contact_method"
-    EMAIL_CONTACT_TYPE = "email_contact_method"
-    PHONE_CONTACT_TYPE = "phone_contact_method"
-    PUSH_CONTACT_TYPE = "push_notification_contact_method"
+    SMS_CONTACT_TYPE = 'sms_contact_method'
+    EMAIL_CONTACT_TYPE = 'email_contact_method'
+    PHONE_CONTACT_TYPE = 'phone_contact_method'
+    PUSH_CONTACT_TYPE = 'push_notification_contact_method'
 
     CONTACT_METHODS_TO_HUMAN_READABLE = {
         '': 'Unknown',
@@ -63,27 +68,25 @@ script:
     }
 
     '''TABLE NAMES'''
-    SCHEDULES = "All Schedules"
+    SCHEDULES = 'All Schedules'
     TRIGGER_EVENT = 'Trigger Event'
     USERS_ON_CALL = 'Users On Call'
-    CONTACT_METHODS = "Contact Methods"
+    INCIDETS = 'PagerDuty Incidents'
+    CONTACT_METHODS = 'Contact Methods'
     USERS_ON_CALL_NOW = 'Users On Call Now'
-    NOTIFICATION_RULES = "User notification rules"
+    NOTIFICATION_RULES = 'User notification rules'
 
     '''TABLE HEADERS'''
-    CONTACT_METHODS_HEADERS = ['ID', 'Type', 'Address']
-    NOTIFICATION_RULES_HEADERS = ["ID", "Type", "Urgency", "Notification timeout(minutes)"]
-    SCHEDULES_HEADERS = ["ID", "Name", "Today", "Time Zone", "Escalation Policy", "Escalation Policy ID"]
-    USERS_ON_CALL_NOW_HEADERS = ["ID", "Email", "Name", "Role", "Color", "User Url", "Avatar Url", "Time Zone"]
-    INCIDENTS_HEADERS = ["ID", "Incident Number", "Created On", "Status", "Html Url", "Service ID", "Service Name", "Service Html Url", "Assigned To User",
-                         "Escalation Policy", "Escalation Policy ID", "Trigger Details Html Url", "Trigger Type", "Last Status Change On", "Last Status Change By",
-                         "Number Of Escalations", "Resolved By User", "Assigned To", "Summary"]
+    CONTACT_METHODS_HEADERS = ['ID', 'Type', 'Details']
+    NOTIFICATION_RULES_HEADERS = ['ID', 'Type', 'Urgency', 'Notification timeout(minutes)']
+    SCHEDULES_HEADERS = ['ID', 'Name', 'Today', 'Time Zone', 'Escalation Policy', 'Escalation Policy ID']
+    USERS_ON_CALL_NOW_HEADERS = ['ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
+    INCIDENTS_HEADERS = ['ID', 'Title', 'Status', 'Created On', 'Urgency', 'Html Url', 'Assigned To User', 'Service ID', 'Service Name',
+                         'Escalation Policy', 'Last Status Change On', 'Last Status Change By', 'Number Of Escalations', 'Resolved By User', 'Resolve Reason']
 
     ''' HELPER FUNCTIONS '''
-    def http_request(method, url_suffix, params_dict):
-        url = SERVER_URL + url_suffix
-
-        LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, DEFAULT_HEADERS, json.dumps(params_dict)))
+    def http_request(method, url, params_dict=None, data=None):
+        LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
 
         try:
             res = requests.request(method,
@@ -91,6 +94,7 @@ script:
                                    verify=USE_SSL,
                                    params=params_dict,
                                    headers=DEFAULT_HEADERS,
+                                   data=data
                                   )
             res.raise_for_status()
 
@@ -107,37 +111,37 @@ script:
         except Exception, e:
             raise Exception(e.message)
 
-        demisto.results("ok")
+        demisto.results('ok')
 
     def extract_on_call_user_data(users):
         """Extact data about user from a given schedule."""
         outputs = []
         contexts = []
-        for i, user in enumerate(users):
+        for user in users:
             output = {}
             context = {}
 
             output['ID'] = user.get('id')
             output['Name'] = user.get('name')
             output['Role'] = user.get('role')
-            output['Color'] = user.get('color')
             output['Email'] = user.get('email')
-            output['User Url'] = user.get('html_url')
             output['Time Zone'] = user.get('time_zone')
-            output['Avatar Url'] = user.get('avatar_url')
+            output['User Url'] = user.get('html_url')
+
 
             context['ID'] = output['ID']
             context['Role'] = output['Role']
             context['Email'] = output['Email']
             context['Username'] = output['Name']
             context['DisplayName'] = output['Name']
+            context['TimeZone'] = output['Time Zone']
 
             outputs.append(output)
             contexts.append(context)
 
         return {
             'Type': entryTypes['note'],
-            'Contents': outputs,
+            'Contents': users,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS),
@@ -146,10 +150,12 @@ script:
             }
         }
 
-    def extract_on_call_now_user_data(oncalls, table_name):
+    def extract_on_call_now_user_data(users_on_call_now):
         """Extract the user data from the oncalls json."""
         outputs = []
         contexts = []
+        oncalls = users_on_call_now.get('oncalls', {})
+
         for i in xrange(len(oncalls)):
             output = {}
             context = {}
@@ -160,17 +166,16 @@ script:
             output['ID'] = user.get('id')
             output['Name'] = user.get('name')
             output['Role'] = user.get('role')
-            output['Color'] = user.get('color')
             output['Email'] = user.get('email')
             output['User Url'] = user.get('html_url')
             output['Time Zone'] = user.get('time_zone')
-            output['Avatar Url'] = user.get('avatar_url')
 
             context['ID'] = output['ID']
             context['Role'] = output['Role']
             context['Email'] = output['Email']
             context['Username'] = output['Name']
             context['DisplayName'] = output['Name']
+            context['TimeZone'] = output['Time Zone']
 
             escal_level = data.get('escalation_level', 1)
             outputs.insert(escal_level - 1, output)
@@ -178,10 +183,10 @@ script:
 
         return {
             'Type': entryTypes['note'],
-            'Contents': outputs,
+            'Contents': users_on_call_now,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(table_name, outputs, USERS_ON_CALL_NOW_HEADERS),
+            'HumanReadable': tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS),
             'EntryContext': {
                 'PagerDutyUser(val.ID==obj.ID)': contexts
             }
@@ -190,53 +195,54 @@ script:
     def extract_incidents_data(incidents):
         """Extact data about incidents."""
         outputs = []
+        contexts = []
         for i, incident in enumerate(incidents):
             output = {}
+            context = {}
 
-            output['ID'] = incident.get('id')
-            output['Status'] = incident.get('status')
+            context['ID'] = output['ID'] = incident.get('id')
+            context['Title'] = output['Title'] = incident.get('summary')
+            context['Status'] = output['Status'] = incident.get('status')
+            context['created_at'] = output['Created On'] = incident.get('created_at')
+            context['urgency'] = output['Urgency'] = incident.get('urgency', '')
             output['Html Url'] = incident.get('html_url')
-            output['Created On'] = incident.get('created_at')
-            output['Incident Number'] = incident.get('incident_number')
-
-            output['Service ID'] = incident.get('service', {}).get('id')
-            output['Service Name'] = incident.get('service', {}).get('summary')
-            output['Service Html Url'] = incident.get('service', {}).get('html_url')
-
 
             if len(incident.get('assignments', [])) > 0:
                 output['Assigned To User'] = incident['assignments'][0].get('assignee', {}).get('name')
             else:
                 output['Assigned To User'] = '-'
 
-            output['Escalation Policy ID'] = incident.get('escalation_policy', {}).get('id')
-            output['Escalation Policy'] = incident.get('escalation_policy', {}).get('summary')
+            context['assignee'] = output['Assigned To User']
 
-            output['Trigger Type'] = incident.get('first_trigger_log_entry', {}).get('summary')
-            output['Trigger Details Html Url'] = incident.get('first_trigger_log_entry', {}).get('html_url')
+            context['service_id'] = output['Service ID'] = incident.get('service', {}).get('id')
+            context['service_name'] = output['Service Name'] = incident.get('service', {}).get('summary')
 
-            output['Last Status Change On'] = incident.get('last_status_change_at')
-            output['Last Status Change By'] = incident.get('last_status_change_by', {}).get('summary')
+            context['escalation_policy'] = output['Escalation Policy'] = incident.get('escalation_policy', {}).get('summary')
 
-            output['Number Of Escalations'] = incident.get('number_of_escalations')
-            if output['Status'] == "resolved":
-                output['Resolved By User'] = output.get('Last Status Change By')
+            context['last_status_change_at'] = output['Last Status Change On'] = incident.get('last_status_change_at')
+            context['last_status_change_by'] = output['Last Status Change By'] = incident.get('last_status_change_by', {}).get('summary')
+
+            context['number_of_escalations'] = output['Number Of Escalations'] = incident.get('number_of_escalations')
+
+            if output['Status'] == 'resolved':
+                output['Resolved By User'] = output['Last Status Change By']
             else:
                 output['Resolved By User'] = '-'
 
-            output['Assigned To'] = output['Assigned To User'] ###### This field is a duplicate, not sure why it's needed, should I delete?
-            output['Summary'] = incident.get('summary')
+            context['resolved_by'] = output['Assigned To User']
+            context['resolve_reason'] = output['Resolve reason'] = incident.get('resolve_reason', '')
 
             outputs.append(output)
+            contexts.append(context)
 
         return {
             'Type': entryTypes['note'],
-            'Contents': outputs,
+            'Contents': incidents,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, INCIDENTS_HEADERS),
+            'HumanReadable': tableToMarkdown(INCIDETS, outputs, INCIDENTS_HEADERS),
             'EntryContext': {
-                'PagerDuty.Incidents(val.id==obj.id)': incidents
+                'PagerDuty.Incidents(val.ID==obj.ID)': contexts
             }
         }
 
@@ -262,8 +268,8 @@ script:
                 context['escalation_policies'][0]['name'] = output['Escalation Policy']
                 context['escalation_policies'][0]['id'] = output['Escalation Policy ID']
             else:
-                output['Escalation Policy'] = "-"
-                output['Escalation Policy ID'] = "-"
+                output['Escalation Policy'] = '-'
+                output['Escalation Policy ID'] = '-'
 
             context['id'] = output['ID']
             context['name'] = output['Name']
@@ -275,7 +281,7 @@ script:
 
         return {
             'Type': entryTypes['note'],
-            'Contents': outputs,
+            'Contents': schedules,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(SCHEDULES, outputs, SCHEDULES_HEADERS),
@@ -284,46 +290,51 @@ script:
             }
         }
 
-    def create_new_incident(author, title, description='No description'):
+    def create_new_incident(source, summary, severity, action, description='No description', group='', event_class='', component='', incident_key=None, service_key=SERVICE_KEY):
         """Create a new incident in the PagerDuty instance."""
-        url = SERVER_URL + CREATE_INCIDENT_SUFFIX
-        headers = DEFAULT_HEADERS.copy()
-        headers['From'] = author
-        headers['Content-Type'] = "application/json"
-
         payload = {
-                      "incident": {
-                            "type": "incident",
-                            "title": title,
-                            "service": {
-                                "id": SERVICE_KEY,
-                                "type": "service_reference"
-                            },
-                            "body": {
-                                "type": "incident_body",
-                                "details": description
+                        'routing_key': service_key,
+                        'event_action': action,
+                        'dedup_key': incident_key,
+                        'images': [],
+                        'links': [],
+                        'payload': {
+                            'summary': summary,
+                            'source': source,
+                            'severity': severity,
+                            'group': group,
+                            'class': event_class,
+                            'component': component,
+                            'custom_details': {
+                                'description': description
                             }
-                      }
+                        }
                   }
 
-        res = requests.post(url, headers=headers, data=json.dumps(payload), verify=USE_SSL)
-        res.raise_for_status()
-        return res.json()
+        return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
 
     def extract_new_event_data(response):
         """Extract the data from the response of creating a new command."""
         output = {}
-        output['Status'] = response.get('incident', {}).get('status')
-        output['Incident Key'] = response.get('incident', {}).get('incident_key')
+        context = {}
+
+        output['Status'] = response.get('status', '')
+        output['Message'] = response.get('message', '')
+        output['Incident key'] = response.get('dedup_key', '')
+
+        context['Status'] = output['Status']
+        context['Message'] = output['Message']
+        context['incident_key'] = output['Incident key']
 
         return {
             'Type': entryTypes['note'],
-            'Contents': output,
+            'Contents': response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(TRIGGER_EVENT, output),
             'EntryContext': {
-                'PagerDuty.Event(val.id==obj.id)': output
+                'PagerDuty.Event(val.incident_key==obj.dedup_key)': context,
+                'Event.ID(val.ID==obj.dedup_key)': context['incident_key']
             }
         }
 
@@ -338,16 +349,24 @@ script:
             output['ID'] = contact_method.get('id')
             output['Type'] = CONTACT_METHODS_TO_HUMAN_READABLE[contact_method.get('type', '')]
 
-            country_code = str(contact_method.get("country_code" ,""))
-            address = contact_method.get('address', "")
-            output['Address'] = country_code + address
+            country_code = str(contact_method.get('country_code' ,''))
+            address = contact_method.get('address', '')
+            output['Details'] = country_code + address
 
             outputs.append(output)
+
+            del contact_method['address']
+            if output['Type'] == 'SMS' or output['Type'] == 'Phone':
+                del contact_method['country_code']
+                contact_method['phone'] = output['Details']
+            else:
+                contact_method['email'] = output['Details']
+
             contexts.append(contact_method)
 
         return {
             'Type': entryTypes['note'],
-            'Contents': outputs,
+            'Contents': user_contact_methods,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(CONTACT_METHODS, outputs, CONTACT_METHODS_HEADERS),
@@ -372,7 +391,7 @@ script:
 
         return {
             'Type': entryTypes['note'],
-            'Contents': outputs,
+            'Contents': user_notication_role,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(NOTIFICATION_RULES, outputs, NOTIFICATION_RULES_HEADERS),
@@ -383,32 +402,47 @@ script:
 
     '''COMMANDS'''
 
+    def configure_status(status):
+        statuses = status.split(',')
+        statuses_string = "&" + STATUSES + '='
+        statuses = statuses_string.join(statuses)
+        status_request = '&' + STATUSES + '=' + statuses
+        return status_request
+
     def get_incidents_command(since=None, until=None, status=None, sortBy=None):
         """Get incidents command."""
         param_dict = {}
         if since is not None:
-            param_dict["since"] = since
+            param_dict['since'] = since
         if until is not None:
-            param_dict["until"] = until
-        if status is not None:
-            param_dict["status"] = status
+            param_dict['until'] = until
         if sortBy is not None:
-            param_dict["sortBy"] = sortBy
+            param_dict['sortBy'] = sortBy
+        if status is None:
+            status = 'triggered,acknowledged'
 
-        res = http_request('GET', GET_INCIDENTS_SUFFIX, param_dict)
-        return extract_incidents_data(res.get("incidents",[]))
+        url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(status)
+        res = http_request('GET', url, param_dict)
+        return extract_incidents_data(res.get('incidents',[]))
 
-    def submit_event_command(author, title, description=None):
+    def submit_event_command(source, summary, severity, action, description='No description', group='', event_class='', component='', incident_key=None, serviceKey=SERVICE_KEY):
         """Create new event."""
-        if SERVICE_KEY is None:
-            raise Exception("You must enter a ServiceKey at the integration parmaters to process this action.")
+        if serviceKey is None:
+            raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
 
-        res = create_new_incident(author, title, description)
+        res = create_new_incident(source, summary, severity, action, description, group, event_class, component, incident_key, serviceKey)
         return extract_new_event_data(res)
 
-    def get_all_schedules_command():
+    def get_all_schedules_command(query=None, limit=None):
         """Get all the schedules."""
-        res = http_request('GET', GET_SCHEDULES_SUFFIX, {})
+        param_dict = {}
+        if query is not None:
+            param_dict['query'] = query
+        if limit is not None:
+            param_dict['limit'] = limit
+
+        url = SERVER_URL + GET_SCHEDULES_SUFFIX
+        res = http_request('GET', url, param_dict)
         schedules = res.get('schedules', [])
         return extract_all_schedules_data(schedules)
 
@@ -416,28 +450,35 @@ script:
         """Get the list of user on call in a from scheduleID"""
         param_dict = {}
         if since is not None:
-            param_dict["since"] = since
+            param_dict['since'] = since
         if until is not None:
-            param_dict["until"] = until
+            param_dict['until'] = until
 
-        url = ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
+
+        url = SERVER_URL + ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
         users_on_call = http_request('GET', url, param_dict)
         return extract_on_call_user_data(users_on_call.get('users', []))
 
-    def get_on_call_now_users_command():
+    def get_on_call_now_users_command(limit=None):
         """Get the list of users that are on call now."""
-        users_on_call_now = http_request('GET', ON_CALLS_USERS_SUFFIX, {})
-        oncalls = users_on_call_now.get('oncalls', {})
-        return extract_on_call_now_user_data(oncalls, USERS_ON_CALL_NOW)
+        param_dict = {}
+        if limit is not None:
+            param_dict['limit'] = limit
+
+        url = SERVER_URL + ON_CALLS_USERS_SUFFIX
+        users_on_call_now = http_request('GET', url, param_dict)
+        return extract_on_call_now_user_data(users_on_call_now)
 
     def get_users_contact_methods_command(UserID):
-        "Get the contact methods of a given user."
-        user_contact_methods = http_request('GET', USERS_CONTACT_METHODS_SUFFIX.format(UserID), {})
+        """Get the contact methods of a given user."""
+        url = SERVER_URL + USERS_CONTACT_METHODS_SUFFIX.format(UserID)
+        user_contact_methods = http_request('GET', url, {})
         return extract_users_contact_methods(user_contact_methods)
 
     def get_users_notification_command(UserID):
-        "Get the notification rule of a given user"
-        user_notication_role = http_request('GET', USERS_NOTIFICATION_RULE.format(UserID), {})
+        """Get the notification rule of a given user"""
+        url = SERVER_URL + USERS_NOTIFICATION_RULE.format(UserID)
+        user_notication_role = http_request('GET', url, {})
         return extract_users_notification_role(user_notication_role)
 
     ''' EXECUTION CODE '''
@@ -447,19 +488,19 @@ script:
     try:
         if demisto.command() == 'test-module':
             test_module()
-        elif demisto.command() == 'PagerDutyIncidents':
+        elif demisto.command() == 'PagerDuty-incidents':
             demisto.results(get_incidents_command(**demisto.args()))
-        elif demisto.command() == 'PagerDutySubmitEvent':
+        elif demisto.command() == 'PagerDuty-submit-event':
             demisto.results(submit_event_command(**demisto.args()))
-        elif demisto.command() == 'PagerDutyGetUsersOnCall':
+        elif demisto.command() == 'PagerDuty-get-users-on-call':
             demisto.results(get_on_call_users_command(**demisto.args()))
-        elif demisto.command() == 'PagerDutyGetAllSchedules':
+        elif demisto.command() == 'PagerDuty-get-all-schedules':
             demisto.results(get_all_schedules_command(**demisto.args()))
-        elif demisto.command() == 'PagerDutyGetUsersOnCallNow':
+        elif demisto.command() == 'PagerDuty-get-users-on-call-now':
             demisto.results(get_on_call_now_users_command(**demisto.args()))
-        elif demisto.command() == 'PagerDutyGetContactMethods':
+        elif demisto.command() == 'PagerDuty-get-contact-methods':
             demisto.results(get_users_contact_methods_command(**demisto.args()))
-        elif demisto.command() == 'PagerDutyGetUsersNotification':
+        elif demisto.command() == 'PagerDuty-get-users-notification':
             demisto.results(get_users_notification_command(**demisto.args()))
 
 
@@ -469,20 +510,22 @@ script:
         raise
   type: python
   commands:
-  - name: PagerDutyGetAllSchedules
+  - name: PagerDuty-get-all-schedules
     arguments:
     - name: query
       description: Show only the schedules whose name matches the query
-    - name: requesterID
-      description: The user id of the user making the request. This will be used to
-        generate the calendar private urls. This is only needed if you are using token
-        based authentication.
+    - name: limit
+      description: The limit for the amount of schedules to receive(Default is 25,
+        max value is 100)
     outputs:
-    - contextPath: PagerDuty.Schedules
-      description: schedules
+    - contextPath: PagerDuty.Schedules.id
+      description: The ID of the schedule
+      type: string
+    - contextPath: PagerDuty.Schedules.name
+      description: The name of the schedule
       type: string
     description: Receive all schedules from PagerDuty
-  - name: PagerDutyGetUsersOnCall
+  - name: PagerDuty-get-users-on-call
     arguments:
     - name: scheduleID
       required: true
@@ -509,12 +552,16 @@ script:
     - contextPath: PagerDutyUser.Role
       description: Display role of person
       type: string
+    - contextPath: PagerDutyUser.TimeZone
+      description: The time zone of the user
+      type: string
     description: Returns the names and details of on call users at a certain time
       or by specific schedule
-  - name: PagerDutyGetUsersOnCallNow
+  - name: PagerDuty-get-users-on-call-now
     arguments:
-    - name: query
-      description: show only the names matching the query
+    - name: limit
+      description: The limit for the amount of users to receive(Default is 25, max
+        value is 100)
     outputs:
     - contextPath: PagerDutyUser.ID
       description: User's ID
@@ -531,8 +578,11 @@ script:
     - contextPath: PagerDutyUser.Role
       description: Role of person
       type: string
+    - contextPath: PagerDutyUser.TimeZone
+      description: The time zone of the user
+      type: string
     description: Returns the names and details of current on call personnel
-  - name: PagerDutyIncidents
+  - name: PagerDuty-incidents
     arguments:
     - name: status
       auto: PREDEFINED
@@ -541,43 +591,120 @@ script:
       - acknowledged
       - resolved
       description: Returns only the incidents currently in the passed status(es).
-        Valid status options are triggered,acknowledged, and resolved
+        Valid status options are triggered,acknowledged, and resolved. (Default values
+        are triggered,acknowledged)
     - name: since
       description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents
         since=2011-05-06T17:00Z
     - name: sortBy
-      description: 'Used to specify both the field you wish to sort the results on,
-        as well as the direction (ascending/descending) of the results.See more https://developer.pagerduty.com/documentation/rest/incidents/list '
+      description: Used to specify both the field you wish to sort the results on,
+        as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents
     - name: until
       description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents
         until=2016-05-06T13:00Z
     outputs:
-    - contextPath: PagerDuty.Incidents
-      description: All incidents
-    description: Shows incidents in PagerDuty
-  - name: PagerDutySubmitEvent
+    - contextPath: PagerDuty.Incidents.ID
+      description: Incident ID
+      type: string
+    - contextPath: PagerDuty.Incidents.Title
+      description: The title of the incident
+      type: string
+    - contextPath: PagerDuty.Incidents.Status
+      description: Incident Status
+      type: string
+    - contextPath: PagerDuty.Incidents.created_at
+      description: Time in which the incident was created
+      type: date
+    - contextPath: PagerDuty.Incidents.urgency
+      description: Incident Urgency
+      type: string
+    - contextPath: PagerDuty.Incidents.assignee
+      description: 'The assignee of the incident '
+      type: string
+    - contextPath: service_id
+      description: The id of the impacted service
+      type: string
+    - contextPath: service_name
+      description: The name of the impacted service
+      type: string
+    - contextPath: escalation_policy
+      description: The escalation policy
+      type: string
+    - contextPath: last_status_change_at
+      description: Time in which the last status change occurred
+      type: date
+    - contextPath: last_status_change_by
+      description: Name of the user who done the last status change
+      type: string
+    - contextPath: number_of_escalations
+      description: Number of escalations that took place
+      type: number
+    - contextPath: resolved_by
+      description: Name of the User who resolved the incident
+      type: string
+    - contextPath: resolve_reason
+      description: The reason for resolving the issue
+      type: string
+    description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
+  - name: PagerDuty-submit-event
     arguments:
-    - name: author
+    - name: source
       required: true
-      description: The email address of a valid user associated with the account making
-        the request.
-    - name: title
+      description: Specific human-readable unique identifier, such as a hostname,
+        for the system having the problem.
+    - name: summary
       required: true
-      description: The name of the incident you create
+      description: "\t A high-level, text summary message of the event. Will be used
+        to construct an alert's description."
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - critical
+      - error
+      - warning
+      - info
+      description: The severity of the event
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - trigger
+      - acknowledge
+      - resolve
+      description: The action to be executed
     - name: description
       description: A short description of the problem
+    - name: group
+      description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02”
+        and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe"
+        "www"'
+    - name: event_class
+      description: 'The class/type of the event. Example: "High CPU" "Latency"'
+    - name: component
+      description: 'The part or component of the affected system that is broken. Example:
+        "keepalive" "webping"'
+    - name: incident_key
+      description: Incident key, used to acknowledge/resolve specific event
+    - name: serviceKey
+      description: Service key for the integration
     outputs:
-    - contextPath: PagerDuty.Event
-      description: Event data
-    description: Creates a new event/incident in PagerDuty
-  - name: PagerDutyGetContactMethods
+    - contextPath: PagerDuty.Event.Status
+      description: Status of the action on the event
+      type: string
+    - contextPath: PagerDuty.Event.incident_key
+      description: Incident key
+      type: string
+    description: Creates a new event/incident in PagerDuty(In order to use this command
+      you have to enter the Service Key in the integration settings)
+  - name: PagerDuty-get-contact-methods
     arguments:
     - name: UserID
       required: true
       description: 'ID of the wanted user '
     outputs:
-    - contextPath: PagerDuty.Contact_methods.address
-      description: The address of the user
+    - contextPath: PagerDuty.Contact_methods.phone
+      description: The phone number of the user
       type: string
     - contextPath: PagerDuty.Contact_methods.id
       description: ID of the contact method
@@ -585,17 +712,20 @@ script:
     - contextPath: PagerDuty.Contact_methods.type
       description: The type of the current contact method
       type: string
+    - contextPath: PagerDuty.Contact_methods.email
+      description: The email of the user
+      type: string
     description: Get the contact methods of a given user
-  - name: PagerDutyGetUsersNotification
+  - name: PagerDuty-get-users-notification
     arguments:
     - name: UserID
       required: true
       description: ID of the wanted user
     outputs:
-    - contextPath: PagerDuty.Notification_rules.PagerDuty.Notification_rules.start_delay_in_minutes
+    - contextPath: PagerDuty.Notification_rules.start_delay_in_minutes
       description: The delay time for notifying the user
       type: string
-    - contextPath: PagerDuty.Notification_rules.PagerDuty.Notification_rules.urgency
+    - contextPath: PagerDuty.Notification_rules.urgency
       description: The urgency of the notification
       type: string
     - contextPath: PagerDuty.Notification_rules.id
@@ -604,3 +734,5 @@ script:
     description: Get the users notification rules
   runonce: false
 hidden: false
+tests:
+  - PagerDuty Test

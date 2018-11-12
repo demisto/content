@@ -2,7 +2,6 @@ commonfields:
   id: CommonServer
   version: 1
 name: CommonServer
-releaseNotes: "Added dbotscore object"
 script: |-
   // Common functions script
   // =======================
@@ -274,7 +273,7 @@ script: |-
           }
           var sep = [];
           headers.forEach(function(h){
-              sep.push('-');
+              sep.push('---');
           });
           if (sep.length === 1) {
               sep[0] = sep[0]+'|';
@@ -1959,3 +1958,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: 'Fix separator line of MD tables'

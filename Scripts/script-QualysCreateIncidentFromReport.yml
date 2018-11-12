@@ -135,3 +135,6 @@ args:
   description: The incident type to create incidents for. Default is "Vulnerability".
 scripttarget: 0
 runonce: false
+dependson:
+  must:
+  - qualys-host-list

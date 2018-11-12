@@ -2,7 +2,6 @@ commonfields:
   id: CommonServerPython
   version: -1
 name: CommonServerPython
-releaseNotes: "Added dbotscore dictionary"
 script: |-
   # Common functions script
   # =======================
@@ -20,7 +19,7 @@ script: |-
   import xml.etree.cElementTree as ET
 
   IS_PY3 = sys.version_info[0] == 3
-  STRING_TYPES = [str, bytes] if IS_PY3 else [str, unicode]
+  STRING_TYPES = (str, bytes) if IS_PY3 else (str, unicode)
 
   entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8, 'entryInfoFile': 9, 'map': 15}
   formats = {'html': 'html', 'table': 'table', 'json': 'json', 'text': 'text', 'dbotResponse': 'dbotCommandResponse', 'markdown': 'markdown'}
@@ -28,6 +27,36 @@ script: |-
   providers = {'xfe': 'IBM X-Force Exchange', 'vt': 'VirusTotal', 'wf': 'WildFire', 'cy': 'Cylance', 'cs': 'CrowdStrike'}
   thresholds = {'xfeScore': 4, 'vtPositives': 10, 'vtPositiveUrlsForIP': 30}
   dbotscores = {'Critical': 4, 'High': 3, 'Medium': 2,'Low': 1, 'Unknown': 0, 'Informational': 0.5}
+
+  def urljoin(url, suffix=""):
+      """
+          Will join url and its suffix
+
+          Example:
+          "https://google.com/", "/"   => "https://google.com/"
+          "https://google.com", "/"   => "https://google.com/"
+          "https://google.com", "api"   => "https://google.com/api"
+          "https://google.com", "/api"  => "https://google.com/api"
+          "https://google.com/", "api"  => "https://google.com/api"
+          "https://google.com/", "/api" => "https://google.com/api"
+
+          :type url: ``string``
+          :param url: URL string (required)
+
+          :type suffix: ``string``
+          :param suffix: the second part of the url
+
+          :rtype: ``string``
+          :return: Full joined url
+      """
+      if url[-1:] != "/":
+          url = url + "/"
+
+      if suffix.startswith("/"):
+          suffix = suffix[1:]
+          return url + suffix
+
+      return url + suffix
 
   def positiveUrl(entry):
       """
@@ -423,6 +452,44 @@ script: |-
   LOG = IntegrationLogger()
 
 
+  def formatAllArgs(args, kwds):
+      """
+      makes a nice string representation of all the arguments
+
+      :type args: ``list``
+      :param args: function arguments (required)
+
+      :type kwds: ``dict``
+      :param kwds: function keyword arguments (required)
+
+      :return: string representation of all the arguments
+      :rtype: ``string``
+      """
+      allargs = [repr(a) for a in args]
+      for key,item in kwds.items():
+          allargs.append('{}={}'.format(key, item))
+      formattedArgs = ', '.join(allargs)
+
+      return formattedArgs
+
+
+  def logger(func):
+      """
+      decorator function to log the function call using LOG
+
+      :type func: ``function``
+      :param func: function to call (required)
+
+      :return: returns the func return value.
+      :rtype: ``any``
+      """
+      def func_wrapper(*args, **kwargs):
+          LOG('calling {}({})'.format(func.func_name, formatAllArgs(args, kwargs)))
+          return func(*args, **kwargs)
+
+      return func_wrapper
+
+
   def formatCell(data, is_pretty=True):
       """
          Convert a given object to md while decending multiple levels
@@ -437,10 +504,10 @@ script: |-
          :rtype: ``str``
       """
       l_format = '\n' if is_pretty else ''
-      if type(data) in STRING_TYPES:
+      if isinstance(data, STRING_TYPES):
           return data
       elif isinstance(data, dict):
-          return '\n'.join(['%s: %s' % (k, flattenCell(v, is_pretty)) for k, v in data.items()])
+          return '\n'.join(['{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
       else:
           return flattenCell(data, is_pretty)
 
@@ -459,7 +526,7 @@ script: |-
          :rtype: ``str``
       """
       indent = 4 if is_pretty else None
-      if type(data) in STRING_TYPES:
+      if isinstance(data, STRING_TYPES):
           return data
       elif isinstance(data, list):
           return ',\n'.join(str(d) for d in data)
@@ -494,7 +561,7 @@ script: |-
           return []
       if isinstance(arg, list):
           return arg
-      if type(arg) in STRING_TYPES:
+      if isinstance(arg, STRING_TYPES):
           if arg[0] == '[' and arg[-1] == ']':
               return json.loads(arg)
           return [s.strip() for s in arg.split(',')]
@@ -520,7 +587,7 @@ script: |-
         return
       existing = demisto.get(demisto.context(), key)
       if existing:
-          strBased = type(data) in STRING_TYPES and type(existing) in STRING_TYPES
+          strBased = isinstance(data, STRING_TYPES) and isinstance(existing, STRING_TYPES)
           if strBased:
               data = data.split(',')
               existing = existing.split(',')
@@ -533,7 +600,7 @@ script: |-
       else:
           demisto.setContext(key, data)
 
-  def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False):
+  def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
       """
          Converts a demisto table in JSON form to a Markdown table
 
@@ -543,14 +610,17 @@ script: |-
          :type t: ``dict`` or ``list``
          :param t: The JSON table - List of dictionaries with the same keys or a single dictionary (required)
 
-         :type headers: ``list``
-         :keyword headers: A list of headers to be presented in the output table (by order). Default will include all available headers.
+         :type headers: ``list`` or ``string``
+         :keyword headers: A list of headers to be presented in the output table (by order). If string will be passed then table will have single header. Default will include all available headers.
 
          :type headerTransform: ``function``
          :keyword headerTransform: A function that formats the original data headers (optional)
 
          :type removeNull: ``bool``
          :keyword removeNull: Remove empty columns from the table. Deafult is False
+
+         :type metadata: ``str``
+         :param metadata: Metadata about the table contents
 
          :return: A string representation of the markdown table
          :rtype: ``str``
@@ -560,12 +630,28 @@ script: |-
       if name:
           mdResult = '### ' + name + '\n'
 
+      if metadata:
+          mdResult += metadata + '\n'
+
       if not t or len(t) == 0:
           mdResult += '**No entries.**\n'
           return mdResult
 
       if not isinstance(t, list):
           t = [t]
+
+      if headers and isinstance(headers, STRING_TYPES):
+          headers = [headers]
+
+      if not isinstance(t[0], dict):
+          # the table cotains only simple objects (strings, numbers)
+          # should be only one header
+          if headers and len(headers) > 0:
+              header = headers[0]
+              t = map(lambda item: dict((h, item) for h in [header]), t)
+          else:
+              raise Exception("Missing headers param for tableToMarkdown. Example: headers=['Some Header']")
+
       # in case of headers was not provided (backward compatibility)
       if not headers:
           headers = list(t[0].keys())
@@ -588,7 +674,7 @@ script: |-
           else:
               mdResult += '|'.join(newHeaders)
           mdResult += '|\n'
-          sep = '-'
+          sep = '---'
           mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
           for entry in t:
               vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''), True, True) for h in headers]
@@ -728,7 +814,25 @@ script: |-
       return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
-  def file_result_existing_file(filename, saveFilename = None):
+  def hash_djb2(s, seed=5381):
+    """
+     Hash string with djb2 hash function
+
+     :type s: ``str``
+     :param s: The input string to hash
+
+     :type seed: ``int``
+     :param seed: The seed for the hash function (default is 5381)
+
+     :return: The hashed value
+     :rtype: ``int``
+    """
+    hash = seed
+    for x in s:
+        hash = (( hash << 5) + hash) + ord(x)
+    return hash & 0xFFFFFFFF
+
+  def file_result_existing_file(filename, saveFilename=None):
       """
          Rename an existing file
 
@@ -1098,7 +1202,7 @@ script: |-
         :return: The converted string
         :rtype: ``str``
       """
-      if type(string) in STRING_TYPES:
+      if isinstance(string, STRING_TYPES):
           return " ".join(word.capitalize() for word in string.replace("_"," ").split())
       else:
           raise Exception('The key is not a string: {}'.format(string))
@@ -1114,7 +1218,7 @@ script: |-
        :return: The converted string
        :rtype: ``str``
       """
-      if type(string) in STRING_TYPES:
+      if isinstance(string, STRING_TYPES):
           return "".join(word.capitalize() for word in string.split('_'))
       else:
           raise Exception('The key is not a string: {}'.format(string))
@@ -1128,3 +1232,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+tests:
+  - TestPYCommonServer
+releaseNotes: "Add djb2 hash function"

@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: PagerDutyAssignOnCallUser
 script: |-
-  var res = executeCommand('PagerDutyGetUsersOnCallNow', {});
+  var res = executeCommand('PagerDuty-get-users-on-call-now', {});
   if (res[0].Type == entryTypes.error) {
       return res[0]
   }
@@ -29,5 +29,5 @@ system: true
 scripttarget: 0
 dependson:
   must:
-  - PagerDutyGetUsersOnCallNow
+  - PagerDuty-get-users-on-call-now
 timeout: 0s

@@ -1,0 +1,900 @@
+id: 2cddaacb-4e4c-407e-8ef5-d924867b810c
+version: 11
+name: AWS - CloudWatchLogs Test Playbook_copy
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5ed045bb-7326-46e4-86fd-836a6c494c1b
+    type: start
+    task:
+      id: 5ed045bb-7326-46e4-86fd-836a6c494c1b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: d24be249-1a30-4085-8c97-9ee708b9d0d8
+    type: regular
+    task:
+      id: d24be249-1a30-4085-8c97-9ee708b9d0d8
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.LogGroups.LogGroupName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: fdefc79c-145a-49dc-88c7-62dc2599e0a0
+    type: regular
+    task:
+      id: fdefc79c-145a-49dc-88c7-62dc2599e0a0
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.LogGroups.CreationTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 0484c7cc-a29b-4853-8e20-54f874c7faa4
+    type: regular
+    task:
+      id: 0484c7cc-a29b-4853-8e20-54f874c7faa4
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.LogGroups.Arn
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: 2c968e3b-22ef-4789-8692-9e9ba779f98b
+    type: regular
+    task:
+      id: 2c968e3b-22ef-4789-8692-9e9ba779f98b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: 303b78bc-2e29-4600-8618-f984f1d00a2d
+    type: title
+    task:
+      id: 303b78bc-2e29-4600-8618-f984f1d00a2d
+      version: -1
+      name: End of Playbook
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3170
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 4323c00c-b648-4ecc-871c-1aaf9678742a
+    type: regular
+    task:
+      id: 4323c00c-b648-4ecc-871c-1aaf9678742a
+      version: -1
+      name: aws-logs-create-log-group
+      description: Creates a log group with the specified name.
+      script: AWS - CloudWatchLogs|||aws-logs-create-log-group
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      kmsKeyId: {}
+      logGroupName:
+        simple: test
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: b040aaed-ed82-4b2e-8393-892f979b140b
+    type: regular
+    task:
+      id: b040aaed-ed82-4b2e-8393-892f979b140b
+      version: -1
+      name: aws-logs-put-log-events
+      description: Uploads a batch of log events to the specified log stream. You
+        must include the sequence token obtained from the response of the previous
+        call. An upload in a newly created log stream does not require a sequence
+        token. You can also get the sequence token using DescribeLogStreams . If you
+        call PutLogEvents twice within a narrow time period using the same value for
+        sequenceToken , both calls may be successful, or one may be rejected.
+      script: AWS - CloudWatchLogs|||aws-logs-put-log-events
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      logGroupName:
+        simple: test
+      logStreamName:
+        simple: test
+      message:
+        simple: testing test
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sequenceToken: {}
+      timestamp:
+        simple: ${timeTimeNowUnix}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: d31b327b-4a0a-45cc-89ea-51e823b46a34
+    type: regular
+    task:
+      id: d31b327b-4a0a-45cc-89ea-51e823b46a34
+      version: -1
+      name: aws-logs-put-metric-filter
+      description: Creates or updates a metric filter and associates it with the specified
+        log group. Metric filters allow you to configure rules to extract metric data
+        from log events ingested through PutLogEvents .
+      script: AWS - CloudWatchLogs|||aws-logs-put-metric-filter
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      filterName:
+        simple: test
+      filterPattern:
+        simple: '"ERROR"'
+      logGroupName:
+        simple: test
+      metricName:
+        simple: test
+      metricNamespace:
+        simple: test
+      metricValue:
+        simple: "1"
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: 246492ad-d75e-490d-8e11-9f388d2ac875
+    type: regular
+    task:
+      id: 246492ad-d75e-490d-8e11-9f388d2ac875
+      version: -1
+      name: aws-logs-delete-metric-filter
+      description: Deletes the specified metric filter.
+      script: AWS - CloudWatchLogs|||aws-logs-delete-metric-filter
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      filterName:
+        simple: test
+      logGroupName:
+        simple: test
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2645
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: d687cc47-11f9-4c68-8578-803dc5716ada
+    type: regular
+    task:
+      id: d687cc47-11f9-4c68-8578-803dc5716ada
+      version: -1
+      name: aws-logs-describe-metric-filters
+      description: Lists the specified metric filters. You can list all the metric
+        filters or filter the results by log name, prefix, metric name, or metric
+        namespace.
+      script: AWS - CloudWatchLogs|||aws-logs-describe-metric-filters
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "44"
+      - "43"
+      - "42"
+    scriptarguments:
+      filterNamePrefix: {}
+      logGroupName:
+        simple: test
+      metricName: {}
+      metricNamespace: {}
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: a9522c33-a656-4301-800c-cd6c8bd28355
+    type: regular
+    task:
+      id: a9522c33-a656-4301-800c-cd6c8bd28355
+      version: -1
+      name: aws-logs-describe-log-groups
+      description: Lists the specified log groups. You can list all your log groups
+        or filter the results by prefix. The results are ASCII-sorted by log group
+        name.
+      script: AWS - CloudWatchLogs|||aws-logs-describe-log-groups
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "14"
+      - "8"
+      - "15"
+    scriptarguments:
+      limit: {}
+      logGroupNamePrefix: {}
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: 62f5a219-0f8c-440e-8603-68c9247e13e7
+    type: regular
+    task:
+      id: 62f5a219-0f8c-440e-8603-68c9247e13e7
+      version: -1
+      name: aws-logs-describe-log-streams
+      description: Lists the log streams for the specified log group. You can list
+        all the log streams or filter the results by prefix. You can also control
+        how the results are ordered.
+      script: AWS - CloudWatchLogs|||aws-logs-describe-log-streams
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "39"
+      - "40"
+      - "41"
+    scriptarguments:
+      limit: {}
+      logGroupName:
+        simple: test
+      logStreamNamePrefix: {}
+      orderBy: {}
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: 390dfc88-caed-4393-85a7-cf7000248506
+    type: regular
+    task:
+      id: 390dfc88-caed-4393-85a7-cf7000248506
+      version: -1
+      name: aws-logs-put-retention-policy
+      description: Sets the retention of the specified log group. A retention policy
+        allows you to configure the number of days for which to retain log events
+        in the specified log group.
+      script: AWS - CloudWatchLogs|||aws-logs-put-retention-policy
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      logGroupName:
+        simple: test
+      region:
+        simple: ${inputs.region}
+      retentionInDays:
+        simple: "5"
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 0151095a-08d7-4eb1-802d-280bdf78741f
+    type: regular
+    task:
+      id: 0151095a-08d7-4eb1-802d-280bdf78741f
+      version: -1
+      name: aws-logs-delete-retention-policy
+      description: Deletes the specified retention policy.  Log events do not expire
+        if they belong to log groups without a retention policy.
+      script: AWS - CloudWatchLogs|||aws-logs-delete-retention-policy
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      logGroupName:
+        simple: test
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: b0ea5c19-3da0-4e9d-8417-e31bdbb35a7a
+    type: regular
+    task:
+      id: b0ea5c19-3da0-4e9d-8417-e31bdbb35a7a
+      version: -1
+      name: aws-logs-delete-log-group
+      description: Deletes the specified log group and permanently deletes all the
+        archived log events associated with the log group.
+      script: AWS - CloudWatchLogs|||aws-logs-delete-log-group
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      logGroupName:
+        simple: test
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2995
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: fb5a1d2e-5abc-4866-8276-7d89f1c28da3
+    type: regular
+    task:
+      id: fb5a1d2e-5abc-4866-8276-7d89f1c28da3
+      version: -1
+      name: aws-logs-delete-log-stream
+      description: Deletes the specified log stream and permanently deletes all the
+        archived log events associated with the log stream.
+      script: AWS - CloudWatchLogs|||aws-logs-delete-log-stream
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      logGroupName:
+        simple: test
+      logStreamName:
+        simple: test
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: 6e1905c5-84fd-486e-841f-d2dc76e7616d
+    type: regular
+    task:
+      id: 6e1905c5-84fd-486e-841f-d2dc76e7616d
+      version: -1
+      name: aws-logs-create-log-stream
+      description: Creates a log stream for the specified log group.
+      script: AWS - CloudWatchLogs|||aws-logs-create-log-stream
+      type: regular
+      iscommand: true
+      brand: AWS - CloudWatchLogs
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      logGroupName:
+        simple: test
+      logStreamName:
+        simple: test
+      region:
+        simple: ${inputs.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+  "39":
+    id: "39"
+    taskid: cb00ecfa-2604-4eae-83a0-7de886a98da1
+    type: regular
+    task:
+      id: cb00ecfa-2604-4eae-83a0-7de886a98da1
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.LogGroups.LogStreams.CreationTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "40":
+    id: "40"
+    taskid: 1795122d-fe3c-4d21-8842-39aacb1cc736
+    type: regular
+    task:
+      id: 1795122d-fe3c-4d21-8842-39aacb1cc736
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.LogGroups.LogStreams.LogStreamName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+  "41":
+    id: "41"
+    taskid: 6f7f3ea6-a795-4b18-8378-243d120ff1fa
+    type: regular
+    task:
+      id: 6f7f3ea6-a795-4b18-8378-243d120ff1fa
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.LogGroups.LogStreams.LogGroupName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+  "42":
+    id: "42"
+    taskid: f2b2bb53-fd44-46bb-8a91-dea4f8aa3a1d
+    type: regular
+    task:
+      id: f2b2bb53-fd44-46bb-8a91-dea4f8aa3a1d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.MetricFilters.creationTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "43":
+    id: "43"
+    taskid: 6ed06fe9-9022-4d61-8c07-797d086987b9
+    type: regular
+    task:
+      id: 6ed06fe9-9022-4d61-8c07-797d086987b9
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.MetricFilters.filterPattern
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+  "44":
+    id: "44"
+    taskid: 621141a6-0d14-4353-8b48-de27c6c54652
+    type: regular
+    task:
+      id: 621141a6-0d14-4353-8b48-de27c6c54652
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudWatchLogs.MetricFilters.filterName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+  "45":
+    id: "45"
+    taskid: aef8f5ae-12ce-40fc-819d-494a6af86788
+    type: regular
+    task:
+      id: aef8f5ae-12ce-40fc-819d-494a6af86788
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      contextKey:
+        simple: time
+      date: {}
+      dateFormat:
+        simple: UTC
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3185,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: region
+  value:
+    simple: eu-central-1
+  required: false
+  description: ""
+outputs: []

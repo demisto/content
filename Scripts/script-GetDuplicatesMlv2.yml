@@ -344,12 +344,15 @@ script: |
       return incident_list
 
   def enrich_incidents_by_indicators(incident_list, max_number_of_results=MAX_INDICATORS):
+      incidents = {}
+      if incident_list is None:
+          return incidents
       query_part1 = create_or_condition("investigationIDs", map(lambda x: x['id'], incident_list))
       query_part2 = create_or_condition("type", INDICATORS_FOR_JACCARD)
       query = "(%s) and (%s)" % (query_part1, query_part2)
       res = demisto.executeCommand("findIndicators", {'query': query, 'size': max_number_of_results})
       indicators = res[0]['Contents']
-      incidents = {}
+
       for incident in incident_list:
           incident_id = incident['id']
           incidents[incident_id] = incident

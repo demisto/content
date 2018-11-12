@@ -20,6 +20,10 @@ script: |-
               ec[args.contextKey] = val;
           }
           vals.push(val);
+
+          if (flags.indexOf('g') === -1) {
+            break;
+          }
       }
   }
   if (vals.length == 1) {

@@ -10,7 +10,6 @@ script: |
   }
   var command = [];
   command.push("powershell.exe");
-  command.push("-version 2.0");
   command.push("-NonInteractive");
   command.push("-NoLogo");
   command.push("'" + which("office365searchdelete.ps1")+ "'");
@@ -33,7 +32,11 @@ script: |
       timeout = args.timeout;
   }
   var results = execute(command.join(" "), timeout);//, 'table');
-  pack('Stdout: ' + results.Stdout + '\nStderr: ' + results.Error);
+  if(results.Error !== "exit status 0" || results.Stderr.length > 0) {
+      throw "script failed with an error. \n" + results.Error +
+      "\nstderr: " + results.Stderr + "\nstdout: " +results.Stdout;
+  }
+  pack(results.Stdout);
 type: javascript
 tags:
 - email

@@ -63,6 +63,10 @@ mapping:
     type: bool
   releaseNotes:
     type: str
+  tests:
+    type: seq
+    sequence:
+    - type: str
   sensitive:
     type: bool
 

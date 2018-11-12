@@ -7,6 +7,7 @@ script: |-
   import os
   from os.path import isdir
   from os.path import isfile
+  from subprocess import Popen, PIPE
 
   filePath = None
   fileEntryID = ''
@@ -72,8 +73,8 @@ script: |-
   excludedFiles = [f for f in os.listdir('.') if isfile(f)]
   excludedDirs = [d for d in os.listdir('.') if isdir(d)]
   # extracting the zip file
-  with zipfile.ZipFile(filePath, "r") as zip_ref:
-      zip_ref.extractall(pwd=password)
+  process = Popen(["7z", "x", ("-p{}").format(password), filePath], stdout=PIPE, stderr=PIPE)
+  stdout, stderr = process.communicate()
 
   # recursing over the file system top down
   for root, directories, files in os.walk('.'):
@@ -133,3 +134,6 @@ outputs:
   description: list of file names which extracted from zip
 scripttarget: 0
 runonce: false
+dockerimage: demisto/7zip
+tests:
+  - ZipFile-Test

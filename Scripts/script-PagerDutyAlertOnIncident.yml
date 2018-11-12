@@ -4,7 +4,7 @@ commonfields:
 name: PagerDutyAlertOnIncident
 script: |-
   if (incidents[0].severity == 4) {
-      return executeCommand('pagerDutySubmitEvent', {description: incidents[0].details, author: args.author, title: incidents[0].name});
+      return executeCommand('PagerDuty-submit-event', {description: incidents[0].details, source: args.author, summary: incidents[0].name, action: 'trigger', severity: 'critical'});
   }
   return 'Incident severity not high enough to wake up user' ;
 type: javascript
@@ -20,6 +20,8 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - pagerDutySubmitEvent
+  - PagerDuty-submit-event
 runonce: false
 timeout: 0s
+tests:
+  - PagerDuty Test

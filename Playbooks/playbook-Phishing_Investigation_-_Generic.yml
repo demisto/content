@@ -1,7 +1,7 @@
 id: Phishing Investigation - Generic
 version: -1
 name: Phishing Investigation - Generic
-fromversion: 3.6.0
+fromversion: 4.0.0
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
@@ -23,15 +23,15 @@ tasks:
       '#none#':
       - "11"
       - "18"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 50
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 762b1bb7-43ba-455a-8b71-ccc7e58ab8f5
@@ -56,15 +56,15 @@ tasks:
         complex:
           root: inputs.Role
       username: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 1040
         }
       }
+    note: false
   "6":
     id: "6"
     taskid: 5882f2a4-7949-4121-8dc6-09a44bc78a48
@@ -81,15 +81,15 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 865
         }
       }
+    note: false
   "7":
     id: "7"
     taskid: 26ed9557-a1c3-433a-8614-94e6c671d9af
@@ -106,7 +106,6 @@ tasks:
     nexttasks:
       '#none#':
       - "33"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -115,6 +114,7 @@ tasks:
           "y": 1535
         }
       }
+    note: false
   "8":
     id: "8"
     taskid: ea1e91fd-530c-4f2e-859a-4a4bc3b321de
@@ -135,15 +135,15 @@ tasks:
       notes:
         simple: 'Default enrichment playbook '
       reason: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2525
+          "x": 695,
+          "y": 2700
         }
       }
+    note: false
   "11":
     id: "11"
     taskid: 6b039cde-c519-4ad2-83b7-17dbefb01c7b
@@ -159,15 +159,15 @@ tasks:
     nexttasks:
       '#none#':
       - "26"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 195
         }
       }
+    note: false
   "12":
     id: "12"
     taskid: 36ce6034-d509-405b-8e8d-4bef662e0709
@@ -193,15 +193,15 @@ tasks:
         complex:
           root: incident
           accessor: labels.Email/from
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1022.5,
           "y": 515
         }
       }
+    note: false
   "13":
     id: "13"
     taskid: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
@@ -237,15 +237,15 @@ tasks:
         complex:
           root: incident
           accessor: labels.Email/from
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1022.5,
           "y": 865
         }
       }
+    note: false
   "14":
     id: "14"
     taskid: 849b0463-ea4a-4860-86b5-825e5cda8a08
@@ -262,15 +262,15 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
-    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1022.5,
           "y": 690
         }
       }
+    note: false
   "15":
     id: "15"
     taskid: f3ddd9af-36b1-44fb-8eaf-1a71be6b34fb
@@ -288,12 +288,11 @@ tasks:
       - "31"
       'Malicious ':
       - "30"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: 'Malicious '
       condition:
-      - - operator: number.greaterThanOrEqual
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: incident.severity
@@ -304,10 +303,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 1215
         }
       }
+    note: false
   "16":
     id: "16"
     taskid: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
@@ -344,15 +344,15 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 60,
-          "y": 2350
+          "y": 2525
         }
       }
+    note: false
   "17":
     id: "17"
     taskid: c0fd6e60-203b-4039-89f9-d34f4024d349
@@ -388,15 +388,15 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 807.5,
           "y": 2030
         }
       }
+    note: false
   "18":
     id: "18"
     taskid: 916bc6c8-6d46-4f04-8bd2-1152736b7984
@@ -412,15 +412,15 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1022.5,
           "y": 355
         }
       }
+    note: false
   "22":
     id: "22"
     taskid: ca065734-ff0b-4d84-8bfe-a93298bd34ab
@@ -437,15 +437,15 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
-    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 690
         }
       }
+    note: false
   "25":
     id: "25"
     taskid: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
@@ -462,15 +462,15 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
-    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 690
         }
       }
+    note: false
   "26":
     id: "26"
     taskid: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
@@ -488,15 +488,15 @@ tasks:
       '#none#':
       - "35"
       - "22"
-    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 340
         }
       }
+    note: false
   "27":
     id: "27"
     taskid: d73d68a4-dff2-4cae-8645-972f9c328444
@@ -511,17 +511,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
       - "34"
-    reputationcalc: 0
+      - "36"
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 807.5,
           "y": 2205
         }
       }
+    note: false
   "28":
     id: "28"
     taskid: 6cc94de8-1f6c-4832-805b-43ec888fcf1b
@@ -538,15 +539,15 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
-    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2350
+          "x": 910,
+          "y": 2525
         }
       }
+    note: false
   "29":
     id: "29"
     taskid: e9a74030-baa8-43f9-8c35-54f8ae2d6b7b
@@ -559,15 +560,15 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2700
+          "x": 695,
+          "y": 2875
         }
       }
+    note: false
   "30":
     id: "30"
     taskid: 824c86e1-14a5-42cf-8516-e5f893558f09
@@ -583,15 +584,15 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 807.5,
           "y": 1885
         }
       }
+    note: false
   "31":
     id: "31"
     taskid: 717e858d-5696-441b-8ff2-30f798cea618
@@ -607,7 +608,6 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -616,6 +616,7 @@ tasks:
           "y": 1390
         }
       }
+    note: false
   "33":
     id: "33"
     taskid: 1787361d-c8b7-4c66-89ac-9f90d340358b
@@ -633,7 +634,6 @@ tasks:
       - "16"
       "yes":
       - "30"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -642,6 +642,7 @@ tasks:
           "y": 1710
         }
       }
+    note: false
   "34":
     id: "34"
     taskid: 4533b6d8-c08d-42c2-805a-e540762472fb
@@ -660,15 +661,15 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2350
+          "x": 460,
+          "y": 2360
         }
       }
+    note: false
   "35":
     id: "35"
     taskid: 524a2856-34ef-4752-862d-90daa98875ee
@@ -685,23 +686,138 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
-    reputationcalc: 0
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 515
         }
       }
+    note: false
+  "36":
+    id: "36"
+    taskid: 9aff5a75-b7eb-410a-8751-6cc749dc9df5
+    type: condition
+    task:
+      id: 9aff5a75-b7eb-410a-8751-6cc749dc9df5
+      version: -1
+      name: Execute the "Search and Delete" sub-playbook?
+      description: Verify that the "Search and Delete" parameter is set to "True"?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDelete
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.SearchAndDelete
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "True"
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2360
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: 8277280f-0c19-4d99-85c9-39e19f60bc0d
+    type: condition
+    task:
+      id: 8277280f-0c19-4d99-85c9-39e19f60bc0d
+      version: -1
+      name: Execute the "Block Indicators" sub-playbook?
+      description: Verify that the "Block indicators" parameter is set to "True"?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.BlockIndicators
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "True"
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2360
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: 2198ea9b-926d-4f25-829e-39c390771dfb
+    type: playbook
+    task:
+      id: 2198ea9b-926d-4f25-829e-39c390771dfb
+      version: -1
+      name: Block Indicators - Generic
+      description: ""
+      playbookName: Block Indicators - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2525
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2715,
-        "width": 1240,
-        "x": 50,
+        "height": 2890,
+        "width": 1670,
+        "x": 60,
         "y": 50
       }
     }
@@ -712,4 +828,21 @@ inputs:
     simple: Administrator
   required: true
   description: The default role to assign the incident to.
+- key: SearchAndDelete
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Enable the "Search and Delete" capability (can be either "True" or "False").
+    In case of a malicious email, the "Search and Delete" sub-playbook will look for other instances of the email and delete them pending analyst approval.
+- key: BlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Enable the "Block Indicators" capability (can be either "True" or "False").
+    In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
+tests:
+  - Phishing test - attachment
+  - Phishing test - Inline

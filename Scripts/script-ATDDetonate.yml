@@ -161,6 +161,11 @@ args:
 - name: interval
   description: Interval to poll for results. Default is 10 seconds.
 scripttarget: 0
+dependson:
+  must:
+  - atd-file-upload
+  - atd-check-status
+  - atd-get-report
 timeout: 960ns
 outputs:
 - contextPath: File.Name
