@@ -167,7 +167,7 @@ script:
         demisto.results('ok')
 
     def panorama_dynamic_list():
-        ''' Creates a dynamic list in panorama '''
+        ''' Creates a dynamic list in Panorama '''
         params = {
             'type':'user-id',
             'key': API_KEY
@@ -181,7 +181,7 @@ script:
         demisto.results(result['response']['@status'])
 
     def panorama_move():
-        ''' Moves a rule'''
+        ''' Moves a rule in Panorama'''
         params = {
             'type': 'config',
             'action': 'move',
@@ -201,6 +201,7 @@ script:
         demisto.results(result['response']['@status'])
 
     def panorama_config():
+        ''' Configures a security rule in panorama'''
         xpath = demisto.args()['xpath']if 'xpath' in demisto.args() else None
         rule_name =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
         src_ip =  demisto.args()['src_ip'] if 'src_ip' in demisto.args() else None
@@ -236,6 +237,7 @@ script:
         })
 
     def panorama_block_ip():
+        ''' Blocks an IP in panorama'''
         ip = demisto.args()['ip']
         direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
         rule_name =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
@@ -269,11 +271,63 @@ script:
             }
         })
 
+    def prettify_applications_arr(applications_arr):
+        pretty_application_arr = []
+        for i in range (len(applications_arr)):
+            application = applications_arr[i]
+            pretty_application_arr.append({
+                'SubCategory': application['subcategory'],
+                'Risk': application['risk'],
+                'Technology': application['technology'],
+                'Name': application['@name'],
+                'Description': application['description'],
+                'Id': application['@id']
+            })
+        return pretty_application_arr;
+
+    def panorama_get_applications():
+        ''' Get all applications in panorama'''
+        params = {
+            'type': 'op',
+            'command': '<show><objects></objects></show>',
+            'key': API_KEY
+        }
+
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+            )
+
+        applications_arr = result['response']['result']['config']['shared']['content-preview']['application']['entry']
+
+        md = tableToMarkdown(
+            'Panorama Applications',
+            prettify_applications_arr(applications_arr),
+            ['Name', 'Id', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
+            )
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': applications_arr,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                  "PanoramaApplications(val.Id == obj.Id)": prettify_applications_arr(applications_arr)
+            }
+        })
+
     def panorama_block_application():
+        ''' Blocks an application in panorama'''
         application = demisto.args()['application']
         rule_name =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
         params = prepare_params(action = 'drop', src_ip = 'any', dst_ip = 'any', rulename = rule_name, application = application)
-        result = http_request(URL, 'POST', params = params)
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+            )
 
         ec = {
             'Application': application,
@@ -293,9 +347,14 @@ script:
         })
 
     def panorama_disable_rule():
+        ''' Disables a rule in panorama'''
         rule_name =  demisto.args()['rulename']
         params = prepare_params(rulename = rule_name, disable = 'Yes')
-        result = http_request(URL, 'POST', params = params)
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+            )
 
         ec = {
             'Name': rule_name,
@@ -314,9 +373,14 @@ script:
         })
 
     def panorama_enable_rule():
+        ''' Enables a rule in panorama'''
         rule_name =  demisto.args()['rulename']
         params = prepare_params(rulename = rule_name, disable = 'No')
-        result = http_request(URL, 'POST', params = params)
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+            )
 
         ec = {
             'Name': rule_name,
@@ -346,7 +410,14 @@ script:
                 'POST',
                 params=params
                 )
-        demisto.results(result['response']['@status'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Panorama command was executed successfully',
+        })
 
     def panorama_commit():
         ''' Commit panorama '''
@@ -355,12 +426,20 @@ script:
             'cmd': '<commit></commit>',
             'key': API_KEY
         }
+
         result = http_request(
             URL,
             'POST',
             params = params
             )
-        demisto.results(result['response']['@status'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Panorama command was executed successfully',
+        })
 
     ''' EXECUTION '''
     LOG('command is %s' % (demisto.command(), ))
@@ -381,6 +460,9 @@ script:
         elif demisto.command() == 'panorama-block-ip':
             panorama_block_ip()
             panorama_commit()
+
+        elif demisto.command() == 'panorama-get-applications':
+            panorama_get_applications()
 
         elif demisto.command() == 'panorama-block-application':
             panorama_block_application()
@@ -588,7 +670,32 @@ script:
       description: Value for the "disable-server-response-inspection" option
     - name: description
       description: Rule description
-    description: Set panorama configuration
+    description: Set Panorama configuration
+  - name: panorama-get-applications
+    arguments: []
+    outputs:
+    - contextPath: PanoramaApplications.Name
+      description: Application name
+      type: string
+    - contextPath: PanoramaApplications.Id
+      description: Application id
+      type: number
+    - contextPath: PanoramaApplications.Category
+      description: Application category
+      type: string
+    - contextPath: PanoramaApplications.SubCategory
+      description: Application sub category
+      type: string
+    - contextPath: PanoramaApplications.Technology
+      description: Application technology
+      type: string
+    - contextPath: PanoramaApplications.Risk
+      description: Application risk (1 to 5)
+      type: number
+    - contextPath: PanoramaApplications.Description
+      description: Application description
+      type: string
+    description: Get a list of applications
   runonce: false
 releaseNotes: "test"
 tests:
