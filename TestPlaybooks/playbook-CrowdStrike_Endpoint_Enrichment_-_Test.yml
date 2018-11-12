@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -83,19 +83,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
     note: false
   "9":
     id: "9"
-    taskid: 2cfb9559-43fb-4946-8822-e0fc4f96f192
+    taskid: fc7af480-343f-4bed-8081-b53cbd6e8b5f
     type: playbook
     task:
-      id: 2cfb9559-43fb-4946-8822-e0fc4f96f192
+      id: fc7af480-343f-4bed-8081-b53cbd6e8b5f
       version: -1
       name: CrowdStrike Endpoint Enrichment
+      description: Enrich Endpoint with CrowdStrike
       playbookName: CrowdStrike Endpoint Enrichment
       type: playbook
       iscommand: false
@@ -103,11 +104,18 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
+    scriptarguments:
+      Hostname:
+        simple: ${Endpoint.Hostname}
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -136,38 +144,74 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 900
+          "y": 895
         }
       }
     note: false
   "13":
     id: "13"
-    taskid: c6a74b07-ee0d-4254-8653-891ada3d61fa
+    taskid: a9ab8750-2d51-4bbb-85c1-2e77591cf409
     type: condition
     task:
-      id: c6a74b07-ee0d-4254-8653-891ada3d61fa
+      id: a9ab8750-2d51-4bbb-85c1-2e77591cf409
       version: -1
-      name: Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
+      name: Context check
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "14"
       "yes":
       - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Endpoint.OS
+          right:
+            value:
+              simple: Windows
+        - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.OS
+            iscontext: true
+          right:
+            value:
+              simple: Linux
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 49c635f7-d828-4351-8099-c7b15595facd
+    type: regular
+    task:
+      id: 49c635f7-d828-4351-8099-c7b15595facd
+      version: -1
+      name: raise an error
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
     scriptarguments:
-      value:
-        complex:
-          root: Endpoint
-          accessor: OS
+      message:
+        simple: No endpoint data
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -176,8 +220,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 945,
-        "width": 380,
+        "height": 940,
+        "width": 810,
         "x": 50,
         "y": 50
       }
