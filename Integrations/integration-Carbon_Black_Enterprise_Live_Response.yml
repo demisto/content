@@ -1690,6 +1690,7 @@ script:
     description: Archive the given session (If the session has no content it will
       fail)
   - name: cb-command-cancel
+    deprecated: true
     arguments:
     - name: session
       required: true
@@ -1748,7 +1749,7 @@ script:
     - contextPath: CbLiveResponse.Files.Size
       description: The File size
     - contextPath: CbLiveResponse.Files.CbFileID
-      description: ID of the file within the Cb Session Storage - use with cb-file-get
+      description: ID of the file within the Cb Session Storage.
     - contextPath: CbLiveResponse.Files.Status
       description: File status (0 if no error, another number otherwise)
     - contextPath: CbLiveResponse.Files.Delete
@@ -2133,6 +2134,7 @@ script:
       description: Boolean flag indicating if memory dump is in progress.
     description: Endpoint memory dump.
   - name: cb-command-create
+    deprecated: true
     arguments:
     - name: name
       required: true
@@ -2209,6 +2211,7 @@ script:
       description: Result code
     description: Create a live response command
   - name: cb-command-create-and-wait
+    deprecated: true
     arguments:
     - name: name
       required: true
