@@ -9,7 +9,8 @@
         {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
-          "nightly": true
+          "nightly": true,
+          "timeout": 500
         },
         {
             "playbookID": "ParseExcel-test"
