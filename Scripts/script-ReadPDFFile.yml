@@ -2,6 +2,7 @@ commonfields:
   id: ReadPDFFile
   version: -1
 name: ReadPDFFile
+releaseNotes: "-"
 script: |-
   import pdfx
   from pdfminer.psparser import PSEOF
@@ -76,9 +77,11 @@ script: |-
               pdfFile[k] = metadata[k]
 
           #Add URLs
-          if "url" in references_dict.keys():
-              for url in references_dict['url']:
-                  URLs.append({'Data':url})
+          res = demisto.executeCommand("ExtractURL", {"text":text})
+          urls = res[0]['Contents']
+          if urls:
+              for url in urls:
+                  URLs.append(url)
 
           md = "### Metadata\n"
           md += "* " if metadata else ""
