@@ -103,10 +103,10 @@ def checked_type(file_path):
     return False
 
 
-def get_modified_files(files_string):
-    all_files = files_string.split('\n')
-    added_files_list = []
-    modified_files_list = []
+def get_modified_files(files_string, second_files_string):
+    all_files = files_string.split('\n') + second_files_string.split('\n')
+    added_files_list = set([])
+    modified_files_list = set([])
     for f in all_files:
         file_data = f.split()
         if not file_data:
@@ -116,9 +116,9 @@ def get_modified_files(files_string):
         file_path = file_data[1]
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and checked_type(file_path) and not file_path.startswith('.'):
-            modified_files_list.append(file_path)
+            modified_files_list.add(file_path)
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
-            added_files_list.append(file_path)
+            added_files_list.add(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
 
@@ -254,7 +254,8 @@ def has_duplicated_ids(id_to_file):
 
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status --no-merges HEAD")
-    modified_files, added_files = get_modified_files(files_string)
+    second_files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+    modified_files, added_files = get_modified_files(files_string, second_files_string)
     missing_release_notes = False
     wrong_schema = False
     is_changed_id = False
