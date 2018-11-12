@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io test"
+        },
+        {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io Scan Test",
+          "nightly": true,
+          "timeout": 500
+        },
+        {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
             "timeout": 500
