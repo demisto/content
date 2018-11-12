@@ -34,12 +34,9 @@ script:
   script: |-
     '''IMPORTS'''
     import requests
-    import json
-    import time
     import collections
     from urlparse import urlparse
     from requests.utils import quote
-    import datetime
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
@@ -47,11 +44,12 @@ script:
 
 
     '''GLOBAL VARS'''
-    BASE_URL = demisto.params().get('url')
+    BASE_URL = 'https://urlscan.io/api/v1/'
     APIKEY = demisto.params().get('apikey')
     INSECURE = demisto.params().get('insecure')
     PROXY = demisto.params().get('proxy')
-    if not demisto.params().get('proxy', False) or demisto.params()['proxy'] == 'false':
+    LIMIT = int(demisto.params().get('threshold'))
+    if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
@@ -74,13 +72,15 @@ script:
             method,
             BASE_URL + url_suffix,
             data=json,
-            headers=headers
+            headers=headers,
+            verify=INSECURE
         )
-        if r.status_code not in {200, 204}:
+        if r.status_code is not 200:
             return_error('Error in API call to URLScan.io [%d] - %s' % (r.status_code, r.reason))
         return r.json()
 
 
+    # Allows nested keys to be accesible
     def makehash():
         return collections.defaultdict(makehash)
 
@@ -98,6 +98,24 @@ script:
         return True
 
 
+    def polling(uuid):
+        request_url = demisto.args().get('url')
+        if demisto.args().get('timeout') is None:
+            TIMEOUT = 60
+        else:
+            TIMEOUT = demisto.args().get('timeout')
+        uri = BASE_URL+'result/{}'.format(uuid)
+
+        ready = poll(
+            lambda: requests.get(uri).status_code == 200,
+            step=5,
+            ignore_exceptions=(requests.exceptions.ConnectionError),
+            timeout=int(TIMEOUT)
+        )
+        return ready
+
+
+
 
     """ POLLING FUNCTIONS"""
     try:
@@ -108,10 +126,6 @@ script:
 
     def step_constant(step):
         return step
-
-
-    def step_linear_double(step):
-        return step * 2
 
 
     def is_truthy(val):
@@ -142,12 +156,7 @@ script:
             values.put(last_item)
             tries += 1
             if max_time is not None and time.time() >= max_time:
-                demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['markdown'],
-                    'Contents': 'The operation timed out. Please try again with a longer timeout period.',
-                    'HumanReadable': 'The operation timed out. Please try again with a longer timeout period.'
-                    })
+                demisto.results('The operation timed out. Please try again with a longer timeout period.')
             time.sleep(step)
             step = step_function(step)
 
@@ -155,7 +164,7 @@ script:
 
 
     '''MAIN FUNCTIONS'''
-    def urlscan_submit_command():
+    def urlscan_submit_url():
         submission_dict = {}
         if demisto.args().get('public') is 'public':
             submission_dict['public'] = 'on'
@@ -163,250 +172,328 @@ script:
         sub_json = json.dumps(submission_dict)
         r = http_request('POST', 'scan/', sub_json)
         uuid = r['uuid']
-        if demisto.args().get('timeout') is None:
-            TIMEOUT = 60
-        else:
-            TIMEOUT = demisto.args().get('timeout')
-        uri = BASE_URL+'result/{}'.format(uuid)
+        return uuid
 
-        ready = poll(
-            lambda: requests.get(uri).status_code == 200,
-            step=5,
-            ignore_exceptions=(requests.exceptions.ConnectionError,),
-            timeout=int(TIMEOUT)
-        )
 
-        if ready is True:
-            response = http_request('GET', 'result/{}'.format(uuid))
+    def format_results(uuid):
+        response = urlscan_submit_request(uuid)
+        try:
             scan_lists = response['lists']
             scan_tasks = response['task']
             scan_page = response['page']
             scan_stats = response['stats']
             scan_meta = response['meta']
+            url_query = scan_tasks['url']
+        except:
+            pass
 
-            ec = makehash()
-            human_readable = makehash()
+        ec = makehash()
+        human_readable = makehash()
+        file_context = makehash()
+        hr_string = ''
 
-            if 'urls' in scan_lists:
-                # ec['URL']['Data'] = scan_lists['urls']
-                ec['URLScan']['URLs'] = scan_lists['urls']
+        LIMIT = int(demisto.args().get('limit'))
+        if 'certificates' in scan_lists:
+            cert_md = []
+            cert_ec = []
+            certs = scan_lists['certificates']
+            for x in certs[:LIMIT]:
+                info, ec_info = cert_format(x)
+                cert_md.append(info)
+                cert_ec.append(ec_info)
+            CERT_HEADERS = ['Subject Name', 'Issuer', 'Validity']
+            context['Certificates'] = cert_ec
+        ec['URL']['Data'] = url_query
+        if 'urls' in scan_lists:
+            context['URLs'] = scan_lists['urls']
+            ec['URL']['Data'] = demisto.args().get('url')
+            context['URL'] = demisto.args().get('url')
+        human_readable['Effective URL'] = url_query
+        if 'uuid' in scan_tasks:
+            ec['URLScan']['UUID']
+        if 'ips' in scan_lists:
+            ip_asn_MD = []
+            ip_asn_ec = []
+            ip_ec_info = makehash()
+            ip_list = scan_lists['ips']
+            asn_list = scan_lists['asns']
 
-            if 'ips' in scan_lists:
-                ip_asn_MD = []
-                ip_asn_ec = []
-                ip_list = scan_lists['ips']
-                asn_list = scan_lists['asns']
-                ip_asn_dict = dict(zip(ip_list, asn_list))
-                i = 1
-                for k in ip_asn_dict:
-                    v = ip_asn_dict[k]
-                    ip_info = {
-                        'Count': i,
-                        'IP': k,
-                        'ASN': v
-                    }
+            ip_asn_dict = dict(zip(ip_list, asn_list))
+            i = 1
+            for k in ip_asn_dict:
+                if i - 1 == LIMIT:
+                    break
+                v = ip_asn_dict[k]
+                ip_info = {
+                    'Count': i,
+                    'IP': k,
+                    'ASN': v
+                }
+                ip_ec_info[i]['IP'] = k
+                ip_ec_info[i]['ASN'] = v
+                ip_asn_MD.append(ip_info)
+                i = i + 1
+            context['RelatedIPs'] = ip_ec_info
+            IP_HEADERS = ['Count', 'IP', 'ASN']
+        if 'countries' in scan_lists:
+            countries = scan_lists['countries']
+            human_readable['Associated Countries'] = countries
+            context['Country'] = countries
+        if not None in scan_lists['hashes']:
+            hashes = scan_lists['hashes']
+            context['iocs'] = hashes
+            human_readable['iocs'] = hashes
+        if 'domains' in scan_lists:
+            subdomains = scan_lists['domains']
+            context['Subdomains'] = subdomains
+            human_readable['Subdomains'] = subdomains
+        if 'asn' in scan_page:
+            context['ASN'] = scan_page['asn']
+        if 'malicious' in scan_stats:
+            human_readable['Malicious URLs Found'] = scan_stats['malicious']
+            if int(scan_stats['malicious']) > 0:
+                human_readable['Malicious'] = 'Malicious'
+                ec['URL']['Data'] = demisto.args().get('url')
+                context['Data'] = demisto.args().get('url')
+                ec['DBotScore']['Indicator'] = demisto.args().get('url')
+                ec['URL']['Malicious']['Vendor'] = 'urlscan.io'
+                context['Malicious']['Vendor'] = 'urlscan.io'
+                ec['DBotScore']['Vendor'] = 'urlscan.io'
+                ec['URL']['Malicious']['Description'] = 'Match found in Urlscan.io database'
+                context['Malicious']['Description'] = 'Match found in Urlscan.io database'
+                ec['DBotScore']['Score'] = 3
+                ec['DBotScore']['Type'] = 'url'
+            else:
+                ec['DBotScore']['Vendor'] = 'urlscan.io'
+                ec['DBotScore']['Indicator'] = demisto.args().get('url')
+                ec['DBotScore']['Score'] = 0
+                ec['DBotScore']['Type'] = 'url'
+                human_readable['Malicious'] = 'Beneign'
+        if 'url' in scan_meta['processors']['gsb']['data'] is None:
+            mal_url_list = []
+            matches = scan_meta['processors']['gsb']['data']['matches']
+            for match in matches:
+                mal_url = match['threat']['url']
+                mal_url_list.append(mal_url)
+            human_readable['Related Malicious URLs'] = mal_url_list
+        if len(scan_meta['processors']['download']['data']) > 0:
+            meta_data = scan_meta['processors']['download']['data'][0]
+            sha256 = meta_data['sha256']
+            filename = meta_data['filename']
+            filesize = meta_data['filesize']
+            filetype = meta_data['mimeType']
+            human_readable['File']['Hash'] = sha256
+            context['File']['Hash'] = sha256
+            file_context['SHA256'] = sha256
+            human_readable['File']['Name'] = filename
+            context['File']['FileName'] = filename
+            file_context['Name'] = filename
+            human_readable['File']['Size'] = filesize
+            context['File']['FileSize'] = filesize
+            file_context['Size'] = filesize
+            human_readable['File']['Type'] = filetype
+            context['File']['FileType'] = filetype
+            file_context['Type'] = filetype
+            file_context['Hostname'] = demisto.args().get('url')
 
-                    ip_asn_MD.append(ip_info)
-                    i = i + 1
-                ec['URLScan']['RelatedIPs'] = ip_list
-                ec['URLScan']['RelatedASNs'] = asn_list
-                IP_HEADERS = ['Count', 'IP', 'ASN']
+        ec = {
+                'URLScan(val.URL===obj.URL)': context
+            }
+        ec[outputPaths['file']]=file_context
 
-            if 'countries' in scan_lists:
-                human_readable['Associated Countries'] = scan_lists['countries']
-                ec['URLScan']['Countries'] = scan_lists['countries']
-            if not None in scan_lists['hashes']:
-                ec['URLScan']['iocs'] = scan_lists['hashes']
-                human_readable['iocs'] = scan_lists['hashes']
-            if 'domains' in scan_lists:
-                ec['URLScan']['Subdomains'] = scan_lists['domains']
-                human_readable['Subdomains'] = scan_lists['domains']
-            if 'asn' in scan_page:
-                ec['URLScan']['ASN'] = scan_page['asn']
-            if 'malicious' in scan_stats:
-                # ec['Malicious'] = scan_stats['malicious']
-                # ec['URL']['Data'] =
-                human_readable['Malicious'] = scan_stats['malicious']
-                if int(scan_stats['malicious']) > 0:
-                    ec['URL']['Data'] = demisto.args().get('url')
-                    ec['URLScan']['Data'] = demisto.args().get('url')
-                    ec['URL']['Malicious']['Vendor'] = 'urlscan.io'
-                    ec['URLScan']['Malicious']['Vendor'] = 'urlscan.io'
-                    ec['URL']['Malicious']['Description'] = 'Match found in Urlscan.io database'
-                    ec['URLScan']['Malicious']['Description'] = 'Match found in Urlscan.io database'
+        if 'screenshotURL' in scan_tasks:
+            human_readable['Screenshot'] = scan_tasks['screenshotURL']
+            screen_path = scan_tasks['screenshotURL']
+            response_img = requests.request("GET", screen_path)
+            stored_img = fileResult('screenshot.png', response_img.content)
 
-
-            if 'url' in scan_meta['processors']['gsb']['data'] is None:
-                mal_url_list = []
-                matches = scan_meta['processors']['gsb']['data']['matches']
-                for match in matches:
-                    mal_url = match['threat']['url']
-                    mal_url_list.append(mal_url)
-                human_readable['Related Malicious URLs'] = mal_url_list
-
-            if len(scan_meta['processors']['download']['data']) > 0:
-                human_readable['File']['Hash'] = scan_meta['processors']['download']['data'][0]['sha256']
-                ec['URLScan']['File']['Hash'] = scan_meta['processors']['download']['data'][0]['sha256']
-                ec['File']['SHA256'] = scan_meta['processors']['download']['data'][0]['sha256']
-                human_readable['File']['Name'] = scan_meta['processors']['download']['data'][0]['filename']
-                ec['URLScan']['File']['FileName'] = scan_meta['processors']['download']['data'][0]['filename']
-                ec['File']['Name'] = scan_meta['processors']['download']['data'][0]['filename']
-                human_readable['File']['Size'] = scan_meta['processors']['download']['data'][0]['filesize']
-                ec['URLScan']['File']['FileSize'] = scan_meta['processors']['download']['data'][0]['filesize']
-                ec['File']['Size'] = scan_meta['processors']['download']['data'][0]['filesize']
-                human_readable['File']['Type'] = scan_meta['processors']['download']['data'][0]['mimeType']
-                ec['URLScan']['File']['FileType'] = scan_meta['processors']['download']['data'][0]['mimeType']
-                ec['File']['Type'] = scan_meta['processors']['download']['data'][0]['mimeType']
-                ec['File']['Hostname'] = demisto.args().get('url')
-
-            if 'screenshotURL' in scan_tasks:
-                human_readable['Screenshot'] = scan_tasks['screenshotURL']
-                screen_path = scan_tasks['screenshotURL']
-                response_img = requests.request("GET", screen_path)
-                stored_img = fileResult('screenshot.png', response_img.content)
-
-            if 'certificates' in scan_lists:
-                cert_md = []
-                certs = scan_lists['certificates']
-                for x in certs:
-                    valid_to = datetime.datetime.fromtimestamp(x['validTo']).strftime('%Y-%m-%d %H:%M:%S')
-                    valid_from = datetime.datetime.fromtimestamp(x['validFrom']).strftime('%Y-%m-%d %H:%M:%S')
-                    info = {
-                        'Subject Name': x['subjectName'],
-                        'Issuer': x['issuer'],
-                        'Validity': "{} - {}".format(valid_to, valid_from)
-                    }
-                    cert_md.append(info)
-                CERT_HEADERS = ['Subject Name', 'Issuer', 'Validity']
-                if len(cert_md) > 0:
-                    demisto.results({
-                        'Type': entryTypes['note'],
-                        'ContentsFormat': formats['markdown'],
-                        'Contents': tableToMarkdown('Certificates',cert_md,CERT_HEADERS),
-                        'HumanReadable': tableToMarkdown('Certificates',cert_md,CERT_HEADERS)
-                        })
-                ec['URLScan']['Certificates'] = certs
-            human_readable['Effective URL'] = submission_dict['url']
-
+        demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': response,
+                'HumanReadable': tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
+                'EntryContext': ec
+                })
+        if len(cert_md) > 0:
             demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['markdown'],
-                    'Contents': tableToMarkdown('{} - Scan Results'.format(submission_dict['url']), human_readable),
-                    'HumanReadable': tableToMarkdown('{} - Scan Results'.format(submission_dict['url']), human_readable),
-                    'EntryContext': ec
-                    })
-            if 'ips' in scan_lists:
-                demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['markdown'],
-                    'Contents': tableToMarkdown('IPs and ASNs',ip_asn_MD,IP_HEADERS),
-                    'HumanReadable': tableToMarkdown('IPs and ASNs',ip_asn_MD,IP_HEADERS)
-                    })
-            if 'screenshotURL' in scan_tasks:
-                demisto.results({
-                    'Type': entryTypes['image'],
-                    'ContentsFormat': formats['text'],
-                    'File': stored_img['File'],
-                    'FileID': stored_img['FileID'],
-                    'Contents': ''
-                    })
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': tableToMarkdown('Certificates',cert_md,CERT_HEADERS),
+                'HumanReadable': tableToMarkdown('Certificates',cert_md,CERT_HEADERS)
+                })
+        if 'ips' in scan_lists:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': tableToMarkdown('Related IPs and ASNs',ip_asn_MD,IP_HEADERS),
+                'HumanReadable': tableToMarkdown('Related IPs and ASNs',ip_asn_MD,IP_HEADERS)
+                })
 
+        if 'screenshotURL' in scan_tasks:
+            demisto.results({
+                'Type': entryTypes['image'],
+                'ContentsFormat': formats['text'],
+                'File': stored_img['File'],
+                'FileID': stored_img['FileID'],
+                'Contents': ''
+            })
+
+    def urlscan_submit_request(uuid):
+        response = http_request('GET', 'result/{}'.format(uuid))
+        return response
+
+
+    def get_urlscan_submit_results_polling(uuid):
+        ready = polling(uuid)
+        if ready is True:
+            format_results(uuid)
+
+
+    def urlscan_submit_command():
+        get_urlscan_submit_results_polling(urlscan_submit_url())
+
+
+    def urlscan_search(search_type, query):
+        r = http_request('GET', 'search/?q='+search_type+':"'+query+'"')
+        return r
+
+
+    def cert_format(x):
+        valid_to = datetime.fromtimestamp(x['validTo']).strftime('%Y-%m-%d %H:%M:%S')
+        valid_from = datetime.fromtimestamp(x['validFrom']).strftime('%Y-%m-%d %H:%M:%S')
+        info = {
+            'Subject Name': x['subjectName'],
+            'Issuer': x['issuer'],
+            'Validity': "{} - {}".format(valid_to, valid_from)
+        }
+        ec_info = {
+            'SubjectName': x['subjectName'],
+            'Issuer': x['issuer'],
+            'ValidFrom': valid_from,
+            'ValidTo': valid_to
+            }
+        return info, ec_info
 
     def urlscan_search_command():
-
-        HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date', 'File']
-        raw_query = demisto.args().get('searchParameter')
-        if is_valid_ip(raw_query) is True:
+        HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date' ]
+        raw_query = demisto.args().get('searchParameter', '')
+        if is_valid_ip(raw_query):
             search_type = 'ip'
-        o = urlparse(raw_query)
-        if o[1] is '' and len(raw_query) == 64:
+
+        # Parsing query to see if it's a url
+        parsed = urlparse(raw_query)
+        # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
+        if parsed[1] is '' and len(raw_query) == 64:
             search_type = 'hash'
         else:
             search_type = 'page.url'
 
+        # Making the query string safe for Elastic Search
         query = quote(raw_query, safe='')
-        r = http_request('GET', 'search/?q='+search_type+':"'+query+'"')
+
+        r = urlscan_search(search_type, query)
 
         if r['total'] == 0:
-            demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['markdown'],
-                    'Contents': 'No results found for {}'.format(raw_query),
-                    'HumanReadable': 'No results found for {}'.format(raw_query)
-                    })
+            demisto.results('No results found for {}'.format(raw_query))
             return
-        res_dict = r['results'][0]
-        res_tasks = res_dict['task']
-        res_stats = res_dict['stats']
-        res_page = res_dict['page']
+        if r['total'] > 0:
+            demisto.results('{} results found for {}'.format(r['total'], raw_query))
 
-        human_readable = makehash()
         ec = makehash()
+        file_context = makehash()
 
-        if 'files' in res_dict:
-            human_readable['Hash'] = res_dict['files'][0]['sha256']
-            ec['URLScan']['Hash'] = res_dict['files'][0]['sha256']
-            ec['File']['SHA256'] = res_dict['files'][0]['sha256']
-            human_readable['Name'] = res_dict['files'][0]['filename']
-            ec['URLScan']['FileName'] = res_dict['files'][0]['filename']
-            ec['File']['Name'] = res_dict['files'][0]['filename']
-            human_readable['Size'] = res_dict['files'][0]['filesize']
-            ec['URLScan']['FileSize'] = res_dict['files'][0]['filesize']
-            ec['File']['Size'] = res_dict['files'][0]['filesize']
-            human_readable['Type'] = res_dict['files'][0]['mimeType']
-            ec['URLScan']['FileType'] = res_dict['files'][0]['mimeType']
-            ec['File']['Type'] = res_dict['files'][0]['mimeType']
-            ec['File']['Hostname'] = res_tasks['url']
+        # Opening empty string for url comparison
+        last_url = ''
 
-        if 'url' in res_tasks:
-            human_readable['URL'] = res_tasks['url']
-            ec['URLScan']['URL'] = res_tasks['url']
-        if 'domain' in res_page:
-            human_readable['Domain'] = res_page['domain']
-            ec['URLScan']['Domain'] = res_page['domain']
-            ec['Domain']['Name'] = res_page['domain']
-        if 'asn' in res_page:
-            ec['URLScan']['ASN'] = res_page['asn']
-            ec['IP']['ASN'] = res_page['asn']
-            human_readable['ASN'] = res_page['asn']
-        if 'ip' in res_page:
-            ec['URLScan']['IP'] = res_page['ip']
-            ec['IP']['Address'] = res_page['ip']
-            human_readable['IP'] = res_page['ip']
-        if '_id' in res_dict:
-            ec['URLScan']['ScanID'] = res_dict['_id']
-            human_readable['Scan ID'] = res_dict['_id']
-        if 'time' in res_tasks:
-            ec['URLScan']['ScanDate'] = res_tasks['time']
-            human_readable['Scan Date'] = res_tasks['time']
-        demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['markdown'],
-                    'Contents': tableToMarkdown('Query results for {}'.format(raw_query), human_readable, HUMAN_READBALE_HEADERS),
-                    'HumanReadable': tableToMarkdown('Query results for {}'.format(raw_query), human_readable, HUMAN_READBALE_HEADERS, removeNull=True),
-                    'EntryContext': ec
-                    })
+        for res in r['results'][:LIMIT]:
+            res_dict = res
+            res_tasks = res_dict['task']
+            res_stats = res_dict['stats']
+            res_page = res_dict['page']
+
+            if last_url == res_tasks['url']:
+                continue
+
+            human_readable = makehash()
+            if 'url' in res_tasks:
+                url = res_tasks['url']
+                human_readable['URL'] = url
+                context['URL'] = url
+                ec['URL']['Data'] = url
+            if 'domain' in res_page:
+                domain = res_page['domain']
+                human_readable['Domain'] = domain
+                context['Domain'] = domain
+                ec['Domain']['Name'] = domain
+            if 'asn' in res_page:
+                asn = res_page['asn']
+                context['ASN'] = asn
+                ec['IP']['ASN'] = asn
+                human_readable['ASN'] = asn
+            if 'ip' in res_page:
+                ip = res_page['ip']
+                context['IP'] = ip
+                ec['IP']['Address'] = ip
+                human_readable['IP'] = ip
+            if '_id' in res_dict:
+                scanID = res_dict['_id']
+                context['ScanID'] = scanID
+                human_readable['Scan ID'] = scanID
+            if 'time' in res_tasks:
+                scanDate = res_tasks['time']
+                context['ScanDate'] = scanDate
+                human_readable['Scan Date'] = scanDate
+            if 'files' in res_dict:
+                HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date', 'File' ]
+                files = res_dict['files'][0]
+                sha256 = files['sha256']
+                filename = files['filename']
+                filesize = files['filesize']
+                filetype = files['mimeType']
+                url = res_tasks['url']
+                human_readable['File']['Hash'] = sha256
+                context['Hash'] = sha256
+                file_context['SHA256'] = sha256
+                human_readable['File']['Name'] = filename
+                context['FileName'] = filename
+                file_context['File']['Name'] = filename
+                human_readable['File']['Size'] = filesize
+                context['FileSize'] = filesize
+                file_context['Size'] = filesize
+                human_readable['File']['Type'] = filetype
+                context['FileType'] = filetype
+                file_context['File']['Type'] = filetype
+                file_context['File']['Hostname'] = url
+            ec = {
+                'URLScan(val.URL===obj.URL)': context
+            }
+            ec[outputPaths['file']]=file_context
+            # Storing last url in memory for comparison on next loop
+            last_url = url
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': r,
+                'HumanReadable': tableToMarkdown('URLScan.io query results for {}'.format(raw_query), human_readable, HUMAN_READBALE_HEADERS, removeNull=True),
+                'EntryContext': ec
+            })
 
 
 
 
     """COMMAND FUNCTIONS"""
-    if demisto.command() == 'test-module':
-        r = requests.get('https://urlscan.io/api/v1/search/')
-        if r.status_code == 200:
+    try:
+        if demisto.command() == 'test-module':
+            r = requests.get('https://urlscan.io/api/v1/search/')
             demisto.results('ok')
-        else:
-            r.raise_for_status()
-        sys.exit(0)
-    if demisto.command() == 'urlscan-submit':
-        urlscan_submit_command()
-        sys.exit(0)
-    if demisto.command() == 'url':
-        urlscan_search_command()
-        sys.exit(0)
-    if demisto.command() == 'urlscan-search':
-        urlscan_search_command()
-        sys.exit(0)
+        if demisto.command() in {'urlscan-submit', 'url'}:
+            urlscan_submit_command()
+        if demisto.command() == 'urlscan-search':
+            urlscan_search_command()
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
   type: python
   commands:
   - name: urlscan-search
@@ -414,7 +501,11 @@ script:
     - name: searchParameter
       required: true
       default: true
-      description: Enter a parameter to search as a string (IP, File name, sha256, url, domain)
+      description: Enter a parameter to search as a string (IP, File name, sha256,
+        url, domain)
+    - name: limit
+      description: Limits the returned results
+      defaultValue: "20"
     outputs:
     - contextPath: URLScan.URL
       description: Bad URLs found
@@ -445,7 +536,7 @@ script:
       description: Url to scan
     - name: timeout
       description: How many seconds to wait for the scan id result
-      defaultValue: "30"
+      defaultValue: "60"
     - name: public
       auto: PREDEFINED
       predefined:
@@ -453,6 +544,9 @@ script:
       - private
       description: Will the submission be public or private
       defaultValue: public
+    - name: limit
+      description: Limits the returned list of Certificates, IP's and ASN's
+      defaultValue: "20"
     outputs:
     - contextPath: URLScan.URLs
       description: Related URLs found from scanned URL
@@ -484,6 +578,14 @@ script:
       description: URL where the file was found
     - contextPath: URLScan.Certificates
       description: Certificates found for the URL scanned
+    - contextPath: DBotScore.Score
+      description: Score retrieved for Dbot
+    - contextPath: DBotScore.Type
+      description: Type of indicator tested for
+    - contextPath: DBotScore.Vendor
+      description: Vendor who provided DBot Score
+    - contextPath: DBotScore.Indicator
+      description: Indicator URLScan tested for
     description: Submit a url to scan
   - name: url
     arguments:
@@ -492,7 +594,7 @@ script:
       description: Url to scan
     - name: timeout
       description: How many seconds to wait for the scan id result
-      defaultValue: "30"
+      defaultValue: "60"
     - name: public
       auto: PREDEFINED
       predefined:
@@ -500,6 +602,9 @@ script:
       - private
       description: Will the submission be public or private
       defaultValue: public
+    - name: limit
+      description: Limits the results in the war room
+      defaultValue: "20"
     outputs:
     - contextPath: URLScan.URLs
       description: Related URLs found from scanned URL
@@ -531,6 +636,14 @@ script:
       description: URL where the file was found
     - contextPath: URLScan.Certificates
       description: Certificates found for the URL scanned
+    - contextPath: DBotScore.Score
+      description: Score retrieved for Dbot
+    - contextPath: DBotScore.Type
+      description: Type of indicator tested for
+    - contextPath: DBotScore.Vendor
+      description: Vendor who provided DBot Score
+    - contextPath: DBotScore.Indicator
+      description: Indicator URLScan tested for
     description: Submit a url to scan
   runonce: false
 releaseNotes: Deprecated ip and file commands. Reformatted context outputs.
