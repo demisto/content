@@ -590,6 +590,6 @@ script:
       description: Rule description
     description: Set panorama configuration
   runonce: false
-releaseNotes: ""
+releaseNotes: "test"
 tests:
 - panorama_test_pb

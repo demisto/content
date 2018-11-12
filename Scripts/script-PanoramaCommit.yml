@@ -20,6 +20,6 @@ dependson:
   must:
   - panorama
 timeout: 0s
-releaseNotes: ""
+releaseNotes: "test"
 tests:
 - panorama_test_pb
