@@ -162,7 +162,7 @@ tasks:
         complex:
           root: Endpoint
           accessor: OS
-    separatecontext: fals
+    separatecontext: false
     view: |-
       {
         "position": {
