@@ -48,7 +48,6 @@ script:
     APIKEY = demisto.params().get('apikey')
     INSECURE = demisto.params().get('insecure')
     PROXY = demisto.params().get('proxy')
-    LIMIT = int(demisto.params().get('threshold'))
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
