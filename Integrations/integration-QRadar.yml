@@ -567,7 +567,9 @@ script:
     def get_search_results_command():
         search_id = demisto.args().get('search_id')
         raw_search_results = get_search_results(search_id, demisto.args().get('range'))
-        return get_entry_for_object('QRadar Search Results', unicode_to_str_recur(raw_search_results), demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
+        result_key = raw_search_results.keys()[0]
+        title = 'QRadar Search Results from ' + result_key
+        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result.{1}'.format(search_id, result_key))
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -590,12 +592,15 @@ script:
             if isinstance(headers, basestring):
                 headers = headers.split(',')
             headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
+        human_readable_md = ''
+        for k, h_obj in human_readable_obj.iteritems():
+            human_readable_md = human_readable_md + tableToMarkdown(k, h_obj, headers)
         return {
             'Type': entryTypes['note'],
             'Contents': obj,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, human_readable_obj, headers),
+            'HumanReadable': "### {0}\n{1}".format(title, human_readable_md),
             'EntryContext': obj
         }
 
@@ -608,11 +613,23 @@ script:
             human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
             populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
             trans_assets[asset_key] = populated_asset
-            human_readable_trans_assets[human_readable_key] = populated_asset
+            human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(populated_asset)
         # Adding endpoints context items
         trans_assets['Endpoint'] = endpoint_dict
         human_readable_trans_assets['Endpoint'] = endpoint_dict
         return trans_assets, human_readable_trans_assets
+
+    def transform_single_asset_to_hr(asset):
+        '''
+        Prepares asset for human readable
+        '''
+        hr_asset = []
+        for k,v in asset.iteritems():
+            if isinstance(v, dict):
+                hr_item = v
+                hr_item['Property Name'] = k
+                hr_asset.append(hr_item)
+        return hr_asset
 
     def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
         asset_dict = {}
@@ -690,7 +707,7 @@ script:
         note = replace_keys(raw_note, note_names_map)
         if 'CreateTime' in note:
           note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-        return get_entry_for_object('QRadar Note', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
+        return get_entry_for_object('QRadar note created successfuly', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
 
     def create_note_command():
         raw_note = create_note(demisto.args().get('offense_id'), demisto.args().get('note_text'), demisto.args().get('fields'))
