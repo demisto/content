@@ -198,7 +198,7 @@ view: |-
 inputs:
 - key: timeout
   value:
-    simple: "600"
+    simple: "60"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 - key: interval
