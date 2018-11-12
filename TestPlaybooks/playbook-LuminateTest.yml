@@ -1,0 +1,328 @@
+id: Luminate-TestPlaybook
+version: -1
+name: Luminate-TestPlaybook
+description: This playbook check the basic functionality of the Luminate-Desmito integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 48d58d13-71f6-48ee-8ab3-bcee6c671737
+    type: start
+    task:
+      id: 48d58d13-71f6-48ee-8ab3-bcee6c671737
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+      - "7"
+      - "9"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 70551c69-d2b8-47a5-8183-87f7289e5217
+    type: regular
+    task:
+      id: 70551c69-d2b8-47a5-8183-87f7289e5217
+      version: -1
+      name: lum-block-user
+      description: Block user by its email from authenticating to Luminate
+      script: Luminate|||lum-block-user
+      type: regular
+      iscommand: true
+      brand: Luminate
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      user_email:
+        simple: ${inputs.email}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 253f609a-2400-4f29-83b7-8b2e5820728a
+    type: regular
+    task:
+      id: 253f609a-2400-4f29-83b7-8b2e5820728a
+      version: -1
+      name: Verify block
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Luminate.Blocked.success
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 435
+        }
+      }
+  "3":
+    id: "3"
+    taskid: e2fa203b-756f-4152-858c-a0de57ac45c9
+    type: regular
+    task:
+      id: e2fa203b-756f-4152-858c-a0de57ac45c9
+      version: -1
+      name: lum-unblock
+      script: Luminate|||lum-unblock-user
+      type: regular
+      iscommand: true
+      brand: Luminate
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      user_email:
+        simple: ${inputs.email}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 625
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 3eda7cf1-4ab3-4104-8278-69c3ce986f71
+    type: regular
+    task:
+      id: 3eda7cf1-4ab3-4104-8278-69c3ce986f71
+      version: -1
+      name: Verify unblock
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Luminate.Unblocked.success
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 792
+        }
+      }
+  "5":
+    id: "5"
+    taskid: f25f35ae-0557-4357-88da-6a4dbb607076
+    type: regular
+    task:
+      id: f25f35ae-0557-4357-88da-6a4dbb607076
+      version: -1
+      name: lum-destroy-user-session
+      description: Disconnect all sessions of the user
+      script: Luminate|||lum-destroy-user-session
+      type: regular
+      iscommand: true
+      brand: Luminate
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      user_email:
+        simple: ${inputs.email}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 915,
+          "y": 230
+        }
+      }
+  "6":
+    id: "6"
+    taskid: d6ed5f4c-0b85-4238-8058-7bd5d1f6342e
+    type: regular
+    task:
+      id: d6ed5f4c-0b85-4238-8058-7bd5d1f6342e
+      version: -1
+      name: verify destroy user session
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Luminate.DestroySession.success
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 406
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 2fd0ee6e-5010-4ca2-8c07-d7431e0d0cbd
+    type: regular
+    task:
+      id: 2fd0ee6e-5010-4ca2-8c07-d7431e0d0cbd
+      version: -1
+      name: get http access logs
+      script: Luminate|||lum-get-http-access-logs
+      type: regular
+      iscommand: true
+      brand: Luminate
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      free_text: {}
+      from_date:
+        simple: yesterday
+      search_after: {}
+      size: {}
+      to_date: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1334,
+          "y": 230
+        }
+      }
+  "8":
+    id: "8"
+    taskid: d78a1d28-cea3-444d-8349-80b0f7219fe5
+    type: regular
+    task:
+      id: d78a1d28-cea3-444d-8349-80b0f7219fe5
+      version: -1
+      name: verify http access logs
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Luminate.AccessLogs
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1334,
+          "y": 406
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 0919568c-7d88-4ca4-8a5a-03bd9fe3acd1
+    type: regular
+    task:
+      id: 0919568c-7d88-4ca4-8a5a-03bd9fe3acd1
+      version: -1
+      name: get ssh access logs
+      script: Luminate|||lum-get-ssh-access-logs
+      type: regular
+      iscommand: true
+      brand: Luminate
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      free_text: {}
+      from_date:
+        simple: yesterday
+      search_after: {}
+      size: {}
+      to_date: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -43,
+          "y": 230
+        }
+      }
+  "10":
+    id: "10"
+    taskid: a0883192-be77-4eac-8023-471ac8f9490d
+    type: regular
+    task:
+      id: a0883192-be77-4eac-8023-471ac8f9490d
+      version: -1
+      name: verify ssh access logs
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Luminate.SshAccessLogs
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -43,
+          "y": 435
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 837,
+        "width": 1757,
+        "x": -43,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: email
+  value:
+    simple: block_test@gmail.com
+  required: false
+  description: ""
+outputs: []
