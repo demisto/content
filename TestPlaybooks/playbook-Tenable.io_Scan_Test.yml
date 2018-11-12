@@ -25,12 +25,44 @@ tasks:
         }
       }
     note: false
-  "1":
-    id: "1"
-    taskid: 8aabb701-60e9-42b4-8d62-16ae7f4ba33d
+  "2":
+    id: "2"
+    taskid: b03c3491-b59b-4fe1-86be-e510119d6f89
+    type: regular
+    task:
+      id: b03c3491-b59b-4fe1-86be-e510119d6f89
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: ed072f62-3151-4c4c-89d5-3cf6e9a42dfa
     type: playbook
     task:
-      id: 8aabb701-60e9-42b4-8d62-16ae7f4ba33d
+      id: ed072f62-3151-4c4c-89d5-3cf6e9a42dfa
       version: -1
       name: Tenable.io Scan
       playbookName: Tenable.io Scan
@@ -50,39 +82,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: b03c3491-b59b-4fe1-86be-e510119d6f89
-    type: regular
-    task:
-      id: b03c3491-b59b-4fe1-86be-e510119d6f89
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
+          "y": 375
         }
       }
     note: false
@@ -91,7 +91,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 415,
+        "height": 420,
         "width": 380,
         "x": 50,
         "y": 50

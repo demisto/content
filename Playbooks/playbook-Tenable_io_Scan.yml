@@ -86,8 +86,7 @@ tasks:
       - "3"
     scriptarguments:
       Ids:
-        complex:
-          root: inputs.scan-id
+        simple: ${TenableIO.Scan.Id}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -97,7 +96,7 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: TenableIO.Scan(val.Status !== "pending" && val.Status !== "running").Id
+        simple: TenableIO.Scan(val.Status == 'pending' || val.Status == 'running').Id
     separatecontext: true
     loop:
       iscommand: false

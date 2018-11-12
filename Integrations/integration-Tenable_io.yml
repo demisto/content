@@ -53,14 +53,14 @@ script:
     ASSET_VULNS_NAMES_MAP = {'PluginId': 'Id', 'PluginFamily': 'Family', 'PluginName': 'Name', 'Count': 'VulnerabilityOccurences'}
 
     # Output Headers / Context Keys
-    GET_SCANS_HEADERS = ['Id', 'Name', 'Type', 'Owner', 'Enabled', 'Status', 'UserPermissions', 'CreationDate', 'LastModificationDate', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId']
-    LAUNCH_SCAN_HEADERS = ['Id', 'Targets']
-    SCAN_REPORT_INFO_HEADERS = ['Id', 'Name', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy', 'Targets', 'FolderId']
-    SCAN_REPORT_VULNERABILITIES_HEADERS = ['Id', 'Name', 'Severity', 'Description', 'FirstSeen', 'LastSeen', 'Solution', 'Synopsis', 'VulnerabilityOccurences']
-    SCAN_REPORT_HOSTS_HEADERS = ['AssetId', 'Hostname', 'Score', 'Critical', 'High', 'Medium', 'Low']
+    GET_SCANS_HEADERS = ['Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Enabled', 'Type', 'Owner', 'Scanner', 'Policy', 'CreationDate', 'LastModificationDate']
+    LAUNCH_SCAN_HEADERS = ['Id', 'Targets', 'Status']
+    SCAN_REPORT_INFO_HEADERS = ['Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy']
+    SCAN_REPORT_VULNERABILITIES_HEADERS = ['Id', 'Name', 'Severity', 'Description', 'Synopsis', 'Solution', 'FirstSeen', 'LastSeen', 'VulnerabilityOccurences']
+    SCAN_REPORT_HOSTS_HEADERS = ['Hostname', 'Score', 'Critical', 'High', 'Medium', 'Low']
     SCAN_REPORT_REMEDIATIONS_HEADERS = ['Id', 'Description', 'AffectedHosts', 'AssociatedVulnerabilities']
-    VULNERABILITY_DETAILS_HEADERS = ['Name', 'Severity', 'Type', 'Synopsis', 'Description', 'FirstSeen', 'LastSeen', 'Solution', 'VulnerabilityOccurences', 'Family', 'ModificationDate', 'PublicationDate', 'CvssVector', 'CvssBaseScore', 'Cvss3Vector', 'Cvss3BaseScore']
-    ASSET_VULNS_HEADERS = ['VulnerabilityOccurences', 'Family', 'Id', 'Name', 'Severity', 'VulnerabilityState']
+    VULNERABILITY_DETAILS_HEADERS = ['Name', 'Severity', 'Type', 'Family', 'Description', 'Synopsis', 'Solution', 'FirstSeen', 'LastSeen', 'PublicationDate', 'ModificationDate', 'VulnerabilityOccurences', 'CvssVector', 'CvssBaseScore', 'Cvss3Vector', 'Cvss3BaseScore']
+    ASSET_VULNS_HEADERS = ['Id', 'Name', 'Severity', 'Family', 'VulnerabilityOccurences', 'VulnerabilityState']
 
     severity_to_text = ['None', 'Low', 'Medium', 'High', 'Critical']
 
@@ -305,7 +305,8 @@ script:
         res = send_scan_request(scan_id, 'launch', 'POST', alt_targets=targets)
         res.update({
             'id': scan_id,
-            'targets': targets
+            'targets': targets,
+            'status': 'pending'
         })
 
         return get_entry_for_object('The requested scan was launched successfully', 'TenableIO.Scan', replace_keys(res), LAUNCH_SCAN_HEADERS)
@@ -349,7 +350,12 @@ script:
         if 'error' in info:
             return_error(info['error'])
         vulns = convert_severity_values(replace_keys(info['vulnerabilities'], ASSET_VULNS_NAMES_MAP))
-        return get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities', vulns, ASSET_VULNS_HEADERS)
+        entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities', vulns, ASSET_VULNS_HEADERS)
+        entry['EntryContext']['TenableIO.Assets(val.Hostname === obj.Hostname)'] = {
+            'Vulnerabilities': map(lambda x: x['plugin_id'], info['vulnerabilities']),
+            'Hostname': indicator
+        }
+        return entry
 
     def get_scan_status_command():
         scan_id = demisto.getArg('scanId')
@@ -358,7 +364,8 @@ script:
             'Id': scan_id,
             'Status': scan_details['info']['status']
         }
-        return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan', scan_status)
+        return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id === obj.Id)', scan_status)
+
 
 
     # Command selector
@@ -430,9 +437,6 @@ script:
     - contextPath: TenableIO.Scan.Target
       description: The targets to be scanned.
       type: string
-    - contextPath: TenableIO.Scan.FolderId
-      description: The unique id of the folder where the scan has been stored.
-      type: number
     description: Retrive scans from the Tenable platform.
   - name: tenable-io-launch-scan
     arguments:
@@ -582,9 +586,6 @@ script:
       required: true
       default: true
       description: The unique ID of the vulnerability.
-    - name: dateRange
-      description: The number of days of data prior to and including today that should
-        be returned.
     outputs:
     - contextPath: TenableIO.Vulnerabilities.Description
       description: The description of the vulnerability.
@@ -676,6 +677,8 @@ script:
   - name: tenable-io-get-scan-status
     arguments:
     - name: scanId
+      required: true
+      default: true
       description: The unique ID of the Scan.
     outputs:
     - contextPath: TenableIO.Scan.Id
