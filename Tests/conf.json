@@ -691,6 +691,7 @@
       }
     ],
     "skipped_tests": {
+        "whois_test": "Server currently has Whois by default, need to deprecate",
         "blockip_test_playbook": "No Check Point FW license",
         "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
@@ -704,6 +705,7 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix"
     },
     "skipped_integrations": {
+        "Whois": "Server currently has Whois by default, need to deprecate",
         "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
         "RedLock": "Don't have alerts",
