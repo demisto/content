@@ -1,0 +1,185 @@
+id: RasterizeImageTest
+version: -1
+name: RasterizeImageTest
+description: Test rasterize-image command
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 68de2c2c-6c0d-4167-83e7-20d0bc09f48a
+    type: start
+    task:
+      id: 68de2c2c-6c0d-4167-83e7-20d0bc09f48a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 250330ca-f4af-42b2-8184-e905b8ec493c
+    type: regular
+    task:
+      id: 250330ca-f4af-42b2-8184-e905b8ec493c
+      version: -1
+      name: Generate File
+      scriptName: GenerateImageFileEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 858d11de-d159-4b08-880d-dc93f68bdcd6
+    type: regular
+    task:
+      id: 858d11de-d159-4b08-880d-dc93f68bdcd6
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 3df4c118-611d-48bf-8d8d-a49b2c49fe74
+    type: regular
+    task:
+      id: 3df4c118-611d-48bf-8d8d-a49b2c49fe74
+      version: -1
+      name: Rasterize
+      script: '|||rasterize-image'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      EntryID:
+        simple: ${File.EntryID}
+      entryID: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 807c3513-5fa8-44b5-8e6e-3272b790c24d
+    type: condition
+    task:
+      id: 807c3513-5fa8-44b5-8e6e-3272b790c24d
+      version: -1
+      name: Check file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: InfoFile.Size
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 27764f12-bf79-4f42-85ee-b775ac78439e
+    type: regular
+    task:
+      id: 27764f12-bf79-4f42-85ee-b775ac78439e
+      version: -1
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
