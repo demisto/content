@@ -783,7 +783,7 @@ script:
                 try{
                     doFile('7657fcb7d772448a6d8504e4b20168b8'); // Check sample file - it will throw an error if not successful
                 } catch(err){
-                    if err == 'No content received. Possible API rate limit reached.'{
+                    if (err == 'No content received. Possible API rate limit reached.'){
                         return true;
                   } else {
                         throw err;
