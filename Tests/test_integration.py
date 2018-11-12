@@ -142,7 +142,8 @@ def __create_incident_with_playbook(client, name, playbook_id):
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
             if inc_id == 'incCreateErr':
-                print_error('failed to get incident. possible issues are: missing playbookID in conf.json, wrong fields in test Playbook.')
+                print_error('Failed to create incident. Possible reasons are:\n
+                    Mismatch between playbookID in conf.json and the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.')
                 return False, -1
             print_error('failed to get incident with id:' + inc_id)
             return False, -1
