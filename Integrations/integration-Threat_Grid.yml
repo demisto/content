@@ -57,6 +57,66 @@ script:
     USER_API = 'api/v3/'
     VALIDATE_CERT = not demisto.params().get('insecure', True)
 
+    ''' Header names maps '''
+    # Format: {'Key': [correspondng headers]}
+    SAMPLE_ANALYSIS_HEADERS_MAP = {
+        'File': [
+            'FileName',
+            'Type',
+            'Size',
+            'MD5',
+            'SHA1',
+            'SHA256',
+            'MagicType'
+        ],
+        'Domain': [
+            'Name',
+            'Status'
+        ],
+        'Network': [
+            'Ts_Begin',
+            'Destination',
+            'DestinationPort',
+            'Transport',
+            'Packets',
+            'PacketSize'
+        ],
+        'Regitry Keys Created': [
+            'name',
+            'options',
+            'access'
+        ],
+        'Regitry Keys Deleted': [
+            'name'
+        ],
+        'Regitry Keys Modified': [
+            'name',
+            'options',
+            'access'
+        ],
+        'Sample': [
+            'ID',
+            'ThreatScore',
+            'HeuristicScore',
+            'ProcessName',
+            'CMD',
+            'Directory',
+            'Memory',
+            'Children'
+        ],
+        'Enviornment Details': [
+            'VM ID',
+            'VM Name',
+            'StartedAt',
+            'EndedAt',
+            'Runtime'
+        ],
+        'VT': [
+            'Hits',
+            'Engines'
+        ]
+    }
+
 
     def return_error(data):
         """
@@ -95,6 +155,23 @@ script:
                 else:
                     params[k] = demisto.getArg(k)
         return params
+
+
+    def get_with_limit(obj, path, limit=None):
+        """
+        Get from path with optional limit
+        """
+        res = demisto.get(obj, path)
+        try:
+            if limit:
+                if len(res) > limit:
+                    if isinstance(res, dict):
+                        return {k: res[k] for k in res.keys()[:limit]}
+                    elif isinstance(res, list):
+                        return res[:limit]
+        # If res has no len, or if not a list or a dictionary return res
+        finally:
+            return res
 
 
     def sample_to_readable(k):
@@ -536,17 +613,197 @@ script:
         """
         sample_id = demisto.getArg('id')
         r = req('GET', SUB_API + 'samples/' + sample_id +'/analysis.json')
-        ec = {'ThreatGrid.Sample.Id': sample_id}
+        ec, hr = extract_data_from_analysis_json(json.loads(r.content), sample_id, demisto.getArg('limit'))
         demisto.results([
             {
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
-                'HumanReadable': '### ThreatGrid Sample Run Analysis JSON -\n' + 'Your sample run analysis download request has been completed successfully for ' + sample_id,
+                'HumanReadable': hr,
                 'Contents': ec,
                 'ContentsFormat': formats['json']
             },
             fileResult(sample_id + '-analysis.json', r.content, file_type=entryTypes['entryInfoFile'])
         ])
+
+
+    def extract_data_from_analysis_json(analysis_json, sample_id, limit):
+        """
+        Extracts relevant data from an analysis json
+        """
+        ec = {}
+        hr = {}
+        sample_key = 'ThreatGrid.Sample(val.ID === obj.ID)'
+        sample_process = extract_sample_process_from_analysis_processes(demisto.get(analysis_json, 'dynamic.processes')) or {}
+        ec[sample_key] = create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process, limit)
+        hr['Sample'] = create_sample_hr_from_analysis_json(ec[sample_key], analysis_json, sample_process, limit)
+        hr['File'] = ec[sample_key]["File"] = create_file_ec_from_analysis_json(analysis_json)
+        handle_artifact_from_analysis_json(ec, hr, analysis_json, limit)
+        hr_str = create_analysis_json_human_readable(hr)
+        return ec, hr_str
+
+    def handle_artifact_from_analysis_json(ec, hr, analysis_json, limit):
+        '''
+        Populates ec and hr with artifact data from analysis json
+        '''
+        hr['Artifact'] = {}
+        for artifact in get_with_limit(analysis_json, 'artifacts', limit).values():
+            id = None
+            yaras = demisto.get(artifact, 'antivirus.yara')
+            if yaras:
+                for yara in filter(lambda yara: 'id' in yara, yaras):
+                    id = yara['id']
+                    break
+                if id:
+                    artifact_key = 'ThreatGrid.Artifact(val.ID === obj.{0})'.format(id)
+                    artifact_hr_key = 'Artifact(ID = {0})'.format(id)
+                    tags = set()
+                    for yara in filter(lambda yara: 'tags' in yara, yaras):
+                        if yara['tags']:
+                            for tag in yara['tags']:
+                                tags.add(tag)
+                    # converting to list for tableToMarkdown
+                    tags = list(tags)
+                    hr['Artifact'][artifact_hr_key] = ec[artifact_key] = {
+                        'ID': id,
+                        'Tags': tags,
+                        'FamilyName': demisto.get(artifact, 'antivirus.reversing_labs.classification.family_name'),
+                        'ThreatName': demisto.get(artifact, 'antivirus.reversing_labs.threat_name')
+                    }
+
+    def create_analysis_json_human_readable(hr):
+        hr_str = tableToMarkdown('Files scanned:', hr['File'], SAMPLE_ANALYSIS_HEADERS_MAP['File'])
+        tmp_hr_str = ''
+        for k in hr['Sample'].keys():
+            if isinstance(hr['Sample'][k], dict) or (isinstance(hr['Sample'][k], list) and len(hr['Sample'][k]) > 0 and k in SAMPLE_ANALYSIS_HEADERS_MAP):
+                demisto.info("\n\n\n{0}\n\n\n".format(str(hr['Sample'][k])))
+                tmp_hr_str = tmp_hr_str + tableToMarkdown('{0}:'.format(str(k)), hr['Sample'][k], SAMPLE_ANALYSIS_HEADERS_MAP[k])
+                del hr['Sample'][k]
+        return hr_str + tableToMarkdown('Sample analysis:', hr['Sample'], SAMPLE_ANALYSIS_HEADERS_MAP['Sample']) + tmp_hr_str + tableToMarkdown('Artifact analysis:', hr['Artifact'])
+
+
+    def extract_sample_process_from_analysis_processes(processes):
+        """
+        Extracts the relevant process (i.e. sample process) from the processes
+        """
+        if processes:
+            for process in processes.values():
+                if demisto.get(process, 'analyzed_because') == "Is target sample.":
+                    return process
+        return None
+
+
+    def create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process, limit):
+        """
+        Creates a dictionary corresponding to required field from the analysis_json
+        """
+        # Handling special case escape character
+        directory = demisto.get(sample_process, 'startup_info.current_directory')
+        if directory:
+            directory = directory[:len(directory) - 1]
+        return {
+            'ID': sample_id,
+            'VM': {'ID': demisto.get(analysis_json, 'metadata.sandcastle_env.vm_id'), 'Name': demisto.get(analysis_json, 'metadata.sandcastle_env.display_name')},
+            'StartedAt': demisto.get(analysis_json, 'metadata.sandcastle_env.analysis_start'),
+            'EndedAt': demisto.get(analysis_json, 'metadata.sandcastle_env.analysis_end'),
+            'Runtime': demisto.get(analysis_json, 'metadata.sandcastle_env.run_time'),
+            'HeuristicScore': demisto.get(analysis_json, 'threat.heuristic_score'),
+            'ThreatScore': get_with_limit(analysis_json, 'threat.threat_score', limit),
+            'FilesDeleted': get_with_limit(sample_process, 'files_deleted', limit),
+            'FilesCreated': get_with_limit(sample_process, 'files_created', limit),
+            'FilesModified': get_with_limit(sample_process, 'files_modified', limit),
+            'Directory': directory,
+            'CMD': demisto.get(sample_process, 'startup_info.command_line'),
+            'ProcessName': demisto.get(sample_process, 'process_name'),
+            'Stream': extract_network_from_analysis_networks(get_with_limit(analysis_json, 'network', limit), full_extraction=False),
+            'VT': extract_vt_from_analysis_artifact(demisto.get(analysis_json, 'artifacts')),
+            'Domain': map(lambda (k,v): {'Name': str(k), 'Status': str(demisto.get(v, 'status'))}, get_with_limit(analysis_json, 'domains', limit).iteritems() or [])
+        }
+
+
+    def create_sample_hr_from_analysis_json(sample_ec, analysis_json, sample_process, limit):
+        """
+        Creates a human readable dictionary corresponding to required field from the analysis_json
+        """
+        res = dict(sample_ec)
+        res.update(
+            {
+                'Mutants Created': get_with_limit(sample_process, 'mutants_created', limit),
+                'Regitry Keys Deleted': get_with_limit(sample_process, 'registry_keys_deleted', limit),
+                'Regisrty Keys Modified': get_with_limit(sample_process, 'registry_keys_modified', limit),
+                'Regitry Keys Created': get_with_limit(sample_process, 'registry_keys_created', limit),
+                'Threads': get_with_limit(sample_process, 'threads', limit),
+                'Children': len(get_with_limit(sample_process, 'children', limit)),
+                'Memory': len(demisto.get(sample_process, 'memory')) if demisto.get(sample_process, 'new') == 'true' else 0,
+                'Network': extract_network_from_analysis_networks(get_with_limit(analysis_json, 'network', limit), full_extraction=True),
+                'Enviornment Details': {
+                    'VM ID': sample_ec['VM']['ID'],
+                    'VM Name': sample_ec['VM']['Name'],
+                    'StartedAt': sample_ec['StartedAt'],
+                    'EndedAt': sample_ec['EndedAt'],
+                    'Runtime': sample_ec['Runtime']
+                }
+            }
+        )
+        # name of stream changes to network for human readable
+        del res['Stream']
+        del res['VM']
+        del res['StartedAt']
+        del res['EndedAt']
+        del res['Runtime']
+        return res
+
+    def extract_network_from_analysis_networks(networks, full_extraction):
+        """
+        Extract network representation from the networks arg
+        """
+        res = []
+        if networks:
+            for network_item in networks.values():
+                res_item = {
+                    'Destination': str(demisto.get(network_item, 'dst')),
+                    'DestinationPort': demisto.get(network_item, 'dst_port'),
+                    'PacketSize': demisto.get(network_item, 'bytes_orig')
+                }
+                if full_extraction:
+                    res_item['Transport'] = str(demisto.get(network_item, 'transport'))
+                    res_item['Ts_Begin'] = demisto.get(network_item, 'ts_begin')
+                    res_item['Packets'] = demisto.get(network_item, 'packets')
+                res.append(res_item)
+        return res
+
+
+    def extract_vt_from_analysis_artifact(artifacts):
+        """
+        Extract virusTotal representation from the artifacts arg
+        """
+        if artifacts:
+            for artifact in artifacts.values():
+                if demisto.get(artifact, 'antivirus.virustotal'):
+                    vt = demisto.get(artifact, 'antivirus.virustotal')
+                    return {
+                        'Hits': demisto.get(vt, 'hits'),
+                        'Engines': demisto.get(vt, 'engines')
+                    }
+
+
+    def create_file_ec_from_analysis_json(analysis_json):
+        """
+        Creates a file entry array from the analysis json
+        """
+        malware_descs = demisto.get(analysis_json, 'metadata.malware_desc')
+        res = []
+        for desc in malware_descs:
+            res.append(
+            {
+                'FileName': demisto.get(desc, 'filename'),
+                'Size': demisto.get(desc, 'size'),
+                'MD5': demisto.get(desc, 'md5'),
+                'SHA1': demisto.get(desc, 'sha1'),
+                'SHA256': demisto.get(desc, 'sha256'),
+                'MagicType': demisto.get(desc, 'magic'),
+                'Type': demisto.get(desc, 'type'),
+            })
+        return res
 
 
     def ioc_to_readable(ioc):
@@ -950,7 +1207,8 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait,
+        prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The sample status, one of a stable set of strings "succ, fail"
     - contextPath: ThreatGrid.Sample.MD5
@@ -982,7 +1240,8 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait,
+        prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The sample status, one of a stable set of strings "succ, fail"
     - contextPath: ThreatGrid.Sample.MD5
@@ -1073,7 +1332,8 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The sample filename
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait,
+        prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The sample status
     - contextPath: ThreatGrid.Sample.MD5
@@ -1092,7 +1352,8 @@ script:
   - name: threat-grid-search-submissions
     arguments:
     - name: q
-      description: Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to 'true'
+      description: Query text. If you wish to work with an elasticsearch query please
+        set 'advanced' argument to 'true'
     - name: user-only
       description: Only display submissions created by the current user, as determined
         by the value of api_key
@@ -1101,7 +1362,7 @@ script:
         as determined by the value of api_key.
     - name: term
       description: Restrict matches to a subset of submission fields. The value of
-        'term' is a comma-delimited list of strings which select groups of fields
+                     'term' is a comma-delimited list of strings which select groups of fields
     - name: before
       description: Return submissions created before specified time. Value is a timestring,
         either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic)
@@ -1113,10 +1374,10 @@ script:
         is a comma-delimited string containing one or more of the values: wait proc
         succ fail'
     - name: advanced
-      description: 'When set to ''true'' interprets ''q'' as a Lucene query syntax, allowing matches
-        by specific field, for instance: q=sha256:1b4468 will return items with sha256 equal to 1b4468.
-        q=analysis.threat_score:64 will return analysis whose threat_score value is equal to 64.
-        For reference see: https://lucene.apache.org/core/2_9_4/queryparsersyntax.html'
+      description: 'When set to ''true'' interprets ''q'' as a Lucene query syntax,
+        allowing matches by specific field, for instance: q=sha256:1b4468 will return
+        items with sha256 equal to 1b4468. q=analysis.threat_score:64 will return
+        analysis whose threat_score value is equal to 64. For reference see: https://lucene.apache.org/core/2_9_4/queryparsersyntax.html'
     - name: sort_by
       description: Sorts by timestamp, submitted_at, analyzed_at, filename, type,
         state, threat or threat_score, login
@@ -1135,7 +1396,8 @@ script:
     - contextPath: ThreatGrid.Sample.Filename
       description: The name of the sample file
     - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait,
+        prep, run, proc, succ, fail"
     - contextPath: ThreatGrid.Sample.Status
       description: The status of the sample
     - contextPath: ThreatGrid.Sample.MD5
@@ -1168,11 +1430,71 @@ script:
       required: true
       default: true
       description: The sample id
+    - name: limit
+      description: Limits the results to not overpopulate the context. Default value
+        is. 20. If you wish to get results with no limit, set this value to "".
+      defaultValue: "20"
     outputs:
-    - contextPath: ThreatGrid.Sample.Id
+    - contextPath: ThreatGrid.Sample.ID
       description: The ID of the sample for which the report was downloaded.
     - contextPath: Demisto.File
-      description: File containing result
+      description: File containing unfiltered result.
+    - contextPath: ThreatGrid.Sample.VM.ID
+      description: The VM ID for the sample.
+    - contextPath: ThreatGrid.Sample.VM.Name
+      description: The VM Name for the sample.
+    - contextPath: ThreatGrid.Sample.StartedAt
+      description: Start time of the analysis.
+    - contextPath: ThreatGrid.Sample.Runtime
+      description: Runtime of the analysis.
+    - contextPath: ThreatGrid.Sample.FileName
+      description: File name of the sample.
+    - contextPath: ThreatGrid.Sample.Size
+      description: Size of the sample.
+    - contextPath: ThreatGrid.Sample.MD5
+      description: The sample MD5 value.
+    - contextPath: ThreatGrid.Sample.SHA1
+      description: The sample's SHA1 value.
+    - contextPath: ThreatGrid.Sample.SHA256
+      description: The sample's SHA256 value.
+    - contextPath: ThreatGrid.Sample.MagicType
+      description: Sample magic type.
+    - contextPath: ThreatGrid.Sample.Type
+      description: Sample's file type
+    - contextPath: ThreatGrid.Sample.ThreatScore
+      description: The threat score of the sample.
+    - contextPath: ThreatGrid.Sample.HeuristicScore
+      description: The sample's hueristic score.
+    - contextPath: ThreatGrid.Sample.FilesDeleted
+      description: The files that were created during the anaylsis.
+    - contextPath: ThreatGrid.Sample.FileCreated
+      description: The files that were created during the analysis.
+    - contextPath: ThreatGrid.Sample.FilesModified
+      description: The files that were modified during the analysis.
+    - contextPath: ThreatGrid.Sample.Directory
+      description: The directory of the sample.
+    - contextPath: ThreatGrid.Sample.CMD
+      description: The command line execution of the sample.
+    - contextPath: ThreatGrid.Sample.ProcessName
+      description: The process name of the sample.
+    - contextPath: ThreatGrid.Sample.Destination
+      description: The destination IP of the sample.
+    - contextPath: ThreatGrid.Sample.DestinationPort
+      description: The destination port of the sample.
+    - contextPath: ThreatGrid.Sample.PacketSize
+      description: Packet size in bytes.
+    - contextPath: ThreatGrid.Sample.VT.Hits
+      description: Sample malicious hits in virustotal.
+    - contextPath: ThreatGrid.Sample.VT.Engines
+      description: Number of engines that scanned the Sample on Virustotal.
+    - contextPath: ThreatGrid.Artifact.Yara
+      description: Artifact ID (yara signature name)
+    - contextPath: ThreatGrid.Artifact.Tags
+      description: Artifact tags.
+    - contextPath: ThreatGrid.Artifact.FamilyName
+      description: Artifact family name.
+    - contextPath: ThreatGrid.Artifact.ThreatName
+      description: Artifact threat name.
     description: The detailed overview of dynamic and static analysis results for
       the sample
   - name: threat-grid-get-processes-by-id
@@ -1415,9 +1737,11 @@ script:
     - name: feed-name
       required: true
       default: true
-      description: The feed name. For a list of possible feed names and how to use them please see - https://panacea.threatgrid.com/doc/main/feeds.html
+      description: The feed name. For a list of possible feed names and how to use
+        them please see - https://panacea.threatgrid.com/doc/main/feeds.html
     - name: feed-period
-      description: Feed daily date (YYYY-MM-DD). Alternatively, you may also write in free text (e.g. '2 days ago')
+      description: Feed daily date (YYYY-MM-DD). Alternatively, you may also write
+        in free text (e.g. '2 days ago')
     - name: output-type
       description: The output type
       defaultValue: json
@@ -1534,7 +1858,8 @@ script:
       description: search by IOC name
     - name: tag
       description: search by tag name
-    description: Search IPs. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    description: Search IPs. Please provide a single argument (only one) to use this
+      command, as the API supports 1 filter at a time.
   - name: threat-grid-get-analysis-annotations
     arguments:
     - name: id
@@ -1596,7 +1921,8 @@ script:
       description: Result ID
     - contextPath: ThreatGrid.Sample.Details
       description: Detail of sample
-    description: Search Samples. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    description: Search Samples. Please provide a single argument (only one) to use
+      this command, as the API supports 1 filter at a time.
   - name: threat-grid-search-urls
     arguments:
     - name: url
@@ -1629,7 +1955,8 @@ script:
       description: search by artifact downloaded
     - name: tag
       description: search by url tag
-    description: Search urls. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
+    description: Search urls. Please provide a single argument (only one) to use this
+      command, as the API supports 1 filter at a time.
   - name: threat-grid-get-samples-state
     arguments:
     - name: ids
