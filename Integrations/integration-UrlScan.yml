@@ -188,6 +188,7 @@ script:
 
         ec = makehash()
         human_readable = makehash()
+        cont = makehash()
         file_context = makehash()
         hr_string = ''
 
@@ -201,12 +202,12 @@ script:
                 cert_md.append(info)
                 cert_ec.append(ec_info)
             CERT_HEADERS = ['Subject Name', 'Issuer', 'Validity']
-            context['Certificates'] = cert_ec
+            cont['Certificates'] = cert_ec
         ec['URL']['Data'] = url_query
         if 'urls' in scan_lists:
-            context['URLs'] = scan_lists['urls']
+            cont['URLs'] = scan_lists['urls']
             ec['URL']['Data'] = demisto.args().get('url')
-            context['URL'] = demisto.args().get('url')
+            cont['URL'] = demisto.args().get('url')
         human_readable['Effective URL'] = url_query
         if 'uuid' in scan_tasks:
             ec['URLScan']['UUID']
@@ -232,34 +233,34 @@ script:
                 ip_ec_info[i]['ASN'] = v
                 ip_asn_MD.append(ip_info)
                 i = i + 1
-            context['RelatedIPs'] = ip_ec_info
+            cont['RelatedIPs'] = ip_ec_info
             IP_HEADERS = ['Count', 'IP', 'ASN']
         if 'countries' in scan_lists:
             countries = scan_lists['countries']
             human_readable['Associated Countries'] = countries
-            context['Country'] = countries
+            cont['Country'] = countries
         if not None in scan_lists['hashes']:
             hashes = scan_lists['hashes']
-            context['iocs'] = hashes
+            cont['iocs'] = hashes
             human_readable['iocs'] = hashes
         if 'domains' in scan_lists:
             subdomains = scan_lists['domains']
-            context['Subdomains'] = subdomains
+            cont['Subdomains'] = subdomains
             human_readable['Subdomains'] = subdomains
         if 'asn' in scan_page:
-            context['ASN'] = scan_page['asn']
+            cont['ASN'] = scan_page['asn']
         if 'malicious' in scan_stats:
             human_readable['Malicious URLs Found'] = scan_stats['malicious']
             if int(scan_stats['malicious']) > 0:
                 human_readable['Malicious'] = 'Malicious'
                 ec['URL']['Data'] = demisto.args().get('url')
-                context['Data'] = demisto.args().get('url')
+                cont['Data'] = demisto.args().get('url')
                 ec['DBotScore']['Indicator'] = demisto.args().get('url')
                 ec['URL']['Malicious']['Vendor'] = 'urlscan.io'
-                context['Malicious']['Vendor'] = 'urlscan.io'
+                cont['Malicious']['Vendor'] = 'urlscan.io'
                 ec['DBotScore']['Vendor'] = 'urlscan.io'
                 ec['URL']['Malicious']['Description'] = 'Match found in Urlscan.io database'
-                context['Malicious']['Description'] = 'Match found in Urlscan.io database'
+                cont['Malicious']['Description'] = 'Match found in Urlscan.io database'
                 ec['DBotScore']['Score'] = 3
                 ec['DBotScore']['Type'] = 'url'
             else:
@@ -282,21 +283,21 @@ script:
             filesize = meta_data['filesize']
             filetype = meta_data['mimeType']
             human_readable['File']['Hash'] = sha256
-            context['File']['Hash'] = sha256
+            cont['File']['Hash'] = sha256
             file_context['SHA256'] = sha256
             human_readable['File']['Name'] = filename
-            context['File']['FileName'] = filename
+            cont['File']['FileName'] = filename
             file_context['Name'] = filename
             human_readable['File']['Size'] = filesize
-            context['File']['FileSize'] = filesize
+            cont['File']['FileSize'] = filesize
             file_context['Size'] = filesize
             human_readable['File']['Type'] = filetype
-            context['File']['FileType'] = filetype
+            cont['File']['FileType'] = filetype
             file_context['Type'] = filetype
             file_context['Hostname'] = demisto.args().get('url')
 
         ec = {
-                'URLScan(val.URL===obj.URL)': context
+                'URLScan(val.URL && val.URL == obj.URL)': cont
             }
         ec[outputPaths['file']]=file_context
 
@@ -399,11 +400,13 @@ script:
         if r['total'] > 0:
             demisto.results('{} results found for {}'.format(r['total'], raw_query))
 
+
         # Opening empty string for url comparison
         last_url = ''
 
         for res in r['results'][:LIMIT]:
             ec = makehash()
+            cont = makehash()
             file_context = makehash()
             res_dict = res
             res_tasks = res_dict['task']
@@ -417,30 +420,30 @@ script:
             if 'url' in res_tasks:
                 url = res_tasks['url']
                 human_readable['URL'] = url
-                context['URL'] = url
+                cont['URL'] = url
                 ec['URL']['Data'] = url
             if 'domain' in res_page:
                 domain = res_page['domain']
                 human_readable['Domain'] = domain
-                context['Domain'] = domain
+                cont['Domain'] = domain
                 ec['Domain']['Name'] = domain
             if 'asn' in res_page:
                 asn = res_page['asn']
-                context['ASN'] = asn
+                cont['ASN'] = asn
                 ec['IP']['ASN'] = asn
                 human_readable['ASN'] = asn
             if 'ip' in res_page:
                 ip = res_page['ip']
-                context['IP'] = ip
+                cont['IP'] = ip
                 ec['IP']['Address'] = ip
                 human_readable['IP'] = ip
             if '_id' in res_dict:
                 scanID = res_dict['_id']
-                context['ScanID'] = scanID
+                cont['ScanID'] = scanID
                 human_readable['Scan ID'] = scanID
             if 'time' in res_tasks:
                 scanDate = res_tasks['time']
-                context['ScanDate'] = scanDate
+                cont['ScanDate'] = scanDate
                 human_readable['Scan Date'] = scanDate
             if 'files' in res_dict:
                 HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date', 'File' ]
@@ -451,20 +454,20 @@ script:
                 filetype = files['mimeType']
                 url = res_tasks['url']
                 human_readable['File']['Hash'] = sha256
-                context['Hash'] = sha256
+                cont['Hash'] = sha256
                 file_context['SHA256'] = sha256
                 human_readable['File']['Name'] = filename
-                context['FileName'] = filename
+                cont['FileName'] = filename
                 file_context['File']['Name'] = filename
                 human_readable['File']['Size'] = filesize
-                context['FileSize'] = filesize
+                cont['FileSize'] = filesize
                 file_context['Size'] = filesize
                 human_readable['File']['Type'] = filetype
-                context['FileType'] = filetype
+                cont['FileType'] = filetype
                 file_context['File']['Type'] = filetype
                 file_context['File']['Hostname'] = url
             ec = {
-                'URLScan(val.URL===obj.URL)': context
+                'URLScan(val.URL && val.URL == obj.URL)': cont
             }
             ec[outputPaths['file']]=file_context
             # Storing last url in memory for comparison on next loop
