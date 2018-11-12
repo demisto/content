@@ -374,6 +374,7 @@ script:
         return info, ec_info
 
     def urlscan_search_command():
+        LIMIT = int(demisto.args().get('limit'))
         HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date' ]
         raw_query = demisto.args().get('searchParameter', '')
         if is_valid_ip(raw_query):
