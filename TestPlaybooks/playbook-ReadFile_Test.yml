@@ -244,7 +244,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "10"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
@@ -274,6 +274,40 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 2f852723-96a5-4230-8625-31e0f9abb93f
+    type: condition
+    task:
+      id: 2f852723-96a5-4230-8625-31e0f9abb93f
+      version: -1
+      name: Check urls
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.[0].Data
+            iscontext: true
+          right:
+            value:
+              simple: https://malformedurl.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1420
         }
       }
@@ -283,7 +317,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50
