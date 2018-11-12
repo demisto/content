@@ -86,9 +86,10 @@ script:
             error_message = e.output
 
         if return_code == 0:
-            filename = demisto.uniqueFile()
-            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
-            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+            file = file_result_existing_file(friendlyName)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
+
         else:
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
@@ -100,9 +101,9 @@ script:
             friendlyName = 'email.pdf'
         rasterize_email(html, friendlyName)
         if return_code == 0:
-            filename = demisto.uniqueFile()
-            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
-            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+            file = file_result_existing_file(friendlyName)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
         else:
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
@@ -138,9 +139,9 @@ script:
             error_message = e.output
 
         if return_code == 0:
-            filename = demisto.uniqueFile()
-            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
-            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+            file = file_result_existing_file(friendlyName)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
         else:
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
