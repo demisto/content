@@ -1,7 +1,7 @@
 id: Phishing Investigation - Generic
 version: -1
 name: Phishing Investigation - Generic
-fromversion: 3.6.0
+fromversion: 4.0.0
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2294dbde-b75d-4632-8ca6-4ec42e2e7be9
+    taskid: 32d25ab2-8fa5-46cd-82df-78dc402c0150
     type: start
     task:
-      id: 2294dbde-b75d-4632-8ca6-4ec42e2e7be9
+      id: 32d25ab2-8fa5-46cd-82df-78dc402c0150
       version: -1
       name: ""
       description: ""
@@ -27,16 +27,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 50
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: cb3d55b6-ccde-4466-8d45-f54917c994e9
+    taskid: 762b1bb7-43ba-455a-8b71-ccc7e58ab8f5
     type: regular
     task:
-      id: cb3d55b6-ccde-4466-8d45-f54917c994e9
+      id: 762b1bb7-43ba-455a-8b71-ccc7e58ab8f5
       version: -1
       name: Assign to analyst
       description: Assign the incident to an analyst based on the analyst's organizational
@@ -59,16 +60,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 865
+          "x": 592.5,
+          "y": 1040
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: 10a9ba52-86fa-4604-8dea-1fa7045fd3f2
+    taskid: 5882f2a4-7949-4121-8dc6-09a44bc78a48
     type: playbook
     task:
-      id: 10a9ba52-86fa-4604-8dea-1fa7045fd3f2
+      id: 5882f2a4-7949-4121-8dc6-09a44bc78a48
       version: -1
       name: ""
       description: ""
@@ -83,16 +85,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 690
+          "x": 377.5,
+          "y": 865
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: 53e3bbf2-9498-4260-8255-065b62bb1d89
+    taskid: 26ed9557-a1c3-433a-8614-94e6c671d9af
     type: regular
     task:
-      id: 53e3bbf2-9498-4260-8255-065b62bb1d89
+      id: 26ed9557-a1c3-433a-8614-94e6c671d9af
       version: -1
       name: Manually review the incident
       description: Review the incident to determine if the email that the user reported
@@ -107,16 +110,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1360
+          "x": 60,
+          "y": 1535
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 0c0c7936-8c77-48af-8e1f-9846f219007d
+    taskid: ea1e91fd-530c-4f2e-859a-4a4bc3b321de
     type: regular
     task:
-      id: 0c0c7936-8c77-48af-8e1f-9846f219007d
+      id: ea1e91fd-530c-4f2e-859a-4a4bc3b321de
       version: -1
       name: Close investigation
       description: Close the investigation.
@@ -135,16 +139,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2350
+          "x": 695,
+          "y": 2700
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: e723af07-00ee-4243-89ba-92f71164bc2f
+    taskid: 6b039cde-c519-4ad2-83b7-17dbefb01c7b
     type: title
     task:
-      id: e723af07-00ee-4243-89ba-92f71164bc2f
+      id: 6b039cde-c519-4ad2-83b7-17dbefb01c7b
       version: -1
       name: Triage
       description: ""
@@ -158,16 +163,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 195
         }
       }
+    note: false
   "12":
     id: "12"
-    taskid: 0c37f6e9-f8bc-483f-82bb-099cabf8f403
+    taskid: 36ce6034-d509-405b-8e8d-4bef662e0709
     type: regular
     task:
-      id: 0c37f6e9-f8bc-483f-82bb-099cabf8f403
+      id: 36ce6034-d509-405b-8e8d-4bef662e0709
       version: -1
       name: Store the email address of the reporting user
       description: Store the email address of the user that reported the incident.
@@ -191,16 +197,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 340
+          "x": 1022.5,
+          "y": 515
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 57119f06-affa-4b76-8d6b-bb07fea4790a
+    taskid: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
     type: regular
     task:
-      id: 57119f06-affa-4b76-8d6b-bb07fea4790a
+      id: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
       version: -1
       name: Acknowledge incident was received
       description: |
@@ -234,16 +241,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 690
+          "x": 1022.5,
+          "y": 865
         }
       }
+    note: false
   "14":
     id: "14"
-    taskid: ab2a151b-758d-4581-84aa-4b5af80b681d
+    taskid: 849b0463-ea4a-4860-86b5-825e5cda8a08
     type: playbook
     task:
-      id: ab2a151b-758d-4581-84aa-4b5af80b681d
+      id: 849b0463-ea4a-4860-86b5-825e5cda8a08
       version: -1
       name: Email Address Enrichment - Generic
       description: ""
@@ -258,16 +266,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 515
+          "x": 1022.5,
+          "y": 690
         }
       }
+    note: false
   "15":
     id: "15"
-    taskid: 12bf1beb-357e-49ee-85b1-faa777daf3e9
+    taskid: f3ddd9af-36b1-44fb-8eaf-1a71be6b34fb
     type: condition
     task:
-      id: 12bf1beb-357e-49ee-85b1-faa777daf3e9
+      id: f3ddd9af-36b1-44fb-8eaf-1a71be6b34fb
       version: -1
       name: Is the email malicious?
       description: Determine if the email is malicious based on the calculated severity.
@@ -283,7 +292,7 @@ tasks:
     conditions:
     - label: 'Malicious '
       condition:
-      - - operator: number.greaterThanOrEqual
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: incident.severity
@@ -294,16 +303,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1040
+          "x": 592.5,
+          "y": 1215
         }
       }
+    note: false
   "16":
     id: "16"
-    taskid: 632a53fe-430e-4f3e-8767-ac4838002f85
+    taskid: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
     type: regular
     task:
-      id: 632a53fe-430e-4f3e-8767-ac4838002f85
+      id: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
       version: -1
       name: Update  the user that the reported email is safe
       description: Send an email to the user explaining that the email they reported
@@ -338,16 +348,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 2175
+          "x": 60,
+          "y": 2525
         }
       }
+    note: false
   "17":
     id: "17"
-    taskid: dbdbb84d-c13a-4264-84ba-d6153dc1d323
+    taskid: c0fd6e60-203b-4039-89f9-d34f4024d349
     type: regular
     task:
-      id: dbdbb84d-c13a-4264-84ba-d6153dc1d323
+      id: c0fd6e60-203b-4039-89f9-d34f4024d349
       version: -1
       name: Update  the user that the reported email is malicious
       description: Send an email to the user explaining that the email they reported
@@ -381,16 +392,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1854
+          "x": 807.5,
+          "y": 2030
         }
       }
+    note: false
   "18":
     id: "18"
-    taskid: 9c7c8122-f72d-4410-8bc3-1cc1a64ddee6
+    taskid: 916bc6c8-6d46-4f04-8bd2-1152736b7984
     type: title
     task:
-      id: 9c7c8122-f72d-4410-8bc3-1cc1a64ddee6
+      id: 916bc6c8-6d46-4f04-8bd2-1152736b7984
       version: -1
       name: Engage with User
       description: ""
@@ -404,16 +416,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 195
+          "x": 1022.5,
+          "y": 355
         }
       }
+    note: false
   "22":
     id: "22"
-    taskid: 42221d7f-3dda-45bd-80dd-ecebe1130872
+    taskid: ca065734-ff0b-4d84-8bfe-a93298bd34ab
     type: playbook
     task:
-      id: 42221d7f-3dda-45bd-80dd-ecebe1130872
+      id: ca065734-ff0b-4d84-8bfe-a93298bd34ab
       version: -1
       name: Detonate File - Generic
       description: ""
@@ -428,16 +441,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 515
+          "x": 592.5,
+          "y": 690
         }
       }
+    note: false
   "25":
     id: "25"
-    taskid: 2d862878-1ee1-4eab-8f14-d0ce5ebf0c92
+    taskid: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
     type: playbook
     task:
-      id: 2d862878-1ee1-4eab-8f14-d0ce5ebf0c92
+      id: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
       version: -1
       name: Entity Enrichment - Generic
       description: ""
@@ -452,16 +466,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 515
+          "x": 162.5,
+          "y": 690
         }
       }
+    note: false
   "26":
     id: "26"
-    taskid: eff3c1ea-a788-45db-8f09-38dfee0f8857
+    taskid: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
     type: playbook
     task:
-      id: eff3c1ea-a788-45db-8f09-38dfee0f8857
+      id: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
       version: -1
       name: Process Email - Generic
       description: ""
@@ -471,22 +486,23 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "35"
       - "22"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 340
         }
       }
+    note: false
   "27":
     id: "27"
-    taskid: d4b01562-2d49-4f33-82c9-0419787fd04a
+    taskid: d73d68a4-dff2-4cae-8645-972f9c328444
     type: title
     task:
-      id: d4b01562-2d49-4f33-82c9-0419787fd04a
+      id: d73d68a4-dff2-4cae-8645-972f9c328444
       version: -1
       name: Remediate
       description: ""
@@ -495,22 +511,24 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
       - "34"
+      - "36"
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2030
+          "x": 807.5,
+          "y": 2205
         }
       }
+    note: false
   "28":
     id: "28"
-    taskid: b9bf9a85-de35-4ff6-832d-729b656f3fec
+    taskid: 6cc94de8-1f6c-4832-805b-43ec888fcf1b
     type: playbook
     task:
-      id: b9bf9a85-de35-4ff6-832d-729b656f3fec
+      id: 6cc94de8-1f6c-4832-805b-43ec888fcf1b
       version: -1
       name: Search And Delete Emails - Generic
       description: ""
@@ -525,16 +543,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2175
+          "x": 910,
+          "y": 2525
         }
       }
+    note: false
   "29":
     id: "29"
-    taskid: b8f67d7a-0744-4ff5-8bb0-e9684c3e7d68
+    taskid: e9a74030-baa8-43f9-8c35-54f8ae2d6b7b
     type: title
     task:
-      id: b8f67d7a-0744-4ff5-8bb0-e9684c3e7d68
+      id: e9a74030-baa8-43f9-8c35-54f8ae2d6b7b
       version: -1
       name: Done
       description: ""
@@ -545,16 +564,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2525
+          "x": 695,
+          "y": 2875
         }
       }
+    note: false
   "30":
     id: "30"
-    taskid: 73cc9683-2aa6-48d1-8453-2465d7b04264
+    taskid: 824c86e1-14a5-42cf-8516-e5f893558f09
     type: title
     task:
-      id: 73cc9683-2aa6-48d1-8453-2465d7b04264
+      id: 824c86e1-14a5-42cf-8516-e5f893558f09
       version: -1
       name: Malicious
       description: ""
@@ -568,16 +588,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1701
+          "x": 807.5,
+          "y": 1885
         }
       }
+    note: false
   "31":
     id: "31"
-    taskid: e4441aac-00cf-4251-89c0-5e336fa940c4
+    taskid: 717e858d-5696-441b-8ff2-30f798cea618
     type: title
     task:
-      id: e4441aac-00cf-4251-89c0-5e336fa940c4
+      id: 717e858d-5696-441b-8ff2-30f798cea618
       version: -1
       name: Undetermined
       description: ""
@@ -591,16 +612,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1215
+          "x": 60,
+          "y": 1390
         }
       }
+    note: false
   "33":
     id: "33"
-    taskid: 24b894a3-0bd7-472c-856f-a99047738698
+    taskid: 1787361d-c8b7-4c66-89ac-9f90d340358b
     type: condition
     task:
-      id: 24b894a3-0bd7-472c-856f-a99047738698
+      id: 1787361d-c8b7-4c66-89ac-9f90d340358b
       version: -1
       name: Is the email malicious?
       description: Is the email that the user reported malicious?
@@ -616,16 +638,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1535
+          "x": 60,
+          "y": 1710
         }
       }
+    note: false
   "34":
     id: "34"
-    taskid: 80d2e8e0-0a77-42ab-8222-8aea55fcb475
+    taskid: 4533b6d8-c08d-42c2-805a-e540762472fb
     type: regular
     task:
-      id: 80d2e8e0-0a77-42ab-8222-8aea55fcb475
+      id: 4533b6d8-c08d-42c2-805a-e540762472fb
       version: -1
       name: Manually remediate  the incident
       description: "Consider the following:\n1. Search for and delete similar emails\n2.
@@ -642,18 +665,159 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2175
+          "x": 460,
+          "y": 2360
         }
       }
+    note: false
+  "35":
+    id: "35"
+    taskid: 524a2856-34ef-4752-862d-90daa98875ee
+    type: playbook
+    task:
+      id: 524a2856-34ef-4752-862d-90daa98875ee
+      version: -1
+      name: Extract Indicators From File - Generic
+      description: ""
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: 9aff5a75-b7eb-410a-8751-6cc749dc9df5
+    type: condition
+    task:
+      id: 9aff5a75-b7eb-410a-8751-6cc749dc9df5
+      version: -1
+      name: Execute the "Search and Delete" sub-playbook?
+      description: Verify that the "Search and Delete" parameter is set to "True"?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDelete
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.SearchAndDelete
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "True"
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2360
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: 8277280f-0c19-4d99-85c9-39e19f60bc0d
+    type: condition
+    task:
+      id: 8277280f-0c19-4d99-85c9-39e19f60bc0d
+      version: -1
+      name: Execute the "Block Indicators" sub-playbook?
+      description: Verify that the "Block indicators" parameter is set to "True"?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.BlockIndicators
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "True"
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2360
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: 2198ea9b-926d-4f25-829e-39c390771dfb
+    type: playbook
+    task:
+      id: 2198ea9b-926d-4f25-829e-39c390771dfb
+      version: -1
+      name: Block Indicators - Generic
+      description: ""
+      playbookName: Block Indicators - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2525
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2540,
-        "width": 1240,
-        "x": 50,
+        "height": 2890,
+        "width": 1670,
+        "x": 60,
         "y": 50
       }
     }
@@ -664,4 +828,21 @@ inputs:
     simple: Administrator
   required: true
   description: The default role to assign the incident to.
+- key: SearchAndDelete
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Enable the "Search and Delete" capability (can be either "True" or "False").
+    In case of a malicious email, the "Search and Delete" sub-playbook will look for other instances of the email and delete them pending analyst approval.
+- key: BlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Enable the "Block Indicators" capability (can be either "True" or "False").
+    In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
+tests:
+  - Phishing test - attachment
+  - Phishing test - Inline

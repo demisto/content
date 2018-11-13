@@ -18,6 +18,7 @@ enabled: true
 args:
 - name: domain
   required: true
+  default: true
   description: Domain to look up
 scripttarget: 0
 runonce: false

@@ -4,7 +4,7 @@ commonfields:
 name: RSA NetWitness v11.1
 display: RSA NetWitness v11.1
 category: Analytics & SIEM
-image: data:image/png;base64,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
+image: data:image/png;base64,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
 description: RSA NetWitness Platform provides systems Logs, Network, and endpoint
   visibility for real-time collection, detection, and automated response with the
   Demisto Enterprise platform. Providing full session analysis, customers can extract
@@ -45,6 +45,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: on 'Fetch incidents' import all alerts related to the incident
+  name: importAlerts
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |2+
 
@@ -83,25 +88,7 @@ script:
 
     """
 
-    GLOBAL VARS
-
-    """
-    SERVER_URL = demisto.params()['server']
-    BASE_PATH = '{}/rest/api'.format(SERVER_URL)
-    USERNAME = demisto.params()['credentials']['identifier']
-    PASSWORD = demisto.params()['credentials']['password']
-    USE_SSL = not demisto.params()['insecure']
-    VERSION = demisto.params()['version']
-    PROXIES = set_proxies()
-    DEFAULT_HEADERS = {
-        'Content-Type' : 'application/json;charset=UTF-8',
-        'Accept': 'application/json; charset=UTF-8',
-        'NetWitness-Version': VERSION
-    }
-
-    """
-
-    COMMAND HANDLERS
+    AUTHENTICATION
 
     """
 
@@ -149,17 +136,96 @@ script:
             - unexpected response from the server
 
         """
+        LOG('Attempting to get token')
         response_body = get_token_request(
             USERNAME,
             PASSWORD
         )
+        LOG('Token recieved')
         token = response_body.get('accessToken')
         if not token:
             raise ValueError('Failed to access get_token token (Unexpected response)')
         return token
 
+    """
 
-    def get_incident_request(token, incident_id):
+    GLOBAL VARS
+
+    """
+    SERVER_URL = demisto.params()['server']
+    BASE_PATH = '{}/rest/api'.format(SERVER_URL)
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    USE_SSL = not demisto.params()['insecure']
+    VERSION = demisto.params()['version']
+    PROXIES = set_proxies()
+    TOKEN = get_token()
+    DEFAULT_HEADERS = {
+        'Content-Type' : 'application/json;charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8',
+        'NetWitness-Version': VERSION
+    }
+
+    """
+
+    COMMAND HANDLERS
+
+    """
+
+    def http_request(method, url, body=None, headers={}, url_params=None):
+        '''
+        returns the http response body
+
+        uses TOKEN global var to send requests to RSA end (this enables using a token for multiple requests and avoiding unnecessary creation of a new token)
+        catches and handles token expiration: in case of 'request timeout' the  token will be renewed and the request will be resent once more.
+
+        '''
+
+        global TOKEN
+
+        # add token to headers
+        headers['NetWitness-Token'] = TOKEN
+
+        request_kwargs = {
+            'headers': headers,
+            'verify': USE_SSL,
+            'proxies': PROXIES
+        }
+
+        #add optional arguments if specified
+        if body is not None:
+            request_kwargs['data'] = body
+        if url_params is not None:
+            request_kwargs['params'] = url_params
+
+        LOG('Attempting {} request to {}\nWith params:{}\nWith body:\n{}'.format(method, url,json.dumps(url_params, indent=4), json.dumps(body, indent=4)))
+        response = requests.request(
+            method,
+            url,
+            **request_kwargs
+        )
+        # handle timeout (token expired): renew token and try again
+        if response.status_code == 408:
+            LOG('Timeout detected -  renwing token')
+            TOKEN = get_token()
+            headers['NetWitness-Token'] = TOKEN
+            response = requests.request(
+                method,
+                url,
+                **request_kwargs
+            )
+        #successful request
+        if response.status_code == 200:
+            try:
+                return response.json()
+            except Exception as e:
+                LOG(e.message)
+                return None
+        #bad request - NetWitness returns a common json structure for errors; a list of error objects
+        error_lst = response.json().get('errors')
+        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+
+    def get_incident_request(incident_id):
         """
 
         returns the response body
@@ -172,20 +238,15 @@ script:
 
         """
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
-        headers = add_token_header(DEFAULT_HEADERS, token)
 
-        response = requests.get(url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES
+        response = http_request(
+            'GET',
+            url,
+            headers = DEFAULT_HEADERS
         )
+        return response
 
-        #successful request
-        if response.status_code == 200:
-            return response.json()
-        #bad request - NetWitness returns a common json structure for errors; a list of error objects
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+
 
     def get_incident():
         """
@@ -197,12 +258,11 @@ script:
         """
         args = demisto.args()
         incident_id = args.get('incidentId')
-
+        LOG('Requesting information on incident ' + incident_id)
         #call get_incident_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
         incident = get_incident_request(
-            get_token(),
             incident_id
         )
 
@@ -221,13 +281,12 @@ script:
         }
         demisto.results(entry)
 
-    def get_incidents_request(token, since=None, until=None, page_number=None, page_size=10):
+    def get_incidents_request(since=None, until=None, page_number=None, page_size=10):
         """
 
         returns the response body
 
         arguments:
-            - token for request auth
             - keywords: url params
 
         raises an exception on:
@@ -245,24 +304,17 @@ script:
             'pageSize': page_size
         }
         url = '{}/incidents'.format(BASE_PATH)
-        headers = add_token_header(DEFAULT_HEADERS, token)
 
-        response = requests.get(
+        response = http_request(
+            'GET',
             url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES,
-            params = url_params
+            headers = DEFAULT_HEADERS,
+            url_params = url_params
         )
 
-        #successful request
-        if response.status_code == 200:
-            return response.json()
-        #bad request - NetWitness returns a common json structure for errors
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+        return response
 
-    def get_all_incidents(token, since=None, until=None, limit=None):
+    def get_all_incidents(since=None, until=None, limit=None):
         """
 
         returns all/up to limit incidents in a time window
@@ -275,12 +327,13 @@ script:
         has_next = True
         page_number = 0
         incidents = []
+        LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s = since or 'not specified', u = until or 'not specified'))
         while has_next and limit > len(incidents):
         #call get_incidents_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
+            LOG('Requesting for page {}'.format(page_number))
             response_body = get_incidents_request(
-                token,
                 since = since,
                 until = until,
                 page_number = page_number
@@ -298,7 +351,7 @@ script:
     def get_incidents():
         """
 
-        returns list of incidents in a specific time window to the war room (main attriibutes only)
+        returns list of incidents in a specific time window to the war room (main attributes only)
 
         raises an exception on:
             - missing arguments
@@ -323,7 +376,6 @@ script:
             limit = int(limit)
 
         incidents = get_all_incidents(
-            get_token(),
             since = args.get('since'),
             until = args.get('until'),
             limit = limit
@@ -345,13 +397,12 @@ script:
         demisto.results(entry)
 
 
-    def update_incident_request(token, incident_id, assignee=None, status=None):
+    def update_incident_request(incident_id, assignee=None, status=None):
 
         """
         returns the response body
 
         arguments:
-            - token for request auth
             - keywords: url params
 
         raises an exception on:
@@ -361,25 +412,20 @@ script:
             - response body does not contain valid json (ValueError)
 
         """
+        LOG('Requestig to update incident ' + incident_id)
+
         body = {
             'assignee': assignee,
             'status': status
         }
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
-        headers = add_token_header(DEFAULT_HEADERS, token)
-        response = requests.patch(
+        response = http_request(
+            'PATCH',
             url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES,
-            json = body
+            headers = DEFAULT_HEADERS,
+            body = body
         )
-        #successful request
-        if response.status_code == 200:
-            return response.json()
-        #bad request - NetWitness returns a common json structure for errors; a list of error objects
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+        return response
 
     def update_incident():
         """
@@ -400,33 +446,30 @@ script:
         #returns the response body on success
         #raises an exception on failed request
         incident = update_incident_request(
-            #use get_token to retrieve a token
-            get_token(),
             args.get('incidentId'),
             status = args.get('status'),
             assignee = args.get('assignee')
             )
 
-        md_content = create_incident_md_table(incident, "NetWitness Update Incident")
+        md_content = create_incident_md_table(incident)
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': incident,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md_content,
+            'HumanReadable':  "## NetWitness Update Incident\n" + md_content,
             'EntryContext': {
                 "NetWitness.Incidents(obj.id==val.id)": incident
             }
         }
         demisto.results(entry)
 
-    def delete_incident_request(token, incident_id):
+    def delete_incident_request(incident_id):
         """
         returns the response body
 
         arguments:
-            - token for request auth
             - incident_id: the id of the incident to delete
 
         raises an exception on:
@@ -435,21 +478,14 @@ script:
             - response status code diff from 204
 
         """
-
+        LOG('Requesting to delete incident ' + incident_id)
         url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
-        headers = add_token_header(DEFAULT_HEADERS, token)
-
-        response = requests.delete(
+        response = http_request(
+            'DELETE',
             url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES)
-        #successful request, no content is  returned from NetWitness
-        if response.status_code == 204:
-            return
-        #bad request - NetWitness returns a common json structure for errors; a list of error objects
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+            headers = DEFAULT_HEADERS
+        )
+        return response
 
     def delete_incident():
         """
@@ -465,7 +501,6 @@ script:
         #no return value on successful request
         #raises an exception on failed request
         delete_incident_request(
-            get_token(),
             incident_id
         )
 
@@ -476,12 +511,11 @@ script:
         }
         demisto.results(entry)
 
-    def get_alerts_request(token, incident_id, page_number=None, page_size=None):
+    def get_alerts_request(incident_id, page_number=None, page_size=None):
         """
         returns the response body
 
         arguments:
-            - token for request auth
             - incident_id: the id of the incident
 
         raises an exception on:
@@ -496,22 +530,16 @@ script:
             'pageNumber' : page_number,
             'pageSize' : page_size
         }
-        headers = add_token_header(DEFAULT_HEADERS, token)
-        response = requests.get(
-            url,
-            headers = headers,
-            verify = USE_SSL,
-            proxies = PROXIES,
-            params = url_params
-        )
-        #successful request
-        if response.status_code == 200:
-            return response.json()
-        #bad request - NetWitness returns a common json structure for errors; a list of error objects
-        error_lst = response.json().get('errors')
-        raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
 
-    def get_all_alerts(token ,incident_id):
+        response = http_request(
+            'GET',
+            url,
+            headers = DEFAULT_HEADERS,
+            url_params = url_params
+        )
+        return response
+
+    def get_all_alerts(incident_id):
         """
         returns the alerts that are associated with an incident
 
@@ -520,12 +548,13 @@ script:
         page_number = 0
         alerts = []
 
+        LOG('Requesting for data on alerts related to incident ' + incident_id)
         while has_next:
         #call get_alerts_request(), given user arguments
         #returns the response body on success
         #raises an exception on failed request
+            LOG('Requesting for page {}'.format(page_number))
             response_body = get_alerts_request(
-                token,
                 incident_id,
                 page_number = page_number
             )
@@ -543,7 +572,6 @@ script:
         args = demisto.args()
         incident_id = args.get('incidentId')
         alerts = get_all_alerts(
-            get_token(),
             incident_id
         )
 
@@ -585,10 +613,8 @@ script:
             #convert to ISO 8601 format and add Z suffix
             timestamp = day_ago.isoformat() + 'Z'
 
-        token = get_token()
-
+        LOG('Fetching incidents since ' + timestamp)
         netwitness_incidents = get_all_incidents(
-            token,
             since = timestamp,
             limit = 100
         )
@@ -598,6 +624,9 @@ script:
 
         last_incident_datetime = datetime.strptime(timestamp, iso_format)
         last_incident_timestamp = timestamp
+
+        # set boolean flag for fetching alerts per incident
+        import_alerts = demisto.params().get('importAlerts')
 
         for incident in netwitness_incidents:
 
@@ -613,7 +642,11 @@ script:
                 last_incident_timestamp = incident_timestamp
 
             # add to incident object an array of all related alerts
-            incident['alerts'] = get_all_alerts(token, incident.get('id'))
+            if import_alerts:
+                try:
+                    incident['alerts'] = get_all_alerts(incident.get('id'))
+                except ValueError as e:
+                    LOG('Failed to fetch alerts related to incident ' + incident.get('id'))
             demisto_incidents.append(parse_incident(incident))
 
         demisto.incidents(demisto_incidents)
@@ -635,9 +668,10 @@ script:
             'categories'
         ]
         incident_labels = [{'type': field, 'value': json.dumps(netwitness_incident.get(field))} for field in incident_fields ]
-        alerts = netwitness_incident.get('alerts', [])
-        alerts_ids = [alert.get('id') for alert in alerts]
-        incident_labels.append({ 'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
+        alerts = netwitness_incident.get('alerts')
+        if alerts:
+            alerts_ids = [alert.get('id') for alert in alerts]
+            incident_labels.append({ 'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
         incident = {
             'name': netwitness_incident.get('title'),
             'occurred': netwitness_incident.get('created'),
@@ -654,14 +688,6 @@ script:
 
     """
 
-    def add_token_header(headers, token):
-        """
-
-        add the token field to a given headers object
-
-        """
-        headers['NetWitness-Token'] = token
-        return headers
 
     def dict_list_to_str(dict_list):
         """
@@ -674,7 +700,7 @@ script:
         string_list = []
         for dict in dict_list:
             key_values = ["{}: {}".format(k,v) for k,v in dict.items()]
-            string_list.append(', '.join(string_representation))
+            string_list.append(', '.join(key_values))
         return '\n'.join(string_list)
 
     def create_incident_md_table(incident):
@@ -942,8 +968,7 @@ script:
     command = demisto.command()
     try:
         if command == 'test-module':
-            #call get_token() to test user credentials, will raise ValueError exception when unsuccessful
-            get_token()
+            # global variable TOKEN initialization tests user credentials (will raise ValueError exception when unsuccessful).
             demisto.results('ok')
         elif command == 'fetch-incidents':
             fetch_incidents()
@@ -960,6 +985,8 @@ script:
             get_alerts()
         sys.exit(0)
     except ValueError as e:
+        LOG(e.message)
+        LOG.print_log()
         return_error_entry(e.message)
         sys.exit(1)
 

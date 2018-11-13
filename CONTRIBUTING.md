@@ -89,7 +89,7 @@ Integrations are build with BYOI feature inside demisto platform, to be later ex
 
 Some requirements for integrations yaml are:
 1. Change integration version to `-1`
-2. Make it has a description
+2. Make sure the integration and each of its commands, inputs and outputs have a description
 3. If the integrations uses some Docker image, make sure it's publicly available on docker hub
 4. It should be added under the Integrations folder, using the naming convention starting with prefix `integration-`
 

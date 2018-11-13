@@ -1,0 +1,470 @@
+id: calculate_severity_-_critical_assets
+version: -1
+name: Calculate Severity - Critical assets
+fromversion: 3.6.0
+toversion: 3.6.1
+description: "Determines if a critical assest is associated with the invesigation.
+  The playbook returns a severity level of \"Critical\" if a critical asset is associated
+  with the investigation.\n\nThis playbook verifies if a user account or an endpoint
+  is part of a critical list or a critical AD group. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    type: start
+    task:
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 50
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 75a46609-7bfd-4575-8945-2f9efd0cf549
+    type: title
+    task:
+      id: 75a46609-7bfd-4575-8945-2f9efd0cf549
+      version: -1
+      name: Check for critical entities
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    taskid: f4e2ace0-c9ab-4c54-841c-95d434cb7227
+    type: condition
+    task:
+      id: f4e2ace0-c9ab-4c54-841c-95d434cb7227
+      version: -1
+      name: Is there a username?
+      description: |
+        Check if there is a “username” in the playbook inputs.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.Account
+          accessor: Username
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "9":
+    id: "9"
+    taskid: ea578ea4-875c-4ae3-8162-7b41d864e2af
+    type: condition
+    task:
+      id: ea578ea4-875c-4ae3-8162-7b41d864e2af
+      version: -1
+      name: Is there a username on the "CriticalUsers" list?
+      description: Check if a username is on the "CriticalUsers" list.
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "11"
+    scriptarguments:
+      left: {}
+      right: {}
+      string:
+        complex:
+          root: inputs.CriticalUsers
+          transformers:
+          - operator: string.concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+      substring:
+        complex:
+          root: inputs.Account
+          accessor: Username
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 529
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    type: title
+    task:
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1291
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 0b05b0cc-13d4-4486-8d8f-81c37b9a3d9f
+    type: regular
+    task:
+      id: 0b05b0cc-13d4-4486-8d8f-81c37b9a3d9f
+      version: -1
+      name: Set severity to "Critical"
+      description: Set the severity level to "Critical" (asset is par of a critical
+        list).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: critical
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 747
+        }
+      }
+  "12":
+    id: "12"
+    taskid: f6985ac2-dd5e-4865-817a-3d07de2da4da
+    type: condition
+    task:
+      id: f6985ac2-dd5e-4865-817a-3d07de2da4da
+      version: -1
+      name: Is there a hostname?
+      description: Check if there is a "hostname" in the playbook inputs.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "13"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.Endpoint
+          accessor: Hostname
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1185,
+          "y": 340
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 1ed6f6b8-e7a7-452a-86ca-6f3d991c6f32
+    type: condition
+    task:
+      id: 1ed6f6b8-e7a7-452a-86ca-6f3d991c6f32
+      version: -1
+      name: Is there a hostname on the "CriticalEndpoints" list?
+      description: Check if a hostname is on the "CriticalEndpoints" list.
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "11"
+    scriptarguments:
+      left: {}
+      right: {}
+      string:
+        complex:
+          root: inputs.CriticalEndpoints
+          transformers:
+          - operator: string.concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+      substring:
+        complex:
+          root: inputs.Endpoint
+          accessor: Hostname
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1185,
+          "y": 529
+        }
+      }
+  "15":
+    id: "15"
+    taskid: b9ee1c8b-b8ec-4cd2-84b3-326aa728e80b
+    type: condition
+    task:
+      id: b9ee1c8b-b8ec-4cd2-84b3-326aa728e80b
+      version: -1
+      name: Is there an user account AD group that is part of the "CriticalGroups"
+        list.
+      description: Check if an user account AD group in context is part of the "CriticalGroups"
+        group.
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    scriptarguments:
+      left: {}
+      right: {}
+      string:
+        complex:
+          root: inputs.CriticalGroups
+          transformers:
+          - operator: string.concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+      substring:
+        complex:
+          root: inputs.Account
+          accessor: Groups
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 977
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 4eab20ec-d53b-4267-80f7-2d78be5bbfb3
+    type: condition
+    task:
+      id: 4eab20ec-d53b-4267-80f7-2d78be5bbfb3
+      version: -1
+      name: Is there an endpoint AD group that is part of the "CriticalGroups" list.
+      description: Check if an Endpoint AD group in context is part of the "CriticalGroups"
+        group.
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    scriptarguments:
+      left: {}
+      right: {}
+      string:
+        complex:
+          root: inputs.CriticalGroups
+          transformers:
+          - operator: string.concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+      substring:
+        complex:
+          root: inputs.Endpoint
+          accessor: Groups
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1185,
+          "y": 977
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 0946dd47-669f-45fb-8f16-8db390988570
+    type: condition
+    task:
+      id: 0946dd47-669f-45fb-8f16-8db390988570
+      version: -1
+      name: Are there AD groups for an Endpoint?
+      description: Check if an endpoint has AD groups in context.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "16"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.Endpoint
+          accessor: Groups
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1185,
+          "y": 734
+        }
+      }
+  "18":
+    id: "18"
+    taskid: febc930e-d0c6-4114-87cc-c0b1531d2adf
+    type: condition
+    task:
+      id: febc930e-d0c6-4114-87cc-c0b1531d2adf
+      version: -1
+      name: Are there AD groups for a user account?
+      description: Check if a User account has AD groups in context.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "15"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.Account
+          accessor: Groups
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 747
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_10_#default#": 0.31,
+      "13_11_yes": 0.51,
+      "15_10_#default#": 0.17,
+      "15_11_yes": 0.15,
+      "16_10_#default#": 0.36,
+      "16_11_yes": 0.16,
+      "8_10_#default#": 0.16,
+      "9_11_yes": 0.41
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1306,
+        "width": 1515,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: CriticalUsers
+  value: {}
+  required: false
+  description: Array of usernames of critical users (comma separated).
+- key: CriticalEndpoints
+  value: {}
+  required: false
+  description: Array of hostnames of critical endpoints (comma separated).
+- key: CriticalGroups
+  value: {}
+  required: false
+  description: Array of DN names of critical AD groups (comma separated).
+- key: Account
+  value:
+    complex:
+      root: Account
+  required: false
+  description: A user account to check against the critical lists.
+- key: Endpoint
+  value:
+    complex:
+      root: Endpoint
+  required: false
+  description: An endpoint to check against the critical lists.
+outputs:
+- contextPath: Severity
+  description: The output severity
+  type: string

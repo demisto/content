@@ -100,3 +100,6 @@ args:
   description: Name of provider
 scripttarget: 0
 deprecated: true
+dependson:
+  must:
+  - okta-update-user

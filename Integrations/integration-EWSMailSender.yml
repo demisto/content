@@ -30,7 +30,7 @@ configuration:
   required: true
 - display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
   name: authType
-  defaultvalue: NTLM
+  defaultvalue: Basic
   type: 0
   required: true
 - display: Trust any certificate (unsecure)
@@ -66,6 +66,8 @@ script:
     from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
     from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, ServiceAccount, Configuration, NTLM, \
         BASIC, DIGEST, Version, DELEGATE
+
+    IS_TEST_MODULE = False
 
     # load arguments
     USE_PROXY = demisto.params()['proxy']
@@ -111,9 +113,15 @@ script:
             to_recipients=to,
             reply_to=reply_to
         )
-        for attachment in attachments:
-            m.attach(attachment)
-        m.send_and_save()
+        if account.protocol.version.build <= EXCHANGE_2010_SP2:
+            m.save()
+            for attachment in attachments:
+                m.attach(attachment)
+            m.send()
+        else:
+            for attachment in attachments:
+                m.attach(attachment)
+            m.send_and_save()
         return m
 
 
@@ -141,10 +149,20 @@ script:
         cc = cc.split(",") if cc is not None else None
         to = to.split(",") if to is not None else None
 
-        file_entries_for_attachments = attachIDs.split(",") if attachIDs else []
-        attachments_names = attachNames.split(",") if attachNames else []
-        if len(file_entries_for_attachments) != len(attachments_names):
-            raise Exception("attachIDs and attachNames lists should be the same length")
+        file_entries_for_attachments = []
+        attachments_names = []
+        if attachIDs:
+            file_entries_for_attachments = attachIDs.split(",")
+            if attachNames:
+                attachments_names = attachNames.split(",")
+            else:
+                for att_id in file_entries_for_attachments:
+                    att_name = demisto.dt(demisto.context(), "File(val.EntryID === '%s').Name" % att_id)
+                    if isinstance(att_name, list):
+                        att_name = att_name[0]
+                    attachments_names.append(att_name)
+            if len(file_entries_for_attachments) != len(attachments_names):
+                raise Exception("attachIDs and attachNames lists should be the same length")
         attachments = []
         for i in range(0, len(file_entries_for_attachments)):
             entry_id = file_entries_for_attachments[i]
@@ -193,7 +211,7 @@ script:
             os.environ['NO_PROXY'] = EWS_SERVER
 
         version = get_version(VERSION_STR)
-        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=0)
+        credentials = ServiceAccount(username=USERNAME, password=PASSWORD, max_wait=300)
         config_args = {
             'credentials': credentials,
             'auth_type': get_auth_method(AUTH_METHOD_STR),
@@ -212,6 +230,8 @@ script:
 
 
     def test_module():
+        global IS_TEST_MODULE
+        IS_TEST_MODULE = True
         BaseProtocol.TIMEOUT = 20
         account = get_account(ACCOUNT_EMAIL)
         demisto.results('ok')

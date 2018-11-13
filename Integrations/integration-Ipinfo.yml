@@ -46,9 +46,10 @@ script:
             }
             return 'not cool';
         case 'ip':
-            var o = sendRequest(base+args.ip+jsonSuffix, true);
+            var o = sendRequest(base + args.ip + jsonSuffix, true);
             var ec = {IP: {Address: o.ip, Hostname: o.hostname, ASN: o.org, Geo: {
                 Location: o.loc, Country: o.country, Description: o.city + ', ' + o.region + ', ' + o.postal + ', ' + o.country}}};
+            ec.DBotScore = {Indicator: args.ip, Type: 'ip', Vendor: 'ipinfo', Score: 0};
             var reply = [{Type: entryTypes.note, Contents: o, ContentsFormat: formats.json, HumanReadable: objToMd(o), EntryContext: ec}];
             if (o.loc) {
                 var parts = o.loc.split(',');

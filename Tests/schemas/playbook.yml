@@ -89,6 +89,8 @@ mapping:
                 type: bool
               clonedfrom:
                 type: str
+          note:
+            type: bool
           nexttasks:
             type: map
             mapping:
@@ -140,6 +142,10 @@ mapping:
     type: text
   releaseNotes:
     type: str
+  tests:
+    type: seq
+    sequence:
+    - type: str
 
 
 # playbook->tasks

@@ -11,8 +11,9 @@ Received: from MWHPR11MB1790.namprd11.prod.outlook.com
  ([fe80::5893:adde:f274:dc9e]) by MWHPR11MB1790.namprd11.prod.outlook.com
  ([fe80::5893:adde:f274:dc9e%4]) with mapi id 15.20.0841.021; Thu, 14 Jun 2018
  17:57:51 +0000
-From: Shachar Hirshberg <shachar@demisto.com>
-To: Shachar Hirshberg <shachar@demisto.com>
+From: Shachar Hirshberg
+        <shachar@demisto.com>
+To: Shachar Hirshberg <shachar@demisto.com>, Shai Yaakovi <yaakovi@demisto.com>
 Subject: ParseEmail test email
 Thread-Topic: ParseEmail test email
 Thread-Index: AQHUBAk2BLnOx8xU50Oxa/O+XRes+g==

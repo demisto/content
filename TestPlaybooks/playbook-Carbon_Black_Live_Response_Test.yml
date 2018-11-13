@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2d09bbad-eab4-49c2-81c5-5e2a0690cd41
+    taskid: b96592b0-ec18-41b9-89e9-d717824616f8
     type: start
     task:
-      id: 2d09bbad-eab4-49c2-81c5-5e2a0690cd41
+      id: b96592b0-ec18-41b9-89e9-d717824616f8
       version: -1
       name: ""
       iscommand: false
@@ -21,39 +21,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 480,
           "y": 50
         }
       }
-  "29":
-    id: "29"
-    taskid: 13594943-1c94-402e-83af-4271ddec30b9
-    type: regular
-    task:
-      id: 13594943-1c94-402e-83af-4271ddec30b9
-      version: -1
-      name: List sessions
-      script: carbonblackliveresponse|||cb-list-sessions
-      type: regular
-      iscommand: true
-      brand: carbonblackliveresponse
-    nexttasks:
-      '#none#':
-      - "30"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 2760
-        }
-      }
+    note: false
   "30":
     id: "30"
-    taskid: f77c355f-4c92-4c6b-8498-837ddf05af39
+    taskid: 64bb9213-d956-46ba-8d50-43afe4d5439e
     type: regular
     task:
-      id: f77c355f-4c92-4c6b-8498-837ddf05af39
+      id: 64bb9213-d956-46ba-8d50-43afe4d5439e
       version: -1
       name: Close session
       script: carbonblackliveresponse|||cb-session-close
@@ -67,82 +45,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2935
+          "x": 592.5,
+          "y": 1360
         }
       }
-  "36":
-    id: "36"
-    taskid: bed6c9eb-597d-4758-880d-7ad4c2b522ad
-    type: regular
-    task:
-      id: bed6c9eb-597d-4758-880d-7ad4c2b522ad
-      version: -1
-      name: Create a process-list command
-      script: carbonblackliveresponse|||cb-command-create-and-wait
-      type: regular
-      iscommand: true
-      brand: carbonblackliveresponse
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      compress: {}
-      get-count: {}
-      name:
-        simple: process-list
-      object: {}
-      offset: {}
-      output-file: {}
-      overwrite: {}
-      session:
-        simple: ${CbResponse.Sessions.CbSessionID}
-      timeout: {}
-      value-data: {}
-      value-type: {}
-      wait-timeout:
-        simple: "30"
-      working-dir: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1215
-        }
-      }
-  "37":
-    id: "37"
-    taskid: 174410a7-8e6e-47bc-8d0e-707ed573cf08
-    type: regular
-    task:
-      id: 174410a7-8e6e-47bc-8d0e-707ed573cf08
-      version: -1
-      name: Send a keepalive to refresh session timeout
-      script: carbonblackliveresponse|||cb-keepalive
-      type: regular
-      iscommand: true
-      brand: carbonblackliveresponse
-    nexttasks:
-      '#none#':
-      - "64"
-    scriptarguments:
-      session:
-        simple: ${CbResponse.Sessions.CbSessionID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1390
-        }
-      }
+    note: false
   "39":
     id: "39"
-    taskid: 3e1212b0-b770-440a-8b82-fc3e0520a12b
+    taskid: 81ac785b-a100-4722-8030-941f3234ac9b
     type: regular
     task:
-      id: 3e1212b0-b770-440a-8b82-fc3e0520a12b
+      id: 81ac785b-a100-4722-8030-941f3234ac9b
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -151,7 +64,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "65"
+      - "76"
     scriptarguments:
       all:
         simple: "yes"
@@ -160,71 +73,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 480,
           "y": 195
         }
       }
-  "40":
-    id: "40"
-    taskid: ab80b4d0-92c6-4fd8-84c7-013a4376979a
-    type: regular
-    task:
-      id: ab80b4d0-92c6-4fd8-84c7-013a4376979a
-      version: -1
-      name: List sensors
-      script: carbonblack-v2|||cb-list-sensors
-      type: regular
-      iscommand: true
-      brand: carbonblack-v2
-    nexttasks:
-      '#none#':
-      - "47"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 515
-        }
-      }
+    note: false
   "41":
     id: "41"
-    taskid: 9f24f347-72e1-46cb-8c40-19f6c32edba4
+    taskid: cf21b218-342d-46ed-8611-01f7167fdf6f
     type: regular
     task:
-      id: 9f24f347-72e1-46cb-8c40-19f6c32edba4
+      id: cf21b218-342d-46ed-8611-01f7167fdf6f
       version: -1
-      name: Create a session for the first sensor in the list
+      name: 'Create a session for sensor #17'
       script: carbonblackliveresponse|||cb-session-create-and-wait
       type: regular
       iscommand: true
       brand: carbonblackliveresponse
     nexttasks:
       '#none#':
-      - "36"
+      - "70"
     scriptarguments:
-      session-timeout: {}
-      keepalive-timeout: {}
+      command-timeout:
+        simple: "200"
+      keepalive-timeout:
+        simple: "300"
       sensor:
-        simple: ${CbResponse.Sensors.[0].CbSensorID}
+        simple: "17"
       wait-timeout:
         simple: "300"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1040
+          "x": 592.5,
+          "y": 1000
         }
       }
+    note: false
   "47":
     id: "47"
-    taskid: c341c29f-1247-4f3c-8ba7-fd455072ec5b
+    taskid: 8433ceba-98ee-40f1-8e87-bac262fcfa1d
     type: regular
     task:
-      id: c341c29f-1247-4f3c-8ba7-fd455072ec5b
+      id: 8433ceba-98ee-40f1-8e87-bac262fcfa1d
       version: -1
-      name: List open sessions for sensor
+      name: 'List open sessions for sensor #17'
       script: carbonblackliveresponse|||cb-list-sessions
       type: regular
       iscommand: true
@@ -234,23 +128,24 @@ tasks:
       - "56"
     scriptarguments:
       sensor:
-        simple: ${CbResponse.Sensors.[0].CbSensorID}
+        simple: "17"
       status:
         simple: active
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 690
+          "x": 807.5,
+          "y": 660
         }
       }
+    note: false
   "56":
     id: "56"
-    taskid: a71b5b69-fc37-4a71-876b-9766255d065b
+    taskid: 6fd03363-8eb5-43f3-8da6-2d1454e234ac
     type: condition
     task:
-      id: a71b5b69-fc37-4a71-876b-9766255d065b
+      id: 6fd03363-8eb5-43f3-8da6-2d1454e234ac
       version: -1
       name: Check if there's an active session
       type: condition
@@ -260,29 +155,46 @@ tasks:
       '#default#':
       - "41"
       "yes":
-      - "36"
+      - "71"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isNotEmpty
+      - - operator: isNotEmpty
           left:
             value:
-              simple: CbResponse.Sessions
+              simple: CbLiveResponse.Sessions
             iscontext: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: CbLiveResponse.Sessions
+            iscontext: true
+          right:
+            value:
+              simple: "null"
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: CbResponse.Sessions.CbSessionID
+            iscontext: true
+          right:
+            value:
+              simple: None
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 865
+          "x": 807.5,
+          "y": 835
         }
       }
+    note: false
   "57":
     id: "57"
-    taskid: e20e5a04-860c-4cab-88be-995f1367ad64
+    taskid: 41ee04ab-f68f-4f91-8e18-5bb2a14227f4
     type: regular
     task:
-      id: e20e5a04-860c-4cab-88be-995f1367ad64
+      id: 41ee04ab-f68f-4f91-8e18-5bb2a14227f4
       version: -1
       name: Create test file
       scriptName: TestCreateWordFile
@@ -301,47 +213,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1710
+          "x": 50,
+          "y": 1535
         }
       }
+    note: false
   "58":
     id: "58"
-    taskid: 910433be-6709-4aeb-8cbd-9a078127cdb0
+    taskid: eb98ce3f-aaac-4d6d-8827-8dcf874d661e
     type: regular
     task:
-      id: 910433be-6709-4aeb-8cbd-9a078127cdb0
+      id: eb98ce3f-aaac-4d6d-8827-8dcf874d661e
       version: -1
-      name: Upload test file to sensor
-      script: carbonblackliveresponse|||cb-file-upload
-      type: regular
-      iscommand: true
-      brand: carbonblackliveresponse
-    nexttasks:
-      '#none#':
-      - "59"
-    scriptarguments:
-      file-id:
-        simple: ${File.EntryID}
-      session:
-        simple: ${CbResponse.Sessions.CbSessionID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1885
-        }
-      }
-  "59":
-    id: "59"
-    taskid: 4e5d9a54-1aa7-4b4f-8bd9-783a65edc30b
-    type: regular
-    task:
-      id: 4e5d9a54-1aa7-4b4f-8bd9-783a65edc30b
-      version: -1
-      name: Get file info
-      script: carbonblackliveresponse|||cb-file-info
+      name: 'Upload test file to sensor #15'
+      script: carbonblackliveresponse|||cb-push-file-to-endpoint
       type: regular
       iscommand: true
       brand: carbonblackliveresponse
@@ -349,27 +234,33 @@ tasks:
       '#none#':
       - "60"
     scriptarguments:
-      file-id:
-        simple: ${CbResponse.Files.CbFileID}
-      session:
-        simple: ${CbResponse.Sessions.CbSessionID}
+      entry-id:
+        simple: ${File.EntryID}
+      path:
+        simple: c:\Users\All Users\Desktop\test.docx
+      sensor:
+        simple: "15"
+      session: {}
+      wait-timeout:
+        simple: "300"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2060
+          "x": 50,
+          "y": 1710
         }
       }
+    note: false
   "60":
     id: "60"
-    taskid: 5f97b3ec-78aa-46f8-8c14-bae8db7c64bb
+    taskid: 81756f1f-00a9-4264-8e88-2ff1821e7909
     type: regular
     task:
-      id: 5f97b3ec-78aa-46f8-8c14-bae8db7c64bb
+      id: 81756f1f-00a9-4264-8e88-2ff1821e7909
       version: -1
-      name: Download uploaded file
-      script: carbonblackliveresponse|||cb-file-get
+      name: Download uploaded file from the sensor
+      script: carbonblackliveresponse|||cb-get-file-from-endpoint
       type: regular
       iscommand: true
       brand: carbonblackliveresponse
@@ -377,80 +268,334 @@ tasks:
       '#none#':
       - "61"
     scriptarguments:
-      file-id:
-        simple: ${CbResponse.Files.CbFileID}
-      session:
-        simple: ${CbResponse.Sessions.CbSessionID}
+      path:
+        simple: c:\Users\All Users\Desktop\test.docx
+      sensor:
+        simple: "15"
+      session: {}
+      wait-timeout:
+        simple: "300"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2235
+          "x": 50,
+          "y": 1885
         }
       }
+    note: false
   "61":
     id: "61"
-    taskid: 0d27c971-3066-466b-8590-51645fd8f72d
+    taskid: dbc52b99-e44b-4525-81db-39544aa02306
     type: regular
     task:
-      id: 0d27c971-3066-466b-8590-51645fd8f72d
+      id: dbc52b99-e44b-4525-81db-39544aa02306
       version: -1
-      name: Delete uploaded file
-      script: carbonblackliveresponse|||cb-file-delete
+      name: Delete uploaded file from the endpoint
+      script: carbonblackliveresponse|||cb-file-delete-from-endpoint
       type: regular
       iscommand: true
       brand: carbonblackliveresponse
-    nexttasks:
-      '#none#':
-      - "62"
     scriptarguments:
-      file-id:
-        simple: ${CbResponse.Files.CbFileID}
-      session:
-        simple: ${CbResponse.Sessions.CbSessionID}
+      cancel-on-timeout: {}
+      path:
+        simple: c:\Users\All Users\Desktop\test.docx
+      sensor:
+        simple: "15"
+      session: {}
+      wait-timeout:
+        simple: "60"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2410
+          "x": 50,
+          "y": 2060
         }
       }
-  "62":
-    id: "62"
-    taskid: a84a0a6f-b5f7-45b9-8638-42e4295f71b1
-    type: regular
-    task:
-      id: a84a0a6f-b5f7-45b9-8638-42e4295f71b1
-      version: -1
-      name: List all files
-      script: carbonblackliveresponse|||cb-list-files
-      type: regular
-      iscommand: true
-      brand: carbonblackliveresponse
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      session:
-        simple: ${CbResponse.Sessions.CbSessionID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 2585
-        }
-      }
+    note: false
   "64":
     id: "64"
-    taskid: bad23e6f-9386-42c1-8c23-04a0778ba5a8
+    taskid: 6f617591-d547-4c25-835b-47d2cf160212
     type: title
     task:
-      id: bad23e6f-9386-42c1-8c23-04a0778ba5a8
+      id: 6f617591-d547-4c25-835b-47d2cf160212
       version: -1
       name: Test Uploading Files
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 675
+        }
+      }
+    note: false
+  "65":
+    id: "65"
+    taskid: 903066c0-cb45-40bc-818d-15917ba1555d
+    type: title
+    task:
+      id: 903066c0-cb45-40bc-818d-15917ba1555d
+      version: -1
+      name: 'Open a new Session and Execute Command '
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 515
+        }
+      }
+    note: false
+  "66":
+    id: "66"
+    taskid: af785d2c-c611-4b09-875f-87c589293932
+    type: title
+    task:
+      id: af785d2c-c611-4b09-875f-87c589293932
+      version: -1
+      name: Execute Commands Without Session Managment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+  "67":
+    id: "67"
+    taskid: 5659ed24-b5b8-4ca1-8fc9-5ca01b954de6
+    type: regular
+    task:
+      id: 5659ed24-b5b8-4ca1-8fc9-5ca01b954de6
+      version: -1
+      name: 'List active sessions for sensor #15 '
+      script: carbonblackliveresponse|||cb-list-sessions
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      sensor:
+        simple: "15"
+      status:
+        simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+    note: false
+  "70":
+    id: "70"
+    taskid: f8b98e21-e8bc-459a-8037-1ee98028e87c
+    type: regular
+    task:
+      id: f8b98e21-e8bc-459a-8037-1ee98028e87c
+      version: -1
+      name: 'List ''c:\Users'' Directory '
+      script: carbonblackliveresponse|||cb-command-create-and-wait
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      compress: {}
+      get-count: {}
+      name:
+        simple: directory-list
+      object:
+        simple: c:\Users\
+      offset: {}
+      output-file: {}
+      overwrite: {}
+      session:
+        simple: ${CbResponse.Sessions.CbSessionID}
+      timeout: {}
+      value-data: {}
+      value-type: {}
+      wait-timeout:
+        simple: "100"
+      working-dir: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1185
+        }
+      }
+    note: false
+  "71":
+    id: "71"
+    taskid: 43fe1462-f5d7-4b5c-8cb0-622d616b5eb7
+    type: regular
+    task:
+      id: 43fe1462-f5d7-4b5c-8cb0-622d616b5eb7
+      version: -1
+      name: Keep Session Alive
+      script: carbonblackliveresponse|||cb-keepalive
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      session:
+        simple: ${CbLiveResponse.Sessions.CbSessionID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1010
+        }
+      }
+    note: false
+  "72":
+    id: "72"
+    taskid: 22488099-6ef8-4d31-864c-3cfa06d9e90c
+    type: regular
+    task:
+      id: 22488099-6ef8-4d31-864c-3cfa06d9e90c
+      version: -1
+      name: Wait
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1185
+        }
+      }
+    note: false
+  "73":
+    id: "73"
+    taskid: 35837ff7-4379-4afc-880b-f711300e4db5
+    type: regular
+    task:
+      id: 35837ff7-4379-4afc-880b-f711300e4db5
+      version: -1
+      name: 'List ''c:\Users'' Directory '
+      script: carbonblackliveresponse|||cb-command-create-and-wait
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    scriptarguments:
+      compress: {}
+      get-count: {}
+      name:
+        simple: directory-list
+      object:
+        simple: c:\Users\
+      offset: {}
+      output-file: {}
+      overwrite: {}
+      session:
+        simple: ${CbLiveResponse.Sessions.CbSessionID}
+      timeout: {}
+      value-data: {}
+      value-type: {}
+      wait-timeout:
+        simple: "100"
+      working-dir: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1185
+        }
+      }
+    note: false
+  "74":
+    id: "74"
+    taskid: 781e7f78-aa25-46a0-8bd4-1fec54e6af75
+    type: condition
+    task:
+      id: 781e7f78-aa25-46a0-8bd4-1fec54e6af75
+      version: -1
+      name: Check if there's an active session
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CbLiveResponse.Sessions
+            iscontext: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: CbLiveResponse.Sessions
+            iscontext: true
+          right:
+            value:
+              simple: "null"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+  "75":
+    id: "75"
+    taskid: bb0b8009-2445-4c0b-8bdf-61edd4ff11bf
+    type: title
+    task:
+      id: bb0b8009-2445-4c0b-8bdf-61edd4ff11bf
+      version: -1
+      name: Try Executing Commands
       type: title
       iscommand: false
       brand: ""
@@ -462,38 +607,41 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1565
+          "y": 1375
         }
       }
-  "65":
-    id: "65"
-    taskid: 457a3571-a669-42b3-806c-a344a2e0da61
+    note: false
+  "76":
+    id: "76"
+    taskid: fc8f6b05-f1a9-49ba-86c2-2ba88264f802
     type: title
     task:
-      id: 457a3571-a669-42b3-806c-a344a2e0da61
+      id: fc8f6b05-f1a9-49ba-86c2-2ba88264f802
       version: -1
-      name: Open a Session and Execute Command
+      name: Test Using CB Response Instance
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+      - "66"
+      - "65"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 480,
           "y": 370
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2980,
-        "width": 492.5,
+        "height": 2105,
+        "width": 1352.5,
         "x": 50,
         "y": 50
       }

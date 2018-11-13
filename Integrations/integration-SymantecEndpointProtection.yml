@@ -433,6 +433,16 @@ script:
         resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
         commandId = resJson.Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.commandId;
 
+        if(!commandId) {
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
+            if(errorCode || errorMessage){
+              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
+            } else {
+              throw 'Could not retrieve command ID, no error was returned from server';
+            }
+        }
+
         return commandId;
     }
 
@@ -441,6 +451,16 @@ script:
         resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
         commandId = resJson.Envelope.Body.runClientCommandScanResponse.CommandClientResult.commandId;
 
+        if(!commandId) {
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
+            if(errorCode || errorMessage){
+              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
+            } else {
+              throw 'Could not retrieve command ID, no error was returned from server';
+            }
+        }
+
         return commandId;
     }
 
@@ -448,6 +468,16 @@ script:
         xml = buildCommandXml('<com:runClientCommandQuarantine><command><commandType>{0}</commandType><targetObjectIds>{1}</targetObjectIds><targetObjectType>COMPUTER</targetObjectType></command></com:runClientCommandQuarantine>'.format(args.actionType, computerId));
         resJson = doPost(token, true, 'sepm/ws/v1/CommandService', xml);
         commandId = resJson.Envelope.Body.runClientCommandQuarantineResponse.CommandClientResult.commandId;
+
+        if(!commandId) {
+            errorCode = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode');
+            errorMessage = dq(resJson, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage');
+            if(errorCode || errorMessage){
+              throw 'An error response has returned from server: ' + errorMessage + ' with code: ' + errorCode;
+            } else {
+              throw 'Could not retrieve command ID, no error was returned from server';
+            }
+        }
 
         return commandId;
     }
@@ -643,3 +673,5 @@ script:
       description: The last-updated date.
     description: Retrieves the client content.
 hidden: false
+tests:
+- sep_-_test_endpoint_search

@@ -1,0 +1,719 @@
+id: Phishing Investigation - Generic
+version: -1
+name: Phishing Investigation - Generic
+fromversion: 3.6.0
+toversion: 3.9.9
+description: |-
+  Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
+
+  The final remediation tasks are always decided by a human analyst.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 32d25ab2-8fa5-46cd-82df-78dc402c0150
+    type: start
+    task:
+      id: 32d25ab2-8fa5-46cd-82df-78dc402c0150
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "18"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 762b1bb7-43ba-455a-8b71-ccc7e58ab8f5
+    type: regular
+    task:
+      id: 762b1bb7-43ba-455a-8b71-ccc7e58ab8f5
+      version: -1
+      name: Assign to analyst
+      description: Assign the incident to an analyst based on the analyst's organizational
+        role.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      roles:
+        complex:
+          root: inputs.Role
+      username: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 5882f2a4-7949-4121-8dc6-09a44bc78a48
+    type: playbook
+    task:
+      id: 5882f2a4-7949-4121-8dc6-09a44bc78a48
+      version: -1
+      name: ""
+      description: ""
+      playbookName: Calculate Severity - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 26ed9557-a1c3-433a-8614-94e6c671d9af
+    type: regular
+    task:
+      id: 26ed9557-a1c3-433a-8614-94e6c671d9af
+      version: -1
+      name: Manually review the incident
+      description: Review the incident to determine if the email that the user reported
+        is malicious.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1535
+        }
+      }
+  "8":
+    id: "8"
+    taskid: ea1e91fd-530c-4f2e-859a-4a4bc3b321de
+    type: regular
+    task:
+      id: ea1e91fd-530c-4f2e-859a-4a4bc3b321de
+      version: -1
+      name: Close investigation
+      description: Close the investigation.
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      notes:
+        simple: 'Default enrichment playbook '
+      reason: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2525
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 6b039cde-c519-4ad2-83b7-17dbefb01c7b
+    type: title
+    task:
+      id: 6b039cde-c519-4ad2-83b7-17dbefb01c7b
+      version: -1
+      name: Triage
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 36ce6034-d509-405b-8e8d-4bef662e0709
+    type: regular
+    task:
+      id: 36ce6034-d509-405b-8e8d-4bef662e0709
+      version: -1
+      name: Store the email address of the reporting user
+      description: Store the email address of the user that reported the incident.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Account.Email.Address
+      value:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
+    type: regular
+    task:
+      id: 0bc7759d-f3bb-48f7-89cc-548cd6e63779
+      version: -1
+      name: Acknowledge incident was received
+      description: |
+        Send an auto-response to user that reported the incident, informing them the incident was received and being handled.
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']
+          ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've received
+          your email and are investigating.\nPlease do not touch the email until further
+          notice.\n\nCordially, \n  Your friendly neighborhood security team"
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      replyTo: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 849b0463-ea4a-4860-86b5-825e5cda8a08
+    type: playbook
+    task:
+      id: 849b0463-ea4a-4860-86b5-825e5cda8a08
+      version: -1
+      name: Email Address Enrichment - Generic
+      description: ""
+      playbookName: Email Address Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+  "15":
+    id: "15"
+    taskid: f3ddd9af-36b1-44fb-8eaf-1a71be6b34fb
+    type: condition
+    task:
+      id: f3ddd9af-36b1-44fb-8eaf-1a71be6b34fb
+      version: -1
+      name: Is the email malicious?
+      description: Determine if the email is malicious based on the calculated severity.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      'Malicious ':
+      - "30"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: 'Malicious '
+      condition:
+      - - operator: number.greaterThanOrEqual
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
+    type: regular
+    task:
+      id: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
+      version: -1
+      name: Update  the user that the reported email is safe
+      description: Send an email to the user explaining that the email they reported
+        is safe.
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          We've concluded that the email you forwarded to us is safe.
+          Thank you for your alertness and your participation in keeping our organization secure.
+
+          Cordially,
+            Your security team
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      replyTo: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2350
+        }
+      }
+  "17":
+    id: "17"
+    taskid: c0fd6e60-203b-4039-89f9-d34f4024d349
+    type: regular
+    task:
+      id: c0fd6e60-203b-4039-89f9-d34f4024d349
+      version: -1
+      name: Update  the user that the reported email is malicious
+      description: Send an email to the user explaining that the email they reported
+        is malicious.
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
+
+          All the best,
+            Your security team
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      replyTo: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2030
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 916bc6c8-6d46-4f04-8bd2-1152736b7984
+    type: title
+    task:
+      id: 916bc6c8-6d46-4f04-8bd2-1152736b7984
+      version: -1
+      name: Engage with User
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 355
+        }
+      }
+  "22":
+    id: "22"
+    taskid: ca065734-ff0b-4d84-8bfe-a93298bd34ab
+    type: playbook
+    task:
+      id: ca065734-ff0b-4d84-8bfe-a93298bd34ab
+      version: -1
+      name: Detonate File - Generic
+      description: ""
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "25":
+    id: "25"
+    taskid: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
+    type: playbook
+    task:
+      id: fb79a97c-7e8d-4004-8a89-4297f9d0a9cf
+      version: -1
+      name: Entity Enrichment - Generic
+      description: ""
+      playbookName: Entity Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
+    type: playbook
+    task:
+      id: 2cf1ade0-ab88-4dfd-819e-c134627edaf7
+      version: -1
+      name: Process Email - Generic
+      description: ""
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+      - "22"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+  "27":
+    id: "27"
+    taskid: d73d68a4-dff2-4cae-8645-972f9c328444
+    type: title
+    task:
+      id: d73d68a4-dff2-4cae-8645-972f9c328444
+      version: -1
+      name: Remediate
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+      - "34"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2205
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 6cc94de8-1f6c-4832-805b-43ec888fcf1b
+    type: playbook
+    task:
+      id: 6cc94de8-1f6c-4832-805b-43ec888fcf1b
+      version: -1
+      name: Search And Delete Emails - Generic
+      description: ""
+      playbookName: Search And Delete Emails - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2350
+        }
+      }
+  "29":
+    id: "29"
+    taskid: e9a74030-baa8-43f9-8c35-54f8ae2d6b7b
+    type: title
+    task:
+      id: e9a74030-baa8-43f9-8c35-54f8ae2d6b7b
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2700
+        }
+      }
+  "30":
+    id: "30"
+    taskid: 824c86e1-14a5-42cf-8516-e5f893558f09
+    type: title
+    task:
+      id: 824c86e1-14a5-42cf-8516-e5f893558f09
+      version: -1
+      name: Malicious
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1885
+        }
+      }
+  "31":
+    id: "31"
+    taskid: 717e858d-5696-441b-8ff2-30f798cea618
+    type: title
+    task:
+      id: 717e858d-5696-441b-8ff2-30f798cea618
+      version: -1
+      name: Undetermined
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1390
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 1787361d-c8b7-4c66-89ac-9f90d340358b
+    type: condition
+    task:
+      id: 1787361d-c8b7-4c66-89ac-9f90d340358b
+      version: -1
+      name: Is the email malicious?
+      description: Is the email that the user reported malicious?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "16"
+      "yes":
+      - "30"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1710
+        }
+      }
+  "34":
+    id: "34"
+    taskid: 4533b6d8-c08d-42c2-805a-e540762472fb
+    type: regular
+    task:
+      id: 4533b6d8-c08d-42c2-805a-e540762472fb
+      version: -1
+      name: Manually remediate  the incident
+      description: "Consider the following:\n1. Search for and delete similar emails\n2.
+        Inform the organization about the threat\n3. Hunt the relevant IOCs\n4. Update
+        proxies and firewalls as necessary\n5. Block the malicious sender/ domain
+        in the mail-gateway "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2350
+        }
+      }
+  "35":
+    id: "35"
+    taskid: 524a2856-34ef-4752-862d-90daa98875ee
+    type: playbook
+    task:
+      id: 524a2856-34ef-4752-862d-90daa98875ee
+      version: -1
+      name: Extract Indicators From File - Generic
+      description: ""
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    reputationcalc: 0
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2715,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Role
+  value:
+    simple: Administrator
+  required: true
+  description: The default role to assign the incident to.
+outputs: []
+tests:
+  - Phishing test - attachment
+  - Phishing test - Inline

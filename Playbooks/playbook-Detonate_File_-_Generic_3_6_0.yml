@@ -1,0 +1,184 @@
+id: Detonate File - Generic
+version: -1
+name: Detonate File - Generic
+fromversion: "3.5.0"
+toversion: "3.6.0"
+description: Detonate file through active integration that support file detonation
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
+    type: start
+    task:
+      id: 73eadb3f-61fa-41d5-87b3-6d6a67a04e63
+      version: -1
+      description: "Playbook start point"
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 14dca057-013d-468f-8ff5-e883e5169d37
+    type: playbook
+    task:
+      id: 14dca057-013d-468f-8ff5-e883e5169d37
+      version: -1
+      name: WildFire - Detonate file
+      description: Detonate files through WildFire
+      playbookName: WildFire - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 09b39ec1-db04-4355-807d-4cf4f4b31e92
+    type: playbook
+    task:
+      id: 09b39ec1-db04-4355-807d-4cf4f4b31e92
+      version: -1
+      name: CrowdStrike Falcon Sandbox - Detonate file
+      description: Detonate file through CrowdStrike Falcon Sandbox
+      playbookName: CrowdStrike Falcon Sandbox - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.EntryID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 9db19651-009c-468f-80b3-c58efea96ed2
+    type: title
+    task:
+      id: 9db19651-009c-468f-80b3-c58efea96ed2
+      version: -1
+      description: "Done"
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: false
+  description: Entry ID of file to be detonated
+- key: File
+  value:
+    simple: ${File}
+  required: false
+  description: File object of file to be detonated
+outputs:
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 of the file
+  type: string
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File
+  description: The File's object
+  type: unknown
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string

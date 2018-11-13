@@ -143,27 +143,31 @@ script: |-
    * @param {Boolean} [replaceNewlines] - Should newlines be replaced with '<br>'
    * @return {String} A string with the markdown characters escaped
    */
-  var stringEscapeMD = function(st, replaceNewlines) {
+  var stringEscapeMD = function(st, replaceNewlines, minimal_escaping) {
       if (typeof(st) != 'string') {
           return st;
       }
 
       if (replaceNewlines) {
-        st = st.replace(/\r\n/g, '<br>')
-        st = st.replace(/\n/g, '<br>')
-        st = st.replace(/\r/g, '<br>')
+        st = st.replace(/\r\n/g, '<br>');
+        st = st.replace(/\n/g, '<br>');
+        st = st.replace(/\r/g, '<br>');
       }
 
-      escapedSt = '';
-      for (var i = 0; i < st.length; i++) {
-          if (MARKDOWN_CHARS.indexOf(st[i]) > -1) {
-              escapedSt += '\\';
+      var escapedSt = '';
+      if (minimal_escaping) {
+          escapedSt = st.replace(/\|/g, '\|');
+      } else {
+          for (var i = 0; i < st.length; i++) {
+              if (MARKDOWN_CHARS.indexOf(st[i]) > -1) {
+                  escapedSt += '\\';
+              }
+              escapedSt += st[i];
           }
-          escapedSt += st[i];
       }
 
       return escapedSt;
-  }
+  };
 
   var HTML_ENTITY_MAP = {
     '&': '&amp;',
@@ -242,11 +246,11 @@ script: |-
       }
 
       //in case of headers was not provided (backward compatibility)
-      if ((!headers || !headers instanceof Array || headers.length === 0) && t && t.length > 0 && typeof(t[0]) === 'object'){
+      if ((!(headers) || !(headers instanceof Array) || headers.length === 0) && t && t.length > 0 && typeof(t[0]) === 'object') {
           headers = GetAllObjectsProperties(t);
       }
 
-      if(!headers || !headers instanceof Array || headers.length === 0) {
+      if(!headers || !(headers instanceof Array) || headers.length === 0) {
           return 'No data returned\n';
       }
 
@@ -269,7 +273,7 @@ script: |-
           }
           var sep = [];
           headers.forEach(function(h){
-              sep.push('-');
+              sep.push('---');
           });
           if (sep.length === 1) {
               sep[0] = sep[0]+'|';
@@ -286,7 +290,7 @@ script: |-
                   if(entry[h] === null || entry[h] === undefined) {
                       vals.push(' ');
                   } else {
-                      vals.push(stringEscapeMD(formatCell(entry[h], cellDelimiter),true) || ' ');
+                      vals.push(stringEscapeMD(formatCell(entry[h], cellDelimiter), true, true) || ' ');
                   }
               });
               if (vals.length === 1) {
@@ -629,8 +633,9 @@ script: |-
     return ok;
   }
 
-  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, entryInfoFile: 9, map: 15};
+  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, entryInfoFile: 9, map: 15, playgroundError: 8};
   var formats = {html: 'html', table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
+  var dbotscores = {critical : 4, high: 3, medium: 2, low: 1, informational: 0.5, unknown: 0};
 
   /**
    * Returns the name of the file as stored in our investigation artifacts on disk.
@@ -1953,3 +1958,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+releaseNotes: 'Fix separator line of MD tables'

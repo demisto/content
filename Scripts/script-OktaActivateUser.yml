@@ -28,3 +28,6 @@ args:
   description: Username in Okta to activate
 scripttarget: 0
 deprecated: true
+dependson:
+  must:
+  - okta-activate-user

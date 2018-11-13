@@ -58,569 +58,730 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Get incident attachments
+  name: get_attachments
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
-    var username = params.credentials.identifier;
-    var password = params.credentials.password;
-    var serverUrl = params.url;
+    import re
+    import requests
+    import json
+    import datetime
+    import time
+    import shutil
 
-    if (serverUrl[serverUrl.length - 1] !== '/') {
-        serverUrl += '/';
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARIABLESS '''
+    def get_server_url():
+        url = demisto.params()['url']
+        url = re.sub('/[\/]+$/', '', url)
+        url = re.sub('\/$', '', url)
+        return url
+
+
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    VERIFY_SSL = not demisto.params().get('insecure', False)
+    API = '/api/now/'
+    VERSION = demisto.params().get('api_version')
+    PARAMS_TICKET_TYPE = demisto.params().get('ticket_type', 'incident')
+    SYSPARM_QUERY = demisto.params().get('sysparm_query')
+
+    if VERSION:
+        API += VERSION + '/'
+
+    SERVER_URL = get_server_url() + API
+
+    DEFAULTS = {
+        'limit':10,
+        'fetch_limit':10
     }
 
-    var defaults = {limit:10, fetch_limit:10};
-
-    var identLevel = function(count) {
-        var ret='';
-        for (var i=0;i<count;i++) {
-            ret += '     ';
-        }
-        return ret;
-    };
-
-    var flattenValue = function(value,level) {
-        if (!level) {
-            level=0;
-        }
-        if (!value || value == '') {
-            return '<br>';
-        } else if (typeof value == 'string') {
-            return value.replace(/(\n)/gm," ") + '<br>';
-        } else {
-            var ret = (level>0) ? identLevel(level-1) + '{ <br>' : '';
-            for (key in value) {
-                ret += identLevel(level) + key + ': ' + flattenValue(value[key],level+1);
-            }
-            return (level>0) ? ret + identLevel(level-1) + '}<br>' : ret;
-        }
-    };
-
-    var getBody = function(templateName, cusFields) {
-        var body = {};
-        var tmpRes;
-
-        if (templateName){
-            tmpRes = SNGetTemplate(templateName);
-        }
-
-        for (var i=0;i<snArgs.length;i++){
-            if (args[snArgs[i]]) {
-                body[snArgs[i]]=args[snArgs[i]];
-            }else{
-                if (templateName !== undefined &&
-                    snArgs[i] in tmpRes){
-                        body[snArgs[i]] = tmpRes[snArgs[i]];
-                    }
-            }
-        }
-
-        if(cusFields){
-            for (fd in cusFields){
-                body["u_"+fd] = cusFields[fd];
-            }
-        }
-
-        return body;
-    }
-
-    var snArgs = ["active", "activity_due", "short_description", "additional_assignee_list", "approval_history", "approval_set", "assigned_to", "assignment_group",
+    SNOW_ARGS = ["active", "activity_due", "short_description", "additional_assignee_list", "approval_history", "approval_set", "assigned_to", "assignment_group",
          "business_duration", "business_service", "business_stc", "calendar_duration", "calendar_stc", "caller_id", "caused_by", "close_code", "close_notes",
          "closed_at", "closed_by", "cmdb_ci", "comments", "comments_and_work_notes", "company", "contact_type", "correlation_display", "correlation_id",
          "delivery_plan", "delivery_task", "description", "due_date", "expected_start", "follow_up", "group_list", "hold_reason", "impact", "incident_state",
          "knowledge", "location", "made_sla", "notify", "order", "parent", "parent_incident", "priority", "problem_id", "resolved_at", "resolved_by", "rfc",
          "severity", "sla_due", "state", "subcategory", "sys_tags", "time_worked", "urgency", "user_input", "watch_list", "work_end", "work_notes", "work_notes_list",
-         "work_start", "impact", "incident_state", "title", "type", "category", "state"];
+         "work_start", "impact", "incident_state", "title", "type", "category", "state"]
 
-    var sendRequest = function(method, path, headers, body, file_id) {
-        if (!headers) {
+    ''' HELPER FUNCTIONS '''
+
+    def send_request(path, method='get', body=None, params=None, headers=None, file=None):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+
+        url = '{}{}'.format(SERVER_URL, path)
+        if not headers:
             headers = {
-                'Accept': ['application/json'],
-                'Content-Type': ['application/json']
-            };
-        }
-        body = (body) ? body : '';
-        var api = '/api/now/';
-        if (params.api_version) {
-            api += params.api_version + '/';
-        }
-        var url = serverUrl + api + path;
-
-        var res;
-        if (file_id) {
-            res = httpMultipart(url,file_id,{Headers: headers, Username: username,Password: password},body,params.insecure,params.proxy,false,'uploadFile', body.file_name,true);
-        } else {
-            res = http(url,{Method: method,Headers: headers,Body: body, Username: username,Password: password},params.insecure,params.proxy);
-        }
-        try {
-            obj = JSON.parse(res.Body);
-        } catch (ex) {
-            throw 'Error parsing reply - ' + res.Body + ' - ' + ex;
-        }
-
-        if (obj.error) {
-            throw 'ServiceNow Error: ' + obj.error.detail;
-        }
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'ServiceNow Error: Failed to perform request. request status: ' + res.Status;
-        }
-
-        try {
-            var obj = JSON.parse(res.Body);
-            return {body: res.Body, obj: obj};
-        } catch (ex) {
-            throw 'Error parsing reply - ' + res.Body + ' - ' + ex;
-        }
-    }
-
-    var mdDict = {
-        'default': {
-            number: 'Number',
-            sys_id: 'System ID',
-            state:  'State',
-            impact: 'Impact',
-            priority:'Priority',
-            severity:'Severity',
-            urgency:'Urgency',
-            sys_created_on:'Created On',
-            sys_created_by:'Created by',
-            active:'Active',
-            close_notes:'Close notes',
-            description:'Description',
-            opened_at:'Opened at',
-            due_date:'Due date',
-            closed_by:'Resolved by',
-            closed_at:'Resolved at',
-            sla_due:'SLA due',
-            short_description:'Short description',
-        },
-        'servicenow-create': {
-            number:'Number',
-            sys_id:'Sys ID',
-            state:  'State',
-            impact: 'Impact',
-            priority:'Priority',
-            severity:'Severity',
-            urgency:'Urgency',
-            sys_created_on:'Created On',
-            sys_created_by:'Created by',
-            short_description:'Short description'
-        },
-        'servicenow-upload-file': {
-            file_name: 'Filename',
-            download_link: 'Download link',
-            sys_id: 'System ID'
-        },
-        'servicenow-incident-create': {
-            number:'Number',
-            sys_id:'Sys ID',
-            state:  'State',
-            impact: 'Impact',
-            priority:'Priority',
-            severity:'Severity',
-            urgency:'Urgency',
-            sys_created_on:'Created On',
-            sys_created_by:'Created by',
-            short_description:'Short description'
-        },
-        'servicenow-incident-upload-file': {
-            file_name: 'Filename',
-            download_link: 'Download link',
-            sys_id: 'System ID'
-        }
-    };
-
-    var ticketEc = function(data) {
-        return {
-                "ID":data["sys_id"],
-                "Creator":data["opened_by"]["value"],
-                "Assignee":data["assigned_to"]["value"],
-                "State":data["state"],
-                "Summary":data["short_description"],
-                "Number":data["number"]
-            };
-    }
-
-    var dataToEc = function(data) {
-        var ec = {};
-        if (Array.isArray(data)) {
-            ec.Ticket=[];
-            for (var i=0;i<data.length;i++) {
-                ec.Ticket.push(ticketEc(data[i]));
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
             }
-        } else {
-            ec.Ticket = ticketEc(data);
+        if file:
+            # Not supported in v2
+            url = url.replace('v2', 'v1')
+            try:
+                file_entry = file['id']
+                file_name = file['name']
+                shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
+                with open(file_name, 'rb') as f:
+                    files = {'file': f}
+                    res = requests.request(method, url, headers=headers, params=params, data=body,files=files, auth=(USERNAME, PASSWORD),
+                    verify=VERIFY_SSL)
+                shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+            except Exception as e:
+                raise Exception('Failed to upload file - ' + e.message)
+        else:
+            res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
+            verify=VERIFY_SSL)
+
+
+        try:
+            obj = res.json()
+        except Exception as e:
+            raise Exception('Error parsing reply - {} - {}'.format(res.content, e.message))
+
+        if 'error' in obj:
+            raise Exception('ServiceNow Error: {}, details: {}'.format(obj['error']['message'], obj['error']['detail']))
+
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code {} with url {} with body {} with headers {}'.format(str(res.status_code), url, str(res.content), str(res.headers)))
+
+        return obj
+
+    def get_table_name(ticket_type=None):
+        if ticket_type:
+            return ticket_type
+        else:
+            if PARAMS_TICKET_TYPE:
+                return PARAMS_TICKET_TYPE
+            else:
+                return 'incident'
+
+    def create_ticket_context(data):
+        context =  {
+            'ID': data["sys_id"],
         }
-        return ec;
-    }
 
-    var dataToMd = function(command,data) {
-        var md;
-        var head='|';
-        var line='|';
+        if 'opened_by' in data:
+            context['Creator'] = data["opened_by"]['value'] if 'value' in data['opened_by'] else ''
+        if 'assigned_to' in data:
+            context['Assignee'] = data["assigned_to"]['value'] if 'value' in data['assigned_to'] else ''
 
-        var dict = (command in mdDict) ? mdDict[command] : mdDict['default'];
+        context['State'] = data.get('state')
+        context['Summary'] = data.get('short_description')
+        context['Number'] = data.get('number')
 
-        for (key in dict) {
-            head += dict[key] + '|';
-            line += '-|';
-        }
+        return context
 
-        md = head + '\n' + line + '\n';
-        data = (Array.isArray(data))? data : [data];
-        for (var i=0;i<data.length;i++) {
-            md += '|';
-            for (key in dict) {
-                md +=flattenValue(data[i][key]) + '|'
+    def get_ticket_context(data):
+        if not isinstance(data, list):
+            return create_ticket_context(data)
+
+        tickets = []
+        for d in data:
+            tickets.append(create_ticket_context(d))
+        return tickets
+
+    def get_ticket_human_readable(tickets):
+        if not isinstance(tickets, list):
+            tickets = [tickets]
+
+        result = []
+        for ticket in tickets:
+            hr = {
+                'Number': ticket['number'],
+                'System ID': ticket['sys_id'],
+                'State': ticket['state'],
+                'Impact': ticket.get('impact'),
+                'Priority': ticket.get('priority'),
+                'Severity': ticket.get('severity'),
+                'Urgency': ticket.get('urgency'),
+                'Created On': ticket.get('sys_created_on'),
+                'Created By': ticket.get('sys_created_by'),
+                'Active': ticket.get('active'),
+                'Close notes': ticket.get('close_notes'),
+                'Description': ticket.get('description'),
+                'Opened at': ticket.get('opened_at'),
+                'Due date': ticket.get('due_date'),
+                'Resolved by': ticket.get('closed_by'),
+                'Resolved at': ticket.get('resolved_at'),
+                'SLA due': ticket.get('sla_due'),
+                'Short description': ticket.get('short_description')
             }
-            md += '\n';
-        }
-        return md;
-    }
+            result.append(hr)
 
-    var SNGetIncident = function() {
-        var ticket_type = getTableName();
-        if (args.id) {
-            var path = "table/"+ticket_type+"/"+args['id'];
-        } else if (args.number) {
-            var path = "table/"+ticket_type + encodeToURLQuery({sysparm_query:"number="+args.number});
-        } else {
-            throw 'incindet-get requires either incident ID (sys_id) or incdent number';
-        }
-        res = sendRequest('GET',path);
-        if (res && res.obj && res.obj.result) {
-            var md = "### Service now incident\n";
-            md += dataToMd(command,res.obj.result);
-            var ec = {};
-            ec = dataToEc(res.obj.result);
-        } else {
-            var md = 'Cannot find incident\n';
-        }
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md, "EntryContext": ec} );
-    }
+        return result
 
-    var SNUpdate = function(){
-        var cusFields;
+    def get_body(template_name, custom_fields):
+        body = {}
+        template = template_name
 
-        var ticket_type = getTableName();
+        if template:
+            template = get_template(template_name)
 
-        if (args.custom_fields){
-            cusFields = splitCusFilds(args.custom_fields);
-        }
+        for arg in SNOW_ARGS:
+            input_arg = demisto.args().get(arg)
+            if input_arg:
+                body[arg] = input_arg
+            elif template_name and arg in template:
+                body[arg] = template[arg]
 
-        var body = getBody(args.template, cusFields);
+        if custom_fields:
+            for field in custom_fields:
+                body['u_' + field] = custom_fields[field]
 
-        var path = "table/"+ticket_type+"/"+args["id"];
-        var res = sendRequest('PATCH',path,null,JSON.stringify(body));
-        var md = "### ServiceNow incident updated\n";
-        md += "### Ticket type: " + ticket_type + '\n';
-        md += dataToMd(command,res.obj.result);
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md} );
-    }
+        return body
 
 
-    var splitCusFilds = function(cusFields){
-        var dicFields = {};
-        var arrFields = cusFields.split(';');
+    def split_custom_fields(fields):
+        dic_fields = {}
+        arr_fields = fields.split(';')
 
-        for(var i=0; i<arrFields.length; i++){
-            var field = arrFields[i].split('=');
-            if (field.length > 1){
-                dicFields[field[0]] = field[1];
-            }
-        }
+        for f in arr_fields:
+            field = f.split('=')
+            if len(field) > 1:
+                dic_fields[field[0]] = field[1]
 
-        return dicFields;
-    }
+        return dic_fields
 
-    var SNCreate = function(){
-        var cusFields;
+    def get_snow_time(minutes_offset):
+        now = datetime.datetime.now()
+        ts = time.time()
+        utc_offset_minutes = (datetime.datetime.utcfromtimestamp(ts) - datetime.datetime.fromtimestamp(ts)).total_seconds() / 60
+        snow_time = now + datetime.timedelta(minutes = utc_offset_minutes)
 
-        if (args.custom_fields){
-            cusFields = splitCusFilds(args.custom_fields);
-        }
+        if minutes_offset:
+            snow_time = snow_time + datetime.timedelta(minutes = minutes_offset)
 
-        var body = getBody(args.template, cusFields);
+        return snow_time.strftime('%Y-%m-%d %H:%M:%S')
 
-        var ticket_type = getTableName();
-        var path = "table/"+ticket_type;
-        var res = sendRequest('POST',path,null,JSON.stringify(body));
-        var md = "### ServiceNow incident created\n";
-        md += "### Ticket type: " + ticket_type + '\n';
-        md += dataToMd(command,res.obj.result);
-        var ec = dataToEc(res.obj.result);
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md, "EntryContext": ec} );
-    }
+    ''' FUNCTIONS '''
+    def get_template(name):
+        query_params={}
+        query_params['sysparm_limit'] = 1
+        query_params['sysparm_query'] = 'name='+name
 
-    var SNAddLink = function(){
-        var key=(args['post-as-comment']=='true')?'comments':'work_notes';
-        var ticket_type = getTableName();
-        var text=(args.text) ? args.text : args.link;
-        var link='[code]<a class="web" target="_blank" href="'+args.link+'" >'+text+'</a>[/code]';
-        var body={};
-        body[key]=link;
-        var path = "table/"+ticket_type+"/" + args["id"];
-        var res = sendRequest('PATCH',path,null,JSON.stringify(body));
-        var md = "### Link added to ServiceNow incident\n";
-        md += dataToMd(command,res.obj.result);
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md} );
-    }
+        ticket_type = 'sys_template'
+        path = 'table/' + ticket_type
+        res = send_request('GET',path,params=query_params)
 
-    var SNAddComment = function(){
-        var key=(args['post-as-comment']=='true')?'comments':'work_notes';
-        var ticket_type = getTableName();
-        var text=args.comment;
-        var body={};
-        body[key]=text;
-        var path = "table/"+ticket_type+"/" + args["id"];
-        var res = sendRequest('PATCH',path,null,JSON.stringify(body));
-        var md = "### Link added to ServiceNow incident\n";
-        md += dataToMd(command,res.obj.result);
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md} );
-    }
+        if len(res['result']) == 0:
+            raise ValueError("Incorrect template name")
 
-    var getTableName = function(){
-        if (args.ticket_type !== undefined){
-            return args.ticket_type;
-        }else {
-            if (params.ticket_type !== undefined){
-                return params.ticket_type;
-            }else {
-                return "incident";
-            }
-        }
-    }
-    var SNQuery = function(){
-        var parameters={};
-        parameters.sysparm_limit = (args.limit) ? args.limit : defaults.limit;
-        if (args.sysparm_query) {
-            parameters.sysparm_query = args.sysparm_query;
-        }
+        template = res['result'][0]['template'].split('^')
+        dic_template = {}
 
-        var ticket_type = getTableName();
-        var path = "table/"+ticket_type + encodeToURLQuery(parameters);
-        res = sendRequest('GET',path);
-        var md = "### ServiceNow incidents\n";
-        md += dataToMd(command,res.obj.result);
-        var ec = dataToEc(res.obj.result);
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res.obj.result, "HumanReadable": md, "EntryContext": ec} );
-    }
+        for i in range(len(template) - 1):
+            template_value = template[i].split('=')
+            if (len(template_value) > 1):
+                dic_template[template_value[0]] = template_value[1]
 
-    var addMinutes = function(date, minutes) {
-        return new Date(date.getTime() + minutes*60000);
-    }
+        return dic_template
 
-    var getServiceNowTime = function(minutesOffset) {
-        var time = new Date();
-        time = addMinutes(time,time.getTimezoneOffset());
-        time = (minutesOffset) ? addMinutes(time,minutesOffset) : time;
+    def get_ticket_command():
+        ticket_type = get_table_name(demisto.args().get('ticket_type'))
+        ticket_id = demisto.args().get('id')
+        number = demisto.args().get('number')
+        get_attachments = demisto.args().get('get_attachments', 'false')
 
-        var month = "0" + (time.getMonth()+1);
-        var day = "0" + time.getDate();
-        var hours = "0" + time.getHours();
-        var minutes = "0" + time.getMinutes();
-        var seconds = "0" + time.getSeconds();
-        var dateOld = time.getFullYear()+'-'+month.substr(-2)+'-'+day.substr(-2);
-        var timeOld = hours.substr(-2) + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-        sertime = dateOld+" "+timeOld;
-        return sertime;
-    }
+        res = get_ticket(ticket_id, number, ticket_type)
+        if not res or 'result' not in res:
+            return 'Cannot find ticket'
 
-    var SNUploadFile = function(){
-        var headers = {
-            'Accept': ['application/json'],
-            'Content-Type': ['multipart/form-data']
-            };
-        var ticket_type = getTableName();
-        var body = {
-            table_name:ticket_type,
-            table_sys_id: args['id']
-        };
-        if (args.file_name) {
-            body.file_name = args['file_name'];
-        } else {
-            body.file_name = dq(invContext,"File(val.EntryID=='"+args.file_id+"').Name");
-        }
-        body.file_name = (Array.isArray(body.file_name)) ? body.file_name[0]: body.file_name;
+        if isinstance(res['result'], list):
+            if len(res['result']) == 0:
+                return 'Cannot find ticket'
+            ticket = res['result'][0]
+        else:
+            ticket = res['result']
 
-        var path = "attachment/upload";
-        var res = sendRequest('POST',path,headers,body,args.file_id);
+        entries = []
 
-        var result = res.obj.result;
-        var md='### File uploaded\n';
-        md += dataToMd(command,result);
+        if get_attachments.lower() != 'false':
+            entries = get_ticket_attachment_entries(ticket['sys_id'])
 
-        return ( {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': result, "HumanReadable": md} );
-    }
+        hr = get_ticket_human_readable(ticket)
 
-
-    var fetchIncidents = function() {
-        var parameters={};
-        var incidents = [];
-
-        var now = getLastRun();
-
-        if (!now.time) {
-            sertime = getServiceNowTime(-10);
-        } else {
-            sertime = now.time;
-        }
-
-        parameters.sysparm_query = "ORDERBYopened_at^opened_at>"+sertime;
-        if (params.sysparm_query) {
-            parameters.sysparm_query += "^" + params.sysparm_query;
-        }
-        parameters.sysparm_limit = (params.fetch_limit) ? params.fetch_limit : defaults.fetch_limit;
-
-        var path = "table/" + params.ticket_type + encodeToURLQuery(parameters);
-
-        res = sendRequest('GET',path);
-
-        for (var i=0;i<res.obj.result.length;i++) {
-            var incident = res.obj.result[i];
-            var labels = [];
-
-            for(var atr in res.obj.result[i]){
-                if (typeof res.obj.result[i][atr] == 'string') {
-                    labels.push({'type':atr,'value':res.obj.result[i][atr]});
-                } else {
-                    labels.push({'type':atr,"value":JSON.stringify(res.obj.result[i][atr])});
-                }
-            }
-
-            var severity = (incident.severity) ? parseInt(incident.severity) : 0;
-            incidents.push({
-                "name": 'ServiceNow Incident ' + incident["number"],
-                "labels": labels,
-                "details" : JSON.stringify(incident),
-                "severity" : severity,
-                "rawJSON": JSON.stringify(incident)
-            });
-
-            sertime = incident.opened_at;
-        }
-
-        setLastRun({'time': sertime});
-
-        return (JSON.stringify(incidents));
-    }
-
-
-    var SNGetTemplate = function(name){
-        var parameters={};
-        parameters.sysparm_limit = 1;
-        parameters.sysparm_query = "name="+name;
-
-        var ticket_type = "sys_template";
-        var path = "table/"+ticket_type + encodeToURLQuery(parameters);
-        res = sendRequest('GET',path);
-
-        if(res.obj.result.length === 0){
-            throw "Incorrect template name";
-        }
-
-        var tmpRes = res.obj.result[0].template.split('^');
-        var dicRes = {};
-
-        for(var i=0; i<tmpRes.length-1; i++){
-            if (tmpRes[i].split('=').length > 1){
-                dicRes[tmpRes[i].split('=')[0]] = tmpRes[i].split('=')[1];
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, removeNull=True),
+            'EntryContext': {
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(ticket)
             }
         }
 
-        return dicRes;
-    }
+        entries.append(entry)
+
+        return entries
 
 
-    var SNGetGroups = function(name){
-        var parameters={};
-        var ticket_type = "sys_user_group";
-        var path = "table/"+ticket_type + encodeToURLQuery(parameters);
-        res = sendRequest('GET',path).obj;
-        var md = '## ServiceNow groups\n';
-        var ec = {ServiceNowGroups: []};
-        for (var i = 0; i < res.result.length; i++) {
-            var headerTran = function(name) {
-                var headers = {
-                    sys_id: 'Id',
-                    name: 'Name',
-                    description: 'Description',
-                    email: 'Email',
-                    active: 'Active',
-                    manager: 'Manager'
-                }
-                if (headers[name]) {
-                    return headers[name];
-                } else {
-                    return name;
-                }
-            };
-            if (name) {
-                if (res.result[i].name === name) {
-                    md += tableToMarkdown('ServiceNow Group', res.result[i], ['sys_id', 'name', 'description', 'email', 'active', 'manager'], '', headerTran);
-                    ec.ServiceNowGroups.push({
-                        GroupId: res.result[i].sys_id,
-                        GroupName: res.result[i].name
-                    });
-                }
-            } else {
-                md += tableToMarkdown('ServiceNow Group', res.result[i], ['sys_id', 'name', 'description', 'email', 'active', 'manager'], '', headerTran);
-                    ec.ServiceNowGroups.push({
-                        GroupId: res.result[i].sys_id,
-                        GroupName: res.result[i].name
-                    });
+    def get_ticket(ticket_id, number, ticket_type):
+        path = None
+        query_params = {}
+        if ticket_id:
+            path = 'table/' + ticket_type + '/' + ticket_id
+        elif number:
+            path = 'table/' + ticket_type
+            query_params = {
+                'number': number
+            }
+        else:
+            raise ValueError('servicenow-get requires either ticket ID (sys_id) or ticket number')
+
+        return send_request(path, 'get', params = query_params)
+
+
+    def get_ticket_attachments(ticket_id):
+        path = 'attachment'
+        query_params = {
+            'sysparm_query': 'table_sys_id=' + ticket_id
+        }
+
+        return send_request(path, 'get', params = query_params)
+
+
+    def get_ticket_attachment_entries(ticket_id):
+        entries = []
+        links = []
+        attachments_res = get_ticket_attachments(ticket_id)
+        if 'result' in attachments_res and len(attachments_res['result']) > 0:
+            attachments = attachments_res['result']
+            links = [(attachment['download_link'], attachment['file_name']) for attachment in attachments]
+
+        for link in links:
+            file_res = requests.get(link[0], auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
+            if file_res is not None:
+                entries.append(fileResult(link[1], file_res.content))
+
+        return entries
+
+    def update_command():
+        custom_fields = demisto.args().get('custom_fields')
+        template = demisto.args().get('template')
+        ticket_type = get_table_name(demisto.args().get('ticket_type'))
+
+        res = update(ticket_type, custom_fields, template)
+
+        hr = get_ticket_human_readable(res['result'])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow ticket updated\nTicket type: ' + ticket_type, hr, removeNull=True)
+        }
+
+        return entry
+
+
+    def update(ticket_type, custom_fields, template):
+        if custom_fields:
+            custom_fields = split_custom_fields(custom_fields)
+
+        body = get_body(template, custom_fields)
+        path = 'table/' + ticket_type + '/' + demisto.args()['id']
+
+        return send_request(path, 'patch', body = body)
+
+    def create_command():
+        custom_fields = demisto.args().get('custom_fields')
+        template = demisto.args().get('template')
+        ticket_type = get_table_name(demisto.args().get('ticket_type'))
+
+        res = create(ticket_type, custom_fields, template)
+
+        hr = get_ticket_human_readable(res['result'])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow ticket created\nTicket type: ' + ticket_type, hr, removeNull=True),
+            'EntryContext': {
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result']),
             }
         }
-        return {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': res, "HumanReadable": md, "EntryContext": ec};
-    };
 
-    if (!params.ticket_type) {
-        params.ticket_type = 'incident';
-    }
+        return entry
 
-    switch (command) {
-        case "servicenow-get":
-        case "servicenow-incident-get":
-            return SNGetIncident();
-        case "servicenow-query":
-        case "servicenow-incidents-query":
-            return SNQuery();
-        case 'servicenow-update':
-        case 'servicenow-incident-update':
-            return SNUpdate();
-        case "servicenow-create":
-        case "servicenow-incident-create":
-            return SNCreate();
-        case "servicenow-add-link":
-        case "servicenow-incident-add-link":
-            return SNAddLink();
-        case "servicenow-add-comment":
-        case "servicenow-incident-add-comment":
-            return SNAddComment();
-        case "servicenow-upload-file":
-        case "servicenow-incident-upload-file":
-            return SNUploadFile();
-        case 'servicenow-get-groups':
-            return SNGetGroups(args.name);
-        case 'fetch-incidents':
-            return fetchIncidents();
-        case 'test-module':
-            var path = "table/incident?sysparm_limit=1";
-            res = sendRequest('GET',path);
-            var obj  = res.obj;
-            if (!obj.result) {
-                throw 'ServiceNow error: ' + JSON.stringify(res);
+    def create(ticket_type, custom_fields, template):
+        if custom_fields:
+            custom_fields = split_custom_fields(custom_fields)
+
+        body = get_body(demisto.args().get('template'), custom_fields)
+        path = 'table/' + ticket_type
+
+        return send_request(path, 'post', body = body)
+
+    def add_link_command():
+        ticket_id = demisto.args()['id']
+        key = 'comments' if demisto.args().get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
+        text = demisto.args().get('text', demisto.args()['link'])
+        link = '[code]<a class="web" target="_blank" href="' + demisto.args()['link'] + '" >'+text+'</a>[/code]'
+        ticket_type = get_table_name(demisto.args().get('ticket_type'))
+
+        res = add_link(ticket_id, ticket_type, key, link)
+
+        hr = get_ticket_human_readable(res['result'])
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Link added to ServiceNow ticket', hr, removeNull=True)
+        }
+
+        return entry
+
+
+    def add_link(ticket_id, ticket_type, key, link):
+        body = {}
+        body[key] = link
+        path = 'table/' + ticket_type + '/' + ticket_id
+
+        return send_request(path, 'patch', body=body)
+
+    def add_comment_command():
+        ticket_id = demisto.args()['id']
+        key = 'comments' if demisto.args().get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
+        text = demisto.args()['comment']
+        ticket_type = get_table_name(demisto.args().get('ticket_type'))
+
+        res = add_comment(ticket_id, ticket_type, key, text)
+
+        hr = get_ticket_human_readable(res['result'])
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Comment added to ServiceNow ticket', hr, removeNull=True)
+        }
+
+        return entry
+
+    def add_comment(ticket_id, ticket_type, key, text):
+        body = {}
+        body[key] = text
+        path = 'table/' + ticket_type + '/' + ticket_id
+
+        return send_request(path, 'patch', body=body)
+
+    def query_command():
+        sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
+        sysparm_query = demisto.args().get('query')
+        if not sysparm_query:
+            #backward compatibility
+            sysparm_query = demisto.args().get('sysparm_query')
+        ticket_type = get_table_name(demisto.args().get('ticket_type'))
+
+        res = query(ticket_type, sysparm_limit, sysparm_query)
+
+        if not res or 'result' not in res:
+            return 'Cannot find ticket'
+
+        hr = get_ticket_human_readable(res['result'])
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, removeNull=True),
+            'EntryContext': {
+                  'Ticket(val.ID==obj.ID)': get_ticket_context(res['result'])
             }
-            return 'ok';
-        default:
-            throw 'ServiceNow unknown command';
-    }
-  type: javascript
+        }
+
+        return entry
+
+
+    def query(ticket_type, sysparm_limit, sysparm_query):
+        query_params = {}
+        query_params['sysparm_limit'] = sysparm_limit
+        if sysparm_query:
+            query_params['sysparm_query'] = sysparm_query
+
+        path = 'table/' + ticket_type
+
+        return send_request(path, 'get', params = query_params)
+
+
+    def upload_file_command():
+        ticket_type = get_table_name(demisto.args().get('ticket_type'))
+        ticket_id = demisto.args()['id']
+        file_id = demisto.args()['file_id']
+        file_name = demisto.args().get('file_name',
+                                    demisto.dt(demisto.context(), "File(val.EntryID=='"+file_id+"').Name"))
+        file_name = file_name[0] if isinstance(file_name, list) else file_name
+
+        res = upload_file(ticket_id, file_id, file_name, ticket_type)
+
+        hr = {
+            'Filename': res['result']['file_name'],
+            'Download link': res['result']['download_link'],
+            'System ID': res['result']['sys_id']
+        }
+
+        context = {
+            'ID': ticket_id,
+            'File': {}
+        }
+        context['File']['Filename'] = res['result']['file_name']
+        context['File']['Link'] = res['result']['download_link']
+        context['File']['SystemID'] = res['result']['sys_id']
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('File Uploaded', hr),
+            'EntryContext': {
+                'Ticket(val.ID==obj.ID)' : context
+            }
+        }
+
+        return entry
+
+
+    def upload_file(ticket_id, file_id, file_name, ticket_type):
+        headers = {
+            'Accept': 'application/json'
+        }
+
+        body = {
+            'table_name': ticket_type,
+            'table_sys_id': ticket_id,
+            'file_name': file_name
+        }
+
+        path = 'attachment/upload'
+
+        return send_request(path, 'post', headers = headers, body = body, file = {'id': file_id, 'name': file_name})
+
+
+    def get_computer_command():
+        ticket_type = 'cmdb_ci_computer'
+        computer_name = demisto.args()['computerName']
+
+        res = get_computer(ticket_type, computer_name)
+
+        if not res or 'result' not in res:
+            return 'Cannot find computer'
+        elif isinstance(res['result'], list):
+            if len(res['result']) == 0:
+                return 'Cannot find computer'
+            computer = res['result'][0]
+        else:
+            computer = res['result']
+
+        if computer['u_code'] != computer_name:
+            return 'Computer not found'
+
+        hr = {
+            'ID': computer['sys_id'],
+            'u_code (computer name)': computer['u_code'],
+            'Support group': computer['support_group'],
+            'Operating System': computer['os'],
+            'Comments': computer['comments']
+        }
+
+        ec = createContext(computer, removeNull=True)
+        if 'support_group' in computer:
+            ec['support_group'] = computer['support_group']['value'] if 'value' in computer['support_group'] else ''
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': computer,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Computer', hr),
+            'EntryContext': {
+                  'ServiceNowComputer(val.sys_id==obj.sys_id)': ec,
+            }
+        }
+
+        return entry
+
+
+    def get_computer(ticket_type, computer_name):
+        path = 'table/' + ticket_type
+
+        query_params = {
+            'sysparm_query': 'u_code=' + computer_name
+        }
+
+        return send_request(path, 'get', params=query_params)
+
+    def get_groups_command():
+        ticket_type = 'sys_user_group'
+        group_name = demisto.args()['name']
+        res = get_groups(ticket_type, group_name)
+
+        if not res or 'result' not in res:
+            return 'Cannot find groups'
+
+        hr_groups = []
+        context_groups = []
+
+        for group in res['result']:
+            if group['name'] == group_name:
+                hr_groups.append({
+                    'ID': group['sys_id'],
+                    'Name': group['name'],
+                    'Description': group['description'],
+                    'Email': group['email'],
+                    'Active': group['active'],
+                    'Manager': ['manager']
+                })
+                context_groups.append({
+                    'GroupId': group['sys_id'],
+                    'GroupName': group['name']
+                })
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Group', hr_groups),
+            'EntryContext': {
+                  'ServiceNowGroups(val.GroupId==obj.GroupId)': context_groups,
+            }
+        }
+
+        return entry
+
+    def get_groups(ticket_type, group_name):
+        path = 'table/' + ticket_type
+
+        query_params = {
+            'sysparm_query': 'name=' + group_name
+        }
+
+        return send_request(path, 'get', params=query_params)
+
+    def fetch_incidents():
+        query_params = {}
+        incidents = []
+        sysparm_query = demisto.params().get('query')
+        sysparm_query = demisto.params().get('sysparm_query')
+        sysparm_limit = demisto.params().get('fetch_limit', DEFAULTS['fetch_limit'])
+        ticket_type = demisto.params()['ticket_type']
+        get_attachments = demisto.params().get('get_attachments', False)
+
+        last_run = demisto.getLastRun()
+        if 'time' not in last_run:
+            snow_time = get_snow_time(-10)
+        else:
+            snow_time = last_run['time']
+
+        query_params['sysparm_query'] = 'ORDERBYopened_at^opened_at>' + snow_time
+        query_params['sysparm_limit'] = sysparm_limit
+        if sysparm_query:
+            query_params['sysparm_query'] += '^' + sysparm_query
+
+        path = 'table/' + ticket_type
+
+        res = send_request(path, 'get', params = query_params)
+
+        for result in res['result']:
+            labels = []
+
+            for k,v in result.iteritems():
+                if isinstance(v, basestring):
+                    labels.append({
+                        'type': k,
+                        'value': v
+                    })
+                else:
+                    labels.append({
+                        'type': k,
+                        'value': json.dumps(v)
+                    })
+
+            severity = int(result['severity']) if 'severity' in result else 0
+
+            file_names = []
+            if get_attachments:
+                file_entries = get_ticket_attachment_entries(result['sys_id'])
+                for file_result in file_entries:
+                    if file_result['Type'] == entryTypes['error']:
+                        return_error(file_result['Contents'])
+                    file_names.append({
+                        'path': file_result['FileID'],
+                        'name': file_result['File']
+                    })
+
+            incidents.append({
+                'name': 'ServiceNow Incident ' + result['number'],
+                'labels': labels,
+                'details': json.dumps(result),
+                'severity': severity,
+                'attachment': file_names,
+                'rawJSON': json.dumps(result)
+            })
+
+            snow_time = result['opened_at']
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': snow_time})
+
+    try:
+        if demisto.command() == 'test-module':
+            path = "table/incident?sysparm_limit=1"
+            res = send_request(path, 'GET')
+            if 'result' not in res:
+                return_error('ServiceNow error: ' + str(res))
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'servicenow-get' or demisto.command() == 'servicenow-incident-update':
+            demisto.results(get_ticket_command())
+        elif demisto.command() == 'servicenow-update' or demisto.command() == 'servicenow-incident-update':
+            demisto.results(update_command())
+        elif demisto.command() == 'servicenow-create' or demisto.command() == 'servicenow-incident-create':
+            demisto.results(create_command())
+        elif demisto.command() == 'servicenow-add-link' or demisto.command() == 'servicenow-incident-add-link':
+            demisto.results(add_link_command())
+        elif demisto.command() == 'servicenow-add-comment' or demisto.command() == 'servicenow-incident-add-comment':
+            demisto.results(add_comment_command())
+        elif demisto.command() == 'servicenow-query' or demisto.command() == 'servicenow-incidents-query':
+            demisto.results(query_command())
+        elif demisto.command() == 'servicenow-upload-file' or demisto.command() == 'servicenow-incident-upload-file':
+            demisto.results(upload_file_command())
+        elif demisto.command() == 'servicenow-get-computer':
+            demisto.results(get_computer_command())
+        elif demisto.command() == 'servicenow-get-groups':
+            demisto.results(get_groups_command())
+    except Exception as e:
+        LOG(e)
+        LOG.print_log()
+        return_error(e.message)
+  type: python
   commands:
   - name: servicenow-get
     arguments:
     - name: id
       default: true
-      description: Incident ID to retrieve
+      description: Ticket System ID to retrieve
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -628,49 +789,84 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: number
-      description: Incident number to retrieve
+      description: Ticket number to retrieve
+    - name: get_attachments
+      description: Whether to retrieve ticket attachments, default false
     outputs:
-    - contextPath: Ticket.Id
-      description: ServiceNow incident ID
+    - contextPath: Ticket.ID
+      description: ServiceNow ticket System ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
+    - contextPath: File.Info
+      description: Attachment file info
+    - contextPath: File.Name
+      description: Attachment file name
+    - contextPath: File.Size
+      description: Attachment file size
+    - contextPath: File.SHA1
+      description: Attachment file SHA1
+    - contextPath: File.SHA256
+      description: Attachment file SHA256
+    - contextPath: File.EntryID
+      description: Attachment file entry ID
+    - contextPath: File.Type
+      description: Attachment file type
+    - contextPath: File.MD5
+      description: Attachment file MD5
     description: Retrieve ticket information by specific ticket ID
   - name: servicenow-incident-get
     deprecated: true
     arguments:
     - name: id
       default: true
-      description: Incident ID to retrieve
+      description: Ticket System ID to retrieve
     - name: ticket_type
       auto: PREDEFINED
       predefined:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: number
-      description: Incident number to retrieve
+      description: Ticket number to retrieve
     outputs:
-    - contextPath: Ticket.Id
-      description: ServiceNow incident ID
+    - contextPath: Ticket.ID
+      description: ServiceNow ticket System ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
     description: Retrieve ticket information by specific ticket ID
   - name: servicenow-create
     arguments:
@@ -683,7 +879,8 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -696,15 +893,15 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Set incident as Active
+      description: Set ticket as Active
     - name: activity_due
-      description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time
     - name: additional_assignee_list
       description: List of assigned users to the ticket
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -778,7 +975,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: Notify about this incident
+      description: Notify about this ticket
     - name: order
       description: Order number
     - name: parent
@@ -826,7 +1023,7 @@ script:
     - name: priority
       description: Priority of the ticket (number)
     - name: template
-      description: Template name to use as a base to create new incidents.
+      description: Template name to use as a base to create new tickets.
     - name: custom_fields
       description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     - name: type
@@ -838,18 +1035,26 @@ script:
       description: Type of Change Request ticket
       defaultValue: normal
     - name: state
-      description: State of the incident (an integer)
+      description: State of the ticket (an integer)
     outputs:
-    - contextPath: Ticket.Id
-      description: ServiceNow ticket ID
+    - contextPath: Ticket.ID
+      description: ServiceNow ticket System ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
     description: Create new ServiceNow ticket
   - name: servicenow-incident-create
     deprecated: true
@@ -862,7 +1067,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -875,15 +1080,15 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Set incident as Active
+      description: Set ticket as Active
     - name: activity_due
-      description: Set incident ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time
     - name: additional_assignee_list
       description: List of assigned users to the ticket
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -957,7 +1162,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: Notify about this incident
+      description: Notify about this ticket
     - name: order
       description: Order number
     - name: parent
@@ -1005,18 +1210,26 @@ script:
     - name: priority
       description: Priority of the ticket (number)
     - name: template
-      description: Template name to use as a base to create new incidents.
+      description: Template name to use as a base to create new tickets.
     outputs:
-    - contextPath: Ticket.Id
-      description: ServiceNow ticket ID
+    - contextPath: Ticket.ID
+      description: ServiceNow ticket System ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
     description: Create new ServiceNow ticket
   - name: servicenow-update
     arguments:
@@ -1029,7 +1242,8 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1050,7 +1264,7 @@ script:
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -1124,7 +1338,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: Notify about this incident
+      description: Notify about this ticket
     - name: order
       description: Order number
     - name: parent
@@ -1173,7 +1387,7 @@ script:
       description: Priority of the ticket (number)
     - name: id
       required: true
-      description: Id(UID) of the ticket to update
+      description: System ID of the ticket to update
     - name: custom_fields
       description: 'Custom fields in this format: fieldname=value;fieldname=value...'
     - name: type
@@ -1185,7 +1399,7 @@ script:
       description: Type of Change Request ticket
       defaultValue: normal
     - name: state
-      description: State of the incident (an integer)
+      description: State of the ticket (an integer)
     description: Update specific ticket by providing ticket id
   - name: servicenow-incident-update
     deprecated: true
@@ -1198,7 +1412,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1219,7 +1433,7 @@ script:
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set incident ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -1293,7 +1507,7 @@ script:
       predefined:
       - "1"
       - "0"
-      description: Notify about this incident
+      description: Notify about this ticket
     - name: order
       description: Order number
     - name: parent
@@ -1342,14 +1556,13 @@ script:
       description: Priority of the ticket (number)
     - name: id
       required: true
-      description: Id(UID) of the ticket to update
+      description: System ID of the ticket to update
     description: Update specific ticket by providing ticket id
   - name: servicenow-add-link
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1357,15 +1570,16 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: link
       required: true
-      description: The actual link to publish in ServiceNow incident, valid url format,
+      description: The actual link to publish in ServiceNow ticket, valid url format,
         like http://www.demisto.com
     - name: post-as-comment
-      description: Publish the link as comment on the incident, by default true, if
-        false will publish the link as WorkNote, format bool
+      description: Publish the link as comment on the ticket, if false will publish
+        the link as WorkNote, format bool
     - name: text
       description: The text to represent the link
     description: Add link to specific ticket by providing ticket id
@@ -1374,22 +1588,21 @@ script:
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: link
       required: true
-      description: The actual link to publish in ServiceNow incident, valid url format,
+      description: The actual link to publish in ServiceNow ticket, valid url format,
         like http://www.demisto.com
     - name: post-as-comment
-      description: Publish the link as comment on the incident, by default true, if
+      description: Publish the link as comment on the ticket, by default true, if
         false will publish the link as WorkNote, format bool
     - name: text
       description: The text to represent the link
@@ -1398,8 +1611,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1407,36 +1619,36 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: comment
       required: true
       description: Comment to add
     - name: post-as-comment
-      description: Publish the link as comment on the incident, by default true, if
-        false will publish the link as WorkNote, format bool
+      description: Publish the link as comment on the ticket, if false will publish
+        the link as WorkNote, format bool
     description: Add comment to specific ticket by providing ticket id
   - name: servicenow-incident-add-comment
     deprecated: true
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: comment
       required: true
       description: Comment to add
     - name: post-as-comment
-      description: Publish the link as comment on the incident, by default true, if
-        false will publish the link as WorkNote, format bool
+      description: Publish the link as comment on the ticket, if false will publish
+        the link as WorkNote, format bool
     description: Add comment to specific ticket by providing ticket id
   - name: servicenow-query
     arguments:
@@ -1444,6 +1656,7 @@ script:
       description: Limit for how many tickets to retrieve
       defaultValue: "10"
     - name: sysparm_query
+      deprecated: true
       description: Query
     - name: ticket_type
       auto: PREDEFINED
@@ -1452,20 +1665,31 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
+    - name: query
+      description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
     outputs:
-    - contextPath: Ticket.Id
-      description: ServiceNow ticket ID
+    - contextPath: Ticket.ID
+      description: ServiceNow ticket System ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
-    description: Retrieve info with query
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
+    description: Retrieve ticket info with query
   - name: servicenow-incidents-query
     deprecated: true
     arguments:
@@ -1480,26 +1704,33 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     outputs:
-    - contextPath: Ticket.Id
-      description: ServiceNow ticket ID
+    - contextPath: Ticket.ID
+      description: ServiceNow ticket System ID
+      type: string
     - contextPath: Ticket.Creator
       description: ServiceNow ticket creator
+      type: string
     - contextPath: Ticket.Assignee
       description: ServiceNow ticket assignee
+      type: string
     - contextPath: Ticket.State
       description: ServiceNow ticket state
+      type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
-    description: Retrieve info with query
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
+    description: Retrieve ticket info with query
   - name: servicenow-upload-file
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1507,7 +1738,8 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: file_id
       required: true
@@ -1515,21 +1747,30 @@ script:
     - name: file_name
       description: Filename of uploaded file to override the existing file name in
         entry
+    outputs:
+    - contextPath: Ticket.File.Filename
+      description: Name of the file
+      type: string
+    - contextPath: Ticket.File.Link
+      description: Download link for the file
+      type: string
+    - contextPath: Ticket.File.SystemID
+      description: System ID of the file
+      type: string
     description: Upload new file
   - name: servicenow-incident-upload-file
     deprecated: true
     arguments:
     - name: id
       required: true
-      description: Incident ID , also known in the api as sys_id - format is uuid
-        like 46b87022a9fe198101a78787e40d7547
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: file_id
       required: true
@@ -1537,11 +1778,52 @@ script:
     - name: file_name
       description: Filename of uploaded file to override the existing file name in
         entry
+    outputs:
+    - contextPath: Ticket.File.Filename
+      description: Name of the file
+      type: string
+    - contextPath: Ticket.File.Link
+      description: Download link for the file
+      type: string
+    - contextPath: Ticket.File.SystemID
+      description: System ID of the file
+      type: string
     description: Upload new file
   - name: servicenow-get-groups
     arguments:
     - name: name
       required: true
       description: Servicenow group name
+    outputs:
+    - contextPath: ServiceNowGroups.GroupId
+      description: Group Id
+      type: string
+    - contextPath: ServiceNowGroups.GroupName
+      description: Group name
+      type: string
     description: Return information about specific servicenow group
+  - name: servicenow-get-computer
+    arguments:
+    - name: computerName
+      required: true
+      description: machine name
+    outputs:
+    - contextPath: ServiceNowComputer.sys_id
+      description: 'Id '
+      type: string
+    - contextPath: ServiceNowComputer.u_code
+      description: Code
+      type: string
+    - contextPath: ServiceNowComputer.support_group
+      description: Support group
+      type: string
+    - contextPath: ServiceNowComputer.os
+      description: Operating System
+      type: string
+    - contextPath: ServiceNowComputer.comments
+      description: Comments
+      type: string
+    description: query the cmdb_ci_computer table with a computer code
   isfetch: true
+tests:
+    - Run all tests

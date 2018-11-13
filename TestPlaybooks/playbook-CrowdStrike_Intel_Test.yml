@@ -1,14 +1,14 @@
 id: CrowdStrike Falcon Intel v2
-version: 17
+version: 5
 name: CrowdStrike Falcon Intel v2
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8fc39449-a01e-4f31-8397-79e8f3b48660
+    taskid: a0ba76ba-e422-4840-8538-1318b29e3b87
     type: start
     task:
-      id: 8fc39449-a01e-4f31-8397-79e8f3b48660
+      id: a0ba76ba-e422-4840-8538-1318b29e3b87
       version: -1
       name: ""
       iscommand: false
@@ -24,18 +24,19 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 5e52d6ee-db15-490e-8fbe-677f7786f616
+    taskid: 631e22f3-2f4e-47f3-8bed-2ab8a5161a92
     type: regular
     task:
-      id: 5e52d6ee-db15-490e-8fbe-677f7786f616
+      id: 631e22f3-2f4e-47f3-8bed-2ab8a5161a92
       version: -1
       name: Check IP Address
-      script:  FalconIntel|||ip
+      script: FalconIntel|||ip
       type: regular
       iscommand: true
-      brand:  FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "3"
@@ -50,12 +51,13 @@ tasks:
           "y": 391
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: 351f2b7b-a641-43a4-8154-c55745f22901
+    taskid: 9336fc6c-2cee-41c9-865e-c090a48c0b97
     type: regular
     task:
-      id: 351f2b7b-a641-43a4-8154-c55745f22901
+      id: 9336fc6c-2cee-41c9-865e-c090a48c0b97
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -77,18 +79,19 @@ tasks:
           "y": 225
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 6beb9982-5245-47a1-8ce5-38a8ceeb4c9e
+    taskid: e381c0d4-7e42-4fa3-80ad-fdef60037021
     type: regular
     task:
-      id: 6beb9982-5245-47a1-8ce5-38a8ceeb4c9e
+      id: e381c0d4-7e42-4fa3-80ad-fdef60037021
       version: -1
       name: Check File
-      script:  FalconIntel|||file
+      script: FalconIntel|||file
       type: regular
       iscommand: true
-      brand:  FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "4"
@@ -103,18 +106,19 @@ tasks:
           "y": 556
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 3802bfdb-a38c-42ee-86c5-bf53e4280d88
+    taskid: e687692e-c334-4de7-82ba-7424433d4e9a
     type: regular
     task:
-      id: 3802bfdb-a38c-42ee-86c5-bf53e4280d88
+      id: e687692e-c334-4de7-82ba-7424433d4e9a
       version: -1
       name: Check URL
-      script:  FalconIntel|||url
+      script: FalconIntel|||url
       type: regular
       iscommand: true
-      brand:  FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "5"
@@ -129,18 +133,19 @@ tasks:
           "y": 709
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: 0dcd8f93-d91e-46d6-8940-636b19911017
+    taskid: 2bd57c60-7aa2-4018-8882-3637dc255b60
     type: regular
     task:
-      id: 0dcd8f93-d91e-46d6-8940-636b19911017
+      id: 2bd57c60-7aa2-4018-8882-3637dc255b60
       version: -1
       name: Check Domain
-      script:  FalconIntel|||domain
+      script: FalconIntel|||domain
       type: regular
       iscommand: true
-      brand:  FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "6"
@@ -155,12 +160,13 @@ tasks:
           "y": 878
         }
       }
+    note: false
   "6":
     id: "6"
-    taskid: d2138ff6-3e9f-4a8b-80e0-cd6c0f1703c9
+    taskid: 3d7bf334-e0ff-4867-8615-426acc1edc47
     type: condition
     task:
-      id: d2138ff6-3e9f-4a8b-80e0-cd6c0f1703c9
+      id: 3d7bf334-e0ff-4867-8615-426acc1edc47
       version: -1
       name: Test if values exist from API calls
       type: condition
@@ -175,7 +181,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: string.isEqual
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Type
@@ -183,7 +189,7 @@ tasks:
           right:
             value:
               simple: ip
-      - - operator: string.isEqual
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Type
@@ -191,7 +197,7 @@ tasks:
           right:
             value:
               simple: hash
-      - - operator: string.isEqual
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Type
@@ -199,7 +205,7 @@ tasks:
           right:
             value:
               simple: url
-      - - operator: string.isEqual
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Type
@@ -214,12 +220,13 @@ tasks:
           "y": 1040
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: aba71f51-9b4f-42a4-8898-160942e1214f
+    taskid: 082c6d81-b48b-4f60-894e-3609540b9400
     type: title
     task:
-      id: aba71f51-9b4f-42a4-8898-160942e1214f
+      id: 082c6d81-b48b-4f60-894e-3609540b9400
       version: -1
       name: Test playbook finished successfully.
       type: title
@@ -229,16 +236,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 101,
-          "y": 1983
+          "x": 114,
+          "y": 1879
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 4efee843-f1c8-4829-8940-81c213af0021
+    taskid: 15f74464-483b-4658-89d2-d6db36f31702
     type: regular
     task:
-      id: 4efee843-f1c8-4829-8940-81c213af0021
+      id: 15f74464-483b-4658-89d2-d6db36f31702
       version: -1
       name: Some value was not found
       scriptName: ThrowException
@@ -256,18 +264,19 @@ tasks:
           "y": 1205
         }
       }
+    note: false
   "9":
     id: "9"
-    taskid: 7a53ba7d-66a5-42e2-8a3f-1da21dcdcf19
+    taskid: d2f007d3-1473-4a40-84cc-e6fc7db7c2d7
     type: regular
     task:
-      id: 7a53ba7d-66a5-42e2-8a3f-1da21dcdcf19
+      id: d2f007d3-1473-4a40-84cc-e6fc7db7c2d7
       version: -1
       name: Search known actors
-      script:  FalconIntel|||cs-actors
+      script: FalconIntel|||cs-actors
       type: regular
       iscommand: true
-      brand:  FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "10"
@@ -297,18 +306,19 @@ tasks:
           "y": 1320
         }
       }
+    note: false
   "10":
     id: "10"
-    taskid: 98954f21-86ac-4d87-8222-061fe28a971a
+    taskid: 63c3a8e9-d8d8-4909-88cf-67e887e113db
     type: regular
     task:
-      id: 98954f21-86ac-4d87-8222-061fe28a971a
+      id: 63c3a8e9-d8d8-4909-88cf-67e887e113db
       version: -1
       name: Search known indicators
-      script:  FalconIntel|||cs-indicators
+      script: FalconIntel|||cs-indicators
       type: regular
       iscommand: true
-      brand:  FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
       - "14"
@@ -330,21 +340,22 @@ tasks:
           "y": 1320
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: db262e1a-d58c-494c-8c39-9c4d0da8efb2
+    taskid: 2ff4a649-1e95-45df-8858-b544ec32399b
     type: regular
     task:
-      id: db262e1a-d58c-494c-8c39-9c4d0da8efb2
+      id: 2ff4a649-1e95-45df-8858-b544ec32399b
       version: -1
       name: Query CrowdStrike intelligence publications
-      script:  FalconIntel|||cs-reports
+      script: FalconIntel|||cs-reports
       type: regular
       iscommand: true
-      brand:  FalconIntel
+      brand: FalconIntel
     nexttasks:
       '#none#':
-      - "12"
+      - "7"
     scriptarguments:
       actor:
         simple: panda
@@ -372,38 +383,13 @@ tasks:
           "y": 1650
         }
       }
-  "12":
-    id: "12"
-    taskid: 219c9ba6-2112-4d69-85b2-65dbbb3f9adf
-    type: regular
-    task:
-      id: 219c9ba6-2112-4d69-85b2-65dbbb3f9adf
-      version: -1
-      name: Retrieve Falcon Intel Report PDF
-      script:  FalconIntel|||cs-report-pdf
-      type: regular
-      iscommand: true
-      brand:  FalconIntel
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      id:
-        simple: "585"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 101,
-          "y": 1814
-        }
-      }
+    note: false
   "13":
     id: "13"
-    taskid: 6a3831eb-7baf-4326-84f9-1423a5ab3d83
+    taskid: 9aa5e908-f84f-47aa-8027-71a2b179ccf6
     type: regular
     task:
-      id: 6a3831eb-7baf-4326-84f9-1423a5ab3d83
+      id: 9aa5e908-f84f-47aa-8027-71a2b179ccf6
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -425,12 +411,13 @@ tasks:
           "y": 1175
         }
       }
+    note: false
   "14":
     id: "14"
-    taskid: f313db80-996c-40c0-8946-e198de408141
+    taskid: dda00278-9b22-4d5e-86c7-4592a6da669f
     type: condition
     task:
-      id: f313db80-996c-40c0-8946-e198de408141
+      id: dda00278-9b22-4d5e-86c7-4592a6da669f
       version: -1
       name: Test if values exist from API calls
       type: condition
@@ -445,7 +432,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: string.isEqual
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Type
@@ -453,7 +440,7 @@ tasks:
           right:
             value:
               simple: ip
-        - operator: string.isEqual
+        - operator: isEqualString
           left:
             value:
               simple: DBotScore.Type
@@ -461,7 +448,7 @@ tasks:
           right:
             value:
               simple: hash
-        - operator: string.isEqual
+        - operator: isEqualString
           left:
             value:
               simple: DBotScore.Type
@@ -469,7 +456,7 @@ tasks:
           right:
             value:
               simple: url
-        - operator: string.isEqual
+        - operator: isEqualString
           left:
             value:
               simple: DBotScore.Type
@@ -484,12 +471,13 @@ tasks:
           "y": 1495
         }
       }
+    note: false
   "15":
     id: "15"
-    taskid: b3d63c21-fc03-490c-830b-231f91e1c1d7
+    taskid: 6d121368-aa22-4120-86a1-05dccdfbfe09
     type: regular
     task:
-      id: b3d63c21-fc03-490c-830b-231f91e1c1d7
+      id: 6d121368-aa22-4120-86a1-05dccdfbfe09
       version: -1
       name: Some value was not found
       scriptName: ThrowException
@@ -507,12 +495,13 @@ tasks:
           "y": 1677
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1998,
+        "height": 1894,
         "width": 1205,
         "x": 101,
         "y": 50

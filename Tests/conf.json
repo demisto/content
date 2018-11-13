@@ -3,20 +3,210 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Mimecast",
+            "playbookID": "Mimecast test"
+        },
+        {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io test"
+        },
+        {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io Scan Test",
+          "nightly": true,
+          "timeout": 500
+        },
+        {
+            "integrations": "google-vault",
+            "playbookID": "Google-Vault-Generic-Test",
+            "timeout": 500
+        },
+        {
+            "playbookID": "Luminate-TestPlaybook",
+            "integrations": "Luminate"
+        },
+        {
+            "playbookID": "ParseEmailFiles-test"
+        },
+        {
+            "playbookID": "ParseExcel-test"
+        },
+        {
+            "integrations": [
+                "Panorama",
+                "Check Point"
+            ],
+            "playbookID": "blockip_test_playbook"
+        },
+        {
+          "integrations": "IntSights",
+          "playbookID": "IntSights Test"
+        },
+        {
+            "integrations": "Palo Alto Minemeld",
+            "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": "IntSights",
+            "playbookID": "IntSights Test"
+        },
+        {
+            "integrations": "BitDam",
+            "playbookID": "Detonate File - BitDam Test"
+        },
+        {
+            "integrations": "Threat Grid",
+            "playbookID": "ThreatGridTest",
+            "timeout": 600
+        },
+        {
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Panorama"
+            ],
+            "playbookID": "block_indicators_-_generic_-_test"
+        },
+        {
+          "integrations": "Signal Sciences WAF",
+          "playbookID": "SignalSciences Test"
+        },
+        {
+            "integrations": "RTIR",
+            "playbookID": "RTIR Test"
+        },
+        {
+            "integrations": "RedCanary",
+            "playbookID": "RedCanaryTest"
+        },
+        {
+          "integrations": "Devo",
+          "playbookID": "devo_test_playbook"
+        },
+        {
+          "integrations": "urlscan.io",
+            "playbookID": "url_enrichment_-_generic_test",
+            "timeout": 500
+        },
+        {
+            "integrations": "SCADAfence CNM",
+            "playbookID": "SCADAfence_test"
+        },
+        {
+
+            "integrations": "BigFix",
+            "playbookID": "BigFixTest"
+        },
+        {
+            "integrations": "Lastline",
+            "playbookID": "Lastline - testplaybook",
+            "nightly": true
+        },
+        {
+            "integrations": "epo",
+            "playbookID": "Test Playbook McAfee ePO"
+        },
+        {
+            "integrations": "activedir",
+            "playbookID": "calculate_severity_-_critical_assets_-_test"
+        },
+        {
+            "playbookID": "TextFromHTML_test_playbook"
+        },
+        {
+            "playbookID": "PortListenCheck-test"
+        },
+        {
+            "integrations": "ThreatExchange",
+            "playbookID": "ThreatExchange-test"
+        },
+        {
+            "integrations": "ThreatExchange",
+            "playbookID": "extract_indicators_-_generic_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "Joe Security",
+            "playbookID": "JoeSecurityTestPlaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
+            "integrations": "WildFire",
+            "playbookID": "Wildfire Test"
+        },
+        {
+            "integrations": "GRR",
+            "playbookID": "grr_test",
+            "nightly": true
+        },
+        {
+            "integrations": "RSA NetWitness Packets and Logs",
+            "playbookID": "rsa_packets_and_logs_test"
+        },
+        {
+            "integrations": "VirusTotal",
+            "playbookID": "virusTotal-test-playbook",
+            "nightly": true,
+            "timeout": 1400
+        },
+        {
+            "integrations": "Preempt",
+            "playbookID": "Preempt Test"
+        },
+        {   "integrations": "Gmail",
+            "playbookID": "get_original_email_-_gmail_-_test"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "get_original_email_-_ews-_test"
+        },
+        {
+            "integrations": "PagerDuty v2",
+            "playbookID": "PagerDuty Test"
+        },
+        {
+            "playbookID": "test_delete_context"
+        },
+        {
+            "playbookID": "GmailTest",
+            "integrations": "Gmail"
+        },
+        {
+            "playbookID": "TestParseCSV"
+        },
+        {
+            "integrations": "Shodan",
+            "playbookID": "ShodanTest"
+        },
+        {
+            "playbookID": "Extract Indicators From File - test"
+        },
+        {
+            "playbookID": "dedup_-_generic_-_test"
+        },
+        {
+            "integrations": "McAfee Advanced Threat Defense",
+            "playbookID": "Test Playbook McAfee ATD",
+            "timeout": 500
+        },
+        {
+            "playbookID": "exporttocsv_script_test"
+        },
+        {
             "integrations": "Intezer",
-            "playbookID": "Intezer Testing"
+            "playbookID": "Intezer Testing",
+            "nightly": true,
+            "timeout": 500
         },
         {
             "integrations": "FalconIntel",
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
-            "integrations": [{
-                "name": "Mail Sender (New)"
-            },{
-                "name": "google",
-                "byoi": false
-            }],
+            "integrations": [
+                "Mail Sender (New)",
+                "google"
+            ],
             "playbookID": "Mail Sender (New) Test"
         },
         {
@@ -24,7 +214,8 @@
         },
         {
             "integrations": "Rapid7 Nexpose",
-            "playbookID": "nexpose_test"
+            "playbookID": "nexpose_test",
+            "timeout": 240
         },
         {
             "integrations": "EWS Mail Sender",
@@ -50,10 +241,6 @@
             "timeout": 240
         },
         {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
-        },
-        {
             "playbookID": "Test filters & transformers scripts"
         },
         {
@@ -71,9 +258,6 @@
             "timeout": 240
         },
         {
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test"
         },
@@ -82,26 +266,11 @@
             "timeout": 300
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest"
-        },
-        {
             "integrations": "Symantec Endpoint Protection",
             "playbookID": "sep_-_test_endpoint_search"
         },
         {
-            "integrations": [
-                "AlienVault OTX",
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 500
-        },
-        {
-            "integrations": {
-                "name": "carbonblackprotection",
-                "byoi": false
-            },
+            "integrations": "carbonblackprotection",
             "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
             "timeout": 500
         },
@@ -110,38 +279,8 @@
             "timeout": 240
         },
         {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations":"Cylance Protect",
-            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
-        },
-        {
-            "integrations": {
-                "name": "activedir",
-                "byoi": false
-            },
+            "integrations": "activedir",
             "playbookID": "account_enrichment_-_generic_test"
-        },
-        {
-            "integrations": {
-                "name": "carbonblack",
-                "byoi": false
-            },
-            "playbookID": "block_endpoint_-_carbon_black_response_-_test"
         },
         {
             "integrations": "FalconHost",
@@ -150,15 +289,17 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "crowdstrike_endpoint_enrichment_-_test"
+            "playbookID": "CrowdStrike Endpoint Enrichment - Test"
         },
         {
-            "integrations": "AlienVault OTX",
+          "integrations": "FalconHost",
+          "playbookID": "crowdstrike_falconhost_test"
+        },
+        {
+            "integrations": [
+                "VirusTotal"
+            ],
             "playbookID": "ip_enrichment_generic_test"
-        },
-        {
-            "integrations": "Cylance Protect",
-            "playbookID": "endpoint_enrichment_-_generic_test"
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -172,7 +313,7 @@
             "playbookID": "Test CommonServer"
         },
         {
-            "integrations": "AlienVault OTX",
+            "integrations": "VirusTotal",
             "playbookID": "domain_enrichment_generic_test"
         },
         {
@@ -180,10 +321,7 @@
             "playbookID": "PostgreSQL Test"
         },
         {
-            "integrations": {
-                "name": "google",
-                "byoi": false
-            },
+            "integrations": "google",
             "playbookID": "GsuiteTest"
         },
         {
@@ -198,10 +336,6 @@
         {
             "integrations": "jira",
             "playbookID": "Jira-Test"
-        },
-        {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
         },
         {
             "integrations": "ipinfo",
@@ -298,33 +432,13 @@
             "playbookID": "TestExtractHTMLTables"
         },
         {
-            "integrations": [
-                {
-                    "name": "carbonblackliveresponse",
-                    "byoi": true
-                },
-                {
-                    "name": "carbonblack-v2",
-                    "byoi": true
-                }
-            ],
-            "playbookID": "CarbonBlackLiveResponseTest"
+            "integrations": "carbonblackliveresponse",
+            "playbookID": "CarbonBlackLiveResponseTest",
+            "nightly": true
         },
         {
             "playbookID": "TestSafeBreach",
             "integrations": "SafeBreach"
-        },
-        {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test"
-        },
-        {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
         },
         {
             "integrations": "urlscan.io",
@@ -356,11 +470,12 @@
             "playbookID": "DemistoLockTest"
         },
         {
-            "playbookID": "test-domain-indicator"
+            "playbookID": "test-domain-indicator",
+            "timeout": 400
         },
         {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
+            "integrations": "VirusTotal - Private API",
+            "playbookID": "virusTotalPrivateAPI-test-playbook",
             "nightly": true
         },
         {
@@ -368,13 +483,8 @@
             "playbookID": "Cybereason Test"
         },
         {
-            "integrations": "ThreatExchange",
-            "playbookID": "extract_indicators_-_generic_-_test",
-            "timeout": 240
-        },
-        {
             "integrations": "Tanium",
-            "playbookID": "Tanium Demo Playbook",
+            "playbookID": "Tanium Test Playbook",
             "nightly": true,
             "timeout": 1200
         },
@@ -382,36 +492,61 @@
             "integrations": "Recorded Future",
             "playbookID": "Recorded Future Test",
             "nightly": true
-        }
-    ],
-    "skipped": [
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Test"
+        },
+        {
+            "integrations": "RedLock",
+            "playbookID": "RedLockTest",
+            "nightly": true
+        },
+        {
+            "integrations": "Symantec Messaging Gateway",
+            "playbookID": "Symantec Messaging Gateway Test"
+        },
+        {
+            "integrations": "ThreatConnect",
+            "playbookID": "test-ThreatConnect"
+        },
+        {
+            "integrations": "VxStream",
+            "playbookID": "VxStream Test",
+            "nightly": true
+        },
+        {
+            "integrations":"Cylance Protect",
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "timeout": 240
+        },
+        {
+            "integrations": "Cylance Protect",
+            "playbookID": "endpoint_enrichment_-_generic_test"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID": "test_Qradar"
+        },
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
-        },
-        {
-            "integrations": "ThreatExchange",
-            "playbookID": "ThreatExchange-test"
         },
         {
             "integrations": "Anomali ThreatStream",
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-
             "integrations": "Farsight DNSDB",
             "playbookID": "DNSDBTest"
         },
         {
-            "integrations": {
-                "name": "carbonblack-v2",
-                "byoi": true
-            },
+            "integrations": "carbonblack-v2",
             "playbookID": "CarbonBlackResponseTest"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco-Umbrella-Test"
+            "playbookID": "Cisco Umbrella Test"
         },
         {
             "integrations": "icebrg",
@@ -421,32 +556,6 @@
         {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500
-        },
-        {
-            "playbookID": "TestParseCSV"
-        },
-        {
-            "integrations": [
-                "AlienVault OTX",
-                {
-                    "name": "activedir",
-                    "byoi": false
-                }],
-            "playbookID": "entity_enrichment_generic_test",
-            "timeout": 240
-        },
-        {
-            "integrations": [
-                "AlienVault OTX",
-                "urlscan.io"
-            ],
-            "playbookID": "url_enrichment_-_generic_test",
-            "timeout": 400
         },
         {
             "integrations": "Remedy AR",
@@ -471,23 +580,10 @@
             "nightly": true
         },
         {
-            "playbookID": "File Enrichment - Generic Test"
-        },
-        {
             "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                {
-                    "name": "carbonblackprotection",
-                    "byoi": false
-                },
-                {
-                    "name": "carbonblack",
-                    "byoi": false
-                }
+                "VirusTotal"
             ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
+            "playbookID": "File Enrichment - Generic Test"
         },
         {
             "integrations": "McAfee Threat Intelligence Exchange",
@@ -525,9 +621,134 @@
             "playbookID": "AlphaSOC-Wisdom-Test"
         },
         {
+            "integrations": "Jask",
+            "playbookID": "Jask_Test"
+        },
+        {
             "integrations": "Qualys",
             "playbookID": "Qualys-Test",
             "nightly": true
-        }
-    ]
+        },
+        {
+            "integrations": "RSA NetWitness Endpoint",
+            "playbookID": "NetWitness Endpoint Test"
+        },
+        {
+            "playbookID": "TestMatchRegex"
+        },
+        {
+            "integrations": "ActiveMQ",
+            "playbookID": "ActiveMQ Test"
+        },
+        {
+            "playbookID": "RegexGroups Test"
+        },
+        {
+            "integrations": "Cisco pxGrid ISE",
+            "playbookID": "cisco-ise-test-playbook"
+        },
+        {
+            "integrations": "Rasterize",
+            "playbookID": "RasterizeImageTest"
+        },
+        {
+            "playbookID": "ExifReadTest"
+        },
+        {
+           "playbookID": "Detonate File - Generic Test",
+           "timeout": 2000,
+           "nightly": true,
+           "integrations": [
+             "VxStream",
+             "McAfee Advanced Threat Defense",
+             "WildFire",
+             "Lastline"
+           ]
+        },
+        {
+           "playbookID": "Detonate URL - Generic Test",
+           "timeout": 2000,
+           "nightly": true,
+           "integrations": [
+             "McAfee Advanced Threat Defense",
+             "VxStream",
+             "Lastline"
+           ]
+        },
+        {
+            "playbookID": "Phishing test - attachment",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
+        },
+        {
+            "playbookID": "Phishing test - Inline",
+            "timeout": 500,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Pwned",
+                "VirusTotal - Private API",
+                "Demisto REST API"
+            ]
+        },
+        {
+            "integrations": [
+                "VirusTotal",
+                "urlscan.io",
+                "activedir"
+            ],
+            "playbookID": "entity_enrichment_generic_test",
+            "timeout": 240
+        },
+        {
+            "integrations": [
+                "FalconHost",
+                "McAfee Threat Intelligence Exchange",
+                "carbonblackprotection",
+                "carbonblack"
+            ],
+            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
+            "timeout": 500
+      },
+      {
+          "playbookID": "ReadPDFFile-Test"
+      }
+    ],
+    "skipped_tests": {
+        "blockip_test_playbook": "No Check Point FW license",
+        "File Enrichment - Generic Test": "Need to check the reason for skipping",
+        "entity_enrichment_generic_test": "Need to check the reason for skipping",
+        "search_endpoints_by_hash_-_generic_-_test": "Need to check the reason for skipping",
+        "ArcSight Logger test": "Possibly outdated API calls",
+        "Centreon-Test-Playbook": "Need to check the reason for skipping",
+        "TruSTAR Test": "Need to check the reason for skipping",
+        "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
+        "Jask_Test": "Need to check the reason for skipping",
+        "Qualys-Test": "Need to check the reason for skipping",
+        "sep_-_test_endpoint_search": "Failed test, need to fix"
+    },
+    "skipped_integrations": {
+        "Anomali ThreatStream": "Instance is down",
+        "McAfee Advanced Threat Defense": "No Credentials",
+        "Cylance Protect": "Under development",
+        "VMware": "DevOps investigation",
+        "Farsight DNSDB": "No instance",
+        "Symantec MSS": "No instance",
+        "Remedy AR": "DevOps investigation",
+        "McAfee Active Response": "DevOps investigation",
+        "McAfee Threat Intelligence Exchange": "DevOps investigation",
+        "XFE": "Need to check the reason for skipping",
+        "iDefense": "DevOps investigation",
+        "LogRhythm": "DevOps investigation",
+        "Phish.AI": "Need to check the reason for skipping",
+        "Dell Secureworks": "Instance locally installed on @liorblob PC",
+        "Service Manager": "Expired license",
+        "Signal Sciences WAF": "API problems, not returning the correct data"
+    }
 }

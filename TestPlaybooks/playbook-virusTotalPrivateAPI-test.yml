@@ -1,0 +1,315 @@
+id: virusTotalPrivateAPI-test-playbook
+version: -1
+name: virusTotalPrivateAPI-test-playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f8c1b13e-9337-429b-8c6f-8dfc4564cb49
+    type: start
+    task:
+      id: f8c1b13e-9337-429b-8c6f-8dfc4564cb49
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 69c8f1ff-1163-462e-8522-23c8fa0fc8f7
+    type: regular
+    task:
+      id: 69c8f1ff-1163-462e-8522-23c8fa0fc8f7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 1c4906bd-845b-44ff-8e61-8fb3346cbab6
+    type: title
+    task:
+      id: 1c4906bd-845b-44ff-8e61-8fb3346cbab6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 678d77fa-c30f-49b3-8878-2bcc2acfe42d
+    type: regular
+    task:
+      id: 678d77fa-c30f-49b3-8878-2bcc2acfe42d
+      version: -1
+      name: vt-get-domain-report
+      description: Retrieves a report on a given domain (including the information
+        recorded by VirusTotal's passive DNS infrastructure).
+      script: VirusTotal - Private API|||vt-private-get-domain-report
+      type: regular
+      iscommand: true
+      brand: VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 07a75f3a-5ba9-4746-85d4-7782363e4790
+    type: condition
+    task:
+      id: 07a75f3a-5ba9-4746-85d4-7782363e4790
+      version: -1
+      name: StringContains
+      description: "Checks whether substring is within string. Returns: \nyes - string
+        contains substring. \nno - string does not contain substring. \nIf stringSeperator
+        is provided, the substring will be split using the separator, and each item
+        will be checked.\nIf one of the items will be found in the string, the srcipt
+        will return yes.\n"
+      scriptName: StringContains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    scriptarguments:
+      string:
+        simple: ${Domain.VirusTotal.Whois}
+      substring:
+        simple: GOOGLE
+      substringSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 84e56fa2-fa83-4728-8cfc-ea376b1cbd4d
+    type: regular
+    task:
+      id: 84e56fa2-fa83-4728-8cfc-ea376b1cbd4d
+      version: -1
+      name: vt-get-file-report
+      description: Retrieves a concluded url scan report for a given url.
+      script: VirusTotal - Private API|||vt-private-get-file-report
+      type: regular
+      iscommand: true
+      brand: VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      allInfo: {}
+      resource:
+        simple: 65d7c8c92a2dce75ba037bb6f89258fdd5f786dfe36d0315fdb7e6f31ad78d36
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: c88db526-35d8-4990-8d66-905c4c81030e
+    type: regular
+    task:
+      id: c88db526-35d8-4990-8d66-905c4c81030e
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File.Malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: da536f91-baf0-4f69-8125-e55740657054
+    type: regular
+    task:
+      id: da536f91-baf0-4f69-8125-e55740657054
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 59c6bd0f-14ec-4ab1-80e8-a6f822b69e33
+    type: regular
+    task:
+      id: 59c6bd0f-14ec-4ab1-80e8-a6f822b69e33
+      version: -1
+      name: vt-private-get-url-report
+      description: Retrieves a concluded url scan report for a given url.
+      script: VirusTotal - Private API|||vt-private-get-url-report
+      type: regular
+      iscommand: true
+      brand: VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      allInfo: {}
+      fullResponse: {}
+      resource:
+        simple: http://En-us.secureconnection.moneytransaction.kb4.io
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: e0ee4735-adb1-469c-8801-a5c9b08d8b01
+    type: regular
+    task:
+      id: e0ee4735-adb1-469c-8801-a5c9b08d8b01
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

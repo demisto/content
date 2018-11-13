@@ -1231,4 +1231,3 @@ script:
     execution: true
   isfetch: true
 hidden: false
-releaseNotes: "Fixed as-add-entries bug. Passing entries array from context now works"

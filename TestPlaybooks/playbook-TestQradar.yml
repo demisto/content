@@ -1,0 +1,645 @@
+id: test_Qradar
+version: -1
+name: test_Qradar
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c0dbc166-d57b-4c99-8b88-c7f5a958aa02
+    type: start
+    task:
+      id: c0dbc166-d57b-4c99-8b88-c7f5a958aa02
+      version: -1
+      name: ""
+      description: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 8101ad04-30a9-4c74-83c6-444e1a20e342
+    type: regular
+    task:
+      id: 8101ad04-30a9-4c74-83c6-444e1a20e342
+      version: -1
+      name: qradar-get-assets
+      description: execute command qradar-get-assets
+      script: QRadar|||qradar-get-assets
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      fields: {}
+      filter: {}
+      headers: {}
+      range:
+        simple: 0-0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: b5b534ec-ea5e-4943-8bb8-0fbe09c37433
+    type: regular
+    task:
+      id: b5b534ec-ea5e-4943-8bb8-0fbe09c37433
+      version: -1
+      name: qradar-create-note in existing offense
+      description: execute command qradar-create-note
+      script: QRadar|||qradar-create-note
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      fields: {}
+      headers: {}
+      note_text:
+        simple: This is a test note created in the test playbook
+      offense_id:
+        simple: ${QRadar.Offense.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 10d78c03-c51b-4dd0-848c-018671c5babe
+    type: regular
+    task:
+      id: 10d78c03-c51b-4dd0-848c-018671c5babe
+      version: -1
+      name: qradar-get-note
+      description: execute command qradar-get-note
+      script: QRadar|||qradar-get-note
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      fields: {}
+      headers: {}
+      note_id:
+        simple: ${QRadar.Note.ID}
+      offense_id:
+        simple: ${QRadar.Offense.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: fdcce115-e7be-47e2-8840-3ea39490da33
+    type: regular
+    task:
+      id: fdcce115-e7be-47e2-8840-3ea39490da33
+      version: -1
+      name: qradar-offenses
+      description: execute command qradar-offenses
+      script: QRadar|||qradar-offenses
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "2"
+      - "11"
+    scriptarguments:
+      fields: {}
+      filter: {}
+      headers: {}
+      range:
+        simple: 0-0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 991ec076-550f-41a0-8571-88902333616d
+    type: regular
+    task:
+      id: 991ec076-550f-41a0-8571-88902333616d
+      version: -1
+      name: qradar-offense-by-id
+      description: execute command qradar-offense-by-id
+      script: QRadar|||qradar-offense-by-id
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      fields: {}
+      filter: {}
+      headers: {}
+      offense_id:
+        simple: ${QRadar.Offense.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 2753b340-0569-40c5-8e30-380406c33b36
+    type: condition
+    task:
+      id: 2753b340-0569-40c5-8e30-380406c33b36
+      version: -1
+      name: Verify offense credibility exists
+      description: Verifies offense credibility exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: QRadar.Offense.Protected
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: ea19e56f-2665-429e-8502-3eb20cf29334
+    type: regular
+    task:
+      id: ea19e56f-2665-429e-8502-3eb20cf29334
+      version: -1
+      name: Set offense protected to false (qradar-update-offense)
+      description: execute command qradar-update-offense
+      script: QRadar|||qradar-update-offense
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      assigned_to: {}
+      closing_reason_name: {}
+      fields: {}
+      follow_up: {}
+      headers: {}
+      offense_id:
+        simple: ${QRadar.Offense.ID}
+      protected:
+        simple: "false"
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 522a7ff5-d152-4a5b-8e62-23c51ca7d4be
+    type: condition
+    task:
+      id: 522a7ff5-d152-4a5b-8e62-23c51ca7d4be
+      version: -1
+      name: Verify protected was set to false
+      description: Verifies protected was set to false
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: QRadar.Offense.Protected
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 75a3b77a-9902-4b7f-8b7a-cec01070ae80
+    type: regular
+    task:
+      id: 75a3b77a-9902-4b7f-8b7a-cec01070ae80
+      version: -1
+      name: Set offense protected to true (qradar-update-offense)
+      description: execute command qradar-update-offense
+      script: QRadar|||qradar-update-offense
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      assigned_to: {}
+      closing_reason_name: {}
+      fields: {}
+      follow_up: {}
+      headers: {}
+      offense_id:
+        simple: ${QRadar.Offense.ID}
+      protected:
+        simple: "true"
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: cf49e05b-309c-4d7d-8380-7e4bf8726de9
+    type: condition
+    task:
+      id: cf49e05b-309c-4d7d-8380-7e4bf8726de9
+      version: -1
+      name: Verify protected was set to true
+      description: Verifies protected was set to true
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: QRadar.Offense.Protected
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 3b120d6a-29c8-425b-8a16-205701b06d29
+    type: title
+    task:
+      id: 3b120d6a-29c8-425b-8a16-205701b06d29
+      version: -1
+      name: Offense test was completed successfully
+      description: Offense test end
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: c891a857-96d7-450c-8a50-a601bc9dcc05
+    type: title
+    task:
+      id: c891a857-96d7-450c-8a50-a601bc9dcc05
+      version: -1
+      name: Offense test was completed successfully
+      description: Offense test end
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 2082b7a2-e8cf-490b-87de-fd3b9e7447bb
+    type: condition
+    task:
+      id: 2082b7a2-e8cf-490b-87de-fd3b9e7447bb
+      version: -1
+      name: Verify note text matches
+      description: Verifies note text matches request
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.Note.Text
+            iscontext: true
+          right:
+            value:
+              simple: This is a test note created in the test playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 3bc580e4-ca4a-416f-829c-89841c3a0e1f
+    type: title
+    task:
+      id: 3bc580e4-ca4a-416f-829c-89841c3a0e1f
+      version: -1
+      name: Notes test was completed successfully
+      description: Notes test end
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1085
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: 910f74d0-034f-47c0-816a-c324e7c1ed17
+    type: regular
+    task:
+      id: 910f74d0-034f-47c0-816a-c324e7c1ed17
+      version: -1
+      name: qradar-get-asset-by-id
+      description: execute command qradar-get-asset-by-id
+      script: QRadar|||qradar-get-asset-by-id
+      type: regular
+      iscommand: true
+      brand: QRadar
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      asset_id:
+        simple: ${QRadar.Asset.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 8647dc21-ed92-4303-8c07-b273c4ddfe95
+    type: condition
+    task:
+      id: 8647dc21-ed92-4303-8c07-b273c4ddfe95
+      version: -1
+      name: Verify MACAddress was pulled successfully
+      description: Verifies MACAddress was pulled successfully
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Endpoint.MACAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: c1cd010c-f88f-46ec-89ca-22d608be0cb8
+    type: title
+    task:
+      id: c1cd010c-f88f-46ec-89ca-22d608be0cb8
+      version: -1
+      name: Assets test was completed successfully
+      description: Assets test end
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 910
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: 0311388e-af21-4a5a-8985-c2adb095a046
+    type: title
+    task:
+      id: 0311388e-af21-4a5a-8985-c2adb095a046
+      version: -1
+      name: Search test was completed successfully
+      description: Search test end
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 560
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: 3a3c5337-f3c3-4bc5-876c-9f0856486d10
+    type: regular
+    task:
+      id: 3a3c5337-f3c3-4bc5-876c-9f0856486d10
+      version: -1
+      name: Delete All Context
+      description: Deletes all the context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "1"
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 45630794-c024-4d7f-849e-d274660cdba2
+    type: playbook
+    task:
+      id: 45630794-c024-4d7f-849e-d274660cdba2
+      version: -1
+      name: QRadarFullSearch
+      description: Use QRadarFullSearch to initiate a search and get the results
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: "1"
+      query_expression:
+        simple: SELECT DOMAINNAME(1) AS 'Domain name' FROM events GROUP BY 'Domain
+          name'
+      range: {}
+      timeout:
+        simple: "60"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - Forgive me for my sins but I did not create any test
