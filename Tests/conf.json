@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Mimecast",
+            "playbookID": "Mimecast test"
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
         },
