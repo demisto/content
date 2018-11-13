@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Mimecast",
+            "integrations": "MimecastV2",
             "playbookID": "Mimecast test"
         },
         {
