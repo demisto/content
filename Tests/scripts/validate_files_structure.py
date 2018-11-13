@@ -176,7 +176,7 @@ def validate_schema(file_path, matching_regex=None):
 
 def changed_id(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    if re.search("\+id: .*", change_string) or re.search("\-id: .*", change_string):
+    if re.search("[+-]( )?id: .*", change_string):
         print_error("You've changed the ID of the file {0} please undo.".format(file_path))
         return True
 
@@ -187,15 +187,6 @@ def is_added_required_fields(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
     if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or re.search("\-  name: .*\n.*\n.*\n-  required: true", change_string) or re.search("\+  required: true", change_string):
         print_error("You've changed the required fields in the integration file {}".format(file_path))
-        return True
-
-    return False
-
-
-def changed_integration_id(file_path):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    if re.search("\+  id: .*", change_string) or re.search("\-  id: .*", change_string):
-        print_error("You've changed the ID of the file {0} please undo.".format(file_path))
         return True
 
     return False
@@ -275,7 +266,7 @@ def validate_committed_files(branch_name):
             if changed_id(file_path):
                 is_changed_id = True
         if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            if changed_integration_id(file_path):
+            if changed_id(file_path):
                 is_changed_id = True
             if is_added_required_fields(file_path):
                 added_required_fields = True
@@ -339,14 +330,14 @@ def validate_all_files():
                     print_error("file " + file_path + " schema is wrong.")
                     wrong_schema = True
                 if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-                    id = get_script_or_integration_id(file_path)
-                    if id in id_list:
-                        print_error("ID {0} has appeared more than once, look at the file {1}".format(id, file_path))
+                    _id = get_script_or_integration_id(file_path)
+                    if _id in id_list:
+                        print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
                         duplicated_id = True
                 if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
-                    id = collect_ids(file_path)
-                    if id in id_list:
-                        print_error("ID {0} has appeared more than once, look at the file {1}".format(id, file_path))
+                    _id = collect_ids(file_path)
+                    if _id in id_list:
+                        print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
                         duplicated_id = True
 
     if wrong_schema or found_wrong_name or duplicated_id:
