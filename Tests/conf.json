@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io test"
+        },
+        {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io Scan Test",
+          "nightly": true,
+          "timeout": 500
+        },
+        {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
             "timeout": 500
@@ -39,6 +49,11 @@
         {
             "integrations": "BitDam",
             "playbookID": "Detonate File - BitDam Test"
+        },
+        {
+            "integrations": "Threat Grid",
+            "playbookID": "ThreatGridTest",
+            "timeout": 600
         },
         {
             "integrations": [
@@ -631,6 +646,10 @@
         {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
+        },
+        {
+            "integrations": "Rasterize",
+            "playbookID": "RasterizeImageTest"
         },
         {
             "playbookID": "ExifReadTest"
