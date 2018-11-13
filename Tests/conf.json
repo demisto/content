@@ -417,10 +417,6 @@
             "playbookID": "ExtractDomainTest"
         },
         {
-            "playbookID": "Detonate File - Generic Test",
-            "timeout": 500
-        },
-        {
             "playbookID": "Test-IsMaliciousIndicatorFound"
         },
         {
