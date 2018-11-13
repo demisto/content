@@ -515,7 +515,9 @@ script:
     """COMMAND FUNCTIONS"""
     try:
         if demisto.command() == 'test-module':
-            r = requests.get('https://urlscan.io/api/v1/search/')
+            search_type = 'ip'
+            query = '8.8.8.8'
+            urlscan_search(search_type, query)
             demisto.results('ok')
         if demisto.command() in {'urlscan-submit', 'url'}:
             urlscan_submit_command()
