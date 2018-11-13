@@ -113,10 +113,15 @@ script:
             to_recipients=to,
             reply_to=reply_to
         )
-        m.save()
-        for attachment in attachments:
-            m.attach(attachment)
-        m.send()
+        if account.protocol.version.build <= EXCHANGE_2010_SP2:
+            m.save()
+            for attachment in attachments:
+                m.attach(attachment)
+            m.send()
+        else:
+            for attachment in attachments:
+                m.attach(attachment)
+            m.send_and_save()
         return m
 
 
