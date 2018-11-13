@@ -410,6 +410,11 @@ script:
 
         # Opening empty string for url comparison
         last_url = ''
+        hr_md = []
+        cont_array = []
+        ip_array = []
+        dom_array = []
+        url_array = []
 
         for res in r['results'][:LIMIT]:
             ec = makehash()
@@ -427,6 +432,7 @@ script:
                 continue
 
             human_readable = makehash()
+
             if 'url' in res_tasks:
                 url = res_tasks['url']
                 human_readable['URL'] = url
@@ -476,22 +482,32 @@ script:
                 cont['FileType'] = filetype
                 file_context['File']['Type'] = filetype
                 file_context['File']['Hostname'] = url
-            ec = {
-                'URLScan(val.URL && val.URL == obj.URL)': cont,
-                'URL': url_cont,
-                'IP': ip_cont,
-                'Domain': dom_cont
-            }
+
+
+
             ec[outputPaths['file']]=file_context
+            hr_md.append(human_readable)
+            cont_array.append(cont)
+            ip_array.append(ip_cont)
+            url_array.append(url_cont)
+            dom_array.append(dom_cont)
+            # demisto.results({'EntryContext':ec})
+
             # Storing last url in memory for comparison on next loop
             last_url = url
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['markdown'],
-                'Contents': r,
-                'HumanReadable': tableToMarkdown('URLScan.io query results for {}'.format(raw_query), human_readable, HUMAN_READBALE_HEADERS, removeNull=True),
-                'EntryContext': ec
+        ec = ({
+                'URLScan(val.URL && val.URL == obj.URL)': cont_array,
+                'URL': url_array,
+                'IP': ip_array,
+                'Domain': dom_array
             })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': r,
+            'HumanReadable': tableToMarkdown('URLScan.io query results for {}'.format(raw_query), hr_md, HUMAN_READBALE_HEADERS, removeNull=True),
+            'EntryContext': ec
+        })
 
 
 
@@ -524,24 +540,34 @@ script:
     outputs:
     - contextPath: URLScan.URL
       description: Bad URLs found
+      type: string
     - contextPath: URLScan.Domain
       description: Domain of the url scanned
+      type: string
     - contextPath: URLScan.ASN
       description: ASN of the URL scanned
+      type: string
     - contextPath: URLScan.IP
       description: IP of the url scanned
+      type: string
     - contextPath: URLScan.ScanID
       description: Scan ID for the URL scanned
+      type: string
     - contextPath: URLScan.ScanDate
       description: Latest scan date for the URL
+      type: string
     - contextPath: URLScan.Hash
       description: SHA256 of file scanned
+      type: string
     - contextPath: URLScan.FileName
       description: Filename of the file scanned
+      type: string
     - contextPath: URLScan.FileSize
       description: File size of the file scanned
+      type: number
     - contextPath: URLScan.FileType
       description: File type of the file scanned
+      type: string
     description: Search for an indicator that is related to former urlscan.io scans.
   - name: urlscan-submit
     arguments:
@@ -565,48 +591,70 @@ script:
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
+      type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
+      type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
     - contextPath: URLScan.URLs
       description: Related URLs found from scanned URL
+      type: string
     - contextPath: URLScan.RelatedIPs
       description: Related IPs found for the URL scanned
+      type: string
     - contextPath: URLScan.RelatedASNs
       description: Related ASNs found for the URL scanned
+      type: string
     - contextPath: URLScan.Countries
       description: Associated countries for the URL scanned
-    - contextPath: URLScan.iocs
-      description: iocs found for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedHash
+      description: Related hashes found for the URL scanned
+      type: string
     - contextPath: URLScan.Subdomains
       description: Associated subdomains for the url scanned
+      type: string
     - contextPath: URLScan.ASN
       description: ASN of the URL scanned
+      type: string
     - contextPath: URLScan.Data
       description: URL of the file found
+      type: string
     - contextPath: URLScan.Malicious.Vendor
       description: Vendor reporting the malicious indicator for the file
+      type: string
     - contextPath: URLScan.Malicious.Description
       description: Description of the malicious indicator
+      type: string
     - contextPath: URLScan.File.Hash
       description: SHA256 of file found
+      type: string
     - contextPath: URLScan.File.FileName
       description: File name of file found
+      type: string
     - contextPath: URLScan.File.FileType
       description: File type of the file found
+      type: string
     - contextPath: URLScan.File.Hostname
       description: URL where the file was found
+      type: string
     - contextPath: URLScan.Certificates
       description: Certificates found for the URL scanned
+      type: string
     - contextPath: DBotScore.Score
       description: Score retrieved for Dbot
+      type: number
     - contextPath: DBotScore.Type
       description: Type of indicator tested for
+      type: string
     - contextPath: DBotScore.Vendor
       description: Vendor who provided DBot Score
+      type: string
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
+      type: string
     description: Submit a url to scan
   - name: url
     arguments:
@@ -629,48 +677,70 @@ script:
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
+      type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
+      type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
     - contextPath: URLScan.URLs
       description: Related URLs found from scanned URL
+      type: string
     - contextPath: URLScan.RelatedIPs
       description: Related IPs found for the URL scanned
+      type: string
     - contextPath: URLScan.RelatedASNs
       description: Related ASNs found for the URL scanned
+      type: string
     - contextPath: URLScan.Countries
       description: Associated countries for the URL scanned
-    - contextPath: URLScan.iocs
-      description: iocs found for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedHash
+      description: Related hashes found for the URL scanned
+      type: string
     - contextPath: URLScan.Subdomains
       description: Associated subdomains for the url scanned
+      type: string
     - contextPath: URLScan.ASN
       description: ASN of the URL scanned
+      type: string
     - contextPath: URLScan.Data
       description: URL of the file found
+      type: string
     - contextPath: URLScan.Malicious.Vendor
       description: Vendor reporting the malicious indicator for the file
+      type: string
     - contextPath: URLScan.Malicious.Description
       description: Description of the malicious indicator
+      type: string
     - contextPath: URLScan.File.Hash
       description: SHA256 of file found
+      type: string
     - contextPath: URLScan.File.FileName
       description: File name of file found
+      type: string
     - contextPath: URLScan.File.FileType
       description: File type of the file found
+      type: string
     - contextPath: URLScan.File.Hostname
       description: URL where the file was found
+      type: string
     - contextPath: URLScan.Certificates
       description: Certificates found for the URL scanned
+      type: string
     - contextPath: DBotScore.Score
       description: Score retrieved for Dbot
+      type: string
     - contextPath: DBotScore.Type
       description: Type of indicator tested for
+      type: string
     - contextPath: DBotScore.Vendor
       description: Vendor who provided DBot Score
+      type: string
     - contextPath: DBotScore.Indicator
       description: Indicator URLScan tested for
+      type: string
     description: Submit a url to scan
   runonce: false
 releaseNotes: Deprecated ip and file commands. Reformatted context outputs.
