@@ -629,6 +629,10 @@
             "playbookID": "NetWitness Endpoint Test"
         },
         {
+            "integrations": "Check Point Sandblast",
+            "playbookID": "Sandblast malicious test"
+        },
+        {
             "playbookID": "TestMatchRegex"
         },
         {
