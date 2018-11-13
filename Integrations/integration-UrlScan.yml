@@ -486,7 +486,6 @@ script:
             ip_array.append(ip_cont)
             url_array.append(url_cont)
             dom_array.append(dom_cont)
-            # demisto.results({'EntryContext':ec})
 
             # Storing last url in memory for comparison on next loop
             last_url = url
