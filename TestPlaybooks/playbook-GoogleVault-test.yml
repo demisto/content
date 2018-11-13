@@ -1,0 +1,836 @@
+id: Google-Vault-Generic-Test
+version: -1
+name: Google Vault Generic Test
+description: This is a test for the Google Vault integration. It calls a variety of
+  commands of the integration. If the whole playbook succeeds, then the integration
+  is working correctly.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1f1920e2-c9be-45d7-88fd-39f7a8493da1
+    type: start
+    task:
+      id: 1f1920e2-c9be-45d7-88fd-39f7a8493da1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 3c217843-5c83-4e85-8be5-345f2c6fbee6
+    type: regular
+    task:
+      id: 3c217843-5c83-4e85-8be5-345f2c6fbee6
+      version: -1
+      name: Create matter "playbook test matter 1"
+      description: Creates a new matter with the given name and description. The initial
+        state is open, and the owner is the method caller. First, checks if a matter
+        with the same name already exists.
+      script: '|||gvault-create-matter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      description:
+        simple: wow
+      name:
+        simple: playbook test matter 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 2d344bd8-7865-4bec-8a08-00524c16975c
+    type: regular
+    task:
+      id: 2d344bd8-7865-4bec-8a08-00524c16975c
+      version: -1
+      name: Verify matter name
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue:
+        simple: playbook test matter 1
+      fields: {}
+      path:
+        simple: GoogleVault.Matter.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 7b31493d-3b74-49c7-8cf9-fd8df776e1fc
+    type: regular
+    task:
+      id: 7b31493d-3b74-49c7-8cf9-fd8df776e1fc
+      version: -1
+      name: Verify matter ID
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: GoogleVault.Matter.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 83aa024a-6b9f-4f9e-8f93-6ae937cade7f
+    type: regular
+    task:
+      id: 83aa024a-6b9f-4f9e-8f93-6ae937cade7f
+      version: -1
+      name: Get matter "playbook test matter 1"
+      description: Checks if we can get the matter information of the matter that
+        was previously created.
+      script: '|||gvault-get-matter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      matterID: {}
+      matterName:
+        simple: playbook test matter 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 727edf0d-5056-4d39-8b53-29b0cbc07424
+    type: regular
+    task:
+      id: 727edf0d-5056-4d39-8b53-29b0cbc07424
+      version: -1
+      name: Delete Context
+      description: Deletes the current context to prevent interference of previous
+        data with the rest of the playbook.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: b4672c2c-cfcd-4871-873b-466ce4ddd807
+    type: regular
+    task:
+      id: b4672c2c-cfcd-4871-873b-466ce4ddd807
+      version: -1
+      name: Delete Context
+      description: Deletes the current context to prevent interference of old remaining
+        data from failing the playbook. You can ignore this part, as it is only a
+        preventative measure for technical purposes.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 0347e0b9-fc3c-4277-8df2-b6783c97891f
+    type: regular
+    task:
+      id: 0347e0b9-fc3c-4277-8df2-b6783c97891f
+      version: -1
+      name: Delete Context
+      description: Deleting context so that we can get an updated list of matters
+        later
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1085
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 202eec1f-b501-4150-8b9d-f5ab182154d1
+    type: regular
+    task:
+      id: 202eec1f-b501-4150-8b9d-f5ab182154d1
+      version: -1
+      name: Get "test10" Matter
+      description: ""
+      script: '|||gvault-get-matter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      matterID: {}
+      matterName:
+        simple: test10
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": 1310
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 48fb255d-792a-4e2e-84d6-8369025b23ef
+    type: regular
+    task:
+      id: 48fb255d-792a-4e2e-84d6-8369025b23ef
+      version: -1
+      name: Create Hold For Account ID 116238185592796178843
+      description: ""
+      script: '|||gvault-create-hold'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      account: {}
+      accountID:
+        simple: "116238185592796178843"
+      corpus:
+        simple: Mail
+      endTime: {}
+      holdName:
+        simple: Test Playbook Hold 1
+      matterID:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+      startTime: {}
+      terms: {}
+      timeFrame: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": 1520
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 09969a90-c691-453d-899c-93a2a1b46492
+    type: regular
+    task:
+      id: 09969a90-c691-453d-899c-93a2a1b46492
+      version: -1
+      name: Add Held Account 101966936162112532972
+      description: ""
+      script: '|||gvault-add-heldAccount'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "18"
+    scriptarguments:
+      account: {}
+      accountID:
+        simple: "101966936162112532972"
+      holdID:
+        simple: ${GoogleVault.Hold.ID}
+      matterID:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": 1695
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 385e8e11-1ada-462b-8212-e6185eb17d81
+    type: regular
+    task:
+      id: 385e8e11-1ada-462b-8212-e6185eb17d81
+      version: -1
+      name: 'Remove Held Account'
+      description: ""
+      script: '|||gvault-remove-heldAccount'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      account: {}
+      accountID:
+        simple: "116238185592796178843"
+      holdID:
+        simple: ${GoogleVault.Hold.ID}
+      matterID:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1870
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: e06fa52a-c99c-4a10-8c9d-8d3511659a5d
+    type: regular
+    task:
+      id: e06fa52a-c99c-4a10-8c9d-8d3511659a5d
+      version: -1
+      name: 'Remove Held Account '
+      script: '|||gvault-remove-heldAccount'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      account: {}
+      accountID:
+        simple: "101966936162112532972"
+      holdID:
+        simple: ${GoogleVault.Hold.ID}
+      matterID:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1870
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: e98c23f9-9256-43b2-82c8-a7c066bec196
+    type: regular
+    task:
+      id: e98c23f9-9256-43b2-82c8-a7c066bec196
+      version: -1
+      name: Delete Hold
+      script: '|||gvault-delete-hold'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      holdID:
+        simple: ${GoogleVault.Hold.ID}
+      matterID:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": 2045
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: c726947c-5d87-43d1-8d91-e5e1c27d3ea4
+    type: regular
+    task:
+      id: c726947c-5d87-43d1-8d91-e5e1c27d3ea4
+      version: -1
+      name: Create mail export
+      description: Creates a Google Vault Export in order to perform search actions
+        on emails.
+      script: '|||gvault-create-export-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      IncludeDrafts: {}
+      corpus: {}
+      dataScope:
+        simple: All Data
+      emails:
+        simple: test@demistodev.com,maya@demistodev.com
+      endTime: {}
+      exportMBOX: {}
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: mail
+              suffix:
+                iscontext: true
+      exportPST:
+        simple: "true"
+      includeDrafts:
+        simple: "false"
+      matterID:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+      matterName: {}
+      ou: {}
+      searchMethod:
+        simple: Specific Accounts(requires emails argument)
+      startTime: {}
+      terms:
+        simple: subject:*a
+      timeFrame:
+        simple: 7 days ago
+      timeZone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 2040
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: a964ca2e-5b7b-4bf8-8306-2dd4de0c33c4
+    type: regular
+    task:
+      id: a964ca2e-5b7b-4bf8-8306-2dd4de0c33c4
+      version: -1
+      name: Get Export Status
+      description: ""
+      script: '|||gvault-export-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      exportID:
+        simple: ${GoogleVault.Export.ID}
+      matterId:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 2220
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: 799c4adf-bd28-44ba-8ede-6dc0f5acf2f2
+    type: title
+    task:
+      id: 799c4adf-bd28-44ba-8ede-6dc0f5acf2f2
+      version: -1
+      name: Create Exports
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1250
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: ad4d18c3-ebbc-4519-83d7-60c693fea1b9
+    type: regular
+    task:
+      id: ad4d18c3-ebbc-4519-83d7-60c693fea1b9
+      version: -1
+      name: GeneratePassword
+      description: "This function generates a password and allows various parameters
+        to customize the properties of the password depending on the use case (e.g.
+        password complexity requirements).  The default behavior is to generate a
+        password of  *random length* including all four character classes (upper,
+        lower, digits, symbols) with at least five and at most ten characters per
+        class. \n\nThe min_* values all default to 0. This means that if the command
+        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
+        a password of length zero could be generated. It is therefore recommended
+        to always include a min_* parameter that matches. \n\nThe debug parameter
+        will print certain properties of the command into the WarRoom for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "8"
+      max_lcase:
+        simple: "2"
+      max_symbols:
+        simple: "0"
+      max_ucase:
+        simple: "2"
+      min_digits:
+        simple: "5"
+      min_lcase:
+        simple: "2"
+      min_symbols: {}
+      min_ucase:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1380
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 25f9a81a-7073-40f2-8a4b-d26aebb337f9
+    type: regular
+    task:
+      id: 25f9a81a-7073-40f2-8a4b-d26aebb337f9
+      version: -1
+      name: Create groups export
+      description: Creates a Google Vault Export in order to perform search actions
+        on emails.
+      script: '|||gvault-create-export-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      corpus: {}
+      dataScope:
+        simple: All Data
+      endTime: {}
+      exportMBOX: {}
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: groups
+              suffix:
+                iscontext: true
+      exportPST:
+        simple: "true"
+      groups:
+        simple: maya-group-test@demistodev.com,ido-group-test@demistodev.com
+      matterID:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+      matterName: {}
+      startTime: {}
+      terms:
+        simple: subject:*c
+      timeFrame:
+        simple: 7 days ago
+      timeZone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1820
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: f2a67df4-9641-43a8-842d-f29c6f66bcaf
+    type: regular
+    task:
+      id: f2a67df4-9641-43a8-842d-f29c6f66bcaf
+      version: -1
+      name: Create drive export
+      description: Creates a Google Vault Export in order to perform search actions
+        on emails.
+      script: '|||gvault-create-export-drive'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      corpus: {}
+      dataScope:
+        simple: All Data
+      emails:
+        simple: test@demistodev.com,maya@demistodev.com
+      endTime: {}
+      exportName:
+        complex:
+          root: NEW_PASSWORD
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: drive
+              suffix:
+                iscontext: true
+      includeTeamDrives:
+        simple: "false"
+      matterID:
+        simple: 0bebe0ec-ee41-4955-96b3-20d9408409c8
+      matterName: {}
+      ou: {}
+      searchMethod:
+        simple: Team Drive
+      startTime: {}
+      teamDrive:
+        simple: 0ANbMMsaWJNw2Uk9PVA,0AOM4L2G2JU4NUk9PVA
+      terms:
+        simple: subject:*a
+      timeFrame:
+        simple: 7 days ago
+      timeZone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1560
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: 32618085-6531-4485-88aa-bc0560d378fd
+    type: regular
+    task:
+      id: 32618085-6531-4485-88aa-bc0560d378fd
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      seconds:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -770,
+          "y": 1690
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: 84e06aad-5862-48e6-8776-d08d76df8ba1
+    type: regular
+    task:
+      id: 84e06aad-5862-48e6-8776-d08d76df8ba1
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      seconds:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 1930
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: e04909d3-eee7-4cf5-80b4-8cef73ae4897
+    type: regular
+    task:
+      id: e04909d3-eee7-4cf5-80b4-8cef73ae4897
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      seconds:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 1450
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2265,
+        "width": 1700,
+        "x": -770,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

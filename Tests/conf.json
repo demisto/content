@@ -3,6 +3,29 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MimecastV2",
+            "playbookID": "Mimecast test"
+        },
+        {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io test"
+        },
+        {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io Scan Test",
+          "nightly": true,
+          "timeout": 500
+        },
+        {
+            "integrations": "google-vault",
+            "playbookID": "Google-Vault-Generic-Test",
+            "timeout": 500
+        },
+        {
+            "playbookID": "Luminate-TestPlaybook",
+            "integrations": "Luminate"
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -32,6 +55,11 @@
             "playbookID": "Detonate File - BitDam Test"
         },
         {
+            "integrations": "Threat Grid",
+            "playbookID": "ThreatGridTest",
+            "timeout": 600
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -55,10 +83,7 @@
           "playbookID": "devo_test_playbook"
         },
         {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io"
-            ],
+          "integrations": "urlscan.io",
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
         },
@@ -272,8 +297,7 @@
         },
         {
             "integrations": [
-                "VirusTotal",
-                "urlscan.io"
+                "VirusTotal"
             ],
             "playbookID": "ip_enrichment_generic_test"
         },
@@ -624,6 +648,10 @@
             "playbookID": "cisco-ise-test-playbook"
         },
         {
+            "integrations": "Rasterize",
+            "playbookID": "RasterizeImageTest"
+        },
+        {
             "playbookID": "ExifReadTest"
         },
         {
@@ -687,6 +715,9 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
+      },
+      {
+          "playbookID": "ReadPDFFile-Test"
       }
     ],
     "skipped_tests": {
@@ -700,8 +731,7 @@
         "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "Cylance Protect v2 Test": "Currently being updated"
+        "sep_-_test_endpoint_search": "Failed test, need to fix"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
@@ -718,6 +748,7 @@
         "LogRhythm": "DevOps investigation",
         "Phish.AI": "Need to check the reason for skipping",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "Service Manager": "Expired license"
+        "Service Manager": "Expired license",
+        "Signal Sciences WAF": "API problems, not returning the correct data"
     }
 }
