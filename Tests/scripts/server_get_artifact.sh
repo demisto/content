@@ -13,6 +13,7 @@ for i in `seq 0 9`; do
     fi
 done
 
+ARTIFACT_BUILD_NUM="32097"
 if [[ "$ARTIFACT_BUILD_NUM" = "" ]]; then
     echo "couldn't find successful build"
     exit 1
