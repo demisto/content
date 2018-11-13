@@ -35,10 +35,10 @@ tasks:
         Point Threat Prevention modules scan and analyze a file. When you upload a
         file to the service, the file is encrypted. It is un-encrypted during analysis,
         and then deleted
-      script: Check Point Sandblast 2|||sandblast-upload
+      script: Check Point Sandblast |||sandblast-upload
       type: regular
       iscommand: true
-      brand: Check Point Sandblast 2
+      brand: Check Point Sandblast
     nexttasks:
       '#none#':
       - "4"
@@ -71,10 +71,10 @@ tasks:
       description: Use the Query API to have a client application look for either
         the analysis report of a specific file on the Check Point Threat Prevention
         service databases or the status of a file, uploaded for analysis
-      script: Check Point Sandblast 2|||sandblast-query
+      script: Check Point Sandblast |||sandblast-query
       type: regular
       iscommand: true
-      brand: Check Point Sandblast 2
+      brand: Check Point Sandblast
     nexttasks:
       '#none#':
       - "6"
