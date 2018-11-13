@@ -237,7 +237,7 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      Input:
+      input:
         simple: |-
           [
               {
