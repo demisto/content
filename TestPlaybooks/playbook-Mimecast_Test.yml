@@ -1,0 +1,531 @@
+id: Mimecast test
+version: -1
+name: Mimecast test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 53c03dbc-cda0-47de-843b-8aac5b80ec7e
+    type: start
+    task:
+      id: 53c03dbc-cda0-47de-843b-8aac5b80ec7e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: febc11e8-8d41-450c-8b8e-e0da51165b31
+    type: regular
+    task:
+      id: febc11e8-8d41-450c-8b8e-e0da51165b31
+      version: -1
+      name: mimecast-list-blocked-sender-policies
+      script: '|||mimecast-list-blocked-sender-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: c3e44f9c-6637-40fe-8850-762d6a2b93f7
+    type: regular
+    task:
+      id: c3e44f9c-6637-40fe-8850-762d6a2b93f7
+      version: -1
+      name: mimecast-create-policy
+      script: '|||mimecast-create-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      description:
+        simple: test policy
+      fromPart:
+        simple: both
+      fromType:
+        simple: internal_addresses
+      fromValue:
+        simple: google.com
+      option:
+        simple: no_action
+      toType:
+        simple: internal_addresses
+      toValue:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 97099010-bc08-474e-827b-351d91df97be
+    type: regular
+    task:
+      id: 97099010-bc08-474e-827b-351d91df97be
+      version: -1
+      name: mimecast-delete-policy
+      script: '|||mimecast-delete-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.Policy.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: d4627d42-a711-402d-8a44-e038968ae77b
+    type: regular
+    task:
+      id: d4627d42-a711-402d-8a44-e038968ae77b
+      version: -1
+      name: mimecast-get-policy
+      script: '|||mimecast-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      policyID:
+        simple: ${Mimecast.Policy.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 2527f658-920f-45ec-84e3-497363e82678
+    type: regular
+    task:
+      id: 2527f658-920f-45ec-84e3-497363e82678
+      version: -1
+      name: mimecast-query
+      script: '|||mimecast-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      active: {}
+      attachmentText: {}
+      attachmentType: {}
+      body: {}
+      date: {}
+      dateFrom: {}
+      dateTo: {}
+      dryRun: {}
+      pageSize: {}
+      queryXml: {}
+      sentFrom: {}
+      sentTo: {}
+      startRow: {}
+      subject: {}
+      text: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 2f91d896-530d-44a7-8fa3-51cd769a0f9e
+    type: regular
+    task:
+      id: 2f91d896-530d-44a7-8fa3-51cd769a0f9e
+      version: -1
+      name: mimecast-url-decode
+      script: '|||mimecast-url-decode'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      url:
+        simple: https://sandbox-api.mimecast.com/s/tfS6Czmwni3uXGu3a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 5136dd13-f016-4d11-8f8b-e6f400e2af47
+    type: regular
+    task:
+      id: 5136dd13-f016-4d11-8f8b-e6f400e2af47
+      version: -1
+      name: mimecast-manage-sender
+      script: '|||mimecast-manage-sender'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action:
+        simple: permit
+      recipient:
+        simple: mimecast@demistolab.com
+      sender:
+        simple: yarden@demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 0a732821-a832-4a0e-862f-d463e403e195
+    type: regular
+    task:
+      id: 0a732821-a832-4a0e-862f-d463e403e195
+      version: -1
+      name: 'mimecast-create-managed-url '
+      script: '|||mimecast-create-managed-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      action:
+        simple: permit
+      comment: {}
+      disableLogClick: {}
+      disableRewrite: {}
+      disableUserAwareness: {}
+      matchType: {}
+      url:
+        simple: https://www.google.com/wtf777
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: cda1b9c0-6851-4d78-847b-5d754941d0c9
+    type: regular
+    task:
+      id: cda1b9c0-6851-4d78-847b-5d754941d0c9
+      version: -1
+      name: mimecast-list-managed-url
+      script: '|||mimecast-list-managed-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      url:
+        simple: https://www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 030d7df9-ee40-4805-852d-1982a5f8a80e
+    type: regular
+    task:
+      id: 030d7df9-ee40-4805-852d-1982a5f8a80e
+      version: -1
+      name: mimecast-list-messages
+      script: '|||mimecast-list-messages'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      endTime: {}
+      mailbox:
+        simple: 'mimecast@demistolab.com '
+      startTime:
+        simple: 2018-10-12T14:49:18+0000
+      subject: {}
+      view:
+        simple: INBOX
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 46bd3a31-111b-46d2-81e0-cd7df01c82fe
+    type: regular
+    task:
+      id: 46bd3a31-111b-46d2-81e0-cd7df01c82fe
+      version: -1
+      name: mimecast-get-url-logs
+      script: '|||mimecast-get-url-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      fromDate:
+        simple: 2016-10-01T14:49:18+0000
+      limit: {}
+      resultType:
+        simple: malicious
+      resultsNumber: {}
+      toDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 08e2787d-6469-4029-8bbc-1cf1ebd97d6e
+    type: regular
+    task:
+      id: 08e2787d-6469-4029-8bbc-1cf1ebd97d6e
+      version: -1
+      name: mimecast-get-impersonation-logs
+      script: '|||mimecast-get-impersonation-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      actions: {}
+      fromDate: {}
+      identifiers: {}
+      limit: {}
+      query: {}
+      resultsNumber: {}
+      searchField: {}
+      taggedMalicious:
+        simple: "true"
+      toDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 8028a206-b0ce-4e2a-8a63-9866382654c7
+    type: regular
+    task:
+      id: 8028a206-b0ce-4e2a-8a63-9866382654c7
+      version: -1
+      name: mimecast-get-attachment-logs
+      script: '|||mimecast-get-attachment-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      fromDate:
+        simple: 2015-10-01T14:49:18+0000
+      limit: {}
+      resultType:
+        simple: malicious
+      resultsNumber: {}
+      toDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 14291bf5-496a-4088-8345-0188247f5224
+    type: title
+    task:
+      id: 14291bf5-496a-4088-8345-0188247f5224
+      version: -1
+      name: Test Done - Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: ba9db22a-a388-4e6f-8bbf-49cbbb064c85
+    type: regular
+    task:
+      id: ba9db22a-a388-4e6f-8bbf-49cbbb064c85
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: cbbc034c-1c2e-4088-80c3-907fd50fc40f
+    type: regular
+    task:
+      id: cbbc034c-1c2e-4088-80c3-907fd50fc40f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
