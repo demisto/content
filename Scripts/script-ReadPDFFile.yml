@@ -2,7 +2,7 @@ commonfields:
   id: ReadPDFFile
   version: -1
 name: ReadPDFFile
-releaseNotes: "-"
+releaseNotes: "Improved extracting URLs"
 script: |-
   import pdfx
   from pdfminer.psparser import PSEOF
@@ -142,6 +142,5 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
-releaseNotes: 'Handling PSEOF error'
 tests:
   - ReadPDFFile-Test
