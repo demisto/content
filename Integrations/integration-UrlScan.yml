@@ -739,7 +739,6 @@ script:
       type: string
     description: Submit a url to scan
   runonce: false
-releaseNotes: Deprecated ip and file commands. Reformatted context outputs.
 fromversion: 3.5.0
 tests:
   - urlscan_malicious_Test

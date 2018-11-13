@@ -256,6 +256,5 @@ script:
         time across active messages
     description: query mimecast emails
   runonce: false
-releaseNotes: "-"
 tests:
  - Forgive me for my sins but I did not create any test

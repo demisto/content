@@ -311,4 +311,3 @@ args:
   defaultValue: dq
 scripttarget: 0
 runonce: false
-releaseNotes: "1.Add hash djb2 test. 2.Fixed table separator"

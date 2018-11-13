@@ -1841,6 +1841,5 @@ script:
     description: Retrieve watchlist in Carbon black Response.
   isfetch: true
   runonce: false
-releaseNotes: "- cb-binary will now present full results for 'Hostname' field. - prevent failure for cb-process-events in case the information returned is partial"
 tests:
   - CarbonBlackResponseTest

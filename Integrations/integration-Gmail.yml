@@ -1708,4 +1708,3 @@ script:
   runonce: false
 tests:
 - GmailTest
-releaseNotes: "Added block email command"
