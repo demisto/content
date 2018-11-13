@@ -693,3 +693,6 @@ script:
       defaultValue: "100"
     description: Push indicator into ThreatStream
   runonce: false
+releaseNotes: "-"
+tests:
+  - Forgive me for my sins but I did not create any test
