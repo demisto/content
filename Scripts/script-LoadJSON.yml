@@ -5,7 +5,7 @@ name: LoadJSON
 script: |-
   import json
   JSON_CONTEXT_KEY = "JsonObject"
-  json_str = demisto.args()['Input']
+  json_str = demisto.args()['input']
   obj = json.loads(json_str)
 
   demisto.results({
