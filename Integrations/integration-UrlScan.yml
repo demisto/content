@@ -10,11 +10,6 @@ detaileddescription: |-
   This integration checks domain information from the urlscan.io Database.
   This is a free service with an API key required. contact urlscan.io to obtain one.
 configuration:
-- display: Server URL (e.g. https://urlscan.io/api/v1/)
-  name: url
-  defaultvalue: https://urlscan.io/api/v1/
-  type: 0
-  required: true
 - display: API Key (needed only for submitting URLs for scanning)
   name: apikey
   defaultvalue: ""
