@@ -715,7 +715,7 @@ script:
             'Authorization': 'Bearer ' + access_token
         }
         uri = '%s/%s' % (URI_THREATS, hash)
-        res = api_call(uri=uri, method='get', headers=headers, body = {}, params = {}, accept_404 = True)
+        res = api_call(uri=uri, method='get', headers=headers, body = {}, params = {}, accept_404 = False)
         return res
 
     def get_threats():
@@ -1101,29 +1101,15 @@ script:
         if not add_hash:
             return_error('Could not add hash to list')
 
-        threat = get_threat_request(hash)
-        if not threat:
-            return demisto.results('The requested threat has been successfully added to '
-            + list_type
-            + ' hashlist, but could not retrieve any info regarding the threat.')
-
-        threat['cylance_score'] = normalize_score(threat['cylance_score'])
-
         contents = {
             'Threat File SHA256': hash,
-            'File Name': threat['name'],
-            'File Size': threat['file_size'],
-            'Detected By': threat['detected_by'],
-            'GlobalQuarantine': threat['global_quarantined'],
-            'Safelisted': threat['safelisted'],
-            'Timestamp': threat['cert_timestamp'],
             'List Type': list_type,
             'Category': category,
             'Reason': reason
         }
 
         context[outputPaths['file']] = {
-            'SHA256': threat['Sha256'],
+            'SHA256': hash,
             'Cylance': {
                 'ListType': list_type,
                 'Category': category
@@ -1164,29 +1150,19 @@ script:
         contents = {}
         context =  {}
 
-        threat = get_threat_request(hash)
         delete_hash = delete_hash_from_lists_request(hash, list_type)
-        if threat:
-            if threat.get('cylance_score'):
-                threat['cylance_score'] = normalize_score(threat['cylance_score'])
 
-            contents = {
-                'Threat File SHA256': hash,
-                'File Name': threat['name'],
-                'File Size': threat['file_size'],
-                'Detected By': threat['detected_by'],
-                'GlobalQuarantine': threat['global_quarantined'],
-                'Safelisted': threat['safelisted'],
-                'Timestamp': threat['cert_timestamp'],
-                'Threat List Type': list_type
-            }
+        contents = {
+            'Threat File SHA256': hash,
+            'Threat List Type': list_type
+        }
 
-            context[outputPaths['file']] = {
-                'SHA256': context_threat['sha256'],
-                'Cylance': {
-                    'ListType': list_type
-                }
+        context[outputPaths['file']] = {
+            'SHA256': hash,
+            'Cylance': {
+                'ListType': list_type
             }
+        }
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -1300,12 +1276,10 @@ script:
                 date_time = datetime.fromtimestamp(ts/1000).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
 
             context = {
-                'Cylance': {
-                    'Policy': {
-                        'ID': policy_details.get('policy_id'),
-                        'Name': policy_details.get('policy_name'),
-                        'Timestamp': date_time
-                    }
+                'Cylance.Policy(val.ID && val.ID == obj.ID)': {
+                    'ID': policy_details.get('policy_id'),
+                    'Name': policy_details.get('policy_name'),
+                    'Timestamp': date_time
                 }
             }
 
@@ -2129,7 +2103,7 @@ script:
     arguments:
     - name: sha256
       required: true
-      description: SHA256 hash to add to the GlobalSafe list
+      description: SHA256 hash to add to the GlobalSafe/GlobalQuarantine list
     - name: listType
       required: true
       auto: PREDEFINED
