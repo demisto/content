@@ -242,7 +242,27 @@ script:
                     maliciousData[uniqueKeys[key].toUpperCase()] = raw.Contents.response[uniqueKeys[key]];
                 }
             }
+            setContext('DBotScore', {'Indicator': raw.Contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType': 'av'});
             addMalicious(ec, outputPaths.file, maliciousData);
+
+        } else if (raw.Contents.response.te && raw.Contents.response.te.combined_verdict && raw.Contents.response.te.combined_verdict == "malicious") {
+            var maliciousData = {
+                Malicious: {
+                    Vendor: 'Sandblast',
+                    Description: 'Sandblast found this file malicious',
+                    Confidence: raw.Contents.response.te.confidence,
+                    Severity: raw.Contents.response.te.severity
+                }
+            };
+            for (var key in uniqueKeys) {
+                if (raw.Contents.response[uniqueKeys[key]]) {
+                    maliciousData[uniqueKeys[key].toUpperCase()] = raw.Contents.response[uniqueKeys[key]];
+                }
+            }
+
+            setContext('DBotScore', {'Indicator': raw.Contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'Subtype':'te'});
+            addMalicious(ec, outputPaths.file, maliciousData);
+
         } else {
             for (var key in uniqueKeys) {
                 if (raw.Contents.response[uniqueKeys[key]]) {
@@ -251,7 +271,10 @@ script:
                     ec['File(val.' + uniqueKeys[key].toUpperCase() + ' == obj.' + uniqueKeys[key].toUpperCase() + ')'] = val;
                 }
             }
+            setContext('DBotScore', {'Indicator': raw.Contents.response.md5, 'Type': 'hash', 'Vendor': 'SandBlast', 'Score': 3, 'SubType':'--'});
         }
+
+
         raw.EntryContext = ec;
         var prefix = command === 'sandblast-upload' ? 'Upload' : 'Query';
         raw.HumanReadable = tableToMarkdown(
