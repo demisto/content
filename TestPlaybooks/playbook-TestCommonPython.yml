@@ -176,4 +176,3 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "Add hash djb2 test"

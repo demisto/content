@@ -99,7 +99,6 @@ args:
 scripttarget: 0
 runonce: false
 deprecated: true
-releaseNotes: made rulename and ipname optional, with sensible defaults
 dependson:
   must:
   - checkpoint
