@@ -124,13 +124,20 @@ script:
 
     def list_scans_command():
         res = list_scans()
+        managable = demisto.args().get('managable').lower()
 
         if not res or 'response' not in res or not res['response']:
             return 'No scans found'
 
-        scans_arrays = (res['response'].get('usable') + res['response'].get('manageable'))
-        no_dups = list(set([tuple(s.items()) for s in scans_arrays]))
-        scans_dicts = [dict(s) for s in no_dups]
+        scans_arrays = res['response'].get('manageable')
+        scans_dicts = []
+
+        if managable == 'false':
+            scans_arrays += res['response'].get('usable')
+            no_dups = list(set([tuple(s.items()) for s in scans_arrays]))
+            scans_dicts = [dict(s) for s in no_dups]
+        else:
+            scans_dicts = scans_arrays
 
         if len(scans_dicts) == 0:
             return 'No scans found'
@@ -147,9 +154,9 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Tenable SecurityCenter scans", mapped_scans, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scans", mapped_scans, headers, removeNull=True),
             'EntryContext': {
-                  'Nexpose.Scan(val.ID==obj.ID)': createContext(mapped_scans, removeNull=True)
+                  'Tenable.Scan(val.ID==obj.ID)': createContext(mapped_scans, removeNull=True)
             }
         }
 
@@ -177,7 +184,7 @@ script:
 
         headers = [
             'Name',
-            'ID',
+            'ResultID',
             'OwnerID',
             'JobID',
             'Status'
@@ -186,7 +193,7 @@ script:
 
         mapped_scan = {
             'Name': scan_result['name'],
-            'ID': scan_result['id'],
+            'ResultID': scan_result['id'],
             'OwnerID': scan_result['ownerID'],
             'JobID': scan_result['jobID'],
             'Status': scan_result['status']
@@ -197,7 +204,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Tenable SecurityCenter scans", mapped_scan, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan", mapped_scan, headers, removeNull=True),
             'EntryContext': {
                   'Nexpose.Scan(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
             }
@@ -218,7 +225,7 @@ script:
         return send_request(path, 'post', body=body)
 
     def get_scan_status_command():
-        scan_results_ids = argToList(demisto.args()['scanResultID'])
+        scan_results_ids = argToList(demisto.args()['scanResultsID'])
 
         scans_results = []
         for scan_results_id in scan_results_ids:
@@ -240,7 +247,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Tenable SecurityCenter scan", mapped_scans_results, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan Status", mapped_scans_results, headers, removeNull=True),
             'EntryContext': {
                   'Tenable.Scan(val.ID==obj.ID)': createContext(mapped_scans_results, removeNull=True)
             }
@@ -299,7 +306,7 @@ script:
             'RepositoryName': scan_results['repository'].get('name')
         }
 
-        hr = tableToMarkdown("Tenable SecurityCenter Scan Report", mapped_results, headers, removeNull=True)
+        hr = tableToMarkdown('Tenable SecurityCenter Scan ' + mapped_results['ID'] + ' Report', mapped_results, headers, removeNull=True)
 
         vulnerabilites = get_vulnearbilites(scan_results_id)
         if vulnerabilites and len(vulnerabilites) > 0:
@@ -371,63 +378,7 @@ script:
         mapped_vulns.sort(key=lambda r: r['Severity'], cmp=lambda a,b: sv.index(a) - sv.index(b))
 
         return mapped_vulns
-        {
-            'Type': entryTypes['note'],
-            'Contents': analysis,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Vulnerabilities", mapped_vulns, vuln_headers, removeNull=True),
-            'EntryContext': {
-                  'TenableSC.Vulnerability(val.ID==obj.ID)': createContext(mapped_vulns, removeNull=True)
-            }
-        }
 
-
-    def get_vulnerability(scan_results_id, vuln_id):
-        vuln_filter =
-        [{
-            'filterName': 'pluginID',
-            'operator': '=',
-            'value': vuln_id
-        }]
-
-        query = get_query(scan_results_id, 'vulnipdetail', vuln_filter)
-
-        if not query or 'response' not in query:
-            return 'Could not get vulnerability query'
-
-        analysis = get_analysis(query['response']['id'], scan_results_id)
-
-        if not analysis or 'response' not in analysis:
-            return 'Could not get vulnerabilites analysis'
-
-        results = analysis['response']['results'][0]
-
-        if not results or len(results) == 0:
-            return 'Vulnerability not found'
-
-        vuln = results[0]
-
-        solution = None
-        solution_query = get_query(scan_results_id, 'sumremediation')
-
-        if query:
-            solution_analysis =  analysis = get_analysis(query['response']['id'], scan_results_id)
-            if solution_analysis:
-                solution = analysis['response']['results']
-
-        mapped_vuln =  {
-            'ID': vuln['pluginID'],
-            'Name': vuln['name'],
-            'Description': vuln['pluginDescription'],
-            'Family': vuln['family'].get('name'),
-            'Severity': vuln['severity'].get('name')
-        }
-
-        hosts = [{'IP': h['ip'], 'MAC': h['mac']} for h in vuln['hosts'].get('iplist', [])]
-
-        # solution
-        # cve
 
     def get_query(scan_id, tool, query_filters=None):
         path = 'query'
@@ -439,7 +390,7 @@ script:
             'scanID': scan_id
         }
 
-        if query_filter:
+        if query_filters:
             body['filters'] = query_filters
 
         return send_request(path, method='post', body=body)
@@ -459,6 +410,179 @@ script:
 
         return send_request(path, method='post', body=body)
 
+    def get_vulnerability_command():
+        vuln_id = demisto.args()['vulnerabilityID']
+        scan_results_id = demisto.args()['scanResultsID']
+
+        vuln_filter = [{
+            'filterName': 'pluginID',
+            'operator': '=',
+            'value': vuln_id
+        }]
+
+        query = get_query(scan_results_id, 'vulnipdetail', vuln_filter)
+
+        if not query or 'response' not in query:
+            return 'Could not get vulnerability query'
+
+        analysis = get_analysis(query['response']['id'], scan_results_id)
+
+        if not analysis or 'response' not in analysis:
+            return 'Could not get vulnerabilites analysis'
+
+        results = analysis['response']['results']
+
+        if not results or len(results) == 0:
+            return 'Vulnerability not found in the scan'
+
+        vuln_response = get_vulnerability(vuln_id)
+
+        if not vuln_response or 'response' not in vuln_response:
+            return 'Vulnerability not found'
+
+        vuln = vuln_response['response']
+
+        vuln['severity'] = results[0]['severity']
+        vuln['hosts'] = results[0]['hosts']
+
+        vuln_hosts = vuln['hosts']
+        severity = vuln['severity'].get('name')
+        hosts = [{'IP': h['ip'], 'MAC': h['macAddress']} for h in demisto.dt(vuln_hosts, 'iplist')]
+
+
+        cve = None
+        if vuln.get('xrefs'):
+            # Extract CVE
+            cve_filter = list(filter(lambda x: x.strip().startswith('CVE'), vuln['xrefs'].split(',')))
+            if cve_filter and len(cve_filter) > 0:
+                cve_str = str(cve_filter[0]).split(":")
+                cve = cve_str[1] if len(cve_str) > 1 else None
+
+        mapped_vuln =  {
+            'ID': vuln['id'],
+            'Name': vuln['name'],
+            'Description': vuln['description'],
+            'Type': vuln['type'],
+            'Severity': severity,
+            'Synopsis': vuln['synopsis'],
+            'Solution': vuln['solution'],
+
+        }
+
+        vuln_info = {
+            'Published': datetime.datetime.utcfromtimestamp(int(vuln['vulnPubDate'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'CPE': vuln['cpe'],
+            'CVE': cve
+        }
+
+        exploit_info = {
+            'ExploitAvailable': vuln['exploitAvailable'],
+            'ExploitEase': vuln['exploitEase']
+        }
+
+        risk_info = {
+            'RiskFactor': vuln['riskFactor'],
+            'CVSSBaseScore': vuln['baseScore'],
+            'CVSSTemporalScore': vuln['temporalScore'],
+            'CVSSVector': vuln['cvssVector']
+        }
+
+        plugin_details = {
+            'Family': vuln['family'].get('name'),
+            'Published': datetime.datetime.utcfromtimestamp(int(vuln['pluginPubDate'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'Modified': datetime.datetime.utcfromtimestamp(int(vuln['pluginModDate'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'CheckType': vuln['checkType']
+        }
+
+        hr = '## Vulnerability: {} ({})\n'.format(mapped_vuln['Name'], mapped_vuln['ID'])
+        hr += '### Synopsis\n{}\n### Description\n{}\n### Solution\n{}\n'.format(mapped_vuln['Synopsis'], mapped_vuln['Description'], mapped_vuln['Solution'])
+        hr += tableToMarkdown('Hosts', hosts, removeNull=True)
+        hr += tableToMarkdown('Risk Information', risk_info, removeNull=True)
+        hr += tableToMarkdown('Exploit Information', exploit_info, removeNull=True)
+        hr += tableToMarkdown('Plugin Details', plugin_details, removeNull=True)
+        hr += tableToMarkdown('Vulnerability Information', vuln_info, removeNull=True)
+
+        mapped_vuln.update(vuln_info)
+        mapped_vuln.update(exploit_info)
+        mapped_vuln.update(risk_info)
+        mapped_vuln['pluginDetails'] = plugin_details
+
+        scan_result = {
+            'ID': scan_results_id,
+            'Vulnerability': mapped_vuln,
+        }
+
+        return {
+            'Type': entryTypes['note'],
+            'Contents': vuln_response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': {
+                  'TenableSC.Scan(val.ID==obj.ID)': createContext(scan_result, removeNull=True)
+            }
+        }
+
+    def get_vulnerability(vuln_id):
+        path = 'plugin/' + vuln_id
+
+        params = {
+            'fields': 'name,description,family,type,cpe,riskFactor,solution,synopsis,exploitEase,exploitAvailable,cvssVector,baseScore,pluginPubDate,pluginModDate,vulnPubDate,temporalScore,xrefs,checkType'
+        }
+
+        return send_request(path, params=params)
+
+
+    def stop_scan_command():
+        scan_results_id = demisto.args()['scanResultsID']
+
+        res = change_scan_status(scan_results_id, 'stop')
+
+        if not res:
+            return 'Could not stop the scan'
+
+        return 'Scan sucessfully stopped'
+
+    def pause_scan_command():
+        scan_results_id = demisto.args()['scanResultsID']
+
+        res = change_scan_status(scan_results_id, 'pause')
+
+        if not res:
+            return 'Could not pause the scan'
+
+        return 'Scan sucessfully paused'
+
+    def resume_scan_command():
+        scan_results_id = demisto.args()['scanResultsID']
+
+        res = change_scan_status(scan_results_id, 'resume')
+
+        if not res:
+            return 'Could not resume the scan'
+
+        return 'Scan sucessfully resumed'
+
+    def change_scan_status(scan_results_id, status):
+        path = 'scanResult/' + scan_results_id + '/' + status
+
+        return send_request(path, method='post')
+
+    def delete_scan_command():
+        scan_id = demisto.args('scanID')
+
+        res = delete_scan(scan_id)
+
+        if not res:
+            return 'Could not delete the scan'
+
+        return 'Scan sucessfully deleted'
+
+    def delete_scan(scan_id):
+        path = 'scan/' + scan_id
+
+        return send_request(path, method='delete')
+
     def logout():
         send_request(path='token', method='delete')
 
@@ -476,12 +600,23 @@ script:
         demisto.results(get_scan_status_command())
     elif demisto.command() == 'tenable-sc-get-scan-report':
         demisto.results(get_scan_report_command())
+    elif demisto.command() == 'tenable-sc-get-vulnerability':
+        demisto.results(get_vulnerability_command())
+    elif demisto.command() == 'tenable-sc-stop-scan':
+        demisto.results(stop_scan_command())
+    elif demisto.command() == 'tenable-sc-pause-scan':
+        demisto.results(pause_scan_command())
+    elif demisto.command() == 'tenable-sc-resume-scan':
+        demisto.results(resume_scan_command())
 
     logout()
   type: python
   commands:
   - name: tenable-sc-list-scans
-    arguments: []
+    arguments:
+    - name: managable
+      description: Whether to return only manageable scans.
+      defaultValue: "false"
     outputs:
     - contextPath: TenableSC.Scan.Name
       description: Scan name
@@ -489,7 +624,7 @@ script:
     - contextPath: TenableSC.Scan.ID
       description: Scan ID
       type: number
-    description: Get a list of Tenable Security Center existing scans
+    description: Get a list of Tenable SecurityCenter existing scans
   - name: tenable-sc-launch-scan
     arguments:
     - name: scanID
@@ -516,12 +651,12 @@ script:
     - contextPath: TenableSC.Scan.Status
       description: Scan status
       type: string
-    description: Launch an existing scan from Tenable Security Center
+    description: Launch an existing scan from Tenable SecurityCenter
   - name: tenable-sc-get-scan-status
     arguments:
-    - name: scanResultID
+    - name: scanResultsID
       required: true
-      description: Scan Result ID
+      description: Scan Results ID
       isArray: true
     outputs:
     - contextPath: TenableSC.Scan.Status
@@ -532,7 +667,7 @@ script:
       type: string
     - contextPath: TenableSC.Scan.Description
       description: Scan description
-    description: Get the status of a specific scan
+    description: Get the status of a specific scan in Tenable SecurityCenter
   - name: tenable-sc-get-scan-report
     arguments:
     - name: scanResultsID
@@ -568,47 +703,31 @@ script:
       type: string
     - contextPath: TenableSC.Scan.Description
       description: Scan description
-    description: Get a report with the scan results
+    description: Get a report with a Tenable SecurityCenter scan results
   - name: tenable-sc-download-report
     arguments:
     - name: scanID
       required: true
       description: Scan ID
-    outputs:
-    - contextPath: TenableSC.Scan.ID
-      description: Scan ID
-      type: string
-    description: Download a report with a given scan's results
+    description: Download a report with a given Tenable SecurityCenter scan results
   - name: tenable-sc-stop-scan
     arguments:
-    - name: scanID
+    - name: scanResultsID
       required: true
-      description: Scan's ID
-    outputs:
-    - contextPath: TenableSC.Scan.ID
-      description: Scan's ID
-      type: string
-    description: Stop a scan on Tenable Security Center
+      description: Scan results ID
+    description: Stop a scan in Tenable SecurityCenter
   - name: tenable-sc-pause-scan
     arguments:
-    - name: scanID
+    - name: scanResultsID
       required: true
-      description: Scan's ID
-    outputs:
-    - contextPath: TenableSC.Scan.ID
-      description: Scan's ID
-      type: string
-    description: Pause a scan on Tenable Security Center
+      description: Scan results ID
+    description: Pause a scan in Tenable SecurityCenter
   - name: tenable-sc-resume-scan
     arguments:
-    - name: scanID
+    - name: scanResultsID
       required: true
-      description: Scan's ID
-    outputs:
-    - contextPath: TenableSC.Scan.ID
-      description: Scan's ID
-      type: string
-    description: Resume a scan on Tenable Security Center
+      description: Scan results ID
+    description: Resume a scan in Tenable SecurityCenter
   - name: tenable-sc-create-scan
     arguments:
     - name: name
@@ -681,12 +800,8 @@ script:
     arguments:
     - name: scanID
       required: true
-      description: Scan's ID
-    outputs:
-    - contextPath: TenableSC.Scan.ID
-      description: Scan's ID
-      type: string
-    description: Delete a scan from Tenable Security Center
+      description: Scan ID
+    description: Delete a scan in Tenable SecurityCenter
   - name: tenalbe-sc-list-assets
     arguments:
     - name: usable
@@ -710,7 +825,7 @@ script:
     - contextPath: TenableSC.Asset.Name
       description: Asset Name
       type: string
-    description: Get a list of Tenable Security Center Assets
+    description: Get a list of Tenable SecurityCenter Assets
   - name: tenable-sc-create-asset
     arguments:
     - name: name
@@ -739,5 +854,15 @@ script:
       type: string
     description: Create an Asset in Tenable Security Center. The Asset can be a single
       ip address, a list or a range of ip addresses.
+  - name: tenable-sc-get-vulnerability
+    arguments:
+    - name: vulnerabilityID
+      required: true
+      description: Vulnerability ID
+    - name: scanResultsID
+      required: true
+      description: Scan results ID
+    description: 'Get details about a given vulnerability from a given Tenable SecurityCenter
+      scan '
   runonce: false
 releaseNotes: "-"
