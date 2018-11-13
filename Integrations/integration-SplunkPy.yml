@@ -86,10 +86,10 @@ script:
     SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
     def get_current_splunk_time(splunk_service):
-        t = datetime.utcnow() - timedelta(days=7)
+        t = datetime.utcnow() - timedelta(days=3)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count':1,'earliest_time':time}
-        searchquery_oneshot = 'search index=* | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
+        searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
 
         oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 
