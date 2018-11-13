@@ -39,6 +39,29 @@ script: |-
           case 'Date':
               timeStr = d.toDateString();
               break;
+        case 'year':
+            timeStr = d.getYear()();
+            break;
+        case 'month':
+            timeStr = d.getMonth();
+            break;
+        case 'date':
+            timeStr = d.getDate();
+            break;
+        case 'day':
+            timeStr = d.getDay();
+            break;
+        case 'hours':
+            timeStr = d.getHours();
+            break;
+        case 'utchours':
+            timeStr = d.getUTCHours();
+            break;
+        case 'minutes':
+            timeStr = d.getMinutes();
+            break;
+
+
           default:
               throw 'Unsupported date format: '+args.dateFormat
       }
@@ -65,7 +88,7 @@ args:
   default: true
   description: The date to use in the object
 - name: dateFormat
-  description: The date format for the result, can be ISO/GMT/UTC/Locale/Date
+  description: The date format for the result, can be ISO/GMT/UTC/Locale/Date/year/month/date/day/hours
 - name: contextKey
   description: prefix the keys in the context for the results
 - name: monthsAgo
