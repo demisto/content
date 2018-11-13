@@ -679,6 +679,14 @@ script:
         response = http_request('GET', cmd_url).json()
         return response
 
+    def sandbox_report(md5, details):
+        return sandbox_report_request(md5, details)
+
+    def sandbox_report_request(md5, details):
+        cmd_url = '/sandbox/report/' + md5 + '?details=' + details
+        result = http_request('GET', cmd_url, None, DEFAULT_HEADERS)
+        return result
+
     ''' EXECUTION CODE '''
     auth = login()
     jsession_id = auth[:auth.index(';')]
@@ -724,6 +732,8 @@ script:
             demisto.results(get_blacklist_command())
         elif demisto.command() == 'zscaler-get-whitelist':
             demisto.results(get_whitelist_command())
+        elif demisto.command() == 'zscaler-sandbox-report':
+            demisto.results(sandbox_report(demisto.args()['md5'], demisto.args()['details']))
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -875,6 +885,20 @@ script:
         8.8.8.8,1.2.3.4) '
     description: Adds IP address to the blacklist.
     execution: true
+  - name: zscaler-sandbox-report
+    arguments:
+    - name: md5
+      required: true
+      description: MD5 hash to get report of.
+    - name: details
+      auto: PREDEFINED
+      predefined:
+      - full
+      - summary
+      description: Get full or summary detailed report.
+      defaultValue: summary
+    description: Get a full (i.e., complete) or summary detail report for an MD5 hash
+      of a file that was analyzed by Sandbox.
   - name: zscaler-category-add-url
     arguments:
     - name: category-id
@@ -1008,3 +1032,4 @@ script:
       type: string
     description: Returns Zscaler default whitelist
   runonce: false
+releaseNotes: "added sandbox-report commands"
