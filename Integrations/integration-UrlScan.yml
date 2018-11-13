@@ -205,7 +205,7 @@ script:
             cont['Certificates'] = cert_ec
         ec['URL']['Data'] = url_query
         if 'urls' in scan_lists:
-            cont['URLs'] = scan_lists['urls']
+            cont['RelatedURLs'] = scan_lists['urls']
             ec['URL']['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
         human_readable['Effective URL'] = url_query
@@ -241,8 +241,8 @@ script:
             cont['Country'] = countries
         if not None in scan_lists['hashes']:
             hashes = scan_lists['hashes']
-            cont['iocs'] = hashes
-            human_readable['iocs'] = hashes
+            cont['RelatedHash'] = hashes
+            human_readable['Related Hashes'] = hashes
         if 'domains' in scan_lists:
             subdomains = scan_lists['domains']
             cont['Subdomains'] = subdomains
@@ -263,12 +263,12 @@ script:
                 cont['Malicious']['Description'] = 'Match found in Urlscan.io database'
                 ec['DBotScore']['Score'] = 3
                 ec['DBotScore']['Type'] = 'url'
-            else:
-                ec['DBotScore']['Vendor'] = 'urlscan.io'
-                ec['DBotScore']['Indicator'] = demisto.args().get('url')
-                ec['DBotScore']['Score'] = 0
-                ec['DBotScore']['Type'] = 'url'
-                human_readable['Malicious'] = 'Beneign'
+        else:
+            ec['DBotScore']['Vendor'] = 'urlscan.io'
+            ec['DBotScore']['Indicator'] = demisto.args().get('url')
+            ec['DBotScore']['Score'] = 0
+            ec['DBotScore']['Type'] = 'url'
+            human_readable['Malicious'] = 'Beneign'
         if 'url' in scan_meta['processors']['gsb']['data'] is None:
             mal_url_list = []
             matches = scan_meta['processors']['gsb']['data']['matches']
@@ -550,6 +550,12 @@ script:
       description: Limits the returned list of Certificates, IP's and ASN's
       defaultValue: "20"
     outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: URLScan.URLs
       description: Related URLs found from scanned URL
     - contextPath: URLScan.RelatedIPs
@@ -608,6 +614,12 @@ script:
       description: Limits the results in the war room
       defaultValue: "20"
     outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: URLScan.URLs
       description: Related URLs found from scanned URL
     - contextPath: URLScan.RelatedIPs
