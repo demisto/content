@@ -183,6 +183,15 @@ def changed_id(file_path):
     return False
 
 
+def is_added_required_fields(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or re.search("\-  name: .*\n.*\n.*\n-  required: true", change_string) or re.search("\+  required: true", change_string):
+        print_error("You've changed the required fields in the integration file {}".format(file_path))
+        return True
+
+    return False
+
+
 def changed_integration_id(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
     if re.search("\+  id: .*", change_string) or re.search("\-  id: .*", change_string):
@@ -257,6 +266,7 @@ def validate_committed_files(branch_name):
     second_files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
     modified_files, added_files = get_modified_files(files_string, second_files_string)
     missing_release_notes = False
+    added_required_fields = False
     wrong_schema = False
     is_changed_id = False
     missing_test = False
@@ -267,6 +277,8 @@ def validate_committed_files(branch_name):
         if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
             if changed_integration_id(file_path):
                 is_changed_id = True
+            if is_added_required_fields(file_path):
+                added_required_fields = True
 
         print "Validating {}".format(file_path)
         if not validate_file_release_notes(file_path):
@@ -294,7 +306,7 @@ def validate_committed_files(branch_name):
     if has_duplicated_ids(id_to_file):
         sys.exit(1)
 
-    if missing_release_notes or wrong_schema or is_changed_id or missing_test:
+    if missing_release_notes or wrong_schema or is_changed_id or missing_test or added_required_fields:
         sys.exit(1)
 
 
