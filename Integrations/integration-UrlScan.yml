@@ -175,21 +175,26 @@ script:
 
 
     def format_results(uuid):
-        response = urlscan_submit_request(uuid)
-        try:
-            scan_lists = response['lists']
-            scan_tasks = response['task']
-            scan_page = response['page']
-            scan_stats = response['stats']
-            scan_meta = response['meta']
-            url_query = scan_tasks['url']
-        except:
-            pass
+        # Scan Lists sometimes returns empty
+        scan_lists = None
+        while scan_lists is None:
+            try:
+                response = urlscan_submit_request(uuid)
+                scan_lists = response['lists']
+                scan_tasks = response['task']
+                scan_page = response['page']
+                scan_stats = response['stats']
+                scan_meta = response['meta']
+                url_query = scan_tasks['url']
+            except:
+                pass
 
         ec = makehash()
+        dbot_score = makehash()
         human_readable = makehash()
         cont = makehash()
         file_context = makehash()
+        url_cont = makehash()
         hr_string = ''
 
         LIMIT = int(demisto.args().get('limit'))
@@ -203,10 +208,10 @@ script:
                 cert_ec.append(ec_info)
             CERT_HEADERS = ['Subject Name', 'Issuer', 'Validity']
             cont['Certificates'] = cert_ec
-        ec['URL']['Data'] = url_query
+        url_cont['Data'] = url_query
         if 'urls' in scan_lists:
             cont['RelatedURLs'] = scan_lists['urls']
-            ec['URL']['Data'] = demisto.args().get('url')
+            url_cont['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
         human_readable['Effective URL'] = url_query
         if 'uuid' in scan_tasks:
@@ -253,22 +258,22 @@ script:
             human_readable['Malicious URLs Found'] = scan_stats['malicious']
             if int(scan_stats['malicious']) > 0:
                 human_readable['Malicious'] = 'Malicious'
-                ec['URL']['Data'] = demisto.args().get('url')
+                url_cont['Data'] = demisto.args().get('url')
                 cont['Data'] = demisto.args().get('url')
-                ec['DBotScore']['Indicator'] = demisto.args().get('url')
-                ec['URL']['Malicious']['Vendor'] = 'urlscan.io'
+                dbot_score['Indicator'] = demisto.args().get('url')
+                url_cont['Malicious']['Vendor'] = 'urlscan.io'
                 cont['Malicious']['Vendor'] = 'urlscan.io'
-                ec['DBotScore']['Vendor'] = 'urlscan.io'
-                ec['URL']['Malicious']['Description'] = 'Match found in Urlscan.io database'
+                dbot_score['Vendor'] = 'urlscan.io'
+                url_cont['Malicious']['Description'] = 'Match found in Urlscan.io database'
                 cont['Malicious']['Description'] = 'Match found in Urlscan.io database'
-                ec['DBotScore']['Score'] = 3
-                ec['DBotScore']['Type'] = 'url'
-        else:
-            ec['DBotScore']['Vendor'] = 'urlscan.io'
-            ec['DBotScore']['Indicator'] = demisto.args().get('url')
-            ec['DBotScore']['Score'] = 0
-            ec['DBotScore']['Type'] = 'url'
-            human_readable['Malicious'] = 'Beneign'
+                dbot_score['Score'] = 3
+                dbot_score['Type'] = 'url'
+            else:
+                dbot_score['Vendor'] = 'urlscan.io'
+                dbot_score['Indicator'] = demisto.args().get('url')
+                dbot_score['Score'] = 0
+                dbot_score['Type'] = 'url'
+                human_readable['Malicious'] = 'Benign'
         if 'url' in scan_meta['processors']['gsb']['data'] is None:
             mal_url_list = []
             matches = scan_meta['processors']['gsb']['data']['matches']
@@ -297,7 +302,9 @@ script:
             file_context['Hostname'] = demisto.args().get('url')
 
         ec = {
-                'URLScan(val.URL && val.URL == obj.URL)': cont
+                'URLScan(val.URL && val.URL == obj.URL)': cont,
+                'DBotScore': dbot_score,
+                'URL': url_cont
             }
         ec[outputPaths['file']]=file_context
 
@@ -407,6 +414,9 @@ script:
         for res in r['results'][:LIMIT]:
             ec = makehash()
             cont = makehash()
+            url_cont = makehash()
+            ip_cont = makehash()
+            dom_cont = makehash()
             file_context = makehash()
             res_dict = res
             res_tasks = res_dict['task']
@@ -421,21 +431,21 @@ script:
                 url = res_tasks['url']
                 human_readable['URL'] = url
                 cont['URL'] = url
-                ec['URL']['Data'] = url
+                url_cont['Data'] = url
             if 'domain' in res_page:
                 domain = res_page['domain']
                 human_readable['Domain'] = domain
                 cont['Domain'] = domain
-                ec['Domain']['Name'] = domain
+                dom_cont['Name'] = domain
             if 'asn' in res_page:
                 asn = res_page['asn']
                 cont['ASN'] = asn
-                ec['IP']['ASN'] = asn
+                ip_cont['ASN'] = asn
                 human_readable['ASN'] = asn
             if 'ip' in res_page:
                 ip = res_page['ip']
                 cont['IP'] = ip
-                ec['IP']['Address'] = ip
+                ip_cont['Address'] = ip
                 human_readable['IP'] = ip
             if '_id' in res_dict:
                 scanID = res_dict['_id']
@@ -467,7 +477,10 @@ script:
                 file_context['File']['Type'] = filetype
                 file_context['File']['Hostname'] = url
             ec = {
-                'URLScan(val.URL && val.URL == obj.URL)': cont
+                'URLScan(val.URL && val.URL == obj.URL)': cont,
+                'URL': url_cont,
+                'IP': ip_cont,
+                'Domain': dom_cont
             }
             ec[outputPaths['file']]=file_context
             # Storing last url in memory for comparison on next loop
