@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8ecc4c16-5175-4b68-8b60-2866d1d76cee
+    taskid: b79f5886-9be1-4654-8dbe-70e848ec98a6
     type: start
     task:
-      id: 8ecc4c16-5175-4b68-8b60-2866d1d76cee
+      id: b79f5886-9be1-4654-8dbe-70e848ec98a6
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 13a6c832-8fa6-4b4f-89cd-e717e7e99b47
+    taskid: f363e319-8198-4437-8a16-a49dc2debc6c
     type: regular
     task:
-      id: 13a6c832-8fa6-4b4f-89cd-e717e7e99b47
+      id: f363e319-8198-4437-8a16-a49dc2debc6c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -52,12 +53,13 @@ tasks:
           "y": 230
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: badd665a-ccb4-485b-848e-93590beb3b7d
+    taskid: e43b6306-b986-44f0-8fb9-2d2ff75cb53a
     type: regular
     task:
-      id: badd665a-ccb4-485b-848e-93590beb3b7d
+      id: e43b6306-b986-44f0-8fb9-2d2ff75cb53a
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -70,7 +72,8 @@ tasks:
       - "3"
     scriptarguments:
       body: {}
-      filename: {}
+      filename:
+        simple: ParseEmailFiles_test_email.eml
       headers: {}
       insecure: {}
       method:
@@ -91,12 +94,13 @@ tasks:
           "y": 410
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: e1802d66-e67d-4aa8-8854-42cf38c2d387
+    taskid: 4e90d035-4b3f-4bad-8cc9-7358f800d775
     type: regular
     task:
-      id: e1802d66-e67d-4aa8-8854-42cf38c2d387
+      id: 4e90d035-4b3f-4bad-8cc9-7358f800d775
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -119,7 +123,23 @@ tasks:
       - "14"
     scriptarguments:
       entryid:
-        simple: ${File.EntryID}
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: ParseEmailFiles_test_email.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
     results:
     - AttachmentName
     separatecontext: false
@@ -130,12 +150,13 @@ tasks:
           "y": 590
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: d494998a-6a23-499c-8788-5836d26d37ef
+    taskid: f9662dc6-a77b-4b55-8dd9-39ebd7bcbade
     type: regular
     task:
-      id: d494998a-6a23-499c-8788-5836d26d37ef
+      id: f9662dc6-a77b-4b55-8dd9-39ebd7bcbade
       version: -1
       name: VerifyContext - To
       description: |-
@@ -150,7 +171,7 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue:
-        simple: shachar@demisto.com
+        simple: shachar@demisto.com, yaakovi@demisto.com
       fields: {}
       path:
         simple: Email.To
@@ -162,12 +183,13 @@ tasks:
           "y": 769
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 6dbb6aea-26cf-46a4-8af5-bb48f657f0cf
+    taskid: a9de755b-3555-4fcb-838d-e6b73793a5b2
     type: regular
     task:
-      id: 6dbb6aea-26cf-46a4-8af5-bb48f657f0cf
+      id: a9de755b-3555-4fcb-838d-e6b73793a5b2
       version: -1
       name: VerifyContext - Subject
       description: |-
@@ -194,12 +216,13 @@ tasks:
           "y": 769
         }
       }
+    note: false
   "11":
     id: "11"
-    taskid: 87e95d08-95fe-488b-8282-005de460b180
+    taskid: 002cb083-3e33-4b49-8d4c-543f9bd27a83
     type: condition
     task:
-      id: 87e95d08-95fe-488b-8282-005de460b180
+      id: 002cb083-3e33-4b49-8d4c-543f9bd27a83
       version: -1
       name: AreValuesEqual - verify pdf attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -216,7 +239,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: File.Extension
@@ -237,17 +260,22 @@ tasks:
           "y": 769
         }
       }
+    note: false
   "12":
     id: "12"
-    taskid: 73c8666e-e1ee-48ba-847e-f7bfc1a9576e
+    taskid: b83af118-a4b9-4d06-8d07-605433515286
     type: title
     task:
-      id: 73c8666e-e1ee-48ba-847e-f7bfc1a9576e
+      id: b83af118-a4b9-4d06-8d07-605433515286
       version: -1
-      name: Done
+      name: Validate Non-Unicode parsing
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
     separatecontext: false
     view: |-
       {
@@ -256,12 +284,13 @@ tasks:
           "y": 1107
         }
       }
+    note: false
   "13":
     id: "13"
-    taskid: 98a17e89-b80c-476a-8946-9b45a177ecf1
+    taskid: f25d6873-b1c0-4ed6-8765-e11192c2bebd
     type: condition
     task:
-      id: 98a17e89-b80c-476a-8946-9b45a177ecf1
+      id: f25d6873-b1c0-4ed6-8765-e11192c2bebd
       version: -1
       name: AreValuesEqual - verify docx attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -278,7 +307,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: File.Extension
@@ -302,10 +331,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: e8e4aea5-215a-4fe4-8946-2fc940506b22
+    taskid: f0266c84-ee00-40d4-8708-b96a6cb146f1
     type: regular
     task:
-      id: e8e4aea5-215a-4fe4-8946-2fc940506b22
+      id: f0266c84-ee00-40d4-8708-b96a6cb146f1
       version: -1
       name: VerifyContext - From
       description: |-
@@ -333,12 +362,190 @@ tasks:
         }
       }
     note: false
+  "15":
+    id: "15"
+    taskid: 6b488ece-4fc6-4564-875f-f66941d8350c
+    type: regular
+    task:
+      id: 6b488ece-4fc6-4564-875f-f66941d8350c
+      version: -1
+      name: Non Unicode Subject
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: EmailWithNonUnicodeSubject.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonUnicodeSubject.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1280
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 2a8e2a49-d105-40b1-8577-9c6d64a46e0d
+    type: regular
+    task:
+      id: 2a8e2a49-d105-40b1-8577-9c6d64a46e0d
+      version: -1
+      name: Non Unicode Attachment Name
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: EmailWithNonUnicodeAttachmentName.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonUnicodeAttachmentName.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1280
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: ff9146b3-3316-43ba-84f4-db7886a9356a
+    type: regular
+    task:
+      id: ff9146b3-3316-43ba-84f4-db7886a9356a
+      version: -1
+      name: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook. Requires pip and access to python repository to install "olefile"
+        package.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: EmailWithNonUnicodeAttachmentName.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1470
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 2231c8f8-459f-4c96-8509-9f0ce2c94207
+    type: regular
+    task:
+      id: 2231c8f8-459f-4c96-8509-9f0ce2c94207
+      version: -1
+      name: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook. Requires pip and access to python repository to install "olefile"
+        package.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: EmailWithNonUnicodeSubject.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1470
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1122,
+        "height": 1515,
         "width": 2151,
         "x": -558,
         "y": 50
