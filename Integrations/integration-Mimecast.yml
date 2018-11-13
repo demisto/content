@@ -530,7 +530,7 @@ script:
         response = http_request('POST', api_endpoint, request_params , str(payload))
         if response.get('fail'):
             return_error(json.dumps(response.get('fail')[0].get('errors')))
-        if response.get('data')[0].get('deleted') != 'true':
+        if response.get('data')[0].get('id') != policy_id:
             return_error('Policy was not deleted.')
         return response.get('data')[0]
 
@@ -1384,11 +1384,14 @@ script:
       auto: PREDEFINED
       predefined:
       - everyone
-      - internal addresses
-      - external addresses
-      - email domain
-      - profile group
-      - individual email address
+      - internal_addresses
+      - external_addresses
+      - email_domain
+      - profile_group
+      - address_attribute_value
+      - individual_email_address
+      - free_mail_domains
+      - header_display_name
       description: Receiver type
     - name: toValue
       description: 'Required if fromType is one of email domain, profile group, individual
@@ -1568,43 +1571,6 @@ script:
       description: If rewriting of this URL in emails is disabled
       type: boolean
     description: Create a managed URL on Mimecast
-  - name: mimecast-get-message
-    arguments:
-    - name: messageID
-      required: true
-      description: Message ID
-    - name: context
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - delievered
-      - received
-      description: 'Defines which copy of the message part to return, must be one
-        of: "delievered" the copy that has been processed by the Mimecast MTA with
-        policies such as URL rewriting applied, OR "received" - the copy of the message
-        that Mimecast originally received.'
-    - name: type
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - HTML
-      - PLAIN
-      - RFC822
-      - TRANSMISSION_MESSAGE_BODY
-      description: The message part to return
-    - name: info
-      auto: PREDEFINED
-      predefined:
-      - body
-      - metadata
-      - all
-      defaultValue: all
-      description: 'Message body, Message meta data or all.'
-    outputs:
-    - contextPath: Mimecast.Message.ID
-      description: Message ID
-      type: string
-    description: Get the contents of a given message
   - name: mimecast-list-messages
     arguments:
     - name: mailbox
@@ -1877,4 +1843,4 @@ script:
   runonce: false
 releaseNotes: "Added 12 new commands + fetch incidents: url, attachments, impersonations. Commands: mimecast-list-blocked-sender-policies, mimecast-create-policy, mimecast-delete-policy, mimecast-get-policy, mimecast-query, mimecast-url-decode, mimecast-manage-sender, mimecast-list-managed-url, mimecast-create-managed-url, mimecast-list-messages, mimecast-get-url-logs, mimecast-get-impersonation-logs, mimecast-get-attachment-logs"
 tests:
-  - Mimecast test
+ - Mimecast test
