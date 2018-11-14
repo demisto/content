@@ -172,12 +172,16 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
             }
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
     integrations = []
     has_skipped_integration = False
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
+            has_skipped_integration = True
+            break
+
+        if integration in nightly_integrations:
             has_skipped_integration = True
             break
 
@@ -252,6 +256,7 @@ def main():
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
     skipped_integrations_conf = conf['skipped_integrations']
+    nightly_integrations = conf['nigthly_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
@@ -284,7 +289,7 @@ def main():
             integrations_conf = [integrations_conf]
 
         has_skipped_integration, integrations = collect_integrations(
-            integrations_conf, skipped_integration, skipped_integrations_conf)
+            integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
 
         # Skip nightly test
         if skip_nightly_test:
