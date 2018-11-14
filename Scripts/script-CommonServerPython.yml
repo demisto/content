@@ -1256,4 +1256,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "1. Added djb2 hash function. 2. Added camelize function."
+releaseNotes: "Added camelize function."
