@@ -17,12 +17,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "12"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -42,7 +42,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       action: {}
       category: {}
@@ -69,17 +69,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 370
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: e68e7ae7-0c41-4d61-8b47-c03eff4fd7b0
+    taskid: d36b3691-01b7-4ae9-800e-2737ac39abbf
     type: regular
     task:
-      id: e68e7ae7-0c41-4d61-8b47-c03eff4fd7b0
+      id: d36b3691-01b7-4ae9-800e-2737ac39abbf
       version: -1
       name: panorama-block-ip
       description: Blocks IP with Panorama
@@ -91,7 +91,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      direction: {}
+      direction:
+        simple: to
       ip:
         simple: 10.10.10.10
       rulename:
@@ -100,17 +101,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 50,
+          "y": 895
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 9aac5c44-e691-4386-87b6-f6e4d06baa75
+    taskid: cbec7fdd-d436-4d22-8d91-709d01d04175
     type: regular
     task:
-      id: 9aac5c44-e691-4386-87b6-f6e4d06baa75
+      id: cbec7fdd-d436-4d22-8d91-709d01d04175
       version: -1
       name: panorama-disable-rule
       description: Disable a security rule
@@ -123,22 +124,22 @@ tasks:
       - "4"
     scriptarguments:
       rulename:
-        simple: test_pb_security_rule
+        simple: test_pb_security_rule-to
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 590
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: ad299a32-18bb-4b83-81e7-e13286715240
+    taskid: 2ed7d07c-b936-498a-8b7c-52d27c855d90
     type: regular
     task:
-      id: ad299a32-18bb-4b83-81e7-e13286715240
+      id: 2ed7d07c-b936-498a-8b7c-52d27c855d90
       version: -1
       name: panorama-enable-rule
       description: Enable a security rule
@@ -148,25 +149,25 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "5"
+      - "7"
     scriptarguments:
       rulename:
-        simple: test_pb_security_rule
+        simple: test_pb_security_rule-to
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 770
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 7483daeb-6b88-4f04-8d62-f71b85fbd0f0
+    taskid: bed46dde-5069-4fa8-89fc-1e32cdb46dbb
     type: regular
     task:
-      id: 7483daeb-6b88-4f04-8d62-f71b85fbd0f0
+      id: bed46dde-5069-4fa8-89fc-1e32cdb46dbb
       version: -1
       name: panorama-block-application
       description: Blocks an application with Panorama
@@ -174,6 +175,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Panorama
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       application:
         simple: fortnite
@@ -183,8 +187,209 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 960
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 12399258-0956-4216-8321-01c7aa3028c2
+    type: regular
+    task:
+      id: 12399258-0956-4216-8321-01c7aa3028c2
+      version: -1
+      name: panorama-get-applications
+      description: Get a list of applications
+      script: Panorama|||panorama-get-applications
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 6f759207-6c57-4a77-8921-3f59bb8cbf21
+    type: regular
+    task:
+      id: 6f759207-6c57-4a77-8921-3f59bb8cbf21
+      version: -1
+      name: panorama-get-address-groups
+      description: Gets all address groups configuration
+      script: Panorama|||panorama-get-address-groups
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 3f963648-a61b-4496-86eb-eb3575584167
+    type: regular
+    task:
+      id: 3f963648-a61b-4496-86eb-eb3575584167
+      version: -1
+      name: panorama-create-dynamic-address-group
+      description: Create an address group
+      script: Panorama|||panorama-create-dynamic-address-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      description:
+        simple: this is not a real address group
+      filter:
+        simple: 1.2.3.4 and 5.6.7.8
+      name:
+        simple: test_pb_address_group_ip
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 998bcfa2-b1f7-420a-80c7-ceb10285a7f5
+    type: regular
+    task:
+      id: 998bcfa2-b1f7-420a-80c7-ceb10285a7f5
+      version: -1
+      name: panorama-get-address-group
+      description: Gets address group configuration
+      script: Panorama|||panorama-get-address-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      address_group:
+        simple: test_pb_address_group_ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 1d1e7392-b152-443a-857e-41c3d21d2c4f
+    type: regular
+    task:
+      id: 1d1e7392-b152-443a-857e-41c3d21d2c4f
+      version: -1
+      name: panorama-edit-dynamic-address-group
+      description: Edit a dynamic address group
+      script: Panorama|||panorama-edit-dynamic-address-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      description:
+        simple: 2nd description
+      filter:
+        simple: 5.5.5.5 and 6.6.6.6
+      name:
+        simple: test_pb_address_group_ip
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: bd220487-4b6d-45e7-8f53-87798eb75182
+    type: regular
+    task:
+      id: bd220487-4b6d-45e7-8f53-87798eb75182
+      version: -1
+      name: panorama-delete-address-group
+      description: Delete an address group
+      script: Panorama|||panorama-delete-address-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    scriptarguments:
+      name:
+        simple: test_pb_address_group_ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 93dfbb2a-5ee5-49da-8ed7-0cf0f0a06ad0
+    type: regular
+    task:
+      id: 93dfbb2a-5ee5-49da-8ed7-0cf0f0a06ad0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -193,9 +398,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1005,
+        "height": 2165,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
