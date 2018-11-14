@@ -45,13 +45,14 @@ configuration:
   type: 0
   required: false
 script:
-  script: |
+  script: |-
     ''' IMPORTS '''
     import string
     import requests
     import json
     import re
     import uuid
+    import time
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -77,18 +78,8 @@ script:
         XPATH = "/config/devices/entry/vsys/entry/rulebase/security/rules/entry"
 
     ''' HELPERS '''
-    def http_request(uri, method, headers = {}, body = {}, params={}, files={}):
+    def http_request(uri, method, headers = {}, body = {}, params={}, files = None):
         ''' Makes an API call with the gicen arguments '''
-        #demisto.log(uri)
-        #demisto.log('11111')
-        #demisto.log(method)
-        #demisto.log(str(headers))
-        #demisto.log('22222')
-        #demisto.log(str(body))
-        #demisto.log(str(params))
-        #demisto.log(str(USE_SSL))
-        #sys.exit(0)
-
         result = requests.request(
             method,
             uri,
@@ -107,7 +98,7 @@ script:
 
         return jresult
 
-    def add_argument_open(arg, field_name, member):
+    def add_argument(arg, field_name, member):
         if arg:
             if member:
                 return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
@@ -115,9 +106,20 @@ script:
                 return '<' + field_name + '>' + arg + '</' + field_name + '>'
         else:
             return ''
+    def add_argument_open(arg, field_name, member):
+        if arg:
+            if member:
+                return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>' + arg + '</' + field_name + '>'
+        else:
+            if member:
+                return '<' + field_name + '><member>any</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>any</' + field_name + '>'
 
     def add_argument_yes_no(arg, field_name):
-        if (arg and arg == 'No'): #for disabled, negate arg
+        if (arg and arg == 'No'):
             return '<' + field_name + '>' + 'no' + '</' + field_name + '>'
         else:
             return '<' + field_name + '>' + ('yes' if arg else 'no') + '</' + field_name + '>'
@@ -134,8 +136,7 @@ script:
             'action': 'set',
             'key': API_KEY,
             'xpath': xpath if xpath else XPATH +  "[@name=\'" + rulename + "\']",
-            'element':
-                add_argument_open(action, 'action', False) +
+            'element': add_argument_open(action, 'action', False) +
                 add_argument_open(description, 'description', False) +
                 add_argument_open(src_ip, 'source', True) +
                 add_argument_open(dst_ip, 'destination', True) +
@@ -146,9 +147,9 @@ script:
                 add_argument_open(service, 'service', True) +
                 add_argument_yes_no(negate_src, 'negate-source') +
                 add_argument_yes_no(negate_dst, 'negate-destination') +
-                add_argument_yes_no(disable, 'disabled') +
-                add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection')
+                add_argument_yes_no(disable, 'disabled')
         }
+        demisto.log(str(params['element']))
         return params
 
     ''' FUNCTIONS'''
@@ -166,18 +167,241 @@ script:
             )
         demisto.results('ok')
 
+    def prettify_address_group(address_group):
+        pretty_address_group = {
+            'Name': address_group['@name'],
+            'Type': 'static' if 'static'in address_group else 'dynamic',
+        }
+
+        if 'description' in address_group:
+            pretty_address_group['Description'] = address_group['description']
+
+        if 'tag' in address_group:
+            pretty_address_group['Tag'] = address_group['tag']['member']
+
+        if pretty_address_group['Type'] == 'static':
+            pretty_address_group['Member'] = address_group['static']['member']
+        else:
+            pretty_address_group['Filter'] = address_group['dynamic']['filter']
+
+        return pretty_address_group
+
+    def panorama_get_address_group():
+        ''' Gets configured address groups '''
+        params = {
+            'action': 'show',
+            'type': 'config',
+            'xpath': "/config/devices/entry/vsys/entry/address-group/entry[@name='" + demisto.args()['address_group'] + "']",
+            'key': API_KEY
+        }
+        result = http_request(
+                URL,
+                'GET',
+                params = params,
+                )
+
+        result = result['response']['result']['entry']
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Address group:', prettify_address_group(result), ['Name', 'Type', 'Tag', 'Member', 'Filter', 'Description'], None, True),
+            'EntryContext': {
+                  "PanoramaAddressGroups(val.Name == obj.Name)": prettify_address_group(result)
+            }
+        })
+
+    def prettify_address_groups_arr(address_groups_arr):
+        pretty_address_groups_arr = []
+        for i in range (len(address_groups_arr)):
+            address_group = address_groups_arr[i]
+            pretty_address_group = {
+                'Name': address_group['@name'],
+                'Type': 'static' if 'static'in address_group else 'dynamic',
+            }
+            if 'description' in address_group:
+                pretty_address_group['Description'] = address_group['description']
+
+            if 'tag' in address_group:
+                pretty_address_group['Tag'] = address_group['tag']['member']
+
+            if pretty_address_group['Type'] == 'static':
+                pretty_address_group['Member'] = address_group['static']['member']
+            else:
+                pretty_address_group['Filter'] = address_group['dynamic']['filter']
+            pretty_address_groups_arr.append(pretty_address_group)
+        return pretty_address_groups_arr;
+
+    def panorama_get_address_groups():
+        ''' Gets all address groups configuration '''
+        params = {
+            'action': 'get',
+            'type': 'config',
+            'xpath': "/config/devices/entry/vsys/entry/address-group/entry",
+            'key': API_KEY
+        }
+        result = http_request(
+                URL,
+                'GET',
+                params = params,
+                )
+
+        result = result['response']['result']
+        address_groups_arr = result['entry']
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Address groups:', prettify_address_groups_arr(address_groups_arr), ['Name', 'Type', 'Tag', 'Member', 'Filter', 'Description'], None, True),
+            'EntryContext': {
+                  "PanoramaAddressGroups(val.Name == obj.Name)": prettify_address_groups_arr(address_groups_arr)
+            }
+        })
+
+    def panorama_edit_dynamic_address_group():
+        ''' Edit an address group '''
+        address_group_name = demisto.args()['name']
+
+        filterr = demisto.args()['filter'] if 'filter' in demisto.args() else None
+        filterr_param = add_argument_open(filterr, 'filter', False)
+        filterr_path = "/config/devices/entry/vsys/entry/address-group/entry[@name='" + address_group_name + "']/dynamic/filter",
+
+        tag = demisto.args()['tag'] if 'tag' in demisto.args() else None
+        tag_param = add_argument_open(tag, 'tag', True)
+        tag_path = "/config/devices/entry/vsys/entry/address-group/entry[@name='" + address_group_name + "']/tag",
+
+        description = demisto.args()['description'] if 'description' in demisto.args() else None
+        description_param = add_argument_open(description, 'description', False)
+        description_path = "/config/devices/entry/vsys/entry/address-group/entry[@name='" + address_group_name + "']/description",
+
+        params = {
+            'action': 'edit',
+            'type': 'config',
+            'key': API_KEY,
+        }
+
+        ec = {'Name': address_group_name}
+
+        if (filterr):
+            params['xpath'] = filterr_path
+            params['element'] = filterr_param
+            result = http_request(URL, 'POST', params = params)
+            ec['Filter'] = filterr
+        if (tag):
+            params['xpath'] = tag_path
+            params['element'] = tag_param
+            result = http_request(URL, 'POST', params = params)
+            ec['tag'] = tag
+        if (description):
+            params['xpath'] = description_path
+            params['element'] = description_param
+            result = http_request(URL, 'POST', params = params)
+            ec['description'] = description
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Panorama address group was editted successfully',
+            'EntryContext': {
+                  "PanoramaAddressGroups(val.Name == obj.Name)": ec
+            }
+        })
+
+    def panorama_create_dynamic_address_group():
+        ''' Create a dynamic address group '''
+        address_group_name = demisto.args()['name']
+        filterr = demisto.args()['filter'] if 'filter' in demisto.args() else None
+        description = demisto.args()['description'] if 'description' in demisto.args() else None
+        tag = demisto.args()['tag'] if 'tag' in demisto.args() else None
+
+        params = {
+            'action': 'edit',
+            'type': 'config',
+            'xpath': "/config/devices/entry/vsys/entry/address-group/entry[@name='" + address_group_name + "']",
+            'key': API_KEY
+        }
+        params['element'] = "<entry name='" + address_group_name + "'>" + "<dynamic>" + add_argument(filterr, 'filter', False) + "</dynamic>" + add_argument(description, 'description', False) + add_argument(tag, 'tag', True) + "</entry>"
+        result = http_request(
+                URL,
+                'POST',
+                params = params,
+                )
+
+        ec = {
+            'Name': address_group_name,
+            'Type': 'dynamic'
+        }
+        if filterr:
+            ec['Filter'] = filterr
+        if tag:
+            ec['tag'] = tag
+        if description:
+            ec['description'] = description
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Dynamic address group was created successfully',
+            'EntryContext': {
+                  "PanoramaAddressGroups(val.Name == obj.Name)": ec
+            }
+        })
+
+    def panorama_delete_address_group():
+        ''' Delete an address group '''
+        address_group_name = demisto.args()['name']
+
+        params = {
+            'action': 'delete',
+            'type': 'config',
+            'xpath': "/config/devices/entry/vsys/entry/address-group/entry[@name='" + address_group_name + "']",
+            'key': API_KEY
+        }
+        params['element'] = "<entry name='" + address_group_name + "'></entry>"
+
+        result = http_request(
+                URL,
+                'POST',
+                params = params,
+                )
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Address group was deleted successfully',
+        })
+
+    # ---------------------how to deprecate it? ------------------------
     def panorama_dynamic_list():
         ''' Creates a dynamic list in Panorama '''
         params = {
             'type':'user-id',
             'key': API_KEY
         }
-        result = http_request(
-            URL,
-            'POST',
-            params = params,
-            files = demisto.args()['file'],
-            )
+
+        file_entry_id = demisto.args()['file']
+        with open(demisto.getFilePath(file_entry_id)['path'], 'rb') as f:
+            demisto.log(str(demisto.getFilePath(file_entry_id)))
+            demisto.log(demisto.getFilePath(file_entry_id)['path'])
+            demisto.log(str(f))
+            demisto.log(str(dir(f)))
+            #sys.exit(0)
+            result = http_request(
+                URL,
+                'POST',
+                params = params,
+                files = f,
+                )
         demisto.results(result['response']['@status'])
 
     def panorama_move():
@@ -200,9 +424,47 @@ script:
         result = http_request(URL, 'POST', params = params)
         demisto.results(result['response']['@status'])
 
+    def panorama_get_pcaps():
+        ''' Get panorama pcaps '''
+        params = {
+            'type': 'export',
+            'key': API_KEY,
+            'category': demisto.args()['pcapType']
+        }
+        if 'password' in demisto.args():
+            params['dlp-password'] = demisto.args()['password']
+        elif demisto.args()['pcapType'] == 'dlp-pcap':
+            return_error('can not provide dlp-pcap without password')
+
+        fromm = demisto.args()['from'] if 'from' in demisto.args() else None
+        to = demisto.args()['to'] if 'to' in demisto.args() else None
+        serialno = demisto.args()['serialNo'] if 'serialNo' in demisto.args() else None
+        search_time = demisto.args()['searchTime'] if 'searchTime' in demisto.args() else None
+        pcap_id = demisto.args()['pcapID'] if 'pcapID' in demisto.args() else None
+        if (fromm):
+            params['from'] = fromm
+        if (to):
+            params['to'] = to
+        if (serialno):
+            params['serialno'] = serialno
+        if (search_time):
+            params['search-time'] = search_time
+        if (pcap_id):
+            params['pcap-id'] = pcap_id
+
+        result = http_request(URL, 'POST', params = params)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Got pcap succesfully',
+        })
+
     def panorama_config():
         ''' Configures a security rule in panorama'''
-        xpath = demisto.args()['xpath']if 'xpath' in demisto.args() else None
+        xpath = demisto.args()['xpath'] if 'xpath' in demisto.args() else None
         rule_name =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
         src_ip =  demisto.args()['src_ip'] if 'src_ip' in demisto.args() else None
         dst_ip =  demisto.args()['dst_ip'] if 'dst_ip' in demisto.args() else None
@@ -211,12 +473,12 @@ script:
         action =  demisto.args()['action'] if 'action' in demisto.args() else None
         service =  demisto.args()['service'] if 'service' in demisto.args() else None
         disable =  demisto.args()['disable'] if 'disable' in demisto.args() else None
-        application = demisto.args()['application']if 'application' in demisto.args() else None
-        src_user = demisto.args()['src_user']if 'src_user' in demisto.args() else None
-        fromm = demisto.args()['fromm']if 'fromm' in demisto.args() else None
-        to = demisto.args()['to']if 'to' in demisto.args() else None
-        disable_server_response_inspection = demisto.args()['disable_server_response_inspection']if 'disable_server_response_inspection' in demisto.args() else None
-        description = demisto.args()['description']if 'description' in demisto.args() else None
+        application = demisto.args()['application'] if 'application' in demisto.args() else None
+        src_user = demisto.args()['src_user'] if 'src_user' in demisto.args() else None
+        fromm = demisto.args()['from'] if 'from' in demisto.args() else None
+        to = demisto.args()['to'] if 'to' in demisto.args() else None
+        disable_server_response_inspection = demisto.args()['disable_server_response_inspection'] if 'disable_server_response_inspection' in demisto.args() else None
+        description = demisto.args()['description'] if 'description' in demisto.args() else None
 
         params = prepare_params(xpath = xpath, rulename = rule_name, src_ip = src_ip, dst_ip = dst_ip,
                     negate_src = negate_src, negate_dst = negate_dst, action = action, service = service,
@@ -265,7 +527,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'ip blocked succesfully',
+            'HumanReadable': 'IP blocked succesfully',
             'EntryContext': {
                   "PanoramaRule(val.Name == obj.Name)": ec
             }
@@ -340,7 +602,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'application blocked succesfully',
+            'HumanReadable': 'Application blocked succesfully',
             'EntryContext': {
                   "PanoramaRule(val.Name == obj.Name)": ec
             }
@@ -348,16 +610,21 @@ script:
 
     def panorama_disable_rule():
         ''' Disables a rule in panorama'''
-        rule_name =  demisto.args()['rulename']
-        params = prepare_params(rulename = rule_name, disable = 'Yes')
+        rulename =  demisto.args()['rulename']
+        params = {
+            'type': 'config',
+            'action': 'set',
+            'key': API_KEY,
+            'xpath': XPATH +  "[@name=\'" + rulename + "\']",
+            'element': '<disabled>yes</disabled>'
+        }
         result = http_request(
             URL,
             'POST',
             params = params
             )
-
         ec = {
-            'Name': rule_name,
+            'Name': rulename,
             'Disabled': True
         }
 
@@ -374,8 +641,14 @@ script:
 
     def panorama_enable_rule():
         ''' Enables a rule in panorama'''
-        rule_name =  demisto.args()['rulename']
-        params = prepare_params(rulename = rule_name, disable = 'No')
+        rulename =  demisto.args()['rulename']
+        params = {
+            'type': 'config',
+            'action': 'set',
+            'key': API_KEY,
+            'xpath': XPATH +  "[@name=\'" + rulename + "\']",
+            'element': '<disabled>no</disabled>'
+        }
         result = http_request(
             URL,
             'POST',
@@ -383,7 +656,7 @@ script:
             )
 
         ec = {
-            'Name': rule_name,
+            'Name': rulename,
             'Disabled': False
         }
 
@@ -420,6 +693,22 @@ script:
         })
 
     def panorama_commit():
+        params = {
+            'type': 'commit',
+            'cmd': '<commit></commit>',
+            'key': API_KEY
+        }
+
+        result = http_request(
+            URL,
+            'POST',
+            params = params
+            )
+
+        #a few seconds until commit will take place
+        time.sleep(3)
+
+    def panorama_final_commit():
         ''' Commit panorama '''
         params = {
             'type': 'commit',
@@ -433,13 +722,17 @@ script:
             params = params
             )
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'Panorama command was executed successfully',
-        })
+        if ('result' in result['response']):
+            demisto.log(str(result))
+            return_error('Panorama commit failed.')
+        else:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': result,
+                'ReadableContentsFormat': formats['text'],
+                'HumanReadable': 'Panorama was committed successfully',
+            })
 
     ''' EXECUTION '''
     LOG('command is %s' % (demisto.command(), ))
@@ -448,14 +741,37 @@ script:
         if demisto.command() == 'test-module':
             panorama_test()
 
+        elif demisto.command() == 'panorama-get-address-group':
+            panorama_get_address_group()
+
+        elif demisto.command() == 'panorama-get-address-groups':
+            panorama_get_address_groups()
+
+        elif demisto.command() == 'panorama-edit-dynamic-address-group':
+            panorama_edit_dynamic_address_group()
+            panorama_commit()
+
+        elif demisto.command() == 'panorama-create-dynamic-address-group':
+            panorama_create_dynamic_address_group()
+            panorama_commit()
+
+        elif demisto.command() == 'panorama-delete-address-group':
+            panorama_delete_address_group()
+            panorama_commit()
+
         elif demisto.command() == 'panorama-dynamic-block-list':
             panorama_dynamic_list()
 
         elif demisto.command() == 'panorama-move':
             panorama_move()
+            panorama_commit()
+
+        elif demisto.command() == 'panorama-get-pcaps':
+            panorama_get_pcaps()
 
         elif demisto.command() == 'panorama-config':
             panorama_config()
+            panorama_commit()
 
         elif demisto.command() == 'panorama-block-ip':
             panorama_block_ip()
@@ -481,17 +797,34 @@ script:
 
         elif demisto.command() == 'panorama':
             panorama_command()
+            panorama_commit()
 
 
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
         return_error(e.message)
+
+    panorama_final_commit()
   type: python
   commands:
   - name: panorama
     arguments:
     - name: action
+      auto: PREDEFINED
+      predefined:
+      - set
+      - edit
+      - delete
+      - rename
+      - clone
+      - move
+      - override
+      - muti-move
+      - multi-clone
+      - complete
+      - show
+      - get
       description: Choose an available  actio(show,get,set,edit, delete,rename,clone,move,override)
     - name: category
       description: Category parameter. e.g. when exporting a configuration file use
@@ -532,10 +865,11 @@ script:
       description: Used for retrieving logs. e.g. log-type=threat for threat logs
     - name: type
       description: The request type (e.g. export, import, log, config)
+      defaultValue: keygen,config,commit,op,report,log,import,export,user-id,version
     - name: search-time
       description: Used for threat PCAPs, the time that the PCAP was received on the
         firewall.
-    description: Run any panorama command supported in api.
+    description: Run any panorama command supported in api
   - name: panorama-dynamic-block-list
     arguments:
     - name: file
@@ -649,6 +983,20 @@ script:
       description: Yes/No - whether to negate the destination IP address (match all
         except the specified address)
     - name: action
+      auto: PREDEFINED
+      predefined:
+      - set
+      - edit
+      - delete
+      - rename
+      - clone
+      - move
+      - override
+      - muti-move
+      - multi-clone
+      - complete
+      - show
+      - get
       description: Action for the rule
     - name: service
       description: Service for the rule
@@ -666,11 +1014,9 @@ script:
       description: '"From" value for the rule'
     - name: to
       description: '"To" value for the rule'
-    - name: disable_server_response_inspection
-      description: Value for the "disable-server-response-inspection" option
     - name: description
       description: Rule description
-    description: Set Panorama configuration
+    description: Set panorama configuration
   - name: panorama-get-applications
     arguments: []
     outputs:
@@ -696,6 +1042,130 @@ script:
       description: Application description
       type: string
     description: Get a list of applications
+  - name: panorama-get-pcaps
+    arguments:
+    - name: pcapType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - application-pcap
+      - filter-pcap
+      - dlp-pcap
+      description: Type of Packet Capture
+    - name: from
+      description: '"From" value for the rule'
+    - name: to
+      description: '"To" value for the rule'
+    - name: serialNo
+      description: Serial number for the request. For further information, see the
+        Panorama XML API Documentation.
+    - name: searchTime
+      description: Search time for the request. For further information, see the Panorama
+        XML API Documentation.
+    - name: pcapID
+      description: ' ID of the Pcap for the request. For further information, see
+        the Panorama XML API Documentation.'
+    - name: password
+      description: Password for Panorama
+    description: Get panorama pcaps
+  - name: panorama-get-address-group
+    arguments:
+    - name: address_group
+      required: true
+      description: Address group name
+    outputs:
+    - contextPath: PanoramaAddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: PanoramaAddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: PanoramaAddressGroups.Filter
+      description: Address group filter
+      type: string
+    - contextPath: PanoramaAddressGroups.Description
+      description: Address group description
+      type: string
+    - contextPath: PanoramaAddressGroups.Tag
+      description: Address group tag
+      type: string
+    description: Gets address group configuration
+  - name: panorama-get-address-groups
+    arguments: []
+    outputs:
+    - contextPath: PanoramaAddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: PanoramaAddressGroups.Type
+      description: Address group type
+    - contextPath: PanoramaAddressGroups.Filter
+      description: Address group filter
+    - contextPath: PanoramaAddressGroups.Description
+      description: Address group description
+    - contextPath: PanoramaAddressGroups.Tag
+      description: Address group tag
+    description: Gets all address groups configuration
+  - name: panorama-edit-dynamic-address-group
+    arguments:
+    - name: name
+      required: true
+      description: Address group name
+    - name: filter
+      description: 'Address group new filter. e.g: "1.1.1.1 and 2.2.2.2"'
+    - name: description
+      description: Address group new description
+    - name: tag
+      description: Address group new tag
+      isArray: true
+    outputs:
+    - contextPath: PanoramaAddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: PanoramaAddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: PanoramaAddressGroups.Filter
+      description: Address group filter
+      type: string
+    - contextPath: PanoramaAddressGroups.Description
+      description: Address group description
+      type: string
+    - contextPath: PanoramaAddressGroups.Tag
+      description: Address group tag
+      type: string
+    description: Edit a dynamic address group
+  - name: panorama-commit
+    arguments: []
+    description: Commit Panorama
+  - name: panorama-create-dynamic-address-group
+    arguments:
+    - name: name
+      required: true
+      description: Address group name
+    - name: filter
+      required: true
+      description: 'Address group filter. e.g: "1.1.1.1 or 2.2.2.2"'
+    - name: description
+      description: Address group description
+    - name: tag
+      description: Address group tag
+    outputs:
+    - contextPath: PanoramaAddressGroups.Name
+      description: Address group name
+    - contextPath: PanoramaAddressGroups.Type
+      description: Address group type
+    - contextPath: PanoramaAddressGroups.Filter
+      description: Address group filter
+    - contextPath: PanoramaAddressGroups.Description
+      description: Address group description
+    - contextPath: PanoramaAddressGroups.Tag
+      description: Address group tag
+    description: Create an address group
+  - name: panorama-delete-address-group
+    arguments:
+    - name: name
+      description: Address group name
+    description: Delete an address group
   runonce: false
 releaseNotes: "test"
 tests:
