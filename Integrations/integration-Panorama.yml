@@ -94,7 +94,12 @@ script:
 
         jresult = json.loads(xml2json(result.text))
         if jresult['response']['@status'] != 'success':
-            return_error('Request Failed.\nStatus code: ' + jresult['response']['@code'] + '\nWith message:' + jresult['response']['msg']['line'])
+            if '@code' in jresult['response']:
+                return_error('Request Failed.\nStatus code: ' + jresult['response']['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
+            elif '@status' in jresult['response']:
+                return_error('Request Failed.\nStatus: ' + jresult['response']['@status'] + '\nWith message: ' + jresult['response']['msg']['line'])
+            else:
+                return_error('Request Failed.\n' + jresult['response'])
 
         return jresult
 
@@ -149,7 +154,6 @@ script:
                 add_argument_yes_no(negate_dst, 'negate-destination') +
                 add_argument_yes_no(disable, 'disabled')
         }
-        demisto.log(str(params['element']))
         return params
 
     ''' FUNCTIONS'''
@@ -431,16 +435,22 @@ script:
             'key': API_KEY,
             'category': demisto.args()['pcapType']
         }
+
         if 'password' in demisto.args():
             params['dlp-password'] = demisto.args()['password']
         elif demisto.args()['pcapType'] == 'dlp-pcap':
             return_error('can not provide dlp-pcap without password')
 
+        if 'pcapID' in demisto.args():
+            params['pcap-id'] = demisto.args()['pcapID']
+        elif demisto.args()['pcapType'] == 'threat-pcap':
+            return_error('can not provide threat-pcap without pcap-id')
+
         fromm = demisto.args()['from'] if 'from' in demisto.args() else None
         to = demisto.args()['to'] if 'to' in demisto.args() else None
         serialno = demisto.args()['serialNo'] if 'serialNo' in demisto.args() else None
         search_time = demisto.args()['searchTime'] if 'searchTime' in demisto.args() else None
-        pcap_id = demisto.args()['pcapID'] if 'pcapID' in demisto.args() else None
+
         if (fromm):
             params['from'] = fromm
         if (to):
@@ -449,10 +459,8 @@ script:
             params['serialno'] = serialno
         if (search_time):
             params['search-time'] = search_time
-        if (pcap_id):
-            params['pcap-id'] = pcap_id
 
-        result = http_request(URL, 'POST', params = params)
+        result = http_request(URL, 'GET', params = params)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -502,22 +510,22 @@ script:
         ''' Blocks an IP in panorama'''
         ip = demisto.args()['ip']
         direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
-        rule_name =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
 
         block_destination = False if direction == 'from' else True
         block_source =  False if direction == 'to' else True
 
         if block_source:
-            params = prepare_params(action = 'drop', src_ip = ip, dst_ip = 'any', rulename = rule_name + '-from')
+            params = prepare_params(action = 'drop', src_ip = ip, dst_ip = 'any', rulename = rulename + '-from')
             result = http_request(URL, 'POST', params = params)
 
         if block_destination:
-            params = prepare_params(action = 'drop', dst_ip = ip, src_ip = 'any', rulename = rule_name + '-to')
+            params = prepare_params(action = 'drop', dst_ip = ip, src_ip = 'any', rulename = rulename + '-to')
             result = http_request(URL, 'POST', params = params)
 
         ec = {
             'IP': ip,
-            'Name': rule_name,
+            'Name': rulename,
             'Direction': direction,
             'Disabled': False
         }
@@ -528,6 +536,41 @@ script:
             'Contents': result,
             'ReadableContentsFormat': formats['text'],
             'HumanReadable': 'IP blocked succesfully',
+            'EntryContext': {
+                  "PanoramaRule(val.Name == obj.Name)": ec
+            }
+        })
+
+    def panorama_block_address_group():
+        ''' Blocks an address group in panorama'''
+        address_group_name = demisto.args()['address_group_name']
+        direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
+
+        block_destination = False if direction == 'from' else True
+        block_source =  False if direction == 'to' else True
+
+        if block_source:
+            params = prepare_params(action = 'drop', src_ip = address_group_name, dst_ip = 'any', rulename = rulename + '-from')
+            result = http_request(URL, 'POST', params = params)
+
+        if block_destination:
+            params = prepare_params(action = 'drop', dst_ip = address_group_name, src_ip = 'any', rulename = rulename + '-to')
+            result = http_request(URL, 'POST', params = params)
+
+        ec = {
+            'AddressGroupName': address_group_name,
+            'Name': rulename,
+            'Direction': direction,
+            'Disabled': False
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Address group blocked succesfully',
             'EntryContext': {
                   "PanoramaRule(val.Name == obj.Name)": ec
             }
@@ -583,8 +626,8 @@ script:
     def panorama_block_application():
         ''' Blocks an application in panorama'''
         application = demisto.args()['application']
-        rule_name =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
-        params = prepare_params(action = 'drop', src_ip = 'any', dst_ip = 'any', rulename = rule_name, application = application)
+        rulename =  demisto.args()['rulename'] if 'rulename' in demisto.args() else str(uuid.uuid4())
+        params = prepare_params(action = 'drop', src_ip = 'any', dst_ip = 'any', rulename = rulename, application = application)
         result = http_request(
             URL,
             'POST',
@@ -593,7 +636,7 @@ script:
 
         ec = {
             'Application': application,
-            'Name': rule_name,
+            'Name': rulename,
             'Disabled': False
         }
 
@@ -723,7 +766,6 @@ script:
             )
 
         if ('result' in result['response']):
-            demisto.log(str(result))
             return_error('Panorama commit failed.')
         else:
             demisto.results({
@@ -775,6 +817,10 @@ script:
 
         elif demisto.command() == 'panorama-block-ip':
             panorama_block_ip()
+            panorama_commit()
+
+        elif demisto.command() == 'panorama-block-address-group':
+            panorama_block_address_group()
             panorama_commit()
 
         elif demisto.command() == 'panorama-get-applications':
@@ -1051,6 +1097,7 @@ script:
       - application-pcap
       - filter-pcap
       - dlp-pcap
+      - threat-pcap
       description: Type of Packet Capture
     - name: from
       description: '"From" value for the rule'
@@ -1166,6 +1213,24 @@ script:
     - name: name
       description: Address group name
     description: Delete an address group
+  - name: panorama-block-address-group
+    arguments:
+    - name: address_group_name
+      required: true
+      description: Address group name
+    - name: direction
+      description: Direction to block
+      defaultValue: to, from, both
+    - name: rulename
+      description: Rule name
+    outputs:
+    - contextPath: PanoramaRule.Name
+      description: Rule name
+    - contextPath: PanoramaRule.AddressGroupName
+      description: Rule address group name
+    - contextPath: PanoramaRule.Direction
+      description: Rule direction
+    description: Blocks an address group
   runonce: false
 releaseNotes: "test"
 tests:
