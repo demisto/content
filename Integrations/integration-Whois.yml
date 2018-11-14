@@ -17,53 +17,61 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: |
     ''' IMPORTS '''
     import socket
     import socks
     import whois
-    import datetime
     from urlparse import urlparse
     import urllib3
-    import json
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
     ''' GLOBAL VARS '''
-    if not demisto.params().get('proxy', False) or demisto.params()['proxy'] == 'false':
+    if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
         del os.environ['http_proxy']
         del os.environ['https_proxy']
+
+
     PROXY = demisto.params()['proxy']
+    # Setting proxy to be used in Socks
+    if PROXY is True:
+        proxy_url = os.environ.get('HTTPS_PROXY', None)
+        if proxy_url:
+            uri = urlparse(proxy_url)
+            socks.set_default_proxy(socks.PROXY_TYPE_HTTP, uri.hostname, uri.port)
+            socket.socket = socks.socksocket
     DOMAIN = demisto.args().get('query')
 
 
     ''' HELPER FUNCTIONS '''
-    def listTool(item, type, number):
+    def list_tool(item, list, number):
         if isinstance(item, list):
             return str(item[number])
         else:
             return item
 
-
-    def myconverter(o):
-        if isinstance(o, datetime.datetime):
-            return o.__str__()
+    # converts inputs into a string w/o u' prepended
+    def my_converter(obj):
+        if isinstance(obj, datetime):
+            return obj.__str__()
         else:
-            return o
+            return obj
 
 
-    def timeListTool(o):
+    def time_list_tool(obj):
         tformat = '%m/%d/%Y %H:%M:%S %p'
-        if o is not None and isinstance(o, list):
-            for s in o:
-                myconverter(s)
-            return s
+        if obj is not None and isinstance(obj, list):
+            for string in obj:
+                my_converter(string)
+            return string
         else:
-            return o
+            return obj
 
 
+    # Removes null/None values from context dict
     def remove_none(obj):
       if isinstance(obj, (list, tuple, set)):
         return type(obj)(remove_none(x) for x in obj if x is not None)
@@ -74,87 +82,61 @@ script:
         return obj
 
 
+
+
     '''COMMANDS'''
-
-
     def whois_command():
-
         try:
-            if PROXY is True:
-                proxy_url = os.environ.get('HTTPS_PROXY', None)
-                if proxy_url:
-                    uri = urlparse(proxy_url)
-                    socks.set_default_proxy(socks.PROXY_TYPE_HTTP, uri.hostname, uri.port)
-                    socket.socket = socks.socksocket
             w = whois.whois(DOMAIN)
             md = {}
-
-            for k in w:
-                v = w[k]
-                v = myconverter(v)
-                kw = k.replace("_", " ")
-                kf = kw.title()
-                md.update({kf: v})
-
-
-
-            filtered = {k: v for k, v in md.iteritems() if v is not None}
+            for key in w:
+                value = w[key]
+                value = my_converter(value)
+                key = string_to_table_header(key)
+                md.update({key: value})
             ec = {}
-
             ec.update({
-                        "DNS":
-                            {
-                                "Name": str(listTool(w.domain_name, list, 0))
+                'Domain':
+                    {
+                    'Name': str(list_tool(w.domain_name, list, 0)),
+                    'Whois':
+                        {
+                        'Domain': str(list_tool(w.domain_name, list, 0)),
+                        'DomainStatus': w.status,
+                        'DNSSec': str(w.dnssec),
+                        'Raw': str(w),
+                        'NameServers': w.name_servers,
+                        'CreationDate': str(time_list_tool(w.creation_date)),
+                        'UpdatedDate': str(time_list_tool(w.updated_date)),
+                        'ExpirationDate': str(time_list_tool(w.expiration_date)),
+                        'Registrar': {
+                            'Name': str(w.registrar),
+                            'AbuseEmail': str(list_tool(w.emails, list, 0))
                             },
-                        "Whois":
-                            {
-                                "Domain": str(listTool(w.domain_name, list, 0)),
-                                "DomainStatus": str(", ".join([str(x) for x in w.status])),
-                                "DNSSec": str(w.dnssec),
-                                "Raw": str(w),
-                                "NameServers": str(", ".join([str(x) for x in w.name_servers])),
-                                "CreationDate": str(timeListTool(w.creation_date)),
-                                "UpdatedDate": str(timeListTool(w.updated_date)),
-                                "ExpirationDate": str(timeListTool(w.expiration_date)),
-                                "Registrar": {
-                                    "Name": str(w.registrar),
-                                    "AbuseEmail": str(listTool(w.emails, list, 0))
-                                },
-                                "Registrant": {
-                                    "Name": str(w.name),
-                                    "Email": str(listTool(w.emails, list, 1))
-                                    }
-                                }
+                        'Registrant': {
+                            'Name': str(w.get('name')),
+                            'Email': str(list_tool(w.emails, list, 1))
+                            }
+                        }
+                    }
                     })
-
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['markdown'],
-                'Contents': tableToMarkdown('Whois results for {}'.format(DOMAIN), filtered),
-                'HumanReadable': tableToMarkdown('Whois results for {}'.format(DOMAIN),filtered),
+                'Contents': str(w),
+                'HumanReadable': tableToMarkdown('Whois results for {}'.format(DOMAIN), md, removeNull=True),
                 'EntryContext': remove_none(ec)
                 })
         except:
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['markdown'],
-                'Contents': 'No result found for {}'.format(DOMAIN),
-                'HumanReadable': 'No result found for {}'.format(DOMAIN)
-                })
+            demisto.results('No result found for {}'.format(DOMAIN))
 
 
     def test_command():
 
         try:
-            if PROXY is True:
-                proxy_url = os.environ.get('HTTPS_PROXY', None)
-                if proxy_url:
-                    uri = urlparse(proxy_url)
-                    socks.set_default_proxy(socks.PROXY_TYPE_HTTP, uri.hostname, uri.port)
-                    socket.socket = socks.socksocket
             w = whois.whois('google.com')
 
-            domain_test = listTool(w.domain_name, list, 1)
+            domain_test = list_tool(w.domain_name, list, 1)
 
             if domain_test == 'google.com':
                 demisto.results('ok')
@@ -164,14 +146,16 @@ script:
 
     ''' EXECUTION CODE '''
 
-
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_command()
-        sys.exit(0)
-    if demisto.command() == 'whois':
-        whois_command()
-        sys.exit(0)
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_command()
+        elif demisto.command() == 'whois':
+            whois_command()
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
   type: python
   commands:
   - name: whois
@@ -181,35 +165,47 @@ script:
     outputs:
     - contextPath: Whois.Domain
       description: Domain
+      type: string
     - contextPath: Whois.DomainStatus
       description: Domain Status
+      type: string
     - contextPath: Whois.DNSSec
       description: DNSSEC
+      type: string
     - contextPath: Whois.NameServers
       description: Name Servers
+      type: string
     - contextPath: Whois.CreationDate
       description: Creation Date
+      type: date
     - contextPath: Whois.UpdatedDate
       description: Updated Date
+      type: date
     - contextPath: Whois.ExpirationDate
       description: Expiration Date
+      type: date
     - contextPath: Whois.Registrar.Name
       description: Registrar's Name
+      type: string
     - contextPath: Whois.Registrar.AbuseEmail
       description: Registrar's Abuse Email
+      type: string
     - contextPath: Whois.Registrant.Name
       description: Registrant's Name
+      type: string
     - contextPath: Whois.Registrant.Email
       description: Registrant's Email
+      type: string
     - contextPath: DNS.Name
       description: Domain Name
+      type: string
     - contextPath: DNS.RiskScore
       description: Risk Score
+      type: number
     - contextPath: Whois.Raw
       description: Raw Output
+      type: string
     description: Provides data enrichment for Domains, URLs, and IP addresses.
-  - name: test-module
-    arguments: []
   dockerimage: demisto/ippysocks
   runonce: false
   releaseNotes: More powerful version of Whois with proxy support.
