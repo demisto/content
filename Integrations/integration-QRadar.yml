@@ -5,8 +5,8 @@ name: QRadar
 display: IBM QRadar
 category: Analytics & SIEM
 image: data:image/png;base64,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
-description: Get incidents and search QRadar
-detaileddescription: Get incidents and search QRadar
+description: Fetch offenses as incidents and search QRadar
+detaileddescription: Fetch offenses as incidents and search QRadar
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -567,7 +567,9 @@ script:
     def get_search_results_command():
         search_id = demisto.args().get('search_id')
         raw_search_results = get_search_results(search_id, demisto.args().get('range'))
-        return get_entry_for_object('QRadar Search Results', unicode_to_str_recur(raw_search_results), demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
+        result_key = raw_search_results.keys()[0]
+        title = 'QRadar Search Results from ' + result_key
+        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result.{1}'.format(search_id, result_key))
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -590,12 +592,15 @@ script:
             if isinstance(headers, basestring):
                 headers = headers.split(',')
             headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
+        human_readable_md = ''
+        for k, h_obj in human_readable_obj.iteritems():
+            human_readable_md = human_readable_md + tableToMarkdown(k, h_obj, headers)
         return {
             'Type': entryTypes['note'],
             'Contents': obj,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, human_readable_obj, headers),
+            'HumanReadable': "### {0}\n{1}".format(title, human_readable_md),
             'EntryContext': obj
         }
 
@@ -608,11 +613,23 @@ script:
             human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
             populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
             trans_assets[asset_key] = populated_asset
-            human_readable_trans_assets[human_readable_key] = populated_asset
+            human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(populated_asset)
         # Adding endpoints context items
         trans_assets['Endpoint'] = endpoint_dict
         human_readable_trans_assets['Endpoint'] = endpoint_dict
         return trans_assets, human_readable_trans_assets
+
+    def transform_single_asset_to_hr(asset):
+        '''
+        Prepares asset for human readable
+        '''
+        hr_asset = []
+        for k,v in asset.iteritems():
+            if isinstance(v, dict):
+                hr_item = v
+                hr_item['Property Name'] = k
+                hr_asset.append(hr_item)
+        return hr_asset
 
     def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
         asset_dict = {}
@@ -690,7 +707,7 @@ script:
         note = replace_keys(raw_note, note_names_map)
         if 'CreateTime' in note:
           note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-        return get_entry_for_object('QRadar Note', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
+        return get_entry_for_object('QRadar note created successfuly', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
 
     def create_note_command():
         raw_note = create_note(demisto.args().get('offense_id'), demisto.args().get('note_text'), demisto.args().get('fields'))

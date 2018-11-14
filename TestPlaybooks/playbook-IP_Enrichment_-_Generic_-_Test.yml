@@ -26,6 +26,7 @@ tasks:
           "y": 55
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 50390730-c3fa-4d95-849f-f6853bc17ea7
@@ -54,6 +55,7 @@ tasks:
           "y": 212
         }
       }
+    note: false
   "8":
     id: "8"
     taskid: ece68928-93e3-49ff-8439-e1f2a4dfb0c8
@@ -64,13 +66,12 @@ tasks:
       name: IP Enrichment - Generic
       description: Enrich IP using one or more integrations
       playbookName: IP Enrichment - Generic
-      playbookId: ip_enrichment_generic
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     scriptarguments:
       IP:
         simple: ${Test.Address}
@@ -87,6 +88,7 @@ tasks:
           "y": 586
         }
       }
+    note: false
   "9":
     id: "9"
     taskid: 3ab19aee-e6dd-4861-8916-eb396b7cafd9
@@ -116,6 +118,7 @@ tasks:
           "y": 747
         }
       }
+    note: false
   "11":
     id: "11"
     taskid: 44b60ed4-8726-4677-8813-af6e82197a01
@@ -129,6 +132,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -143,6 +149,7 @@ tasks:
           "y": 934
         }
       }
+    note: false
   "12":
     id: "12"
     taskid: 976463d4-e7b8-46e9-89b7-de92a0355ff2
@@ -173,14 +180,102 @@ tasks:
           "y": 400
         }
       }
+    note: false
+  "13":
+    id: "13"
+    taskid: 2506094f-c249-4e35-8edc-2e9c558138de
+    type: condition
+    task:
+      id: 2506094f-c249-4e35-8edc-2e9c558138de
+      version: -1
+      name: Check for errors
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 670
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 3654b181-2edc-4aec-8a89-aae914607cc2
+    type: title
+    task:
+      id: 3654b181-2edc-4aec-8a89-aae914607cc2
+      version: -1
+      name: End of test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1170
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: af83745f-05a6-46ad-8fed-b284787ff6c0
+    type: condition
+    task:
+      id: af83745f-05a6-46ad-8fed-b284787ff6c0
+      version: -1
+      name: Check for API RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 900
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1154,
-        "width": 381,
-        "x": 449,
+        "height": 1180,
+        "width": 960,
+        "x": -130,
         "y": 55
       }
     }

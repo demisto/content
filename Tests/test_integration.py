@@ -141,6 +141,9 @@ def __create_incident_with_playbook(client, name, playbook_id):
     while incidents['total'] != 1:
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
+            if inc_id == 'incCreateErr':
+                print_error('Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.')
+                return False, -1
             print_error('failed to get incident with id:' + inc_id)
             return False, -1
         time.sleep(1)
