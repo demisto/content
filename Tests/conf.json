@@ -718,6 +718,9 @@
       },
       {
           "playbookID": "ReadPDFFile-Test"
+      },
+      {
+          "playbookID": "URLDecode-Test"
       }
     ],
     "skipped_tests": {
