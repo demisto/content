@@ -111,7 +111,7 @@ script:
 
         token = login_response['response'].get('token')
         # There might be a case where the API does not return a token because there are too many sessions with the same user.
-        # In that case we need to add 'releaseSession = true';
+        # In that case we need to add 'releaseSession = true'
         if not token:
             login_body['releaseSession'] = 'true'
             login_response = send_login_request(login_body)
@@ -124,29 +124,22 @@ script:
 
     def list_scans_command():
         res = list_scans()
-        managable = demisto.args().get('managable').lower()
+        manageable = demisto.args().get('managable').lower()
 
         if not res or 'response' not in res or not res['response']:
             return 'No scans found'
 
-        scans_arrays = res['response'].get('manageable')
-        scans_dicts = []
-
-        if managable == 'false':
-            scans_arrays += res['response'].get('usable')
-            no_dups = list(set([tuple(s.items()) for s in scans_arrays]))
-            scans_dicts = [dict(s) for s in no_dups]
-        else:
-            scans_dicts = scans_arrays
+        scans_dicts = get_elements(res['response'], manageable)
 
         if len(scans_dicts) == 0:
             return 'No scans found'
 
-        mapped_scans = [{'Name': s['name'], 'ID': s['id']} for s in scans_dicts]
+        mapped_scans = [{'Name': s['name'], 'ID': s['id'], 'Description': s['description']} for s in scans_dicts]
 
         headers = [
         'ID',
-        'Name'
+        'Name',
+        'Description'
         ]
 
         entry = {
@@ -166,6 +159,104 @@ script:
         path = 'scan'
 
         return send_request(path)
+
+
+    def list_policies_command():
+        res = get_policies()
+
+        manageable = demisto.args().get('manageable').lower()
+
+        if not res or 'response' not in res or not res['response']:
+            return 'No policies found'
+
+        policies = get_elements(res['response'], manageable)
+
+        if len(policies) == 0:
+            return 'No policies found'
+
+        headers = [
+            'ID',
+            'Name',
+            'Description'
+            ]
+
+        mapped_policies = [{'ID': p['id'], 'Name': p['name'], 'Description': p['description']} for p in policies]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan Policies", mapped_policies, headers, removeNull=True),
+            'EntryContext': {
+                  'TenableSC.ScanPolicy(val.ID==obj.ID)': createContext(mapped_policies, removeNull=True)
+            }
+        }
+
+        return entry
+
+
+    def get_policies():
+        path = 'policy'
+
+        return send_request(path)
+
+    def list_repositories_command():
+        res = get_repositories()
+
+        if not res or 'response' not in res or not res['response']:
+            return 'No repositories found'
+
+
+        repositories = res['response']
+
+        if len(repositories) == 0:
+            return 'No repositories found'
+
+        headers = [
+            'ID',
+            'Name',
+            'Description'
+            ]
+
+        mapped_repositories = [{'ID': r['id'], 'Name': r['name'], 'Description': r['description']} for r in repositories]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan Repositories", mapped_repositories, headers, removeNull=True),
+            'EntryContext': {
+                  'TenableSC.ScanRepository(val.ID==obj.ID)': createContext(mapped_repositories, removeNull=True)
+            }
+        }
+
+        return entry
+
+
+    def get_repositories():
+        path = 'repository'
+
+        return send_request(path)
+
+    def get_elements(elements, manageable):
+        arrays = elements.get('manageable')
+        dicts = []
+
+        if manageable == 'false':
+            arrays += elements.get('usable')
+            no_dups = list(set([tuple(s.items()) for s in arrays]))
+            dicts = [dict(s) for s in no_dups]
+        else:
+            dicts = arrays
+
+        return dicts
+
+
+    #def create_scan_command():
+
+
 
     def launch_scan_command():
         scan_id = demisto.args()['scanID']
@@ -190,7 +281,6 @@ script:
             'Status'
         ]
 
-
         mapped_scan = {
             'Name': scan_result['name'],
             'ResultID': scan_result['id'],
@@ -206,7 +296,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan", mapped_scan, headers, removeNull=True),
             'EntryContext': {
-                  'Nexpose.Scan(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
+                  'TenableSC.Scan(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
             }
         }
 
@@ -263,6 +353,7 @@ script:
 
     def get_scan_report_command():
         scan_results_id = demisto.args()['scanResultsID']
+        vulnerabilities_to_get = argToList(demisto.args().get('vulnerabilitySeverity', []))
 
         res = get_scan_report(scan_results_id)
 
@@ -308,10 +399,11 @@ script:
 
         hr = tableToMarkdown('Tenable SecurityCenter Scan ' + mapped_results['ID'] + ' Report', mapped_results, headers, removeNull=True)
 
-        vulnerabilites = get_vulnearbilites(scan_results_id)
-        if vulnerabilites and len(vulnerabilites) > 0:
-            hr += tableToMarkdown("Vulnerabilities", vulnerabilites, vuln_headers, removeNull=True)
-            mapped_results['Vulnerability'] = vulnerabilites
+        if len(vulnerabilities_to_get) > 0:
+            vulnerabilities = list(filter(lambda v: v['Severity'] in vulnerabilities_to_get, get_vulnearbilites(scan_results_id)))
+            if vulnerabilities and len(vulnerabilities) > 0:
+                hr += tableToMarkdown("Vulnerabilities", vulnerabilities, vuln_headers, removeNull=True)
+                mapped_results['Vulnerability'] = vulnerabilities
 
         entry = {
             'Type': entryTypes['note'],
@@ -450,13 +542,16 @@ script:
         hosts = [{'IP': h['ip'], 'MAC': h['macAddress']} for h in demisto.dt(vuln_hosts, 'iplist')]
 
 
-        cve = None
+        cves = None
+        cves_output = []
         if vuln.get('xrefs'):
             # Extract CVE
             cve_filter = list(filter(lambda x: x.strip().startswith('CVE'), vuln['xrefs'].split(',')))
             if cve_filter and len(cve_filter) > 0:
-                cve_str = str(cve_filter[0]).split(":")
-                cve = cve_str[1] if len(cve_str) > 1 else None
+                cves = list(map(lambda c: c.replace('CVE:', '').strip(), cve_arr))
+                cves_output + map(lambda c: {
+                'ID': cve
+                }, cves)
 
         mapped_vuln =  {
             'ID': vuln['id'],
@@ -472,7 +567,7 @@ script:
         vuln_info = {
             'Published': datetime.datetime.utcfromtimestamp(int(vuln['vulnPubDate'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
             'CPE': vuln['cpe'],
-            'CVE': cve
+            'CVE': cves
         }
 
         exploit_info = {
@@ -512,14 +607,18 @@ script:
             'Vulnerability': mapped_vuln,
         }
 
-        return {
+        context = createContext(scan_result, removeNull=True)
+        if len(cves_output) > 0:
+            context['CVE(val.ID==obj.ID)'] = cves_output
+
+        entry = {
             'Type': entryTypes['note'],
             'Contents': vuln_response,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
             'EntryContext': {
-                  'TenableSC.Scan(val.ID==obj.ID)': createContext(scan_result, removeNull=True)
+                  'TenableSC.Scan(val.ID==obj.ID)': context
             }
         }
 
@@ -594,6 +693,10 @@ script:
         demisto.results('ok')
     elif demisto.command() == 'tenable-sc-list-scans':
         demisto.results(list_scans_command())
+    elif demisto.command() == 'tenable-sc-list-policies':
+        demisto.results(list_policies_command())
+    elif demisto.command() == 'tenable-sc-list-repositories':
+        demisto.results(list_repositories_command())
     elif demisto.command() == 'tenable-sc-launch-scan':
         demisto.results(launch_scan_command())
     elif demisto.command() == 'tenable-sc-get-scan-status':
@@ -614,8 +717,9 @@ script:
   commands:
   - name: tenable-sc-list-scans
     arguments:
-    - name: managable
-      description: Whether to return only manageable scans.
+    - name: manageable
+      description: Whether to return only manageable scans. Returns both useable and
+        manageable scans by default.
       defaultValue: "false"
     outputs:
     - contextPath: TenableSC.Scan.Name
@@ -624,7 +728,37 @@ script:
     - contextPath: TenableSC.Scan.ID
       description: Scan ID
       type: number
+    - contextPath: TenableSC.Scan.Description
+      description: Scan description
     description: Get a list of Tenable SecurityCenter existing scans
+  - name: tenable-sc-list-policies
+    arguments:
+    - name: manageable
+      description: Whether to return only manageable scan policies. Returns both useable
+        and manageable by default.
+      defaultValue: "false"
+    outputs:
+    - contextPath: TenableSC.ScanPolicy.Name
+      description: Scan Policy name
+      type: string
+    - contextPath: TenableSC.ScanPolicy.ID
+      description: Scan Policy ID
+      type: number
+    - contextPath: TenableSC.ScanPolicy.Description
+      description: Scan policy description
+    description: Get a list of Tenable SecurityCenter scan policies
+  - name: tenable-sc-list-repositories
+    arguments: []
+    outputs:
+    - contextPath: TenableSC.ScanRepository.Name
+      description: Scan Repository name
+      type: string
+    - contextPath: TenableSC.ScanRepository.ID
+      description: Scan Repository ID
+      type: number
+    - contextPath: TenableSC.ScanRepository.Description
+      description: Scan Repository description
+    description: Get a list of Tenable SecurityCenter scan repositories
   - name: tenable-sc-launch-scan
     arguments:
     - name: scanID
@@ -673,6 +807,10 @@ script:
     - name: scanResultsID
       required: true
       description: Scan Results ID
+    - name: vulnerabilitySeverity
+      description: Comma separated list of severity values of vulnerabilities to retrieve
+      isArray: true
+      defaultValue: Critical,High,Medium,Low,Info
     outputs:
     - contextPath: TenableSC.Scan.Name
       description: Scan name
