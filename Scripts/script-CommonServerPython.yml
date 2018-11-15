@@ -1256,4 +1256,3 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "Added camelize function."

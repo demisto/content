@@ -3,7 +3,6 @@ version: -1
 name: Add Indicator to Miner - Palo Alto MineMeld
 description: Add indicators to the relevant Miner using MineMeld.
 fromversion: 4.0.0
-releaseNotes: "-"
 starttaskid: "0"
 tasks:
   "0":

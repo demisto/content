@@ -1152,7 +1152,5 @@ script:
       description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
     description: Private API. Retrieve comments for a given resource
   runonce: false
-releaseNotes:
-  '-'
 tests:
   - virusTotal-test-playbook
