@@ -1491,4 +1491,3 @@ script:
   runonce: false
 tests:
   - test_Qradar
-releaseNotes: "-"

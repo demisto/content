@@ -2665,6 +2665,5 @@ script:
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
   runonce: false
-releaseNotes: "update 'session-create-and-wait' to include more information on failure. fix 'cb-session-close' results to reflect the actual session status for CB Response case "
 tests:
   - CarbonBlackLiveResponseTest

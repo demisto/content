@@ -678,6 +678,5 @@ script:
     description: 'Check the status of a specific scan using its ID. The status can
       hold following possible values : Running, Completed and Empty (Ready to run).'
   runonce: false
-releaseNotes: "-"
 tests:
   - Tenable.io test

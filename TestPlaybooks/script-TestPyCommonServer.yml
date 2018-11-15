@@ -316,4 +316,3 @@ args:
   defaultValue: dq
 scripttarget: 0
 runonce: false
-releaseNotes: "Added camelize function test"

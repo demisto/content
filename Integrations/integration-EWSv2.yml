@@ -2200,4 +2200,3 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
-releaseNotes: "Fixed typo in compliance search methods"
