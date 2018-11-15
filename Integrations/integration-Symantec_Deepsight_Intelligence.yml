@@ -1,0 +1,324 @@
+commonfields:
+  id: Symantec Deepsight Intelligence
+  version: -1
+name: Symantec Deepsight Intelligence
+display: Symantec Deepsight Intelligence
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Leverage Symantec Deepsight Intelligence
+configuration:
+- display: API Key
+  name: APIKEY
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: https://deepsightapi.symantec.com/v1/
+  name: SERVER
+  defaultvalue: https://deepsightapi.symantec.com/v1/
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |+
+    import requests
+    import json
+
+
+    ''' Global Vars '''
+    KEY = demisto.params()['APIKEY']
+    BASE_URL = demisto.params()['SERVER']
+    DOMAIN_URL = BASE_URL + '/domains/'
+    IP_URL = BASE_URL + '/ips/'
+    URL_URL = BASE_URL + '/urls/'
+    FILE_URL = BASE_URL + '/files/'
+    USAGE_URL = BASE_URL + '/usage_limit_status/'
+
+
+    if not demisto.getParam('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    headers = {'API-KEY':KEY, 'Accept': 'application/json'}
+
+
+    # Create the output dictionary for storing results for a command
+    output = []
+
+
+    ''' Functions '''
+    def request_status():
+        req_status = requests.get(USAGE_URL, headers)
+        json_req_status = json.loads(req_status.content)
+        output.append({
+            'Type' : entrytype['note'],
+            'Contents' : json_req_status,
+            'ContentsFormat' : formats['json'],
+            'ReadableContentsFormat' : formats['markdown']
+            'EntryContext' : json_req_status
+        })
+        return output
+
+
+    def request_domain_intel(domain)
+        dom_req = request.get(DOMAIN_URL + domain)
+        ''' reputation 1-10, confidenc 1-5, hostility 1-5 '''
+        json_req_domain = json.loads(dom_req.content)
+        dom_rep = json_req_domain['reputationValues']['reputation']
+        try:
+            if dom_rep == "":
+                dbotscore = 0
+            elif dom_rep > 5:
+                dbotscore = 3
+            else:
+                dbotscore = 2
+            context = {
+                'DBotScore' : {
+                    'Indicator' : domain,
+                    'Score' : dbotscore,
+                    'Type' : 'domain',
+                    'Vendor' : 'Symantec Deepsight Intelligence'
+
+            }
+            if dbotscore == 3:
+                # add 'malicious' flag to data
+            output.append({
+                'Type' : entryTypes['note'],
+                'Contents' : json_req_domain,
+                'ContentsFormat' : formats['json'],
+                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'ReadableContentsFormat' : formats['markdown']
+                'EntryContext' : context
+            })
+            return output
+        except:
+            dbotscore = 0
+            context = {
+                'DBotScore' : {
+                    'Indicator' : domain,
+                    'Score' : dbotscore,
+                    'Type' : 'domain',
+                    'Vendor' : 'Symantec Deepsight Intelligence'
+                    }
+            }
+            output.append({
+                'Type' : entryTypes['note'],
+                'Contents' : json_req_domain,
+                'ContentsFormat' : formats['json'],
+                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'ReadableContentsFormat' : formats['markdown']
+                'EntryContext' : context
+            })
+            return output
+
+
+    def request_ip_intel(ip):
+        ''' reputationValues {reputation} 1-10 '''
+        req_ip = requests.get(FILE_URL + ip)
+        json_req_ip = json.loads(req_ip.content)
+        rep_ip = json_req_ip['reputationValues']['reputation']
+        try:
+            if rep_ip == "":
+                dbotscore = 0
+            elif rep_ip > 5:
+                dbotscore = 3
+            else:
+                dbotscore = 2
+            context = {
+                'DBotScore' : {
+                    'Indicator' : ip,
+                    'Score' : dbotscore,
+                    'Type' : 'ip',
+                    'Vendor' : 'Symantec Deepsight Intelligence'
+                }
+            }
+            output.append({
+                'Type' : entryTypes['note'],
+                'Contents' : json_req_ip,
+                'ContentsFormat' : formats['json'],
+                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'ReadableContentsFormat' : formats['markdown']
+                'EntryContext' : context
+            })
+            return output
+        except:
+            dbotscore = 0
+            context = {
+                'DBotScore' : {
+                    'Indicator' : ip,
+                    'Score' : dbotscore,
+                    'Type' : 'ip',
+                    'Vendor' : 'Symantec Deepsight Intelligence'
+                }
+            }
+            output.append({
+                'Type' : entryTypes['note'],
+                'Contents' : json_req_ip,
+                'ContentsFormat' : formats['json'],
+                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'ReadableContentsFormat' : formats['markdown']
+                'EntryContext' : context
+            })
+            return output
+
+
+    def request_file_intel(filehash):
+        req_filehash = requests.get(FILE_URL + filehash)
+        json_req_filehash = json.loads(req_filehash.content)
+        file_rep = json_req_filehash['reputation']
+        if file_rep == "Unknown Reputation":
+            dbotscore = 0
+        elif file_rep  == "Clean" or file_rep  == "Trending Clean":
+            dbotscore = 1
+        elif file_rep  == "Trending Bad":
+            dbotscore = 2
+        elif file_rep  == "Malicious":
+            dbotscore = 3
+        context = {
+            'DBotScore' : {
+                'Indicator' : file,
+                'Score' : dbotscore,
+                'Type' : 'file',
+                'Vendor' : 'Symantec Deepsight Intelligence'
+            }
+
+        }
+        output.append({
+            'Type' : entryTypes['note'],
+            'Contents' : json_req_filehash,
+            'ContentsFormat' : formats['json'],
+            # 'HumanReadable' : md, # not sure if need to build the md first?
+            'ReadableContentsFormat' : formats['markdown']
+            'EntryContext' : context
+        })
+        return output
+
+
+    def request_url_intel(url):
+        '''
+        if behaviour has value other than SPAM => malicous (possible values are Attack, Bot, CnC, Fraud, Malware, Phish_host or SPAM)
+        else if behaviour is SPAM => suspicious
+        if no behaviour, then unknown
+        '''
+        req_url = requests.get(URL_URL + URL)
+        json_url = json.loads(req_url.content)
+        dbotscore = 0
+        try:
+            behaviours = json.url['behaviours']
+            if behaviours == 1:
+                if behaviours['behaviour'] == 'Spam':
+                    dbotscore = 2
+                else:
+                    dbotscore = 3
+            else:
+                for attitude in behaviours:
+                    # by cycling through number of behaviours i run
+                    #   the risk of changing the value to a 2 if the last value is spam
+                    #   Need to ensure if 3 is found, then move on and keep score as 3 (malicious)
+                    if attitude['behaviour'] != 'Spam':
+                        dbotscore = 3
+                    else:
+                        dbotscore = 2
+            context = {
+                'Indicator' : url,
+                'Score' : dbotscore,
+                'Type' : 'url',
+                'Vendor' : 'Symantec Deepsight Intelligence'
+            }
+            output.append({
+                'Type' : entryTypes['note'],
+                'Contents' : json_req_ip,
+                'ContentsFormat' : formats['json'],
+                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'ReadableContentsFormat' : formats['markdown']
+                'EntryContext' : context
+            })
+            return output
+        except:
+            context = {
+                'Indicator' : url,
+                'Score' : dbotscore,
+                'Type' : 'url',
+                'Vendor' : 'Symantec Deepsight Intelligence'
+            }
+            output.append({
+                'Type' : entryTypes['note'],
+                'Contents' : json_req_ip,
+                'ContentsFormat' : formats['json'],
+                # 'HumanReadable' : md, # not sure if need to build the md first?
+                'ReadableContentsFormat' : formats['markdown']
+                'EntryContext' : context
+            })
+            return output
+
+
+    ''' need to validate '''
+    def login():
+        result = ""
+        login_do_response = requests.get(USAGE_URL)
+        login_status = login_do_response.status_code
+        if login_status != 200:
+            result = 'Login status Failed. Please validate API key and credentials'
+        else:
+            result = 'success'
+
+
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            # Checks authentication and connectivity in login() function
+            success = login()
+            if success == 'success':
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
+        elif demisto.command() == 'deepsight-get-domain':
+            demisto.results(request_domain_intel(demisto.args()['domain']))
+        elif demisto.command() == 'deepsight-get-ip':
+            demisto.results(request_ip_intel(demisto.args()['ip']))
+        elif demisto.command() == 'deepsight-get-file':
+            demisto.results(block_domain(request_file_intel()['filehash']))
+        elif demisto.command() == 'deepsight-get-url':
+            demisto.results(block_ip(request_url_intel()['url']))
+        elif demisto.command() == 'deepsight-get-request-status':
+            demisto.results(request_status())
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+
+  type: python
+  commands:
+  - name: deepsight-get-domain
+    arguments:
+    - name: domain
+      description: Domain
+    description: Get Domain
+  - name: deepsight-get-ip
+    arguments:
+    - name: ip
+      description: IP
+    description: Get IP
+  - name: deepsight-get-file
+    arguments:
+    - name: hash
+      description: sha256 or md5
+    description: Get File
+  - name: deepsight-get-url
+    arguments:
+    - name: url
+      description: URL
+    description: Get URL
+  - name: deepsight-get-request-status
+    arguments: []
+    description: Get Request Status
+  dockerimage: demisto/python:1.3-alpine
+  runonce: false
+releaseNotes: "-"
