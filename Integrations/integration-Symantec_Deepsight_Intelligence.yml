@@ -10,7 +10,7 @@ configuration:
 - display: API Key
   name: APIKEY
   defaultvalue: ""
-  type: 9
+  type: 4
   required: true
 - display: https://deepsightapi.symantec.com/v1/
   name: SERVER
@@ -27,15 +27,16 @@ script:
     import requests
     import json
 
+    # This Integration currently does not include MATI based resources
 
-    ''' Global Vars '''
+    ''' Global Variables '''
     KEY = demisto.params()['APIKEY']
     BASE_URL = demisto.params()['SERVER']
     DOMAIN_URL = BASE_URL + '/domains/'
     IP_URL = BASE_URL + '/ips/'
     URL_URL = BASE_URL + '/urls/'
     FILE_URL = BASE_URL + '/files/'
-    USAGE_URL = BASE_URL + '/usage_limit_status/'
+    USAGE_URL = BASE_URL + '/application/usage_limit_status/'
 
 
     if not demisto.getParam('proxy'):
@@ -45,30 +46,55 @@ script:
         del os.environ['https_proxy']
 
 
-    headers = {'API-KEY':KEY, 'Accept': 'application/json'}
+    headers = {'API-KEY': KEY, 'Accept': 'application/json'}
 
 
     # Create the output dictionary for storing results for a command
     output = []
 
 
+    # Define return code values based on the symantec deepsight api documentation.
+    def return_code_match(statusCode):
+        result = ""
+        if statusCode == 200:
+            result =  "200: Success"
+            return result
+        elif statusCode == 400:
+            result = "400: Invalid Input. Input was incorrect format."
+            return result
+        elif statusCode == 403:
+            result = "403: Access Denied. API key successful, but license does not permit access to the requested resource."
+            return result
+        elif statusCode == 404:
+            result = "404: Data not found"
+            return result
+        elif statusCode == 429:
+            result = "429: License count usage has been exceeded."
+            return result
+        else:
+            result = "503: Server is overloaded.  Try again later"
+            return result
+
+
     ''' Functions '''
+    # get results of request status - determine current limit usage of the api license
     def request_status():
-        req_status = requests.get(USAGE_URL, headers)
+        req_status = requests.get(USAGE_URL, headers=headers)
         json_req_status = json.loads(req_status.content)
         output.append({
             'Type' : entrytype['note'],
             'Contents' : json_req_status,
             'ContentsFormat' : formats['json'],
-            'ReadableContentsFormat' : formats['markdown']
+            'ReadableContentsFormat' : formats['markdown'],
             'EntryContext' : json_req_status
         })
         return output
 
 
-    def request_domain_intel(domain)
-        dom_req = request.get(DOMAIN_URL + domain)
-        ''' reputation 1-10, confidenc 1-5, hostility 1-5 '''
+    # get information for a given Domain.
+    # reputation 1-10, confidenc 1-5, hostility 1-5
+    def request_domain_intel(domain):
+        dom_req = request.get(DOMAIN_URL + domain, headers=headers)
         json_req_domain = json.loads(dom_req.content)
         dom_rep = json_req_domain['reputationValues']['reputation']
         try:
@@ -78,24 +104,24 @@ script:
                 dbotscore = 3
             else:
                 dbotscore = 2
-            context = {
-                'DBotScore' : {
-                    'Indicator' : domain,
-                    'Score' : dbotscore,
-                    'Type' : 'domain',
-                    'Vendor' : 'Symantec Deepsight Intelligence'
-
-            }
+                context = {
+                        'DBotScore' : {
+                        'Indicator' : domain,
+                        'Score' : dbotscore,
+                        'Type' : 'domain',
+                        'Vendor' : 'Symantec Deepsight Intelligence'
+                    }
+                }
             if dbotscore == 3:
                 # add 'malicious' flag to data
-            output.append({
-                'Type' : entryTypes['note'],
-                'Contents' : json_req_domain,
-                'ContentsFormat' : formats['json'],
-                # 'HumanReadable' : md, # not sure if need to build the md first?
-                'ReadableContentsFormat' : formats['markdown']
-                'EntryContext' : context
-            })
+                output.append({
+                    'Type' : entryTypes['note'],
+                    'Contents' : json_req_domain,
+                    'ContentsFormat' : formats['json'],
+                    # 'HumanReadable' : md, # not sure if need to build the md first?
+                    'ReadableContentsFormat' : formats['markdown'],
+                    'EntryContext' : context
+                })
             return output
         except:
             dbotscore = 0
@@ -112,15 +138,16 @@ script:
                 'Contents' : json_req_domain,
                 'ContentsFormat' : formats['json'],
                 # 'HumanReadable' : md, # not sure if need to build the md first?
-                'ReadableContentsFormat' : formats['markdown']
+                'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
             return output
 
 
+    # Return data base on IP search
+    # reputation Values if exist are 1-10, 10 being worst
     def request_ip_intel(ip):
-        ''' reputationValues {reputation} 1-10 '''
-        req_ip = requests.get(FILE_URL + ip)
+        req_ip = requests.get(IP_URL + ip, headers=headers)
         json_req_ip = json.loads(req_ip.content)
         rep_ip = json_req_ip['reputationValues']['reputation']
         try:
@@ -143,7 +170,7 @@ script:
                 'Contents' : json_req_ip,
                 'ContentsFormat' : formats['json'],
                 # 'HumanReadable' : md, # not sure if need to build the md first?
-                'ReadableContentsFormat' : formats['markdown']
+                'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
             return output
@@ -162,14 +189,15 @@ script:
                 'Contents' : json_req_ip,
                 'ContentsFormat' : formats['json'],
                 # 'HumanReadable' : md, # not sure if need to build the md first?
-                'ReadableContentsFormat' : formats['markdown']
+                'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
             return output
 
 
+    # Return data based on a sha256 or md5 hash search
     def request_file_intel(filehash):
-        req_filehash = requests.get(FILE_URL + filehash)
+        req_filehash = requests.get(FILE_URL + filehash, headers=headers)
         json_req_filehash = json.loads(req_filehash.content)
         file_rep = json_req_filehash['reputation']
         if file_rep == "Unknown Reputation":
@@ -194,19 +222,18 @@ script:
             'Contents' : json_req_filehash,
             'ContentsFormat' : formats['json'],
             # 'HumanReadable' : md, # not sure if need to build the md first?
-            'ReadableContentsFormat' : formats['markdown']
+            'ReadableContentsFormat' : formats['markdown'],
             'EntryContext' : context
         })
         return output
 
 
+    # Search for intel based on an URL
+    # if behaviour has value other than SPAM => malicous (possible values are Attack, Bot, CnC, Fraud, Malware, Phish_host or SPAM)
+    #  else if behaviour is SPAM => suspicious
+    #  if no behaviour, then unknown
     def request_url_intel(url):
-        '''
-        if behaviour has value other than SPAM => malicous (possible values are Attack, Bot, CnC, Fraud, Malware, Phish_host or SPAM)
-        else if behaviour is SPAM => suspicious
-        if no behaviour, then unknown
-        '''
-        req_url = requests.get(URL_URL + URL)
+        req_url = requests.get(URL_URL + URL, headers=headers)
         json_url = json.loads(req_url.content)
         dbotscore = 0
         try:
@@ -236,7 +263,7 @@ script:
                 'Contents' : json_req_ip,
                 'ContentsFormat' : formats['json'],
                 # 'HumanReadable' : md, # not sure if need to build the md first?
-                'ReadableContentsFormat' : formats['markdown']
+                'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
             return output
@@ -252,32 +279,31 @@ script:
                 'Contents' : json_req_ip,
                 'ContentsFormat' : formats['json'],
                 # 'HumanReadable' : md, # not sure if need to build the md first?
-                'ReadableContentsFormat' : formats['markdown']
+                'ReadableContentsFormat' : formats['markdown'],
                 'EntryContext' : context
             })
             return output
 
 
-    ''' need to validate '''
     def login():
-        result = ""
-        login_do_response = requests.get(USAGE_URL)
+        login_do_response = requests.get(USAGE_URL, headers=headers)
         login_status = login_do_response.status_code
-        if login_status != 200:
-            result = 'Login status Failed. Please validate API key and credentials'
+        if login_status == requests.codes.ok:
+            return True
         else:
-            result = 'success'
+            result = return_code_match(login_status)
+            return result
 
 
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
             # Checks authentication and connectivity in login() function
-            success = login()
-            if success == 'success':
-                demisto.results('ok')
+            result = login()
+            if result == True:
+                demisto.results("ok")
             else:
-                demisto.results('test failed')
+                demisto.results("Test Failed" + str(result))
         elif demisto.command() == 'deepsight-get-domain':
             demisto.results(request_domain_intel(demisto.args()['domain']))
         elif demisto.command() == 'deepsight-get-ip':
@@ -299,26 +325,30 @@ script:
   - name: deepsight-get-domain
     arguments:
     - name: domain
-      description: Domain
-    description: Get Domain
+      required: true
+      description: domain to be enriched.
+    description: Enrich a domain from Symantec Deepsight intelligence
   - name: deepsight-get-ip
     arguments:
     - name: ip
-      description: IP
-    description: Get IP
+      required: true
+      description: IP to enrich
+    description: Enrich an IP address from Symantec Deepsight Intelligence
   - name: deepsight-get-file
     arguments:
     - name: hash
-      description: sha256 or md5
-    description: Get File
+      required: true
+      description: sha256 or md5 hash only
+    description: Enrich a file from Symantec Deepsight Intelligence
   - name: deepsight-get-url
     arguments:
     - name: url
-      description: URL
-    description: Get URL
+      required: true
+      description: URL to enrich, Should contain HTTP(S)://
+    description: Enrich an URL from Symantec Deepsight Intelligence
   - name: deepsight-get-request-status
     arguments: []
-    description: Get Request Status
+    description: Get API Usage status for current license period
   dockerimage: demisto/python:1.3-alpine
   runonce: false
 releaseNotes: "-"
