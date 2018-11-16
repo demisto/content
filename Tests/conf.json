@@ -683,7 +683,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "VirusTotal - Private API",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Lastline"
             ]
         },
         {
@@ -694,7 +695,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "VirusTotal - Private API",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Lastline"
             ]
         },
         {
