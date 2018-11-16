@@ -1,0 +1,888 @@
+commonfields:
+  id: Google Compute Instance
+  version: -1
+name: Google Compute Instance
+display: Google Compute Instance
+category: Authentication
+image: data:image/png;base64,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
+description: This integration lets you view, create, delete, list, start and stop
+  Google Compute Instances
+detaileddescription: "Steps to run the Google Compute Instance integration\n*Getting
+  authorization credentials from Google Compute Console*\n1. Go to ‘API & Services’
+  > ‘Credentials’ from Google Compute Console left menu bar\n2. On ‘Credentials’ page,
+  from ‘Create Credentials’ dropdown select ‘Service account key’\n3. On the new page,
+  from ‘Service account’ dropdown select ‘Compute Engine default service account’
+  and select ‘JSON’ from ‘Key Type’. This will download a JSON file. \n\n*Adding instance
+  and authorizing it on Demisto*\n1. Go to Settings\n2. Search for “Google Compute
+  Instance”\n3. Click on “Add instance”, this should slide in a pop up\n4. From the
+  downloaded JSON file, enter details asked on the pop up as it is except the private_key\n5.
+  Private_key is a long string with multiple lines. To easily extract it from JSON,
+  you can follow the following steps -\n- Copy the Private_key content\n- Run a python
+  print command on your choice of python command line. This should give you the key
+  in the exact format that it is supposed to be used.\n- Use the whole content including
+  - \n\t-----BEGIN PRIVATE KEY-----\n<key>\n-----END PRIVATE KEY-----\n6. Test the
+  integration and click ‘Done’ if success\n7. Start using the integration from the
+  War Room"
+configuration:
+- display: project_id
+  name: project_id
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: private_key_id
+  name: private_key_id
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: private_key
+  name: private_key
+  defaultvalue: ""
+  type: 12
+  required: true
+- display: client_email
+  name: client_email
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: client_id
+  name: client_id
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: client_x509_cert_url
+  name: client_x509_cert_url
+  defaultvalue: ""
+  type: 12
+  required: true
+script:
+  script: |+
+    import requests
+    import json
+
+    import argparse
+    import os
+    import time
+    from google.oauth2 import service_account
+
+    import googleapiclient.discovery
+    from six.moves import input
+    import webbrowser
+    from oauth2client.client import flow_from_clientsecrets
+    from oauth2client.client import OAuth2WebServerFlow
+
+    data = {}
+    data['type'] = "service_account"
+    data['project_id'] = demisto.params()['project_id']
+    data['private_key_id'] = demisto.params()['private_key_id']
+    data['private_key'] = demisto.params()['private_key']
+    data['client_email'] = demisto.params()['client_email']
+    data['client_id'] = demisto.params()['client_id']
+    data['auth_uri'] = "https://accounts.google.com/o/oauth2/auth"
+    data['token_uri'] = "https://oauth2.googleapis.com/token"
+    data['auth_provider_x509_cert_url'] = "https://www.googleapis.com/oauth2/v1/certs"
+    data[
+        'client_x509_cert_url'] = demisto.params()['client_x509_cert_url']
+
+    def create_gcompute_instance(args):
+        credentials = service_account.Credentials.from_service_account_info(data)
+        compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials);
+
+        image_type = 'ubuntu-1710-artful-v20180315'
+        project_type = 'ubuntu-os-cloud'
+        description = "N/A"
+        canIpForward = False
+        deletionProtection = False
+        tags = None
+        networkInterfaces = []
+        networkInterfaces.append({
+                'network': 'global/networks/default',
+                'accessConfigs': [
+                    {'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT'}
+                ]
+            })
+
+        project = args.get( 'projectId' )
+        zone = args.get( 'zone' )
+        name = args.get( 'instanceName' )
+        if args.get('image_type') is not None:
+            image_type = args.get('image_type')
+        if args.get('project_type') is not None:
+            project_type = args.get('project_type')
+        if args.get('description') is not None:
+            description = args.get('description')
+        if args.get('canIpForward') is not None:
+            canIpForward = args.get('canIpForward')
+        if args.get('deletionProtection') is not None:
+            deletionProtection = args.get('deletionProtection')
+        if args.get('tags') is not None:
+            tags = args.get('tags')
+        if args.get('networkInterfaces') is not None:
+            networkInterfaces = args.get('networkInterfaces')
+
+        image_response = compute.images().get( project=project_type, image=image_type ).execute()
+        source_disk_image = image_response['selfLink']
+
+        # Configure the machine
+        machine_type = "zones/%s/machineTypes/n1-standard-1" % zone
+        # startup_script = open(os.path.join(os.path.dirname(__file__), 'startup-script.sh'), 'r').read()
+        image_url = "http://storage.googleapis.com/gce-demo-input/photo.jpg"
+        image_caption = "Ready for dessert?"
+
+
+        config = {
+            'name': name,
+            'machineType': machine_type,
+            'description':description,
+            'canIpForward': canIpForward,
+            'deletionProtection':deletionProtection,
+            'tags':{
+                    'items':[]
+            },
+            # Specify the boot disk and the image to use as a source.
+            'disks': [
+                {
+                    'boot': True,
+                    'autoDelete': True,
+                    'initializeParams': {
+                        'sourceImage': source_disk_image,
+                    }
+                }
+            ],
+
+            # Specify a network interface with NAT to access the public
+            # internet.
+            'networkInterfaces': networkInterfaces,
+
+            # Allow the instance to access cloud storage and logging.
+            'serviceAccounts': [{
+                'email': 'default',
+                'scopes': [
+                    'https://www.googleapis.com/auth/devstorage.read_write',
+                    'https://www.googleapis.com/auth/logging.write'
+                ]
+            }],
+            'metadata': {
+                'items': [{
+                    'key': 'url',
+                    'value': image_url
+                }, {
+                    'key': 'text',
+                    'value': image_caption
+                }]
+            }
+        }
+        if tags is not None:
+            config['tags']['items'].append(tags)
+        operation = compute.instances().insert( project=project, zone=zone, body=config).execute()
+        response = {
+            'ProjectId': operation['id'],
+            'InstanceName': operation['name'],
+            'Zone': operation['zone'],
+            'Status': operation['status'],
+            'User': operation['user'],
+            'Progress': operation['progress'],
+            'InsertTime': "N/A" if 'insertTime' not in operation else operation['insertTime'],
+            'StartTime': "N/A" if 'startTime' not in operation else operation['startTime'],
+            'Region': "N/A" if 'region' not in operation else operation['region'],
+            'Error':"N/A",
+            'HttpErrorStatusCode': "N/A" if 'httpErrorStatusCode' not in operation else operation['httpErrorStatusCode']
+        }
+
+        humanread = {
+            'Instance Id': operation['id'],
+            'Instance Name':operation['name'],
+            'Instance Zone':operation['zone'],
+            'Instance Status':operation['status'],
+            'Instance Progress':operation['progress'],
+            'Instance Created by':operation['user'],
+            'Instance Insert Time':"N/A" if 'insertTime' not in operation else operation['insertTime']
+        }
+
+        erroroupt =[]
+        if 'error' in operation:
+            for errors in operation['error']:
+                erroroupt.append({
+                    'message' : errors['message'],
+                    'code': errors['code'],
+                    'location' : errors['location']
+                })
+            response['error'] = erroroupt
+            humanread['error'] = erroroupt
+
+
+        md = tableToMarkdown('Created a new Google Compute Instance',humanread)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': operation,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable':md,
+            'EntryContext': {
+                'Gcp.instance': response
+            }
+        }
+        demisto.results( entry )
+
+    def start_gcompute_instance(args):
+        credentials = service_account.Credentials.from_service_account_info(data)
+        compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials);
+
+        project = args.get( 'projectId' )
+        zone = args.get( 'zone' )
+        name = args.get( 'instanceName' )
+
+        operation = compute.instances().start(project=project, zone=zone, instance=name).execute()
+        response = {}
+        response['ProjectId'] = operation['id']
+        response['InstanceName'] = operation['name']
+        response['Zone'] = operation['zone']
+        response['Status'] = operation['status']
+        response['User'] = operation['user']
+        response['StartTime'] = "N/A"
+        response['Error'] = "N/A"
+        response['HttpErrorStatusCode'] = 'N/A'
+        response['SelfLink'] = "N/A"
+
+        humanread = {
+            'Instance Name':operation['name'],
+            'Instance Zone':operation['zone'],
+            'Instance Status':operation['status'],
+            'Instance Start Time':"N/A",
+            'Process Error':"N/A"
+        }
+
+
+        if 'startTime' in operation:
+            response['startTime'] = operation['startTime']
+            humanread['Instance Start Time'] = operation['startTime']
+
+        erroroupt =[]
+        if 'error' in operation:
+            for errors in operation['error']:
+                erroroupt.append({
+                    'message' : errors['message'],
+                    'code': errors['code'],
+                    'location' : errors['location']
+                })
+            response['error'] = erroroupt
+            humanread['Process Error'] = erroroupt
+
+        if 'httpErrorStatusCode' in operation:
+            response['httpErrorStatusCode'] = operation['httpErrorStatusCode']
+
+        if 'selfLink' in operation:
+            response['selfLink'] = operation['selfLink']
+
+        md = tableToMarkdown('Started Google Compute Instance', humanread)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': operation,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable':md,
+            'EntryContext': {
+                'Gcp.Instance': response
+            }
+        }
+        demisto.results( entry )
+
+    def stop_gcompute_instance(args):
+        credentials = service_account.Credentials.from_service_account_info(data)
+        compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials);
+        project = args.get( 'projectId' )
+        zone = args.get( 'zone' )
+        name = args.get( 'instanceName' )
+
+        operation = compute.instances().stop(project=project, zone=zone, instance=name).execute()
+
+        response = {}
+        response['ProjectId'] = operation['id']
+        response['InstanceName'] = operation['name']
+        response['Zone'] = operation['zone']
+        # response['Instance status'] = operation['status']
+        # response['Instance user'] = operation['user']
+        # response['Instance error'] = "N/A"
+
+        humanread= {
+            'Instance Name': operation['name'],
+            'Instance Zone':operation['zone'],
+            'Instance Status':operation['status'],
+            'Command initiated by':operation['user'],
+            'Instance errors':"N/A"
+        }
+
+        erroroupt =[]
+        if 'error' in operation:
+            for errors in operation['error']:
+                erroroupt.append({
+                    'message' : errors['message'],
+                    'code': errors['code'],
+                    'location' : errors['location']
+                })
+            response['error'] = erroroupt
+            humanread['Instance errors'] = erroroupt
+
+        md = tableToMarkdown('Stopped Google Compute Instance', humanread)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': operation,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable':md,
+            'EntryContext': {
+                'Gcp.Instance': response
+            }
+        }
+        demisto.results( entry )
+
+    def list_gcompute_instance(args):
+        credentials = service_account.Credentials.from_service_account_info(data)
+        compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials);
+        project = args.get( 'projectId' )
+        zone = args.get( 'zone' )
+        orderBy = None
+        maxResults = None
+        filter = None
+        if args.get('orderBy') is not None:
+            orderBy = args.get('orderBy')
+        if args.get('maxResults') is not None:
+            maxResults = args.get('maxResults')
+        if args.get('filter') is not None:
+            filter = args.get('filter')
+
+        if project is not None and zone is not None:
+            operation = compute.instances().list(project=project, zone=zone, orderBy=orderBy, maxResults=maxResults, filter=filter).execute()
+            output = []
+            humanread = []
+            for item in operation['items']:
+                output.append({
+                    'Status' : item['status'],
+                    'ProjectId':item['id'],
+                    'Zone':item['zone'],
+                    'InstanceName':item['name'],
+                    'MachineTypee':item['machineType'],
+                    'SelfLink':item['selfLink']
+                })
+                humanread.append({
+                    'Instance Descriptions': 'N/A' if 'description' not in item else item['description'],
+                    'Instance Machine Types':item['machineType'],
+                    'Instance Status':item['status'],
+                    'Instance Zones' : item['zone'],
+                    'Instance Names': item['name']
+                })
+
+            md = tableToMarkdown('List of all Google Compute Instances in the request', humanread)
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': operation,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable':md,
+                'EntryContext': {
+                    'Gcp.Instance': output
+                }
+            }
+            demisto.results( entry )
+        else:
+            manager = googleapiclient.discovery.build('cloudresourcemanager', 'v1', credentials=credentials);
+            operation = manager.projects().list().execute()
+            output = []
+            humanread = []
+            for project in operation['projects']:
+                projectId = project['projectId']
+                instance_set = compute.instances().aggregatedList(project=projectId).execute()['items']
+                for key in instance_set.keys():
+                    item = instance_set[key]
+                    if 'instances' in item:
+                        for instance in item['instances']:
+                            output.append({
+                                'Status' : instance['status'],
+                                'ProjectId':instance['id'],
+                                'Zone':instance['zone'],
+                                'InstanceName':instance['name'],
+                                'MachineTypee':instance['machineType'],
+                                'SelfLink':instance['selfLink']
+                            })
+                            humanread.append({
+                                'Instance Descriptions': 'N/A' if 'description' not in instance else instance['description'],
+                                'Instance Machine Types':instance['machineType'],
+                                'Instance Status':instance['status'],
+                                'Instance Zones' : instance['zone'],
+                                'Instance Names': instance['name']
+                            })
+            md = tableToMarkdown('List of all Google Compute Instances in the request', humanread)
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': operation,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable':md,
+                'EntryContext': {
+                    'Gcp.Instance': output
+                }
+            }
+            demisto.results( entry )
+
+    def get_gcompute_instance(args):
+        credentials = service_account.Credentials.from_service_account_info(data)
+        compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials);
+
+        project = args.get( 'projectId' )
+        zone = args.get( 'zone' )
+        name = args.get( 'instanceName' )
+
+        operation = compute.instances().get(project=project, zone=zone, instance=name).execute()
+
+        response_networks = []
+        humanread_networks =[]
+        response_disk = []
+        humanread_disk = []
+        for network in operation['networkInterfaces']:
+            response_networks.append({
+                'Network':network['network'],
+                'Subnetwork':network['subnetwork'],
+                'NetworkName':network['name'],
+                'NetworkIP':network['networkIP']
+            })
+            humanread_networks.append({
+                'Network':network['network'],
+                'Subnetwork':network['subnetwork'],
+                'NetworkName':network['name'],
+                'NetworkIP':network['networkIP']
+            })
+        for disk in operation['disks']:
+            response_disk.append({
+                'DiskType': disk['type'],
+                'DiskMode':disk['mode']
+            })
+            humanread_disk.append({
+                'Disk Type':disk['type'],
+                'Disk Mode':disk['mode']
+            })
+
+        response = {
+            'ProjectId':operation['id'],
+            'CreationTime': 'N/A' if 'creationTimestamp' not in operation else operation['creationTimestamp'],
+            'InstanceName':operation['name'],
+            'Decription': 'N/A' if 'description' not in operation else operation['description'],
+            'TagItems': 'N/A' if 'tags' not in operation else operation['tags'],
+            'MachineType':operation['machineType'],
+            'Status':operation['status'],
+            'Zone':operation['zone'],
+            'SelfLink': operation['selfLink'],
+            'DeletionProtection': operation['deletionProtection'],
+            'CanIpForward':operation['canIpForward'],
+            'DiskType':response_disk,
+            'NetworkInterfaces':response_networks
+        }
+
+        humanread = {
+            'Instance Names': operation['name'],
+            'Instance Description':'N/A' if 'description' not in operation else operation['description'],
+            'Instance Creation Time':'N/A' if 'creationTimestamp' not in operation else operation['creationTimestamp'],
+            'Instance Status':operation['status'],
+            'Instance Zone':operation['zone'],
+            'Instance Link':operation['selfLink'],
+            'Instance Machine Type':operation['machineType'],
+            'Instance Labels':'N/A' if 'labels' not in operation else operation['labels'],
+            'Instance Can IP Forward':operation['canIpForward'],
+            'Instance Deletion Protection':operation['deletionProtection'],
+        }
+
+
+        md = tableToMarkdown('Details of the requested Google Compute Instance', humanread)
+        md1 = tableToMarkdown('Network Interfaces', humanread_networks)
+        md2 = tableToMarkdown('Disks', humanread_disk)
+        # entry = {
+        #     'Type': entryTypes['note'],
+        #     'Contents': operation,
+        #     'ContentsFormat': formats['json'],
+        #     'ReadableContentsFormat': formats['markdown'],
+        #     'HumanReadable':md,
+        #     'HumanReadable':md1,
+        #     'HumanReadable':md2,
+        #     'EntryContext': {
+        #         'Gcp.Instance': response
+        #     }
+        # }
+
+        entry = []
+        entry.append( {
+                'Type': entryTypes['note'],
+                'Contents': operation,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable':md,
+                'EntryContext': {
+                    'Gcp.Instance': response
+                }
+            })
+        entry.append({
+                'Type': entryTypes['note'],
+                'Contents': operation,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable':md1
+            })
+        entry.append({
+                'Type': entryTypes['note'],
+                'Contents': operation,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable':md2
+            })
+
+        demisto.results( entry )
+
+    def delete_gcompute_instance(args):
+        credentials = service_account.Credentials.from_service_account_info(data)
+        compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials);
+
+        project = args.get( 'projectId' )
+        zone = args.get( 'zone' )
+        name = args.get( 'instanceName' )
+
+        operation = compute.instances().delete(project=project, zone=zone, instance=name).execute()
+
+        response = {
+            'ProjectId':operation['id'],
+            'InstanceName':operation['name'],
+            'Zone':operation['zone'],
+            'Status':operation['status'],
+            'User':operation['user'],
+            'Error':"N/A"
+        }
+
+        humanread = {
+            'Instance id': operation['id'],
+            'Instance name': operation['name'],
+            'Instance zone': operation['zone'],
+            'Instance status': operation['status'],
+            'Instance user':operation['user'],
+            'Instance error': "N/A"
+        }
+
+        erroroupt =[]
+        if 'error' in operation:
+            for errors in operation['error']:
+                erroroupt.append({
+                    'message' : errors['message'],
+                    'code': errors['code'],
+                    'location' : errors['location']
+                })
+            response['error'] = erroroupt
+            humanread['error'] = erroroupt
+
+        md = tableToMarkdown('Deleted the requested Google Compute Instance', humanread)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': operation,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable':md,
+            'EntryContext': {
+                'Gcp.Instance': response
+            }
+        }
+        demisto.results( entry )
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+
+        credentials = service_account.Credentials.from_service_account_info(data)
+        compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials);
+        demisto.results('ok')
+
+    if demisto.command() == 'gcompute-create-instance':
+        create_gcompute_instance(demisto.args() )
+
+    if demisto.command() == 'gcompute-start-instance':
+        start_gcompute_instance( demisto.args() )
+
+    if demisto.command() == 'gcompute-stop-instance':
+        stop_gcompute_instance( demisto.args() )
+
+    if demisto.command() == 'gcompute-list-instance':
+        list_gcompute_instance( demisto.args() )
+
+    if demisto.command() == 'gcompute-get-instance':
+        get_gcompute_instance( demisto.args() )
+
+    if demisto.command() == 'gcompute-delete-instance':
+        delete_gcompute_instance( demisto.args() )
+
+  type: python
+  commands:
+  - name: gcompute-create-instance
+    arguments:
+    - name: projectId
+      required: true
+      description: Project ID for this request. For example, foo-bar-123
+    - name: zone
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - asia-east1-a/b/c
+      - asia-east2-a/b/c
+      - asia-northeast1-a/b/c
+      - asia-south1-a/b/c
+      - asia-southeast1-a/b/c
+      - australia-southeast1-a/b/c
+      - europe-north1-a/b/c
+      - europe-west1-b/c/d
+      - europe-west2-a/b/c
+      - europe-west3-a/b/c
+      - europe-west4-a/b/c
+      - northamerica-northeast1-a/b/c
+      - southamerica-east1-a/b/c
+      - us-central1-a/b/c/f
+      - us-east1-b/c/d
+      - us-east4-a/b/c
+      - us-west1-a/b/c
+      - us-west2-a/b/c
+      description: The name of the zone for this request. For example, us-east1-b
+      defaultValue: Choose from auto-populated values. Use one of the a, b, c, d or
+        f values, remove other a, b, c, d or f values.
+    - name: instanceName
+      required: true
+      description: The name of the resource, provided by the client when initially
+        creating the resource. For example, instance-1
+    - name: image_type
+      description: The image type of virtual machine
+    - name: project_type
+      description: The project type that machine belongs to
+    - name: description
+      description: Description of the instance
+    - name: tags
+      description: Tags to apply to the instance
+    - name: canIpForward
+      description: Allows this instance to send and receive packets with non-matching
+        destination or source IPs
+    - name: deletionProtection
+      description: Whether the resource should be protected against deletion
+    - name: networkInterfaces
+      description: An array of network configurations for this instance.
+    outputs:
+    - contextPath: Gcp.Instance.ProjectId
+      description: Project ID for this request
+      type: string
+    - contextPath: Gcp.Instance.InstanceName
+      description: Name of the instance resource to start
+      type: string
+    - contextPath: Gcp.Instance.Zone
+      description: The name of the zone for this request
+      type: string
+    - contextPath: Gcp.Instance.Status
+      description: The status of the instance
+      type: string
+    - contextPath: Gcp.Instance.User
+      description: User who created the instance
+      type: string
+    - contextPath: Gcp.Instance.Progress
+      description: An optional progress indicator that ranges from 0 to 100
+      type: number
+    - contextPath: Gcp.Instance.InsertTime
+      description: The time that this operation was requested.
+      type: string
+    - contextPath: Gcp.Instance.HttpErrorStatusCode
+      description: If the operation fails, this field contains the HTTP error status
+        code that was returned.
+      type: number
+    - contextPath: Gcp.Instance.StartTime
+      description: The time that this operation was started by the server.
+      type: string
+    - contextPath: Gcp.Instance.Region
+      description: The URL of the region where the operation resides.
+      type: string
+    - contextPath: Gcp.Instance.Error
+      description: If errors are generated during processing of the operation, this
+        field will be populated.
+      type: string
+    description: Creates an instance resource in the specified project using the data
+      included in the request
+  - name: gcompute-start-instance
+    arguments:
+    - name: projectId
+      required: true
+      description: Project ID for this request. For example, foo-bar-123
+    - name: zone
+      required: true
+      description: The name of the zone for this request. For example, us-east1-b
+    - name: instanceName
+      required: true
+      description: Name of the instance resource to start. For example, instance-1
+    outputs:
+    - contextPath: Gcp.Instance.ProjectId
+      description: The unique identifier for the resource
+      type: string
+    - contextPath: Gcp.Instance.InstanceName
+      description: ' The name of the resource, provided by the client when initially
+        creating the resource.'
+      type: string
+    - contextPath: Gcp.Instance.Zone
+      description: 'URL of the zone where the instance resides. '
+      type: string
+    - contextPath: Gcp.Instance.Status
+      description: The status of the instance.
+      type: string
+    - contextPath: Gcp.Instance.StartTime
+      description: 'The time that this operation was started by the server. '
+      type: string
+    - contextPath: Gcp.Instance.Error
+      description: If errors are generated during processing of the operation, this
+        field will be populated.
+      type: string
+    - contextPath: Gcp.Instance.HttpErrorStatusCode
+      description: If the operation fails, this field contains the HTTP error status
+        code that was returned.
+      type: number
+    - contextPath: Gcp.Instance.SelfLink
+      description: Server-defined URL for the resource
+      type: string
+    description: Start a stopped instance
+  - name: gcompute-stop-instance
+    arguments:
+    - name: projectId
+      required: true
+      description: Project ID for this request. For example, foo-bar-123
+    - name: zone
+      required: true
+      description: The name of the zone for this request. For example, us-east1-b
+    - name: instanceName
+      required: true
+      description: Name of the instance resource to stop. For example, instance-1
+    outputs:
+    - contextPath: Gcp.Instance.ProjectId
+      description: The unique identifier for the resource.
+      type: string
+    - contextPath: Gcp.Instance.InstanceName
+      description: The name of the resource, provided by the client when initially
+        creating the resource.
+      type: string
+    - contextPath: Gcp.Instance.Zone
+      description: URL of the zone where the instance resides.
+      type: string
+    description: Stop a running instance
+  - name: gcompute-list-instance
+    arguments:
+    - name: projectId
+      description: Project ID for this request. For example, foo-bar-123
+    - name: zone
+      description: The name of the zone for this request. For example, us-east1-b
+    - name: orderBy
+      description: the oder of the list instances. Currently, only sorting by name
+        or creationTimestamp desc is supported.
+    - name: maxResults
+      description: 'the max number of instances listed. Acceptable values are 0 to
+        500, inclusive. (Default: 500)'
+    - name: filter
+      description: the filter applied to the instances-specify the field name, a comparison
+        operator, and the value that you want to use for filtering
+    outputs:
+    - contextPath: Gcp.Instance.Status
+      description: ' The status of the instance. '
+      type: string
+    - contextPath: Gcp.Instance.ProjectId
+      description: 'The unique identifier for the resource. '
+      type: string
+    - contextPath: Gcp.Instance.Zone
+      description: URL of the zone where the instance resides.
+      type: string
+    - contextPath: Gcp.Instance.InstanceName
+      description: ' The name of the resource, provided by the client when initially
+        creating the resource.'
+      type: string
+    - contextPath: Gcp.Instance.SelfLink
+      description: Server-defined URL for this resource.
+      type: string
+    description: List the instance meeting the requirement in a project
+  - name: gcompute-get-instance
+    arguments:
+    - name: projectId
+      required: true
+      description: Project ID for this request. For example, foo-bar-123
+    - name: zone
+      required: true
+      description: The name of the zone for this request. For example, us-east1-b
+    - name: instanceName
+      required: true
+      description: The name of the resource, provided by the client when initially
+        creating the resource. For example, instance-1
+    outputs:
+    - contextPath: Gcp.Instance.ProjectId
+      description: The unique identifier for the resource
+      type: string
+    - contextPath: Gcp.Instance.CreationTime
+      description: Creation timestamp
+      type: string
+    - contextPath: Gcp.Instance.InstanceName
+      description: The name of the resource, provided by the client when initially
+        creating the resource.
+      type: string
+    - contextPath: Gcp.Instance.Decription
+      description: An optional description of this resource.
+      type: string
+    - contextPath: Gcp.Instance.TagItems
+      description: 'Tags to apply to this instance. '
+      type: string
+    - contextPath: Gcp.Instance.MachineType
+      description: Full or partial URL of the machine type resource to use for this
+        instance
+      type: string
+    - contextPath: Gcp.Instance.Status
+      description: ' The status of the instance. '
+      type: string
+    - contextPath: Gcp.Instance.Zone
+      description: URL of the zone where the instance resides.
+      type: string
+    - contextPath: Gcp.Instance.SelfLink
+      description: Server-defined URL for this resource.
+      type: string
+    - contextPath: Gcp.Instance.DeletionProtection
+      description: Whether the resource should be protected against deletion.
+      type: boolean
+    - contextPath: Gcp.Instance.CanIpForward
+      description: Allows this instance to send and receive packets with non-matching
+        destination or source IPs.
+      type: boolean
+    - contextPath: Gcp.Instance.DiskType
+      description: Specifies the type of the disk
+      type: string
+    - contextPath: Gcp.Instance.NetworkInterfaces
+      description: 'An array of network configurations for this instance. '
+      type: string
+    description: Get the information of a certain instance
+  - name: gcompute-delete-instance
+    arguments:
+    - name: instanceName
+      required: true
+      description: Name of the instance resource to delete. For example, instance-1
+    - name: projectId
+      required: true
+      description: Project ID for this request. For example, foo-bar-123
+    - name: zone
+      required: true
+      description: The name of the zone for this request. For example, us-east1-b
+    outputs:
+    - contextPath: Gcp.Instance.ProjectId
+      description: The unique identifier for the resource.
+      type: string
+    - contextPath: Gcp.Instance.InstanceName
+      description: Name of the resource
+      type: string
+    - contextPath: Gcp.Instance.Status
+      description: 'The status of the operation, which can be one of the following:
+        PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: Gcp.Instance.User
+      description: '  If errors are generated during processing of the operation,
+        this field will be populated.'
+      type: string
+    - contextPath: Gcp.Instance.Error
+      description: '  If errors are generated during processing of the operation,
+        this field will be populated.'
+      type: string
+    description: Delete a certain instance
+  dockerimage: fuxuyu/demisto-gcp:4
+  runonce: false
