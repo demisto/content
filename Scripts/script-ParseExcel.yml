@@ -50,6 +50,5 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/xlrd
-releaseNotes: "Added automation to parse Excel formats like xls and xlsx"
 tests:
 - ParseExcel-test
