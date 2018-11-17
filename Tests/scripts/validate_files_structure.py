@@ -176,7 +176,7 @@ def validate_schema(file_path, matching_regex=None):
 
 def changed_id(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    if re.search("[+-]( )?id: .*", change_string):
+    if re.search("[+-](  )?id: .*", change_string):
         print_error("You've changed the ID of the file {0} please undo.".format(file_path))
         return True
 
