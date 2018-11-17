@@ -527,4 +527,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: "Support fetch of notable events using Splunk Time instead of Demisto machine time"
