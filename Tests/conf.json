@@ -676,6 +676,9 @@
            ]
         },
         {
+            "playbookID": "ReadPDFFile-Test"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 500,
             "nightly": true,
@@ -683,8 +686,7 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "VirusTotal - Private API",
-                "Demisto REST API",
-                "Lastline"
+                "Demisto REST API"
             ]
         },
         {
@@ -695,8 +697,7 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "VirusTotal - Private API",
-                "Demisto REST API",
-                "Lastline"
+                "Demisto REST API"
             ]
         },
         {
@@ -717,9 +718,6 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      },
-      {
-          "playbookID": "ReadPDFFile-Test"
       }
     ],
     "skipped_tests": {
