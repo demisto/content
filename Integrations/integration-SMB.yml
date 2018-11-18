@@ -62,7 +62,15 @@ script:
             self.close()
 
 
-    def download(share, path):
+    def split_path(path):
+        share = ''
+        delim = '/' if '/' in path else ['\\']
+        while path and not share:
+            share, path = path.split(delim, 1)
+        return share, path
+
+    def download(path_with_share):
+        share, path = split_path(path_with_share)
         with Mysmb() as conn, tempfile.NamedTemporaryFile() as file_obj:
             file_attributes, filesize = conn.retrieveFile(share, path, file_obj)
             file_obj.seek(0)
@@ -75,16 +83,14 @@ script:
             pass
         demisto.results('ok')
     elif demisto.command() == 'smb-download':
-        download(demisto.getArg('share'), demisto.getArg('path'))
+        download(demisto.getArg('path'))
   type: python
   commands:
   - name: smb-download
     arguments:
-    - name: share
-      required: true
-      description: Name of the share on the server.
     - name: path
       required: true
+      default: true
       description: The path to the file, starting from the share.
     description: Download a file from the SMB server
   dockerimage: demisto/pysmb
