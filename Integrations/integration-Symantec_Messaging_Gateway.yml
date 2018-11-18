@@ -569,4 +569,3 @@ script:
     arguments: []
     description: Returns a list of all blocked IP addresses.
   dockerimage: demisto/bs4
-releaseNotes: "-"

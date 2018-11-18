@@ -2,7 +2,6 @@ commonfields:
   id: ADGetUser
   version: -1
 name: ADGetUser
-releaseNotes: Improve display formatting of UserAccountControl flags
 script: |-
   import re
 
