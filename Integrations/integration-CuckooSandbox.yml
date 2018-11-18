@@ -954,3 +954,5 @@ script:
       name.
 hidden: false
 fromversion: 3.5.0
+tests:
+  - Forgive me for my sins but I did not create any test

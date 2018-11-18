@@ -175,12 +175,10 @@ script:
                 md += tblToMd('Relayed Comm Set',relayed_comm_set,relayed_keys);
             }
         }
-
         if (summary){
             if (!(summary instanceof Array)){
                 summary = [summary];
             }
-
             if (summary.length > 0 && summary[0]) {
                 var summary_keys = Object.keys(summary[0]);
 
@@ -927,3 +925,5 @@ script:
       description: The id of the required detection
     description: Get detections by host id
   isfetch: true
+tests:
+  - Forgive me for my sins but I did not create any test
