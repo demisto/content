@@ -5,7 +5,7 @@ jobs:
       - image: ronykoz/content-build-node911:latest
     environment:
       CONTENT_VERSION: "18.11.1"
-      GIT_SHA1: "6243291849e8a4cbcd3c05a5b9fededcae206aa8"
+      GIT_SHA1: "a69202151d14f290307d0a19b8ae9846e1bfddb8"
     steps:
       - checkout
       - run:
