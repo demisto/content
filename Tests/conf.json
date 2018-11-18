@@ -749,7 +749,8 @@
         "Phish.AI": "Need to check the reason for skipping",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
-        "Signal Sciences WAF": "API problems, not returning the correct data"
+        "Signal Sciences WAF": "API problems, not returning the correct data",
+        "Symantec Deepsight Intelligence": "No instance"
     },
     "nigthly_integrations": [
         "Lastline"
