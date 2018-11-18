@@ -500,7 +500,12 @@ script:
             {to: 'OtherProcessBinary', from: ".=(val.split('|')[4])"}
         ];
         headers = crossProcDataMap.map(cn => cn.to);
-        translatedData = mapObjFunction(crossProcDataMap)(result.process.crossproc_complete);
+        translatedData = [];
+        if ('process' in result) {
+          if (result.process.crossproc_complete) {
+            translatedData = mapObjFunction(crossProcDataMap)(result.process.crossproc_complete);
+          }
+        }
         humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['CrossProc'] = translatedData;
         entries.push({
@@ -537,8 +542,10 @@ script:
         ];
         headers = registryDataMap.map(cn => cn.to);
         translatedData = [];
-        if (result.process.regmod_complete) {
+        if ('process' in result) {
+          if (result.process.regmod_complete) {
             translatedData = mapObjFunction(registryDataMap)(result.process.regmod_complete);
+          }
         }
         humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['Registry'] = translatedData;
@@ -552,12 +559,17 @@ script:
 
         title = 'Binaries';
         headers = ['MD5', 'Publisher', 'Result'];
-        let keys = Object.keys(result.process.binaries);
-        translatedData = keys.map(md5 => ({
-            'MD5': md5,
-            'Publisher': result.process.binaries[md5]['digsig_publisher'],
-            'Result': result.process.binaries[md5]['digsig_result']
-        }));
+        translatedData = [];
+        if ('process' in result) {
+          if (result.process.binaries) {
+            let keys = Object.keys(result.process.binaries);
+            translatedData = keys.map(md5 => ({
+                'MD5': md5,
+                'Publisher': result.process.binaries[md5]['digsig_publisher'],
+                'Result': result.process.binaries[md5]['digsig_result']
+            }));
+          }
+        }
         humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['Binaries'] = translatedData.map(binary => ({
             'MD5': binary.MD5,
@@ -587,7 +599,7 @@ script:
             to: 'Extension',
             from: '.=(val.original_filename.indexOf(".")>=0 ? val.original_filename.split(".")[1] : "")'
         },
-        {to: 'Hostname', from: ".=(val.endpoint ? val.endpoint[0] : '')"},
+        {to: 'Hostname', from: "endpoint"},
         {to: 'Path', from: 'observed_filename'},
         {to: 'LastSeen', from: 'last_seen'},
         {to: 'ServerAddedTimestamp', from: 'server_added_timestamp'},
@@ -656,6 +668,13 @@ script:
         let dataMap = binaryData;
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
+        // format results - "|" char disturbing markdown representation
+        for (let i = 0; i < translatedData.length; i++) {
+            let data = translatedData[i];
+            if (data['Hostname']) {
+                translatedData[i]['Hostname'] = data['Hostname'].join().replace(/\|/gi," ");
+            }
+        }
         let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'File(val.MD5==obj.MD5)': createContext(translatedData)
@@ -1822,5 +1841,6 @@ script:
     description: Retrieve watchlist in Carbon black Response.
   isfetch: true
   runonce: false
+releaseNotes: "-"
 tests:
   - CarbonBlackResponseTest

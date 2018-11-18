@@ -104,8 +104,7 @@ script:
         if sum(map(lambda x: x in ['Information','Warning','Threat','Severe','Critical'], s_arr)) == len(s_arr):
             return set(s_arr)
         LOG("Invalid alert severity values")
-        raise "Invalid alert severity values"
-
+        raise Exception("Invalid alert severity values")
 
     def http_request(method, url_suffix, params_dict, headers):
         """
@@ -124,10 +123,10 @@ script:
         url = API_URL + url_suffix
 
         LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, headers, json.dumps(req_params)))
-
+        res_msg = ""
         try:
 
-            if method == 'PATCH':
+            if method in ['PATCH', 'POST']:
                 data = req_params
                 params = None
             else:
@@ -140,6 +139,8 @@ script:
                 params=params,
                 headers=headers
             )
+            if res.text:
+                res_msg = res.text
             res.raise_for_status()
 
             if not res.text:
@@ -147,8 +148,8 @@ script:
             return json.loads(res.text)
 
         except Exception, e:
-            LOG(e)
-            raise(e)
+            LOG("{}\n{}".format(e, res_msg))
+            raise Exception("{}\n{}".format(e, res_msg))
 
 
     def call_api(method, api_suffix, params):
@@ -161,7 +162,7 @@ script:
         """
         return http_request(method, api_suffix, params, DEFAULT_HEADERS)
 
-    def get_alerts(severity, from_date):
+    def get_alerts(severity, ip, from_date):
         """
         API caller
         :param severity: string: required severity level
@@ -169,7 +170,7 @@ script:
         :return: call_api.http_request.data
         """
         api_suffix = "/alerts"
-        return call_api('GET', api_suffix, {'severity': severity, 'from': from_date})
+        return call_api('GET', api_suffix, {'severity': severity, 'ip': ip, 'from': from_date})
 
     def fetch_incidents():
         """
@@ -190,7 +191,7 @@ script:
         tmp_time = last_updated
 
         for severity in severities:
-            events = get_alerts(severity, last_updated[1])
+            events = get_alerts(severity, None, last_updated[1])
 
             for event in events:
                 event_ts = datetime.strptime(event['createdOn'], '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -226,14 +227,6 @@ script:
                 params[api_keys[i]] = demisto.args()[key]
         return params
 
-    def get_asset(asset_ip):
-        """
-        getter for single asset data by IP
-        :param asset_ip: string
-        :return: call_api.http_request.res.text
-        """
-        api_suffix = "/assets/" + asset_ip
-        return call_api('GET', api_suffix, None)
 
     def get_assets(asset_data):
         """
@@ -245,7 +238,7 @@ script:
         if asset_data:
             api_suffix = "/assets"
             return call_api('GET', api_suffix, asset_data)
-        raise "Invalid call for assets data (missing parameters)"
+        return_error("Invalid call for assets data (missing parameters)")
 
     def get_asset_map(asset_details):
         """
@@ -256,7 +249,16 @@ script:
         if asset_details:
             api_suffix = "/asset/map"
             return call_api('GET', api_suffix, asset_details)
-        raise "Invalid call for asset map (missing parameters)"
+        return_error("Invalid call for asset map (missing parameters)")
+
+    def get_assets_map():
+        """
+        fetches asset connection data by one or more (combined) parameters
+        :param asset_details: disct :{'ip': ip, 'host': hostname, 'mac': mac}
+        :return: call_api.http_request.res.text
+        """
+        api_suffix = "/asset/map"
+        return call_api('GET', api_suffix, None)
 
     def get_asset_traffic(asset_details):
         """
@@ -267,20 +269,105 @@ script:
         if asset_details:
             api_suffix = "/asset/traffic"
             return call_api('GET', api_suffix, asset_details)
-        raise "Invalid call for asset map (missing parameters)"
+        return_error("Invalid call for asset traffic (missing parameters)")
+
+    def dest_endpoint(ep):
+        return {
+                'ip': ep['dest_ip'],
+                'mac': ep['dest_mac'],
+                'hostname': ep['dest_hostname'],
+                'port': ep['dest_port'],
+                'proto': ep['proto'],
+                'traffic': ep['traffic']
+            }
+
+    def src_endpoint(ep):
+        return {
+                'ip': ep['src_ip'],
+                'mac': ep['src_mac'],
+                'hostname': ep['src_hostname'],
+                'port': ep['src_port'],
+                'proto': ep['proto'],
+                'traffic': ep['traffic']
+            }
+
+    def get_endpoint_data(data):
+        ret = []
+        for ep in data:
+            if 'ipAddress' in demisto.args().keys():
+                if demisto.args()['ipAddress'] == ep['src_ip']:
+                    ret.append(dest_endpoint(ep))
+                else:
+                    ret.append(src_endpoint(ep))
+
+            elif 'macAddress' in demisto.args().keys():
+                if demisto.args()['macAddress'] == ep['src_mac']:
+                    ret.append(dest_endpoint(ep))
+                else:
+                    ret.append(src_endpoint(ep))
+
+            else:
+                if demisto.args()['hostName'] == ep['src_hostname']:
+                    ret.append(dest_endpoint(ep))
+                else:
+                    ret.append(src_endpoint(ep))
+        return ret
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        get_alerts('Critical', None)
+        get_alerts('Critical', None, None)
         demisto.results('ok')
         sys.exit(0)
 
-    elif demisto.command() == 'scadafence-getAlerts':
+    elif demisto.command() == 'scadafence-createAlert':
 
-        data = get_alerts(demisto.args()['severity'], None)
-        md = '## Following alerts were found\n'
-        md += tableToMarkdown('Alerts are: ', data)
+        ip = demisto.args()['ipAddress']
+        severity = demisto.args()['severity']
+        description = demisto.args()['description']
+        active = demisto.args()['alertIsActive']
+        remediation = demisto.args()['remediationText']
+
+        api_suffix = "/alert"
+        alert_data = {
+            'ip': ip,
+            'severity': severity,
+            'details': description,
+            'active': active,
+            'remediation': remediation
+        }
+        data = call_api('POST', api_suffix, alert_data)
+        
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Create alert:', data),
+            'EntryContext': {
+                'SCADAfence.Alert': data
+            }
+        })
+
+    elif demisto.command() == 'scadafence-getAlerts':
+        ip = None
+        severity = None
+        if 'ipAddress' in demisto.args():
+            ip = demisto.args()['ipAddress']
+        if 'severity' in demisto.args():
+            severity = demisto.args()['severity']
+        data = get_alerts(severity, ip, None)
+        output = []
+        for alert in data:
+            output.append({
+                        'status': alert['status'],
+                        'severity': alert['severity'],
+                        'ip': alert['ip'],
+                        'details': alert['details'],
+                        'id': alert['id'],
+                        'remediation': alert['remediation']
+                    })
+        md = tableToMarkdown('SCADAfence alerts', output)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': data,
@@ -288,7 +375,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'SCADAfence.Alerts(val.id==obj.id)': data
+                'SCADAfence.Alert(val.id==obj.id)': output
             }
         })
 
@@ -296,7 +383,18 @@ script:
         api_suffix = "/alerts/" + demisto.args()['alertId']
         alert_status = demisto.args()['alertStatus']
         call_api('PATCH', api_suffix, {'status': alert_status})
-        demisto.results("Alert " + demisto.args()['alertId'] + " status was set to '" + alert_status + "' successfully.")
+        md = tableToMarkdown("Setting status for alert " + demisto.args()['alertId'] + " to '" + alert_status + "':",{"success": True})
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': {"status": alert_status},
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'SCADAfence.Alert.status': alert_status
+            }
+        })
+
 
     elif demisto.command() == 'scadafence-getAsset':
         params = map_optional_params(['ipAddress', 'hostName', 'assetType'], ['ip', 'host', 'type'])
@@ -317,6 +415,21 @@ script:
     elif demisto.command() == 'scadafence-getAssetConnections':
         params = map_optional_params(['ipAddress', 'macAddress', 'hostName'], ['ip', 'mac', 'host'])
         data = get_asset_map(params)
+        result = get_endpoint_data(data)
+        md = tableToMarkdown('Asset connections: ', result)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': result,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                'SCADAfence.Asset.Conn(val.ip==obj.ip)':result
+            }
+        })
+
+    elif demisto.command() == 'scadafence-getAllConnections':
+        data = get_assets_map()
         md = tableToMarkdown('Asset connections: ', data)
 
         demisto.results({
@@ -326,7 +439,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': md,
             'EntryContext': {
-                'SCADAfence.AssetMap(val.ip==obj.ip)': data
+                'SCADAfence.Connection': data
             }
         })
 
@@ -360,7 +473,6 @@ script:
   - name: scadafence-getAlerts
     arguments:
     - name: severity
-      required: true
       auto: PREDEFINED
       predefined:
       - Information
@@ -369,15 +481,23 @@ script:
       - Critical
       - Severe
       description: Required severity level of alert
+    - name: ipAddress
+      description: get alerts for specified IP
     outputs:
-    - contextPath: SCADAfence.Alerts.id
+    - contextPath: SCADAfence.Alert.id
       description: alert ID
       type: string
-    - contextPath: SCADAfence.Alerts.ip
+    - contextPath: SCADAfence.Alert.ip
       description: asset IP
       type: string
-    - contextPath: SCADAfence.Alerts.severity
+    - contextPath: SCADAfence.Alert.severity
       description: alert severity level
+      type: string
+    - contextPath: SCADAfence.Alert.type
+      description: short alert description
+      type: string
+    - contextPath: SCADAfence.Alert.details
+      description: extended alert description
       type: string
     description: query alerts data from SCADAfence CNM
   - name: scadafence-getAsset
@@ -405,7 +525,16 @@ script:
       description: type of the asset (one from list of options)
     outputs:
     - contextPath: SCADAfence.Asset.ip
-      description: IP address of suspicious asset
+      description: IP address of the asset
+      type: string
+    - contextPath: SCADAfence.Asset.assetTypes
+      description: types of the asset (if detected)
+      type: string
+    - contextPath: operatingSystem
+      description: OS of the asset (if available)
+      type: string
+    - contextPath: vendor
+      description: asset vendor
       type: string
     description: fetch asset data from SCADAfence CNM
   - name: scadafence-setAlertStatus
@@ -420,6 +549,10 @@ script:
       - InProgress
       - Resolved
       description: Alert status
+    outputs:
+    - contextPath: SCADAfence.Alert.status
+      description: new status for the alert
+      type: string
     description: setting alert status
   - name: scadafence-getAssetConnections
     arguments:
@@ -436,8 +569,8 @@ script:
     - contextPath: SCADAfence.Asset.Conn.port
       description: another endpoint's port
       type: number
-    - contextPath: SCADAfence.Asset.Conn.protocol
-      description: protocol used for the connection
+    - contextPath: SCADAfence.Asset.Conn.proto
+      description: L4 protocol used for the connection
       type: string
     - contextPath: SCADAfence.Asset.Conn.traffic
       description: total bytes sent (both directions)
@@ -458,11 +591,91 @@ script:
     - name: hostName
       description: optional - hostname of the asset
     outputs:
-    - contextPath: SCADAfence.AssetTraffic.TCP
-      description: network activity summary over TCP
-    - contextPath: SCADAfence.AssetTraffic.UDP
-      description: network activity summary over UDP
+    - contextPath: SCADAfence.AssetTraffic.TCP_tx_bytes
+      description: bytes sent by the asset via TCP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.TCP_rx_bytes
+      description: bytes received by the asset via TCP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.UDP_tx_bytes
+      description: bytes sent by the asset via UDP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.UDP_rx_bytes
+      description: bytes received by the asset via UDP
+      type: number
     description: fetch asset network activity data  by one or more (combined) parameters
+  - name: scadafence-createAlert
+    arguments:
+    - name: ipAddress
+      required: true
+      description: IP address of the asset that alert's related to
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Information
+      - Warning
+      - Threat
+      - Severe
+      - Critical
+      description: desired alert severity level
+      defaultValue: Information
+    - name: description
+      required: true
+      description: human readable alert description
+    - name: remediationText
+      description: instructions on issue remediation
+      defaultValue: not provided
+    - name: alertIsActive
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: set active=True to make the alert appear on SCADAfence UI
+      defaultValue: "True"
+    outputs:
+    - contextPath: SCADAfence.Alert.alertCreated
+      description: flag defining alert creation status
+      type: boolean
+    - contextPath: SCADAfence.Alert.id
+      description: unique ID set to a new alert
+      type: string
+    description: create alert in SCADAfence CNM
+  - name: scadafence-getAllConnections
+    arguments: []
+    outputs:
+    - contextPath: SCADAfence.Connection.src_ip
+      description: IP address of endpoint A
+      type: string
+    - contextPath: SCADAfence.Connection.dest_ip
+      description: IP address of endpoint B
+      type: string
+    - contextPath: SCADAfence.Connection.src_port
+      description: port of endpoint A
+      type: number
+    - contextPath: SCADAfence.Connection.dest_port
+      description: port of endpoint B
+      type: number
+    - contextPath: SCADAfence.Connection.src_mac
+      description: endpoint A MAC address
+      type: string
+    - contextPath: SCADAfence.Connection.dest_mac
+      description: endpoint B MAC address
+      type: string
+    - contextPath: SCADAfence.Connection.src_cname
+      description: endpoint A hostname
+      type: string
+    - contextPath: SCADAfence.Connection.dest_cname
+      description: endpoint B hostname
+      type: string
+    - contextPath: SCADAfence.Connection.proto
+      description: L4 protocol
+      type: string
+    - contextPath: SCADAfence.Connection.traffic
+      description: total number of bytes sent in both directions
+      type: number
+    description: Fetches all connections from the CNM
   isfetch: true
   runonce: false
 tests:

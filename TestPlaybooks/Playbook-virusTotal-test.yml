@@ -29,7 +29,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -49,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "51"
     scriptarguments:
       all:
         simple: "yes"
@@ -59,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -79,8 +79,9 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "3"
+      - "60"
     scriptarguments:
+      fullResponse: {}
       ip:
         simple: 8.8.8.8
       long: {}
@@ -88,12 +89,13 @@ tasks:
       sampleSize: {}
       threshold: {}
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
@@ -158,7 +160,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2120
         }
       }
@@ -194,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2470
+          "x": 480,
+          "y": 2645
         }
       }
     note: false
@@ -214,7 +216,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "8"
     scriptarguments:
       all:
         simple: "yes"
@@ -224,8 +226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 265,
+          "y": 2820
         }
       }
     note: false
@@ -244,7 +246,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "5"
+      - "62"
     scriptarguments:
       domain:
         simple: demisto.com
@@ -254,11 +256,12 @@ tasks:
       sampleSize: {}
       threshold: {}
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2295
         }
       }
@@ -278,7 +281,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "9"
+      - "65"
     scriptarguments:
       file:
         simple: 7657fcb7d772448a6d8504e4b20168b8
@@ -286,11 +289,12 @@ tasks:
       retries: {}
       threshold: {}
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2995
         }
       }
@@ -327,7 +331,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3345
         }
       }
     note: false
@@ -356,8 +360,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3345
+          "x": 265,
+          "y": 3520
         }
       }
     note: false
@@ -368,7 +372,7 @@ tasks:
     task:
       id: 3d11944c-a38e-4303-8574-cbaf0aa04043
       version: -1
-      name: url
+      name: url long demisto.com
       description: Check URL Reputation
       script: VirusTotal|||url
       type: regular
@@ -376,9 +380,10 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "15"
+      - "79"
     scriptarguments:
-      long: {}
+      long:
+        simple: "true"
       retries: {}
       sampleSize: {}
       submitWait: {}
@@ -386,12 +391,13 @@ tasks:
       url:
         simple: www.demisto.com
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7195
+          "x": 265,
+          "y": 7895
         }
       }
     note: false
@@ -427,7 +433,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 8245
         }
       }
     note: false
@@ -446,7 +452,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
+      - "42"
     scriptarguments:
       all:
         simple: "yes"
@@ -456,107 +462,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7545
-        }
-      }
-    note: false
-  "17":
-    id: "17"
-    taskid: 0e99b781-0388-4b43-88a9-f281147b63bb
-    type: regular
-    task:
-      id: 0e99b781-0388-4b43-88a9-f281147b63bb
-      version: -1
-      name: Sleep
-      description: |
-        vt has a quota of requests per minute that we exceed in the test playbook.
-
-        Sleep for 60 seconds.
-
-        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5270
-        }
-      }
-    note: false
-  "18":
-    id: "18"
-    taskid: 397437c1-fffd-4ee8-8509-eaf4a790da68
-    type: regular
-    task:
-      id: 397437c1-fffd-4ee8-8509-eaf4a790da68
-      version: -1
-      name: Sleep
-      description: |
-        vt has a quota of requests per minute that we exceed in the test playbook.
-
-        Sleep for 60 seconds.
-
-        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "51"
-    scriptarguments:
-      seconds:
-        simple: "61"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "19":
-    id: "19"
-    taskid: 1c2b2cc4-61bd-49c3-8c04-d01215cdeabd
-    type: regular
-    task:
-      id: 1c2b2cc4-61bd-49c3-8c04-d01215cdeabd
-      version: -1
-      name: Sleep
-      description: |
-        vt has a quota of requests per minute that we exceed in the test playbook.
-
-        Sleep for 60 seconds.
-
-        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4045
+          "x": 265,
+          "y": 8420
         }
       }
     note: false
@@ -567,7 +474,7 @@ tasks:
     task:
       id: 2f041110-4a06-4051-890a-9e4eef6719ee
       version: -1
-      name: file
+      name: file (second hash)
       description: Check file reputation of the given hash
       script: VirusTotal|||file
       type: regular
@@ -575,7 +482,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "21"
+      - "68"
     scriptarguments:
       file:
         simple: d41d8cd98f00b204e9800998ecf8427e
@@ -583,12 +490,13 @@ tasks:
       retries: {}
       threshold: {}
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4220
+          "x": 265,
+          "y": 4395
         }
       }
     note: false
@@ -624,7 +532,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4745
         }
       }
     note: false
@@ -653,8 +561,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4570
+          "x": 265,
+          "y": 4920
         }
       }
     note: false
@@ -665,7 +573,7 @@ tasks:
     task:
       id: 084ad60a-a06a-4839-8888-5aeddde84e1e
       version: -1
-      name: file
+      name: file long (second hash)
       description: Check file reputation of the given hash
       script: VirusTotal|||file
       type: regular
@@ -673,7 +581,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "25"
+      - "72"
     scriptarguments:
       file:
         simple: d41d8cd98f00b204e9800998ecf8427e
@@ -682,12 +590,13 @@ tasks:
       retries: {}
       threshold: {}
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4745
+          "x": 265,
+          "y": 5095
         }
       }
     note: false
@@ -706,7 +615,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "30"
     scriptarguments:
       all:
         simple: "yes"
@@ -716,8 +625,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5095
+          "x": 265,
+          "y": 5620
         }
       }
     note: false
@@ -753,40 +662,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
-        }
-      }
-    note: false
-  "26":
-    id: "26"
-    taskid: c375b052-7231-455b-8bcb-dac4a6e28357
-    type: regular
-    task:
-      id: c375b052-7231-455b-8bcb-dac4a6e28357
-      version: -1
-      name: Sleep
-      description: |
-        vt has a quota of requests per minute that we exceed in the test playbook.
-
-        Sleep for 60 seconds.
-
-        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
+          "y": 5445
         }
       }
     note: false
@@ -797,7 +673,7 @@ tasks:
     task:
       id: c6776e4b-636b-4bd0-8adb-c94678989c62
       version: -1
-      name: file
+      name: file long
       description: Check file reputation of the given hash
       script: VirusTotal|||file
       type: regular
@@ -805,7 +681,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "28"
+      - "66"
     scriptarguments:
       file:
         simple: 7657fcb7d772448a6d8504e4b20168b8
@@ -814,12 +690,13 @@ tasks:
       retries: {}
       threshold: {}
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3520
+          "x": 265,
+          "y": 3695
         }
       }
     note: false
@@ -855,7 +732,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 4045
         }
       }
     note: false
@@ -874,7 +751,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "20"
     scriptarguments:
       all:
         simple: "yes"
@@ -884,8 +761,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3870
+          "x": 265,
+          "y": 4220
         }
       }
     note: false
@@ -896,7 +773,7 @@ tasks:
     task:
       id: 35aaac7d-d462-4388-8841-1577865db358
       version: -1
-      name: url
+      name: url coffedoesgood.com
       description: Check URL Reputation
       script: VirusTotal|||url
       type: regular
@@ -904,7 +781,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "31"
+      - "73"
     scriptarguments:
       long: {}
       retries: {}
@@ -915,12 +792,13 @@ tasks:
       url:
         simple: http://coffeedoesgood.com
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5445
+          "x": 265,
+          "y": 5795
         }
       }
     note: false
@@ -956,7 +834,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 6145
         }
       }
     note: false
@@ -985,8 +863,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5795
+          "x": 265,
+          "y": 6320
         }
       }
     note: false
@@ -997,7 +875,7 @@ tasks:
     task:
       id: 35a1233f-7a25-45a4-8032-4946c7c6f1a2
       version: -1
-      name: url
+      name: url long coffedoesgood.com
       description: Check URL Reputation
       script: VirusTotal|||url
       type: regular
@@ -1005,7 +883,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "50"
+      - "75"
     scriptarguments:
       long:
         simple: "true"
@@ -1017,12 +895,13 @@ tasks:
       url:
         simple: http://coffeedoesgood.com
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5970
+          "x": 265,
+          "y": 6495
         }
       }
     note: false
@@ -1058,7 +937,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 6845
         }
       }
     note: false
@@ -1087,8 +966,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6495
+          "x": 265,
+          "y": 7020
         }
       }
     note: false
@@ -1099,7 +978,7 @@ tasks:
     task:
       id: ee29d4f2-1cc0-496e-873c-22354b6531a9
       version: -1
-      name: url
+      name: url demisto.com
       description: Check URL Reputation
       script: VirusTotal|||url
       type: regular
@@ -1107,10 +986,9 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "37"
+      - "77"
     scriptarguments:
-      long:
-        simple: "true"
+      long: {}
       retries: {}
       sampleSize: {}
       submitWait: {}
@@ -1118,12 +996,13 @@ tasks:
       url:
         simple: www.demisto.com
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6670
+          "x": 265,
+          "y": 7195
         }
       }
     note: false
@@ -1159,7 +1038,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 7545
         }
       }
     note: false
@@ -1188,109 +1067,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7020
-        }
-      }
-    note: false
-  "39":
-    id: "39"
-    taskid: 33f46a1c-c857-4fba-8063-177b0c3980c2
-    type: regular
-    task:
-      id: 33f46a1c-c857-4fba-8063-177b0c3980c2
-      version: -1
-      name: ip
-      description: Check IP Reputation
-      script: VirusTotal|||ip
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      fullResponse: {}
-      ip:
-        simple: 8.8.8.8
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold:
-        simple: "0"
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 7895
-        }
-      }
-    note: false
-  "40":
-    id: "40"
-    taskid: 5161a874-d5f5-4831-8976-4d54985bf713
-    type: regular
-    task:
-      id: 5161a874-d5f5-4831-8976-4d54985bf713
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      expectedValue:
-        simple: 8.8.8.8
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 8070
-        }
-      }
-    note: false
-  "41":
-    id: "41"
-    taskid: 12e33401-20e9-46df-8222-5f70ca369c79
-    type: regular
-    task:
-      id: 12e33401-20e9-46df-8222-5f70ca369c79
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "42"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 8245
+          "x": 265,
+          "y": 7720
         }
       }
     note: false
@@ -1309,7 +1087,7 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "43"
+      - "81"
     scriptarguments:
       domain:
         simple: demisto.com
@@ -1320,12 +1098,13 @@ tasks:
       threshold:
         simple: "0"
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 8420
+          "x": 265,
+          "y": 8595
         }
       }
     note: false
@@ -1361,7 +1140,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8595
+          "y": 8945
         }
       }
     note: false
@@ -1378,9 +1157,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
     scriptarguments:
       all:
         simple: "yes"
@@ -1390,205 +1166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 8770
-        }
-      }
-    note: false
-  "45":
-    id: "45"
-    taskid: f284b293-2fc2-4037-88ba-925cae625590
-    type: regular
-    task:
-      id: f284b293-2fc2-4037-88ba-925cae625590
-      version: -1
-      name: Sleep
-      description: |
-        vt has a quota of requests per minute that we exceed in the test playbook.
-
-        Sleep for 60 seconds.
-
-        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "47"
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 8945
-        }
-      }
-    note: false
-  "46":
-    id: "46"
-    taskid: dff8c385-ec95-4e11-85f3-ce998c19bd51
-    type: regular
-    task:
-      id: dff8c385-ec95-4e11-85f3-ce998c19bd51
-      version: -1
-      name: Sleep
-      description: |
-        vt has a quota of requests per minute that we exceed in the test playbook.
-
-        Sleep for 60 seconds.
-
-        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 7720
-        }
-      }
-    note: false
-  "47":
-    id: "47"
-    taskid: 25a0ecb2-daaf-42d4-8524-60795e5a619d
-    type: regular
-    task:
-      id: 25a0ecb2-daaf-42d4-8524-60795e5a619d
-      version: -1
-      name: url
-      description: Check URL Reputation
-      script: VirusTotal|||url
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "48"
-    scriptarguments:
-      long:
-        simple: "true"
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      url:
-        simple: www.demisto.com
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
+          "x": 265,
           "y": 9120
-        }
-      }
-    note: false
-  "48":
-    id: "48"
-    taskid: 67734c89-8a55-4f57-8ef0-ec6b2e7fed8b
-    type: regular
-    task:
-      id: 67734c89-8a55-4f57-8ef0-ec6b2e7fed8b
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "49"
-    scriptarguments:
-      expectedValue:
-        simple: www.demisto.com
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 9295
-        }
-      }
-    note: false
-  "49":
-    id: "49"
-    taskid: 777e2b05-dea9-4ca1-8883-92114bb13bb9
-    type: regular
-    task:
-      id: 777e2b05-dea9-4ca1-8883-92114bb13bb9
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 9470
-        }
-      }
-    note: false
-  "50":
-    id: "50"
-    taskid: bab08c39-594e-4a73-8da8-96d335e1863f
-    type: regular
-    task:
-      id: bab08c39-594e-4a73-8da8-96d335e1863f
-      version: -1
-      name: Sleep
-      description: |
-        vt has a quota of requests per minute that we exceed in the test playbook.
-
-        Sleep for 60 seconds.
-
-        https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6145
         }
       }
     note: false
@@ -1618,8 +1197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -1650,8 +1229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -1662,7 +1241,7 @@ tasks:
     task:
       id: 24529095-6330-444b-8347-fd45e0c93bc7
       version: -1
-      name: file
+      name: File (1 call)
       description: Check file reputation of the given hash
       script: VirusTotal|||file
       type: regular
@@ -1670,26 +1249,24 @@ tasks:
       brand: VirusTotal
     nexttasks:
       '#none#':
-      - "56"
+      - "58"
     scriptarguments:
-      confidenceThreshold: {}
       file:
         complex:
           root: File
           accessor: SHA1
       long: {}
-      owners: {}
-      ratingThreshold: {}
       retries: {}
       threshold:
         simple: "1"
       wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -1708,7 +1285,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -1720,36 +1297,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1420
-        }
-      }
-    note: false
-  "55":
-    id: "55"
-    taskid: 3224e0a8-9919-49c8-8d6a-af6967ef7661
-    type: regular
-    task:
-      id: 3224e0a8-9919-49c8-8d6a-af6967ef7661
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      seconds:
-        simple: "61"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
         }
       }
     note: false
@@ -1831,13 +1380,817 @@ tasks:
         }
       }
     note: false
+  "58":
+    id: "58"
+    taskid: 5e940d99-810a-4a07-8a88-b7ce58a09495
+    type: condition
+    task:
+      id: 5e940d99-810a-4a07-8a88-b7ce58a09495
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+  "59":
+    id: "59"
+    taskid: 238b3ed9-c3f1-4eee-8bf6-f88df263eea3
+    type: condition
+    task:
+      id: 238b3ed9-c3f1-4eee-8bf6-f88df263eea3
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+  "60":
+    id: "60"
+    taskid: 031572ea-8f47-40f3-882b-f3164210119a
+    type: condition
+    task:
+      id: 031572ea-8f47-40f3-882b-f3164210119a
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+  "61":
+    id: "61"
+    taskid: 1dbbfd05-d863-46ff-89f0-da2b6f36e745
+    type: condition
+    task:
+      id: 1dbbfd05-d863-46ff-89f0-da2b6f36e745
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+  "62":
+    id: "62"
+    taskid: 7d105115-5046-419c-8207-913e19b74c99
+    type: condition
+    task:
+      id: 7d105115-5046-419c-8207-913e19b74c99
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+  "63":
+    id: "63"
+    taskid: 466cb558-656d-435b-8c27-2d801c57b252
+    type: condition
+    task:
+      id: 466cb558-656d-435b-8c27-2d801c57b252
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "64":
+    id: "64"
+    taskid: 62efbbe1-5725-42c9-82cb-7aa110235335
+    type: condition
+    task:
+      id: 62efbbe1-5725-42c9-82cb-7aa110235335
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3345
+        }
+      }
+    note: false
+  "65":
+    id: "65"
+    taskid: ae0f5526-472c-41c7-896d-09a2a41d60e7
+    type: condition
+    task:
+      id: ae0f5526-472c-41c7-896d-09a2a41d60e7
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+  "66":
+    id: "66"
+    taskid: 1d49447a-e21d-4773-8b20-b4c805ca0745
+    type: condition
+    task:
+      id: 1d49447a-e21d-4773-8b20-b4c805ca0745
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3870
+        }
+      }
+    note: false
+  "67":
+    id: "67"
+    taskid: 86254dba-7e94-4060-8e3b-d64acdd3781e
+    type: condition
+    task:
+      id: 86254dba-7e94-4060-8e3b-d64acdd3781e
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4045
+        }
+      }
+    note: false
+  "68":
+    id: "68"
+    taskid: b28c7881-6e12-428b-8e49-2df447177e4e
+    type: condition
+    task:
+      id: b28c7881-6e12-428b-8e49-2df447177e4e
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+  "69":
+    id: "69"
+    taskid: 0428f6df-b150-4e67-8b44-ce9eeaaccb5d
+    type: condition
+    task:
+      id: 0428f6df-b150-4e67-8b44-ce9eeaaccb5d
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4745
+        }
+      }
+    note: false
+  "71":
+    id: "71"
+    taskid: dcf27ac6-9754-4263-8d92-9a58886406c3
+    type: condition
+    task:
+      id: dcf27ac6-9754-4263-8d92-9a58886406c3
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5445
+        }
+      }
+    note: false
+  "72":
+    id: "72"
+    taskid: 05237cb4-4007-4787-8694-d576495ade07
+    type: condition
+    task:
+      id: 05237cb4-4007-4787-8694-d576495ade07
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5270
+        }
+      }
+    note: false
+  "73":
+    id: "73"
+    taskid: 282380f6-836e-47b4-8f41-8d24fa9a19aa
+    type: condition
+    task:
+      id: 282380f6-836e-47b4-8f41-8d24fa9a19aa
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5970
+        }
+      }
+    note: false
+  "74":
+    id: "74"
+    taskid: db977b08-cb01-4c7f-8ab8-ca6770668d34
+    type: condition
+    task:
+      id: db977b08-cb01-4c7f-8ab8-ca6770668d34
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6145
+        }
+      }
+    note: false
+  "75":
+    id: "75"
+    taskid: a5dd7408-7719-4c0f-8c1a-9befd90ec848
+    type: condition
+    task:
+      id: a5dd7408-7719-4c0f-8c1a-9befd90ec848
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6670
+        }
+      }
+    note: false
+  "76":
+    id: "76"
+    taskid: 6dde4487-cabb-49f8-8c92-b480cf9cbde2
+    type: condition
+    task:
+      id: 6dde4487-cabb-49f8-8c92-b480cf9cbde2
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6845
+        }
+      }
+    note: false
+  "77":
+    id: "77"
+    taskid: cafd0bb2-66e9-4d56-8e68-c91510a71f5c
+    type: condition
+    task:
+      id: cafd0bb2-66e9-4d56-8e68-c91510a71f5c
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7370
+        }
+      }
+    note: false
+  "78":
+    id: "78"
+    taskid: dac1048e-0671-4b11-8d07-93ed0b721508
+    type: condition
+    task:
+      id: dac1048e-0671-4b11-8d07-93ed0b721508
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7545
+        }
+      }
+    note: false
+  "79":
+    id: "79"
+    taskid: d9040dab-afde-403e-84ea-2ce390dac9e3
+    type: condition
+    task:
+      id: d9040dab-afde-403e-84ea-2ce390dac9e3
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8070
+        }
+      }
+    note: false
+  "80":
+    id: "80"
+    taskid: 43259a3e-0c5e-4fca-8a1b-def58f9c08b9
+    type: condition
+    task:
+      id: 43259a3e-0c5e-4fca-8a1b-def58f9c08b9
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8245
+        }
+      }
+    note: false
+  "81":
+    id: "81"
+    taskid: cf127357-c375-45b0-8b57-f1d1111f92d0
+    type: condition
+    task:
+      id: cf127357-c375-45b0-8b57-f1d1111f92d0
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8770
+        }
+      }
+    note: false
+  "82":
+    id: "82"
+    taskid: 72dc1d2e-7f6e-4240-836b-458e142905b5
+    type: condition
+    task:
+      id: 72dc1d2e-7f6e-4240-836b-458e142905b5
+      version: -1
+      name: Check if error is API-RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8945
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9515,
-        "width": 380,
+        "height": 9165,
+        "width": 810,
         "x": 50,
         "y": 50
       }

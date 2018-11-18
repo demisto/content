@@ -306,7 +306,8 @@ script:
         let curTry = 0;
         while (curTry < retries) {
             let result = getSessionsRequest(sessionId, args.sensor);
-            if (result.status === 'active') {
+            let status = result.status.toLowerCase()
+            if (status === 'active' ) {
                 let title = `CB ${CB_PRODUCT} - Create Session And Wait`;
                 let dataMap = sessionData;
                 //keep CbResponse context for backward competability
@@ -315,13 +316,13 @@ script:
                     'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'
                 ];
                 return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-            } else if (result.status !== 'pending' && result.status !== 'PENDING') {
+            } else if (status !== 'pending') {
                 throw `Executing session ${sessionId} failed, status: ${result.status}`;
             }
             sleep(SLEEP_BETWEEN_RETRIES);
             curTry++;
         }
-        throw `Creating session ${sessionId} timedout (${timeout / 1000} seconds), increase wait-timeout and try again`;
+        throw `Exceeded timeout.\nNew session for sensor ${args.sensor} was created with ID: ${sessionId}.\nSession status remains '${result.status}'. Wait for session to become active (you may query for session staus with 'cb-session-info').\nIt is recomended to increase wait-timeout for this command.`;
     }
 
     function closeSessionRequest(sessionId) {
@@ -347,6 +348,13 @@ script:
             'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',
             'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'
         ];
+        // cb response - session will have 'active' value for 'status' field although status is 'closed'
+        if (CB_PRODUCT === 'Response') {
+            // retrieving closed session info returns inconsistent results (expected to return the updated info with correct status, but in practice this may return an error)
+            // do not try to retrieve updated session info, simply change the session status in the result to avoid confusion
+            // see https://developer.carbonblack.com/reference/enterprise-response/6.1/live-response-api/#close-sessions
+            result.status = 'close'
+        }
         return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
     }
 
@@ -1682,6 +1690,7 @@ script:
     description: Archive the given session (If the session has no content it will
       fail)
   - name: cb-command-cancel
+    deprecated: true
     arguments:
     - name: session
       required: true
@@ -1740,7 +1749,7 @@ script:
     - contextPath: CbLiveResponse.Files.Size
       description: The File size
     - contextPath: CbLiveResponse.Files.CbFileID
-      description: ID of the file within the Cb Session Storage - use with cb-file-get
+      description: ID of the file within the Cb Session Storage.
     - contextPath: CbLiveResponse.Files.Status
       description: File status (0 if no error, another number otherwise)
     - contextPath: CbLiveResponse.Files.Delete
@@ -2125,6 +2134,7 @@ script:
       description: Boolean flag indicating if memory dump is in progress.
     description: Endpoint memory dump.
   - name: cb-command-create
+    deprecated: true
     arguments:
     - name: name
       required: true
@@ -2201,6 +2211,7 @@ script:
       description: Result code
     description: Create a live response command
   - name: cb-command-create-and-wait
+    deprecated: true
     arguments:
     - name: name
       required: true
