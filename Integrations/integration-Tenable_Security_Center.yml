@@ -1,15 +1,15 @@
 commonfields:
-  id: Tenable Security Center
+  id: Tenable SecurityCenter
   version: -1
-name: Tenable Security Center
-display: Tenable Security Center
+name: Tenable.sc
+display: Tenable.sc
 category: Vulnerability Management
-image: data:image/png;base64,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
-description: SecurityCenter® consolidates and evaluates vulnerability data across
-  your organization, prioritizing security risks and providing a clear view of your
-  security posture.
+image: data:image/png;base64,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
+description: Tenable.sc consolidates and evaluates vulnerability data across your
+  organization, prioritizing security risks and providing a clear view of your security
+  posture.
 configuration:
-- display: Server URL (e.g https://tenablesc.eastus.cloudapp.azure.com)
+- display: Server URL (e.g. https://192.168.0.1)
   name: server
   defaultvalue: ""
   type: 0
@@ -78,7 +78,7 @@ script:
                 error = res.json()
             except:
                 raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
-            raise Exception('Got an error from Security Center, code: {}, details: {}'.format(error['error_code'], error['error_msg']))
+            raise Exception('Got an error from TenableSC, code: {}, details: {}'.format(error['error_code'], error['error_msg']))
         return res.json()
 
 
@@ -124,7 +124,7 @@ script:
 
     def list_scans_command():
         res = list_scans()
-        manageable = demisto.args().get('managable').lower()
+        manageable = demisto.args().get('managable', 'false').lower()
 
         if not res or 'response' not in res or not res['response']:
             return 'No scans found'
@@ -147,7 +147,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scans", mapped_scans, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scans", mapped_scans, headers, removeNull=True),
             'EntryContext': {
                   'Tenable.Scan(val.ID==obj.ID)': createContext(mapped_scans, removeNull=True)
             }
@@ -164,7 +164,7 @@ script:
     def list_policies_command():
         res = get_policies()
 
-        manageable = demisto.args().get('manageable').lower()
+        manageable = demisto.args().get('manageable', 'false').lower()
 
         if not res or 'response' not in res or not res['response']:
             return 'No policies found'
@@ -187,7 +187,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan Policies", mapped_policies, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan Policies", mapped_policies, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.ScanPolicy(val.ID==obj.ID)': createContext(mapped_policies, removeNull=True)
             }
@@ -226,9 +226,189 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan Repositories", mapped_repositories, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan Repositories", mapped_repositories, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.ScanRepository(val.ID==obj.ID)': createContext(mapped_repositories, removeNull=True)
+            }
+        }
+
+        return entry
+
+
+    def get_repositories():
+        path = 'repository'
+
+        return send_request(path)
+
+
+    def list_credentials_command():
+        res = get_credentials()
+
+        manageable = demisto.args().get('manageable', 'false').lower()
+
+        if not res or 'response' not in res or not res['response']:
+            return 'No credentials found'
+
+        credentials = get_elements(res['response'], manageable)
+
+        if len(credentials) == 0:
+            return 'No credentials found'
+
+        headers = [
+            'ID',
+            'Name',
+            'Description',
+            'Type'
+            ]
+
+        mapped_credentials = [{'ID': c['id'], 'Name': c['name'], 'Description': c['description'], 'Type': c['type']} for c in credentials]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable.sc Credentials", mapped_credentials, headers, removeNull=True),
+            'EntryContext': {
+                  'TenableSC.Credential(val.ID==obj.ID)': createContext(mapped_credentials, removeNull=True)
+            }
+        }
+
+        return entry
+
+
+    def get_credentials():
+        path = 'credential'
+
+        return send_request(path)
+
+    def list_assets_command():
+        res = list_assets()
+
+        manageable = demisto.args().get('manageable', 'false').lower()
+
+        if not res or 'response' not in res or not res['response']:
+            return 'No assets found'
+
+        assets = get_elements(res['response'], manageable)
+
+        if len(assets) == 0:
+            return 'No assets found'
+
+        headers = [
+            'ID',
+            'Name',
+            'Description'
+            'IPCount',
+            'Type'
+            ]
+
+        mapped_assets = [{'ID': a['id'], 'Name': a['name'], 'Description': a['description'], 'Type': a['type'], 'IPCount': a['ipCount']} for a in assets]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable.sc Assets", mapped_assets, headers, removeNull=True),
+            'EntryContext': {
+                  'TenableSC.Asset(val.ID==obj.ID)': createContext(mapped_assets, removeNull=True)
+            }
+        }
+
+        return entry
+
+    def list_assets():
+        path = 'asset'
+
+        params = {
+            'fields': 'id,name,description,ipCount,type'
+        }
+
+        return send_request(path, params=params)
+
+
+    def list_reports_command():
+        res = get_reports()
+
+        manageable = demisto.args().get('manageable', 'false').lower()
+
+        if not res or 'response' not in res or not res['response']:
+            return 'No reports found'
+
+        reports = get_elements(res['response'], manageable)
+        # Remove duplicates, take latest
+        reports = [reduce(lambda x, y: x if int(x['modifiedTime']) > int(y['modifiedTime']) else y, filter(lambda e: e['name'] == n, reports)) for n in {r['name'] for r in reports}]
+
+        if len(reports) == 0:
+            return 'No reports found'
+
+        headers = [
+            'ID',
+            'Name',
+            'Description'
+            ]
+
+        mapped_reports = [{'ID': r['id'], 'Name': r['name'], 'Description': r['description']} for r in reports]
+
+        hr = tableToMarkdown("Tenable.sc Report Definitions", mapped_reports, headers, removeNull=True)
+        for r in mapped_reports:
+            del r['Description']
+
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': {
+                  'TenableSC.Report(val.ID==obj.ID)': createContext(mapped_reports, removeNull=True)
+            }
+        }
+
+        return entry
+
+
+    def get_reports():
+        path = 'reportDefinition'
+
+        params = {
+            'fields': 'id,name,description,modifiedTime'
+        }
+
+        return send_request(path, params=params)
+
+
+    def list_zones_command():
+        res = get_zones()
+
+        if not res or 'response' not in res or not res['response']:
+            return 'No zones found'
+
+        zones = res['response']
+
+        if len(zones) == 0:
+            return 'No repositories found'
+
+        headers = [
+            'ID',
+            'Name',
+            'Description',
+            'IPList',
+            'ActiveScanners'
+            ]
+
+        mapped_zones = [{'ID': z['id'], 'Name': z['name'], 'Description': z['description'], 'IPList': z['ipList'], 'ActiveScanners': z['activeScanners']} for z in zones]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan Zones", mapped_zones, headers, removeNull=True),
+            'EntryContext': {
+                  'TenableSC.ScanZone(val.ID==obj.ID)': createContext(mapped_zones, removeNull=True)
             }
         }
 
@@ -254,9 +434,152 @@ script:
         return dicts
 
 
-    #def create_scan_command():
+    def create_scan_command():
+        name = demisto.args()['name']
+        repo_id = demisto.args()['repositoryID']
+        policy_id = demisto.args().get('policyID')
+        plugin_id = demisto.args().get('pluginID')
+        description = demisto.args().get('description')
+        zone_id = demisto.args().get('zoneID')
+        schedule = demisto.args().get('schedule')
+        asset_ids = argToList(demisto.args().get('assetIDs'))
+        ips = argToList(demisto.args().get('ipList'))
+        scan_virtual_hosts = demisto.args().get('scanVirtualHosts')
+        report_ids = argToList(demisto.args().get('reportIDs'))
+        credentials = demisto.args().get('credentials')
+        timeout_action = demisto.args().get('timeoutAction')
+        max_scan_time = demisto.args().get('maxScanTime')
+        dhcp_track = demisto.args().get('dhcpTracking')
+        rollover_type = demisto.args().get('rolloverType')
+        schedule_start = demisto.args().get('scheduleStart')
+        repeat_rule = demisto.args().get('repeatRule')
+        dependent = demisto.args().get('dependentID')
+
+        if not policy_id and not plugin_id:
+            raise ValueError('Policy and/or Plugin ID must be provided')
+
+        if not asset_ids and not ip_list:
+            raise ValueError('Assets and/or IPs must be provided')
+
+        if schedule == 'dependent' and not dependent:
+            raise ValueError('Dependent schedule must include a dependent scan ID')
+
+        res = create_scan(name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
+                         ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time, dhcp_track, rollover_type, schedule_start, repeat_rule, dependent)
+
+        if not res or 'response' not in res:
+            return 'Could not retrieve scan'
+
+        scan = res['response']
+
+        headers = [
+            'ID',
+            'CreatorID',
+            'Name',
+            'Type',
+            'CreationTime',
+            'OwnerName',
+            'Reports'
+        ]
+
+        mapped_scan = {
+            'ID': scan['id'],
+            'CreatorID': scan['creator'].get('id'),
+            'Name': scan['name'],
+            'Type': scan['type'],
+            'CreationTime': datetime.datetime.utcfromtimestamp(int(scan['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'OwnerName': scan['owner'].get('name'),
+            'Reports': demisto.dt(scan['reports'], 'id')
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan", mapped_scan, headers, removeNull=True),
+            'EntryContext': {
+                  'TenableSC.Scan(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
+            }
+        }
+
+        return entry
 
 
+    def create_scan(name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
+                    ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time, dhcp_track, rollover_type, schedule_start, repeat_rule, dependent):
+        path = 'scan'
+
+        scan_type = 'policy' if policy_id else 'plugin'
+
+        body = {
+            'name' : name,
+            'type' : scan_type,
+            'repository' : {
+                'id' : repo_id
+            }
+        }
+
+        if policy_id:
+            body['policy'] = {
+                'id': policy_id
+            }
+
+        if plugin_id:
+            body['pluginID'] = plugin_id
+
+        if description:
+            body['description'] = description
+
+        if zone_id:
+            body['zone'] = {
+                'id' : zone_id
+            }
+
+        if dhcp_track:
+            body['dhcpTracking'] = dhcp_track
+
+        if schedule:
+            body['schedule'] = {
+                'type' : schedule
+            }
+
+            if dependent:
+                body['schedule']['dependentID'] = dependent
+
+            if repeat_rule:
+                body['schedule']['repeatRule'] = repeat_rule
+
+        if report_ids:
+            body['reports'] = [{'id' : r_id, 'reportSource' : 'individual'} for r_id in report_ids]
+
+        if asset_ids:
+            if str(asset_ids).startswith('All'):
+                manageable = True if asset_ids == 'AllManageable' else False
+                res = get_assets()
+                assets = get_elements(res['response'], manageable)
+                asset_ids = list(map(lambda a: a['id'], assets))
+            body['assets'] = [{'id' : a_id} for a_id in asset_ids]
+
+        if credentials:
+            body['credentials'] = [{'id' : c_id} for c_id in credentials]
+
+        if timeout_action:
+            body['timeoutAction'] = timeout_action
+
+        if scan_virtual_hosts:
+            body['scanningVirtualHosts'] = scan_virtual_hosts
+
+        if rollover_type:
+            body['rolloverType'] = rollover_type
+
+        if ips:
+            body['ipList'] = ','.join(ips)
+
+        if max_scan_time:
+            body['maxScanTime'] = max_scan_time * 3600
+
+        return send_request(path, method='post', body=body)
 
     def launch_scan_command():
         scan_id = demisto.args()['scanID']
@@ -294,7 +617,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan", mapped_scan, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan", mapped_scan, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.Scan(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
             }
@@ -337,7 +660,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Tenable SecurityCenter Scan Status", mapped_scans_results, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan Status", mapped_scans_results, headers, removeNull=True),
             'EntryContext': {
                   'Tenable.Scan(val.ID==obj.ID)': createContext(mapped_scans_results, removeNull=True)
             }
@@ -354,6 +677,9 @@ script:
     def get_scan_report_command():
         scan_results_id = demisto.args()['scanResultsID']
         vulnerabilities_to_get = argToList(demisto.args().get('vulnerabilitySeverity', []))
+
+        if not isinstance(vulnerabilities_to_get, list):
+            vulnerabilities_to_get = [vulnerabilities_to_get]
 
         res = get_scan_report(scan_results_id)
 
@@ -397,13 +723,17 @@ script:
             'RepositoryName': scan_results['repository'].get('name')
         }
 
-        hr = tableToMarkdown('Tenable SecurityCenter Scan ' + mapped_results['ID'] + ' Report', mapped_results, headers, removeNull=True)
+        hr = tableToMarkdown('Tenable.sc Scan ' + mapped_results['ID'] + ' Report', mapped_results, headers, removeNull=True)
 
         if len(vulnerabilities_to_get) > 0:
-            vulnerabilities = list(filter(lambda v: v['Severity'] in vulnerabilities_to_get, get_vulnearbilites(scan_results_id)))
-            if vulnerabilities and len(vulnerabilities) > 0:
-                hr += tableToMarkdown("Vulnerabilities", vulnerabilities, vuln_headers, removeNull=True)
-                mapped_results['Vulnerability'] = vulnerabilities
+            vulns = get_vulnearbilites(scan_results_id)
+
+            if isinstance(vulns, list):
+                vulnerabilities = list(filter(lambda v: v['Severity'] in vulnerabilities_to_get, vulns))
+                if vulnerabilities and len(vulnerabilities) > 0:
+                    hr += tableToMarkdown("Vulnerabilities", vulnerabilities, vuln_headers, removeNull=True)
+                    mapped_results['Vulnerability'] = vulnerabilities
+
 
         entry = {
             'Type': entryTypes['note'],
@@ -697,6 +1027,12 @@ script:
         demisto.results(list_policies_command())
     elif demisto.command() == 'tenable-sc-list-repositories':
         demisto.results(list_repositories_command())
+    elif demisto.command() == 'tenable-sc-list-reports':
+        demisto.results(list_reports_command())
+    elif demisto.command() == 'tenable-sc-list-assets':
+        demisto.results(list_assets_command())
+    elif demisto.command() == 'tenable-sc-create-scan':
+        demisto.results(create_scan_command())
     elif demisto.command() == 'tenable-sc-launch-scan':
         demisto.results(launch_scan_command())
     elif demisto.command() == 'tenable-sc-get-scan-status':
@@ -718,7 +1054,7 @@ script:
   - name: tenable-sc-list-scans
     arguments:
     - name: manageable
-      description: Whether to return only manageable scans. Returns both useable and
+      description: Whether to return only manageable scans. Returns both usable and
         manageable scans by default.
       defaultValue: "false"
     outputs:
@@ -730,35 +1066,7 @@ script:
       type: number
     - contextPath: TenableSC.Scan.Description
       description: Scan description
-    description: Get a list of Tenable SecurityCenter existing scans
-  - name: tenable-sc-list-policies
-    arguments:
-    - name: manageable
-      description: Whether to return only manageable scan policies. Returns both useable
-        and manageable by default.
-      defaultValue: "false"
-    outputs:
-    - contextPath: TenableSC.ScanPolicy.Name
-      description: Scan Policy name
-      type: string
-    - contextPath: TenableSC.ScanPolicy.ID
-      description: Scan Policy ID
-      type: number
-    - contextPath: TenableSC.ScanPolicy.Description
-      description: Scan policy description
-    description: Get a list of Tenable SecurityCenter scan policies
-  - name: tenable-sc-list-repositories
-    arguments: []
-    outputs:
-    - contextPath: TenableSC.ScanRepository.Name
-      description: Scan Repository name
-      type: string
-    - contextPath: TenableSC.ScanRepository.ID
-      description: Scan Repository ID
-      type: number
-    - contextPath: TenableSC.ScanRepository.Description
-      description: Scan Repository description
-    description: Get a list of Tenable SecurityCenter scan repositories
+    description: Get a list of Tenable.sc existing scans
   - name: tenable-sc-launch-scan
     arguments:
     - name: scanID
@@ -785,7 +1093,17 @@ script:
     - contextPath: TenableSC.Scan.Status
       description: Scan status
       type: string
-    description: Launch an existing scan from Tenable SecurityCenter
+    description: Launch an existing scan from Tenable.sc
+  - name: tenable-sc-get-vulnerability
+    arguments:
+    - name: vulnerabilityID
+      required: true
+      description: Vulnerability ID
+    - name: scanResultsID
+      required: true
+      description: Scan results ID
+    description: 'Get details about a given vulnerability from a given Tenable.sc
+      scan '
   - name: tenable-sc-get-scan-status
     arguments:
     - name: scanResultsID
@@ -801,7 +1119,7 @@ script:
       type: string
     - contextPath: TenableSC.Scan.Description
       description: Scan description
-    description: Get the status of a specific scan in Tenable SecurityCenter
+    description: Get the status of a specific scan in Tenable.sc
   - name: tenable-sc-get-scan-report
     arguments:
     - name: scanResultsID
@@ -841,46 +1159,131 @@ script:
       type: string
     - contextPath: TenableSC.Scan.Description
       description: Scan description
-    description: Get a report with a Tenable SecurityCenter scan results
+    description: Get a report with a Tenable.sc scan results
   - name: tenable-sc-download-report
     arguments:
     - name: scanID
       required: true
       description: Scan ID
-    description: Download a report with a given Tenable SecurityCenter scan results
+    description: Download a report with a given Tenable.sc scan results
   - name: tenable-sc-stop-scan
     arguments:
     - name: scanResultsID
       required: true
       description: Scan results ID
-    description: Stop a scan in Tenable SecurityCenter
+    description: Stop a scan in Tenable.sc
   - name: tenable-sc-pause-scan
     arguments:
     - name: scanResultsID
       required: true
       description: Scan results ID
-    description: Pause a scan in Tenable SecurityCenter
+    description: Pause a scan in Tenable.sc
   - name: tenable-sc-resume-scan
     arguments:
     - name: scanResultsID
       required: true
       description: Scan results ID
-    description: Resume a scan in Tenable SecurityCenter
+    description: Resume a scan in Tenable.sc
+  - name: tenable-sc-list-credentials
+    arguments:
+    - name: manageable
+      description: Whether to return only manageable scan credentials. Returns both
+        usable and manageable by default.
+      defaultValue: "false"
+    outputs:
+    - contextPath: TenableSC.Credential.Name
+      description: Credential name
+      type: string
+    - contextPath: TenableSC.Credential.ID
+      description: Credential ID
+      type: number
+    - contextPath: TenableSC.Credential.Description
+      description: Credential description
+      type: string
+    - contextPath: TenableSC.Credential.Type
+      description: Credential type
+      type: string
+    description: Get a list of Tenable.sc credentials
+  - name: tenable-sc-list-policies
+    arguments:
+    - name: manageable
+      description: Whether to return only manageable scan policies. Returns both usable
+        and manageable by default.
+      defaultValue: "false"
+    outputs:
+    - contextPath: TenableSC.ScanPolicy.Name
+      description: Scan policy name
+      type: string
+    - contextPath: TenableSC.ScanPolicy.ID
+      description: Scan policy ID
+      type: number
+    - contextPath: TenableSC.ScanPolicy.Description
+      description: Scan policy description
+      type: string
+    description: Get a list of Tenable.sc scan policies
+  - name: tenable-sc-list-reports
+    arguments:
+    - name: manageable
+      description: Whether to return only manageable reports. Returns both usable
+        and manageable by default.
+      defaultValue: "false"
+    outputs:
+    - contextPath: TenableSC.Report.Name
+      description: Scan report name
+      type: string
+    - contextPath: TenableSC.Report.ID
+      description: Scan report ID
+      type: number
+    - contextPath: TenableSC.Report.Description
+      description: Scan report description
+      type: string
+    description: Get a list of Tenable.sc report definitions
+  - name: tenable-sc-list-repositories
+    arguments: []
+    outputs:
+    - contextPath: TenableSC.ScanRepository.Name
+      description: Scan Repository name
+      type: string
+    - contextPath: TenableSC.ScanRepository.ID
+      description: Scan Repository ID
+      type: number
+    - contextPath: TenableSC.ScanRepository.Description
+      description: Scan Repository
+      type: string
+    description: Get a list of Tenable.sc scan repositories
+  - name: tenable-sc-list-zones
+    arguments: []
+    outputs:
+    - contextPath: TenableSC.ScanZone.Name
+      description: Scan Zone name
+      type: string
+    - contextPath: TenableSC.ScanZone.ID
+      description: Scan Zone ID
+      type: number
+    - contextPath: TenableSC.ScanZone.Description
+      description: Scan Zone description
+      type: string
+    - contextPath: TenableSC.ScanZone.IPList
+      description: Scan Zone IP list
+      type: unknown
+    - contextPath: TenableSC.ScanZone.ActiveScanners
+      description: Scan Zone active scanners
+      type: number
+    description: Get a list of Tenable.sc scan zones
   - name: tenable-sc-create-scan
     arguments:
     - name: name
       required: true
       description: Scan name
-    - name: typeID
-      required: true
-      description: Scan type (plugin or policy) ID
+    - name: policyID
+      description: Policy ID in case of policy type scan
     - name: description
       description: Scan description
     - name: repositoryID
       required: true
-      description: Repository ID for the scan
+      description: Scan Repository ID
     - name: zoneID
-      description: Zone ID for the scan (default is all zones)
+      description: Scan zone ID (default is all zones)
     - name: schedule
       auto: PREDEFINED
       predefined:
@@ -888,25 +1291,60 @@ script:
       - ical
       - never
       - rollover
-      - now
-      description: Schedule time for the scan
-      defaultValue: now
-    - name: assetID
-      description: Asset IDs to scan (Separated by comma)
-    - name: scanningVirtualHosts
+      - template
+      description: Schedule time for the scan, default is template
+    - name: assetIDs
+      auto: PREDEFINED
+      predefined:
+      - All
+      - AllManageable
+      description: Comma separated asset IDs to scan
+      isArray: true
+    - name: scanVirtualHosts
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Decide if the scan includes virtual hosts
-      defaultValue: "false"
+      description: Whether to includes virtual hosts, default false
     - name: ipList
       description: IP list to scan
+    - name: pluginID
+      description: Plugin ID in case of plugin type scan, or for when the policy is
+        of no context
+    - name: reportIDs
+      description: Comma separated list of report IDs to create post-scan
+      isArray: true
+    - name: credentials
+      description: Comma separated credentials IDs to use
+      isArray: true
+    - name: timeoutAction
+      auto: PREDEFINED
+      predefined:
+      - discard
+      - import
+      - rollover
+      description: Scan timeout action, default is import
+    - name: maxScanTime
+      description: Maximum scan run time in hours, default is 1
+    - name: dhcpTracking
+      description: Track hosts
+    - name: rolloverType
+      auto: PREDEFINED
+      predefined:
+      - nextDay
+      - template
+      description: Scan rollover type, default is 'template'
+    - name: startScan
+      description: Whether to launch the scan right away
+    - name: repeatRule
+      description: Schedule repeat rule for ical schedule type in repeat rule format
+    - name: dependentID
+      description: Dependent scan ID in case of a dependent schedule
     outputs:
     - contextPath: TenableSC.Scan.ID
       description: Scan ID
       type: string
-    - contextPath: TenableSC.Scan.Creator.ID
+    - contextPath: TenableSC.Scan.CreatorID
       description: Scan's creator ID
       type: string
     - contextPath: TenableSC.Scan.Name
@@ -915,47 +1353,31 @@ script:
     - contextPath: TenableSC.Scan.Type
       description: Scan type
       type: string
-    - contextPath: TenableSC.Scan.Policy.ID
-      description: Policy ID
-      type: string
-    - contextPath: TenableSC.Scan.Plugin.ID
-      description: Plugin ID
-      type: string
-    - contextPath: TenableSC.Scan.Repository.ID
-      description: Scan's repository ID
-      type: string
     - contextPath: TenableSC.Scan.CreatedTime
-      description: Scan's created time
+      description: Scan creation time
       type: date
-    - contextPath: TenableSC.Scan.Scedule.Type
-      description: Scan's schedule type
+    - contextPath: TenableSC.Scan.OwnerName
+      description: Scan owner Username
       type: string
-    - contextPath: TenableSC.Scan.Owner.Name
-      description: Owner's Username
-      type: string
-    description: Create a scan on Tenable Security Center
+    - contextPath: TenableSC.Scan.Reports
+      description: Scan report IDs
+    description: Create a scan on Tenable.sc
   - name: tenable-sc-delete-scan
     arguments:
     - name: scanID
       required: true
       description: Scan ID
-    description: Delete a scan in Tenable SecurityCenter
-  - name: tenalbe-sc-list-assets
+    description: Delete a scan in Tenable.sc
+  - name: tenable-sc-list-assets
     arguments:
-    - name: usable
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Filter results by usable flag
-      defaultValue: "true"
     - name: manageable
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Filter results by manageable flag
-      defaultValue: "true"
+      description: Whether to return only manageable scan credentials. Returns both
+        usable and manageable by default.
+      defaultValue: "false"
     outputs:
     - contextPath: TenableSC.Asset.ID
       description: Asset ID
@@ -963,7 +1385,16 @@ script:
     - contextPath: TenableSC.Asset.Name
       description: Asset Name
       type: string
-    description: Get a list of Tenable SecurityCenter Assets
+    - contextPath: TenableSC.Asset.Description
+      description: Asset description
+      type: string
+    - contextPath: TenableSC.Asset.IPCount
+      description: Asset IP count
+      type: number
+    - contextPath: TenableSC.Asset.Type
+      description: Asset type
+      type: string
+    description: Get a list of Tenable.sc Assets
   - name: tenable-sc-create-asset
     arguments:
     - name: name
@@ -990,17 +1421,7 @@ script:
     - contextPath: TenableSC.Asset.Tag
       description: Asset's related tags
       type: string
-    description: Create an Asset in Tenable Security Center. The Asset can be a single
-      ip address, a list or a range of ip addresses.
-  - name: tenable-sc-get-vulnerability
-    arguments:
-    - name: vulnerabilityID
-      required: true
-      description: Vulnerability ID
-    - name: scanResultsID
-      required: true
-      description: Scan results ID
-    description: 'Get details about a given vulnerability from a given Tenable SecurityCenter
-      scan '
+    description: Create an Asset in Tenable.sc. The Asset can be a single ip address,
+      a list or a range of ip addresses.
   runonce: false
 releaseNotes: "-"
