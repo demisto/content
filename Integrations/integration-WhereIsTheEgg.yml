@@ -10,7 +10,6 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAABkCAIAAAA3wCqQAAA62Ul
 configuration: []
 scriptNotVisible: true
 defaultEnabled: true
-releaseNotes: "-"
 tests:
   - Forgive me for my sins but I did not create any test
 script:

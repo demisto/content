@@ -2209,4 +2209,3 @@ script:
   runonce: false
 tests:
   - Cylance Protect v2 Test
-releaseNotes: "Added 5 new commands: cylance-protect-download-threat, cylance-protect-add-hash-to-list, cylance-protect-delete-hash-from-lists, cylance-protect-get-policy-details, cylance-protect-delete-devices"

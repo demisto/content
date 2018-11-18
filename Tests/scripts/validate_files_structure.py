@@ -20,11 +20,14 @@ try:
 except ImportError:
     print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
     sys.exit(1)
-import json
 import re
 import os
+import json
 from subprocess import Popen, PIPE
 from pykwalify.core import Core
+
+# Magic Numbers
+IMAGE_MAX_SIZE = 10 * 1024  # 10kB
 
 # dirs
 INTEGRATIONS_DIR = "Integrations"
@@ -102,10 +105,10 @@ def checked_type(file_path):
     return False
 
 
-def get_modified_files(files_string):
-    all_files = files_string.split('\n')
-    added_files_list = []
-    modified_files_list = []
+def get_modified_files(files_string, second_files_string):
+    all_files = files_string.split('\n') + second_files_string.split('\n')
+    added_files_list = set([])
+    modified_files_list = set([])
     for f in all_files:
         file_data = f.split()
         if not file_data:
@@ -115,15 +118,13 @@ def get_modified_files(files_string):
         file_path = file_data[1]
 
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and checked_type(file_path) and not file_path.startswith('.'):
-            modified_files_list.append(file_path)
+            modified_files_list.add(file_path)
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
-            added_files_list.append(file_path)
+            added_files_list.add(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
 
     return modified_files_list, added_files_list
-
-    return modified_files_list
 
 
 def validate_file_release_notes(file_path):
@@ -223,36 +224,52 @@ def is_test_in_conf_json(file_path):
     return False
 
 
+def oversize_image(file_path):
+    data_dictionary = get_json(file_path)
+    image = data_dictionary.get('image', '')
+    if image == '':
+        return False
+
+    if sys.getsizeof(image) > IMAGE_MAX_SIZE:
+         print_error("{} has too large logo, please update the logo to be under 10kB".format(file_path))
+         return True
+
+    return False
+
+
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status --no-merges HEAD")
-    modified_files, added_files = get_modified_files(files_string)
-    missing_release_notes = False
-    wrong_schema = False
-    is_changed_id = False
-    missing_test = False
+    second_files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+    modified_files, added_files = get_modified_files(files_string, second_files_string)
+    has_schema_problem = False
     for file_path in modified_files:
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if changed_id(file_path):
-                is_changed_id = True
+                has_schema_problem = True
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if changed_id(file_path):
+                has_schema_problem = True
+            if oversize_image(file_path):
+                has_schema_problem = True
 
         print "Validating {}".format(file_path)
         if not validate_file_release_notes(file_path):
-            missing_release_notes = True
+            has_schema_problem = True
 
         if not validate_schema(file_path):
-            wrong_schema = True
+            has_schema_problem = True
 
     for file_path in added_files:
         print "Validating {}".format(file_path)
         if not validate_schema(file_path):
-            wrong_schema = True
+            has_schema_problem = True
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if not is_test_in_conf_json(file_path):
-                missing_test = True
+                has_schema_problem = True
                 print_error("You've failed to add the {0} to conf.json".format(file_path))
 
-    if missing_release_notes or wrong_schema or is_changed_id or missing_test:
+    if has_schema_problem:
         sys.exit(1)
 
 
