@@ -422,7 +422,6 @@ script:
     # Creates incidents from offense
     def create_incident_from_offense(offense):
         occured = epoch_to_ISO(offense['start_time'])
-        enrich_offense_result(offense, full_enrichment=True)
         offense = unicode_to_str_recur(offense)
         keys = offense.keys()
         labels = []
