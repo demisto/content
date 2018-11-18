@@ -38,7 +38,7 @@ script:
     APIKEY = demisto.params()['apikey']
     VERIFY = not demisto.params()['unsecure']
     BASE_URL = demisto.params()['url']
-    BASE_URL = BASE_URL + 'v1' if BASE_URL[-1] == '/' else '/v1'
+    BASE_URL += 'v1' if BASE_URL[-1] == '/' else '/v1'
     DOMAIN_URL = BASE_URL + '/domains/'
     IP_URL = BASE_URL + '/ips/'
     URL_URL = BASE_URL + '/urls/'
