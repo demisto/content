@@ -1191,3 +1191,4 @@ script:
     arguments: []
     description: Returns the usage data for your account.
   runonce: false
+releaseNotes: InfoArmor VigilanteATI new integration
