@@ -96,10 +96,6 @@ script:
     # Ignore warnings print to stdout
     warnings.filterwarnings("ignore")
 
-    # Collect exchange debug log to a stringIO
-    log_stream = StringIO()
-    logging.basicConfig(stream=log_stream, level=logging.DEBUG)
-
     import exchangelib
     from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, ErrorInvalidIdMalformed, \
         ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, ErrorInvalidPropertyRequest
@@ -264,7 +260,7 @@ script:
 
     def start_logging():
         global log_stream
-        if log_stream is not None:
+        if log_stream is None:
             log_stream = StringIO()
             logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
@@ -274,8 +270,6 @@ script:
         version = get_build(VERSION_STR)
         if 'target-mailbox' in demisto.args():
             version = get_account(demisto.args()['target-mailbox']).protocol.version.build
-        elif demisto.command() != 'fetch-incidents':
-            version = get_account(ACCOUNT_EMAIL).protocol.version.build
         if version <= EXCHANGE_2010_SP2:
             for m in (Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact, exchangelib.items.DistributionList, exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest, exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
                 for i,f in enumerate(m.FIELDS):
@@ -1430,8 +1424,8 @@ script:
 
     config = prepare()
     args = prepare_args(demisto.args())
+    fix_2010()
     try:
-        fix_2010()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
@@ -1487,6 +1481,7 @@ script:
         import time
 
         time.sleep(2)
+        start_logging()
         debug_log = log_stream.getvalue()
         error_message_simple = ""
         error_message = ""
@@ -2200,3 +2195,6 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
+releaseNotes: "-"
+tests:
+  - pyEWS_Test
