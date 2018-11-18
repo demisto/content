@@ -107,7 +107,7 @@ script:
                     ContentsFormat: formats.json,
                     HumanReadable: md,
                     EntryContext: {
-                        'URL(obj.Data.Url && obj.Data.Url===val.Data.Url)' : {
+                        'URL(obj.Data.URL && obj.Data.URL===val.Data.URL)' : {
                             'Data': ec.PhishAI.Url
                         },
                         'IP(obj.Hostname && obj.Hostname===val.Hostname)' : {
