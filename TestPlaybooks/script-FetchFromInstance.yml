@@ -14,8 +14,9 @@ script: |
           raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
 
       for inc in response:
-          if 'Error' in inc.get('Contents', ''):
-              raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
+          contents = inc.get('Contents', '')
+          if 'Error' in contents:
+              raise Exception("Error occurred while fetching incidents from {0}: {1}".format(instance_name, contents))
 
       res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": response})
 
