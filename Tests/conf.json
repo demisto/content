@@ -7,6 +7,9 @@
             "playbookID": "Mimecast test"
         },
         {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
             "integrations": "Panorama",
             "playbookID": "panorama_test_pb"
         },
@@ -719,9 +722,6 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      },
-      {
-          "playbookID": "ReadPDFFile-Test"
       }
     ],
     "skipped_tests": {
@@ -735,7 +735,9 @@
         "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix"
+        "sep_-_test_endpoint_search": "Failed test, need to fix",
+        "Phishing test - Inline": "Ip range problem in IsIPInRanges",
+        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile."
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
@@ -754,5 +756,8 @@
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data"
-    }
+    },
+    "nigthly_integrations": [
+        "Lastline"
+    ]
 }

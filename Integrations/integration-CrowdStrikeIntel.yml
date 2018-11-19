@@ -772,4 +772,3 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
   runonce: false
-releaseNotes: Return DBotScore None if indicator was not found

@@ -60,7 +60,6 @@ args:
   description: Base name for added ip/hosts inside checkpoint db
 scripttarget: 0
 runonce: false
-releaseNotes: made rulename and ipname optional, with sensible defaults
 dependson:
   should:
   - panorama
