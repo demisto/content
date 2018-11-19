@@ -731,7 +731,8 @@
         "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix"
+        "sep_-_test_endpoint_search": "Failed test, need to fix",
+        "FireEye HX Test": "Failed task, need to check that out"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
