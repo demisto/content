@@ -850,7 +850,7 @@ tasks:
       contextKey: {}
       date: {}
       dateFormat:
-        simple: date
+        simple: year
       hoursAgo: {}
       minutesAgo: {}
       monthsAgo: {}
