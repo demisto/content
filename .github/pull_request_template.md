@@ -1,9 +1,5 @@
 ## Status
-- [ ] Ready
-- [ ] In code review
-- [ ] In Progress
-- [ ] Hold
-      Reason for hold:
+Ready/In Progress/Hold(Reason for hold)
 
 ## Related Issues
 fixes: link to the issue
@@ -27,6 +23,7 @@ x.x.x
 ## Must have
 - [ ] Tests
 - [ ] Documentation (with link to it)
+- [ ] code review
 
 ## Additional changes
 Describe additional changes done, for example adding a function to common server.
