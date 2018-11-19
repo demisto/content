@@ -29,3 +29,5 @@ args:
   description: The name of the instance you want to fetch from
 scripttarget: 0
 runonce: false
+tests:
+  - Forgive me for my sins but I did not create any test
