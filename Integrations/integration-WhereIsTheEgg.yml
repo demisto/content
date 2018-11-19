@@ -71,4 +71,4 @@ script:
       description: yep
     description: try me
   runonce: false
-releaseNotes: ""
+releaseNotes: "-"

@@ -1589,6 +1589,6 @@ script:
     description: Re-set policy fields.
   isfetch: true
   runonce: false
-releaseNotes: ""
+releaseNotes: "-"
 tests:
   - Forgive me for my sins but I did not create any test

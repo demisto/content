@@ -966,6 +966,6 @@ script:
       or filter the results by log name, prefix, metric name, or metric namespace.
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: ""
+releaseNotes: "-"
 tests:
   - Forgive me for my sins but I did not create any test

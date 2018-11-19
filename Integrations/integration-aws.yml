@@ -425,6 +425,6 @@ script:
       description: Headers to display in Human readable format
     description: Get EC2 EBS Volume Information
 hidden: false
-releaseNotes: ""
+releaseNotes: "-"
 tests:
   - Forgive me for my sins but I did not create any test
