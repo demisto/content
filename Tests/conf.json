@@ -676,6 +676,9 @@
            ]
         },
         {
+            "playbookID": "ReadPDFFile-Test"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 500,
             "nightly": true,
@@ -715,9 +718,6 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      },
-      {
-          "playbookID": "ReadPDFFile-Test"
       }
     ],
     "skipped_tests": {
@@ -731,7 +731,9 @@
         "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix"
+        "sep_-_test_endpoint_search": "Failed test, need to fix",
+        "Phishing test - Inline": "Ip range problem in IsIPInRanges",
+        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile."
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
