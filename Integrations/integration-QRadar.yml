@@ -1488,5 +1488,6 @@ script:
       from version 8.1 and upward.
   isfetch: true
   runonce: false
+releaseNotes: ""
 tests:
   - test_Qradar
