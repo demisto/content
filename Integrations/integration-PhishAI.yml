@@ -107,7 +107,7 @@ script:
                     ContentsFormat: formats.json,
                     HumanReadable: md,
                     EntryContext: {
-                        'Url(obj.Data.Url && obj.Data.Url===val.Data.Url)' : {
+                        'URL(obj.Data.URL && obj.Data.URL===val.Data.URL)' : {
                             'Data': ec.PhishAI.Url
                         },
                         'IP(obj.Hostname && obj.Hostname===val.Hostname)' : {
@@ -178,3 +178,4 @@ script:
       type: string
     description: Check if url is phishing and get details about the brand that is
       being phished
+releaseNotes: "-"
