@@ -959,4 +959,4 @@ releaseNotes: "Add isArray option to uuid argument in lastline-get-report"
 tests:
 - Lastline - testplaybook
 - Detonate URL - Generic Test
-- detonate_file_-_generic_test
+- Detonate File - Generic Test
