@@ -7,6 +7,15 @@
           "playbookID": "Tenable.io test"
         },
         {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
+          "playbookID": "URLDecode-Test"
+        },
+        {
+          "playbookID": "GetTime-Test"
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
@@ -715,12 +724,6 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      },
-      {
-          "playbookID": "ReadPDFFile-Test"
-      },
-      {
-          "playbookID": "URLDecode-Test"
       }
     ],
     "skipped_tests": {
