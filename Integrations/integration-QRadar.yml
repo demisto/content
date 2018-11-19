@@ -386,13 +386,17 @@ script:
         url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
         return send_request('DELETE', url)
 
-    def update_reference_set_element(ref_name, value, source=None):
+    def update_reference_set_value(ref_name, value, source=None):
         url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
         params = {'name': ref_name, 'value': value}
         if source:
             params['source'] = source
         return send_request('POST', url, params=params)
 
+    def delete_reference_set_value(ref_name, value):
+        url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, ref_name, value)
+        params = {'name': ref_name, 'value': value}
+        return send_request('DELETE', url, params=params)
 
     ''' Command methods '''
 
@@ -792,12 +796,19 @@ script:
             'HumanReadable': "Reference Data Deletion Task for '{0}' was intiated. Refernce set '{0}' should be deleted shortly.".format(ref_name)
         }
 
-    def update_reference_set_element_command():
+    def update_reference_set_value_command():
         args = demisto.args()
-        raw_ref = update_reference_set_element(args.get('ref_name'), args.get('value'), args.get('source'))
+        raw_ref = update_reference_set_value(args.get('ref_name'), args.get('value'), args.get('source'))
         ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
         enrich_reference_set_result(ref)
         return get_entry_for_reference_set(ref, title='Element value was updated successfuly in reference set:')
+
+    def delete_reference_set_value_command():
+        args = demisto.args()
+        raw_ref = delete_reference_set_value(args.get('ref_name'), args.get('value'))
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        enrich_reference_set_result(ref)
+        return get_entry_for_reference_set(ref, title='Element value was deleted successfuly in reference set:')
 
     # Command selector
     if demisto.command() == 'test-module':
@@ -832,8 +843,10 @@ script:
         demisto.results(create_reference_set_command())
     elif demisto.command() == 'qradar-delete-reference-set':
         demisto.results(delete_reference_set_command())
-    elif demisto.command() in ('qradar-create-reference-set-element', 'qradar-update-reference-set-element'):
-        demisto.results(update_reference_set_element_command())
+    elif demisto.command() in ('qradar-create-reference-set-value', 'qradar-update-reference-set-value'):
+        demisto.results(update_reference_set_value_command())
+    elif demisto.command() == 'qradar-delete-reference-set-value':
+        demisto.results(delete_reference_set_value_command())
   type: python
   commands:
   - name: qradar-offenses
@@ -1579,8 +1592,7 @@ script:
         values need to be represented in milliseconds since the Unix Epoch January
         1st 1970.'
     - name: timeout_type
-      description: The allowed values are "FIRST_SEEN", "LAST_SEEN" and "UNKNOWN".
-        The default value is "UNKNOWN".
+      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The default value is UNKNOWN.
     - name: time_to_live
       description: 'The time to live interval, for example: "1 month" or "5 minutes"'
     outputs:
@@ -1599,8 +1611,8 @@ script:
       description: Number of elements in the created reference set.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Timeout type of the reference. The allowed values are "FIRST_SEEN",
-                     "LAST_SEEN" and "UNKNOWN".'
+      description: 'Timeout type of the reference. The allowed values are FIRST_SEEN,
+                     LAST_SEEN and UNKNOWN.'
       type: string
     description: Creates a new reference set. If the provided name is already in use,
       this command will fail
@@ -1611,11 +1623,39 @@ script:
       default: true
       description: The name of reference set to delete.
     description: Deletes a reference set corresponding to the name provided.
-  - name: qradar-create-reference-set-element
+  - name: qradar-create-reference-set-value
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to add or update an element in.
+      description: The name of the reference set to add or update a value in.
+    - name: value
+      required: true
+      description: 'The value to add or update in the reference set. Note: Date values
+        must be represented in milliseconds since the Unix Epoch January 1st 1970.'
+    - name: source
+      description: "An indication of where the data originated. The default value is 'reference data api'."
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+    description: Add or update a value in a reference set.
+  - name: qradar-update-reference-set-value
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to add or update a value in.
     - name: value
       required: true
       description: 'The value to add or update in the reference set. Note: Date values
@@ -1639,19 +1679,15 @@ script:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
       type: string
-    description: Add or update an element in a reference set.
-  - name: qradar-update-reference-set-element
+    description: Add or update a value in a reference set.
+  - name: qradar-delete-reference-set-value
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to add or update an element in.
+      description: The name of the reference set to remove a value from.
     - name: value
       required: true
-      description: 'The value to add or update in the reference set. Note: Date values
-        must be represented in milliseconds since the Unix Epoch January 1st 1970.'
-    - name: source
-      description: "An indication of where the data originated. The default value is
-                     'reference data api'."
+      description: 'The value to remove from the reference set.'
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference set.
@@ -1668,13 +1704,14 @@ script:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
       type: string
-    description: Add or update an element in a reference set.
+    description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
 releaseNotes: 'Added new commands:
                   1. qradar-create-reference-set - Creates a new reference set.
                   2. qradar-delete-reference-set - Deletes a reference set.
-                  3. qradar-create-reference-set-element - Creates/Updates a reference set element
-                  4. qradar-update-reference-set-element - Creates/Updates a reference set element'
+                  3. qradar-create-reference-set-value - Creates/Updates a reference set value.
+                  4. qradar-update-reference-set-value - Creates/Updates a reference set value.
+                  5. qradar-delete-reference-set-value - Deletes a reference set value.'
 tests:
   - test_Qradar
