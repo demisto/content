@@ -50,7 +50,7 @@ jobs:
     - run:
         name: Download Configuration
         command: |
-          ./Tests/scripts/download_demisto_conf.sh
+          ./Tests/config_yml/download_demisto_conf.sh
     - run:
         name: Create Instance
         command: |
