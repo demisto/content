@@ -354,7 +354,7 @@ script:
             t = t - timedelta(minutes=10)
             lastRun = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now}
+                      "index_latest": now, "count": 0}
         searchquery_oneshot = demisto.params()['fetchQuery']
 
         if demisto.get(demisto.params(), 'extractFields'):
@@ -527,3 +527,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: "Fix Splunk issue ability to fetch more then 100 notable events per minute"
