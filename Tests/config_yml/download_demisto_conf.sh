@@ -10,7 +10,7 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 DEMISTO_LIC_PATH="./demisto.lic"
 echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 
-EMISTO_SEVERCONF_PATH="./demisto.conf"
+DEMISTO_SEVERCONF_PATH="./demisto.conf"
 echo ${DEMISTO_SEVERCONF_PATH} > demisto_conf_path
 
 curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
