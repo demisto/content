@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MimecastV2",
+            "playbookID": "Mimecast test"
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
         },
@@ -88,10 +92,7 @@
           "playbookID": "devo_test_playbook"
         },
         {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io"
-            ],
+          "integrations": "urlscan.io",
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
         },
@@ -305,8 +306,7 @@
         },
         {
             "integrations": [
-                "VirusTotal",
-                "urlscan.io"
+                "VirusTotal"
             ],
             "playbookID": "ip_enrichment_generic_test"
         },
@@ -685,6 +685,9 @@
            ]
         },
         {
+            "playbookID": "ReadPDFFile-Test"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 500,
             "nightly": true,
@@ -738,7 +741,8 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "Cylance Protect v2 Test": "Currently being updated"
+        "Phishing test - Inline": "Ip range problem in IsIPInRanges",
+        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile."
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
@@ -757,5 +761,8 @@
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data"
-    }
+    },
+    "nigthly_integrations": [
+        "Lastline"
+    ]
 }

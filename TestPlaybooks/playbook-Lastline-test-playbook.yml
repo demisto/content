@@ -1,18 +1,18 @@
 id: Lastline - testplaybook
 version: -1
+rolename: []
 name: Lastline - testplaybook
 description: Test PB for Lastline integration
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 30a0f72b-95a6-4902-8820-7f1343bf0dcb
+    taskid: 1647e00c-751a-4cf0-83ec-d0b30f76b12f
     type: start
     task:
-      id: 30a0f72b-95a6-4902-8820-7f1343bf0dcb
+      id: 1647e00c-751a-4cf0-83ec-d0b30f76b12f
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,10 +29,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 11766e67-21df-42a9-8622-c4876f84348d
+    taskid: 02f37b39-5a1b-422a-88f5-22667044dbe8
     type: playbook
     task:
-      id: 11766e67-21df-42a9-8622-c4876f84348d
+      id: 02f37b39-5a1b-422a-88f5-22667044dbe8
       version: -1
       name: Detonate File - Lastline
       playbookName: Detonate File - Lastline
@@ -50,10 +50,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 206ed351-4acf-4b96-8fe6-482adbac3619
+    taskid: f8947776-c5a9-4565-84c1-89fb7d343cfb
     type: playbook
     task:
-      id: 206ed351-4acf-4b96-8fe6-482adbac3619
+      id: f8947776-c5a9-4565-84c1-89fb7d343cfb
       version: -1
       name: Detonate URL - Lastline
       playbookName: Detonate URL - Lastline
@@ -78,16 +78,16 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 720
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 94ec2e74-8080-4ebf-86cf-aecafca4e3bd
+    taskid: 1e597c6e-d547-4d0c-8de6-5d0be300361d
     type: regular
     task:
-      id: 94ec2e74-8080-4ebf-86cf-aecafca4e3bd
+      id: 1e597c6e-d547-4d0c-8de6-5d0be300361d
       version: -1
       name: Set
       description: Sets a value into the context with the given context key
@@ -97,7 +97,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       append: {}
       key:
@@ -115,10 +115,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 268d74cd-235f-4cd2-89a9-d5cdcbf7d01b
+    taskid: ca9e8a7b-60f2-491b-8cc4-2a9fdfe83d07
     type: regular
     task:
-      id: 268d74cd-235f-4cd2-89a9-d5cdcbf7d01b
+      id: ca9e8a7b-60f2-491b-8cc4-2a9fdfe83d07
       version: -1
       name: get pdf file
       description: |
@@ -156,10 +156,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: de4b7272-15b6-4021-8618-5224b3fc2257
+    taskid: 0edeff33-2b87-4f81-8230-6720df23aecc
     type: regular
     task:
-      id: de4b7272-15b6-4021-8618-5224b3fc2257
+      id: 0edeff33-2b87-4f81-8230-6720df23aecc
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -187,12 +187,44 @@ tasks:
         }
       }
     note: false
+  "6":
+    id: "6"
+    taskid: 37a616c3-766a-4ea0-8353-3a579bc37e7f
+    type: regular
+    task:
+      id: 37a616c3-766a-4ea0-8353-3a579bc37e7f
+      version: -1
+      name: Set2
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 765,
         "width": 810,
         "x": 50,
         "y": 50

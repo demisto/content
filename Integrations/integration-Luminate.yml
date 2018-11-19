@@ -352,6 +352,5 @@ script:
   isfetch: true
   runonce: false
 fromversion: 0.0.0
-releaseNotes: "New Integration"
 tests:
   - Luminate-TestPlaybook
