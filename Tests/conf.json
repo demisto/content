@@ -7,6 +7,9 @@
             "playbookID": "Mimecast test"
         },
         {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
         },
