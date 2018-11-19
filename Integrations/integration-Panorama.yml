@@ -81,7 +81,6 @@ script:
     ''' HELPERS '''
     def http_request(uri, method, headers = {}, body = {}, params={}, files = None):
         ''' Makes an API call with the gicen arguments '''
-        demisto.log(str(params))
         result = requests.request(
             method,
             uri,
