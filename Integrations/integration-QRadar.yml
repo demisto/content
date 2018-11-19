@@ -396,7 +396,7 @@ script:
         return json.dumps(incidents)
 
     # Finds the last page position for QRadar query that receives a range parameter
-    def find_last_page_pos():
+    def find_last_page_pos(fetchQuery):
         # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
         if len(get_offenses(_range='{0}-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)) == 0:
             return OFFENSES_PER_CALL - 1
@@ -421,7 +421,6 @@ script:
     # Creates incidents from offense
     def create_incident_from_offense(offense):
         occured = epoch_to_ISO(offense['start_time'])
-        enrich_offense_result(offense, full_enrichment=True)
         offense = unicode_to_str_recur(offense)
         keys = offense.keys()
         labels = []
