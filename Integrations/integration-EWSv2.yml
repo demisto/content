@@ -88,6 +88,7 @@ script:
     from cStringIO import StringIO
     import logging, warnings
     import subprocess
+    import xml.dom.minidom
 
     # Define utf8 as default encoding
     reload(sys)
@@ -119,6 +120,12 @@ script:
         MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
     else:
         MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.TNS
+
+    # Fallback imports
+    import xml.etree.ElementTree as ET
+    import requests
+    from requests.auth import HTTPDigestAuth, HTTPBasicAuth
+    from requests_ntlm import HttpNtlmAuth
 
     # consts
     VERSIONS = {
@@ -163,6 +170,13 @@ script:
 
     ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
                              'toRecipients', ]
+
+    # Fallback constants
+    FALLBACK_REQUEST_HEADERS = {'Content-Type': "text/xml; charset=utf-8"}
+    FALLBACK_NS = {
+        't': "http://schemas.microsoft.com/exchange/services/2006/types",
+        'm': "http://schemas.microsoft.com/exchange/services/2006/messages"
+    }
 
     # Load integratoin params from demisto
     USE_PROXY = demisto.params()['proxy']
@@ -210,6 +224,17 @@ script:
         raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
 
 
+    def fallback_get_auth():
+        auth_method = AUTH_METHOD_STR.lower()
+        if auth_method == 'ntlm':
+            return HttpNtlmAuth(USERNAME, PASSWORD)
+        elif auth_method == 'basic':
+            return HTTPBasicAuth(USERNAME, PASSWORD)
+        elif auth_method == 'digest':
+            return HTTPDigestAuth(USERNAME, PASSWORD)
+        raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
+
+
     def get_build(version_str):
         if version_str not in VERSIONS:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
@@ -221,6 +246,10 @@ script:
             raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
         return Version(VERSIONS[version_str])
 
+    def fallback_get_version():
+        return get_version(VERSION_STR).api_version
+
+    FALLBACK_VERSION = fallback_get_version()
 
     def prepare():
         if NON_SECURE:
@@ -405,6 +434,66 @@ script:
         return folder_result
 
 
+    def get_top_folder_id(mailbox):
+        payload = '''<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+          xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+            <soap:Header>
+            <t:RequestServerVersion Version="{}" />
+          </soap:Header>
+          <soap:Body>
+            <FindFolder Traversal="Shallow" xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">
+              <FolderShape>
+                <t:BaseShape>Default</t:BaseShape>
+              </FolderShape>
+                <ParentFolderIds>
+                    <t:DistinguishedFolderId Id="root">
+                        <t:Mailbox>
+                            <t:EmailAddress>{}</t:EmailAddress>
+                        </t:Mailbox>
+                    </t:DistinguishedFolderId>
+                </ParentFolderIds>
+            </FindFolder>
+          </soap:Body>
+        </soap:Envelope>'''.format(FALLBACK_VERSION, mailbox)
+
+        folderid_elem = fallback_send_request(payload).find(".//*[t:DisplayName='Top of Information Store']/t:FolderId", FALLBACK_NS)
+        return folderid_elem.attrib['Id'], folderid_elem.attrib['ChangeKey']
+
+
+    def get_subfolder_id(folder_id, change_key, child_name):
+        payload = '''<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+              xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+                <soap:Header>
+                <t:RequestServerVersion Version="{}" />
+              </soap:Header>
+              <soap:Body>
+                <FindFolder Traversal="Shallow" xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">
+                  <FolderShape>
+                    <t:BaseShape>Default</t:BaseShape>
+                  </FolderShape>
+                    <ParentFolderIds>
+                        <t:FolderId Id="{}" ChangeKey="{}"/>
+                    </ParentFolderIds>
+                </FindFolder>
+              </soap:Body>
+            </soap:Envelope>'''.format(FALLBACK_VERSION, folder_id, change_key)
+
+        subfolder_id_elem = fallback_send_request(payload).find(".//*[t:DisplayName='{}']/t:FolderId".format(child_name), FALLBACK_NS)
+        if subfolder_id_elem is None:
+            raise Exception('Invalid folder path.')
+        return subfolder_id_elem.attrib['Id'], subfolder_id_elem.attrib['ChangeKey']
+
+
+    def fallback_get_folder_by_path(mailbox, path):
+        if len(path) == 120:
+            return path, None
+        folder_id, change_key = get_top_folder_id(mailbox)
+        path = path.replace("/", "\\").split('\\')
+        for sf in path:
+            folder_id, change_key = get_subfolder_id(folder_id, change_key, sf)
+        return folder_id, change_key
+
+
     class MarkAsJunk(EWSAccountService):
         SERVICE_NAME = 'MarkAsJunk'
 
@@ -510,6 +599,23 @@ script:
 
             return element
 
+
+    def fallback_send_request(payload):
+        r = requests.post(EWS_SERVER, headers=FALLBACK_REQUEST_HEADERS, data=payload, auth=fallback_get_auth(), verify=not NON_SECURE)
+        if r.status_code < 200 or r.status_code >= 300:
+            error_msg = 'Got status code {} for request.'.format(r.status_code)
+            if r.content:
+                error_msg += ' Response content:\n{}'.format(xml.dom.minidom.parseString(r.content).toprettyxml())
+            raise Exception(error_msg)
+        raw = ET.fromstring(r.content)
+        errors = raw.findall(".//m:GetItemResponseMessage[@ResponseClass='Error']", FALLBACK_NS)
+        errors.extend(raw.findall(".//m:GetItemResponseMessage[@ResponseClass='Warning']", FALLBACK_NS))
+        if errors:
+            error_msg = 'Encountered the following errors:\n'
+            for e in errors:
+                error_msg += '{}: {}\n'.format(e.find('m:ResponseCode', FALLBACK_NS).text, e.find('m:MessageText', FALLBACK_NS).text)
+            raise Exception(error_msg)
+        return raw
 
     def get_searchable_mailboxes(protocol):
         searchable_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
@@ -698,6 +804,193 @@ script:
             raw_dict[MAILBOX] = email_address
         return raw_dict
 
+    def fallback_parse_item_as_dict(message, attachments_dict):
+        import re
+
+        first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+        all_cap_re = re.compile('([a-z0-9])([A-Z])')
+
+        def convert(name):
+            s1 = first_cap_re.sub(r'\1_\2', name)
+            return all_cap_re.sub(r'\1_\2', s1).lower()
+
+        def clean_keys(item, is_key=False):
+            if isinstance(item, list):
+                return map(clean_keys, item)
+            if isinstance(item, dict):
+                return {clean_keys(k, True): clean_keys(v) for k,v in item.iteritems()}
+            if isinstance(item, str) and is_key:
+                if item[0] in ('#', '@'):
+                    item = item[1:]
+                item = item.replace('DateTime', 'datetime')
+                item = item.replace('ChangeKey', 'changekey')
+                item = convert(item)
+            return item
+
+        def convert_bools(item):
+            if isinstance(item, list):
+                return map(convert_bools, item)
+            if isinstance(item, dict):
+                return {k: convert_bools(v) for k,v in item.iteritems()}
+            if item == 'true':
+                return True
+            if item == 'false':
+                return False
+            return item
+
+        def handle_mailboxes(item):
+            if isinstance(item, list):
+                return map(handle_mailboxes, item)
+            if isinstance(item, dict) and 'mailbox' in item:
+                item['mailbox']['item_id'] = None
+                return item['mailbox']
+            return item
+
+        def fallback_parse_attachments(item_dict, attachments_dict):
+            if not 'attachments' in item_dict:
+                return None
+            att_elems = []
+            for k in ('item_attachment', 'file_attachment'):
+                if k in item_dict['attachments']:
+                    if isinstance(item_dict['attachments'][k], list):
+                        att_elems.extend(item_dict['attachments'][k])
+                    else:
+                        att_elems.append(item_dict['attachments'][k])
+
+            atts = []
+            for a in att_elems:
+                attachment = {
+                    'originalItemId': item_dict['item_id'],
+                    'attachmentId': a['attachment_id']['id'],
+                    'attachmentName': a['name'],
+                    'attachmentSHA256': None,
+                    'attachmentContentType': a['content_type'] if 'content_type' in a else None,
+                    'attachmentContentId': a['content_id'] if 'content_id' in a else None,
+                    'attachmentContentLocation': a['content_location'] if 'content_location' in a else None,
+                    'attachmentSize': int(a['size']),
+                    'attachmentLastModifiedTime': a['last_modified_time'] + '+00:00',
+                    'attachmentIsInline': a['is_inline'] if 'is_inline' in a else False,
+                    'attachmentType': None
+                }
+                for a_entry in attachments_dict:
+                    if a_entry['Id'] == attachment['attachmentId']:
+                        attachment['attachmentSHA256'] = hashlib.sha256(a_entry['Content']).hexdigest() if a_entry['Content'] else None
+                        attachment['attachmentType'] = 'FileAttachment' if a_entry['Type'] == 'file' else 'ItemAttachment'
+                        break
+                atts.append(attachment)
+            return atts
+
+        d = elem_to_internal(message)
+        d = clean_keys(d)
+        d = convert_bools(d)
+
+        d = d['message']
+
+        d['headers'] = map(lambda x: {'name': x['header_name'], 'value': x['text']}, d['internet_message_headers']['internet_message_header'])
+        del d['internet_message_headers']
+
+        d['text_body'] = d['text_body']['text'] if 'text_body' in d and 'text' in d['text_body'] else ""
+        if d['body']['body_type'] == 'Text':
+            d['text_body'] = d['body']['text']
+        d['body'] = d['body']['text']
+
+        d['mime_content'] = d['mime_content']['text']
+
+        for field in ('from', 'received_representing', 'received_by', 'sender', 'to_recipients'):
+            if field == 'from':
+                d['author'] = handle_mailboxes(d[field])
+                del d[field]
+            else:
+                d[field] = handle_mailboxes(d[field])
+            if field == 'to_recipients' and isinstance(d[field], dict):
+                d[field] = [d[field]]
+
+        d['message_id'] = d['internet_message_id']
+        del d['internet_message_id']
+
+        d['changekey'] = d['item_id']['changekey']
+        d['item_id'] = d['item_id']['id']
+
+        d['conversation_id']['changekey'] = None if 'changekey' not in d['conversation_id'] else d['conversation_id']['changekey']
+
+        empty_items = {
+            'is_response_requested': False,
+            'reminder_minutes_before_start': 0,
+            'reminder_is_set': False,
+        }
+
+        for k,v in empty_items.iteritems():
+            if k not in d:
+                d[k] = v
+
+        if attachments_dict:
+            d['attachments'] = fallback_parse_attachments(d, attachments_dict)
+
+        if 'at_all_mention' in d:
+            del d['at_all_mention']
+        del d['response_objects']
+        del d['instance_key']
+        del d['entity_extraction_result']
+        del d['flag']
+        del d['display_cc']
+        d['size'] = int(d['size'])
+        d['unique_body'] = d['unique_body']['text']
+
+
+        # DEBUG
+        #dj = json.dumps(d, indent=4, separators=(',', ': '))
+        #demisto.results(dj)
+        return d
+
+    def fallback_get_attachments(attachment_elems):
+        if not attachment_elems:
+            return []
+        attachment_ids = map(lambda x: x.find('.//t:AttachmentId', FALLBACK_NS).attrib['Id'], attachment_elems)
+        payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+                        <soap:Header>
+                            <t:RequestServerVersion Version="{}" />
+                        </soap:Header>
+                        <soap:Body>
+                            <GetAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+                              <AttachmentShape>
+                                <t:IncludeMimeContent>true</t:IncludeMimeContent>
+                              </AttachmentShape>
+                              <AttachmentIds>'''.format(FALLBACK_VERSION)
+        for att_id in attachment_ids:
+            payload += '<t:AttachmentId Id="{}"/>'.format(att_id)
+        payload += '''</AttachmentIds>
+                    </GetAttachment>
+                </soap:Body>
+            </soap:Envelope>'''
+        raw = fallback_send_request(payload)
+
+        attachments = []
+        attachment_elems = raw.findall('.//m:Attachments/*', FALLBACK_NS)
+
+        # DEBUG
+        #for a in attachment_elems:
+        #    demisto.info('\n\n\n')
+        #    demisto.info(xml.dom.minidom.parseString(ET.tostring(a)).toprettyxml())
+        #    demisto.info('\n\n\n')
+
+        for a in attachment_elems:
+            name = a.find('./t:Name', FALLBACK_NS).text
+            att_type = 'file' if "FileAttachment" in a.tag else 'item'
+            content = None
+            if att_type == 'item':
+                suffix = '.msg' if a.find('./t:ContentType', FALLBACK_NS).text == 'application/octet-stream' else '.eml'
+                name += suffix
+                content = a.find('.//t:MimeContent', FALLBACK_NS).text
+            else:
+                content = a.find('.//t:Content', FALLBACK_NS).text
+            attachment = {
+                'Name': name,
+                'Id': a.find('./t:AttachmentId', FALLBACK_NS).attrib['Id'],
+                'Type': att_type,
+                'Content': content
+            }
+            attachments.append(attachment)
+        return attachments
 
     def parse_incident_from_item(item):
         incident = {}
@@ -853,6 +1146,196 @@ script:
                 raise
             return []
 
+
+    def fallback_fetch_emails_as_incidents():
+        start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
+        last_run = get_last_run()
+        last_run_time = last_run[LAST_RUN_TIME] if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] else (start_time - timedelta(minutes=10)).ewsformat()
+        last_run_ids = last_run[LAST_RUN_IDS] if LAST_RUN_IDS in last_run and last_run[LAST_RUN_IDS] else []
+
+        folder_id, change_key = fallback_get_folder_by_path(ACCOUNT_EMAIL, FOLDER_NAME)
+
+        payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+            <soap:Header>
+                <t:RequestServerVersion Version="{}" />'''.format(FALLBACK_VERSION)
+        if demisto.params()['impersonation']:
+            payload += '''<t:ExchangeImpersonation>
+                        <t:ConnectingSID>
+                        <t:PrimarySmtpAddress>{}</t:PrimarySmtpAddress>
+                        </t:ConnectingSID>
+                        </t:ExchangeImpersonation>'''.format(ACCOUNT_EMAIL)
+        payload += '''</soap:Header>
+            <soap:Body>
+                <m:FindItem Traversal="Shallow">
+                    <m:ItemShape>
+                        <t:BaseShape>IdOnly</t:BaseShape>
+                    </m:ItemShape>
+                    <m:IndexedPageItemView MaxEntriesReturned="100" Offset="0" BasePoint="Beginning" />
+                    <m:Restriction>
+                        <t:And>
+                            <t:IsGreaterThan>
+                                <t:FieldURI FieldURI="item:DateTimeReceived" />
+                                <t:FieldURIOrConstant>
+                                    <t:Constant Value="{}"/>
+                                </t:FieldURIOrConstant>
+                            </t:IsGreaterThan>'''.format(last_run_time)
+        if LAST_RUN_IDS in last_run and last_run[LAST_RUN_IDS]:
+            for last_id in last_run[LAST_RUN_IDS]:
+                payload += '''<t:IsNotEqualTo>
+                        <t:FieldURI FieldURI="item:ItemId" />
+                        <t:FieldURIOrConstant>
+                            <t:Constant Value="{}"/>
+                        </t:FieldURIOrConstant>
+                    </t:IsNotEqualTo>'''.format(last_id)
+        payload += '''</t:And>
+            </m:Restriction>
+            <m:SortOrder>
+                <t:FieldOrder Order="Ascending">
+                    <t:FieldURI FieldURI="item:DateTimeReceived" />
+                </t:FieldOrder>
+            </m:SortOrder>
+            <m:ParentFolderIds>'''
+        if change_key:
+            payload += '<t:FolderId Id="{}" ChangeKey="{}"></t:FolderId>'.format(folder_id, change_key)
+        elif folder_id:
+            payload += '<t:FolderId Id="{}"></t:FolderId>'.format(folder_id)
+        else:
+            payload += '''<t:DistinguishedFolderId Id="inbox">
+                <t:Mailbox>
+                    <t:EmailAddress>{}</t:EmailAddress>
+                </t:Mailbox>
+            </t:DistinguishedFolderId>'''.format(ACCOUNT_EMAIL)
+        payload += '''</m:ParentFolderIds>
+                    </m:FindItem>
+                </soap:Body>
+            </soap:Envelope>'''
+
+        raw = fallback_send_request(payload)
+
+        messages = raw.findall(".//t:Message", FALLBACK_NS)
+        #demisto.info('{} incident{}'.format(len(messages), 's' if len(messages) != 1 else '')) # DEBUG
+        if not messages:
+            return []
+        item_ids = map(lambda x: x.find("./t:ItemId", FALLBACK_NS).attrib['Id'], messages)
+
+        # Send GetItem request for the returned IDs
+        payload = '''<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+        <soap:Header>
+            <t:RequestServerVersion Version="{}" />'''.format(FALLBACK_VERSION)
+        if demisto.params()['impersonation']:
+            payload += '''<t:ExchangeImpersonation>
+                        <t:ConnectingSID>
+                        <t:PrimarySmtpAddress>{}</t:PrimarySmtpAddress>
+                        </t:ConnectingSID>
+                        </t:ExchangeImpersonation>'''.format(ACCOUNT_EMAIL)
+        payload += '''</soap:Header>
+        <soap:Body>
+            <GetItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+                <ItemShape>
+                    <t:BaseShape>AllProperties</t:BaseShape>
+                    <t:IncludeMimeContent>true</t:IncludeMimeContent>
+                    <t:AdditionalProperties>
+                        <t:ExtendedFieldURI DistinguishedPropertySetId="InternetHeaders" PropertyName="From" PropertyType="String" />
+                        <t:FieldURI FieldURI="item:UniqueBody" />'''
+        if get_build(VERSION_STR) > EXCHANGE_2010_SP2:
+            payload += '<t:FieldURI FieldURI="item:TextBody" />'
+        payload += '''</t:AdditionalProperties>
+                </ItemShape>
+                <ItemIds>'''
+        for item_id in item_ids:
+            payload += '<t:ItemId Id="{}" />'.format(item_id)
+        payload += '''</ItemIds>
+            </GetItem>
+        </soap:Body>
+    </soap:Envelope>'''
+        raw = fallback_send_request(payload)
+
+        messages = raw.findall(".//t:Message", FALLBACK_NS)
+        if len(messages) != len(item_ids):
+            raise Exception("Not all items could be retrieved")
+
+        # Create an incident for each message
+        incidents = []
+        for m in messages:
+            incident = {}
+            labels = []
+
+            # Get message bodis
+            bodies = {
+                'text': m.find(".//t:Body[@BodyType='Text']", FALLBACK_NS),
+                'HTML': m.find(".//t:Body[@BodyType='HTML']", FALLBACK_NS)
+            }
+
+            if bodies['text'] is None:
+                bodies['text'] = m.find(".//t:TextBody[@BodyType='Text']", FALLBACK_NS)
+
+            # handle general info
+            incident['details'] = bodies['text'].text if bodies['text'] is not None else bodies['HTML'].text
+            incident['name'] = m.find('./t:Subject', FALLBACK_NS).text
+            labels.append({'type': 'Email/subject', 'value': incident['name']})
+            incident['occured'] = m.find('./t:DateTimeCreated', FALLBACK_NS).text
+
+            # handle to
+            recipients = m.findall("./t:ToRecepients/t:Mailbox/t:EmailAddress", FALLBACK_NS)
+            labels.extend([{'type': 'Email', 'value': r.text} for r in recipients])
+
+            # handle cc
+            ccs = m.findall("./t:CcRecepients/t:Mailbox/t:EmailAddress", FALLBACK_NS)
+            labels.extend([{'type': 'Email/cc', 'value': c.text} for c in ccs])
+
+            # handle from
+            sender = m.find("./t:Sender/t:Mailbox/t:EmailAddress", FALLBACK_NS)
+            if sender:
+                labels.push({'type': 'Email/from', 'value': sender.text})
+
+            # Email format
+            for email_format in ('text', 'HTML'):
+                if bodies[email_format]:
+                    labels.append({'type': 'Email/{}'.format(email_format.lower()), 'value': bodies[email_format]})
+            labels.append({'type': 'Email/format', 'value': email_format})
+
+            # Handle attachments
+            attachments = fallback_get_attachments(m.findall('./t:Attachments/*', FALLBACK_NS))
+            if attachments:
+                incident['attachment'] = []
+                for a in attachments:
+                    type_header = None
+                    type_id_header = None
+                    file_result = fileResult(a['Name'], a['Content'])
+                    incident['attachment'].append({
+                        'path': file_result['FileID'],
+                        'name': a['Name']
+                    })
+                    if a['Type'] == 'file':
+                        type_header = 'attachments'
+                        type_id_header = 'attachmentId'
+                    else:
+                        type_header = 'attachmentItems'
+                        type_id_header = 'attachmentItemId'
+                    labels.append({'type': type_header, 'value': a['Name']})
+                    labels.append({'type': type_id_header, 'value': a['Id']})
+
+            # Handle headers
+            headers = m.findall(".//t:InternetMessageHeader", FALLBACK_NS)
+            if headers:
+                for h in headers:
+                    labels.append({'type': 'Email/Header/{}'.format(h.attrib['HeaderName']), 'value': h.text})
+
+            # Add item ID
+            labels.append({'type': 'Email/ID', 'value': m.find("./t:ItemId", FALLBACK_NS).attrib['Id']})
+
+            incident['labels'] = labels
+            incident['rawJSON'] = json.dumps(fallback_parse_item_as_dict(m, attachments), ensure_ascii=False)
+            incidents.append(incident)
+
+        demisto.setLastRun({
+            LAST_RUN_TIME: start_time.ewsformat(),
+            LAST_RUN_FOLDER: FOLDER_NAME,
+            LAST_RUN_IDS: item_ids,
+            ERROR_COUNTER: 0
+        })
+
+        return incidents
 
     def get_entry_for_file_attachment(item_id, attachment):
         entry = fileResult(get_attachment_name(attachment.name), attachment.content)
@@ -1430,12 +1913,16 @@ script:
 
     config = prepare()
     args = prepare_args(demisto.args())
+    fix_2010()
     try:
-        fix_2010()
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'fetch-incidents':
-            incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
+            incidents = None
+            try:
+                incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
+            except:
+                incidents = fallback_fetch_emails_as_incidents()
             demisto.incidents(str_to_unicode(incidents))
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
@@ -2200,3 +2687,4 @@ script:
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
+releaseNotes: "-"
