@@ -8,16 +8,19 @@ script: |
   instance_name = demisto.args()["instance_name"]
   command = '!{0}-fetch'.format(instance_name)
 
-  resCmdName = demisto.executeCommand(command, {})
+  response = demisto.executeCommand(command, {})
   try:
-      if not resCmdName:
-          raise Exception("")
+      if not response:
+          raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
 
-      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": resCmdName})
+      for inc in response:
+          if 'Error' in inc.get('Contents', ''):
+              raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
+
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": response})
 
   except Exception as ex:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                  "Contents": "Error occurred while fetching incidents from {}".format(instance_name)})
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})
 
   demisto.results(res)
 type: python
