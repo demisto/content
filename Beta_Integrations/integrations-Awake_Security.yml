@@ -59,6 +59,8 @@ script:
     import datetime
     import re
     import requests
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
 
     params = demisto.params()
@@ -66,6 +68,8 @@ script:
     prefix = address + "/awakeapi/v1"
     verify = params["verify"]
     credentials = params["credentials"]
+    min_threshold = params['min_threshold']
+    max_threshold = params['max_threshold']
     identifier = credentials["identifier"]
     password = credentials["password"]
     authTokenRequest = {
@@ -77,7 +81,6 @@ script:
     headers = {
         "Authentication": ("access " + authToken)
     }
-
     command = demisto.command()
     args = demisto.args()
     request = {}
@@ -87,8 +90,8 @@ script:
         for field in fields:
             if field in args:
                 request[field] = args[field]
-
     # Render a subset of the fields of the Contents as a markdown table
+
     def displayTable(contents, fields):
         # We don't use a set() because we want to preserve field order
         #
@@ -136,6 +139,7 @@ script:
             "Contents": json.dumps(machineReadable),
             "HumanReadable": humanReadable,
             "ReadableContentsFormat": "markdown",
+            "EntryContext": machineReadable,
         }
         demisto.results(results)
 
@@ -151,13 +155,13 @@ script:
         # partioning the scores by quartile appears to
         # map closely enough to Demisto's classification
         # scheme for now.
-        if percentile <= args['min_threshold']:
+        if percentile <= min_threshold:
             # People doing something out of the ordinary
             # compared to others (i.e. performing weird
             # searches, learning something exotic, making
             # an unusual purchase)
             score = 1
-        elif percentile <= args['max_threshold']:
+        elif percentile <= max_threshold:
             # Something doing multiple things out of the
             # ordinary, worth investigating
             score = 2
@@ -181,6 +185,8 @@ script:
         else:
             request["lookback_minutes"] = 480
         response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+        demisto.log(str(response))
+        demisto.log(str(type(response)))
         return response.json()
 
     def lookupDevice(lookup_key):
@@ -229,6 +235,7 @@ script:
             "firstSeen",
             "lastSeen",
         ]
+
         if "notability" in contents:
             dbotScore = toDBotScore("domain", contents["notability"], lookup_key)
         else:
@@ -306,6 +313,9 @@ script:
                     request["queryExpression"] = mapping.format(args[name])
         path = "/query/" + lookup_type
         response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+        demisto.log(str(response))
+        demisto.log(str(type(response)))
+        sys.exit(0)
         contents = response.json()
         return contents
 
@@ -343,7 +353,6 @@ script:
         ]
         humanReadable = displayTable(contents, humanReadableFields)
         returnResults(contents, humanReadable, None)
-
     def queryDomains():
         contents = query("domains")
         humanReadableFields = [
@@ -379,6 +388,9 @@ script:
         request["sessions"] = [ session ]
         path = "/pcap/download"
         response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
+        demisto.log(str(response))
+        demisto.log(str(type(response)))
+        sys.exit(0)
         b64 = response.json()["pcap"]
         bytes = base64.b64decode(b64)
         demisto.results(fileResult("download.pcap", bytes))
@@ -431,39 +443,28 @@ script:
 
     ''' EXECUTION '''
     LOG('command is %s' % (command))
-
     try:
         if command == "test-module":
             # If we got this far we already successfully authenticated against the server
             demisto.results('ok')
-
         elif command == "fetch-incidents":
             fetchIncidents()
-
         elif command == "awake-query-devices":
             queryDevices()
-
         elif command == "awake-query-activities":
             queryActivities()
-
         elif command == "awake-query-domains":
             queryDomains()
-
         elif command == "awake-pcap-download":
             pcapDownload()
-
         elif command == "domain":
             lookupDomain(args["domain"])
-
         elif command == "email":
-            lookupDomain(args["email"])
-
+            lookupEmail(args["email"])
         elif command == "ip":
             lookupIp(args["ip"])
-
         elif command == "device":
             lookupDevice(args["device"])
-
     except Exception, e:
         LOG(e.message)
         LOG.print_log()
@@ -557,6 +558,70 @@ script:
       description: The domain name
     - name: lookback_minutes
       description: How many minutes of history to query
+    outputs:
+    - contextPath: AwakeSecurity.approxBytesTransferred
+      description: Approximate bytes the indicator passed
+      type: number
+    - contextPath: AwakeSecurity.DomainWithSameRegistrant
+      description: Domain with same registrant to the domain
+      type: unknown
+    - contextPath: AwakeSecurity.DomainWithSameRegistrant.firstSeen
+      description: First time the domain with same registrant to the domain was seen
+      type: string
+    - contextPath: AwakeSecurity.IntelSources
+      description: Intel sources
+      type: string
+    - contextPath: AwakeSecurity.ipAddresses
+      description: Ip addresses
+      type: string
+    - contextPath: AwakeSecurity.isAlexaTopOneMillion
+      description: Alexa data
+      type: string
+    - contextPath: AwakeSecurity.isDGA
+      description: is the indicator DGA
+      type: boolean
+    - contextPath: AwakeSecurity.lastSeen
+      description: Last time the indicator was seen
+      type: string
+    - contextPath: AwakeSecurity.notabillity
+      description: Notability score
+      type: number
+    - contextPath: AwakeSecurity.numAssociatedActivities
+      description: Number of associated activities
+      type: number
+    - contextPath: AwakeSecurity.numAssociatedADevices
+      description: Number of associated devices
+      type: number
+    - contextPath: AwakeSecurity.protocols
+      description: Related protocols
+      type: string
+    - contextPath: AwakeSecurity.relatedSubdomains
+      description: Related subdomains
+      type: string
+    - contextPath: AwakeSecurity.subdomains
+      description: Subdomains
+      type: string
+    - contextPath: AwakeSecurity.topDevices
+      description: Top Devices
+      type: string
+    - contextPath: AwakeSecurity.totalNumDevices
+      description: Total number of devices
+      type: number
+    - contextPath: AwakeSecurity.whiteListed
+      description: Is in white list
+      type: boolean
+    - contextPath: DBotScore.Indicator
+      description: Indicator of the domain
+      type: string
+    - contextPath: DBotScore.Score
+      description: Score of the domain
+      type: number
+    - contextPath: DBotScore.Type
+      description: Type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor of the data
+      type: string
     description: Lookup a domain
   - name: ip
     arguments:
@@ -565,6 +630,27 @@ script:
       description: The IP address
     - name: lookback_minutes
       description: How many minutes of history to query
+    outputs:
+    - contextPath: AwakeSecurity.activityCount
+      description: Activity count of the ip
+    - contextPath: AwakeSecurity.deviceCount
+      description: device count of the ip
+    - contextPath: AwakeSecurity.devices
+      description: Devices of the ip
+    - contextPath: AwakeSecurity.domains
+      description: domains of the ip
+    - contextPath: AwakeSecurity.ipFirstSeen
+      description: First time the ip was seen
+    - contextPath: AwakeSecurity.ipLastSeen
+      description: Last time the ip was seen
+    - contextPath: DBotScore.Indicator
+      description: INdicator of the ip
+    - contextPath: DBotScore.Score
+      description: Score of the ip
+    - contextPath: DBotScore.Vendor
+      description: Vendor of the data
+    - contextPath: DBotScore.Type
+      description: Type of the indicator
     description: Lookup an IP address
   - name: email
     arguments:
@@ -583,4 +669,3 @@ script:
     description: Lookup a device
   isfetch: true
   runonce: false
-releaseNotes: ""
