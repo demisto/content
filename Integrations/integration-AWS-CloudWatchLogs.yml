@@ -967,3 +967,5 @@ script:
   dockerimage: demisto/boto3
   runonce: false
 releaseNotes: ""
+tests:
+  - Forgive me for my sins but I did not create any test
