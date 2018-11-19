@@ -1,0 +1,255 @@
+commonfields:
+  id: DocumentationAutomation
+  version: -1
+name: DocumentationAutomation
+script: |-
+  import yaml
+  import sys
+
+  reload(sys)
+  sys.setdefaultencoding('utf-8')
+
+  entryID = demisto.args()['entryID']
+
+  res = demisto.executeCommand('getFilePath', {'id': entryID})
+  if isError(res[0]):
+      demisto.results(res)
+      sys.exit(0)
+
+  path = res[0]['Contents']['path']
+
+  yamlFile  = open(path)
+  dataMap = yaml.safe_load(yamlFile)
+  yamlFile.close()
+
+  def addLines(line):
+      output = ''
+      lastDigit = 0
+      for i in range(len(line)):
+          if line[i].isdigit():
+              if line[i+1] == '.':
+                  output += line[lastDigit:i] + '\n'
+                  lastDigit = i
+      output += line[lastDigit:len(line)] + '\n'
+      return output
+
+  def addErrorLines(scriptToScan, scriptType):
+      res = ''
+      if 'python' in scriptType:
+          errorKeys = ['return_error', 'raise ']
+      elif 'javascript' in scriptType:
+          errorKeys = ['throw ']
+      # Unsupported script type
+      else:
+          return res
+      linesToSkip = 0
+      scriptLines = scriptToScan.splitlines()
+      for idx in range(len(scriptLines)):
+          # Skip lines that were already scanned
+          if linesToSkip > 0:
+              linesToSkip -= 1
+              continue
+          line = scriptLines[idx]
+          if any(key in line for key in errorKeys):
+              if '(' in line:
+                  bracketOpenIdx = line.index('(') + 1
+                  if ')' in line:
+                      bracketCloseIdx = line.index(')')
+                      res += '* ' + line[bracketOpenIdx:bracketCloseIdx] + '\n'
+                  # Handle multi line error
+                  else:
+                      res += '*' + ('' if len(line[bracketOpenIdx:].lstrip()) < 1 else ' ' + line[bracketOpenIdx:] + '\n')
+                      while not ')' in scriptLines[idx + linesToSkip + 1]:
+                          linesToSkip += 1
+                          line = scriptLines[idx + linesToSkip]
+                          res += ' ' + line.lstrip() + '\n'
+                      # Adding last line of error
+                      linesToSkip += 1
+                      line = scriptLines[idx + linesToSkip]
+                      bracketCloseIdx = line.index(')')
+                      res += line[:bracketCloseIdx].lstrip() + '\n'
+              else:
+                  firstMatchingErrorKey = next((key for key in errorKeys if key in line), False)
+                  afterErrorKeyIdx = line.index(firstMatchingErrorKey) + len(firstMatchingErrorKey)
+                  res += '* ' + line[afterErrorKeyIdx:] + '\n'
+      return res
+
+  name = dataMap['name']
+  doc = ''
+
+  # Overview
+  doc += '## Overview\n'
+  doc += '---\n'
+  if 'overview' in demisto.args():
+      doc += demisto.args()['overview'] + '\n'
+
+  doc += 'This integration was integrated and tested with version xx of ' + name + '\n'
+
+  # Playbooks
+  doc += "## {} Playbook\n".format(name)
+  doc += '---\n'
+
+  # Use-cases
+  doc += '## Use cases\n'
+  doc += '---\n'
+
+  if 'useCases' in demisto.args():
+      doc +=addLines(demisto.args()['useCases']) + '\n'
+
+  #Setup integration to work with Demisto
+
+  doc += '\n## Configure ' + name + ' on Demisto\n'
+  doc += '---\n'
+
+  if 'setupOnIntegration' in demisto.args():
+      doc += addLines(demisto.args()['setupOnIntegration']) + '\n'
+
+  #Setup integration on Demisto
+
+  doc += '''
+  1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+  2. Search for ''' + name + '''.
+  3. Click __Add instance__ to create and configure a new integration instance.
+  You should configure the following settings:
+    * __Name__: a textual name for the integration instance.
+  '''
+
+  j=2
+  for i in range(len(dataMap['configuration'])):
+      if (dataMap['configuration'][i]['display']):
+          doc += '  * __' + dataMap['configuration'][i]['display'] +'__\n'
+      else:
+          doc += '  * __' + dataMap['configuration'][i]['name'] +'__\n'
+      j += 1
+  doc += '4. Click __Test__ to validate the URLs, token, and connection.' +'\n'
+
+
+  # Fetched incidents data
+
+  doc += '\n## Fetched Incidents Data\n'
+  doc += '---\n'
+
+  if 'fetchedData' in demisto.args():
+      doc +=addLines(demisto.args()['fetchedData']) + '\n'
+
+  # Commands
+
+  doc += '\n## Commands\n'
+  doc += '---\n'
+  doc += 'You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.\n'
+  doc += 'After you successfully execute a command, a DBot message appears in the War Room with the command details.\n'
+
+  for i in range(len(dataMap['script']['commands'])):
+      doc += str(i+1) + '. ' + dataMap['script']['commands'][i]['name'] + '\n'
+
+  for i in range(len(dataMap['script']['commands'])):
+      try:
+          doc += '### ' + dataMap['script']['commands'][i]['name'] + '\n'
+          doc += '---\n'
+          doc += str(dataMap['script']['commands'][i].get('description'," ")) + '\n'
+          doc += '##### Base Command\n'
+          doc += '`' + dataMap['script']['commands'][i]['name'] + '`' + '\n'
+
+          #Inputs
+          doc += '##### Input\n'
+          doc += '| **Argument Name** | **Description** | **Required** |\n'
+          doc += '| --- | --- | --- |\n'
+          if len(dataMap['script']['commands'][i]['arguments']) != 0:
+              for j in range(len(dataMap['script']['commands'][i]['arguments'])):
+                  doc += '| ' + dataMap['script']['commands'][i]['arguments'][j]['name'] + ' | '
+                  if not (dataMap['script']['commands'][i]['arguments'][j].get('description', False)):
+                      demisto.results("Error! You are missing description in input " + dataMap['script']['commands'][i]['arguments'][j]['name'] +\
+                      " of command " + dataMap['script']['commands'][i]['name'])
+                      sys.exit(0)
+                  doc += dataMap['script']['commands'][i]['arguments'][j]['description'] + ' | '
+                  doc += str(dataMap['script']['commands'][i]['arguments'][j].get('required', 'False'))  + ' | \n'
+          else:
+              doc += '-\n'
+          #Context output
+          doc += '##### Context Output\n'
+          if 'outputs' in dataMap['script']['commands'][i]:
+              doc += '| **Path** | **Type** | **Description** |\n'
+              doc += '| --- | --- | --- |\n'
+              for k in range(len(dataMap['script']['commands'][i]['outputs'])):
+                  doc += '| ' + dataMap['script']['commands'][i]['outputs'][k]['contextPath'] + ' | '
+                  doc += str(dataMap['script']['commands'][i]['outputs'][k].get('type', 'unknown')) + ' | '
+                  if not (dataMap['script']['commands'][i]['outputs'][k].get('description', False)):
+                      demisto.results("Error! You are missing description in output " + dataMap['script']['commands'][i]['outputs'][j]['name'] + \
+                      " of command " + dataMap['script']['commands'][i]['name'])
+                      sys.exit(0)
+                  doc += dataMap['script']['commands'][i]['outputs'][k]['description'] + ' | \n'
+          else:
+              doc += 'There is no context output for this command.\n'
+          #Raw output:
+          doc += '##### Command Example\n'
+          doc += '##### Context Example\n'
+          doc += '##### Human Readable Output\n'
+
+          doc += '\n'
+      except Exception as e:
+          demisto.results("Error encountered in the processing of command " + \
+          dataMap['script']['commands'][i]['name'] + ", error was missing a " + str(e) + \
+          ". Please check your command inputs and outputs")
+          sys.exit(0)
+
+  # Additional info
+
+  doc += '\n## Additional information:\n'
+
+  if 'addInfo' in demisto.args():
+      doc +=addLines(demisto.args()['addInfo']) + '\n'
+
+  # Known limitations
+
+  doc += '\n## Known limitations:'
+
+  if 'limit' in demisto.args():
+      doc +=addLines(demisto.args()['limit']) + '\n'
+
+  # Troubleshooting
+
+  doc += '\n## Troubleshooting:\n'
+  if 'troubleshooting' in demisto.args():
+      doc +=addLines(demisto.args()['troubleshooting'])
+
+  # Possible Errors
+
+  if 'True' == demisto.args()['withErrors']:
+      doc += '\n## Possible Errors (DO NOT PUBLISH ON ZENDESK):\n'
+      doc += addErrorLines(dataMap['script']['script'], dataMap['script']['type'])
+
+  filename = name + '-documantation.txt'
+  demisto.results(fileResult(filename, doc))
+type: python
+tags: []
+comment: Automates integration documentation
+enabled: true
+args:
+- name: entryID
+  required: true
+  description: War-room entry ID of sample file
+- name: overview
+  description: Documentation overview
+- name: setupOnIntegration
+  description: Setting to work with Demisto instructions. Number the steps by 'x.'
+    (i.e. '1.')
+- name: useCases
+  description: Top use-cases. Number the steps by 'x.' (i.e. '1.')
+- name: troubleshooting
+  description: Integration troubleshooting
+- name: fetchedData
+  description: Fetched incidents data. Number the steps by 'x.' (i.e. '1.')
+- name: addInfo
+  description: Additional information. Number the steps by 'x.' (i.e. '1.')
+- name: limit
+  description: Known limitations. Number the steps by 'x.' (i.e. '1.')
+- name: withErrors
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: Flag for creating documentation with errors
+  defaultValue: "True"
+scripttarget: 0
+runonce: false
+dockerimage: demisto/docs

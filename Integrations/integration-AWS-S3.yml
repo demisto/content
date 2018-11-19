@@ -304,6 +304,33 @@ script:
         except Exception as e:
             return raise_error(e)
 
+    def get_file_path(file_id):
+
+        try:
+            filepath_result = demisto.getFilePath(file_id)
+            return filepath_result
+
+        except Exception as e:
+            return raise_error(e)
+
+    def upload_file(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            path = get_file_path(args.get('entryID'))
+
+            with open(path['path'], 'rb') as data:
+                response = client.upload_fileobj(data, args.get('bucket'),args.get('key'))
+                return 'File %s was uploaded successfully to %s' % (args.get('key'), args.get('bucket'))
+
+        except Exception as e:
+            return raise_error("Error: entry %s is not a file." % (args['entryID']))
+
+
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         client = aws_session()
@@ -337,6 +364,9 @@ script:
 
     if demisto.command() == 'aws-s3-list-bucket-objects':
         result = list_objects(demisto.args())
+
+    if demisto.command() == 'aws-s3-upload-file':
+        result = upload_file(demisto.args())
 
     demisto.results(result)
     sys.exit(0)
@@ -551,5 +581,29 @@ script:
         the role.
     description: Replaces a policy on a bucket. If the bucket already has a policy,
       the one in this request completely replaces it.
+  - name: aws-s3-upload-file
+    arguments:
+    - name: entryID
+      required: true
+      description: Entry ID of the file to upload
+    - name: bucket
+      required: true
+      description: The name of the bucket to upload to
+    - name: key
+      required: true
+      description: The name of the key to upload to
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Upload file to S3 bucket
   dockerimage: demisto/boto3
   runonce: false
+tests:
+  - Forgive me for my sins but I did not create any test

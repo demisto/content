@@ -439,7 +439,7 @@ script:
                             'RelatedEntities': related_entities_ec
                         }
                     }
-                elif entity_type == 'file':
+                elif entity_type == 'hash':
                     ec[outputPaths['file']] = {
                         determine_hash(entity_value): entity_value,
                         'RecordedFuture': {

@@ -46,6 +46,7 @@ script:
     from threatconnect.Config.FilterOperator import FilterOperator
     import urllib
     import datetime
+    from urlparse import urlparse
 
     filePath= 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256)'
     ipPath= 'IP(val.Address && val.Address == obj.Address)'
@@ -192,6 +193,9 @@ script:
         sys.exit(0)
     if demisto.command() == 'url':
         url = demisto.args()['url']
+        parsed_url = urlparse(url)
+        if not parsed_url.scheme:
+            return_error('Please provide a valid URL including a protocol (http/https)')
         malRatingThreshold = -1
         malConfidenceThreshold = -1
         if demisto.get(demisto.args(), 'ratingThreshold'):
@@ -297,6 +301,15 @@ script:
         indicators = tc.indicators()
         filter1 = indicators.add_filter()
         filter1.add_indicator(demisto.args()['indicator'])
+        owners_arr = []
+        if "owner" in demisto.args():
+            owners_arr.append(demisto.args()['owner'])
+        else:
+            owners = tc.owners()
+            owners.retrieve()
+            for owner in owners:
+                owners_arr.append(owner.name)
+        filter1.add_owner(owners_arr)
         indicators.retrieve()
 
         for indicator in indicators:
@@ -316,7 +329,7 @@ script:
             owners_arr.append(owner.name)
         filter1.add_owner(owners_arr)
         if demisto.get(demisto.args(), 'ratingThreshold'):
-            filters.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GT)
+            filter1.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GT)
         if demisto.get(demisto.args(), 'confidenceThreshold'):
             filter1.add_pf_confidence(int(demisto.args()['confidenceThreshold']), FilterOperator.GT)
         indicators.retrieve()
@@ -556,6 +569,8 @@ script:
       default: true
       description: Indicator to tag, this is the value of indicator like ip, file
         hash, url
+    - name: owner
+      description: filter by owner
     description: Tag an exiting indicator
   - name: tc-get-indicator
     arguments:
@@ -640,7 +655,8 @@ script:
       description: value of indicator (hash,ip, url...)
     - name: owner
       description: filter by owner
-    description: associate an indicator to an existing incident
+    description: associate an indicator to an existing incident, please note indicator
+      MUST exist prior to using this command, look at tc-add-indicator for that
   - name: domain
     arguments:
     - name: domain
@@ -664,12 +680,14 @@ script:
       description: The actual score
     description: Check domain reputation
   - name: tc-get-incident-associate-indicators
-    description: Get incidents that are related to a specific indicator
     arguments:
     - name: incidentId
-      description: incident ID
       required: true
       default: true
+      description: incident ID
     - name: owner
       description: filter by owner too
+    description: Get incidents that are related to a specific indicator
   dockerimage: demisto/threatconnect-sdk
+tests:
+  - "test-ThreatConnect"

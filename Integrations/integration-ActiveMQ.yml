@@ -1,0 +1,217 @@
+commonfields:
+  id: ActiveMQ
+  version: -1
+name: ActiveMQ
+display: ActiveMQ
+category: Messaging
+image: data:image/png;base64,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
+description: Integration with ActiveMQ queue
+detaileddescription: |-
+  This integration uses ActiveMQ STOMP protocol, that must be enabled (usually port 61613 by default) in order to work.
+  Fetch incidents is based on using Durable Topic Subscribers, in order to fetch messages, and convert to Demisto incidents.
+configuration:
+- display: Server IP (e.g. 192.168.0.1)
+  name: hostname
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "61613"
+  type: 0
+  required: false
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Client ID
+  name: client-id
+  defaultvalue: Demisto
+  type: 0
+  required: false
+- display: Subscription ID
+  name: subscription-id
+  defaultvalue: "1"
+  type: 0
+  required: false
+- display: Topic Name (for subscription)
+  name: topic-name
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+
+    import stomp
+    import os
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARS '''
+
+    HOSTNAME = demisto.params()['hostname']
+    PORT = int(demisto.params()['port'])
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+
+    class MsgListener(stomp.ConnectionListener):
+        def __init__(self):
+            self.result_arr = []
+            self.msg_ids = []
+
+        def on_error(self, headers, message):
+            demisto.results('received an error "%s"' % message)
+        def on_message(self, headers, message):
+            self.result_arr.append(message)
+            self.msg_ids.append(headers['message-id'])
+
+    ''' HELPER FUNCTIONS '''
+
+    def create_connection():
+        conn = stomp.Connection([(HOSTNAME, PORT)])
+        return conn
+
+    def connect(conn, client_id=None):
+        conn.start()
+        if client_id and len(client_id) > 0:
+            conn.connect(USERNAME, PASSWORD, wait=True, headers = {'client-id': client_id })
+        else:
+            conn.connect(USERNAME, PASSWORD, wait=True)
+        return conn
+
+    ''' FUNCTIONS '''
+
+    def send_message():
+
+        txid = conn.begin()
+        dest = demisto.args()['destination']
+        body = demisto.args()['body']
+        conn.send(dest, body, transaction=txid)
+        conn.commit(txid)
+        demisto.results('Message sent to ActiveMQ destination: ' + dest + ' with transaction ID: ' + txid)
+
+    def subscribe():
+
+        listener = MsgListener()
+        if client and len(client) > 0:
+            conn.set_listener('Demisto', listener)
+        subscription_id = demisto.args()['subscription-id']
+        topic_name = demisto.args()['topic-name']
+        conn.subscribe('/topic/'+topic_name, subscription_id, ack='client-individual', headers={'activemq.subscriptionName': client})
+        time.sleep(1)
+        for msg in listener.result_arr:
+            demisto.results(msg)
+        for msg_id in listener.msg_ids:
+            conn.ack(msg_id, subscription_id)
+
+    def fetch_incidents():
+
+        subscription_id = demisto.params()['subscription-id']
+        listener = MsgListener()
+        if client and len(client) > 0:
+            conn.set_listener('Demisto', listener)
+        topic_name = demisto.params()['topic-name']
+        conn.subscribe(
+            '/topic/' + topic_name,
+            subscription_id,
+            ack='client-individual',
+            headers={'activemq.subscriptionName': client}
+        )
+        incidents = []
+        time.sleep(3)
+        for i in range(len(listener.result_arr)):
+            msg = listener.result_arr[i]
+            msg_id = listener.msg_ids[i]
+            incidents.append({
+                'Name': 'ActiveMQ incident:' + msg_id,
+                'rawJSON': msg,
+                'details': msg
+            })
+        demisto.incidents(incidents)
+        last_msg_id = ""
+        for msg_id in listener.msg_ids:
+            conn.ack(msg_id, subscription_id)
+            last_msg_id = msg_id
+
+    ''' EXECUTION CODE '''
+    client = 'Demisto'
+    if demisto.get(demisto.params(), 'client-id'):
+        client = demisto.params()['client-id']
+
+    conn = create_connection()
+
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        if demisto.command() == 'test-module':
+            # Test connectivity
+            connect(conn)
+            demisto.results('ok')
+
+        elif demisto.command() == 'activemq-send':
+            connect(conn)
+            send_message()
+
+        elif demisto.command() == 'activemq-subscribe':
+            connect(conn, client)
+            subscribe()
+
+        elif demisto.command() == 'fetch-incidents':
+            connect(conn, client)
+            fetch_incidents()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+    finally:
+        conn.disconnect()
+  type: python
+  commands:
+  - name: activemq-send
+    arguments:
+    - name: destination
+      required: true
+      description: The message destination (such as a message queue - for example
+        ‘/queue/test’ - or a message topic)
+    - name: body
+      required: true
+      description: The content of the message to be sent
+    description: Send messag to topic or queue
+  - name: activemq-subscribe
+    arguments:
+    - name: subscription-id
+      required: true
+      description: The identifier to uniquely identify the subscription
+      defaultValue: "1"
+    - name: topic-name
+      required: true
+      description: The topic to subscribe to
+    description: Subscribe and read messages from topic
+  dockerimage: demisto/stomp
+  isfetch: true
+  runonce: false
+tests:
+  - ActiveMQ Test

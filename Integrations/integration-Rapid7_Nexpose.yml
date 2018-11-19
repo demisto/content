@@ -53,11 +53,17 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
 
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('unsecure', False)
-    TOKEN = demisto.params().get('token', None)
+    TOKEN = demisto.params().get('token')
 
     def get_server_url():
         url = demisto.params()['server']
@@ -66,16 +72,8 @@ script:
         return url
 
 
-    def load_proxy():
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
     BASE_URL = get_server_url()
     SERVER_URL = BASE_URL + '/api/3'
-    PROXY = load_proxy()
 
     def get_login_headers():
         headers = {
@@ -95,7 +93,7 @@ script:
             'nexposeccusername': USERNAME,
             'nexposeccpassword': PASSWORD
         }
-        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.post(url, headers=headers, data=body, verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
             return ''
         body = res.json()
@@ -126,7 +124,7 @@ script:
     def get_site(asset_id):
         url = BASE_URL + '/data/assets/' + str(asset_id) + '/scans'
         headers = get_site_headers()
-        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
            return ''
         response = res.json()
@@ -139,11 +137,14 @@ script:
             'ip': response['records'][0]['ipAddress']
         }
 
-    def send_request(path, method = 'get', body = {}, params = {}, headers=None, is_file=False):
-        url = '%s/%s' % (SERVER_URL, path)
+    def send_request(path, method = 'get', body=None, params=None, headers=None, is_file=False):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+
+        url = '{}/{}'.format(SERVER_URL, path)
+
         headers = headers if headers is not None else get_headers()
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-        verify=VERIFY_SSL, proxies=PROXY)
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception('Got status code ' + str(res.status_code) + ' with url ' + url + ' with body ' + res.content + ' with headers ' + str(res.headers))
         return res.json() if is_file is False else res.content
@@ -276,7 +277,7 @@ script:
         asset['LastScanId'] = last_scan['id']
         asset['Site'] = get_site(asset['id'])['name']
 
-        assetHeaders = [
+        asset_headers = [
         'AssetId',
         'Addresses',
         'Hardware',
@@ -290,7 +291,7 @@ script:
         'RiskScore'
         ]
 
-        assetOutput = translate_object(asset, [
+        asset_output = translate_object(asset, [
             {'from': 'id', 'to': 'AssetId'},
             {'from': 'addresses.ip', 'to': 'Addresses'},
             {'from': 'addresses.mac', 'to': 'Hardware'},
@@ -305,30 +306,30 @@ script:
             {'from': 'riskScore', 'to': 'RiskScore'}
         ])
 
-        softwareOutput = None
-        servicesOutput = None
-        usersOutput = None
+        software_output = None
+        services_output = None
+        users_output = None
 
         if 'software' in asset and len(asset['software']) > 0:
-            softwareHeaders = [
+            software_headers = [
                 'Software',
                 'Version'
                 ]
 
-            softwareOutput = translate_object(asset['software'], [
+            software_output = translate_object(asset['software'], [
                 {'from': 'description', 'to': 'Software'},
                 {'from': 'version', 'to': 'Version'}
             ])
 
         if 'services' in asset and len(asset['services']) > 0:
-            serviceHeaders = [
+            service_headers = [
                 'Name',
                 'Port',
                 'Product',
                 'Protocol'
                 ]
 
-            servicesOutput = translate_object(asset['services'], [
+            services_output = translate_object(asset['services'], [
                 {'from': 'name', 'to': 'Name'},
                 {'from': 'port', 'to': 'Port'},
                 {'from': 'product', 'to': 'Product'},
@@ -336,19 +337,19 @@ script:
             ])
 
         if 'users' in asset and len(asset['users']) > 0:
-            userHeaders = [
+            user_headers = [
                 'FullName',
                 'Name',
                 'UserId'
                 ]
 
-            usersOutput = translate_object(asset['users'], [
+            users_output = translate_object(asset['users'], [
                 {'from': 'name', 'to': 'Name'},
                 {'from': 'fullName', 'to': 'FullName'},
                 {'from': 'id', 'to': 'UserId'},
             ])
 
-        vulnerabilityHeaders = [
+        vulnerability_headers = [
             'Id',
             'Title',
             'Malware',
@@ -363,61 +364,61 @@ script:
 
         vulnerabilities = get_vulnerabilities(asset['id'])
         asset['vulnerabilities'] = vulnerabilities
-        vulnerabilitiesOutput = []
-        cvesOutput = []
+        vulnerabilities_output = []
+        cves_output = []
         for i,v in enumerate(asset['vulnerabilities']):
-            detailedVuln = get_vulnerability(v['id'])
+            detailed_vuln = get_vulnerability(v['id'])
             # Add to raw output
-            asset['vulnerabilities'][i] = dict(asset['vulnerabilities'][i].items() + detailedVuln.items())
-            cvss = dq(detailedVuln['cvss'], ['v2','score'])
+            asset['vulnerabilities'][i] = dict(asset['vulnerabilities'][i].items() + detailed_vuln.items())
+            cvss = dq(detailed_vuln['cvss'], ['v2','score'])
 
-            if('cves' in detailedVuln):
-                cvesOutput = cvesOutput + map(lambda cve: {
+            if('cves' in detailed_vuln):
+                cves_output = cves_output + map(lambda cve: {
                 'ID': cve
-                }, detailedVuln['cves'])
+                }, detailed_vuln['cves'])
 
-            outputVuln = {
+            output_vuln = {
                 'Id': v['id'],
-                'Title': detailedVuln['title'],
-                'Malware': detailedVuln['malwareKits'],
-                'Exploit': detailedVuln['exploits'],
+                'Title': detailed_vuln['title'],
+                'Malware': detailed_vuln['malwareKits'],
+                'Exploit': detailed_vuln['exploits'],
                 'CVSS': cvss,
-                'Risk': detailedVuln['riskScore'],
-                'PublishedOn': detailedVuln['published'],
-                'ModifiedOn': detailedVuln['modified'],
-                'Severity': detailedVuln['severity'],
+                'Risk': detailed_vuln['riskScore'],
+                'PublishedOn': detailed_vuln['published'],
+                'ModifiedOn': detailed_vuln['modified'],
+                'Severity': detailed_vuln['severity'],
                 'Instances': v['instances'],
             }
 
-            vulnerabilitiesOutput.append(outputVuln)
+            vulnerabilities_output.append(output_vuln)
 
-        assetMd = tableToMarkdown('Nexpose asset ' + str(asset['id']), assetOutput, assetHeaders, removeNull=True)
-        vulnerabilitiesMd = tableToMarkdown('Vulnerabilities', vulnerabilitiesOutput, vulnerabilityHeaders, removeNull=True) if len(vulnerabilitiesOutput) > 0 else ''
-        softwareMd = tableToMarkdown('Software', softwareOutput, softwareHeaders, removeNull=True) if softwareOutput is not None else ''
-        servicesMd = tableToMarkdown('Services', servicesOutput, serviceHeaders, removeNull=True) if servicesOutput is not None else ''
-        usersMd = tableToMarkdown('Users', usersOutput, userHeaders, removeNull=True) if usersOutput is not None else ''
+        asset_md = tableToMarkdown('Nexpose asset ' + str(asset['id']), asset_output, asset_headers, removeNull=True)
+        vulnerabilities_md = tableToMarkdown('Vulnerabilities', vulnerabilities_output, vulnerability_headers, removeNull=True) if len(vulnerabilities_output) > 0 else ''
+        software_md = tableToMarkdown('Software', software_output, software_headers, removeNull=True) if software_output is not None else ''
+        services_md = tableToMarkdown('Services', services_output, service_headers, removeNull=True) if services_output is not None else ''
+        users_md = tableToMarkdown('Users', users_output, user_headers, removeNull=True) if users_output is not None else ''
 
-        md = assetMd + vulnerabilitiesMd + softwareMd + servicesMd + usersMd
+        md = asset_md + vulnerabilities_md + software_md + services_md + users_md
 
-        assetOutput['Vulnerability'] = vulnerabilitiesOutput
-        assetOutput['Software'] = softwareOutput
-        assetOutput['Service'] = servicesOutput
-        assetOutput['User'] = usersOutput
+        asset_output['Vulnerability'] = vulnerabilities_output
+        asset_output['Software'] = software_output
+        asset_output['Service'] = services_output
+        asset_output['User'] = users_output
 
         endpoint =  {
-            'IP': assetOutput['Addresses'],
-            'MAC': assetOutput['Hardware'],
-            'HostName': assetOutput['Aliases'],
-            'OS': assetOutput['OperatingSystem']
+            'IP': asset_output['Addresses'],
+            'MAC': asset_output['Hardware'],
+            'HostName': asset_output['Aliases'],
+            'OS': asset_output['OperatingSystem']
         }
 
         context = {
-            'Nexpose.Asset(val.AssetId==obj.AssetId)': assetOutput,
+            'Nexpose.Asset(val.AssetId==obj.AssetId)': asset_output,
             'Endpoint(val.IP==obj.IP)': endpoint
         }
 
-        if len(cvesOutput) > 0:
-            context['CVE(val.ID==obj.ID)'] = cvesOutput
+        if len(cves_output) > 0:
+            context['CVE(val.ID==obj.ID)'] = cves_output
 
         entry = {
             'Type': entryTypes['note'],
@@ -440,7 +441,7 @@ script:
         if v is None:
             return 'Vulnerability not found'
 
-        vulnHeaders = [
+        vuln_headers = [
             'Id',
             'Title',
             'Severity',
@@ -456,10 +457,10 @@ script:
             'CVES'
         ]
 
-        detailedVuln = get_vulnerability(v['id'])
+        detailed_vuln = get_vulnerability(v['id'])
         # Add to raw output
-        v = dict(v.items() + detailedVuln.items())
-        vulnOutputs = translate_object(detailedVuln, [
+        v = dict(v.items() + detailed_vuln.items())
+        vuln_outputs = translate_object(detailed_vuln, [
             {'from': 'id', 'to': 'Id'},
             {'from': 'title', 'to': 'Title'},
             {'from': 'severity', 'to': 'Severity'},
@@ -475,7 +476,7 @@ script:
             {'from': 'cves', 'to': 'CVES'}
         ])
 
-        resultsHeaders = [
+        results_headers = [
             "Port",
             "Protocol",
             "Since",
@@ -483,9 +484,9 @@ script:
             "Status"
         ]
 
-        resultsOutput = []
+        results_output = []
         if 'results' in v and len(v['results']) > 0:
-            resultsOutput = translate_object(v['results'], [
+            results_output = translate_object(v['results'], [
             {'from': 'port', 'to': 'Port'},
             {'from': 'protocol', 'to':'Protocol'},
             {'from': 'since', 'to': 'Since'},
@@ -494,10 +495,10 @@ script:
         ])
 
         # Remove HTML tags
-        for r in resultsOutput:
+        for r in results_output:
             r['Proof'] = re.sub('<.*?>', '', r['Proof'])
 
-        solutionsHeaders = [
+        solutions_headers = [
             'Type',
             'Summary',
             'Steps',
@@ -505,36 +506,36 @@ script:
             'AdditionalInformation'
         ]
 
-        solutionsOutput = None
+        solutions_output = None
         solutions = get_vulnerability_solutions(demisto.args()['id'], demisto.args()['vulnerabilityId'])
         # Add to raw output
         v['solutions'] = solutions
         if solutions is not None and len(solutions) > 0:
-            solutionsOutput = translate_object(solutions['resources'], [
+            solutions_output = translate_object(solutions['resources'], [
                 {'from': 'type', 'to': 'Type'},
                 {'from': 'summary.text', 'to': 'Summary'},
                 {'from': 'steps.text', 'to': 'Steps'},
                 {'from': 'estimate', 'to': 'Estimate'},
                 {'from': 'additionalInformation.text', 'to': 'AdditionalInformation'}
             ])
-            for i, val in enumerate(solutionsOutput):
-                solutionsOutput[i]['Estimate'] = str(iso8601_duration_as_minutes(solutionsOutput[i]['Estimate'])) + ' minutes'
+            for i, val in enumerate(solutions_output):
+                solutions_output[i]['Estimate'] = str(iso8601_duration_as_minutes(solutions_output[i]['Estimate'])) + ' minutes'
 
-        vulnerabilitiesMd = tableToMarkdown('Vulnerability ' + demisto.args()['vulnerabilityId'], vulnOutputs, vulnHeaders, removeNull=True)
-        resultsMd = tableToMarkdown('Checks', resultsOutput, resultsHeaders, removeNull=True) if len(resultsOutput) > 0 else ''
-        solutionsMd = tableToMarkdown('Solutions', solutionsOutput, solutionsHeaders, removeNull=True) if solutionsOutput is not None else ''
-        md = vulnerabilitiesMd + resultsMd + solutionsMd
+        vulnerabilities_md = tableToMarkdown('Vulnerability ' + demisto.args()['vulnerabilityId'], vuln_outputs, vuln_headers, removeNull=True)
+        results_md = tableToMarkdown('Checks', results_output, results_headers, removeNull=True) if len(results_output) > 0 else ''
+        solutions_md = tableToMarkdown('Solutions', solutions_output, solutions_headers, removeNull=True) if solutions_output is not None else ''
+        md = vulnerabilities_md + results_md + solutions_md
         cves = []
-        if(vulnOutputs['CVES'] is not None and len(vulnOutputs['CVES']) > 0):
+        if(vuln_outputs['CVES'] is not None and len(vuln_outputs['CVES']) > 0):
             cves = map(lambda cve: {
             'ID': cve
-            }, vulnOutputs['CVES'])
+            }, vuln_outputs['CVES'])
 
-        vulnOutputs['Check'] = resultsOutput
-        vulnOutputs['Solution'] = solutionsOutput
+        vuln_outputs['Check'] = results_output
+        vuln_outputs['Solution'] = solutions_output
         asset = {
             'AssetId': demisto.args()['id'],
-            'Vulnerability': [vulnOutputs]
+            'Vulnerability': [vuln_outputs]
         }
 
         context = {
@@ -573,17 +574,17 @@ script:
 
         return send_request(path)
 
-    def search_by_filter(textFilters):
-        if(textFilters is None):
+    def search_by_filter(text_filters):
+        if(text_filters is None):
             return []
 
-        filters = get_search_filters(textFilters)
+        filters = get_search_filters(text_filters)
         assets = search_assets(filters, demisto.args()['match'], demisto.args().get('limit'), demisto.args().get('sort'))
 
         return assets
 
     def search_assets_command():
-        textFilters = None
+        text_filters = None
         queries = demisto.args().get('query')
         ip_addresses = demisto.args().get('ipAddressIs')
         host_names = demisto.args().get('hostNameIs')
@@ -595,7 +596,7 @@ script:
         if queries is not None:
             assets = search_by_filter(queries.split(';'))
         elif risk_score is not None:
-            assets = search_by_filter(['risk-score is-greater-than ' + risk_score])
+            assets = search_by_filter(['risk-score is-greater-than ' + str(risk_score)])
         elif vulnerability_title is not None:
             assets = search_by_filter(['vulnerability-title contains ' + vulnerability_title])
         elif siteIds is not None:
@@ -670,21 +671,21 @@ script:
 
         return entry
 
-    def get_search_filters(textFilters):
+    def get_search_filters(text_filters):
         filters = []
-        for text in textFilters:
+        for text in text_filters:
             components = text.split(' ')
             field = components[0]
             operator = components[1]
             value = components[2].split(',')
             # Convert numbers to floats if values are numbers
             for i, v in enumerate(value):
-                currVal = None
+                curr_val = None
                 try:
-                    currVal = float(v)
+                    curr_val = float(v)
                 except:
-                    currVal = v
-                value[i] = currVal
+                    curr_val = v
+                value[i] = curr_val
 
             flt = {
                 'field': field,
@@ -786,27 +787,20 @@ script:
         return get_list_response('assets', limit=limit, params=params)
 
     def get_scan_command():
-        scan = get_scan(demisto.args()['id'])
+        ids = argToList(str(demisto.args()['id']))
 
-        if(scan is None):
-            return 'Scan not found'
+        scans = []
+        for id in ids:
+            scan = get_scan(id)
+            if(scan is None):
+                return 'Scan not found'
+            scan_entry = get_scan_entry(scan)
+            scans.append(scan_entry)
 
-        return get_scan_entry(scan)
+        return scans
 
-    def get_scan_entry(scan):
-        scanHeaders = [
-            'Id',
-            'ScanType',
-            'ScanName',
-            'StartedBy',
-            'Assets',
-            'TotalTime',
-            'Completed',
-            'Status',
-            'Message'
-        ]
-
-        scanOutput = translate_object(scan, [
+    def map_scan(scan):
+        scan_output = translate_object(scan, [
             {'from': 'id', 'to': 'Id'},
             {'from': 'scanType', 'to': 'ScanType'},
             {'from': 'scanName', 'to': 'ScanName'},
@@ -818,44 +812,143 @@ script:
             {'from': 'message', 'to': 'Message'}
         ])
 
-        scanOutput['TotalTime'] = str(iso8601_duration_as_minutes(scanOutput['TotalTime'])) + ' minutes'
+        if isinstance(scan_output, list):
+            for scan in scan_output:
+                scan['TotalTime'] = str(iso8601_duration_as_minutes(scan['TotalTime'])) + ' minutes'
+        else:
+            scan_output['TotalTime'] = str(iso8601_duration_as_minutes(scan_output['TotalTime'])) + ' minutes'
 
-        vulnHeaders = [
+        return scan_output
+
+    def get_scan_human_readable(scan_output, title):
+        scan_headers = [
+            'Id',
+            'ScanType',
+            'ScanName',
+            'StartedBy',
+            'Assets',
+            'TotalTime',
+            'Completed',
+            'Status',
+            'Message'
+        ]
+
+        return tableToMarkdown(title, scan_output, scan_headers,removeNull=True)
+
+    def get_scan_entry(scan):
+        scan_output = map_scan(scan)
+
+        vuln_headers = [
             'Critical',
             'Severe',
             'Moderate',
             'Total'
         ]
 
-        vulnOutput = translate_object(scan['vulnerabilities'], [
+        vuln_output = translate_object(scan['vulnerabilities'], [
             {'from': 'critical', 'to': 'Critical'},
             {'from': 'severe', 'to': 'Severe'},
             {'from': 'moderate', 'to': 'Moderate'},
             {'from': 'total', 'to': 'Total'}
         ])
 
-        scanMd = tableToMarkdown('Nexpose scan ' + str(demisto.args()['id']), scanOutput, scanHeaders,removeNull=True)
-        vulnMd = tableToMarkdown('Vulnerabilities', vulnOutput, vulnHeaders, removeNull=True)
-        md = scanMd + vulnMd
+        scan_hr = get_scan_human_readable(scan_output, 'Nexpose scan ' + str(scan['id']))
+        vuln_hr = tableToMarkdown('Vulnerabilities', vuln_output, vuln_headers, removeNull=True)
+        hr = scan_hr + vuln_hr
 
-        scanOutput['Vulnerabilities'] = vulnOutput
+        scan_output['Vulnerabilities'] = vuln_output
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': scan,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
+            'HumanReadable': hr,
             'EntryContext': {
-                  'Nexpose.Scan(val.Id==obj.Id)': scanOutput,
+                  'Nexpose.Scan(val.Id==obj.Id)': scan_output,
             }
         }
 
         return entry
 
+
     def get_scan(scan_id):
         path = 'scans/' + str(scan_id)
         return send_request(path)
+
+    def create_site_command():
+        assets = argToList(demisto.args()['assets'])
+        site = create_site(demisto.args()['name'], assets,
+        demisto.args().get('description'), demisto.args().get('importance'), demisto.args().get('scanTemplateId'))
+
+        if not site or 'id' not in site:
+            raise Exception('Site creation failed, could not get the new site')
+
+        output = {
+            'Id': site['id']
+        }
+
+        md = tableToMarkdown('New site created', output)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': site,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': {
+                  'Nexpose.Site(val.Id==obj.Id)': output,
+            }
+        }
+
+        return entry
+
+
+    def create_site(name, assets, description=None, importance=None, template_id=None):
+        site_body = {
+            'name': name
+        }
+
+        if assets:
+            site_body['scan'] = {
+                'assets': {
+                    'includedTargets': {
+                        'addresses': assets
+                    }
+                }
+            }
+        if description:
+            site_body['description'] = description
+        if importance:
+            site_body['importance'] = importance
+        if template_id:
+            site_body['scanTemplateId'] = template_id
+
+        path = 'sites'
+
+        return send_request(path, 'post', body=site_body)
+
+    def delete_site_command():
+        site_id = demisto.args()['id']
+
+        res = delete_site(site_id)
+
+        hr = "Site " + str(site_id) + " deleted"
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
+        }
+
+        return entry
+
+    def delete_site(site_id):
+        path = 'sites/' + str(site_id)
+
+        return send_request(path, 'delete')
 
     def get_sites_command():
         sites = get_sites(limit=demisto.args().get('limit'),sort=demisto.args().get('sort'))
@@ -945,53 +1038,53 @@ script:
         assets = str(demisto.args()['assets']).split(',')
         template = demisto.args().get('template')
         name = demisto.args().get('name','report ' + str(datetime.now()))
-        reportFormat = demisto.args().get('format', 'pdf')
+        report_format = demisto.args().get('format', 'pdf')
 
         scope = {
             'assets': assets
         }
 
-        report_id = create_report(scope, name, template, reportFormat)
+        report_id = create_report(scope, name, template, report_format)
 
         if report_id is None:
             return 'Could not retrieve report'
 
-        return download_report(report_id, name, reportFormat)
+        return download_report(report_id, name, report_format)
 
     def create_sites_report_command():
         sites = str(demisto.args()['sites']).split(',')
         template = demisto.args().get('template')
         name = demisto.args().get('name','report ' + str(datetime.now()))
-        reportFormat = demisto.args().get('format', 'pdf')
+        report_format = demisto.args().get('format', 'pdf')
 
         scope = {
             'sites': sites
         }
 
-        report_id = create_report(scope, name, template, reportFormat)
+        report_id = create_report(scope, name, template, report_format)
 
         if report_id is None:
             return 'Could not retrieve report'
 
-        return download_report(report_id, name, reportFormat)
+        return download_report(report_id, name, report_format)
 
     def create_scan_report_command():
         scan = demisto.args()['scan']
         template = demisto.args().get('template')
         name = demisto.args().get('name','report ' + str(datetime.now()))
-        reportFormat = demisto.args().get('format', 'pdf')
+        report_format = demisto.args().get('format', 'pdf')
         scope = {
             'scan': scan
         }
 
-        report_id = create_report(scope, name, template, reportFormat)
+        report_id = create_report(scope, name, template, report_format)
 
         if report_id is None:
             return 'Could not retrieve report'
 
-        return download_report(report_id, name, reportFormat)
+        return download_report(report_id, name, report_format)
 
-    def create_report(scope, name, template, reportFormat):
+    def create_report(scope, name, template, report_format):
         if template is None:
             templates = get_report_templates()
             if(templates is None or len(templates) == 0 or 'resources' not in templates):
@@ -1008,13 +1101,13 @@ script:
             'scope': scope,
             'template': template,
             'name': name,
-            'format': reportFormat
+            'format': report_format
         }
 
         result = send_request(path, 'post', body=body)
         return result['id'] if 'id' in result else None
 
-    def download_report(report_id, name, reportFormat):
+    def download_report(report_id, name, report_format):
         # Generate the report
         path = 'reports/' + str(report_id) +' /generate'
         instance = send_request(path, 'post')
@@ -1033,25 +1126,25 @@ script:
         path = 'reports/' + str(report_id) + '/history/' + str(instance['id']) + '/output'
         report = send_request(path, headers=headers, is_file=True)
 
-        return fileResult(name + '.' + reportFormat, report)
+        return fileResult(name + '.' + report_format, report, entryTypes['entryInfoFile'])
 
     def start_assets_scan_command():
         ips = demisto.args().get('IPs')
-        hostNames = demisto.args().get('hostNames')
+        host_names = demisto.args().get('hostNames')
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
 
-        textFilters = None
-        if ips is not None:
+        text_filters = None
+        if ips:
             ips = ips.split(',')
-            textFilters = ['ip-address is ' + ips[0]]
-        elif hostNames is not None:
-            hostNames = hostNames.split(',')
-            textFilters = ['host-name is ' + hostNames[0]]
+            text_filters = ['ip-address is ' + ips[0]]
+        elif host_names:
+            host_names = host_names.split(',')
+            text_filters = ['host-name is ' + host_names[0]]
 
-        if textFilters is None:
+        if text_filters is None:
             return 'No IPs or hosts were provided'
 
-        filters = get_search_filters(textFilters)
+        filters = get_search_filters(text_filters)
         asset = search_assets(filters, match='all')
 
         if asset is None or len(asset) == 0:
@@ -1062,17 +1155,17 @@ script:
             return 'Could not find site'
 
         hosts = []
-        if ips is not None:
+        if ips:
             hosts += ips
-        if hostNames is not None:
-            hosts += hostNames
+        if host_names:
+            hosts += host_names
 
         scan_response = start_scan(site['id'], hosts, name)
 
-        if(scan_response is None):
+        if(scan_response is None or 'id' not in scan_response):
             return 'Could not start scan'
 
-        scan = wait_until_scan_finished(scan_response['id'])
+        scan = get_scan(scan_response['id'])
 
         return get_scan_entry(scan)
 
@@ -1081,24 +1174,20 @@ script:
         name = demisto.args().get('name', 'scan ' + str(datetime.now()))
         hosts = demisto.args().get('hosts', '')
 
-        scan_response = start_scan(site, hosts.split(','), name)
+        if not hosts:
+            assets = get_site_assets(site)
+            hosts = [asset['ip'] for asset in assets]
+        else:
+            hosts = argToList(hosts)
 
-        if(scan_response is None):
+        scan_response = start_scan(site, hosts, name)
+
+        if(scan_response is None or 'id' not in scan_response):
             return 'Could not start scan'
 
-        scan = wait_until_scan_finished(scan_response['id'])
+        scan = get_scan(scan_response['id'])
 
         return get_scan_entry(scan)
-
-    def wait_until_scan_finished(scan_id):
-        while True:
-            scan = get_scan(scan_id)
-            status = scan['status']
-            if status not in ['running','dispatched','integrating','unknown']:
-                break
-            time.sleep(60)
-
-        return scan
 
     def start_scan(site, hosts, name):
         path = 'sites/' + str(site) + '/scans'
@@ -1108,6 +1197,91 @@ script:
         }
 
         return send_request(path, 'post', body=body)
+
+    def get_site_assets(site_id):
+        path = 'sites/' + site_id + '/assets'
+
+        return get_list_response(path)
+
+    def get_scans_command():
+        scans = get_scans(demisto.args().get('sort'), demisto.args().get('limit'), demisto.args().get('active'))
+
+        if not scans or len(scans) == 0:
+            return 'No scans found'
+
+        scan_output = map_scan(scans)
+        scan_hr = get_scan_human_readable(scan_output, 'Nexpose scans')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': scans,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': scan_hr,
+            'EntryContext': {
+                  'Nexpose.Scan(val.Id==obj.Id)': scan_output,
+            }
+        }
+
+        return entry
+
+
+    def get_scans(sort, limit, active):
+        path = 'scans'
+        params = {}
+        if sort is not None:
+            params['sort'] = sort.split(';')
+        if active is not None:
+            params['active'] = active
+
+        return get_list_response(path, method='get', limit=limit, params=params)
+
+    def stop_scan_command():
+        scan_id = demisto.args()['id']
+        res = set_scan_status(scan_id, 'stop')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Succesfully stopped the scan',
+        }
+
+        return entry
+
+    def pause_scan_command():
+        scan_id = demisto.args()['id']
+        res = set_scan_status(scan_id, 'pause')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Succesfully paused the scan',
+        }
+
+        return entry
+
+    def resume_scan_command():
+        scan_id = demisto.args()['id']
+        res = set_scan_status(scan_id, 'resume')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Succesfully resumed the scan',
+        }
+
+        return entry
+
+    def set_scan_status(scan_id, scan_status):
+        path = 'scans/' + str(scan_id) + '/' + scan_status
+
+        return send_request(path, 'post')
 
     try:
         if demisto.command() == 'test-module':
@@ -1137,10 +1311,22 @@ script:
             demisto.results(start_site_scan_command())
         if demisto.command() == 'nexpose-start-assets-scan':
             demisto.results(start_assets_scan_command())
+        if demisto.command() == 'nexpose-create-site':
+            demisto.results(create_site_command())
+        if demisto.command() == 'nexpose-delete-site':
+            demisto.results(delete_site_command())
+        if demisto.command() == 'nexpose-stop-scan':
+            demisto.results(stop_scan_command())
+        if demisto.command() == 'nexpose-pause-scan':
+            demisto.results(pause_scan_command())
+        if demisto.command() == 'nexpose-resume-scan':
+            demisto.results(resume_scan_command())
+        if demisto.command() == 'nexpose-get-scans':
+            demisto.results(get_scans_command())
     except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        raise
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
   type: python
   commands:
   - name: nexpose-get-asset
@@ -1151,83 +1337,118 @@ script:
     outputs:
     - contextPath: Nexpose.Asset.Addresses
       description: All addresses discovered on the asset.
+      type: unknown
     - contextPath: Nexpose.Asset.AssetId
       description: Id of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Hardware
       description: The primary Media Access Control (MAC) address of the asset. The
         format is six groups of two hexadecimal digits separated by colons.
+      type: string
     - contextPath: Nexpose.Asset.Aliases
       description: All host names or aliases discovered on the asset.
+      type: unknown
     - contextPath: Nexpose.Asset.HostType
       description: The type of asset, Valid values are unknown, guest, hypervisor,
         physical, mobile
+      type: string
     - contextPath: Nexpose.Asset.Site
       description: Asset site name.
+      type: string
     - contextPath: Nexpose.Asset.OperatingSystem
       description: Operating system of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerabilities
       description: The total number of vulnerabilities on the asset.
+      type: number
     - contextPath: Nexpose.Asset.CPE
       description: The Common Platform Enumeration (CPE) of the operating system.
+      type: string
     - contextPath: Nexpose.Asset.LastScanDate
       description: Last scan date of the asset.
+      type: date
     - contextPath: Nexpose.Asset.LastScanId
       description: Id of the asset's last scan.
+      type: number
     - contextPath: Nexpose.Asset.RiskScore
       description: The risk score (with criticality adjustments) of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Software.Software
       description: The description of the software.
+      type: string
     - contextPath: Nexpose.Asset.Software.Version
       description: The version of the software.
+      type: string
     - contextPath: Nexpose.Asset.Services.Name
       description: The name of the service.
+      type: string
     - contextPath: Nexpose.Asset.Services.Port
       description: The port of the service.
+      type: number
     - contextPath: Nexpose.Asset.Services.Product
       description: The product running the service.
+      type: string
     - contextPath: Nexpose.Asset.Services.protocol
       description: The protocol of the service, valid values are ip, icmp, igmp, ggp,
         tcp, pup, udp, idp, esp, nd, raw
+      type: string
     - contextPath: Nexpose.Asset.Users.FullName
       description: The full name of the user account.
+      type: string
     - contextPath: Nexpose.Asset.Users.Name
       description: The name of the user account.
+      type: string
     - contextPath: Nexpose.Asset.Users.UserId
       description: The identifier of the user account.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Id
       description: The identifier of the vulnerability.
-    - contextPath: Nexpose.Asset.Vulnerability.Instacnes
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Instances
       description: The number of vulnerable occurrences of the vulnerability. This
         does not include invulnerable instances.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Title
       description: The title (summary) of the vulnerability.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Malware
       description: The malware kits that are known to be used to exploit the vulnerability.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Exploit
       description: The exploits that can be used to exploit a vulnerability.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSS
       description: The CVSS exploit score.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Risk
       description: The risk score of the vulnerability, rounded to a maximum of to
         digits of precision. If using the default Rapid7 Real Risk™ model, this value
         ranges from 0-1000.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.PublishedOn
       description: The date the vulnerability was first published or announced. The
         format is an ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.ModifiedOn
       description: The last date the vulnerability was modified. The format is an
         ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.Severity
       description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
         "Critical".'
+      type: string
     - contextPath: Endpoint.IP
       description: Endpoint IP address.
+      type: string
     - contextPath: Endpoint.HostName
       description: Endpoint host name.
+      type: string
     - contextPath: Endpoint.OS
       description: Endpoint operating system.
+      type: string
     - contextPath: CVE.ID
       description: Common Vulnerabilities and Exposures ids
+      type: string
     description: Returns the specified asset.
   - name: nexpose-get-assets
     arguments:
@@ -1241,37 +1462,52 @@ script:
     outputs:
     - contextPath: Nexpose.Asset.AssetId
       description: The identifier of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Address
       description: The primary IPv4 or IPv6 address of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Name
       description: The primary host name (local or FQDN) of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Site
       description: Asset site name.
+      type: string
     - contextPath: Nexpose.Asset.Exploits
       description: The number of distinct exploits that can exploit any of the vulnerabilities
         on the asset.
+      type: number
     - contextPath: Nexpose.Asset.Malware
       description: The number of distinct malware kits that vulnerabilities on the
         asset are susceptible to.
+      type: number
     - contextPath: Nexpose.Asset.OperatingSystem
       description: Operating system of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerabilities
       description: The total number of vulnerabilities.
+      type: number
     - contextPath: Nexpose.Asset.RiskScore
       description: The risk score (with criticality adjustments) of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Assessed
       description: Whether the asset has been assessed for vulnerabilities at least
         once.
+      type: boolean
     - contextPath: Nexpose.Asset.LastScanDate
       description: Last scan date of the asset.
+      type: date
     - contextPath: Nexpose.Asset.LastScanId
       description: Id of the asset's last scan.
+      type: number
     - contextPath: Endpoint.IP
       description: Endpoint IP address.
+      type: string
     - contextPath: Endpoint.HostName
       description: Endpoint host name.
+      type: string
     - contextPath: Endpoint.OS
       description: Endpoint operating system.
+      type: string
     description: Returns all assets for which you have access.
   - name: nexpose-search-assets
     arguments:
@@ -1309,70 +1545,95 @@ script:
     outputs:
     - contextPath: Nexpose.Asset.AssetId
       description: The identifier of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Address
       description: The primary IPv4 or IPv6 address of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Name
       description: The primary host name (local or FQDN) of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Site
       description: Asset site name.
+      type: string
     - contextPath: Nexpose.Asset.Exploits
       description: The number of distinct exploits that can exploit any of the vulnerabilities
         on the asset.
+      type: number
     - contextPath: Nexpose.Asset.Malware
       description: The number of distinct malware kits that vulnerabilities on the
         asset are susceptible to.
+      type: number
     - contextPath: Nexpose.Asset.OperatingSystem
       description: Operating system of the asset.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerabilities
       description: The total number of vulnerabilities.
+      type: number
     - contextPath: Nexpose.Asset.RiskScore
       description: The risk score (with criticality adjustments) of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Assessed
       description: Whether the asset has been assessed for vulnerabilities at least
         once.
+      type: boolean
     - contextPath: Nexpose.Asset.LastScanDate
       description: Last scan date of the asset.
+      type: date
     - contextPath: Nexpose.Asset.LastScanId
       description: Id of the asset's last scan.
+      type: number
     - contextPath: Endpoint.IP
       description: Endpoint IP address.
+      type: string
     - contextPath: Endpoint.HostName
       description: Endpoint host name.
+      type: string
     - contextPath: Endpoint.OS
       description: Endpoint operating system.
+      type: string
     description: Returns all assets for which you have access that match the given
       search criteria.
   - name: nexpose-get-scan
     arguments:
     - name: id
       required: true
-      description: integer <int64> The identifier of the scan.
+      description: Multiple criteria of integer <int64> Identifiers of scans
+      isArray: true
     outputs:
     - contextPath: Nexpose.Scan.Id
       description: The identifier of the scan.
+      type: number
     - contextPath: Nexpose.Scan.ScanType
       description: The scan type (automated, manual, scheduled).
+      type: string
     - contextPath: Nexpose.Scan.StartedBy
       description: The name of the user that started the scan.
+      type: string
     - contextPath: Nexpose.Scan.Assets
       description: The number of assets found in the scan
+      type: number
     - contextPath: Nexpose.Scan.TotalTime
       description: The duration of the scan in minutes.
-    - contextPath: Nexpose.Scan.Completed
-      description: The end time of the scan in ISO8601 format.
+      type: string
     - contextPath: Nexpose.Scan.Status
       description: The scan status. Valid values are aborted, unknown, running, finished,
         stopped, error, paused, dispatched, integrating
+      type: string
     - contextPath: Nexpose.Scan.Completed
       description: The end time of the scan in ISO8601 format.
+      type: date
     - contextPath: Nexpose.Scan.Vulnerabilities.Critical
       description: The number of critical vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
       description: The number of moderate vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Severe
       description: The number of severe vulnerabilities.
+      type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Total
       description: The total number of vulnerabilities.
+      type: number
     description: Returns the specified scan.
   - name: nexpose-get-asset-vulnerability
     arguments:
@@ -1385,70 +1646,130 @@ script:
     outputs:
     - contextPath: Nexpose.Asset.AssetId
       description: Identifier of the asset.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Id
       description: The identifier of the vulnerability.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Title
       description: The title (summary) of the vulnerability.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Severity
       description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
         "Critical".'
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.RiskScore
       description: The risk score of the vulnerability, rounded to a maximum of to
         digits of precision. If using the default Rapid7 Real Risk™ model, this value
         ranges from 0-1000.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSS
       description: The CVSS vector(s) for the vulnerability.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.CVSSV3
       description: The CVSS v3 vector.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Published
       description: The date the vulnerability was first published or announced. The
         format is an ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.Added
       description: The date the vulnerability coverage was added. The format is an
         ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.Modified
       description: The last date the vulnerability was modified. The format is an
         ISO 8601 date, YYYY-MM-DD.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.CVSSScore
       description: The CVSS score, which ranges from 0-10.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSSV3Score
       description: The CVSS3 score, which ranges from 0-10.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Categories
       description: All vulnerability categories assigned to this vulnerability.
+      type: unknown
     - contextPath: Nexpose.Asset.Vulnerability.CVES
       description: All CVEs assigned to this vulnerability.
+      type: unknown
     - contextPath: Nexpose.Asset.Vulnerability.Check.Port
       description: The port of the service the result was discovered on.
+      type: number
     - contextPath: Nexpose.Asset.Vulnerability.Check.Protocol
       description: The protocol of the service the result was discovered on, valid
         values ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Check.Since
       description: The date and time the result was first recorded, in the ISO8601
         format. If the result changes status this value is the date and time of the
         status change.
+      type: date
     - contextPath: Nexpose.Asset.Vulnerability.Check.Proof
       description: The proof explaining why the result was found vulnerable.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Check.Status
       description: The status of the vulnerability check result. Valid values are,
         unknown, not-vulnerable, vulnerable, vulnerable-version, vulnerable-potential,
         vulnerable-with-exception-applied, vulnerable-version-with-exception-applied,
         vulnerable-potential-with-exception-applied
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Type
       description: 'The type of the solution. One of: "Configuration", "Rollup patch",
         "Patch".'
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Summary
       description: The summary of the solution.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Steps
       description: The steps required to remediate the vulnerability.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Estimate
       description: The estimated duration to apply the solution, in minutes.
+      type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.AdditionalInformation
       description: Additional information or resources that can assist in applying
         the remediation
+      type: string
     - contextPath: CVE.ID
       description: Common Vulnerabilities and Exposures ids
+      type: string
     description: Returns the details and possible remediations for an asset's given
       vulnerability.
+  - name: nexpose-create-site
+    arguments:
+    - name: name
+      required: true
+      description: <string> The site name. Name must be unique.
+    - name: description
+      description: <string> The site's description.
+    - name: assets
+      required: true
+      description: Multiple criteria of <string> Specify asset addresses to be included
+        in site scans
+      isArray: true
+    - name: scanTemplateId
+      description: '<string> The identifier of a scan template. Use nexpose-get-report-templates
+        to get all templates,  default scan template is selected when not specified. '
+    - name: importance
+      auto: PREDEFINED
+      predefined:
+      - very_low
+      - low
+      - normal
+      - high
+      - very_high
+      description: <string> The site importance. Defaults to "normal" if not specified.
+    outputs:
+    - contextPath: Nexpose.Site.Id
+      description: The created site Id
+      type: number
+    description: Creates a new site with the specified configuration.
+  - name: nexpose-delete-site
+    arguments:
+    - name: id
+      required: true
+      description: Id of the site to delete
+    description: Deletes a site.
   - name: nexpose-get-sites
     arguments:
     - name: limit
@@ -1461,33 +1782,44 @@ script:
     outputs:
     - contextPath: Nexpose.Site.Id
       description: The identifier of the site.
+      type: number
     - contextPath: Nexpose.Site.Name
       description: The site name.
+      type: string
     - contextPath: Nexpose.Site.Assets
       description: The number of assets that belong to the site.
+      type: number
     - contextPath: Nexpose.Site.Type
       description: The type of the site. Valid values are agent, dynamic, static
+      type: string
     - contextPath: Nexpose.Site.Vulnerabilities
       description: The total number of vulnerabilities.
+      type: number
     - contextPath: Nexpose.Site.Risk
       description: The risk score (with criticality adjustments) of the site.
+      type: number
     - contextPath: Nexpose.Site.LastScan
       description: The date and time of the site's last scan.
+      type: date
     description: Retrieves accessible sites.
   - name: nexpose-get-report-templates
     arguments: []
     outputs:
     - contextPath: Nexpose.Template.Id
-      description: The identifier of the report template;
+      description: The identifier of the report template.
+      type: number
     - contextPath: Nexpose.Template.Name
       description: The name of the report template.
+      type: string
     - contextPath: Nexpose.Template.Description
       description: The description of the report template.
+      type: string
     - contextPath: Nexpose.Template.Type
       description: The type of the report template. document is a templatized, typically
         printable, report that has various sections of content. export is data-oriented
         output, typically CSV. file is a printable report template using a report
         template file.
+      type: string
     description: Returns all available report templates.
   - name: nexpose-create-assets-report
     arguments:
@@ -1509,6 +1841,25 @@ script:
       - html
       - text
       description: <string> The report format, default is PDF
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
     description: Generates a new report on given assets according to a template and
       arguments.
   - name: nexpose-create-sites-report
@@ -1531,6 +1882,25 @@ script:
       - html
       - text
       description: <string> The report format, default is PDF
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
     description: Generates a new report on given sites according to a template and
       arguments.
   - name: nexpose-create-scan-report
@@ -1552,6 +1922,176 @@ script:
       - html
       - text
       description: <string> The report format, default is PDF
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
     description: Generates a new report for a specified scan.
+  - name: nexpose-start-site-scan
+    arguments:
+    - name: site
+      required: true
+      description: integer <int32> The identifier of the site.
+    - name: hosts
+      description: Multiple criteria of <string> The hosts that should be included
+        as a part of the scan. This should be a mixture of IP Addresses and host names
+        as a comma separated string array.
+      isArray: true
+    - name: name
+      description: <string> The user-driven scan name for the scan.
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+      type: number
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+      type: string
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+      type: date
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+      type: number
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+      type: string
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+      type: date
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+      type: string
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
+      type: number
+    description: Starts a scan for the specified site.
+  - name: nexpose-start-assets-scan
+    arguments:
+    - name: IPs
+      description: Multiple criteria of <string> IP addresses of assets, comma separated.
+    - name: hostNames
+      description: Multiple criteria of <string> Host names of assets, comma separated.
+    - name: name
+      description: <string> The user-driven scan name for the scan.
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+      type: number
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+      type: string
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+      type: date
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+      type: number
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+      type: string
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+      type: date
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+      type: string
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
+      type: number
+    description: Starts a scan for specified asset IP addresses and host names.
+  - name: nexpose-stop-scan
+    arguments:
+    - name: id
+      required: true
+      description: integer <int64> ID of the scan to stop.
+    description: Stop the specified scan
+  - name: nexpose-pause-scan
+    arguments:
+    - name: id
+      required: true
+      description: integer <int64> ID of the scan to pause.
+    description: Pause the specified scan
+  - name: nexpose-resume-scan
+    arguments:
+    - name: id
+      required: true
+      description: integer <int64> ID of the scan to resume.
+    description: Resume the specified scan
+  - name: nexpose-get-scans
+    arguments:
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: <boolean> Return active or past scans.
+      defaultValue: "true"
+    - name: limit
+      description: integer <int32> The number of records retrieve.
+      defaultValue: "10"
+    - name: sort
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+      type: number
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+      type: string
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+      type: date
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+      type: number
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+      type: string
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+      type: date
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+      type: string
+    description: Returns a list of scans.
   runonce: false
 fromversion: 3.6.0

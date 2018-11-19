@@ -109,3 +109,6 @@ args:
   description: Executes activation lifecycle operation when creating the user
 scripttarget: 0
 deprecated: true
+dependson:
+  must:
+  - okta-create-user

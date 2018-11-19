@@ -1,25 +1,22 @@
-
 id: test_url_regex
-version: -1
+version: 3
 name: Test URL Regex
 description: Test the URL regex
-fromversion: "3.6.0"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b7660052-6c13-41dd-8ca7-51d03a397f8f
+    taskid: 2135d445-3df4-4fb9-8c23-9a4beb6c742e
     type: start
     task:
-      id: b7660052-6c13-41dd-8ca7-51d03a397f8f
+      id: 2135d445-3df4-4fb9-8c23-9a4beb6c742e
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
@@ -28,15 +25,15 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 3d458497-3938-481b-8fcd-25c5e21dd4c7
+    taskid: ea3987cd-ec64-4f6e-88c3-b8c911e8780d
     type: regular
     task:
-      id: 3d458497-3938-481b-8fcd-25c5e21dd4c7
+      id: ea3987cd-ec64-4f6e-88c3-b8c911e8780d
       version: -1
       name: Print URL
-      description: ""
       scriptName: Print
       type: regular
       iscommand: false
@@ -53,18 +50,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 395
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: ac0f49a0-20cd-4acc-88e2-f2bac019c156
+    taskid: e3e22eff-5098-4586-8eb2-b09096ec1fdd
     type: regular
     task:
-      id: ac0f49a0-20cd-4acc-88e2-f2bac019c156
+      id: e3e22eff-5098-4586-8eb2-b09096ec1fdd
       version: -1
       name: VerifyContext
-      description: ""
       scriptName: VerifyContext
       type: regular
       iscommand: false
@@ -83,18 +80,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 570
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: c1f37b22-c11a-4b4b-8020-086b22d85968
+    taskid: 0a65e9fd-99b5-4207-88fd-2ee8d85b28bd
     type: title
     task:
-      id: c1f37b22-c11a-4b4b-8020-086b22d85968
+      id: 0a65e9fd-99b5-4207-88fd-2ee8d85b28bd
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -103,15 +100,47 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 745
         }
       }
+    note: false
+  "4":
+    id: "4"
+    taskid: b99e2862-da90-4a34-80e6-57057c37f9cb
+    type: regular
+    task:
+      id: b99e2862-da90-4a34-80e6-57057c37f9cb
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
+        "height": 760,
         "width": 380,
         "x": 50,
         "y": 50

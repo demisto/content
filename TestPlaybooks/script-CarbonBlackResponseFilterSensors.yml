@@ -1,0 +1,88 @@
+commonfields:
+  id: CarbonBlackResponseFilterSensors
+  version: 43
+name: CarbonBlackResponseFilterSensors
+script: |-
+  import sys
+  dArgs = demisto.args()
+
+  sensors = dArgs.get('sensors')
+  hostname = dArgs.get('hostname')
+  status = dArgs.get('status')
+  matches = []
+
+  if type(sensors) in (str, unicode):
+      try:
+          sensors = json.loads(sensors)
+      except Exception as e:
+          error_entry = {
+              "Type": entryTypes["error"],
+              "Contents": "'sensors' must be a list of sensors data.\nRun 'cb-list-sensors' to get the the sensors data.)",
+              "ContentsFormat": formats["text"],
+          }
+          demisto.results(error_entry)
+          sys.exit(0)
+
+  if type(sensors) is dict:
+      sensors = [sensors]
+
+  for sensor in sensors:
+      status_match = sensor.get('Status').lower() == status.lower() if status else True
+      hostname_match = sensor.get('Hostname').lower() == hostname.lower() if hostname else True
+      if hostname_match and status_match:
+          matches.append(sensor)
+
+  md = tableToMarkdown(
+      'Carbon Black Response - Filter Sensors',
+      matches
+  )
+
+  entry = {
+      "Type": entryTypes["note"],
+      "Contents": matches,
+      "ContentsFormat": formats["json"],
+      'ReadableContentsFormat': formats['markdown'],
+      'HumanReadable': md,
+      'EntryContext': {
+          "CbResponse.FilteredSensors(val.CbSensorID==obj.CbSensorID)": matches
+      }
+  }
+  demisto.results(entry)
+  sys.exit(0)
+type: python
+tags: []
+comment: Filter sensors by hostname/ status
+enabled: true
+args:
+- name: sensors
+  required: true
+  default: true
+  description: The sensors data returned from 'cb-list-sensors'
+- name: status
+  description: The sensor status to filter by. Default is 'online'.
+  defaultValue: Online
+- name: hostname
+  description: The hostname to filter by.
+outputs:
+- contextPath: CbResponse.FilteredSensors.Status
+  description: Sensor Status
+- contextPath: CbResponse.FilteredSensors.LastUpdate
+  description: Sensor Last Updated
+- contextPath: CbResponse.FilteredSensors.Uptime
+  description: The Sensor uptime
+- contextPath: CbResponse.FilteredSensors.SupportsCbLive
+  description: Sensor Support CB Live
+- contextPath: CbResponse.FilteredSensors.Notes
+  description: Sensor Notes
+- contextPath: CbResponse.FilteredSensors.Hostname
+  description: Sensor Hostname
+- contextPath: CbResponse.FilteredSensors.CbSensorID
+  description: Sensor ID
+- contextPath: CbResponse.FilteredSensors.Isolated
+  description: Sensor Isolated
+- contextPath: CbResponse.FilteredSensors.IPAddresses
+  description: Sensor IP Addresses
+- contextPath: CbResponse.FilteredSensors.OS
+  description: Sensor OS
+scripttarget: 0
+runonce: false

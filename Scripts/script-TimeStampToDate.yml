@@ -15,7 +15,7 @@ script: |-
 type: javascript
 tags:
 - transformer
-- number
+- date
 comment: |-
   Converts UNIX Epoch time stamp to a simplified extended ISO format string. Use it to convert time stamp to Demisto date field
 

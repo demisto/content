@@ -11,5 +11,6 @@
   "isPredefined": true,
   "version": -1,
   "category": "others",
-  "widgetType": "list"
+  "widgetType": "list",
+  "description": ""
 }

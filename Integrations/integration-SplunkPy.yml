@@ -64,8 +64,13 @@ configuration:
   defaultvalue: ""
   type: 12
   required: false
+- display: Use Splunk Clock Time For Fetch
+  name: useSplunkTime
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
-  script: |
+  script: |+
     import splunklib.client as client
     import splunklib.results as results
     import json
@@ -77,6 +82,24 @@ script:
     import requests
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+    def get_current_splunk_time(splunk_service):
+        t = datetime.utcnow() - timedelta(days=3)
+        time = t.strftime(SPLUNK_TIME_FORMAT)
+        kwargs_oneshot = {'count':1,'earliest_time':time}
+        searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
+
+        oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+
+        reader = results.ResultsReader(oneshotsearch_results)
+        for item in reader:
+            if isinstance(item, results.Message):
+                return item.message["clock"]
+            if isinstance(item, dict):
+                return item["clock"]
+        raise ValueError('Error: Could not fetch Splunk time')
 
     def rawToDict(raw):
         result = {}
@@ -92,7 +115,16 @@ script:
               val = val.strip("\"")
               val = val.strip("\\")
               key = single_key_val[0].strip()
-              result[key] = val
+
+              alreadyThere = False
+              for dictkey, dictvalue in result.items():
+                if dictkey == key:
+                  alreadyThere = True
+                  result[dictkey] = dictvalue + "," + val
+
+              if alreadyThere == False:
+                result[key] = val
+
         return result
 
     def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None, searchID=None):
@@ -213,12 +245,7 @@ script:
             'body': StringIO(response.read())
         }
 
-    service = client.connect(
-            host=demisto.params()['host'],
-            port=demisto.params()['port'],
-            username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'])
-
+    service = None
     proxy = demisto.params()['proxy']
     if proxy:
         try:
@@ -233,6 +260,12 @@ script:
                 pass
             else:
                 raise
+    else:
+        service = client.connect(
+            host=demisto.params()['host'],
+            port=demisto.params()['port'],
+            username=demisto.params()['authentication']['identifier'],
+            password=demisto.params()['authentication']['password'])
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
@@ -243,7 +276,7 @@ script:
         sys.exit(0)
     if demisto.command() == 'splunk-search':
         t = datetime.utcnow() - timedelta(days=7)
-        time = t.strftime("%Y-%m-%dT%H:%M:%S")
+        time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {"earliest_time":time}
         if demisto.get(demisto.args(), 'earliest_time'):
             kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
@@ -252,6 +285,7 @@ script:
         if demisto.get(demisto.args(), 'event_limit'):
             kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
         searchquery_oneshot = demisto.args()['query']
+        searchquery_oneshot = searchquery_oneshot.encode('utf-8')
         if not searchquery_oneshot.startswith('search') and not searchquery_oneshot.startswith('Search') and not searchquery_oneshot.startswith('|'):
             searchquery_oneshot = 'search '+searchquery_oneshot
         oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
@@ -311,12 +345,16 @@ script:
         if demisto.get(demisto.params(), 'timezone'):
             timezone = demisto.params()['timezone']
             t = t + timedelta(minutes=int(timezone))
-        now = t.strftime("%Y-%m-%dT%H:%M:%S")
+
+        now = t.strftime(SPLUNK_TIME_FORMAT)
+        if demisto.get(demisto.params(), 'useSplunkTime'):
+            now = get_current_splunk_time(service)
+            t = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         if len(lastRun) == 0:
             t = t - timedelta(minutes=10)
-            lastRun = t.strftime("%Y-%m-%dT%H:%M:%S")
+            lastRun = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now}
+                      "index_latest": now, "count": 0}
         searchquery_oneshot = demisto.params()['fetchQuery']
 
         if demisto.get(demisto.params(), 'extractFields'):
@@ -349,7 +387,9 @@ script:
             demisto.results({'ContentsFormat': formats['text'],'Type': entryTypes['error'],'Contents':"Found no Splunk index: "+demisto.args()['index']})
             sys.exit(0)
         else:
-            r = index.submit(demisto.args()['data'], sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
+            data = demisto.args()['data']
+            data_formatted = data.encode('utf8')
+            r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
             demisto.results('Event was created in Splunk index: '+r.name)
         sys.exit(0)
     if demisto.command() == 'splunk-notable-event-edit':
@@ -394,14 +434,14 @@ script:
       required: true
       default: true
       description: search id
-    description: 'fetch splunk search results '
+    description: fetch splunk search results, can be used in conjunction with splunk-job-create
   - name: splunk-search
     arguments:
     - name: query
       required: true
       default: true
-      description: The splunk search language string to execute, example :"* | head
-        3"
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
     - name: earliest_time
       description: 'Specifies the earliest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
@@ -468,11 +508,11 @@ script:
     arguments:
     - name: query
       required: true
-      description: The splunk search language string to execute, example :"* | head
-        3"
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
     outputs:
     - contextPath: Splunk.Job
-      description: The created jon SID
+      description: The created job SID
     description: 'Create new search job in Splunk '
   - name: splunk-parse-raw
     arguments:
@@ -487,3 +527,4 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+releaseNotes: "Fix Splunk issue ability to fetch more then 100 notable events per minute"

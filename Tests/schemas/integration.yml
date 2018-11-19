@@ -55,8 +55,6 @@ mapping:
         type: str
       isfetch:
         type: bool
-      runonce:
-        type: bool
       commands:
         type: seq
         sequence:
@@ -73,6 +71,10 @@ mapping:
     type: bool
   releaseNotes:
     type: str
+  tests:
+    type: seq
+    sequence:
+    - type: str
   scriptNotVisible:
     type: bool
 
@@ -127,6 +129,8 @@ schema;command_schema:
       type: seq
       sequence:
       - include: important_schema
+    timeout:
+      type: int
 
 # int
 schema;argument_schema:

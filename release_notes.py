@@ -103,7 +103,7 @@ class Content:
                         return None
 
                     if ans is None:
-                        print_error("Error:\n[%s] is missing releaseNotes entry" % (path,))
+                        print_error("Error:\n[%s] is missing releaseNotes/description entry" % (path,))
                         missing_rn = True
                     elif ans:
                         new_count += 1
@@ -452,7 +452,7 @@ class IntegrationContent(Content):
         return "Integrations"
 
     def added_release_notes(self, cnt):
-        return release_notes_item(cnt["name"], cnt["description"])
+        return release_notes_item(cnt["display"], cnt["description"])
 
     def modified_release_notes(self, cnt):
         rn = cnt.get("releaseNotes", "")
@@ -461,7 +461,7 @@ class IntegrationContent(Content):
         res = ""
 
         if rn != '-':
-            res = release_notes_item(cnt["name"], rn)
+            res = release_notes_item(cnt["display"], rn)
         return res
 
 

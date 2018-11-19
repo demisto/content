@@ -1,0 +1,82 @@
+commonfields:
+  id: SalesforceAskUser
+  version: -1
+name: SalesforceAskUser
+script: |-
+  import time
+
+  retries = int(demisto.args().get('retries'))
+  persistent = True if demisto.args().get('persistent') == 'true' else False
+  for i in xrange(retries):
+      res = demisto.executeCommand('addEntitlement', {'persistent': persistent})
+      if isError((res[0])):
+          if '[investigations] [investigation] (15)' in res[0]['Contents']:
+              time.sleep(1)
+              continue
+          return_error(res.Contents)
+      entitlement = res[0]['Contents']
+      break
+
+  comment_suffix = ' - #{0} {1}'.format(demisto.incidents()[0]['id'], entitlement)
+  task = demisto.args().get('task')
+  if task:
+      comment_suffix += ' #{}'.format(task)
+
+  text = demisto.args().get('text', '')
+  if not text:
+      option1 = demisto.args().get('option1')
+      option2 = demisto.args().get('option2')
+      text += 'Please reply with either ' + option1 + ' or ' + option2;
+      additional_options = demisto.args().get('additionalOptions')
+      if additional_options:
+          additional_options_list = additional_options.split(',')
+          text += ' or '
+          text += (' or ').join(additional_options_list)
+  text += '\n\nDemistoID: ' + comment_suffix;
+
+  oid = demisto.args().get('oid')
+
+  comment = demisto.executeCommand('salesforce-push-comment', {'oid': oid, 'text': text})
+  demisto.results(comment)
+type: python
+tags: []
+comment: Ask a user a question via Salesforce Chatter and process the reply directly into the investigation.
+enabled: true
+args:
+- name: persistent
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Indicates whether to use one-time entitlement or a persistent one
+  defaultValue: "false"
+- name: replyEntriesTag
+  description: Tag to add on comment reply entries
+- name: retries
+  description: Indicates how many times to try and create an entitlement in case of
+    failure
+  defaultValue: "10"
+- name: task
+  description: Which task should we close with the reply. If none then no playbook
+    tasks will be closed.
+- name: option1
+  description: First option for a user reply.
+  defaultValue: "yes"
+- name: option2
+  description: Second option for the user reply.
+  defaultValue: "no"
+- name: oid
+  description: Object ID of Subject
+- name: additionalOptions
+  description: A comma delimited list of additional options (in case more than 2 options
+    are needed)
+- name: text
+  description: Chatter comment text. If not given, a default post message will be
+    generated based on option arguments.
+- name: link
+  description: Add a link to the message
+scripttarget: 0
+runonce: false
+dependson:
+  must:
+  - salesforce-push-comment

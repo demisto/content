@@ -54,3 +54,6 @@ args:
   description: This will populate the comment field of any attribute created using
     this API.
 scripttarget: 0
+dependson:
+  must:
+  - internal-misp-upload-sample
