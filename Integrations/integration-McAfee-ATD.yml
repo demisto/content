@@ -48,7 +48,7 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    if not demisto.params().get("proxy", True):
+    if not demisto.params().get("proxy", False):
         del os.environ["HTTP_PROXY"]
         del os.environ["HTTPS_PROXY"]
         del os.environ["http_proxy"]
@@ -62,20 +62,11 @@ script:
         url = re.sub('\/$', '', url)
         return url
 
-    def load_proxy():
-        ''' Loads the system configured proxy if enabled in configuration '''
-        proxy = {}
-        if demisto.params()['proxy']:
-            proxy['http'] = os.environ['http_proxy']
-            proxy['https'] = os.environ['https_proxy']
-        return proxy
-
     ''' GLOBALS '''
     USERNAME = demisto.params()['username']
     PASSWORD = demisto.params()['password']
     USE_SSL = not demisto.params()['unsecure']
     BASE_URL = load_server_url()
-    PROXY = load_proxy()
     LOGINHEADERS = {
         'Accept': 'application/vnd.ve.v1.0+json',
         'Content-Type': 'application/json',
@@ -1219,4 +1210,3 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "Moved McAfee-Advanced-Threat-Defense integration to python"

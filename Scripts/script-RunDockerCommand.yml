@@ -58,4 +58,3 @@ outputs:
     looking at commands like ExtractRegex or create your own follow on automation
     script that will parse the results into the format you would like.
 scripttarget: 0
-releaseNotes: Runs local commands on a docker container of choice

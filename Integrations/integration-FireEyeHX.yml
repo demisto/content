@@ -65,16 +65,11 @@ script:
     """
 
     def set_proxies():
-
-        if demisto.params()['proxy']:
-            http = os.environ['http_proxy'] or os.environ['HTTP_PROXY']
-            https = os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-            proxies = {
-                'http': http,
-                'https': https
-            }
-            return proxies
-        return None
+        if not demisto.params().get('proxy', False):
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
 
     """
 
@@ -86,7 +81,6 @@ script:
     PASSWORD = demisto.params()['credentials']['password']
     USE_SSL = not demisto.params()['insecure']
     VERSION = demisto.params()['version']
-    PROXIES = set_proxies()
     GET_HEADERS = {
         'Accept': 'application/json'
     }
@@ -784,7 +778,6 @@ script:
                 url,
                 headers=GET_HEADERS,
                 verify=USE_SSL,
-                proxies=PROXIES,
                 auth=(USERNAME,PASSWORD)
             )
         except requests.exceptions.SSLError as e:
@@ -1971,6 +1964,10 @@ script:
         #validate the host name or agent ID was passed
         if not args.get('hostName') and not args.get('agentId'):
             raise ValueError('Please provide either agentId or hostName')
+
+        if not args.get('defaultSystemScript') and not args.get('script'):
+            raise ValueError('If the script is not provided, defaultSystemScript must be specified.')
+
         if args.get('script') and not args.get('scriptName'):
             raise ValueError('If the script is provided, script name must be specified as well.')
 
@@ -2199,8 +2196,7 @@ script:
 
         request_kwargs = {
             'headers': headers,
-            'verify': USE_SSL,
-            'proxies': PROXIES
+            'verify': USE_SSL
         }
 
         #add optional arguments if specified
@@ -2253,6 +2249,7 @@ script:
 
     """
 
+    set_proxies()
 
     command = demisto.command()
     LOG('Running command "{}"'.format(command))
@@ -2773,6 +2770,5 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
-releaseNotes: "Fix fetch events to handle empty results"
 tests:
   - FireEye HX Test

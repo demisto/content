@@ -94,4 +94,3 @@ runonce: false
 dependson:
   must:
   - tn-ask-manual-question
-releaseNotes: "-"

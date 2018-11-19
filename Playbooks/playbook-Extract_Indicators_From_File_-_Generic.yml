@@ -21,7 +21,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -30,6 +29,7 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 1189dbf0-6420-4533-8c76-e6cb3083e9a7
@@ -48,12 +48,11 @@ tasks:
       - "3"
       "yes":
       - "2"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
@@ -67,6 +66,7 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 49a307bb-ec5a-41bb-8f75-658e444f1f94
@@ -90,7 +90,6 @@ tasks:
       value:
         complex:
           root: inputs.File
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -99,6 +98,7 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
     taskid: 3c91d141-7645-4300-8610-51328a06369a
@@ -111,7 +111,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -120,6 +119,7 @@ tasks:
           "y": 1027
         }
       }
+    note: false
   "4":
     id: "4"
     taskid: 190a8c7e-cdaf-4b32-8e28-f93153071b5a
@@ -136,7 +136,6 @@ tasks:
       '#none#':
       - "5"
       - "7"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -145,6 +144,7 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 779f5b67-d538-4619-8c66-94d78925fa2e
@@ -162,18 +162,17 @@ tasks:
       - "3"
       "yes":
       - "6"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: File
                 filters:
-                - - operator: string.contains
+                - - operator: containsString
                     left:
                       value:
                         simple: File.Type
@@ -191,6 +190,7 @@ tasks:
           "y": 690
         }
       }
+    note: false
   "6":
     id: "6"
     taskid: 01cd1380-8b6c-4a75-8602-832daeb2bfd5
@@ -212,7 +212,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: string.contains
+          - - operator: containsString
               left:
                 value:
                   simple: File.Type
@@ -232,12 +232,13 @@ tasks:
           "y": 865
         }
       }
+    note: false
   "7":
     id: "7"
-    taskid: 70a28ee2-dff5-41d3-805a-6b067f81349e
+    taskid: 07542fb0-0931-468e-89ab-5d6550e1f99a
     type: condition
     task:
-      id: 70a28ee2-dff5-41d3-805a-6b067f81349e
+      id: 07542fb0-0931-468e-89ab-5d6550e1f99a
       version: -1
       name: Is there a PDF file
       description: Check if there is a PDF file in context.
@@ -249,18 +250,17 @@ tasks:
       - "3"
       "yes":
       - "8"
-    reputationcalc: 0
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: File
                 filters:
-                - - operator: string.contains
+                - - operator: containsString
                     left:
                       value:
                         simple: File.Type
@@ -269,8 +269,18 @@ tasks:
                       value:
                         simple: application/pdf
                     ignorecase: true
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: application/pdf
+                    ignorecase: true
                 accessor: EntryID
             iscontext: true
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -278,12 +288,13 @@ tasks:
           "y": 690
         }
       }
+    note: false
   "8":
     id: "8"
-    taskid: 10d138ff-19b1-449b-89e3-5432719e47d5
+    taskid: 458345d2-ad32-449f-8c3d-0a54c61dc24d
     type: regular
     task:
-      id: 10d138ff-19b1-449b-89e3-5432719e47d5
+      id: 458345d2-ad32-449f-8c3d-0a54c61dc24d
       version: -1
       name: Read PDF file
       description: Extract indicators from PDF files.
@@ -299,10 +310,18 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Info
                 iscontext: true
               right:
                 value:
@@ -319,6 +338,7 @@ tasks:
           "y": 865
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -373,3 +393,5 @@ outputs:
   description: Extracted SHA256
 - contextPath: IP.Address
   description: Extracted IPs
+tests:
+  - Extract Indicators From File - test

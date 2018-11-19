@@ -8,6 +8,15 @@ aws configure set region us-west-2
 
 CONFFILE=$1
 
+#Get nightly image of the server
+IMAGE_ID=$(aws ec2 describe-images \
+    --filters Name=name,Values=Demisto-Circle-CI-Content-Master* \
+    --query 'Images[*].[ImageId,CreationDate]' --output text | sort -k2 -r | head -n1)
+
+echo $IMAGE_ID > image_id.txt
+
+python ./Tests/scripts/update_image_id.py -i image_id.txt -c $CONFFILE
+
 #create instance
 REQUEST_ID=$(aws ec2 request-spot-instances \
     --launch-specification file://${CONFFILE} \

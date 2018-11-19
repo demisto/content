@@ -1193,7 +1193,6 @@ script:
     - contextPath: NetWitness.Blacklist.Domains
       description: Domains blacklisted successfully
     description: 'Add a list of domains to blacklist '
-releaseNotes: "NetWitness Endpoint"
 tests:
   - NetWitness Endpoint Test
 

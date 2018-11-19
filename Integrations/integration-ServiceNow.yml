@@ -75,20 +75,19 @@ script:
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    ''' GLOBAL VARIABLESS '''
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
+    ''' GLOBAL VARIABLESS '''
     def get_server_url():
         url = demisto.params()['url']
         url = re.sub('/[\/]+$/', '', url)
         url = re.sub('\/$', '', url)
         return url
 
-    def load_proxy():
-        proxy = {}
-        if demisto.params().get('proxy', False):
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
 
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
@@ -102,7 +101,6 @@ script:
         API += VERSION + '/'
 
     SERVER_URL = get_server_url() + API
-    PROXY = load_proxy()
 
     DEFAULTS = {
         'limit':10,
@@ -139,13 +137,13 @@ script:
                 with open(file_name, 'rb') as f:
                     files = {'file': f}
                     res = requests.request(method, url, headers=headers, params=params, data=body,files=files, auth=(USERNAME, PASSWORD),
-                    verify=VERIFY_SSL, proxies=PROXY)
+                    verify=VERIFY_SSL)
                 shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
             except Exception as e:
                 raise Exception('Failed to upload file - ' + e.message)
         else:
             res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, auth=(USERNAME, PASSWORD),
-            verify=VERIFY_SSL, proxies=PROXY)
+            verify=VERIFY_SSL)
 
 
         try:
@@ -365,12 +363,11 @@ script:
             links = [(attachment['download_link'], attachment['file_name']) for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, proxies=PROXY)
+            file_res = requests.get(link[0], auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
         return entries
-
 
     def update_command():
         custom_fields = demisto.args().get('custom_fields')
@@ -777,7 +774,6 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log()
-        raise
         return_error(e.message)
   type: python
   commands:
@@ -793,14 +789,15 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: number
       description: Ticket number to retrieve
     - name: get_attachments
-      description: Wether to retrieve ticket attachments, default false
+      description: Whether to retrieve ticket attachments, default false
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -814,6 +811,9 @@ script:
       type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
       type: string
     - contextPath: File.Info
       description: Attachment file info
@@ -844,14 +844,12 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: number
       description: Ticket number to retrieve
-    - name: get_attachments
-      description: Wether to retrieve ticket attachments, default false
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -866,6 +864,9 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
     description: Retrieve ticket information by specific ticket ID
   - name: servicenow-create
     arguments:
@@ -878,7 +879,8 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1035,7 +1037,7 @@ script:
     - name: state
       description: State of the ticket (an integer)
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -1050,6 +1052,9 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
     description: Create new ServiceNow ticket
   - name: servicenow-incident-create
     deprecated: true
@@ -1062,7 +1067,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1207,7 +1212,7 @@ script:
     - name: template
       description: Template name to use as a base to create new tickets.
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -1222,6 +1227,9 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
     description: Create new ServiceNow ticket
   - name: servicenow-update
     arguments:
@@ -1234,7 +1242,8 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1403,7 +1412,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: urgency
       description: Ticket urgency
@@ -1561,7 +1570,8 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: link
       required: true
@@ -1585,7 +1595,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: link
       required: true
@@ -1609,7 +1619,8 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: comment
       required: true
@@ -1630,7 +1641,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: comment
       required: true
@@ -1654,12 +1665,13 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: query
       description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -1673,6 +1685,9 @@ script:
       type: string
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
+      type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
       type: string
     description: Retrieve ticket info with query
   - name: servicenow-incidents-query
@@ -1689,10 +1704,10 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     outputs:
-    - contextPath: Ticket.Id
+    - contextPath: Ticket.ID
       description: ServiceNow ticket System ID
       type: string
     - contextPath: Ticket.Creator
@@ -1707,6 +1722,9 @@ script:
     - contextPath: Ticket.Summary
       description: ServiceNow ticket short summary
       type: string
+    - contextPath: Ticket.Number
+      description: ServiceNow ticket number
+      type: string
     description: Retrieve ticket info with query
   - name: servicenow-upload-file
     arguments:
@@ -1720,7 +1738,8 @@ script:
       - problem
       - change_request
       - sc_request
-      description: Ticket type to create
+      - sc_task
+      description: Ticket type
       defaultValue: incident
     - name: file_id
       required: true
@@ -1751,7 +1770,7 @@ script:
       - incident
       - problem
       - change_request
-      description: Ticket type to create
+      description: Ticket type
       defaultValue: incident
     - name: file_id
       required: true
@@ -1806,4 +1825,5 @@ script:
       type: string
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
-releaseNotes: "Added option to get ticket attachments(get command, fetch incidents) and additional outputs"
+tests:
+    - Run all tests

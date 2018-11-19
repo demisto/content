@@ -138,4 +138,3 @@ runonce: false
 dependson:
   must:
   - qualys-host-list
-releaseNotes: "-"

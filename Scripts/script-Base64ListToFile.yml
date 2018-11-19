@@ -48,4 +48,3 @@ outputs:
   description: EntryID of the file (only in case of report type=json)
 scripttarget: 0
 runonce: false
-releaseNotes: "-"

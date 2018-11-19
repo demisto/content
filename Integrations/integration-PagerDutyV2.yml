@@ -290,10 +290,10 @@ script:
             }
         }
 
-    def create_new_incident(source, summary, severity, action, description='No description', group='', event_class='', component='', incident_key=None):
+    def create_new_incident(source, summary, severity, action, description='No description', group='', event_class='', component='', incident_key=None, service_key=SERVICE_KEY):
         """Create a new incident in the PagerDuty instance."""
         payload = {
-                        'routing_key': SERVICE_KEY,
+                        'routing_key': service_key,
                         'event_action': action,
                         'dedup_key': incident_key,
                         'images': [],
@@ -425,12 +425,12 @@ script:
         res = http_request('GET', url, param_dict)
         return extract_incidents_data(res.get('incidents',[]))
 
-    def submit_event_command(**kwargs):
+    def submit_event_command(source, summary, severity, action, description='No description', group='', event_class='', component='', incident_key=None, serviceKey=SERVICE_KEY):
         """Create new event."""
-        if SERVICE_KEY is None:
-            raise Exception('You must enter a ServiceKey at the integration parmaters to process this action.')
+        if serviceKey is None:
+            raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
 
-        res = create_new_incident(**kwargs)
+        res = create_new_incident(source, summary, severity, action, description, group, event_class, component, incident_key, serviceKey)
         return extract_new_event_data(res)
 
     def get_all_schedules_command(query=None, limit=None):
@@ -686,6 +686,8 @@ script:
         "keepalive" "webping"'
     - name: incident_key
       description: Incident key, used to acknowledge/resolve specific event
+    - name: serviceKey
+      description: Service key for the integration
     outputs:
     - contextPath: PagerDuty.Event.Status
       description: Status of the action on the event
@@ -732,6 +734,5 @@ script:
     description: Get the users notification rules
   runonce: false
 hidden: false
-releaseNotes: "-"
 tests:
   - PagerDuty Test

@@ -103,4 +103,3 @@ deprecated: true
 dependson:
   must:
   - okta-update-user
-releaseNotes: "-"

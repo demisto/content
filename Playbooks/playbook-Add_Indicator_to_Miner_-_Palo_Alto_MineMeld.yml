@@ -1,0 +1,234 @@
+id: add_indicator_to_miner_-_palo_alto_mineMeld
+version: -1
+name: Add Indicator to Miner - Palo Alto MineMeld
+description: Add indicators to the relevant Miner using MineMeld.
+fromversion: 4.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e25e2919-33a2-4f71-8465-f9099c562d10
+    type: start
+    task:
+      id: e25e2919-33a2-4f71-8465-f9099c562d10
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 30
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 2874eab4-7137-43d3-8ff4-4be014c9b7b0
+    type: condition
+    task:
+      id: 2874eab4-7137-43d3-8ff4-4be014c9b7b0
+      version: -1
+      name: Is MineMeld enabled?
+      description: |
+        Verify that there is a valid instance of Minemeld enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Minemeld
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 195
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: d09ed85f-25e6-481e-8529-5e74257252e6
+    type: title
+    task:
+      id: d09ed85f-25e6-481e-8529-5e74257252e6
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: c588f1f8-6de6-40e5-8933-080fcf299252
+    type: title
+    task:
+      id: c588f1f8-6de6-40e5-8933-080fcf299252
+      version: -1
+      name: Add indicator to the Miner
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 370
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: e545269b-d484-46e7-8e04-a067bc76d086
+    type: condition
+    task:
+      id: e545269b-d484-46e7-8e04-a067bc76d086
+      version: -1
+      name: Verify indicator and Miner name
+      description: |-
+        Verify that the playbook input includes the following inputs:
+        * MineMeld Miner
+        * Indicators (one or more)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Indicator
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.MinerName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 9209143b-1ebc-409a-8de7-c5c45dcd561f
+    type: regular
+    task:
+      id: 9209143b-1ebc-409a-8de7-c5c45dcd561f
+      version: -1
+      name: Add indicator to Miner
+      description: Add Indictor to the MineMeld Miner.
+      script: Palo Alto Minemeld|||minemeld-add-to-miner
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      comment:
+        simple: Added by Demisto
+      indicator:
+        complex:
+          root: inputs.Indicator
+      miner:
+        complex:
+          root: inputs.MinerName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 690
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_6_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 930,
+        "width": 380,
+        "x": 500,
+        "y": 30
+      }
+    }
+  }
+inputs:
+- key: Indicator
+  value: {}
+  required: false
+  description: The indicator to add to the miner
+- key: MinerName
+  value: {}
+  required: false
+  description: The Name of the miner
+outputs: []
+tests:
+  - block_indicators_-_generic_-_test

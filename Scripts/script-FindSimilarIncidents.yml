@@ -383,4 +383,3 @@ outputs:
 scripttarget: 0
 timeout: 300ns
 runonce: false
-releaseNotes: "Support all incident keys in one argument"

@@ -4546,4 +4546,3 @@ script:
     execution: true
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Added New command aws-ec2-get-password-data. bug fixes"

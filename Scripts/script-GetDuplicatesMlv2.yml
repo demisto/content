@@ -613,4 +613,3 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/machine-learning
-releaseNotes: "fix case where there are no dups results in GetDuplicatesMlv2"

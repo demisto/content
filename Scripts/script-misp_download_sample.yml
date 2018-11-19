@@ -33,4 +33,3 @@ scripttarget: 0
 dependson:
   must:
   - internal-misp-download-sample
-releaseNotes: "-"

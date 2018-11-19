@@ -62,4 +62,3 @@ args:
 scripttarget: 1
 dependson: {}
 timeout: 7.2µs
-releaseNotes: "Better error handling in PS script run"

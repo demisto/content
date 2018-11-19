@@ -98,4 +98,3 @@ dependson:
   must:
   - archer-update-record
 runonce: false
-releaseNotes: "-"
