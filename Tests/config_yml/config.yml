@@ -53,16 +53,16 @@ jobs:
     - run:
         name: Create Instance
         command: |
-          ./Tests/scripts/create_instance.sh instance.json
+          ./Tests/config_yml/create_instance.sh instance.json
     - run:
         name: Setup Instance
         command: |
-          ./Tests/scripts/run_installer_on_instance.sh
+          ./Tests/config_yml/run_installer_on_instance.sh
           ./Tests/scripts/wait_until_server_ready.sh
     - run:
         name: Run Tests
         shell: /bin/bash
-        command: ./Tests/scripts/run_tests.sh
+        command: ./Tests/config_yml/run_tests.sh
     - run:
         name: Slack Notifier
         shell: /bin/bash
