@@ -1575,3 +1575,5 @@ script:
       an item is moved, a new id will be associated with it.
   isfetch: true
 releaseNotes: "-"
+tests:
+  - EWS test
