@@ -230,7 +230,7 @@ def oversize_image(file_path):
     if image == '':
         return False
 
-    if sys.getsizeof(image) > IMAGE_MAX_SIZE:
+    if ((len(image) -22) / 4.0) * 3 > IMAGE_MAX_SIZE:
          print_error("{} has too large logo, please update the logo to be under 10kB".format(file_path))
          return True
 
