@@ -23,7 +23,7 @@ x.x.x
 ## Must have
 - [ ] Tests
 - [ ] Documentation (with link to it)
-- [ ] code review
+- [ ] Code Review
 
 ## Additional changes
 Describe additional changes done, for example adding a function to common server.
