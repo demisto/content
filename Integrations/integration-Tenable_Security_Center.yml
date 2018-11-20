@@ -49,7 +49,6 @@ script:
         del os.environ['https_proxy']
 
     ''' CONSTANTS '''
-
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('unsecure', False)
@@ -65,7 +64,8 @@ script:
     BASE_URL = get_server_url()
     SERVER_URL = BASE_URL + '/rest'
 
-    def send_request(path, method = 'get', body=None, params=None, headers=None):
+
+    def send_request(path, method='get', body=None, params=None, headers=None):
         body = body if body is not None else {}
         params = params if params is not None else {}
 
@@ -328,8 +328,83 @@ script:
         return send_request(path, params=params)
 
 
-    def list_reports_command():
-        res = get_reports()
+    def create_asset_command():
+        name = demisto.args()['name']
+        description = demisto.args().get('description')
+        owner_id = demisto.args().get('ownerID')
+        tags = argToList(demisto.args().get('tags'))
+        ips = argToList(demisto.args().get('IPs'))
+
+        res = create_asset(name, description, owner_id, tags, ips)
+
+        if not res or 'response' not in res:
+            return 'Could not retrieve asset'
+
+        asset = res['response']
+
+        mapped_asset = {
+            'ID': asset['id'],
+            'Name': asset['name'],
+            'OwnerName': asset['owner'].get('username'),
+            'Tags': asset['tags'],
+        }
+
+        headers = [
+        'ID',
+        'Name',
+        'OwnerName',
+        'Tags'
+        ]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Tenable.sc Asset', mapped_asset, headers=headers, removeNull=True),
+            'EntryContext': {
+                  'TenableSC.Asset(val.ID==obj.ID)': createContext(mapped_asset, removeNull=True)
+            }
+        }
+
+        return entry
+
+
+    def create_asset(name, description, owner_id, tags, ips):
+        path = 'asset'
+
+        if not isinstance(ips, list):
+            ips = [ips]
+        if not isinstance(tags, list):
+            tags = [tags]
+
+        body = {
+            'name': name,
+            'definedIPs' : ','.join(ips),
+            'type': 'static'
+        }
+
+        if description:
+            body['description'] = description
+
+        if owner_id:
+            body['ownerID'] = owner_id
+
+        if tags:
+            body['tags'] = ','.join(tags)
+
+        return send_request(path, method='post', body=body)
+
+
+
+    def list_templates(category_id):
+        path = 'assetTemplate'
+
+        return send_request(path)
+
+
+    def list_report_definitions_command():
+        res = get_report_definitions()
 
         manageable = demisto.args().get('manageable', 'false').lower()
 
@@ -363,14 +438,14 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
             'EntryContext': {
-                  'TenableSC.Report(val.ID==obj.ID)': createContext(mapped_reports, removeNull=True)
+                  'TenableSC.ReportDefinition(val.ID==obj.ID)': createContext(mapped_reports, removeNull=True)
             }
         }
 
         return entry
 
 
-    def get_reports():
+    def get_report_definitions():
         path = 'reportDefinition'
 
         params = {
@@ -458,7 +533,7 @@ script:
         if not policy_id and not plugin_id:
             raise ValueError('Policy and/or Plugin ID must be provided')
 
-        if not asset_ids and not ip_list:
+        if not asset_ids and not ips:
             raise ValueError('Assets and/or IPs must be provided')
 
         if schedule == 'dependent' and not dependent:
@@ -952,6 +1027,8 @@ script:
             }
         }
 
+        return entry
+
     def get_vulnerability(vuln_id):
         path = 'plugin/' + vuln_id
 
@@ -1012,6 +1089,83 @@ script:
 
         return send_request(path, method='delete')
 
+    def get_device_command():
+        uuid = demisto.args().get('uuid')
+        ip = demisto.args().get('ip')
+        dns_name = demisto.args().get('dnsName')
+
+        res = get_device(uuid, ip, dns_name)
+
+        if not res or 'response' not in res:
+            return 'Device not found'
+
+        device = res['response']
+
+        headers = [
+        'IP',
+        'UUID',
+        'MacAddress',
+        'RepositoryID',
+        'RepositoryName',
+        'NetbiosName',
+        'DNSName',
+        'OS',
+        'OsCPE',
+        'LastScan',
+        'TotalScore',
+        'LowSeverity',
+        'MediumSeverity',
+        'HighSeverity',
+        'CriticalSeverity'
+        ]
+
+        mapped_device = {
+            'IP': device['ip'],
+            'UUID': device['uuid'],
+            'MacAddress': device['macAddress'],
+            'RepositoryID': device['repository'].get('id'),
+            'RepositoryName': device['repository'].get('name'),
+            'NetbiosName': device['netbiosName'],
+            'DNSName': device['dnsName'],
+            'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device['os'] else '',
+            'OsCPE': device['osCPE'],
+            'LastScan': datetime.datetime.utcfromtimestamp(int(device['lastScan'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'TotalScore': device['total'],
+            'LowSeverity': device['severityLow'],
+            'MediumSeverity': device['severityMedium'],
+            'HighSeverity': device['severityHigh'],
+            'CriticalSeverity': device['severityCritical']
+        }
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Tenable.sc Device', mapped_device, headers=headers, removeNull=True),
+            'EntryContext': {
+                  'TenableSC.Device(val.UUID==obj.UUID)': createContext(mapped_device, removeNull=True)
+            }
+        }
+
+        return entry
+
+
+
+    def get_device(uuid, ip, dns_name):
+        path = 'deviceInfo'
+        params = {
+            'fields': 'ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,severityMedium,severityHigh,severityCritical'
+        }
+        if uuid:
+            params['uuid'] = uuid
+        else:
+            params['ip'] = ip
+            if dns_name:
+                params['dnsName'] = dns_name
+
+        return send_request(path)
+
     def logout():
         send_request(path='token', method='delete')
 
@@ -1027,10 +1181,12 @@ script:
         demisto.results(list_policies_command())
     elif demisto.command() == 'tenable-sc-list-repositories':
         demisto.results(list_repositories_command())
-    elif demisto.command() == 'tenable-sc-list-reports':
-        demisto.results(list_reports_command())
+    elif demisto.command() == 'tenable-sc-list-report-defintions':
+        demisto.results(list_report_definitions_command())
     elif demisto.command() == 'tenable-sc-list-assets':
         demisto.results(list_assets_command())
+    elif demisto.command() == 'tenable-sc-create-asset':
+        demisto.results(create_asset_command())
     elif demisto.command() == 'tenable-sc-create-scan':
         demisto.results(create_scan_command())
     elif demisto.command() == 'tenable-sc-launch-scan':
@@ -1047,6 +1203,8 @@ script:
         demisto.results(pause_scan_command())
     elif demisto.command() == 'tenable-sc-resume-scan':
         demisto.results(resume_scan_command())
+    elif demisto.command() == 'tenable-sc-get-device':
+        demisto.results(get_device_command())
 
     logout()
   type: python
@@ -1221,20 +1379,20 @@ script:
       description: Scan policy description
       type: string
     description: Get a list of Tenable.sc scan policies
-  - name: tenable-sc-list-reports
+  - name: tenable-sc-list-reports-definitions
     arguments:
     - name: manageable
       description: Whether to return only manageable reports. Returns both usable
         and manageable by default.
       defaultValue: "false"
     outputs:
-    - contextPath: TenableSC.Report.Name
+    - contextPath: TenableSC.ReportDefinition.Name
       description: Scan report name
       type: string
-    - contextPath: TenableSC.Report.ID
+    - contextPath: TenableSC.ReportDefinition.ID
       description: Scan report ID
       type: number
-    - contextPath: TenableSC.Report.Description
+    - contextPath: TenableSC.ReportDefinition.Description
       description: Scan report description
       type: string
     description: Get a list of Tenable.sc report definitions
@@ -1312,7 +1470,7 @@ script:
       description: Plugin ID in case of plugin type scan, or for when the policy is
         of no context
     - name: reportIDs
-      description: Comma separated list of report IDs to create post-scan
+      description: Comma separated list of report definition IDs to create post-scan
       isArray: true
     - name: credentials
       description: Comma separated credentials IDs to use
@@ -1360,7 +1518,8 @@ script:
       description: Scan owner Username
       type: string
     - contextPath: TenableSC.Scan.Reports
-      description: Scan report IDs
+      description: Scan report defintion IDs
+      type: unknown
     description: Create a scan on Tenable.sc
   - name: tenable-sc-delete-scan
     arguments:
@@ -1403,11 +1562,14 @@ script:
     - name: description
       description: Asset description
     - name: ownerID
-      description: default is the Session User ID
+      description: Asset owner ID, default is the Session User ID
     - name: tags
-      description: Tag the Asset
-    - name: data
-      description: An ip, a list or a range of ip addresses
+      description: Comma separated list of asset tags
+      isArray: true
+    - name: IPs
+      required: true
+      description: Comma separated list of IPs to include in the asset
+      isArray: true
     outputs:
     - contextPath: TenableSC.Asset.Name
       description: Asset Name
@@ -1415,13 +1577,138 @@ script:
     - contextPath: TenableSC.Asset.ID
       description: Asset ID
       type: string
-    - contextPath: TenableSC.Asset.owner,ID
-      description: Asset's owner ID
+    - contextPath: TenableSC.Asset.OwnerName
+      description: Asset owner name
       type: string
-    - contextPath: TenableSC.Asset.Tag
-      description: Asset's related tags
+    - contextPath: TenableSC.Asset.Tags
+      description: Asset tags
       type: string
-    description: Create an Asset in Tenable.sc. The Asset can be a single ip address,
-      a list or a range of ip addresses.
+    description: Create an Asset in Tenable.sc with provided IP addresses
+  - name: tenable-sc-get-device
+    arguments:
+    - name: uuid
+      description: A valid device UUID
+    - name: ip
+      description: A valid IP address
+    - name: dnsName
+      description: DNS name for the IP address
+    outputs:
+    - contextPath: TenableSC.Device.IP
+      description: Device IP address
+      type: string
+    - contextPath: TenableSC.Device.UUID
+      description: Device UUID
+      type: string
+    - contextPath: TenableSC.Device.RepositoryID
+      description: Device repository ID
+      type: string
+    - contextPath: TenableSC.Device.MacAddress
+      description: Device Mac address
+      type: string
+    - contextPath: TenableSC.Device.NetbiosName
+      description: Device Netbios name
+      type: string
+    - contextPath: TenableSC.Device.DNSName
+      description: Device DNS name
+      type: string
+    - contextPath: TenableSC.Device.OS
+      description: Device Operating System
+      type: string
+    - contextPath: TenableSC.Device.OsCPE
+      description: Device Common Platform Enumeration
+      type: string
+    - contextPath: TenableSC.Device.LastScan
+      description: Device's last scan time
+      type: date
+    - contextPath: TenableSC.Device.RepositoryName
+      description: Device repository name
+      type: string
+    - contextPath: TenableSC.Device.TotalScore
+      description: Device total threat score
+      type: number
+    - contextPath: TenableSC.Device.LowSeverity
+      description: Device total threat scores with low severity
+      type: number
+    - contextPath: TenableSC.Device.MediumSeverity
+      description: Device total threat scores with medium severity
+      type: number
+    - contextPath: TenableSC.Device.HighSeverity
+      description: Device total threat scores with high severity
+      type: number
+    - contextPath: TenableSC.Device.CriticalSeverity
+      description: Device total threat scores with critical severity
+      type: number
+    description: Gets the device information from the current user in Tenable.sc
+  - name: tenable-sc-list-users
+    arguments:
+    - name: id
+      description: User ID
+    - name: username
+      description: User name
+    - name: email
+      description: User email address
+    outputs:
+    - contextPath: TenableSC.User.ID
+      description: User ID
+      type: string
+    - contextPath: TenableSC.User.Username
+      description: Username
+      type: string
+    - contextPath: TenableSC.User.FirstName
+      description: User's first name
+      type: string
+    - contextPath: TenableSC.User.LastName
+      description: User's last name
+      type: string
+    - contextPath: TenableSC.User.Title
+      description: User's title
+      type: string
+    - contextPath: TenableSC.User.Email
+      description: User's email address
+      type: string
+    - contextPath: TenableSC.User.Created
+      description: The creation time of the user
+      type: date
+    - contextPath: TenableSC.User.Modified
+      description: Last modification time of the user
+      type: date
+    - contextPath: TenableSC.User.Login
+      description: User's last login
+      type: date
+    - contextPath: TenableSC.User.Role
+      description: User's role name
+      type: string
+    description: List users in Tenable.sc
+  - name: tenable-sc-get-system-diagnostics
+    arguments: []
+    outputs:
+    - contextPath: TenableSC.System.Version
+      description: System version
+      type: string
+    - contextPath: TenableSC.System.Build.ID
+      description: System's build ID
+      type: string
+    - contextPath: TenableSC.System.Release.ID
+      description: System's release ID
+      type: string
+    - contextPath: TenableSC.System.License
+      description: System's license status
+      type: string
+    - contextPath: TenableSC.System.StatusJava
+      description: Server java status
+      type: boolean
+    - contextPath: TenableSC.System.StatusRPM
+      description: Server RPM status
+      type: boolean
+    - contextPath: TenableSC.System.StatusDisk
+      description: Server disk status
+      type: boolean
+    - contextPath: TenableSC.System.ThresholdDisk
+      description: Left space on disk
+      type: number
+    - contextPath: TenableSC.System.LastCheck
+      description: Last check time for the system
+      type: date
+    description: Gets the system diagnostics information from Tenable.sc
   runonce: false
 releaseNotes: "-"
