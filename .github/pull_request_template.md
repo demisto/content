@@ -1,5 +1,5 @@
 ## Status
-Ready/In Progress/Hold(Reason for hold)
+Ready/In Progress/In Hold(Reason for hold)
 
 ## Related Issues
 fixes: link to the issue
