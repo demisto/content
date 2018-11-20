@@ -246,7 +246,7 @@ def test_integration(client, integrations, playbook_id, options={}):
     # wait for playbook to finish run
     while True:
         # give playbook time to run
-        time.sleep(interval)
+        time.sleep(1)
 
         # fetch status
         playbook_state = __get_investigation_playbook_state(client, investigation_id)
@@ -261,8 +261,9 @@ def test_integration(client, integrations, playbook_id, options={}):
             print_error(playbook_id + ' failed on timeout')
             break
 
-        print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
-        i = i + 1
+        if i % interval:
+            print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
+            i = i + 1
 
     test_pass = playbook_state == PB_Status.COMPLETED
     if test_pass:
