@@ -83,7 +83,10 @@ script:
                 verify=USE_SSL
             )
             if res.status_code != 200:
-                raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
+                error_reason = res.reason
+                if res.status_code == 404: # IOC does not exist in Recorded Future
+                    error_reason = 'IOC Was ' + error_reason
+                return_error('Your request failed with the following error: ' + error_reason + ' - ' + str(res.status_code))
         except Exception, e:
             LOG(e)
             raise
@@ -829,3 +832,4 @@ script:
       type: string
     description: Look up threat intel context for an indicator in Recorded Future.
   runonce: false
+releaseNotes: "Improved error message returned for an IOC which does not exist in Recorded Future"
