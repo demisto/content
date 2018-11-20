@@ -1,0 +1,160 @@
+id: URLDecode-Test
+version: -1
+rolename: []
+name: URLDecode-Test
+description: 'Testing output of URLDecode '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 51f3c5c4-68fb-4e22-8827-71fe3e73108c
+    type: start
+    task:
+      id: 51f3c5c4-68fb-4e22-8827-71fe3e73108c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 8d170e20-df55-4302-83fa-267285681829
+    type: regular
+    task:
+      id: 8d170e20-df55-4302-83fa-267285681829
+      version: -1
+      name: URLDecode
+      description: |-
+        Converts
+        https:%2F%2Fexample.com
+        into
+        https://example.com
+      scriptName: URLDecode
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: https:%2F%2Fexample.com/%2F%2F
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: b80c239c-d58a-4fda-8b99-57847c3f0875
+    type: condition
+    task:
+      id: b80c239c-d58a-4fda-8b99-57847c3f0875
+      version: -1
+      name: Check args
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DecodedURL
+            iscontext: true
+          right:
+            value:
+              simple: https://example.com///
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 5749107c-6584-4e5d-8f17-15fb7f7a3bed
+    type: title
+    task:
+      id: 5749107c-6584-4e5d-8f17-15fb7f7a3bed
+      version: -1
+      name: End test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 63b09765-9535-4bbc-8b74-1e191a670a3a
+    type: regular
+    task:
+      id: 63b09765-9535-4bbc-8b74-1e191a670a3a
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -7,8 +7,23 @@
             "playbookID": "Mimecast test"
         },
         {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
+          "playbookID": "JSONtoCSV-Test"
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
+        },
+        {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
+          "playbookID": "URLDecode-Test"
+        },
+        {
+          "playbookID": "GetTime-Test"
         },
         {
           "integrations": "Tenable.io",
