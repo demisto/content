@@ -742,8 +742,7 @@
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "Phishing test - Inline": "Ip range problem in IsIPInRanges",
-        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile."
-        "sep_-_test_endpoint_search": "Failed test, need to fix",
+        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile.",
         "FireEye HX Test": "Failed task, need to check that out"
     },
     "skipped_integrations": {

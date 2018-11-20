@@ -238,7 +238,7 @@ def oversize_image(file_path):
 
 
 def validate_committed_files(branch_name):
-    files_string = run_git_command("git diff --name-status --no-merges HEAD")
+    files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     modified_files, added_files = get_modified_files(files_string)
     has_schema_problem = False
     for file_path in modified_files:
