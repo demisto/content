@@ -103,6 +103,7 @@ script:
             delete report.domain;
         } else if (url === report.domain){
             delete report.url;
+
         }
         md = tableToMarkdown('Phish.AI Scan report ' + url, report);
         return {
@@ -224,3 +225,4 @@ script:
 releaseNotes: 'Phish.AI enhancement'
 tests:
   - 'Forgive me for my sins but I did not create any test'
+

@@ -260,4 +260,3 @@ outputs:
   description: The result of the search
 tests:
 - test_Qradar
-releaseNotes: "-"
