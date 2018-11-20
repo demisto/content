@@ -699,7 +699,7 @@ script:
 
         try:
             incident['details'] = item.text_body or item.body
-        except ValueError:
+        except AttributeError:
             incident['details'] = item.body
         incident['name'] = item.subject
         labels.append({'type': 'Email/subject', 'value': item.subject})
@@ -724,7 +724,7 @@ script:
             if item.text_body:
                 labels.append({'type': 'Email/text', 'value': item.text_body})
                 email_format = 'text'
-        except ValueError:
+        except AttributeError:
             pass
         if item.body:
             labels.append({'type': 'Email/html', 'value': item.body})
