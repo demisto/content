@@ -1,6 +1,5 @@
 {
     "testTimeout": 160,
-    "testInterval": 20,
     "tests": [
         {
             "integrations": "MimecastV2",
@@ -406,8 +405,7 @@
         },
         {
             "playbookID": "ProofpointDecodeURL-Test",
-            "timeout": 300,
-            "interval": 20
+            "timeout": 300
         },
         {
             "playbookID": "listExecutedCommands-Test"
