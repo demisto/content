@@ -771,7 +771,6 @@ script:
         data = ref.pop('Data', None)
         ec_key = 'QRadar.Reference(val.Name === obj.Name)'
         entry = get_entry_for_object(title, ref, demisto.args().get('headers'), ec_key)
-        demisto.info(str(entry))
         # Add another table for the data values
         if data:
             entry['HumanReadable'] = entry['HumanReadable'] + tableToMarkdown("Reference Items", data)
