@@ -121,3 +121,4 @@ dependson:
   must:
   - qradar-searches
 releaseNotes: "-"
+tests: []
