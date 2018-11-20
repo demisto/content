@@ -10,12 +10,24 @@
           "playbookID": "ReadPDFFile-Test"
         },
         {
+          "playbookID": "JSONtoCSV-Test"
+        },
+        {
             "integrations": "Panorama",
             "playbookID": "panorama_test_pb"
         },
         {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
+        },
+        {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
+          "playbookID": "URLDecode-Test"
+        },
+        {
+          "playbookID": "GetTime-Test"
         },
         {
           "integrations": "Tenable.io",
@@ -681,6 +693,9 @@
              "VxStream",
              "Lastline"
            ]
+        },
+        {
+            "playbookID": "ReadPDFFile-Test"
         },
         {
             "playbookID": "Phishing test - attachment",
