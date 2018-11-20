@@ -11,6 +11,15 @@
           "playbookID": "Tenable.io test"
         },
         {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
+          "playbookID": "URLDecode-Test"
+        },
+        {
+          "playbookID": "GetTime-Test"
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
@@ -732,6 +741,9 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
+        "Phishing test - Inline": "Ip range problem in IsIPInRanges",
+        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile."
+        "sep_-_test_endpoint_search": "Failed test, need to fix",
         "FireEye HX Test": "Failed task, need to check that out"
     },
     "skipped_integrations": {
@@ -751,5 +763,8 @@
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data"
-    }
+    },
+    "nigthly_integrations": [
+        "Lastline"
+    ]
 }
