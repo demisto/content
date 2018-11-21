@@ -41,7 +41,6 @@ script:
   script: |-
     ''' IMPORTS '''
     import tempfile
-    import traceback
     from smb.SMBConnection import SMBConnection
 
     if not demisto.params()['proxy']:
@@ -99,13 +98,9 @@ script:
         elif demisto.command() == 'smb-download':
             download()
     except Exception, e:
-        demisto.error('{}: {}'.format(demisto.command(), e.message))
-        LOG(traceback.format_exc())
+        LOG(e)
         LOG.print_log()
-        if demisto.command() == 'test-module':
-            demisto.results(e.message)
-        else:
-            return_error(e.message)
+        return_error(e.message)
     finally:
         conn.close()
   type: python
