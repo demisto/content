@@ -6,13 +6,7 @@ else
    set -e
 
    INSTANCE_ID=$(cat instance_ids)
-   if ./Tests/scripts/is_ami.sh ;
-     then
-       USER="ec2-user"
-
-     else
-       USER="centos"
-   fi
+   USER="centos"
 
    # collect log file to artifacts
    PUBLIC_IP=$(cat public_ip)

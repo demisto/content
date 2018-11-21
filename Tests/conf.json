@@ -7,11 +7,14 @@
             "playbookID": "Mimecast test"
         },
         {
-          "integrations": "Tenable.io",
-          "playbookID": "Tenable.io test"
+          "playbookID": "ReadPDFFile-Test"
         },
         {
-          "playbookID": "ReadPDFFile-Test"
+          "playbookID": "JSONtoCSV-Test"
+        },
+        {
+          "integrations": "Tenable.io",
+          "playbookID": "Tenable.io test"
         },
         {
           "playbookID": "URLDecode-Test"
@@ -400,8 +403,7 @@
         },
         {
             "playbookID": "ProofpointDecodeURL-Test",
-            "timeout": 300,
-            "interval": 20
+            "timeout": 300
         },
         {
             "playbookID": "listExecutedCommands-Test"
@@ -685,6 +687,9 @@
            ]
         },
         {
+            "playbookID": "ReadPDFFile-Test"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 500,
             "nightly": true,
@@ -724,9 +729,6 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      },
-      {
-          "playbookID": "ReadPDFFile-Test"
       }
     ],
     "skipped_tests": {
@@ -743,7 +745,7 @@
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "Phishing test - Inline": "Ip range problem in IsIPInRanges",
         "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile.",
-        "FireEye HX Test": "Failed task, need to check that out"
+        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
