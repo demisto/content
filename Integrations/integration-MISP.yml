@@ -516,15 +516,19 @@ script:
             return 'ok';
         case 'internal-misp-upload-sample':
         case 'misp-upload-sample':
+            command = 'internal-misp-upload-sample';
             return doUploadSample(command);
         case 'internal-misp-download-sample':
         case 'misp-download-sample':
+            command = 'internal-misp-download-sample';
             return doGeneralPost(command, args);
         case 'internal-misp-create-event':
         case 'misp-create-event':
+            command = 'internal-misp-create-event';
             return createEvent(command);
         case 'internal-misp-add-attribute':
         case 'misp-add-attribute':
+            command = 'internal-misp-add-attribute';
             return addAtribute(command)
         case 'misp-search':
             return translateEvents(doGeneralPost(command, args), commands[command].contextKey, commands[command].title);
