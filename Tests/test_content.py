@@ -252,10 +252,12 @@ def main():
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
 
+    default_test_timeout = conf.get('testTimeout', 30)
+
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
-    skipped_integrations_conf = conf['skipped_integrations']
     nightly_integrations = conf['nigthly_integrations']
+    skipped_integrations_conf = conf['skipped_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
@@ -279,8 +281,7 @@ def main():
         test_message = 'playbook: ' + playbook_id
 
         test_options = {
-            'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
-            'interval': conf.get('testInterval', 10)
+            'timeout': t.get('timeout', default_test_timeout)
         }
 
         if not isinstance(integrations_conf, list):
