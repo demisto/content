@@ -33,7 +33,7 @@ script:
     import os
     import json
     import requests
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     ''' GLOBAL VARS '''
     # Pagerduty API works only with secured communication.
@@ -460,11 +460,15 @@ script:
 
     def fetch_incidents():
         param_dict = {}
-        now = datetime.isoformat(datetime.utcnow())
+        now_time = datetime.utcnow()
+        now = datetime.isoformat(now_time)
         lastRunObject = demisto.getLastRun()
         if lastRunObject:
             param_dict['since'] = lastRunObject['time']
-            param_dict['until'] = now
+        else:
+            param_dict['since'] = datetime.isoformat(now_time - timedelta(minutes=1))
+
+        param_dict['until'] = now
 
         url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status()
         res = http_request('GET', url, param_dict)
