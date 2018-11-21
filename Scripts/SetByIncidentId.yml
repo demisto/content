@@ -1,8 +1,10 @@
 commonfields:
   id: 46e2109c-b735-458e-884f-030229a20830
-  version: 42
+  version: 203
 name: SetByIncidentId
 script: |-
+  import time
+
   incident_id = demisto.args()['id'] if 'id' in demisto.args() else demisto.incidents()[0]['id']
   key = demisto.args()['key']
   value = demisto.args()['value']
@@ -10,10 +12,29 @@ script: |-
 
   args = {'key': key, 'value': value, 'append': append}
 
-  demisto.executeCommand("executeCommandAt",
+  demisto.executeCommand('executeCommandAt',
                           {'incidents': incident_id,
                           'command':'Set',
                           'arguments': args})
+
+  # Give the above command time to run and set context
+  time.sleep(0.1)
+
+  # Check to see if command was successful
+  context = demisto.executeCommand('getContext', {'id':incident_id})[0]['Contents']['context']
+  keysplit = key.split('.')
+  valcheck = reduce((lambda x,y: x[y]), keysplit, context)
+
+  res = "Key {} set".format(key)
+  demisto.results(res)
+
+  res = [{'Incident':incident_id,
+          'Key':key,
+          'Value':valcheck}]
+
+  demisto.results({'ContentsFormat' : formats['table'],
+                  'Contents' : res,
+                  'Type' : entryTypes['note']})
 type: python
 tags:
 - DemistoAPI
