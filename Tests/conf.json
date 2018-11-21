@@ -16,9 +16,6 @@
           "playbookID": "Tenable.io test"
         },
         {
-          "playbookID": "ReadPDFFile-Test"
-        },
-        {
           "playbookID": "URLDecode-Test"
         },
         {
