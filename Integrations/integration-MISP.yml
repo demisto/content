@@ -812,3 +812,5 @@ script:
       description: Value of the attribute
     description: Add attribute to existing MISP event
 releaseNotes: "Added commands without 'internal-' prefix"
+tests:
+  - Forgive me for my sins but I did not create any test
