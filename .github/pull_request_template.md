@@ -20,6 +20,11 @@ branch | PR
 ## Required version of Demisto
 x.x.x
 
+## Does it break backward compatibility?
+   - Yes
+       - Further details:
+   - No
+
 ## Must have
 - [ ] Tests
 - [ ] Documentation (with link to it)
