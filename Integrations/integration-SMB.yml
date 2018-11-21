@@ -7,7 +7,7 @@ category: Utilities
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAF8ElEQVRo3tVaa2wUVRQ+lUeolLZQHwQxEUIi/GgpakvTst2d7fax7RaEUFOIRW2x7e7cme220BawNSQ1MQZFgYaH8gvlFVAxUYIIJPxRA7FSLCpBJMYnL5FEyh8cvzttodvd6e527izpJCezO3Pn3Pvde853zzkzRKKPAmUOScp+Kg/MoVF7FCiZJLHz5JA1nL8jlzxzxLoklgw908iBc5xBZKPTSzqIAcmvPU3Ltk+NSc/S5vGUz9YASBd0XIXOb2jpKm+cQDAnOvw9CAQXm1ej0ubj9PW5yVHpaXplLJU3bKN83xA9+F+gtJAnkGAdCIm50dm1EBADYgeYrJrDlF0d2UTscj7ZfXcMdN2kJW2PWwPCIZdC/jYEESwHATopwsquHVZHgb9IPAinvhI3owTRJ5L8ITm8xisjye8N+7xLtQk2JyUHPnElJhB3CcB7hCpff9TATI8bPmfzXUCfqeJAuPyzoPinEYEYkMKGr8jtnztkhbmZ3gr1MYiTXaPFgWKRFDuenMpBUyD0wemsBGqVt2EVWmgRmMoh3wjTthdAdlGpP120cz8EO/7FNJBQswm95mR7qKTBoujAqUzADJ4QDiREWDe5lInWbn5FgWysyiEAOmNgDuZFkt+N107+AGw3hUrU6VSsLsTvo4LBHMFEJVDcD7syBh1vEQikFz5SRPflkNRU2PY5cebF/oBPLjM/sMWBVEShKpRuJxeLjsMdyibx/sL2UUXHCNmrtiUZ9n/0bhSaW3uL1A2RuVxiqy1ismvQvR7ycKxx1GuUP0hRdo1GLVvfjsK8NlpMzRdhbowKlSmRQVSumg/kt4csr0Y5dZepyvuEMXh/Ctr1kA1t56vDC28jmaLnbkQZ9VSoJhqxzzh08rmhguyXPqI9xxINzOotPsDkhbXavMZlWmZgeVjh93gbHYx5//kWYFZQkfLg0P2hAg3+M3xwQb1GFe0nacVaDz3XOB3m9xiU5UP64i/M9rzG5dq+6xnanqsZ2u4rc4OEX+P3eBt9ZYQRgnf/4IAwERe7IsyARnl1PBTX9IRKYteD7mNwfNb5gD+4nKG9/9fcIOHX+D3eRggQbp42Pp616wYBUVeaVtwPhM8+H/iuPzODhF/j94QB4RNaFviR1h1K6wPxYkcyZvqHUQckC2y6utN3bzWatzDKqtZGHZDcuh56oWNSH4h3dqRRSdP5frsfXUAkVn1vNTxyO+V5zfG6GGe/ohMIn1BOKFJEej5NBfKEwfHRAWE0OBL6ldh+0H4ussRpOqVXrfFQRdtJneqN+7qD+G9J8N7hbkzEalRBusynrDFuiE7lzbCbK990s6s/Ns732WGkweMMQgxs95JSB0BnzPF61CHKWVC+cY1rZWAG5fmuhs1Vlq96JprsbzLyZRmoL1gaADrZGxHHsiSwKagwwUtDLmV9rBEwKiasvb9sY0FezgIRx/BsUybCoN5Bz32G2CppZLlJTfNssrO94sEoG6MrCLIytN8KS/EB/CQBNS1WCflNIJgeOHvKfcrLlULd2YT5ibwZ5zHxB+JAicbBjgg1MV5KcjcuIk/TdFBrKnwzTsCcyk6LmIynBd04f0Lu1qctNi05CZ2dtbxkKiknyNmQaA0Il5qOTkLDmZyXrQDzMyRNLACPmgmlu+Ebt0MTG991Yhs6sUM34n6nvufYTfsMJ4G9VMjGigNR0+LRbTf84P4lW31wWdOtZlCx8qUpMPw9fZEyUxyI1rYpCA8uGQ5Kkr8I+5y39RFa4Ds8QiCXwVpZYk2q1C9FeIexw/BZm5yMmY01PbgBJ7egcF3oLxnWjl1Kc4Ty6USAPRBDSbTYGpZqacMGJf8TvnqBxEaS8yLqyKpJhnyqfzRgHPrzzzQsfIWweE0CuHw12euHMpVG5f7N+Nwiuh2Yf77hbj6mf84Rap6/YoO1x2cnL3m1Dp2e0h1RwtkuB5CSxhZGPL9zKj4UONX/NncAxEWS/E/FOcaSJ+mfHDlNhNFlrTP0l5x9weL38LF0GrWHq2m2/uLGpT4pWvX/zRDqQjZWrVoAAAAASUVORK5CYII=
 description: Retrieve files from an SMB server
 configuration:
-- display: Server IP / Hostname
+- display: Server IP / Hostname (e.g. 1.2.3.4)
   name: hostname
   defaultvalue: ""
   type: 0
@@ -27,17 +27,31 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Authentication
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
+    ''' IMPORTS '''
     import tempfile
+    import traceback
     from smb.SMBConnection import SMBConnection
 
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
+
+    ''' GLOBAL VARS '''
     USER = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     HOSTNAME = demisto.params()['hostname']
@@ -45,23 +59,8 @@ script:
     NBNAME = demisto.params()['nbname']
     DOMAIN = demisto.params().get('domain', None)
 
-    # Extend SMBConnection to be a context-manager (usable in 'with' statement)
-    class Mysmb(SMBConnection):
-        def __init__(self):
-            if not DOMAIN:
-                SMBConnection.__init__(self, USER, PASSWORD, 'Demisto', NBNAME, is_direct_tcp=True)
-            else:
-                SMBConnection.__init__(self, USER, PASSWORD, 'Demisto', NBNAME, domain=DOMAIN, is_direct_tcp=True)
 
-        def __enter__(self):
-            if not self.connect(HOSTNAME, PORT):
-                return_error('Authentication failed, please verify instance configuration parameters and try again.')
-            return self
-
-        def __exit__(self, type, value, tb):
-            self.close()
-
-
+    ''' HELPER FUNCTIONS '''
     def split_path(path):
         share = ''
         delim = '/' if '/' in path else ['\\']
@@ -69,29 +68,54 @@ script:
             share, path = path.split(delim, 1)
         return share, path
 
-    def download(path_with_share):
-        share, path = split_path(path_with_share)
-        with Mysmb() as conn, tempfile.NamedTemporaryFile() as file_obj:
+
+    def connect():
+        if not DOMAIN:
+            conn = SMBConnection(USER, PASSWORD, 'Demisto', NBNAME, is_direct_tcp=True)
+        else:
+            conn = SMBConnection(USER, PASSWORD, 'Demisto', NBNAME, domain=DOMAIN, is_direct_tcp=True)
+        if not conn.connect(HOSTNAME, PORT):
+            return_error('Authentication failed, verify instance configuration parameters and try again.')
+        return conn
+
+
+    ''' FUNCTIONS '''
+    def download():
+        share, path = split_path(demisto.getArg('file_path'))
+        with tempfile.NamedTemporaryFile() as file_obj:
             file_attributes, filesize = conn.retrieveFile(share, path, file_obj)
             file_obj.seek(0)
             filename = path.split('/')[-1] if '/' in path else path.split('\\')[-1]
             demisto.results(fileResult(filename, file_obj.read()))
 
 
-    if demisto.command() == 'test-module':
-        with Mysmb() as conn:
-            pass
-        demisto.results('ok')
-    elif demisto.command() == 'smb-download':
-        download(demisto.getArg('path'))
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+
+    conn = connect()
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results('ok')
+        elif demisto.command() == 'smb-download':
+            download()
+    except Exception, e:
+        demisto.error('{}: {}'.format(demisto.command(), e.message))
+        LOG(traceback.format_exc())
+        LOG.print_log()
+        if demisto.command() == 'test-module':
+            demisto.results(e.message)
+        else:
+            return_error(e.message)
+    finally:
+        conn.close()
   type: python
   commands:
   - name: smb-download
     arguments:
-    - name: path
+    - name: file_path
       required: true
       default: true
-      description: The path to the file, starting from the share.
+      description: The path to the file, starting from the share. (e.g. Share/Folder/File)
     description: Download a file from the SMB server
   dockerimage: demisto/pysmb
   runonce: false
