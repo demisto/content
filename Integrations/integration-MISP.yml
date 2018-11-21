@@ -515,7 +515,7 @@ script:
             doIP('1.3.4.5');
             return 'ok';
         case 'internal-misp-upload-sample':
-        case 'misp-upload-sample:
+        case 'misp-upload-sample':
             return doUploadSample(command);
         case 'internal-misp-download-sample':
         case 'misp-download-sample':
@@ -539,7 +539,7 @@ script:
 
   type: javascript
   commands:
-  - name: internal-misp-upload-sample
+  - name: misp-upload-sample
     arguments:
     - name: filename
       required: true
@@ -728,7 +728,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
     description: Check IP Reputation
-  - name: internal-misp-download-sample
+  - name: misp-download-sample
     arguments:
     - name: hash
       required: true
@@ -744,7 +744,7 @@ script:
       description: If set, it will return all samples from events that have a match
         for the hash provided above.
     description: Download malware sample by hash
-  - name: internal-misp-create-event
+  - name: misp-create-event
     arguments:
     - name: type
       description: Type of the event
@@ -784,7 +784,7 @@ script:
     - contextPath: MISP.ID
       description: MISP event ID
     description: Create new MISP event
-  - name: internal-misp-add-attribute
+  - name: misp-add-attribute
     arguments:
     - name: id
       required: true
