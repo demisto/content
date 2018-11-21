@@ -515,12 +515,16 @@ script:
             doIP('1.3.4.5');
             return 'ok';
         case 'internal-misp-upload-sample':
+        case 'misp-upload-sample:
             return doUploadSample(command);
         case 'internal-misp-download-sample':
+        case 'misp-download-sample':
             return doGeneralPost(command, args);
         case 'internal-misp-create-event':
+        case 'misp-create-event':
             return createEvent(command);
         case 'internal-misp-add-attribute':
+        case 'misp-add-attribute':
             return addAtribute(command)
         case 'misp-search':
             return translateEvents(doGeneralPost(command, args), commands[command].contextKey, commands[command].title);
@@ -807,3 +811,4 @@ script:
       required: true
       description: Value of the attribute
     description: Add attribute to existing MISP event
+releaseNotes: "Added commands without 'internal-' prefix"
