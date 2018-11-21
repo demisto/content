@@ -746,7 +746,8 @@
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "Phishing test - Inline": "Ip range problem in IsIPInRanges",
-        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile."
+        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile.",
+        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
