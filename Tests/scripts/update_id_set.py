@@ -96,10 +96,33 @@ def get_script_or_integration_id(file_path):
         return commonfields.get('id', ['-', ])
 
 
+def re_create_id_set():
+    id_list = []
+    for file in glob.glob(os.path.join('Integrations', '*')):
+        id = get_script_or_integration_id(file)
+        id_list.append(id)
+
+    for file in glob.glob(os.path.join('Playbooks', '*')):
+        id = collect_ids(file)
+        id_list.append(id)
+
+    for file in glob.glob(os.path.join('Scripts', '*')):
+        id = get_script_or_integration_id(file)
+        id_list.append(id)
+
+    with open('./Tests/id_set.json', 'w') as id_set_file:
+        json.dump(id_list, id_set_file, indent=4)
+
+
 def update_id_set():
+    branches = run_git_command("git branch")
+    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name = branch_name_reg.group(1)
+
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status --no-merges HEAD")
-    added_files = get_added_files(files_string)
+    files_string = run_git_command("git diff --name-status HEAD")
+    second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+    added_files = get_added_files(files_string + '\n' + second_files_string)
 
     if added_files:
         print("Updating id_set.json")
@@ -120,7 +143,6 @@ def update_id_set():
         with open('./Tests/id_set.json', 'w') as id_set_file:
             json.dump(id_list, id_set_file, indent=4)
 
-        res = run_git_command("git commit --no-verify -m 'Updating_id_set.json'")
         print("Finished updating id_set.json")
 
 
