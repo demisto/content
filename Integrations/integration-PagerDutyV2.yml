@@ -52,6 +52,7 @@ script:
 
 
     '''PARAMS'''
+    UTC_PARAM = '&time_zone=UTC'
     STATUSES = 'statuses%5B%5D'
     INCLUDED_FIELDS = '&include%5B%5D=first_trigger_log_entries&include%5B%5D=assignments'
 
@@ -493,7 +494,7 @@ script:
         statuses = statuses_string.join(statuses)
         status_request = '&' + STATUSES + '=' + statuses
 
-        status_request = status_request + INCLUDED_FIELDS
+        status_request = status_request + INCLUDED_FIELDS + UTC_PARAM
         return status_request
 
 
