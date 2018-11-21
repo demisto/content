@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
- if [ -n "${AMI_RUN}" ]; then exit 0 ; fi # run with AMI
- exit 1 # should with latest server build
+ if [ -n "${NON_AMI_RUN}" ]; then exit 1 ; fi # run with latest server
+ exit 0 # should with AMI

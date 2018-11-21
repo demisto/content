@@ -10,7 +10,7 @@ if [ -z "$3"]
     post_data=$(cat <<EOF
     {
       "build_parameters": {
-        "AMI_RUN": "true"
+        "NON_AMI_RUN": "true"
       }
     }
     EOF)
@@ -19,15 +19,14 @@ if [ -z "$3"]
     post_data=$(cat <<EOF
     {
       "build_parameters": {
-        "AMI_RUN": "true",
+        "NON_AMI_RUN": "true",
         "SERVER_BRANCH_NAME": $3
       }
     }
     EOF)
 fi
 
-
-curl \
+echo curl \
 --header "Accept: application/json" \
 --header "Content-Type: application/json" \
 --data "${post_data}" \
