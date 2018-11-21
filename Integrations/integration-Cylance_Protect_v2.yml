@@ -1381,7 +1381,7 @@ script:
             last_run = now
         else:
             last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S') # Converts string to datetime object
-
+        current_run = last_run
         threats = get_threats_request().get('page_items', [])
 
         incidents = []
@@ -1390,9 +1390,11 @@ script:
             if last_found > last_run:
                 incident = threat_to_incident(threat)
                 incidents.append(incident)
+            if last_found > current_run:
+                current_run = last_found + timedelta(seconds=1)
 
         demisto.incidents(incidents)
-        demisto.setLastRun({ 'time': now.isoformat().split('.')[0] })
+        demisto.setLastRun({ 'time': current_run.isoformat().split('.')[0] })
 
 
     # EXECUTION
