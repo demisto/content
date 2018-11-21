@@ -118,7 +118,7 @@ def get_modified_files(files_string):
         file_status = file_data[0]
         file_path = file_data[1]
 
-        if (file_status.lower() == 'm' or file_status.lower() == 'a') and checked_type(file_path) and not file_path.startswith('.'):
+        if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
             modified_files_list.add(file_path)
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
@@ -307,10 +307,7 @@ def validate_committed_files(branch_name):
         elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             id_to_file[collect_ids(file_path)] = file_path
 
-    if has_duplicated_ids(id_to_file):
-        sys.exit(1)
-
-    if has_schema_problem:
+    if has_schema_problem or has_duplicated_ids(id_to_file):
         sys.exit(1)
 
 
