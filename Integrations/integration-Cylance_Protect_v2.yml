@@ -1377,7 +1377,7 @@ script:
         now = datetime.utcnow()
         last_run = demisto.getLastRun().get('time')
         if last_run is None:
-            now = now - timedelta(minutes=10)
+            now = now - timedelta(days=3)
             last_run = now
         else:
             last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S') # Converts string to datetime object
