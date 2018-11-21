@@ -3,8 +3,6 @@ commonfields:
   version: 209
 name: SetByIncidentId
 script: |-
-  import time
-
   incident_id = demisto.args()['id'] if 'id' in demisto.args() else demisto.incidents()[0]['id']
   key = demisto.args()['key']
   value = demisto.args()['value']
