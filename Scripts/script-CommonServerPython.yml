@@ -1148,7 +1148,7 @@ script: |-
               return False
       return True
 
-  def return_error(message):
+  def return_error(message, quit=True):
       """
          Returns error entry with given message and exits the script
 
@@ -1163,7 +1163,8 @@ script: |-
           'ContentsFormat': formats['text'],
           'Contents': message
       })
-      sys.exit(0)
+      if quit:
+        sys.exit(0)
 
   def camelize(src, delim=' '):
       """
@@ -1339,4 +1340,4 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "-"
+releaseNotes: "Modified return_error to have the option not to exit."
