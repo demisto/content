@@ -6,11 +6,20 @@ releaseNotes: "Improved extracting URLs"
 script: |-
   import pdfx
   from pdfminer.psparser import PSEOF
+  from urlparse import urlparse
+  import re
   import sys
   reload(sys)
   sys.setdefaultencoding('utf-8')
 
   entryID = demisto.args()['entryID']
+  """
+      Prepare regex:
+      regexp = everything that starts with www
+      regexp2 = end with any compatible charachter
+  """
+  regexp = re.compile('(www.*)')
+  regexp2 = re.compile('[a-zA-z:\./-0-9]*[a-zA-z/\-0-9]')
 
   def mark_suspicious():
       """Missing EOF, file may be corrupted or suspicious file"""
@@ -69,19 +78,38 @@ script: |-
           references_dict = pdf.get_references_as_dict()
           text = pdf.get_text()
 
-          #Add Text to file entity
+          # Add Text to file entity
           pdfFile["Text"] = text
 
-          #Add Metadata to file entity
+          # Add Metadata to file entity
           for k in metadata.keys():
               pdfFile[k] = metadata[k]
 
-          #Add URLs
-          res = demisto.executeCommand("ExtractURL", {"text":text})
-          urls = res[0]['Contents']
-          if urls:
-              for url in urls:
+          # Add URLs
+          URLs = []
+          if "url" in references_dict.keys():
+              for url in references_dict['url']:
+                  url_obj = urlparse(url)
+                  url =  url_obj.netloc if len(url_obj.path) < len(url_obj.netloc) else url_obj.path
+                  if len(url_obj.scheme):
+                      url = url_obj.scheme + "://" + url
                   URLs.append(url)
+
+              # Remove terms before www if exists, then removing terms after TLD
+              temp_URLs = []
+              for url in URLs:
+                  new_url = url
+                  try:
+                      new_url = regexp.findall(url)[0]
+                  except:
+                      pass
+                  try:
+                      new_url = regexp2.findall(new_url)[0]
+                  except:
+                      pass
+                  temp_URLs.append({'Data':new_url})
+              URLs = temp_URLs
+
 
           md = "### Metadata\n"
           md += "* " if metadata else ""
