@@ -115,7 +115,7 @@ script:
                 'URL(val.Data === obj.Data)' : {
                     'Data': url
                 },
-                'IP(obj.Hostname && obj.Hostname===val.Hostname)' : {
+                'IP(val.Hostname === obj.Hostname)' : {
                     'Address': report.ip_address,
                     'Hostname': report.domain,
                     'Geo':{
