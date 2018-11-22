@@ -1086,7 +1086,12 @@ script:
         default:
             result = sendAndParse(command, pathDictionary[command], args);
     }
-    logout();
+    try {
+        logout();
+    } catch (err) {
+        demisto.error('Failed to logout ArcSight ESM session. Error: ' + err);
+    }
+
     return result;
   type: javascript
   commands:
@@ -1231,3 +1236,4 @@ script:
     execution: true
   isfetch: true
 hidden: false
+releaseNotes: "-"
