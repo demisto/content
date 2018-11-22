@@ -1,5 +1,7 @@
 import yaml
 import sys
+import re
+import os
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -12,6 +14,10 @@ def return_error(error):
 
 
 # load the integration yml file
+if len(sys.argv) < 2:
+    print("You must provide full path of integration yml file")
+    exit(1)
+
 path = sys.argv[1]
 yamlFile  = open(path)
 data_map = yaml.safe_load(yamlFile)
@@ -185,7 +191,7 @@ doc += '\n## Troubleshooting:\n'
 #     doc += '\n## Possible Errors (DO NOT PUBLISH ON ZENDESK):\n'
 #     doc += add_error_lines(data_map['script']['script'], data_map['script']['type'])
 
-filename = name + '-documantation.txt'
+filename = os.path.basename(sys.argv[1]).replace('documentation-', 'integration-').replace('.yml', '.txt').replace('.yaml', '.txt')  # strip all the spaces
 
 # save file by default at same path unless the second arg provided
 if len(sys.argv) > 2:
@@ -193,3 +199,5 @@ if len(sys.argv) > 2:
 
 with open(filename, 'w') as f:
     f.write(doc)
+
+print("Integration documentation file generated at: \n" + filename)
