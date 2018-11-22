@@ -14,7 +14,7 @@ echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip
 
-USER="ec2-user"
+USER="centos"
 
 echo "wait 90 seconds to ensure server is ready for ssh"
 sleep 90s
