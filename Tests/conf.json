@@ -619,6 +619,10 @@
             "playbookID": "PhishAi-Test"
         },
         {
+            "integrations": "Phish.AI",
+            "playbookID": "Test-Detonate URL - Phish.AI"
+        },
+        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
