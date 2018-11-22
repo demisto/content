@@ -282,7 +282,6 @@ script: |-
       assert camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_').__str__ == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
       assert camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_').__str__ == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
 
-
   def test_flatten_cell():
       returned = []
 
@@ -357,6 +356,3 @@ args:
   defaultValue: dq
 scripttarget: 0
 runonce: false
-releaseNotes: "Fixed table separator"
-tests:
-  - Test CommonServer
