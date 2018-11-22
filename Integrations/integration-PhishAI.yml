@@ -190,7 +190,7 @@ script:
     }
   type: javascript
   commands:
-  - name: url
+  - name: phish-ai-scan-url
     arguments:
     - name: url
       required: true
@@ -220,8 +220,18 @@ script:
     - contextPath: IP.Geo.Country
       description: Geo location of the url
       type: string
-    description: Check if URL is phishing and get details about the brand that is
+    description: Check if url is phishing and get details about the brand that is
       being phished
+  - name: phish-ai-check-status
+    arguments:
+    - name: url
+      description: url to check status for
+    outputs:
+    - contextPath: URL.Data
+      description: URL address
+    - contextPath: URL.Status
+    description: checks on url's status, e.g. completed/in progress
+  runonce: false
 releaseNotes: 'Phish.AI enhancement'
 tests:
   - 'Forgive me for my sins but I did not create any test'
