@@ -27,7 +27,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Initial Fetch Interval(In minutes)
+- display: Initial Fetch Interval(In minutes, used only for first fetch or after Reset last run)
   name: FetchInterval
   defaultvalue: "1"
   type: 0
