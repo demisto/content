@@ -1,14 +1,25 @@
 {
     "testTimeout": 160,
-    "testInterval": 20,
     "tests": [
         {
             "integrations": "MimecastV2",
             "playbookID": "Mimecast test"
         },
         {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
+          "playbookID": "JSONtoCSV-Test"
+        },
+        {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
+        },
+        {
+          "playbookID": "URLDecode-Test"
+        },
+        {
+          "playbookID": "GetTime-Test"
         },
         {
           "integrations": "Tenable.io",
@@ -391,8 +402,7 @@
         },
         {
             "playbookID": "ProofpointDecodeURL-Test",
-            "timeout": 300,
-            "interval": 20
+            "timeout": 300
         },
         {
             "playbookID": "listExecutedCommands-Test"
@@ -676,6 +686,9 @@
            ]
         },
         {
+            "playbookID": "ReadPDFFile-Test"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 500,
             "nightly": true,
@@ -715,9 +728,6 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      },
-      {
-          "playbookID": "ReadPDFFile-Test"
       }
     ],
     "skipped_tests": {
@@ -731,7 +741,10 @@
         "AlphaSOC-Wisdom-Test": "Need to check the reason for skipping",
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
-        "sep_-_test_endpoint_search": "Failed test, need to fix"
+        "sep_-_test_endpoint_search": "Failed test, need to fix",
+        "Phishing test - Inline": "Ip range problem in IsIPInRanges",
+        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile.",
+        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
@@ -750,5 +763,8 @@
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data"
-    }
+    },
+    "nigthly_integrations": [
+        "Lastline"
+    ]
 }

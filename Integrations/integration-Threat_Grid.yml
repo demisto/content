@@ -2259,6 +2259,5 @@ script:
       description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
-releaseNotes: "-"
 tests:
   - ThreatGridTest

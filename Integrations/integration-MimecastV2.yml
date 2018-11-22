@@ -1841,6 +1841,5 @@ script:
     description: Decodes a given url from mimecast
   isfetch: true
   runonce: false
-releaseNotes: "Added 12 new commands + fetch incidents: url, attachments, impersonations. Commands: mimecast-list-blocked-sender-policies, mimecast-create-policy, mimecast-delete-policy, mimecast-get-policy, mimecast-query, mimecast-url-decode, mimecast-manage-sender, mimecast-list-managed-url, mimecast-create-managed-url, mimecast-list-messages, mimecast-get-url-logs, mimecast-get-impersonation-logs, mimecast-get-attachment-logs"
 tests:
  - Mimecast test

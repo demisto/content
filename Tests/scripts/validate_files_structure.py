@@ -20,11 +20,15 @@ try:
 except ImportError:
     print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
     sys.exit(1)
-import json
 import re
 import os
+import glob
+import json
 from subprocess import Popen, PIPE
 from pykwalify.core import Core
+
+# Magic Numbers
+IMAGE_MAX_SIZE = 10 * 1024  # 10kB
 
 # dirs
 INTEGRATIONS_DIR = "Integrations"
@@ -104,8 +108,8 @@ def checked_type(file_path):
 
 def get_modified_files(files_string):
     all_files = files_string.split('\n')
-    added_files_list = []
-    modified_files_list = []
+    added_files_list = set([])
+    modified_files_list = set([])
     for f in all_files:
         file_data = f.split()
         if not file_data:
@@ -114,16 +118,14 @@ def get_modified_files(files_string):
         file_status = file_data[0]
         file_path = file_data[1]
 
-        if (file_status.lower() == 'm' or file_status.lower() == 'a') and checked_type(file_path) and not file_path.startswith('.'):
-            modified_files_list.append(file_path)
+        if file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
+            modified_files_list.add(file_path)
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
-            added_files_list.append(file_path)
+            added_files_list.add(file_path)
         if file_status.lower() not in KNOWN_FILE_STATUSES:
             print_error(file_path + " file status is an unknown known one, please check. File status was: " + file_status)
 
     return modified_files_list, added_files_list
-
-    return modified_files_list
 
 
 def validate_file_release_notes(file_path):
@@ -177,11 +179,28 @@ def validate_schema(file_path, matching_regex=None):
 
 def changed_id(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
-    if re.search("\+id: .*", change_string) or re.search("\-id: .*", change_string):
-        print_error("You've changed the ID of the playbook {0} please undo.".format(file_path))
+    if re.search("[+-](  )?id: .*", change_string):
+        print_error("You've changed the ID of the file {0} please undo.".format(file_path))
         return True
 
     return False
+
+
+def is_added_required_fields(file_path):
+    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    if re.search("\+  name: .*\n.*\n.*\n   required: true", change_string) or re.search("\-  name: .*\n.*\n.*\n-  required: true", change_string) or re.search("\+  required: true", change_string):
+        print_error("You've changed the required fields in the integration file {}".format(file_path))
+        return True
+
+    return False
+
+
+def get_script_or_integration_id(file_path):
+    data_dictionary = get_json(file_path)
+
+    if data_dictionary:
+        commonfields = data_dictionary.get('commonfields', {})
+        return commonfields.get('id', ['-', ])
 
 
 def get_json(file_path):
@@ -223,41 +242,79 @@ def is_test_in_conf_json(file_path):
     return False
 
 
+def oversize_image(file_path):
+    data_dictionary = get_json(file_path)
+    image = data_dictionary.get('image', '')
+    if image == '':
+        return False
+
+    if ((len(image) - 22) / 4.0) * 3 > IMAGE_MAX_SIZE:
+         print_error("{} has too large logo, please update the logo to be under 10kB".format(file_path))
+         return True
+
+    return False
+
+
+def has_duplicated_ids(id_to_file):
+    has_duplicate = False
+    with open('./Tests/id_set.json', 'r') as id_set_file:
+        id_list = json.load(id_set_file)
+
+    for id in id_to_file.keys():
+        if id in id_list:
+            print_error("The ID {0} already exists, please update the file {1}".format(id, id_to_file[id]))
+            has_duplicate = True
+
+    return has_duplicate
+
+
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status --no-merges HEAD")
     modified_files, added_files = get_modified_files(files_string)
-    missing_release_notes = False
-    wrong_schema = False
-    is_changed_id = False
-    missing_test = False
+    has_schema_problem = False
     for file_path in modified_files:
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if changed_id(file_path):
-                is_changed_id = True
+                has_schema_problem = True
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if changed_id(file_path):
+                has_schema_problem = True
+            if oversize_image(file_path):
+                has_schema_problem = True
+            if is_added_required_fields(file_path):
+                has_schema_problem = True
 
         print "Validating {}".format(file_path)
         if not validate_file_release_notes(file_path):
-            missing_release_notes = True
+            has_schema_problem = True
 
         if not validate_schema(file_path):
-            wrong_schema = True
+            has_schema_problem = True
 
+    id_to_file = {}
     for file_path in added_files:
         print "Validating {}".format(file_path)
         if not validate_schema(file_path):
-            wrong_schema = True
+            has_schema_problem = True
 
         if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if not is_test_in_conf_json(file_path):
-                missing_test = True
+                has_schema_problem = True
                 print_error("You've failed to add the {0} to conf.json".format(file_path))
 
-    if missing_release_notes or wrong_schema or is_changed_id or missing_test:
+        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            id_to_file[get_script_or_integration_id(file_path)] = file_path
+        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            id_to_file[collect_ids(file_path)] = file_path
+
+    if has_schema_problem or has_duplicated_ids(id_to_file):
         sys.exit(1)
 
 
 def validate_all_files():
+    id_list = []
     found_wrong_name = False
+    duplicated_id = False
     wrong_schema = False
 
     for regex in CHECKED_TYPES_REGEXES:
@@ -268,21 +325,32 @@ def validate_all_files():
         for root, dirs, files in os.walk(directory):
             print_color("Validating {} directory:".format(directory), LOG_COLORS.GREEN)
             for file_name in files:
+                file_path = os.path.join(root, file_name)
                 # skipping hidden files
                 if file_name.startswith('.'):
                     continue
                 print "Validating " + file_name
                 if not file_name.lower().endswith(suffix):
-                     print_error("file " + os.path.join(root, file_name) + " should end with " + suffix)
+                     print_error("file " + file_path + " should end with " + suffix)
                      found_wrong_name = True
                 if not file_name.lower().startswith(prefix):
-                     print_error("file " + os.path.join(root, file_name) + " should start with " + prefix)
+                     print_error("file " + file_path + " should start with " + prefix)
                      found_wrong_name = True
-                if not validate_schema(os.path.join(root, file_name), regex):
-                    print_error("file " + os.path.join(root, file_name) + " schema is wrong.")
+                if not validate_schema(file_path, regex):
+                    print_error("file " + file_path + " schema is wrong.")
                     wrong_schema = True
+                if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                    _id = get_script_or_integration_id(file_path)
+                    if _id in id_list:
+                        print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
+                        duplicated_id = True
+                if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                    _id = collect_ids(file_path)
+                    if _id in id_list:
+                        print_error("ID {0} has appeared more than once, look at the file {1}".format(_id, file_path))
+                        duplicated_id = True
 
-    if wrong_schema or found_wrong_name:
+    if wrong_schema or found_wrong_name or duplicated_id:
         sys.exit(1)
 
 
