@@ -112,7 +112,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: {
-                'Url(obj.Data.Url && obj.Data.Url===val.Data.Url)' : {
+                'URL(val.Data === obj.Data)' : {
                     'Data': url
                 },
                 'IP(obj.Hostname && obj.Hostname===val.Hostname)' : {
