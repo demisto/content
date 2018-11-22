@@ -275,6 +275,13 @@ script: |-
           demisto.results(str(results))
           demisto.results(return_error('failure'))
 
+  def test_hash_djb2():
+      assert hash_djb2("test") == 2090756197, "Invalid value of hash_djb2"
+
+  def test_camelize():
+      assert camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_').__str__ == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
+      assert camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_').__str__ == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
+
 
   def test_flatten_cell():
       returned = []
@@ -320,6 +327,8 @@ script: |-
       # 'XML' : test_xml,
       'ENTRY' : test_entry,
       'TBLMD' : test_tbl_to_md,
+      'HASH'  : test_hash_djb2,
+      'CAMELIZE': test_camelize
       'FLTNCL': test_flatten_cell
   }
 
@@ -343,6 +352,7 @@ args:
   - XML
   - TBLMD
   - FLTNCL
+  - HASH
   description: one of python common server testing features
   defaultValue: dq
 scripttarget: 0
