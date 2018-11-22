@@ -27,6 +27,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: Initial Fetch Interval(In minutes)
+  name: FetchInterval
+  defaultvalue: "1"
+  type: 0
+  required: false
 script:
   script: |-
     ''' IMPORTS '''
@@ -41,6 +46,7 @@ script:
 
     API_KEY = demisto.params()['APIKey']
     SERVICE_KEY = demisto.params()['ServiceKey']
+    FETCH_INTERVAL = demisto.params()['FetchInterval']
 
     SERVER_URL = 'https://api.pagerduty.com/'
     CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
@@ -467,7 +473,7 @@ script:
         if lastRunObject:
             param_dict['since'] = lastRunObject['time']
         else:
-            param_dict['since'] = datetime.isoformat(now_time - timedelta(minutes=1))
+            param_dict['since'] = datetime.isoformat(now_time - timedelta(minutes=int(FETCH_INTERVAL)))
 
         param_dict['until'] = now
 
