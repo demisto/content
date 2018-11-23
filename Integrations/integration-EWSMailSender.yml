@@ -316,3 +316,5 @@ script:
     description: Send email via EWS
   dockerimage: demisto/py-ews
 releaseNotes: "-"
+tests:
+  - "EWS Mail Sender Test"
