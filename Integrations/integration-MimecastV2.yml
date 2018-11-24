@@ -174,8 +174,8 @@ script:
         Return the number of seconds for given date. If no date, return current.
         """
         if not d:
-            d = datetime.utcnow()
-        return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+            d = datetime.datetime.utcnow()
+        return int((d - datetime.datetime.utcfromtimestamp(0)).total_seconds())
 
 
     def auto_refresh_token():
@@ -186,7 +186,7 @@ script:
             integration_context = demisto.getIntegrationContext()
             last_update_ts = integration_context.get('token_last_update')
             current_ts = epoch_seconds()
-            if last_update is not None:
+            if last_update_ts is not None:
                 if current_ts - last_update_ts > 60 * 60 * 24 * 3 - 1800:
                     response = refresh_token_request()
                     current_ts = epoch_seconds()
