@@ -131,6 +131,7 @@ script:
     EMAIL_ADDRESS = demisto.params().get('email')
     PASSWORD = demisto.params().get('password')
 
+
     # remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -179,22 +180,20 @@ script:
 
     def auto_refresh_token():
         """
-        Check if we have a valid token, if not automatically renew validation time for 3 days
+        Check if we have a valid token, if not automatically renew validation time for 3 days when necessary params are provided
         """
-        if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
-            return_error('Credentials provided are expired, could not automatically refresh tokens. App ID, Email Address and Password are required.')
-        integration_context = demisto.getIntegrationContext()
-        if integration_context.get('token_last_update'):
-            if epoch_seconds() - integration_context.get('token_last_update') < 60 * 60 * 24 * 3 - 1800:
-                return False
-        response = refresh_token_request()
-        demisto.setIntegrationContext({'token_last_update': epoch_seconds()})
-
-        return True
+        if APP_ID and EMAIL_ADDRESS and PASSWORD:
+            integration_context = demisto.getIntegrationContext()
+            last_update_ts = integration_context.get('token_last_update')
+            current_ts = epoch_seconds()
+            if last_update is not None:
+                if current_ts - last_update_ts > 60 * 60 * 24 * 3 - 1800:
+                    response = refresh_token_request()
+                    current_ts = epoch_seconds()
+                    demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
     def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True):
-        is_token_refreshed = auto_refresh_token()
         is_user_auth = True
         url = BASE_URL + api_endpoint
         # 2 types of auth, user and non user, mostly user is needed
@@ -244,6 +243,14 @@ script:
 
             res.raise_for_status()
             return res.json()
+
+        except HTTPError as e:
+            LOG(e)
+            if e.response.status_code == 418:
+                if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
+                    return_error('Credentials provided are expired, could not automatically refresh tokens. App ID + Email Address + Password are required.')
+            else:
+                raise
 
         except Exception, e:
             LOG(e)
@@ -1325,6 +1332,8 @@ script:
     def refresh_token_request():
         if not EMAIL_ADDRESS:
             return_error('In order to refresh a token validty duration, account\'s email is required.')
+        if not ACCESS_KEY:
+            return_error('In order to refresh a token validty duration, account\'s access key is required.')
         email = EMAIL_ADDRESS.encode('utf-8')
         access_key = ACCESS_KEY.encode('utf-8')
         # Setup required variables
@@ -1388,7 +1397,7 @@ script:
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('command is %s' % (demisto.command(), ))
-
+    is_token_refreshed = auto_refresh_token()
 
     try:
         if demisto.command() == 'test-module':
