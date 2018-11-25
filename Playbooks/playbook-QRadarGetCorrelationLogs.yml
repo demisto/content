@@ -1,0 +1,345 @@
+id: QRadarGetCorrelationLogs
+version: -1
+name: QRadarGetCorrelationLogs
+fromversion: 4.0.0
+starttaskid: "0"
+description: Return the QRadar Correlation logs if exist
+tasks:
+  "0":
+    id: "0"
+    taskid: 36b27c8f-834b-475f-8d76-832d37484f06
+    type: start
+    task:
+      id: 36b27c8f-834b-475f-8d76-832d37484f06
+      version: -1
+      name: ""
+      description: Start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: c6fb0b48-74af-4672-8949-7d7f68d8827a
+    type: regular
+    task:
+      id: c6fb0b48-74af-4672-8949-7d7f68d8827a
+      version: -1
+      name: Create correlation logs query
+      description: Creates correlation logs query
+      scriptName: QRadarCreateCorrelationLogsQuery
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      additionalQueryFields:
+        simple: ${inputs.additionalQueryFields}
+      offenseID:
+        simple: ${inputs.offenseID}
+      qid:
+        simple: ${inputs.qid}
+      startTime:
+        simple: ${inputs.startTime}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 4713f637-d047-4acb-8075-636e91caee5c
+    type: regular
+    task:
+      id: 4713f637-d047-4acb-8075-636e91caee5c
+      version: -1
+      name: Get correlations logs result
+      description: Gets the correlations logs result from the search
+      scriptName: QRadarGetCorrelationsLogsResult
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      correlation_id:
+        simple: ${inputs.qid}
+      headers:
+        simple: ${inputs.headers}
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 05376af4-ea6e-47bf-81ad-1a9adda7675c
+    type: title
+    task:
+      id: 05376af4-ea6e-47bf-81ad-1a9adda7675c
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 91bdff87-91b9-4b26-8213-ad7280efa707
+    type: regular
+    task:
+      id: 91bdff87-91b9-4b26-8213-ad7280efa707
+      version: -1
+      name: Delete previous query
+      description: Delete previous query
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: QRadar.Log.Query
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 3abce201-3fc1-4361-898c-2c33d090a077
+    type: regular
+    task:
+      id: 3abce201-3fc1-4361-898c-2c33d090a077
+      version: -1
+      name: Create search
+      description: Creates search
+      script: '|||qradar-searches'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      headers: {}
+      query_expression:
+        simple: ${QRadar.CorrelationQuery}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: c9a11103-8b75-4ba8-88ba-4160c9e28291
+    type: playbook
+    task:
+      id: c9a11103-8b75-4ba8-88ba-4160c9e28291
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      description: Polls until search is complete
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        simple: ${QRadar.Search.ID}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: search_id
+      PollingCommandName:
+        simple: qradar-get-search
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: QRadar.Search(val.Status!=='COMPLETED' ).ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: b8231b1f-07bf-4e45-8081-3eeb76ad97cf
+    type: condition
+    task:
+      id: b8231b1f-07bf-4e45-8081-3eeb76ad97cf
+      version: -1
+      name: Is there a previously executed query?
+      description: Checks whether there is a previously executed query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${QRadar.CorrelationQuery}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: offenseID
+  value:
+    simple: ${incident.labels.id}
+  required: true
+  description: The offense ID to query.
+- key: startTime
+  value:
+    simple: ${incident.labels.start_time}
+  required: true
+  description: query from startTime (in timestamp format).
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: Interval to poll for results in minutes. Default is 1 minute.
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: Timeout in minutes. Default is 10 minutes.
+- key: qid
+  value:
+    simple: ${Correlation.QID}
+  required: true
+  description: The Correlation QID to query.
+- key: additionalQueryFields
+  value: {}
+  required: false
+  description: ""
+- key: headers
+  value: {}
+  required: false
+  description: Table headers
+- key: range
+  value: {}
+  required: false
+  description: Range of results to return (e.g. 5-11)
+outputs:
+- contextPath: QRadar.Log
+  description: The QRadar offense correlation logs
+  type: unknown
+- contextPath: QRadar.Log.QID
+  description: The log's correlation ID
+  type: unknown
+- contextPath: QRadar.Log.SourceIP
+  description: The log's source IP
+  type: unknown
+- contextPath: QRadar.Log.DestinationPort
+  description: The log's destination port
+  type: unknown
+- contextPath: QRadar.Log.SourcePort
+  description: The log's source port
+  type: unknown
+- contextPath: QRadar.Log.DestinationIP
+  description: The log's destination IP
+  type: unknown
+- contextPath: QRadar.Log.Category
+  description: The log's category
+  type: unknown
+- contextPath: QRadar.Log.IdentityIP
+  description: The log's identity IP
+  type: unknown
+- contextPath: QRadar.Log.Username
+  description: The log's username
+  type: unknown
+- contextPath: QRadar.Log.StartTime
+  description: The log's start time
+  type: unknown
+- contextPath: QRadar.Log.Magnitude
+  description: The log's magnitude
+  type: unknown
+- contextPath: QRadar.Log.ProtocolName
+  description: The log's protocol name
+  type: unknown
+releaseNotes: "Created QRadarGetCorrelationLogs playbook - an alternative to QRadarGetCorrelationLogs automation."
+tests:
+  - Forgive me for my sins but I did not create any test

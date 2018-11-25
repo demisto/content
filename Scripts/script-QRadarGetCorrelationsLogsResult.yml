@@ -1,0 +1,131 @@
+commonfields:
+  id: QRadarGetCorrelationsLogsResult
+  version: -1
+name: QRadarGetCorrelationsLogsResult
+script: |-
+  import json
+
+  args = demisto.args()
+  correlation_id = demisto.get(args, 'correlation_id')
+  resp = demisto.executeCommand('qradar-get-search-results',args)
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0],'Contents')
+
+      if not data:
+          resp[0]['HumanReadable'] = "No logs were found for correlation id {0}".format(correlation_id)
+      else:
+          data = data if isinstance(data,list) else [data]
+
+          QRadar = {}
+          QRadar['Log'] = []
+
+          for corr in data:
+
+              keys = corr.keys()
+              log = {}
+              log["QID"] = correlation_id
+              #Standardized known keys
+              log["SourceIP"] = demisto.get(corr,"sourceip")
+              keys.remove("sourceip") if "sourceip" in keys else None
+
+              log["DestinationPort"] = demisto.get(corr,"destinationport")
+              keys.remove("destinationport") if "destinationport" in keys else ""
+
+              log["SourcePort"] = demisto.get(corr,"sourceport")
+              keys.remove("sourceport") if "sourceport" in keys else ""
+
+              log["EventCount"] = demisto.get(corr,"eventcount")
+              keys.remove("eventcount") if "eventcount" in keys else ""
+
+              log["DestinationIP"] = demisto.get(corr,"destinationip")
+              keys.remove("destinationip") if "destinationip" in keys else ""
+
+              log["Category"] = demisto.get(corr,"categoryname_category")
+              keys.remove("categoryname_category") if "categoryname_category" in keys else ""
+
+              log["IdentityIP"] = demisto.get(corr,"identityip")
+              keys.remove("identityip") if "identityip" in keys else ""
+
+              log["Username"] = demisto.get(corr,"username")
+              keys.remove("username") if "username" in keys else ""
+
+              log["StartTime"] = demisto.get(corr,"starttime")
+              keys.remove("starttime") if "starttime" in keys else ""
+
+              log["Magnitude"] = demisto.get(corr,"magnitude")
+              keys.remove("magnitude") if "magnitude" in keys else ""
+
+              log["ProtocolName"] = demisto.get(corr,"protocolname_protocolid")
+              keys.remove("protocolname_protocolid") if "protocolname_protocolid" in keys else ""
+
+              #Push to context rest of the keys (won't be shown in 'outputs')
+              for key in keys:
+                  log[''.join(x for x in key.title() if not x.isspace())] = demisto.get(corr,key)
+
+              QRadar['Log'].append(log)
+
+          context = {"QRadar":QRadar}
+          resp[0]['EntryContext'] = context
+
+  demisto.results(resp)
+type: python
+tags: []
+comment: Gets the correlations logs from a search ID and QID
+enabled: true
+args:
+- name: search_id
+  required: true
+  description: The correlation search id
+- name: correlation_id
+  required: true
+  description: The Correlation QID to query.
+- name: headers
+  description: Tabel headers
+outputs:
+- contextPath: QRadar.Log
+  description: The QRadar offense correlation logs
+  type: unknown
+- contextPath: QRadar.Log.QID
+  description: The log's correlation ID
+  type: unknown
+- contextPath: QRadar.Log.SourceIP
+  description: The log's source IP
+  type: unknown
+- contextPath: QRadar.Log.DestinationPort
+  description: The log's destination port
+  type: unknown
+- contextPath: QRadar.Log.SourcePort
+  description: The log's source port
+  type: unknown
+- contextPath: QRadar.Log.DestinationIP
+  description: The log's destination IP
+  type: unknown
+- contextPath: QRadar.Log.Category
+  description: The log's category
+  type: unknown
+- contextPath: QRadar.Log.IdentityIP
+  description: The log's identity IP
+  type: unknown
+- contextPath: QRadar.Log.Username
+  description: The log's username
+  type: unknown
+- contextPath: QRadar.Log.StartTime
+  description: The log's start time
+  type: unknown
+- contextPath: QRadar.Log.Magnitude
+  description: The log's magnitude
+  type: unknown
+- contextPath: QRadar.Log.ProtocolName
+  description: The log's protocol name
+  type: unknown
+scripttarget: 0
+dependson:
+  must:
+  - '|||qradar-get-search-results'
+runonce: false
+releaseNotes: "-"
+tests:
+  - Forgive me for my sins but I did not create any test
