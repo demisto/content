@@ -64,6 +64,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 - display: Fetch URL incidents
   name: fetchURL
   defaultvalue: ""
@@ -78,16 +88,6 @@ configuration:
   name: fetchImpersonations
   defaultvalue: ""
   type: 8
-  required: false
-- display: Fetch incidents
-  name: isFetch
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
 script:
   script: |-
