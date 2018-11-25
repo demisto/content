@@ -7,10 +7,10 @@ description: Return the QRadar Correlation logs if exist
 tasks:
   "0":
     id: "0"
-    taskid: 36b27c8f-834b-475f-8d76-832d37484f06
+    taskid: 5c0ada9e-ba74-4b7d-85cb-81b2de1a1e3a
     type: start
     task:
-      id: 36b27c8f-834b-475f-8d76-832d37484f06
+      id: 5c0ada9e-ba74-4b7d-85cb-81b2de1a1e3a
       version: -1
       name: ""
       description: Start
@@ -18,56 +18,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 50
-        }
-      }
-    note: false
-  "1":
-    id: "1"
-    taskid: c6fb0b48-74af-4672-8949-7d7f68d8827a
-    type: regular
-    task:
-      id: c6fb0b48-74af-4672-8949-7d7f68d8827a
-      version: -1
-      name: Create correlation logs query
-      description: Creates correlation logs query
-      scriptName: QRadarCreateCorrelationLogsQuery
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
       - "6"
-    scriptarguments:
-      additionalQueryFields:
-        simple: ${inputs.additionalQueryFields}
-      offenseID:
-        simple: ${inputs.offenseID}
-      qid:
-        simple: ${inputs.qid}
-      startTime:
-        simple: ${inputs.startTime}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 50,
+          "y": 50
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 4713f637-d047-4acb-8075-636e91caee5c
+    taskid: bb637f9c-a735-4bbb-8ae3-d2bcd1471ed3
     type: regular
     task:
-      id: 4713f637-d047-4acb-8075-636e91caee5c
+      id: bb637f9c-a735-4bbb-8ae3-d2bcd1471ed3
       version: -1
       name: Get correlations logs result
       description: Gets the correlations logs result from the search
@@ -89,17 +55,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1070
+          "x": 50,
+          "y": 545
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: 05376af4-ea6e-47bf-81ad-1a9adda7675c
+    taskid: 1d3d6e9d-e7c3-452c-864d-b934743b9c1b
     type: title
     task:
-      id: 05376af4-ea6e-47bf-81ad-1a9adda7675c
+      id: 1d3d6e9d-e7c3-452c-864d-b934743b9c1b
       version: -1
       name: Done
       description: Done
@@ -110,50 +76,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1245
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 91bdff87-91b9-4b26-8213-ad7280efa707
-    type: regular
-    task:
-      id: 91bdff87-91b9-4b26-8213-ad7280efa707
-      version: -1
-      name: Delete previous query
-      description: Delete previous query
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "no"
-      index: {}
-      key:
-        simple: QRadar.Log.Query
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
           "x": 50,
-          "y": 370
+          "y": 720
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: 3abce201-3fc1-4361-898c-2c33d090a077
+    taskid: a5b5317c-c02d-4042-883c-ce2fb02da903
     type: regular
     task:
-      id: 3abce201-3fc1-4361-898c-2c33d090a077
+      id: a5b5317c-c02d-4042-883c-ce2fb02da903
       version: -1
       name: Create search
       description: Creates search
@@ -167,26 +100,30 @@ tasks:
     scriptarguments:
       headers: {}
       query_expression:
-        simple: ${QRadar.CorrelationQuery}
+        simple: select RULENAME(${inputs.qid}), sourceip, destinationip, eventcount,
+          sourceport, username, starttime, destinationport, magnitude, identityip,
+          CATEGORYNAME(category), PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}
+          from events where "CRE Name" IS NULL AND INOFFENSE(${inputs.offenseID})
+          START '${inputs.startTime}'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 50,
+          "y": 195
         }
       }
     note: false
   "7":
     id: "7"
-    taskid: c9a11103-8b75-4ba8-88ba-4160c9e28291
+    taskid: a4156c68-3d15-43ad-826a-b0d2d5dcf1b3
     type: playbook
     task:
-      id: c9a11103-8b75-4ba8-88ba-4160c9e28291
+      id: a4156c68-3d15-43ad-826a-b0d2d5dcf1b3
       version: -1
       name: GenericPolling
-      playbookName: GenericPolling
       description: Polls until search is complete
+      playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
@@ -214,42 +151,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: b8231b1f-07bf-4e45-8081-3eeb76ad97cf
-    type: condition
-    task:
-      id: b8231b1f-07bf-4e45-8081-3eeb76ad97cf
-      version: -1
-      name: Is there a previously executed query?
-      description: Checks whether there is a previously executed query
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "1"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${QRadar.CorrelationQuery}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -258,8 +161,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 492.5,
+        "height": 735,
+        "width": 380,
         "x": 50,
         "y": 50
       }
