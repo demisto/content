@@ -49,6 +49,8 @@ tasks:
         simple: ${inputs.qid}
       headers:
         simple: ${inputs.headers}
+      range:
+        simple: ${inputs.range}
       search_id:
         simple: ${QRadar.Search.ID}
     separatecontext: false

@@ -82,7 +82,9 @@ args:
   required: true
   description: The Correlation QID to query.
 - name: headers
-  description: Tabel headers
+  description: Table headers
+- name: range
+  description: Range for results (e.g. 0-20)
 outputs:
 - contextPath: QRadar.Log
   description: The QRadar offense correlation logs
