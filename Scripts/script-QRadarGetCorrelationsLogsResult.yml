@@ -11,9 +11,9 @@ script: |-
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0],'EntryContext')
+      data = demisto.get(resp[0],'Contents')
 
-      if not data:
+      if data == u'There is no output result':
           resp[0]['HumanReadable'] = "No logs were found for correlation id {0}".format(correlation_id)
       else:
           data = data if isinstance(data,list) else [data]

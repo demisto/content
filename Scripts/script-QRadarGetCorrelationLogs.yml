@@ -2,6 +2,7 @@ commonfields:
   id: QRadarGetCorrelationLogs
   version: -1
 name: QRadarGetCorrelationLogs
+deprecated: true
 script: |-
   QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, sourceport, username, starttime, destinationport, magnitude, identityip, CATEGORYNAME(category), PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid){1} from events where \"CRE Name\" IS NULL AND INOFFENSE({2}) START '{3}'"
 
@@ -18,9 +19,9 @@ script: |-
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0],'Contents.events')
+      data = demisto.get(resp[0],'Contents')
 
-      if not data:
+      if data == u'There is no output result':
           resp[0]['HumanReadable'] = "No logs were found for correlation id {0}".format(correlation_id)
       else:
           data = data if isinstance(data,list) else [data]
@@ -139,3 +140,4 @@ scripttarget: 0
 dependson:
   must:
   - qradar-searches
+releaseNotes: "Deprecated QRadarGetCorrelationLog script (replaced with playbook by the same name)"
