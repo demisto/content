@@ -619,6 +619,10 @@
             "playbookID": "PhishAi-Test"
         },
         {
+            "integrations": "Phish.AI",
+            "playbookID": "Test-Detonate URL - Phish.AI"
+        },
+        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -759,7 +763,6 @@
         "XFE": "Need to check the reason for skipping",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
-        "Phish.AI": "Need to check the reason for skipping",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data"
