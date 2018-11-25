@@ -1380,7 +1380,7 @@ script:
             now = now - timedelta(days=3)
             last_run = now
         else:
-            last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S') # Converts string to datetime object
+            last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S') #Converts string to datetime object
         current_run = last_run
         threats = get_threats_request().get('page_items', [])
 
