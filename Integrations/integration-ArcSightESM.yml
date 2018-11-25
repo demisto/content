@@ -1236,4 +1236,4 @@ script:
     execution: true
   isfetch: true
 hidden: false
-releaseNotes: "-"
+releaseNotes: "Added logout handling"
