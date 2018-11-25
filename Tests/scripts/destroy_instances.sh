@@ -6,7 +6,7 @@ else
    set -e
 
    INSTANCE_ID=$(cat instance_ids)
-   USER="centos"
+   USER="ec2-user"
 
    # collect log file to artifacts
    PUBLIC_IP=$(cat public_ip)
