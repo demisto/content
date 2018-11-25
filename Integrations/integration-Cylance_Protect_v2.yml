@@ -1391,7 +1391,7 @@ script:
                 incident = threat_to_incident(threat)
                 incidents.append(incident)
             if last_found > current_run:
-                current_run = last_found + timedelta(seconds=1)
+                current_run = last_found
 
         demisto.incidents(incidents)
         demisto.setLastRun({ 'time': current_run.isoformat().split('.')[0] })
