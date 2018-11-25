@@ -234,4 +234,4 @@ script:
   runonce: false
 releaseNotes: 'Phish.AI enhancement'
 tests:
-  - 'Forgive me for my sins but I did not create any test'
+  - PhishAi-Test
