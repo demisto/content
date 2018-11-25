@@ -88,12 +88,12 @@ tasks:
     task:
       id: 96353c64-dc04-4475-89a8-f0f90922090f
       version: -1
-      name: Get Original Email - EWS_copy
+      name: Get Original Email - EWS
       description: |-
         Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
 
         You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
-      playbookName: Get Original Email - EWS_copy
+      playbookName: Get Original Email - EWS
       type: playbook
       iscommand: false
       brand: ""
