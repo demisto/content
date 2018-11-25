@@ -24,6 +24,7 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 72b494c4-aa64-4146-8678-0bd9cb289351
@@ -73,7 +74,6 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue: {}
-      extend-context: {}
       fields:
         simple: Data
       path:
