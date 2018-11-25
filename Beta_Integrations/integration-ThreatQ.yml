@@ -390,3 +390,6 @@ script:
       description: DBotScore Malicious status
     description: Run file check against ThreatQ
   runonce: false
+releaseNotes: "ThreatQ beta integration"
+tests:
+- Forgive me for my sins but I did not create any test
