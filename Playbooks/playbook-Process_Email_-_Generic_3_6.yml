@@ -2,7 +2,7 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
-toversion: 4.0.0
+toversion: 3.6.0
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -651,3 +651,6 @@ outputs:
 - contextPath: Email.Format
   description: The format of the email if available
   type: string
+tests:
+  - Phishing test - attachment
+  - Phishing test - Inline

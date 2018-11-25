@@ -12,8 +12,9 @@ from test_integration import test_integration
 from test_utils import print_color, print_error, print_warning, LOG_COLORS
 
 
+RUN_ALL_TESTS = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
-
+INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -35,6 +36,7 @@ def options_handler():
     parser.add_argument('-t', '--slack', help='The token for slack', required=True)
     parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
+    parser.add_argument('-g', '--buildName', help='The build name', required=True)
     options = parser.parse_args()
 
     return options
@@ -76,7 +78,7 @@ def update_test_msg(integrations, test_message):
 
 
 def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, CircleCI, buildNumber, server_url):
+             test_message, test_options, slack, CircleCI, buildNumber, server_url, build_name):
     print '------ Test %s start ------' % (test_message,)
     # run test
     succeed, inc_id = test_integration(c, integrations, playbook_id, test_options)
@@ -87,7 +89,7 @@ def run_test(c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
     else:
         print 'Failed: %s failed' % (test_message,)
         failed_playbooks.append(playbook_id)
-        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url)
+        notify_failed_test(slack, CircleCI, playbook_id, buildNumber, inc_id, server_url, build_name)
 
     print '------ Test %s end ------' % (test_message,)
 
@@ -115,12 +117,12 @@ def get_user_name_from_circle(circleci_token, build_number):
     return user_details.get('name', '')
 
 
-def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url):
+def notify_failed_test(slack, CircleCI, playbook_id, build_number, inc_id, server_url, build_name):
     circle_user_name = get_user_name_from_circle(CircleCI, build_number)
     sc = SlackClient(slack)
     user_id = retrieve_id(circle_user_name, sc)
 
-    text = "{0} Failed\n{1}".format(playbook_id, server_url) if inc_id == -1 else "{0} Failed\n{1}/#/WorkPlan/{2}".format(playbook_id, server_url, inc_id)
+    text = "{0} - {1} Failed\n{2}".format(build_name, playbook_id, server_url) if inc_id == -1 else "{0} - {1} Failed\n{2}/#/WorkPlan/{3}".format(build_name, playbook_id, server_url, inc_id)
 
     if user_id:
         sc.api_call(
@@ -161,6 +163,7 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
                               item["name"] == integration['name']]
         if integration_params:
             integration['params'] = integration_params[0].get('params', {})
+            integration['byoi'] = integration_params[0].get('byoi', True)
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
@@ -169,42 +172,25 @@ def set_integration_params(demisto_api_key, integrations, secret_params):
             }
 
 
-def collect_integrations(integrations_conf, is_filter_configured,
-                         skipped_integration, skipped_integrations_conf):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
     integrations = []
+    is_nightly_integration = False
     has_skipped_integration = False
     for integration in integrations_conf:
-        if type(integration) is dict:
-            name = integration.get('name')
-            if name in skipped_integrations_conf:
-                if name not in skipped_integration:
-                    skipped_integration.append(name)
+        if integration in skipped_integrations_conf.keys():
+            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
+            has_skipped_integration = True
 
-                has_skipped_integration = True
-                break
+        if integration in nightly_integrations:
+            is_nightly_integration = True
 
-            # dict description
-            integrations.append({
-                'name': integration.get('name'),
-                'byoi': integration.get('byoi', True),
-                'params': {}
-            })
-        else:
-            if integration in skipped_integrations_conf:
-                if integration not in skipped_integration:
-                    skipped_integration.append(integration)
+        # string description
+        integrations.append({
+            'name': integration,
+            'params': {}
+        })
 
-                has_skipped_integration = True
-                break
-
-            # string description
-            integrations.append({
-                'name': integration,
-                'byoi': True,
-                'params': {}
-            })
-
-    return has_skipped_integration, integrations
+    return has_skipped_integration, integrations, is_nightly_integration
 
 
 def extract_filtered_tests():
@@ -212,8 +198,9 @@ def extract_filtered_tests():
         filterd_tests = filter_file.readlines()
         filterd_tests = [line.strip('\n') for line in filterd_tests]
         is_filter_configured = True if filterd_tests else False
+        run_all = True if RUN_ALL_TESTS in filterd_tests else False
 
-    return filterd_tests, is_filter_configured
+    return filterd_tests, is_filter_configured, run_all
 
 
 def generate_demisto_api_key(c):
@@ -249,6 +236,7 @@ def main():
     slack = options.slack
     CircleCI = options.circleci
     buildNumber = options.buildNumber
+    build_name = options.buildName
 
     if not (username and password and server):
         print_error('You must provide server user & password arguments')
@@ -264,59 +252,62 @@ def main():
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
 
+    default_test_timeout = conf.get('testTimeout', 30)
+
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
+    nightly_integrations = conf['nigthly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filterd_tests, is_filter_configured = extract_filtered_tests()
-    if is_filter_configured:
+    filterd_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
+    if is_filter_configured and not run_all_tests:
         is_nightly = True
 
     if not tests or len(tests) is 0:
         print('no integrations are configured for test')
         return
 
-    skipped_tests = []
     failed_playbooks = []
     succeed_playbooks = []
-    skipped_integration = []
+    skipped_tests = set([])
+    skipped_integration = set([])
     for t in tests:
         playbook_id = t['playbookID']
         nightly_test = t.get('nightly', False)
         integrations_conf = t.get('integrations', [])
-        skip_test = True if nightly_test and not is_nightly else False
 
         test_message = 'playbook: ' + playbook_id
 
         test_options = {
-            'timeout': t['timeout'] if 'timeout' in t else conf.get('testTimeout', 30),
-            'interval': conf.get('testInterval', 10)
+            'timeout': t.get('timeout', default_test_timeout)
         }
 
         if not isinstance(integrations_conf, list):
             integrations_conf = [integrations_conf]
 
-        has_skipped_integration, integrations = collect_integrations(
-            integrations_conf, is_filter_configured, skipped_integration,
-            skipped_integrations_conf)
+        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
+            integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+
+        skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
 
         # Skip nightly test
-        if skip_test:
-            print '------ Test %s start ------' % (test_message, )
+        if skip_nightly_test:
+            print '------ Test %s start ------' % (test_message,)
             print 'Skip test'
             print '------ Test %s end ------' % (test_message,)
 
             continue
 
-        # Skip filtered test
-        if is_filter_configured and playbook_id not in filterd_tests:
-            continue
+        if not run_all_tests:
+            # Skip filtered test
+            if is_filter_configured and playbook_id not in filterd_tests:
+                continue
 
         # Skip bad test
-        if playbook_id in skipped_tests_conf:
-            skipped_tests.append(playbook_id)
+        if playbook_id in skipped_tests_conf.keys():
+            skipped_tests.add("{0} - reason: {1}".format(playbook_id, skipped_tests_conf[playbook_id]))
             continue
 
         # Skip integration
@@ -328,7 +319,7 @@ def main():
 
         run_test(c, failed_playbooks, integrations, playbook_id,
                  succeed_playbooks, test_message, test_options, slack, CircleCI,
-                 buildNumber, server)
+                 buildNumber, server, build_name)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration)
 
@@ -336,6 +327,9 @@ def main():
     os.remove(FILTER_CONF)
 
     if len(failed_playbooks):
+        with open("./Tests/is_build_failed.txt", "w") as is_build_failed_file:
+            is_build_failed_file.write('Build failed')
+
         sys.exit(1)
 
 

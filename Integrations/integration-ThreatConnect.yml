@@ -329,7 +329,7 @@ script:
             owners_arr.append(owner.name)
         filter1.add_owner(owners_arr)
         if demisto.get(demisto.args(), 'ratingThreshold'):
-            filters.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GT)
+            filter1.add_pf_rating(int(demisto.args()['ratingThreshold']), FilterOperator.GT)
         if demisto.get(demisto.args(), 'confidenceThreshold'):
             filter1.add_pf_confidence(int(demisto.args()['confidenceThreshold']), FilterOperator.GT)
         indicators.retrieve()
@@ -691,4 +691,3 @@ script:
   dockerimage: demisto/threatconnect-sdk
 tests:
   - "test-ThreatConnect"
-releaseNotes: "-"

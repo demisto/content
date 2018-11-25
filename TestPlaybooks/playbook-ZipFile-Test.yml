@@ -1,15 +1,15 @@
 id: ZipFile-Test
-version: -1
+version: 38
 name: ZipFile-Test
 description: Test ZipFile and UnzipFile scripts
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 619d8c98-8a51-4685-836b-cab808ddf1fa
+    taskid: 03783473-e075-4ca8-8de8-9dbad47fa8df
     type: start
     task:
-      id: 619d8c98-8a51-4685-836b-cab808ddf1fa
+      id: 03783473-e075-4ca8-8de8-9dbad47fa8df
       version: -1
       name: ""
       iscommand: false
@@ -21,51 +21,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 450,
+          "y": -200
         }
       }
+    note: false
   "1":
     id: "1"
-    taskid: 0e7b75cf-4790-4908-816c-c4dc95676520
+    taskid: e0abbdd7-6fff-4431-8aad-c291d5fd11fd
     type: regular
     task:
-      id: 0e7b75cf-4790-4908-816c-c4dc95676520
+      id: e0abbdd7-6fff-4431-8aad-c291d5fd11fd
       version: -1
-      name: FileCreateAndUpload
-      description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      data:
-        simple: something
-      entryId: {}
-      filename:
-        simple: original.txt
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "2":
-    id: "2"
-    taskid: f64580a9-8abe-4c1a-8be4-3769f4fd28c0
-    type: regular
-    task:
-      id: f64580a9-8abe-4c1a-8be4-3769f4fd28c0
-      version: -1
-      name: ZipFile
-      description: Zip a file
-      scriptName: ZipFile
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
       type: regular
       iscommand: false
       brand: ""
@@ -73,24 +43,36 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      entryID:
-        simple: ${File.EntryID}
-      zipName:
-        simple: testing.zip
+      body: {}
+      filename:
+        simple: test.zip
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/blob/master/TestData/TestImage.jpg.zip?raw=true
+      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 450,
+          "y": 90
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: c7de4174-cb84-434e-8684-9a00490560bb
+    taskid: e826184f-b29b-403b-8123-a97431eb6812
     type: regular
     task:
-      id: c7de4174-cb84-434e-8684-9a00490560bb
+      id: e826184f-b29b-403b-8123-a97431eb6812
       version: -1
       name: UnzipFile
       description: Unzip a file using fileName or entryID to specify a file. Files
@@ -101,27 +83,29 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "8"
     scriptarguments:
       entryID:
-        simple: ${File(val.Extension=='zip').EntryID}
+        simple: ${File.EntryID}
       fileName: {}
       lastZipFileInWarroom: {}
-      password: {}
+      password:
+        simple: '{ENCRYPTED}Agrn7bHc9tA+Or7VMAcjoLRn0giBKLTnDkqtL8yrmoFHmUZorGAUgGAmB+z3trwEn9e5AMpYGLyWpE4slO7pHw=='
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 450,
+          "y": 240
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 4895c39c-31a7-4090-804c-a62e8ce9f606
+    taskid: f0586d3e-9846-4d34-8949-83390e6d9899
     type: regular
     task:
-      id: 4895c39c-31a7-4090-804c-a62e8ce9f606
+      id: f0586d3e-9846-4d34-8949-83390e6d9899
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -135,133 +119,217 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      index: {}
       key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 450,
+          "y": -70
         }
       }
-  "5":
-    id: "5"
-    taskid: 68db8e23-4085-4bd0-8ae6-58a35f8b31e7
+    note: false
+  "8":
+    id: "8"
+    taskid: 30c92aa8-4bfb-4795-828f-f76201ca4a30
     type: regular
     task:
-      id: 68db8e23-4085-4bd0-8ae6-58a35f8b31e7
+      id: 30c92aa8-4bfb-4795-828f-f76201ca4a30
       version: -1
-      name: ReadFile
-      description: Load the contents of a file into context.
-      scriptName: ReadFile
+      name: ZipFile
+      description: Zip a file and upload to war room
+      scriptName: ZipFile
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "13"
     scriptarguments:
       entryID:
-        simple: ${File.EntryID=>val[2]}
-      maxFileSize: {}
+        simple: ${File.[1].EntryID}
+      password: {}
+      zipName: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 450,
+          "y": 400
         }
       }
-  "6":
-    id: "6"
-    taskid: 0803fb70-0705-4a6b-86be-2caa80fd5381
-    type: condition
+    note: false
+  "13":
+    id: "13"
+    taskid: 8cedc47f-3567-412e-8a94-ab88e5d9408d
+    type: regular
     task:
-      id: 0803fb70-0705-4a6b-86be-2caa80fd5381
+      id: 8cedc47f-3567-412e-8a94-ab88e5d9408d
       version: -1
-      name: VerifySuccessfulCycle
-      description: Check whether the initial file was zipped and unzipped properly
-        by comparing the initial and unzipped files md5. If the md5 is not equal to
-        expected it means that the process was not successful.
-      type: condition
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
-      - "7"
+      '#none#':
+      - "14"
     scriptarguments:
-      firstFile:
-        simple: ${File.EntryID}
-      secondFile: {}
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isNotExists
-          left:
-            value:
-              complex:
-                root: File
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: File.Name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: original.txt
-                - - operator: string.isNotEqual
-                    left:
-                      value:
-                        simple: File.MD5
-                      iscontext: true
-                    right:
-                      value:
-                        simple: 437b930db84b8079c2dd804a71936b5f
-                accessor: MD5
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1069
+          "x": 900,
+          "y": -70
         }
       }
-  "7":
-    id: "7"
-    taskid: 63c7ce47-81eb-46d1-8367-ab731abc028f
+    note: false
+  "14":
+    id: "14"
+    taskid: e271f1cb-3e1d-418a-8145-88b8a551ba09
     type: regular
     task:
-      id: 63c7ce47-81eb-46d1-8367-ab731abc028f
+      id: e271f1cb-3e1d-418a-8145-88b8a551ba09
       version: -1
-      name: closeInvestigation
-      description: Close the current investigation
-      script: Builtin|||closeInvestigation
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
       type: regular
-      iscommand: true
-      brand: Builtin
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
     scriptarguments:
-      closeNotes: {}
-      closeReason: {}
-      id: {}
+      body: {}
+      filename:
+        simple: test.tar
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/blob/master/TestData/TestImage.jpg.tar?raw=true
+      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 900,
+          "y": 90
         }
       }
+    note: false
+  "15":
+    id: "15"
+    taskid: bac708d2-63c9-488a-8c35-8c19b931fa8a
+    type: regular
+    task:
+      id: bac708d2-63c9-488a-8c35-8c19b931fa8a
+      version: -1
+      name: UnzipFile
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password:
+        simple: '{ENCRYPTED}lmXEAbAk72OuXO7HJ1SJoUuXtf2fP0jyApmi/BK3o47AN2IV5wrFjEw4XLEmxDGf8QbntRgP6O/9jIApbzix2Q=='
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 400
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 4a0a616f-fbec-4f6a-8134-1386ecb7b0e5
+    type: regular
+    task:
+      id: 4a0a616f-fbec-4f6a-8134-1386ecb7b0e5
+      version: -1
+      name: CloseInvestigation
+      description: Close an investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 620
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: e0b1b420-6018-4036-8131-efe9f251dcff
+    type: regular
+    task:
+      id: e0b1b420-6018-4036-8131-efe9f251dcff
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 240
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
-        "width": 380,
-        "x": 50,
-        "y": 50
+        "height": 915,
+        "width": 830,
+        "x": 450,
+        "y": -200
       }
     }
   }

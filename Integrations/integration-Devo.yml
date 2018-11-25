@@ -80,7 +80,7 @@ script:
         return sign.hexdigest()
 
 
-    def get_headers(body = ''):
+    def get_headers(body=''):
         headers = {
             'Content-Type': 'application/json'
         }
@@ -93,7 +93,9 @@ script:
         return headers
 
 
-    def send_request(path, headers = get_headers(), method = 'get', body = {}, params = {}):
+    def send_request(path, headers=get_headers(), method='get', body=None, params=None):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
         url = '{}/{}'.format(SERVER_URL, path)
 
         res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
@@ -220,23 +222,23 @@ script:
       description: A query Id to launch. The body must have a query or queryId parameter.
     - name: from
       required: true
-      description: A starting date timestamp in UTC format, e.g 2012-03-01T10:00:00Z.
+      description: 'The start date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z'
     - name: to
-      description: An ending date timestamp in UTC format, e.g 2012-03-01T10:00:00Z.
-        With no ending date, the query must be continuous.
+      description: 'The end date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z,
+        set to the current time by default.'
     - name: skip
       description: Skip the first X elements of the query.
     - name: limit
       description: Limit the results of the query. The query will stop after returning
         the first X elements of the query or reaching its end.
+      defaultValue: "30"
     - name: writeToContext
-      description: Wether to write results to context or not
+      description: Whether to write results to context or not
       defaultValue: "true"
     outputs:
     - contextPath: Devo.Results
       description: The query results
     description: Perform a query.
   runonce: false
-releaseNotes: "Added Devo integration"
 tests:
     - devo_test_playbook

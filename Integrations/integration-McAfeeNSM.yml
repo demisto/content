@@ -684,4 +684,3 @@ script:
       type: string
     description: Get all available attack definitions in NSM
   runonce: false
-releaseNotes: "Added output types"

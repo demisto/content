@@ -426,7 +426,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
-releaseNotes: Checking File type also in File.Extenstion and ignoreing case
 tests:
 - VxStream Test
 - detonate_file_-_generic_test

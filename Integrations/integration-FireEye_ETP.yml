@@ -912,4 +912,3 @@ script:
       90 days old are not available.
   isfetch: true
   runonce: false
-releaseNotes: "fix proxy configuration"

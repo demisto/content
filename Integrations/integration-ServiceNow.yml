@@ -774,7 +774,6 @@ script:
     except Exception as e:
         LOG(e)
         LOG.print_log()
-        raise
         return_error(e.message)
   type: python
   commands:
@@ -790,6 +789,7 @@ script:
       - problem
       - change_request
       - sc_request
+      - sc_task
       description: Ticket type
       defaultValue: incident
     - name: number
@@ -879,6 +879,7 @@ script:
       - problem
       - change_request
       - sc_request
+      - sc_task
       description: Ticket type
       defaultValue: incident
     - name: urgency
@@ -1241,6 +1242,7 @@ script:
       - problem
       - change_request
       - sc_request
+      - sc_task
       description: Ticket type
       defaultValue: incident
     - name: urgency
@@ -1568,6 +1570,7 @@ script:
       - problem
       - change_request
       - sc_request
+      - sc_task
       description: Ticket type
       defaultValue: incident
     - name: link
@@ -1616,6 +1619,7 @@ script:
       - problem
       - change_request
       - sc_request
+      - sc_task
       description: Ticket type
       defaultValue: incident
     - name: comment
@@ -1661,6 +1665,7 @@ script:
       - problem
       - change_request
       - sc_request
+      - sc_task
       description: Ticket type
       defaultValue: incident
     - name: query
@@ -1733,6 +1738,7 @@ script:
       - problem
       - change_request
       - sc_request
+      - sc_task
       description: Ticket type
       defaultValue: incident
     - name: file_id
@@ -1819,4 +1825,5 @@ script:
       type: string
     description: query the cmdb_ci_computer table with a computer code
   isfetch: true
-releaseNotes: "Fixed outputs"
+tests:
+    - Run all tests

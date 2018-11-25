@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b95322d1-6762-46bd-89e6-3591301699ce
+    taskid: 3e125f96-9572-4238-82bb-8156f7d704d8
     type: start
     task:
-      id: b95322d1-6762-46bd-89e6-3591301699ce
+      id: 3e125f96-9572-4238-82bb-8156f7d704d8
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,13 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "2":
     id: "2"
-    taskid: f08ad922-1a02-47aa-876b-8ac5d35f0631
+    taskid: 6398bbcc-ac42-4468-8693-489d0e6a037f
     type: regular
     task:
-      id: f08ad922-1a02-47aa-876b-8ac5d35f0631
+      id: 6398bbcc-ac42-4468-8693-489d0e6a037f
       version: -1
       name: Test DQ
       scriptName: TestPYCommonServer
@@ -50,12 +51,13 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 236318a3-e1ff-485c-8ea8-c722c83b3c91
+    taskid: adbd4194-10e5-4f0d-8331-01b250983002
     type: regular
     task:
-      id: 236318a3-e1ff-485c-8ea8-c722c83b3c91
+      id: adbd4194-10e5-4f0d-8331-01b250983002
       version: -1
       name: Test MarkDown
       description: Tests for common functions createEntry and TableToMarkDown
@@ -65,7 +67,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
       test_type:
         simple: MD
@@ -77,12 +79,13 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
-    taskid: 0848edaa-e517-4371-8ca9-baf1f0b9266b
+    taskid: 286eab76-1d7f-4653-8b62-9e92051f900f
     type: regular
     task:
-      id: 0848edaa-e517-4371-8ca9-baf1f0b9266b
+      id: 286eab76-1d7f-4653-8b62-9e92051f900f
       version: -1
       name: Test XML JSON relations
       description: 'Tests for common functions xml2json and json2xml '
@@ -104,15 +107,17 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "5":
     id: "5"
-    taskid: c6a2e171-6cc4-428d-819d-7a47d87a239b
+    taskid: 8d2c15bc-13be-4c1d-81b5-5e1044e4b97e
     type: regular
     task:
-      id: c6a2e171-6cc4-428d-819d-7a47d87a239b
+      id: 8d2c15bc-13be-4c1d-81b5-5e1044e4b97e
       version: -1
       name: Test tableToMarkdown
-      description: Tests underscoreToCamelCase and tableToMarkDown with and without headerTransform
+      description: Tests underscoreToCamelCase and tableToMarkDown with and without
+        headerTransform
       scriptName: TestPYCommonServer
       type: regular
       iscommand: false
@@ -126,15 +131,43 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 725
+          "y": 895
         }
       }
+    note: false
+  "6":
+    id: "6"
+    taskid: ba3f0206-8e60-49ca-8deb-f4d7e46d23fe
+    type: regular
+    task:
+      id: ba3f0206-8e60-49ca-8deb-f4d7e46d23fe
+      version: -1
+      name: Test hash function
+      scriptName: TestPYCommonServer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      test_type:
+        simple: HASH
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 770,
+        "height": 940,
         "width": 380,
         "x": 50,
         "y": 50
