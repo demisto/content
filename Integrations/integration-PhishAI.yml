@@ -228,9 +228,10 @@ script:
       description: url to check status for
     outputs:
     - contextPath: URL.Data
-      description: URL address
+      description: URL's Address
     - contextPath: URL.Status
-    description: checks on url's status, e.g. completed/in progress
+      description: URL's Status
+    description: Checks on url's status, e.g. completed/in progress
   runonce: false
 releaseNotes: 'Phish.AI enhancement'
 tests:
