@@ -141,3 +141,5 @@ dependson:
   must:
   - qradar-searches
 releaseNotes: "Deprecated QRadarGetCorrelationLog script (replaced with playbook by the same name)"
+tests:
+- Forgive me for my sins but I did not create any test
