@@ -7,13 +7,18 @@ category: Network Security
 image: data:image/png;base64,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
 description: Protect your cloud assets and private network
 configuration:
+- display: Stealthwatch's server URL
+  name: serverURL
+  defaultvalue: ""
+  type: 0
+  required: true
 - display: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<api_key>"
   name: APIKey
   defaultvalue: ""
   type: 4
   required: true
 - display: Use system proxy settings
-  name: useProxy
+  name: proxy
   defaultvalue: "true"
   type: 8
   required: false
@@ -32,11 +37,6 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Stealthwatch's server URL
-  name: serverURL
-  defaultvalue: ""
-  type: 0
-  required: true
 script:
   script: |+
     ''' IMPORTS '''
@@ -50,7 +50,8 @@ script:
     requests.packages.urllib3.disable_warnings()
 
     ''' GLOBAL VARS '''
-    SERVER_URL=demisto.params().get('serverURL') + '/api/v3'
+    SERVER = demisto.params().get('serverURL')[:-1] if demisto.params().get('serverURL').endswith('/') else demisto.params().get('serverURL')
+    SERVER_URL=SERVER + '/api/v3'
     API_KEY=demisto.params()['APIKey']
 
     USE_SSL = not demisto.params().get('insecure')
@@ -63,15 +64,11 @@ script:
 
     ''' HELPER FUNCTIONS '''
 
-    def load_proxy():
-        """ Loads the system configured proxy if enabled in configuration """
-        proxy = {}
-        if "proxy" in demisto.params():
-            proxy["http"] = os.environ["http_proxy"]
-            proxy["https"] = os.environ["https_proxy"]
-        return proxy
-
-    PROXY = load_proxy()
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
 
     def http_request(method, url_suffix, params_dict, headers, data=None):
         req_params = {
@@ -89,7 +86,6 @@ script:
                 verify=USE_SSL,
                 params=req_params,
                 headers=headers,
-                proxies=PROXY,
                 data=data
             )
             res.raise_for_status()
@@ -280,10 +276,19 @@ script:
         ip = demisto.args().get('ip')
 
         if not (domain or ip):
-            return 'Please enter either domain or ip'
+            return {
+                "Type" : entryTypes["error"],
+                "ContentsFormat" : formats["text"],
+                "Contents" : 'Please enter either domain or ip'
+            }
+
 
         if domain and ip:
-            return 'Please enter only domain or ip, not both'
+            return {
+                "Type" : entryTypes["error"],
+                "ContentsFormat" : formats["text"],
+                "Contents" : 'Please enter only domain or ip, not both'
+            }
 
         identifier = None
         if domain:
@@ -496,7 +501,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Found the following session data', data_output),
             'EntryContext': {
-                "Stealthwatch.Session(val==obj)": final_sessions_data
+                "Stealthwatch.Session(val.id==obj.id)": final_sessions_data
             }
         }
 
@@ -656,6 +661,7 @@ script:
       type: boolean
     - contextPath: Stealthwatch.Alert.source_info.ips
       description: IP of the alert's source
+      type: string
     - contextPath: Stealthwatch.Alert.source_info.hostname
       description: Hostname of the alert's source
       type: string
@@ -706,6 +712,7 @@ script:
       type: boolean
     - contextPath: Stealthwatch.Alert.source_info.ips
       description: IP of the alert's source
+      type: string
     - contextPath: Stealthwatch.Alert.source_info.hostname
       description: Hostname of the alert's source
       type: string
@@ -824,6 +831,7 @@ script:
       - internal
       description: Select type of session - external/internal to receive data only
         about this kind of session
+      defaultValue: all
     outputs:
     - contextPath: Stealthwatch.Session.id
       description: Session ID
