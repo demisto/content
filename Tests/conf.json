@@ -19,6 +19,7 @@
           "playbookID": "URLDecode-Test"
         },
         {
+          "integrations": "Cuckoo Sandbox",
           "playbookID": "CuckooTest"
         },
         {
