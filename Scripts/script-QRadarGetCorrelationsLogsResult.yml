@@ -19,7 +19,7 @@ script: |-
           data = data if isinstance(data,list) else [data]
 
           QRadar = {}
-          QRadar['Log'] = []
+          QRadar['QRadar.Log'] = []
 
           for corr in data:
 
@@ -64,10 +64,9 @@ script: |-
               for key in keys:
                   log[''.join(x for x in key.title() if not x.isspace())] = demisto.get(corr,key)
 
-              QRadar['Log'].append(log)
+              QRadar['QRadar.Log'].append(log)
 
-          context = {"QRadar":QRadar}
-          resp[0]['EntryContext'] = context
+          resp[0]['EntryContext'] = QRadar
 
   demisto.results(resp)
 type: python

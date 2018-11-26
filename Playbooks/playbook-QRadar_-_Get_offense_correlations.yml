@@ -188,7 +188,9 @@ tasks:
       offenseID:
         simple: ${inputs.ID}
       qid:
-        simple: ${inputs.qid}
+        complex:
+          root: QRadar
+          accessor: Correlation.QID
       range:
         simple: 0-${inputs.MaxLogsCount}
       startTime:
@@ -414,4 +416,4 @@ outputs:
   description: The log's protocol name
 releaseNotes: "Updated QRadar - Get offense correlations playbook to support custom timeout."
 tests:
-- Forgive me for my sins but I did not create any test
+  - Forgive me for my sins but I did not create any test
