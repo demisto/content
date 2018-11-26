@@ -14,26 +14,26 @@ script: |-
 
   is_email = validate_email(inp)
   if is_email:
-    domain = re.search("@[\w.|\-]+", inp)
-    if len(domain.group()) > 0:
-        extractedDomain = domain.group()[1:]
-        results.append(extractedDomain)
-        _list = extractedDomain.split(".")
-        if len(_list) > 2:
-            parentDomain = _list[len(_list)-2] + "." + _list[len(_list)-1]
-            results.append(parentDomain)
-        demisto.results(results)
+      domain = re.search("@[\w.|\-]+", inp)
+      if len(domain.group()) > 0:
+          extractedDomain = domain.group()[1:]
+          results.append(extractedDomain)
+          _list = extractedDomain.split(".")
+          if len(_list) > 2:
+              parentDomain = _list[len(_list)-2] + "." + _list[len(_list)-1]
+              results.append(parentDomain)
+          demisto.results(results)
   else:
-    domain = get_tld(inp, fail_silently=True)
-    if not domain:
-        inp_with_http = 'https://'+inp
-        domain = get_tld(inp_with_http, fail_silently=True)
-        if domain:
-            demisto.results(domain)
-        else:
-           demisto.results("")
-    else:
-        demisto.results(domain)
+      domain = get_tld(inp, fail_silently=True)
+      if not domain:
+          inp_with_http = 'https://'+inp
+          domain = get_tld(inp_with_http, fail_silently=True)
+          if domain:
+              demisto.results(domain)
+          else:
+             demisto.results("")
+      else:
+          demisto.results(domain)
 type: python
 tags:
 - indicator-format
