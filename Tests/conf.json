@@ -33,6 +33,12 @@
           "timeout": 500
         },
         {
+            "integrations": "tenable.sc",
+            "playbookID": "tenable-sc-scan-test",
+            "nightly": true,
+            "timeout": 500
+        },
+        {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
             "timeout": 500
