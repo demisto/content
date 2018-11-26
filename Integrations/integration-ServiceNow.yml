@@ -87,7 +87,7 @@ script:
         url = re.sub('\/$', '', url)
         return url
 
-    ''' GLOBAL VARIABLESS '''
+    ''' GLOBAL VARIABLES '''
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     VERIFY_SSL = not demisto.params().get('insecure', False)
@@ -143,6 +143,15 @@ script:
         '3': '3 - Moderate',
         '4': '4 - Low',
         '5': '5 - Planning'
+    }
+
+    COMPUTER_STATUS = {
+        '1': 'In use',
+        '2': 'On order',
+        '3': 'On maintenance',
+        '6': 'In stock/In transit',
+        '7': 'Retried',
+        '100': 'Missing'
     }
 
     DEFAULTS = {
@@ -257,7 +266,7 @@ script:
         for ticket in tickets:
 
             hr = {
-                'Number': ticket['number'],
+                'Number': ticket.get('number'),
                 'System ID': ticket['sys_id'],
                 'Created On': ticket.get('sys_created_on'),
                 'Created By': ticket.get('sys_created_by'),
@@ -420,7 +429,7 @@ script:
 
         if isinstance(res['result'], list):
             if len(res['result']) == 0:
-                return 'Cannot find ticket'
+                return 'Cannot find record'
             record = res['result'][0]
         else:
             record = res['result']
@@ -896,6 +905,157 @@ script:
         return entry
 
 
+    def query_computers_command():
+        table_name = 'cmdb_ci_computer'
+        computer_id = demisto.args().get('computer_id')
+        computer_name = demisto.args().get('computer_name')
+        asset_tag = demisto.args().get('asset_tag')
+        computer_query = demisto.args().get('query', {})
+        limit = demisto.args().get('limit')
+
+        if computer_id:
+            res = get(table_name, computer_id)
+        else:
+            if computer_name:
+                computer_query = 'name=' + computer_name
+            elif asset_tag:
+                computer_query = 'asset_tag=' + asset_tag
+
+            res = query(table_name, limit, computer_query)
+
+        if not res or 'result' not in res:
+            return 'Cannot find computers'
+
+        computers = res['result']
+        if not isinstance(computers, list):
+            computers = [computers]
+
+        if len(computers) == 0:
+            return 'Cannot find computers'
+
+        mapped_computers = [{
+            'ID': computer['sys_id'],
+            'AssetTag': computer['asset_tag'],
+            'Name': computer['name'],
+            'DisplayName': '{} - {}'.format(computer['asset_tag'], computer['name']),
+            'SupportGroup': computer['support_group'],
+            'OperatingSystem': computer['os'],
+            'Company': computer['company'],
+            'AssignedTo': computer['assigned_to'],
+            'State': COMPUTER_STATUS.get(computer['install_status'], computer['install_status']),
+            'Cost': '{} {}'.format(computer['cost'], computer['cost_cc']),
+            'Comments': computer['comments']
+        } for computer in computers]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Computer', mapped_computers, removeNull=True),
+            'EntryContext': {
+                  'ServiceNow.Computer(val.ID==obj.ID)': createContext(mapped_computers, removeNull=True),
+            }
+        }
+
+        return entry
+
+
+
+    def query_groups_command():
+        table_name = 'sys_user_group'
+        group_id = demisto.args().get('group_id')
+        group_name = demisto.args().get('group_name')
+        group_query = demisto.args().get('query', {})
+        limit = demisto.args().get('limit')
+
+        if group_id:
+            res = get(table_name, group_id)
+        else:
+            if group_name:
+                group_query = 'name=' + group_name
+            res = query(table_name, limit, group_query)
+
+        if not res or 'result' not in res:
+            return 'Cannot find groups'
+
+        groups = res['result']
+        if not isinstance(groups, list):
+            groups = [groups]
+
+        if len(groups) == 0:
+            return 'Cannot find groups'
+
+        mapped_groups = [{
+            'ID': group['sys_id'],
+            'Description': group['description'],
+            'Name': group['name'],
+            'Active': group['active'],
+            'Manager': group['manager'],
+            'Updated': group['sys_updated_on'],
+        } for group in groups]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, removeNull=True),
+            'EntryContext': {
+                  'ServiceNow.Group(val.ID==obj.ID)': createContext(mapped_groups, removeNull=True),
+            }
+        }
+
+        return entry
+
+
+    def query_users_command():
+        table_name = 'sys_user'
+        user_id = demisto.args().get('user_id')
+        user_name = demisto.args().get('user_name')
+        user_query = demisto.args().get('query', {})
+        limit = demisto.args().get('limit')
+
+        if user_id:
+            res = get(table_name, user_id)
+        else:
+            if user_name:
+                user_query = 'user_name=' + user_name
+            res = query(table_name, limit, user_query)
+
+        if not res or 'result' not in res:
+            return 'Cannot find users'
+
+        users = res['result']
+        if not isinstance(users, list):
+            users = [users]
+
+        if len(users) == 0:
+            return 'Cannot find users'
+
+        mapped_users = [{
+            'ID': user['sys_id'],
+            'Name': '{} {} {}'.format(user['first_name'], user['middle_name'], user['last_name']),
+            'UserName': user['user_name'],
+            'Email': user['email'],
+            'Created': user['sys_created_on'],
+            'Updated': user['sys_updated_on'],
+        } for user in users]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, removeNull=True),
+            'EntryContext': {
+                  'ServiceNow.User(val.ID==obj.ID)': createContext(mapped_users, removeNull=True),
+            }
+        }
+
+        return entry
+
+
     def get_groups_command():
         table_name = 'sys_user_group'
         group_name = demisto.args()['name']
@@ -934,6 +1094,39 @@ script:
         }
 
         return entry
+
+    def list_table_fields_command():
+        table_name = demisto.args()['table_name']
+
+        res = get_table_fields(table_name)
+
+        if not res or 'result' not in res:
+            return 'Cannot find table'
+
+        if len(res['result']) == 0:
+            return 'Table contains no records'
+
+        fields = [{'Name': k} for k,v in res['result'][0].iteritems()]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Table fields - ' + table_name, fields),
+            'EntryContext': {
+                  'ServiceNow.Field': createContext(fields),
+            }
+        }
+
+        return entry
+
+    def get_table_fields(table_name):
+        # Get 1 record
+        path = 'table/' + table_name + '?sysparm_limit=1'
+        res = send_request(path, 'GET')
+
+        return res
 
 
     def fetch_incidents():
@@ -1029,6 +1222,12 @@ script:
             demisto.results(upload_file_command())
         elif demisto.command() == 'servicenow-get-computer':
             demisto.results(get_computer_command())
+        elif demisto.command() == 'servicenow-query-computers':
+            demisto.results(query_computers_command())
+        elif demisto.command() == 'servicenow-query-groups':
+            demisto.results(query_groups_command())
+        elif demisto.command() == 'servicenow-query-users':
+            demisto.results(query_users_command())
         elif demisto.command() == 'servicenow-get-groups':
             demisto.results(get_groups_command())
         elif demisto.command() == 'servicenow-get-record':
@@ -1039,8 +1238,8 @@ script:
             demisto.results(create_record_command())
         elif demisto.command() == 'servicenow-delete-record':
             demisto.results(delete_record_command())
-        if demisto.command() == 'servicenow-query-table':
-            demisto.results(query_table_command())
+        if demisto.command() == 'servicenow-list-table-fields':
+            demisto.results(list_table_fields_command())
     except Exception as e:
         LOG(e)
         LOG.print_log()
@@ -1312,6 +1511,15 @@ script:
     - name: caused_by
       description: UID Format
     - name: close_code
+      auto: PREDEFINED
+      predefined:
+      - Solved (Work Around)
+      - Solved (Permanently)
+      - Solved Remotely (Work Around)
+      - Solved Remotely (Permanently)
+      - Not Solved (Not Reproducible)
+      - Not Solved (Too Costly)
+      - Closed/Resolved by Caller
       description: Ticket's close code
     - name: close_notes
       description: Close notes of the ticket
@@ -1909,6 +2117,15 @@ script:
     - name: caused_by
       description: UID Format
     - name: close_code
+      auto: PREDEFINED
+      predefined:
+      - Solved (Work Around)
+      - Solved (Permanently)
+      - Solved Remotely (Work Around)
+      - Solved Remotely (Permanently)
+      - Not Solved (Not Reproducible)
+      - Not Solved (Too Costly)
+      - Closed/Resolved by Caller
       description: Ticket's close code
     - name: close_notes
       description: Close notes of the ticket
@@ -2792,14 +3009,14 @@ script:
     arguments:
     - name: table_name
       required: true
-      description: The name of the table to create a record in
+      description: The name of the table to create a record in.
     - name: fields
       description: 'Fields and their values to create the record with, in the format:
         fieldname1=value;fieldname2=value;...'
     - name: custom_fields
       description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
     - name: template
-      description: Template name to use as a base to create new tickets.
+      description: Template name to use as a base to create new records.
     outputs:
     - contextPath: ServiceNow.Record.ID
       description: The unique record identifier for the record.
@@ -2859,9 +3076,126 @@ script:
       description: The table name
     - name: id
       required: true
-      description: The system ID of the ticket to update
+      description: The system ID of the ticket to delete
     description: Delete a record in a specified ServiceNow table
+  - name: servicenow-list-table-fields
+    arguments:
+    - name: table_name
+      required: true
+      description: Table name
+    outputs:
+    - contextPath: ServiceNow.Field
+      description: Table API field name
+      type: string
+    description: List API fields for a specified ServiceNow table
+  - name: servicenow-query-computers
+    arguments:
+    - name: computer_id
+      description: Query by computer sys_id
+    - name: computer_name
+      description: Query by computer name
+    - name: query
+      description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - name: asset_tag
+      description: Query by asset tag
+    - name: limit
+      description: Query results limit
+      defaultValue: "10"
+    outputs:
+    - contextPath: ServiceNow.Computer.ID
+      description: Computer sys_id
+      type: string
+    - contextPath: ServiceNow.Computer.AssetTag
+      description: Computer Asset tag
+      type: string
+    - contextPath: ServiceNow.Computer.Name
+      description: Computer name
+      type: string
+    - contextPath: ServiceNow.Computer.DisplayName
+      description: Computer display name
+      type: string
+    - contextPath: ServiceNow.Computer.SupportGroup
+      description: Computer support group
+      type: string
+    - contextPath: ServiceNow.Computer.OperatingSystem
+      description: Computer operating system
+      type: string
+    - contextPath: ServiceNow.Computer.Company
+      description: Computer company sys_id
+      type: string
+    - contextPath: ServiceNow.Computer.AssignedTo
+      description: Computer assigned to user sys_id
+      type: string
+    - contextPath: ServiceNow.Computer.State
+      description: Computer state
+      type: string
+    - contextPath: ServiceNow.Computer.Cost
+      description: Computer cost
+      type: string
+    - contextPath: ServiceNow.Computer.Comments
+      description: Computer comments
+      type: string
+    description: Query the cmdb_ci_computer table in ServiceNow
+  - name: servicenow-query-groups
+    arguments:
+    - name: group_id
+      description: Query by group sys_id
+    - name: group_name
+      description: Query by group name
+    - name: query
+      description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - name: limit
+      description: Query results limit
+    outputs:
+    - contextPath: ServiceNow.Group.ID
+      description: Group sys_id
+      type: string
+    - contextPath: ServiceNow.Group.Description
+      description: Group description
+      type: string
+    - contextPath: ServiceNow.Group.Name
+      description: Group name
+      type: string
+    - contextPath: ServiceNow.Group.Manager
+      description: Group manager sys_id
+      type: string
+    - contextPath: ServiceNow.Group.Updated
+      description: Group update time
+      type: date
+    description: Query the sys_user_group table in ServiceNow
+  - name: servicenow-query-users
+    arguments:
+    - name: user_id
+      description: Query by user sys_id
+    - name: user_name
+      description: Query by username
+    - name: query
+      description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - name: limit
+      description: Query results limit
+    outputs:
+    - contextPath: ServiceNow.User.ID
+      description: User sys_id
+      type: string
+    - contextPath: ServiceNow.User.Name
+      description: User name (first + middle + last)
+      type: string
+    - contextPath: ServiceNow.User.UserName
+      description: User username
+      type: string
+    - contextPath: ServiceNow.User.Email
+      description: User email
+      type: string
+    - contextPath: ServiceNow.User.Created
+      description: User creation time
+      type: date
+    - contextPath: ServiceNow.User.Updated
+      description: User update time
+      type: date
+    description: Query the sys_user table in ServiceNow
   isfetch: true
+  runonce: false
 releaseNotes: ""
-tests:
-    - Run all tests
