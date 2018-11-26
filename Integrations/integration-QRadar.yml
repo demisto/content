@@ -824,7 +824,7 @@ script:
     def update_reference_set_value_command():
         args = demisto.args()
         if args.get('date_value') == 'True':
-            value = demisto.date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+            value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
         else:
             value = args.get('value')
         raw_ref = update_reference_set_value(args.get('ref_name'), value, args.get('source'))
@@ -835,7 +835,7 @@ script:
     def delete_reference_set_value_command():
         args = demisto.args()
         if args.get('date_value') == 'True':
-            value = demisto.date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+            value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
         else:
             value = args.get('value')
         raw_ref = delete_reference_set_value(args.get('ref_name'), value)
