@@ -19,6 +19,9 @@
           "playbookID": "URLDecode-Test"
         },
         {
+          "playbookID": "CuckooTest"
+        },
+        {
           "playbookID": "GetTime-Test"
         },
         {
