@@ -2280,8 +2280,6 @@ script:
       description: Asset ID
     description: Delete the Asset with the given ID from tenable.sc
     execution: true
-  isfetch: true
-  runonce: false
   - name: tenable-sc-list-alerts
     arguments:
     - name: manageable
