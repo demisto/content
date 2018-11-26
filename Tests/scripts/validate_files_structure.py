@@ -281,6 +281,12 @@ def validate_committed_files(branch_name):
 
     has_schema_problem = False
     for file_path in modified_files:
+        print "Validating {}".format(file_path)
+        if not validate_schema(file_path):
+            has_schema_problem = True
+        if not validate_file_release_notes(file_path):
+            has_schema_problem = True
+
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if changed_id(file_path):
                 has_schema_problem = True
@@ -291,13 +297,6 @@ def validate_committed_files(branch_name):
                 has_schema_problem = True
             if is_added_required_fields(file_path):
                 has_schema_problem = True
-
-        print "Validating {}".format(file_path)
-        if not validate_file_release_notes(file_path):
-            has_schema_problem = True
-
-        if not validate_schema(file_path):
-            has_schema_problem = True
 
     id_to_file = {}
     for file_path in added_files:
