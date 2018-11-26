@@ -72,7 +72,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -249,7 +249,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -277,7 +277,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -296,7 +296,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     scriptarguments:
       seconds:
         simple: "5"
@@ -309,12 +309,41 @@ tasks:
         }
       }
     note: false
+  "10":
+    id: "10"
+    taskid: fb2f1eb0-0d65-4367-8df7-40a015704047
+    type: regular
+    task:
+      description: view task
+      id: fb2f1eb0-0d65-4367-8df7-40a015704047
+      version: -1
+      name: View task
+      script: '|||cuckoo-view-task'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      id:
+        simple: ${Cuckoo.Task.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 605,
         "x": 50,
         "y": 50

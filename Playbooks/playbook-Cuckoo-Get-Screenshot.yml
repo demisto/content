@@ -27,34 +27,6 @@ tasks:
         }
       }
     note: false
-  "2":
-    id: "2"
-    taskid: 51f013c7-0a29-413d-8e48-81e1725ae885
-    type: regular
-    task:
-      description: start
-      id: 51f013c7-0a29-413d-8e48-81e1725ae885
-      version: -1
-      name: View task
-      script: '|||cuckoo-view-task'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      id:
-        simple: ${inputs.TaskID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
   "3":
     id: "3"
     taskid: fa0f8456-028e-4dd0-81b8-10b9c1cef206
@@ -71,7 +43,7 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "2"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -108,40 +80,6 @@ tasks:
         }
       }
     note: false
-  "4":
-    id: "4"
-    taskid: 1e8f4552-9174-472c-8b5d-0fa181ba5be7
-    type: condition
-    task:
-      description: check if completed
-      id: 1e8f4552-9174-472c-8b5d-0fa181ba5be7
-      version: -1
-      name: Is the task completed?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Cuckoo.Task.CompletedOn
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 545
-        }
-      }
-    note: false
   "7":
     id: "7"
     taskid: b5eb756b-903d-4f8e-8b09-f8bcad28627c
@@ -159,7 +97,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 545
         }
       }
     note: false
@@ -187,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 720
+          "x": 162.5,
+          "y": 370
         }
       }
     note: false
@@ -197,8 +135,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 605,
+        "height": 560,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }

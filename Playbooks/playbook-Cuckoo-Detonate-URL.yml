@@ -1,7 +1,7 @@
 id: CuckooDetonateURL
 version: -1
 name: CuckooDetonateURL
-description: "Detonating URL with Cuckoo"
+description: Detonating URL with Cuckoo
 starttaskid: "0"
 tasks:
   "0":
@@ -147,7 +147,6 @@ tasks:
     taskid: 9ad01520-9f27-44be-8a20-2caa2ce4b1c4
     type: playbook
     task:
-
       id: 9ad01520-9f27-44be-8a20-2caa2ce4b1c4
       version: -1
       name: GenericPolling
@@ -188,7 +187,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -237,7 +236,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -256,7 +255,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
     scriptarguments:
       seconds:
         simple: "5"
@@ -269,12 +268,40 @@ tasks:
         }
       }
     note: false
+  "9":
+    id: "9"
+    taskid: 666d7185-d292-42cf-8d42-882e5f80c0d8
+    type: regular
+    task:
+      description: view task
+      id: 666d7185-d292-42cf-8d42-882e5f80c0d8
+      version: -1
+      name: View task
+      script: '|||cuckoo-view-task'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id:
+        simple: ${Cuckoo.Task.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1435,
         "width": 605,
         "x": 50,
         "y": 50
