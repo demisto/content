@@ -20,7 +20,8 @@
         },
         {
           "integrations": "Cuckoo Sandbox",
-          "playbookID": "CuckooTest"
+          "playbookID": "CuckooTest",
+          "timeout": 600
         },
         {
           "playbookID": "GetTime-Test"
