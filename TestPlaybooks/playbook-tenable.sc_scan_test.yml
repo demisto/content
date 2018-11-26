@@ -28,7 +28,7 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 03367f8b-274a-4ec2-83c9-139b828c0322
+    taskid: tenable-sc-scan
     type: playbook
     task:
       id: tenable-sc-scan
