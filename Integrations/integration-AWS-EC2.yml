@@ -4712,3 +4712,5 @@ script:
   dockerimage: demisto/boto3
   runonce: false
 releaseNotes: "Added commands: aws-ec2-modify-instance-attribute & aws-ec2-modify-network-interface-attribute"
+tests:
+  - Forgive me for my sins but I did not create any test
