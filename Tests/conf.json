@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+          "integrations": "tenable.sc",
+          "playbookID": "tenable-sc-test",
+          "timeout": 240
+        },
+        {
             "integrations": "MimecastV2",
             "playbookID": "Mimecast test"
         },

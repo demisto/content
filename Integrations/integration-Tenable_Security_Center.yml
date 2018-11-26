@@ -357,9 +357,9 @@ script:
             'ID': a['id'],
             'Name': a['name'],
             'Tag': a['tags'],
-            'Owner': a['owner'].get('username'),
+            'Owner': a.get('owner', {}).get('username'),
             'Type': a['type'],
-            'Group': a['ownerGroup'].get('name'),
+            'Group': a.get('ownerGroup', {}).get('name'),
             'HostCount': a['ipCount'],
             'LastModified': datetime.datetime.utcfromtimestamp(int(a['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['modifiedTime'] else ''
         } for a in assets]
@@ -416,8 +416,8 @@ script:
             'Tag': asset['tags'],
             'Created': datetime.datetime.utcfromtimestamp(int(asset['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if asset['createdTime'] else '',
             'Modified': datetime.datetime.utcfromtimestamp(int(asset['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if asset['modifiedTime'] else '',
-            'Owner': asset['owner'].get('username'),
-            'Group': asset['ownerGroup'].get('name'),
+            'Owner': asset.get('owner', {}).get('username'),
+            'Group': asset('ownerGroup', {}).get('name'),
             'IPs': ips
         }
 
@@ -549,8 +549,8 @@ script:
             'Name': r['name'],
             'Description': r['description'],
             'Type': r['type'],
-            'Group': r['ownerGroup'].get('name'),
-            'Owner': r['owner'].get('owner')
+            'Group': r.get('ownerGroup', {}).get('name'),
+            'Owner': r.get('owner', {}).get('username')
         } for r in reports]
 
         hr = tableToMarkdown("tenable.sc Report Definitions", mapped_reports, headers, removeNull=True)
@@ -883,8 +883,7 @@ script:
             'Status': scan_results['status'],
             'Description': scan_results['description'],
             'Policy': scan_results['details'],
-            'Group': scan_results['ownerGroup'].get('name'),
-            'Owner': scan_results['owner'].get('name'),
+            'Group': scan_results.get('ownerGroup', {}).get('name'),
             'Status': scan_results['status'],
             'Checks': scan_results['completedChecks'],
             'StartTime': datetime.datetime.utcfromtimestamp(int(scan_results['startTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if scan_results['startTime'] else '',
@@ -1546,7 +1545,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('tenable.sc Alerts', mapped_alerts, headers=headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.System(val.ID==obj.ID)': createContext(mapped_alerts, removeNull=True)
+                  'TenableSC.Alert(val.ID==obj.ID)': createContext(mapped_alerts, removeNull=True)
             }
         })
 
@@ -1728,7 +1727,6 @@ script:
         elif demisto.command() == 'tenable-sc-get-system-licensing':
             get_system_licensing_command()
     except Exception as e:
-        raise
         LOG(e)
         LOG.print_log(False)
         return_error(e.message)
@@ -1886,6 +1884,9 @@ script:
       isArray: true
       defaultValue: Critical,High,Medium,Low,Info
     outputs:
+    - contextPath: TenableSC.ScanResults.ID
+      description: Scan results ID
+      type: number
     - contextPath: TenableSC.ScanResults.Name
       description: Scan name
       type: string
@@ -1904,9 +1905,6 @@ script:
     - contextPath: TenableSC.ScanResults.Checks
       description: Scan completed checks
       type: number
-    - contextPath: TenableSC.ScanResults.OwnerName
-      description: Scan owner username
-      type: string
     - contextPath: TenableSC.ScanResults.RepositoryName
       description: Scan repository name
       type: string
@@ -1943,9 +1941,6 @@ script:
     - contextPath: TenableSC.ScanResults.ImportTime
       description: Scan import time
       type: date
-    - contextPath: TenableSC.ScanResults.ID
-      description: Scan results ID
-      type: number
     description: Get a report with a tenable.sc scan results
   - name: tenable-sc-list-credentials
     arguments:
@@ -2247,6 +2242,46 @@ script:
       description: Asset tags
       type: string
     description: Create an Asset in tenable.sc with provided IP addresses
+  - name: tenable-sc-get-asset
+    arguments:
+    - name: asset_id
+      required: true
+      description: Asset ID that can be retrieved from the list-assets command
+    outputs:
+    - contextPath: TenableSC.Asset.ID
+      description: Asset ID
+      type: number
+    - contextPath: TenableSC.Asset.Name
+      description: Asset name
+      type: string
+    - contextPath: TenableSC.Asset.Description
+      description: Asset description
+      type: string
+    - contextPath: TenableSC.Asset.Tag
+      description: Asset tag
+      type: string
+    - contextPath: TenableSC.Asset.Modified
+      description: Asset last modified time
+      type: date
+    - contextPath: TenableSC.Asset.Owner
+      description: Asset owner user name
+      type: string
+    - contextPath: TenableSC.Asset.Group
+      description: Asset owner group
+      type: string
+    - contextPath: TenableSC.Asset.IPs
+      description: Asset viewable IPs
+      type: unknown
+    description: Get details for a given asset in tenable.sc
+  - name: tenable-sc-delete-asset
+    arguments:
+    - name: asset_id
+      required: true
+      description: Asset ID
+    description: Delete the Asset with the given ID from tenable.sc
+    execution: true
+  isfetch: true
+  runonce: false
   - name: tenable-sc-list-alerts
     arguments:
     - name: manageable
@@ -2456,44 +2491,4 @@ script:
       description: System last check time
       type: date
     description: Get the system information and diagnostics from tenable.sc
-  - name: tenable-sc-get-asset
-    arguments:
-    - name: asset_id
-      required: true
-      description: Asset ID that can be retrieved from the list-assets command
-    outputs:
-    - contextPath: TenableSC.Asset.ID
-      description: Asset ID
-      type: number
-    - contextPath: TenableSC.Asset.Name
-      description: Asset name
-      type: string
-    - contextPath: TenableSC.Asset.Description
-      description: Asset description
-      type: string
-    - contextPath: TenableSC.Asset.Tag
-      description: Asset tag
-      type: string
-    - contextPath: TenableSC.Asset.Modified
-      description: Asset last modified time
-      type: date
-    - contextPath: TenableSC.Asset.Owner
-      description: Asset owner user name
-      type: string
-    - contextPath: TenableSC.Asset.Group
-      description: Asset owner group
-      type: string
-    - contextPath: TenableSC.Asset.IPs
-      description: Asset viewable IPs
-      type: unknown
-    description: Get details for a given asset in tenable.sc
-  - name: tenable-sc-delete-asset
-    arguments:
-    - name: asset_id
-      required: true
-      description: Asset ID
-    description: Delete the Asset with the given ID from tenable.sc
-    execution: true
-  isfetch: true
-  runonce: false
 releaseNotes: "tenable.sc integration"

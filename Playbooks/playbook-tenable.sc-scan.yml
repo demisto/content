@@ -1,0 +1,358 @@
+id: tenable-sc-scan
+version: -1
+name: Launch Scan - tenable.sc
+description: Launches an existing tenable.sc scan by scan ID and waits for the scan
+  to finish by polling its status in pre-defined intervals.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c613b21c-e424-4a21-8151-1c4dc32caa7a
+    type: start
+    task:
+      id: c613b21c-e424-4a21-8151-1c4dc32caa7a
+      version: -1
+      name: ""
+      description: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 33369f50-8c49-458d-8f5c-ca975e822fe9
+    type: regular
+    task:
+      id: 33369f50-8c49-458d-8f5c-ca975e822fe9
+      version: -1
+      name: Launch scan
+      description: Starts a scan for specified asset IP addresses and host names.
+      script: tenable.sc|||tenable-sc-launch-scan
+      type: regular
+      iscommand: true
+      brand: tenable.sc
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      diagnostic_password:
+        complex:
+          root: inputs.diagnosticPassword
+      diagnostic_target:
+        complex:
+          root: inputs.diagnosticTarget
+      diagnosticPassword: {}
+      diagnosticTarget: {}
+      scan_id:
+        complex:
+          root: inputs.ScanID
+      scanID: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 1c704f4c-7f5e-4225-869f-2fa09265d983
+    type: title
+    task:
+      id: 1c704f4c-7f5e-4225-869f-2fa09265d983
+      version: -1
+      name: Done
+      description: Final task
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 35ed2d47-595c-43cf-8a97-cfb18232a824
+    type: regular
+    task:
+      id: 35ed2d47-595c-43cf-8a97-cfb18232a824
+      version: -1
+      name: Get scan report
+      description: Returns the specified scan.
+      script: tenable.sc|||tenable-sc-get-scan-report
+      type: regular
+      iscommand: true
+      brand: tenable.sc
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      scan_results_id:
+        complex:
+          root: TenableSC
+          accessor: ScanResults.ID
+      scanResultsID:
+        complex:
+          root: TenableSC
+          accessor: Scan.ResultsID
+      vulnerability_severity: {}
+      vulnerabilitySeverity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: e5ca0be8-57c3-4a6d-82dc-8f85d1a9a385
+    type: playbook
+    task:
+      id: e5ca0be8-57c3-4a6d-82dc-8f85d1a9a385
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Ids:
+        simple: ${TenableSC.ScanResults.ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scan_results_id
+      PollingCommandName:
+        simple: tenable-sc-get-scan-status
+      Timeout:
+        simple: "60"
+      dt:
+        simple: TenableSC.ScanResults(val.Status == 'Running' || val.Status == 'Pending'
+                  || val.Status != 'Resuming' || val.Status == 'Pausing' || val.Status ==
+                  'Paused' || val.Status == 'Queued' || val.Status == 'Verifying targets').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 858c4d4b-083a-4435-8099-bd509396b41d
+    type: condition
+    task:
+      id: 858c4d4b-083a-4435-8099-bd509396b41d
+      version: -1
+      name: Is tenable.sc enabled?
+      description: Checks wether Nexpose is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: tenable.sc
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: a00bb8ff-dd92-4a9d-8e26-33d279ecdd2f
+    type: condition
+    task:
+      id: a00bb8ff-dd92-4a9d-8e26-33d279ecdd2f
+      version: -1
+      name: Did scan successfully launch?
+      description: Checks wether assets were found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: TenableSC.ScanResults.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ScanID
+  value:
+    simple: ${TenableSC.Scan.ID}
+  required: true
+  description: Scan ID to launch
+- key: diagnosticTarget
+  value:
+    simple: ${Endpoint.IPAddress}
+  required: false
+  description: Valid IP/Hostname of a specific target to scan. Must be provided with
+    diagnosticPassword.
+- key: diagnosticPassword
+  value:
+    simple: ${Endpoint.Password}
+  required: false
+  description: Non empty string password
+outputs:
+- contextPath: TenableSC.ScanResults.Name
+  description: Scan name
+  type: string
+- contextPath: TenableSC.ScanResults.Status
+  description: Scan status
+  type: string
+- contextPath: TenableSC.ScanResults.ScannedIPs
+  description: Scan number of scanned IPs
+  type: number
+- contextPath: TenableSC.ScanResults.StartTime
+  description: Scan start time
+  type: date
+- contextPath: TenableSC.ScanResults.EndTime
+  description: Scan end time
+  type: date
+- contextPath: TenableSC.ScanResults.Checks
+  description: Scan completed checks
+  type: number
+- contextPath: TenableSC.ScanResults.RepositoryName
+  description: Scan repository name
+  type: string
+- contextPath: TenableSC.ScanResults.Description
+  description: Scan description
+  type: string
+- contextPath: TenableSC.ScanResults.Policy
+  description: Scan policy
+  type: string
+- contextPath: TenableSC.ScanResults.Group
+  description: Scan owner group name
+  type: string
+- contextPath: TenableSC.ScanResults.Owner
+  description: Scan owner user name
+  type: string
+- contextPath: TenableSC.ScanResults.Duration
+  description: Scan duration in minutes
+  type: number
+- contextPath: TenableSC.ScanResults.ImportTime
+  description: Scan import time
+  type: date
+- contextPath: TenableSC.ScanResults.ID
+  description: Scan Results ID
+  type: number
+- contextPath: TenableSC.ScanResults.Vulnerability.ID
+  description: Scan vulnerability plugin ID
+  type: number
+- contextPath: TenableSC.ScanResults.Vulnerability.Name
+  description: Scan vulnerability Name
+  type: string
+- contextPath: TenableSC.ScanResults.Vulnerability.Family
+  description: Scan vulnerability family
+  type: string
+- contextPath: TenableSC.ScanResults.Vulnerability.Severity
+  description: Scan vulnerability severity
+  type: string
+- contextPath: TenableSC.ScanResults.Vulnerability.Total
+  description: Scan vulnerability total hosts
+  type: number
+releaseNotes: "tenable.sc scan playbook"
