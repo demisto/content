@@ -1730,7 +1730,6 @@ script:
         except Exception as e:
             return raise_error(e)
 
-<<<<<<< HEAD
     def modify_network_interface_attribute(args):
         try:
             client = aws_session(
@@ -1792,9 +1791,6 @@ script:
 
         except Exception as e:
             return raise_error(e)
-
-=======
->>>>>>> master
 
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
