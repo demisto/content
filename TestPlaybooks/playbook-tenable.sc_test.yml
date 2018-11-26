@@ -1,7 +1,7 @@
 id: tenable-sc-test
 version: -1
-name: tenable.sc Test
-description: Test playbook for tenable.sc integration
+name: Tenable.sc Test
+description: Test playbook for Tenable.sc integration
 starttaskid: "0"
 tasks:
   "0":
@@ -59,11 +59,11 @@ tasks:
       id: bbb84a11-f563-4476-8999-39d2893f409e
       version: -1
       name: Get manageable policies
-      description: Get a list of tenable.sc scan policies
-      script: tenable.sc|||tenable-sc-list-policies
+      description: Get a list of Tenable.sc scan policies
+      script: Tenable.sc|||tenable-sc-list-policies
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "3"
@@ -88,11 +88,11 @@ tasks:
       id: 1c0aa1bc-2a78-406d-8d28-7f0f56fce1e0
       version: -1
       name: Get repositories
-      description: Get a list of tenable.sc scan repositories
-      script: tenable.sc|||tenable-sc-list-repositories
+      description: Get a list of Tenable.sc scan repositories
+      script: Tenable.sc|||tenable-sc-list-repositories
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "4"
@@ -114,11 +114,11 @@ tasks:
       id: 29dbfecf-5313-4ac2-8d97-c0585249e139
       version: -1
       name: Get zones
-      description: Get a list of tenable.sc scan zones
-      script: tenable.sc|||tenable-sc-list-zones
+      description: Get a list of Tenable.sc scan zones
+      script: Tenable.sc|||tenable-sc-list-zones
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "5"
@@ -140,11 +140,11 @@ tasks:
       id: 4fa0cf2b-6ae4-46ed-85d6-e9b044833e36
       version: -1
       name: Get credentials
-      description: Get a list of tenable.sc credentials
-      script: tenable.sc|||tenable-sc-list-credentials
+      description: Get a list of Tenable.sc credentials
+      script: Tenable.sc|||tenable-sc-list-credentials
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "6"
@@ -202,11 +202,11 @@ tasks:
       id: 54c77e6a-302a-4258-8f35-6667b789d160
       version: -1
       name: Create scan
-      description: Create a scan on tenable.sc
-      script: tenable.sc|||tenable-sc-create-scan
+      description: Create a scan on Tenable.sc
+      script: Tenable.sc|||tenable-sc-create-scan
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "9"
@@ -322,11 +322,11 @@ tasks:
       id: 1d3cfc5c-63e6-42cc-8e6a-fd179c12f6b7
       version: -1
       name: Get manageable report definitions
-      description: Get a list of tenable.sc report definitions
-      script: tenable.sc|||tenable-sc-list-report-definitions
+      description: Get a list of Tenable.sc report definitions
+      script: Tenable.sc|||tenable-sc-list-report-definitions
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "7"
@@ -351,11 +351,11 @@ tasks:
       id: 7c8c122b-53ba-4706-89d0-85cb0abc3bda
       version: -1
       name: Delete the scan
-      description: Delete a scan in tenable.sc
-      script: tenable.sc|||tenable-sc-delete-scan
+      description: Delete a scan in Tenable.sc
+      script: Tenable.sc|||tenable-sc-delete-scan
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "26"
@@ -470,11 +470,11 @@ tasks:
       id: d263222f-d5f4-44b3-8d6b-5e7e9dc90f9a
       version: -1
       name: List scans
-      description: Get a list of tenable.sc existing scans
-      script: tenable.sc|||tenable-sc-list-scans
+      description: Get a list of Tenable.sc existing scans
+      script: Tenable.sc|||tenable-sc-list-scans
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "14"
@@ -499,11 +499,11 @@ tasks:
       id: 50ba360e-25e0-4550-87a4-d163dcdf9e69
       version: -1
       name: Launch my_test_scan
-      description: Launch an existing scan from tenable.sc
-      script: tenable.sc|||tenable-sc-launch-scan
+      description: Launch an existing scan from Tenable.sc
+      script: Tenable.sc|||tenable-sc-launch-scan
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "15"
@@ -544,11 +544,11 @@ tasks:
       id: 0d284adc-2881-40e2-8abd-45272bb839e3
       version: -1
       name: Get scan status
-      description: Get the status of a specific scan in tenable.sc
-      script: tenable.sc|||tenable-sc-get-scan-status
+      description: Get the status of a specific scan in Tenable.sc
+      script: Tenable.sc|||tenable-sc-get-scan-status
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "16"
@@ -630,11 +630,11 @@ tasks:
       id: 2f42b2b2-0ff0-4091-8d52-ddfbbedddb1e
       version: -1
       name: Get report from a complete scan
-      description: Get a report with a tenable.sc scan results
-      script: tenable.sc|||tenable-sc-get-scan-report
+      description: Get a report with a Tenable.sc scan results
+      script: Tenable.sc|||tenable-sc-get-scan-report
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "19"
@@ -661,12 +661,12 @@ tasks:
       id: af8a268c-806c-4302-8333-4e5bdc419076
       version: -1
       name: tenable-sc-get-vulnerability
-      description: 'Get details about a given vulnerability from a given tenable.sc
+      description: 'Get details about a given vulnerability from a given Tenable.sc
         scan '
-      script: tenable.sc|||tenable-sc-get-vulnerability
+      script: Tenable.sc|||tenable-sc-get-vulnerability
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "20"
@@ -835,11 +835,11 @@ tasks:
       id: de3e1786-48a1-4d32-812e-7b9c5ef5ad6e
       version: -1
       name: Create asset
-      description: Create an Asset in tenable.sc with provided IP addresses
-      script: tenable.sc|||tenable-sc-create-asset
+      description: Create an Asset in Tenable.sc with provided IP addresses
+      script: Tenable.sc|||tenable-sc-create-asset
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "1"
@@ -871,11 +871,11 @@ tasks:
       id: 07e2b89d-afa6-47d6-8138-fc295b4a0192
       version: -1
       name: Get user
-      description: List users in tenable.sc
-      script: tenable.sc|||tenable-sc-list-users
+      description: List users in Tenable.sc
+      script: Tenable.sc|||tenable-sc-list-users
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "24"
@@ -902,11 +902,11 @@ tasks:
       id: 4d6a4b63-3d85-42ff-8f6d-d6b1a4bb588a
       version: -1
       name: Delete the asset
-      description: Delete the Asset with the given ID from tenable.sc
-      script: tenable.sc|||tenable-sc-delete-asset
+      description: Delete the Asset with the given ID from Tenable.sc
+      script: Tenable.sc|||tenable-sc-delete-asset
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "12"
@@ -955,11 +955,11 @@ tasks:
       id: d565f54b-0ae0-4a53-8813-7757f504b74d
       version: -1
       name: Get manageable alerts
-      description: List alerts from tenable.sc
-      script: tenable.sc|||tenable-sc-list-alerts
+      description: List alerts from Tenable.sc
+      script: Tenable.sc|||tenable-sc-list-alerts
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "29"
@@ -985,10 +985,10 @@ tasks:
       version: -1
       name: Get alert
       description: Get information about a given alert in tenabel.sc
-      script: tenable.sc|||tenable-sc-get-alert
+      script: Tenable.sc|||tenable-sc-get-alert
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "30"
@@ -1046,7 +1046,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: tenable.sc
+                  simple: Tenable.sc
           accessor: name
     separatecontext: false
     view: |-
@@ -1090,11 +1090,11 @@ tasks:
       id: d8d4c3a6-8ee2-4e8b-83a4-8e3dde140437
       version: -1
       name: List assets
-      description: Get a list of tenable.sc Assets
-      script: tenable.sc|||tenable-sc-list-assets
+      description: Get a list of Tenable.sc Assets
+      script: Tenable.sc|||tenable-sc-list-assets
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "35"
@@ -1152,11 +1152,11 @@ tasks:
       id: 4847fee1-8e2f-4cca-85cd-8b187138e89f
       version: -1
       name: Get device
-      description: Gets the device information from the current user in tenable.sc
-      script: tenable.sc|||tenable-sc-get-device
+      description: Gets the device information from the current user in Tenable.sc
+      script: Tenable.sc|||tenable-sc-get-device
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "36"
@@ -1181,11 +1181,11 @@ tasks:
       id: 44f5f278-2e42-4abd-8f18-1877d86cb7e8
       version: -1
       name: Get licensing
-      description: Retrieve licensing information from tenable.sc
-      script: tenable.sc|||tenable-sc-get-system-licensing
+      description: Retrieve licensing information from Tenable.sc
+      script: Tenable.sc|||tenable-sc-get-system-licensing
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "37"

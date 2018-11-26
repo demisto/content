@@ -1,7 +1,7 @@
 id: tenable-sc-scan
 version: -1
-name: Launch Scan - tenable.sc
-description: Launches an existing tenable.sc scan by scan ID and waits for the scan
+name: Launch Scan - Tenable.sc
+description: Launches an existing Tenable.sc scan by scan ID and waits for the scan
   to finish by polling its status in pre-defined intervals.
 starttaskid: "0"
 tasks:
@@ -38,10 +38,10 @@ tasks:
       version: -1
       name: Launch scan
       description: Starts a scan for specified asset IP addresses and host names.
-      script: tenable.sc|||tenable-sc-launch-scan
+      script: Tenable.sc|||tenable-sc-launch-scan
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "10"
@@ -99,10 +99,10 @@ tasks:
       version: -1
       name: Get scan report
       description: Returns the specified scan.
-      script: tenable.sc|||tenable-sc-get-scan-report
+      script: Tenable.sc|||tenable-sc-get-scan-report
       type: regular
       iscommand: true
-      brand: tenable.sc
+      brand: Tenable.sc
     nexttasks:
       '#none#':
       - "5"
@@ -186,7 +186,7 @@ tasks:
     task:
       id: 858c4d4b-083a-4435-8099-bd509396b41d
       version: -1
-      name: Is tenable.sc enabled?
+      name: Is Tenable.sc enabled?
       description: Checks wether Nexpose is enabled
       type: condition
       iscommand: false
@@ -213,7 +213,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: tenable.sc
+                        simple: Tenable.sc
                 - - operator: isEqualString
                     left:
                       value:
@@ -355,4 +355,4 @@ outputs:
 - contextPath: TenableSC.ScanResults.Vulnerability.Total
   description: Scan vulnerability total hosts
   type: number
-releaseNotes: "tenable.sc scan playbook"
+releaseNotes: "Tenable.sc scan playbook"

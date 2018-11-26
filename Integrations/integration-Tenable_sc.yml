@@ -1,13 +1,12 @@
 commonfields:
-  id: tenable.sc
+  id: Tenable.sc
   version: -1
-name: tenable.sc
-display: tenable.sc
+name: Tenable.sc
+display: Tenable.sc
 category: Vulnerability Management
 image: data:image/png;base64,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
-description: tenable.sc consolidates and evaluates vulnerability data across your
-  organization, prioritizing security risks and providing a clear view of your security
-  posture.
+description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous
+  assessment of your security posture so you can find and fix vulnerabilities faster.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -173,7 +172,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Scans", mapped_scans, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scans", mapped_scans, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.Scan(val.ID==obj.ID)': createContext(mapped_scans, removeNull=True)
             }
@@ -224,7 +223,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Scan Policies", mapped_policies, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan Policies", mapped_policies, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.ScanPolicy(val.ID==obj.ID)': createContext(mapped_policies, removeNull=True)
             }
@@ -267,7 +266,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Scan Repositories", mapped_repositories, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan Repositories", mapped_repositories, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.ScanRepository(val.ID==obj.ID)': createContext(mapped_repositories, removeNull=True)
             }
@@ -311,7 +310,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Credentials", mapped_credentials, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Credentials", mapped_credentials, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.Credential(val.ID==obj.ID)': createContext(mapped_credentials, removeNull=True)
             }
@@ -369,7 +368,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Assets", mapped_assets, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Assets", mapped_assets, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.Asset(val.ID==obj.ID)': createContext(mapped_assets, removeNull=True)
             }
@@ -417,7 +416,7 @@ script:
             'Created': datetime.datetime.utcfromtimestamp(int(asset['createdTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if asset['createdTime'] else '',
             'Modified': datetime.datetime.utcfromtimestamp(int(asset['modifiedTime'])).strftime('%Y-%m-%dT%H:%M:%SZ') if asset['modifiedTime'] else '',
             'Owner': asset.get('owner', {}).get('username'),
-            'Group': asset('ownerGroup', {}).get('name'),
+            'Group': asset.get('ownerGroup', {}).get('name'),
             'IPs': ips
         }
 
@@ -426,7 +425,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Asset", mapped_asset, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Asset", mapped_asset, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.Asset(val.ID==obj.ID)': createContext(mapped_asset, removeNull=True)
             }
@@ -553,7 +552,7 @@ script:
             'Owner': r.get('owner', {}).get('username')
         } for r in reports]
 
-        hr = tableToMarkdown("tenable.sc Report Definitions", mapped_reports, headers, removeNull=True)
+        hr = tableToMarkdown("Tenable.sc Report Definitions", mapped_reports, headers, removeNull=True)
         for r in mapped_reports:
             del r['Description']
 
@@ -613,7 +612,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Scan Zones", mapped_zones, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan Zones", mapped_zones, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.ScanZone(val.ID==obj.ID)': createContext(mapped_zones, removeNull=True)
             }
@@ -747,7 +746,7 @@ script:
         if asset_ids:
             if str(asset_ids).startswith('All'):
                 manageable = True if asset_ids == 'AllManageable' else False
-                res = get_assets()
+                res = get_assets(None)
                 assets = get_elements(res['response'], manageable)
                 asset_ids = list(map(lambda a: a['id'], assets))
             body['assets'] = [{'id' : a_id} for a_id in argToList(asset_ids)]
@@ -808,7 +807,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Scan", mapped_scan, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan", mapped_scan, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.ScanResults(val.ID==obj.ID)': createContext(mapped_scan, removeNull=True)
             }
@@ -851,7 +850,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("tenable.sc Scan Status", mapped_scans_results, headers, removeNull=True),
+            'HumanReadable': tableToMarkdown("Tenable.sc Scan Status", mapped_scans_results, headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.ScanResults(val.ID==obj.ID)': createContext(mapped_scans_results, removeNull=True)
             }
@@ -895,7 +894,7 @@ script:
             'RepositoryName': scan_results['repository'].get('name')
         }
 
-        hr = tableToMarkdown('tenable.sc Scan ' + mapped_results['ID'] + ' Report', mapped_results, headers, removeNull=True)
+        hr = tableToMarkdown('Tenable.sc Scan ' + mapped_results['ID'] + ' Report', mapped_results, headers, removeNull=True)
 
         if len(vulnerabilities_to_get) > 0:
             vulns = get_vulnearbilites(scan_results_id)
@@ -956,7 +955,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('tenable.sc Plugins', mapped_plugins, headers=headers,removeNull=True),
+            'HumanReadable': tableToMarkdown('Tenable.sc Plugins', mapped_plugins, headers=headers,removeNull=True),
             'EntryContext': {
                 'TenableSC.Plugin(val.ID==obj.ID)': createContext(mapped_plugins, removeNull=True)
             }
@@ -1314,7 +1313,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('tenable.sc Device', mapped_device, headers=headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('Tenable.sc Device', mapped_device, headers=headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.Device(val.UUID==obj.UUID)': createContext(mapped_device, removeNull=True)
             }
@@ -1391,7 +1390,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('tenable.sc Users', mapped_users, headers=headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('Tenable.sc Users', mapped_users, headers=headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.User(val.ID==obj.ID)': createContext(mapped_users, removeNull=True)
             }
@@ -1438,7 +1437,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('tenable.sc Licensing information', mapped_licensing, headers=headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('Tenable.sc Licensing information', mapped_licensing, headers=headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.Status': createContext(mapped_licensing, removeNull=True)
             }
@@ -1496,7 +1495,7 @@ script:
             'Contents': sys_res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('tenable.sc System information', mapped_information, headers=headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('Tenable.sc System information', mapped_information, headers=headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.System(val.BuildID==obj.BuildID)': createContext(mapped_information, removeNull=True)
             }
@@ -1532,7 +1531,7 @@ script:
             'Name': a['name'],
             'State': 'Triggered' if a['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
             'Actions': demisto.dt(a['action'], 'type'),
-            'LastTriggered': datetime.datetime.utcfromtimestamp(int(a['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['lastTriggered'] else '',
+            'LastTriggered': datetime.datetime.utcfromtimestamp(int(a['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['lastTriggered'] and int(a['lastTriggered']) > 0 else 'Never',
             'LastEvaluated': datetime.datetime.utcfromtimestamp(int(a['lastEvaluated'])).strftime('%Y-%m-%dT%H:%M:%SZ') if a['lastEvaluated'] else '',
             'Group': a['ownerGroup'].get('name'),
             'Owner': a['owner'].get('username')
@@ -1543,7 +1542,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('tenable.sc Alerts', mapped_alerts, headers=headers, removeNull=True),
+            'HumanReadable': tableToMarkdown('Tenable.sc Alerts', mapped_alerts, headers=headers, removeNull=True),
             'EntryContext': {
                   'TenableSC.Alert(val.ID==obj.ID)': createContext(mapped_alerts, removeNull=True)
             }
@@ -1554,7 +1553,7 @@ script:
         alert_id = demisto.args()['alert_id']
         res = get_alerts(None, alert_id)
 
-        if not res or 'response' not in res:
+        if not res or 'response' not in res or not res['response']:
             return_message('Alert not found')
 
         alert = res['response']
@@ -1569,7 +1568,7 @@ script:
             'ID': alert['id'],
             'Name': alert['name'],
             'Description': alert['description'],
-            'LastTriggered': datetime.datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if alert['lastTriggered'] else '',
+            'LastTriggered': datetime.datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ') if alert['lastTriggered'] and int(alert['lastTriggered']) > 0 else 'Never',
             'State': 'Triggered' if alert['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
             'Behavior': 'Execute on every trigger ' if alert['executeOnEveryTrigger'] == 'true' else 'Execute only on first trigger',
             'Actions': demisto.dt(alert['action'], 'type')
@@ -1588,7 +1587,7 @@ script:
                 } for f in query.get('filters', [])]
             mapped_condition['Filter'] = mapped_filters
 
-        hr = tableToMarkdown('tenable.sc Alert', mapped_alert, headers=alert_headers, removeNull=True)
+        hr = tableToMarkdown('Tenable.sc Alert', mapped_alert, headers=alert_headers, removeNull=True)
         hr += tableToMarkdown('Condition', mapped_condition, headers=query_headers, removeNull=True)
         if mapped_filters:
             hr += tableToMarkdown('Filters', mapped_filters, headers=filter_headers, removeNull=True)
@@ -1654,7 +1653,7 @@ script:
                         })
 
                 incidents.append({
-                    'name': 'tenable.sc Alert Triggered - ' + alert['name'],
+                    'name': 'Tenable.sc Alert Triggered - ' + alert['name'],
                     'labels': labels,
                     'occurred': datetime.datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
                     'details': json.dumps(alert),
@@ -1763,7 +1762,7 @@ script:
     - contextPath: TenableSC.Scan.Owner
       description: Scan policy owner user name
       type: string
-    description: Get a list of tenable.sc existing scans
+    description: Get a list of Tenable.sc existing scans
   - name: tenable-sc-launch-scan
     arguments:
     - name: scan_id
@@ -1790,12 +1789,12 @@ script:
     - contextPath: TenableSC.ScanResults.Status
       description: Scan status
       type: string
-    description: Launch an existing scan from tenable.sc
+    description: Launch an existing scan from Tenable.sc
   - name: tenable-sc-get-vulnerability
     arguments:
     - name: vulnerability_id
       required: true
-      description: Vulnerability ID from the scan-report command results
+      description: Vulnerability ID from the scan-report command
     - name: scan_results_id
       required: true
       description: Scan results ID from the scan-report command
@@ -1854,7 +1853,7 @@ script:
       description: Vulnerability plugin details
     - contextPath: CVE.ID
       description: CVE ID
-    description: 'Get details about a given vulnerability from a given tenable.sc
+    description: 'Get details about a given vulnerability from a given Tenable.sc
       scan '
   - name: tenable-sc-get-scan-status
     arguments:
@@ -1873,7 +1872,7 @@ script:
       description: Scan description
     - contextPath: TenableSC.ScanResults.ID
       description: Scan results ID
-    description: Get the status of a specific scan in tenable.sc
+    description: Get the status of a specific scan in Tenable.sc
   - name: tenable-sc-get-scan-report
     arguments:
     - name: scan_results_id
@@ -1941,7 +1940,7 @@ script:
     - contextPath: TenableSC.ScanResults.ImportTime
       description: Scan import time
       type: date
-    description: Get a report with a tenable.sc scan results
+    description: Get a report with a Tenable.sc scan results
   - name: tenable-sc-list-credentials
     arguments:
     - name: manageable
@@ -1977,7 +1976,7 @@ script:
     - contextPath: TenableSC.Credential.LastModified
       description: Credential last modified time
       type: date
-    description: Get a list of tenable.sc credentials
+    description: Get a list of Tenable.sc credentials
   - name: tenable-sc-list-policies
     arguments:
     - name: manageable
@@ -2013,7 +2012,7 @@ script:
     - contextPath: TenableSC.ScanPolicy.Type
       description: Scan policy type
       type: string
-    description: Get a list of tenable.sc scan policies
+    description: Get a list of Tenable.sc scan policies
   - name: tenable-sc-list-report-definitions
     arguments:
     - name: manageable
@@ -2043,7 +2042,7 @@ script:
     - contextPath: TenableSC.ReportDefinition.Owner
       description: Report definition owner user name
       type: string
-    description: Get a list of tenable.sc report definitions
+    description: Get a list of Tenable.sc report definitions
   - name: tenable-sc-list-repositories
     arguments: []
     outputs:
@@ -2056,7 +2055,7 @@ script:
     - contextPath: TenableSC.ScanRepository.Description
       description: Scan Repository
       type: string
-    description: Get a list of tenable.sc scan repositories
+    description: Get a list of Tenable.sc scan repositories
   - name: tenable-sc-list-zones
     arguments: []
     outputs:
@@ -2075,7 +2074,7 @@ script:
     - contextPath: TenableSC.ScanZone.ActiveScanners
       description: Scan Zone active scanners
       type: number
-    description: Get a list of tenable.sc scan zones
+    description: Get a list of Tenable.sc scan zones
   - name: tenable-sc-create-scan
     arguments:
     - name: name
@@ -2169,13 +2168,13 @@ script:
     - contextPath: TenableSC.Scan.Reports
       description: Scan report defintion IDs
       type: unknown
-    description: Create a scan on tenable.sc
+    description: Create a scan on Tenable.sc
   - name: tenable-sc-delete-scan
     arguments:
     - name: scan_id
       required: true
       description: Scan ID, can be. retrieved from the list-scans command
-    description: Delete a scan in tenable.sc
+    description: Delete a scan in Tenable.sc
   - name: tenable-sc-list-assets
     arguments:
     - name: manageable
@@ -2211,7 +2210,7 @@ script:
     - contextPath: TenableSC.Asset.LastModified
       description: Asset last modified time
       type: date
-    description: Get a list of tenable.sc Assets
+    description: Get a list of Tenable.sc Assets
   - name: tenable-sc-create-asset
     arguments:
     - name: name
@@ -2241,7 +2240,7 @@ script:
     - contextPath: TenableSC.Asset.Tags
       description: Asset tags
       type: string
-    description: Create an Asset in tenable.sc with provided IP addresses
+    description: Create an Asset in Tenable.sc with provided IP addresses
   - name: tenable-sc-get-asset
     arguments:
     - name: asset_id
@@ -2272,13 +2271,13 @@ script:
     - contextPath: TenableSC.Asset.IPs
       description: Asset viewable IPs
       type: unknown
-    description: Get details for a given asset in tenable.sc
+    description: Get details for a given asset in Tenable.sc
   - name: tenable-sc-delete-asset
     arguments:
     - name: asset_id
       required: true
       description: Asset ID
-    description: Delete the Asset with the given ID from tenable.sc
+    description: Delete the Asset with the given ID from Tenable.sc
     execution: true
   - name: tenable-sc-list-alerts
     arguments:
@@ -2317,7 +2316,7 @@ script:
     - contextPath: TenableSC.Alert.Owner
       description: Alert owner user name
       type: string
-    description: List alerts from tenable.sc
+    description: List alerts from Tenable.sc
   - name: tenable-sc-get-alert
     arguments:
     - name: alert_id
@@ -2406,15 +2405,15 @@ script:
     - contextPath: TenableSC.Device.CriticalSeverity
       description: Device total threat scores with critical severity
       type: number
-    description: Gets the device information from the current user in tenable.sc
+    description: Gets the device information from the current user in Tenable.sc
   - name: tenable-sc-list-users
     arguments:
     - name: id
-      description: User ID
+      description: Filter by user ID
     - name: username
-      description: User name
+      description: Filter by user username
     - name: email
-      description: User email address
+      description: Filter by user email address
     outputs:
     - contextPath: TenableSC.User.ID
       description: User ID
@@ -2446,7 +2445,7 @@ script:
     - contextPath: TenableSC.User.Role
       description: User role name
       type: string
-    description: List users in tenable.sc
+    description: List users in Tenable.sc
   - name: tenable-sc-get-system-licensing
     arguments: []
     outputs:
@@ -2457,7 +2456,7 @@ script:
       description: Number of licensed IP addresses
     - contextPath: TenableSC.Status.License
       description: License status
-    description: Retrieve licensing information from tenable.sc
+    description: Retrieve licensing information from Tenable.sc
   - name: tenable-sc-get-system-information
     arguments: []
     outputs:
@@ -2488,5 +2487,5 @@ script:
     - contextPath: TenableSC.System.LastCheck
       description: System last check time
       type: date
-    description: Get the system information and diagnostics from tenable.sc
-releaseNotes: "tenable.sc integration"
+    description: Get the system information and diagnostics from Tenable.sc
+  releaseNotes: "tenable.sc integration"
