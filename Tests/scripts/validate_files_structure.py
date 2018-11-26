@@ -270,7 +270,15 @@ def has_duplicated_ids(id_to_file):
 
 def validate_committed_files(branch_name):
     files_string = run_git_command("git diff --name-status --no-merges HEAD")
+    all_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+
     modified_files, added_files = get_modified_files(files_string)
+    _, added_files_from_branch = get_modified_files(all_files_string)
+    for mod_file in modified_files:
+        if mod_file in added_files_from_branch:
+            added_files.add(mod_file)
+            modified_files = modified_files - set([mod_file])
+
     has_schema_problem = False
     for file_path in modified_files:
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
