@@ -212,4 +212,4 @@ inputs:
 outputs: []
 releaseNotes: "-"
 tests:
-  CuckooTest
+  - CuckooTest

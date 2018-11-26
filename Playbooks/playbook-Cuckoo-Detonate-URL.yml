@@ -333,4 +333,4 @@ outputs:
   description: Monitor of the reported task
 releaseNotes: "-"
 tests:
-  CuckooTest
+  - CuckooTest
