@@ -1,0 +1,377 @@
+id: CuckooDetonateFile
+version: -1
+name: CuckooDetonateFile
+description: "Detonating file with Cuckoo"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c1de2f2b-64cb-4df5-8490-07c49e7255b6
+    type: start
+    task:
+      description: start
+      id: c1de2f2b-64cb-4df5-8490-07c49e7255b6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: edb32e9f-570f-4418-8522-b121f7bd5233
+    type: playbook
+    task:
+      id: edb32e9f-570f-4418-8522-b121f7bd5233
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        simple: ${Cuckoo.Task.ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: cuckoo-view-task
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Cuckoo.Task(val.CompletedOn == null).ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: c8400cff-bb6a-4ba7-8032-69e0322c54cf
+    type: condition
+    task:
+      description: Check for active instance
+      id: c8400cff-bb6a-4ba7-8032-69e0322c54cf
+      version: -1
+      name: Is there any active Cuckoo instance?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cuckoo Sandbox
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    
+  "4":
+    id: "4"
+    taskid: 087ea815-c0b4-4604-8b43-099927639fa9
+    type: condition
+    task:
+      description: Check if file exist
+      id: 087ea815-c0b4-4604-8b43-099927639fa9
+      version: -1
+      name: Is there any file to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 5354101e-b678-4ed5-82ff-6abe4dbed57b
+    type: regular
+    task:
+      description: set file to context
+      id: 5354101e-b678-4ed5-82ff-6abe4dbed57b
+      version: -1
+      name: Set file to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        simple: ${inputs.File}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 4d966bd6-db01-4c5f-8cb3-da14e5f1058b
+    type: regular
+    task:
+      description: send file to Cuckoo
+      id: 4d966bd6-db01-4c5f-8cb3-da14e5f1058b
+      version: -1
+      name: Send file to Cuckoo
+      script: '|||cuckoo-create-task-from-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      enforce_timeout: {}
+      entryID:
+        simple: ${File.EntryID}
+      fileID: {}
+      machine: {}
+      memory: {}
+      options: {}
+      package: {}
+      platform: {}
+      tags: {}
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: b5eb756b-903d-4f8e-8b09-f8bcad28627c
+    type: title
+    task:
+      description: Done
+      id: b5eb756b-903d-4f8e-8b09-f8bcad28627c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: f1f53022-58b9-4d86-82f1-89ef2b0d7da2
+    type: regular
+    task:
+      description: get task report
+      id: f1f53022-58b9-4d86-82f1-89ef2b0d7da2
+      version: -1
+      name: Get task report
+      script: '|||cuckoo-get-task-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        simple: ${Cuckoo.Task.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: d2d7357c-0e0f-472f-89fd-e2ac9d46bcc4
+    type: regular
+    task:
+      description: sleep
+      id: d2d7357c-0e0f-472f-89fd-e2ac9d46bcc4
+      version: -1
+      name: Sleep (let the sandbox create the task)
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    simple: ${File}
+  required: true
+  description: ""
+outputs:
+- contextPath: Cuckoo.Task.Category
+  description: Category of task
+- contextPath: Cuckoo.Task.Machine
+  description: Machine of task
+- contextPath: Cuckoo.Task.Errors
+  description: Errors of task
+- contextPath: Cuckoo.Task.Traget
+  description: Traget of task
+- contextPath: Cuckoo.Task.Package
+  description: Package of task
+- contextPath: Cuckoo.Task.SampleID
+  description: Sample ID of task
+- contextPath: Cuckoo.Task.Guest
+  description: Task guest
+- contextPath: Cuckoo.Task.Custom
+  description: Custom values of task
+- contextPath: Cuckoo.Task.Owner
+  description: Task owner
+- contextPath: Cuckoo.Task.Priority
+  description: Priority of task
+- contextPath: Cuckoo.Task.Platform
+  description: Platform of task
+- contextPath: Cuckoo.Task.Options
+  description: Task options
+- contextPath: Cuckoo.Task.Status
+  description: Task status
+- contextPath: Cuckoo.Task.EnforceTimeout
+  description: Is timeout of task enforced
+- contextPath: Cuckoo.Task.Timeout
+  description: Task timeout
+- contextPath: Cuckoo.Task.Memory
+  description: Task memory
+- contextPath: Cuckoo.Task.Tags
+  description: Task tags
+- contextPath: Cuckoo.Task.ID
+  description: ID of task
+- contextPath: Cuckoo.Task.AddedOn
+  description: Date on which the task was added
+- contextPath: Cuckoo.Task.CompletedOn
+  description: Date on which the task was completed
+- contextPath: Cuckoo.Task.Score
+  description: Reported score of the the task
+- contextPath: Cuckoo.Task.Monitor
+  description: Monitor of the reported task
+releaseNotes: "-"
+tests:
+  CuckooTest
