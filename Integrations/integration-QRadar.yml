@@ -219,7 +219,15 @@ script:
             res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
             res.raise_for_status()
         except HTTPError, e:
-            return_error(res.json())
+            err_json = res.json()
+            err_msg = ''
+            if 'message' in err_json:
+              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
+            elif 'http_response' in err_json:
+              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
+            if 'code' in err_json:
+              err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+            return_error(err_msg)
         return res.json()
 
     # Generic function that receives a result json, and turns it into an entryObject

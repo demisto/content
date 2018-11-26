@@ -35,10 +35,10 @@ tasks:
       version: -1
       name: qradar-get-assets
       description: execute command qradar-get-assets
-      script: QRadar2|||qradar-get-assets
+      script: QRadar|||qradar-get-assets
       type: regular
       iscommand: true
-      brand: QRadar2
+      brand: QRadar
     nexttasks:
       '#none#':
       - "21"
@@ -66,10 +66,10 @@ tasks:
       version: -1
       name: qradar-create-note in existing offense
       description: execute command qradar-create-note
-      script: QRadar2|||qradar-create-note
+      script: QRadar|||qradar-create-note
       type: regular
       iscommand: true
-      brand: QRadar2
+      brand: QRadar
     nexttasks:
       '#none#':
       - "6"
@@ -98,10 +98,10 @@ tasks:
       version: -1
       name: qradar-get-note
       description: execute command qradar-get-note
-      script: QRadar2|||qradar-get-note
+      script: QRadar|||qradar-get-note
       type: regular
       iscommand: true
-      brand: QRadar2
+      brand: QRadar
     nexttasks:
       '#none#':
       - "19"
@@ -130,10 +130,10 @@ tasks:
       version: -1
       name: qradar-offenses
       description: execute command qradar-offenses
-      script: QRadar2|||qradar-offenses
+      script: QRadar|||qradar-offenses
       type: regular
       iscommand: true
-      brand: QRadar2
+      brand: QRadar
     nexttasks:
       '#none#':
       - "2"
@@ -162,10 +162,10 @@ tasks:
       version: -1
       name: qradar-offense-by-id
       description: execute command qradar-offense-by-id
-      script: QRadar2|||qradar-offense-by-id
+      script: QRadar|||qradar-offense-by-id
       type: regular
       iscommand: true
-      brand: QRadar2
+      brand: QRadar
     nexttasks:
       '#none#':
       - "12"
@@ -227,10 +227,10 @@ tasks:
       version: -1
       name: Set offense protected to false (qradar-update-offense)
       description: execute command qradar-update-offense
-      script: QRadar2|||qradar-update-offense
+      script: QRadar|||qradar-update-offense
       type: regular
       iscommand: true
-      brand: QRadar2
+      brand: QRadar
     nexttasks:
       '#none#':
       - "14"
@@ -295,10 +295,10 @@ tasks:
       version: -1
       name: Set offense protected to true (qradar-update-offense)
       description: execute command qradar-update-offense
-      script: QRadar2|||qradar-update-offense
+      script: QRadar|||qradar-update-offense
       type: regular
       iscommand: true
-      brand: QRadar2
+      brand: QRadar
     nexttasks:
       '#none#':
       - "16"
@@ -461,10 +461,10 @@ tasks:
       version: -1
       name: qradar-get-asset-by-id
       description: execute command qradar-get-asset-by-id
-      script: QRadar2|||qradar-get-asset-by-id
+      script: QRadar|||qradar-get-asset-by-id
       type: regular
       iscommand: true
-      brand: QRadar2
+      brand: QRadar
     nexttasks:
       '#none#':
       - "22"
