@@ -1,7 +1,7 @@
 commonfields:
-  id: ParseJson
+  id: ParseJSON
   version: -1
-name: ParseJson
+name: ParseJSON
 script: |-
   var value = args.value;
   try {
@@ -25,3 +25,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 releaseNotes: "Added parse json transformer to parse string to json easily"
+tests:
+- Forgive me for my sins but I did not create any test
