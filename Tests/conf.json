@@ -6,6 +6,9 @@
             "playbookID": "Mimecast test"
         },
         {
+            "playbookID": "CreateEmailHtmlBody_test_pb"
+        },
+        {
           "playbookID": "ReadPDFFile-Test"
         },
         {
