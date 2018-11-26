@@ -1792,6 +1792,7 @@ script:
         except Exception as e:
             return raise_error(e)
 
+
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
@@ -4610,7 +4611,6 @@ script:
     description: Retrieves the encrypted administrator password for a running Windows
       instance.
     execution: true
-<<<<<<< HEAD
   - name: aws-ec2-modify-network-interface-attribute
     arguments:
     - name: networkInterfaceId
@@ -4709,8 +4709,6 @@ script:
       multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute
       action.
     execution: true
-=======
->>>>>>> master
   dockerimage: demisto/boto3
   runonce: false
 releaseNotes: "Added commands: aws-ec2-modify-instance-attribute & aws-ec2-modify-network-interface-attribute"
