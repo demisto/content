@@ -6,7 +6,7 @@ script: |-
   var value = args.value;
   try {
     return JSON.parse(value);
-  }catch(err) {
+  } catch(err) {
     return err;
   }
   return null;
