@@ -31,7 +31,7 @@ tasks:
     taskid: 03367f8b-274a-4ec2-83c9-139b828c0322
     type: playbook
     task:
-      id: 03367f8b-274a-4ec2-83c9-139b828c0322
+      id: tenable-sc-scan
       version: -1
       name: Launch Scan - tenable.sc
       description: Launches an existing tenable.sc scan by scan ID and waits for the
