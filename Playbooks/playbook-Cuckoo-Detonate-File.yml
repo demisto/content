@@ -1,6 +1,6 @@
-id: CuckooDetonateFile
+id: Detonate File - Cuckoo
 version: -1
-name: CuckooDetonateFile
+name: Detonate File - Cuckoo
 description: "Detonating file with Cuckoo"
 fromversion: "4.0.0"
 starttaskid: "0"

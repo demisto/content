@@ -108,8 +108,8 @@ tasks:
       description: start detonation playbook file
       id: 7ce222de-5f8b-469e-845a-23df060cfa30
       version: -1
-      name: CuckooDetonateFile
-      playbookName: CuckooDetonateFile
+      name: Detonate File - Cuckoo
+      playbookName: Detonate File - Cuckoo
       type: playbook
       iscommand: false
       brand: ""
@@ -196,8 +196,8 @@ tasks:
       description: url detonation playbook
       id: a5eef8a0-e185-4934-8a0e-c049c7fefc80
       version: -1
-      name: CuckooDetonateURL
-      playbookName: CuckooDetonateURL
+      name: Detonate URL - Cuckoo
+      playbookName: Detonate URL - Cuckoo
       type: playbook
       iscommand: false
       brand: ""
