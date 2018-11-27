@@ -694,6 +694,7 @@
         "LogRhythm": "DevOps investigation",
         "Phish.AI": "Need to check the reason for skipping",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "Service Manager": "Expired license"
+        "Service Manager": "Expired license",
+        "ServiceNow": "Instance goes to hibernate every few hours"
     }
 }
