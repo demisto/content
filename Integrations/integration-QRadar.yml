@@ -1686,8 +1686,10 @@ script:
     - name: value
       required: true
       description: 'The value to add or update in the reference set. Note: Date values
-        must be represented in epoch (milliseconds since the Unix Epoch January 1st
-        1970), unless date_value argument is set to ''True, then .'
+        must be represented in epoch in reference sets (milliseconds since the Unix Epoch January 1st
+        1970).
+        If ''date_value'' is set to ''True'', then the argument will be converted from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
     - name: source
       description: An indication of where the data originated. The default value is
                      'reference data api'.
