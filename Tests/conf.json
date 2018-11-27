@@ -676,6 +676,10 @@
             "playbookID": "cisco-ise-test-playbook"
         },
         {
+            "integrations": "RSA NetWitness v11.1",
+            "playbookID": "RSA NetWitness Test"
+        },
+        {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest"
         },
