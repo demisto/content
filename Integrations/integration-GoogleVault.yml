@@ -1429,6 +1429,5 @@ script:
     description: Gets a specified Export status
   dockerimage: demisto/gvault
   runonce: false
-releaseNotes: "A new integration for Google Vault"
 tests:
   - Google-Vault-Generic-Test

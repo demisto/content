@@ -946,6 +946,5 @@ script:
       type: string
     description: Gets the ePO version. This requires global admin permissions.
   runonce: false
-releaseNotes: add epo-find-system, epo-get-version commands and output for epo-query-table
 tests:
 - Test Playbook McAfee ePO

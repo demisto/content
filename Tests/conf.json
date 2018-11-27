@@ -1,10 +1,28 @@
 {
     "testTimeout": 160,
-    "testInterval": 20,
     "tests": [
+        {
+            "integrations": "MimecastV2",
+            "playbookID": "Mimecast test"
+        },
+        {
+            "playbookID": "CreateEmailHtmlBody_test_pb"
+        },
+        {
+          "playbookID": "ReadPDFFile-Test"
+        },
+        {
+          "playbookID": "JSONtoCSV-Test"
+        },
         {
           "integrations": "Tenable.io",
           "playbookID": "Tenable.io test"
+        },
+        {
+          "playbookID": "URLDecode-Test"
+        },
+        {
+          "playbookID": "GetTime-Test"
         },
         {
           "integrations": "Tenable.io",
@@ -51,6 +69,11 @@
             "playbookID": "Detonate File - BitDam Test"
         },
         {
+            "integrations": "Threat Grid",
+            "playbookID": "ThreatGridTest",
+            "timeout": 600
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -74,10 +97,7 @@
           "playbookID": "devo_test_playbook"
         },
         {
-            "integrations": [
-                "VirusTotal",
-                "urlscan.io"
-            ],
+          "integrations": "urlscan.io",
             "playbookID": "url_enrichment_-_generic_test",
             "timeout": 500
         },
@@ -291,8 +311,7 @@
         },
         {
             "integrations": [
-                "VirusTotal",
-                "urlscan.io"
+                "VirusTotal"
             ],
             "playbookID": "ip_enrichment_generic_test"
         },
@@ -386,8 +405,7 @@
         },
         {
             "playbookID": "ProofpointDecodeURL-Test",
-            "timeout": 300,
-            "interval": 20
+            "timeout": 300
         },
         {
             "playbookID": "listExecutedCommands-Test"
@@ -604,6 +622,10 @@
             "playbookID": "PhishAi-Test"
         },
         {
+            "integrations": "Phish.AI",
+            "playbookID": "Test-Detonate URL - Phish.AI"
+        },
+        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -671,6 +693,9 @@
            ]
         },
         {
+            "playbookID": "ReadPDFFile-Test"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 500,
             "nightly": true,
@@ -710,9 +735,6 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      },
-      {
-          "playbookID": "ReadPDFFile-Test"
       }
     ],
     "skipped_tests": {
@@ -727,7 +749,7 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "Cylance Protect v2 Test": "Currently being updated"
+        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
@@ -742,9 +764,12 @@
         "XFE": "Need to check the reason for skipping",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
-        "Phish.AI": "Need to check the reason for skipping",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
-        "Signal Sciences WAF": "API problems, not returning the correct data"
-    }
+        "Signal Sciences WAF": "API problems, not returning the correct data",
+        "Server Message Block (SMB)": "No instance"
+    },
+    "nigthly_integrations": [
+        "Lastline"
+    ]
 }

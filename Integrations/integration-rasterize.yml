@@ -178,4 +178,3 @@ script:
     description: Rasterize an image file
   dockerimage: demisto/rasterize
   runonce: false
-releaseNotes: "Added rasterize-image command to securely display images in war room"
