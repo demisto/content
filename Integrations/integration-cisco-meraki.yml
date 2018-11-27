@@ -794,5 +794,5 @@ script:
     description: update rule to L3 firewall rules of an SSID
 hidden: false
 tests:
-  - Cisco-Meraki-Test
+- Cisco-Meraki-Test
 releaseNotes: updated API login
