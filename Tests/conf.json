@@ -2,6 +2,10 @@
     "testTimeout": 160,
     "tests": [
         {
+            "integrations": "dnstwist",
+            "playbookID": "dnstwistTest"
+        },
+        {
             "playbookID": "WordTokenizeTest"
         },
         {
