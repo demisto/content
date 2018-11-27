@@ -315,11 +315,13 @@ inputs:
   required: true
   description: URL to detonate
 - key: interval
-  value: {}
+  value:
+    simple: "1"
   required: false
   description: How often to poll for results
 - key: timeout
-  value: {}
+  value:
+    simple: "10"
   required: false
   description: How long to wait before giving up waiting for results
 outputs:
