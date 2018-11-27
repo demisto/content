@@ -170,13 +170,13 @@ tasks:
       Ids:
         simple: ${Cuckoo.Task.ID}
       Interval:
-        simple: "1"
+        simple: ${inputs.interval}
       PollingCommandArgName:
         simple: id
       PollingCommandName:
         simple: cuckoo-view-task
       Timeout:
-        simple: "10"
+        simple: ${inputs.timeout}
       dt:
         simple: Cuckoo.Task(val.CompletedOn == null).ID
     separatecontext: true
@@ -314,6 +314,14 @@ inputs:
   value: {}
   required: true
   description: URL to detonate
+- key: interval
+  value: {}
+  required: false
+  description: How often to poll for results
+- key: timeout
+  value: {}
+  required: false
+  description: How long to wait before giving up waiting for results
 outputs:
 - contextPath: Cuckoo.Task.Category
   description: Category of task
@@ -321,8 +329,8 @@ outputs:
   description: Machine of task
 - contextPath: Cuckoo.Task.Errors
   description: Errors of task
-- contextPath: Cuckoo.Task.Target
-  description: Target of task
+- contextPath: Cuckoo.Task.Traget
+  description: Traget of task
 - contextPath: Cuckoo.Task.Package
   description: Package of task
 - contextPath: Cuckoo.Task.SampleID

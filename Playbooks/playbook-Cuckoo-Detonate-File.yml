@@ -55,13 +55,13 @@ tasks:
       Ids:
         simple: ${Cuckoo.Task.ID}
       Interval:
-        simple: "1"
+        simple: ${inputs.interval}
       PollingCommandArgName:
         simple: id
       PollingCommandName:
         simple: cuckoo-view-task
       Timeout:
-        simple: "10"
+        simple: ${inputs.timeout}
       dt:
         simple: Cuckoo.Task(val.CompletedOn == null).ID
     separatecontext: true
@@ -130,7 +130,6 @@ tasks:
         }
       }
     note: false
-
   "4":
     id: "4"
     taskid: 087ea815-c0b4-4604-8b43-099927639fa9
@@ -165,37 +164,6 @@ tasks:
         }
       }
     note: false
-  "5":
-    id: "5"
-    taskid: 5354101e-b678-4ed5-82ff-6abe4dbed57b
-    type: regular
-    task:
-      description: set file to context
-      id: 5354101e-b678-4ed5-82ff-6abe4dbed57b
-      version: -1
-      name: Set file to context
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      append: {}
-      key:
-        simple: File
-      value:
-        simple: ${inputs.File}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 545
-        }
-      }
-    note: false
   "6":
     id: "6"
     taskid: 4d966bd6-db01-4c5f-8cb3-da14e5f1058b
@@ -215,7 +183,7 @@ tasks:
     scriptarguments:
       enforce_timeout: {}
       entryID:
-        simple: ${File.EntryID}
+        simple: ${inputs.File.EntryID}
       fileID: {}
       machine: {}
       memory: {}
@@ -340,7 +308,9 @@ tasks:
     note: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "4_6_yes": 0.89
+    },
     "paper": {
       "dimensions": {
         "height": 1610,
@@ -355,7 +325,17 @@ inputs:
   value:
     simple: ${File}
   required: true
-  description: ""
+  description: The file to detonate
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: How often to poll for results
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: How long to wait before giving up waiting for results
 outputs:
 - contextPath: Cuckoo.Task.Category
   description: Category of task
@@ -363,8 +343,8 @@ outputs:
   description: Machine of task
 - contextPath: Cuckoo.Task.Errors
   description: Errors of task
-- contextPath: Cuckoo.Task.Target
-  description: Target of task
+- contextPath: Cuckoo.Task.Traget
+  description: Traget of task
 - contextPath: Cuckoo.Task.Package
   description: Package of task
 - contextPath: Cuckoo.Task.SampleID
