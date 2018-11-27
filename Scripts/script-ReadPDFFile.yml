@@ -93,7 +93,7 @@ script: |-
                   #parsing url
                   url_obj = urlparse(url)
                   # if len(netloc) > len(path) - netloc contains port number
-                  if len(url.obj.netloc) > len(url_obj.path):
+                  if len(url_obj.netloc) > len(url_obj.path):
                       url = url_obj.netloc
                   else:
                       url = url_obj.path
