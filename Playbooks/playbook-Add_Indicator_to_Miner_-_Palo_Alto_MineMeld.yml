@@ -19,7 +19,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-      - "4"
     separatecontext: false
     view: |-
       {
@@ -43,6 +42,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "4"
       "yes":
       - "6"
     separatecontext: false

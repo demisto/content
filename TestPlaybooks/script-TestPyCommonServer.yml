@@ -278,13 +278,18 @@ script: |-
   def test_hash_djb2():
       assert hash_djb2("test") == 2090756197, "Invalid value of hash_djb2"
 
+  def test_camelize():
+      assert camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_').__str__ == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
+      assert camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_').__str__ == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
+
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
       # 'XML' : test_xml,
       'ENTRY' : test_entry,
       'TBLMD' : test_tbl_to_md,
-      'HASH'  : test_hash_djb2
+      'HASH'  : test_hash_djb2,
+      'CAMELIZE': test_camelize
   }
 
   test_type = demisto.args()['test_type']
@@ -311,4 +316,3 @@ args:
   defaultValue: dq
 scripttarget: 0
 runonce: false
-releaseNotes: "1.Add hash djb2 test. 2.Fixed table separator"

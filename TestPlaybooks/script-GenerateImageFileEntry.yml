@@ -13,4 +13,3 @@ comment: Generate image file into war room
 enabled: true
 scripttarget: 0
 runonce: false
-releaseNotes: "Generate image file into war room"
