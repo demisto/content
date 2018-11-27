@@ -851,6 +851,7 @@ script:
     - name: uuid
       required: true
       description: Task UUID of the submitted Lastline analysis
+      isArray: true
     - name: threshold
       description: Score threshold to identify file as malicious. Lastline default
         is 70.
@@ -954,8 +955,8 @@ script:
         12:00:00'
     description: Gets a list of tasks
   runonce: false
-releaseNotes: added outputs, support multiple inputs for get-report, handle errors gracefully, code readability
+releaseNotes: "Add isArray option to uuid argument in lastline-get-report"
 tests:
 - Lastline - testplaybook
-- detonate_url_-_generic_test
-- detonate_file_-_generic_test
+- Detonate URL - Generic Test
+- Detonate File - Generic Test

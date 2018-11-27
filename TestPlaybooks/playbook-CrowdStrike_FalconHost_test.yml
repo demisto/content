@@ -1,0 +1,436 @@
+id: crowdstrike_falconhost_test
+version: -1
+name: CrowdStrike FalconHost Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7485bc71-86d3-4260-80f2-8ef6a2866739
+    type: start
+    task:
+      id: 7485bc71-86d3-4260-80f2-8ef6a2866739
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 08135349-1673-45b6-810c-9161c712abea
+    type: regular
+    task:
+      id: 08135349-1673-45b6-810c-9161c712abea
+      version: -1
+      name: Search devices
+      description: Search for devices in your environment by platform, host name,
+        IP, or a number of other parameters
+      script: FalconHost|||cs-device-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      offset:
+        simple: "1"
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 1745fae7-2616-4294-8dba-4a45efac7ce8
+    type: regular
+    task:
+      id: 1745fae7-2616-4294-8dba-4a45efac7ce8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 2bd7b3dc-fee7-44f7-85ac-94d9c4a23397
+    type: condition
+    task:
+      id: 2bd7b3dc-fee7-44f7-85ac-94d9c4a23397
+      version: -1
+      name: Found any devices?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FalconHostDevices
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: dcf7e227-e82b-4a72-8f83-5d7d743fecc4
+    type: regular
+    task:
+      id: dcf7e227-e82b-4a72-8f83-5d7d743fecc4
+      version: -1
+      name: Get device details
+      description: Get details for one or more devices, according to device ID
+      script: FalconHost|||cs-device-details
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ids:
+        simple: ${FalconHostDevices}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 9fde426b-2a35-4139-88fc-a5505ebc2615
+    type: regular
+    task:
+      id: 9fde426b-2a35-4139-88fc-a5505ebc2615
+      version: -1
+      name: Verify Endpoint
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Endpoint
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 93df7904-6a2e-4579-8d47-03e21f0438df
+    type: regular
+    task:
+      id: 93df7904-6a2e-4579-8d47-03e21f0438df
+      version: -1
+      name: Search by MD5
+      description: Returns a list of device IDs on which an indicator ran
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      type:
+        simple: md5
+      value:
+        simple: 36bd4be7042f6de7e332c05cef287d05
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 317c45d1-72e5-4f09-8263-a44b34f30d39
+    type: regular
+    task:
+      id: 317c45d1-72e5-4f09-8263-a44b34f30d39
+      version: -1
+      name: Get details
+      description: Get details for one or more devices, according to device ID
+      script: FalconHost|||cs-device-details
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      ids:
+        simple: ${FalconHostDevices}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: b3ebc50b-2202-4dc5-8f43-1be95a72fa41
+    type: regular
+    task:
+      id: b3ebc50b-2202-4dc5-8f43-1be95a72fa41
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: b83a51d3-c5fc-4f22-8770-4d1774aaf198
+    type: title
+    task:
+      id: b83a51d3-c5fc-4f22-8770-4d1774aaf198
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2295
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: bba6c2b8-ee63-4f97-8545-d8130547d657
+    type: regular
+    task:
+      id: bba6c2b8-ee63-4f97-8545-d8130547d657
+      version: -1
+      name: Search with number offset
+      description: Search for devices in your environment by platform, host name,
+        IP, or various other parameters
+      script: FalconHost|||cs-device-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      offset:
+        simple: ${Offset}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: e6473261-93e2-45f0-8ac5-c095652cfdf4
+    type: regular
+    task:
+      id: e6473261-93e2-45f0-8ac5-c095652cfdf4
+      version: -1
+      name: Get device details
+      description: Get details for one or more devices, according to device ID
+      script: FalconHost|||cs-device-details
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      ids:
+        simple: ${FalconHostDevices}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: e6192547-b2d9-4c19-8921-2ce37c7ddf2a
+    type: regular
+    task:
+      id: e6192547-b2d9-4c19-8921-2ce37c7ddf2a
+      version: -1
+      name: Set number offset
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Offset
+      value:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: cf4979a7-14a4-40c1-83ff-dac27b2336e5
+    type: condition
+    task:
+      id: cf4979a7-14a4-40c1-83ff-dac27b2336e5
+      version: -1
+      name: Found any devices?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FalconHostDevices
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

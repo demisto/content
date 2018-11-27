@@ -27,10 +27,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: 6f557960-dfb7-4894-82fe-6ae0ca9091f7
+    taskid: a9430872-d104-4a85-8bc8-3ca8a939a7b6
     type: regular
     task:
-      id: 6f557960-dfb7-4894-82fe-6ae0ca9091f7
+      id: a9430872-d104-4a85-8bc8-3ca8a939a7b6
       version: -1
       name: msg-search-alerts
       description: List alerts (security issues) within a customer's tenant that Microsoft
@@ -43,13 +43,11 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      category:
-        simple: repeatedShareActivity
+      category: {}
       filter: {}
       last_modified: {}
       severity: {}
-      time_from:
-        simple: 2018-09-19
+      time_from: {}
       time_to: {}
     separatecontext: false
     view: |-
@@ -62,10 +60,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 3ed28c73-3f47-4526-8008-4d172fc142cc
+    taskid: f1abf1da-85f1-43b3-8595-df7e575ee722
     type: regular
     task:
-      id: 3ed28c73-3f47-4526-8008-4d172fc142cc
+      id: f1abf1da-85f1-43b3-8595-df7e575ee722
       version: -1
       name: msg-get-alert-details
       description: Get details for a specific alert.
@@ -91,10 +89,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 452e3596-aaf8-4d94-8f09-7ec075e900a1
+    taskid: e2556b00-9b65-42cf-816d-5932b36d494e
     type: regular
     task:
-      id: 452e3596-aaf8-4d94-8f09-7ec075e900a1
+      id: e2556b00-9b65-42cf-816d-5932b36d494e
       version: -1
       name: msg-update-alert
       description: Update an editable alert property within any integrated solution
@@ -109,18 +107,18 @@ tasks:
       - "4"
     scriptarguments:
       alert_id:
-        simple: ${MsGraph.Alert.[0].ID}
+        simple: ${MsGraph.Alert.ID}
       assigned_to: {}
       closed_date_time: {}
-      comments:
-        simple: TestComment
-      feedback: {}
+      comments: {}
+      feedback:
+        simple: truePositive
       provider_information:
-        simple: ${MsGraph.Alert.[0].Provider}
+        simple: ${MsGraph.Alert.Provider}
       status: {}
       tags: {}
       vendor_information:
-        simple: ${MsGraph.Alert.[0].Vendor}
+        simple: ${MsGraph.Alert.Vendor}
     separatecontext: false
     view: |-
       {

@@ -321,10 +321,15 @@ script:
             break;
 
         case 'wildfire-upload':
-            var response = uploadFile(args.upload);
-            var uploadData = response.data;
-            var result = response.res;
-            return createUploadEntry(uploadData,'WildFire Upload File', result);
+            inputs = argToList(args.upload);
+            entries = [];
+            for (i=0; i < inputs.length; i++) {
+                var response = uploadFile(inputs[i]);
+                var uploadData = response.data;
+                var result = response.res;
+                entries.push(createUploadEntry(uploadData,'WildFire Upload File', result));
+            }
+            return entries;
 
         case 'wildfire-upload-file-remote':
             var response = uploadFileRemote(args.upload);
@@ -334,8 +339,8 @@ script:
 
         case 'file':
         case 'wildfire-report':
-            inputs = GetReportArgsHandler(args.md5, args.hash, args.file)
-            entries = []
+            inputs = GetReportArgsHandler(args.md5, args.hash, args.file);
+            entries = [];
             for (i=0; i < inputs.length; i++) {
                 var reportResponse = getReport(inputs[i]);
                 if (reportResponse.error){
@@ -600,3 +605,5 @@ script:
       type: string
     description: Upload a file hosted on a website to WildFire for analysis
   runonce: false
+tests:
+- Wildfire Test

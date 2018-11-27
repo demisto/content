@@ -2,7 +2,6 @@ commonfields:
   id: ParseEmailFiles
   version: -1
 name: ParseEmailFiles
-releaseNotes: "-"
 script: |-
   from email import message_from_string
   from email.header import decode_header
@@ -437,14 +436,18 @@ script: |-
                   print("Directory: " + str(dir))
                   print("Contents: " + self._getStream(dir))
   ########################################################################################################################
-  REGEX_EXTRACT_EMAIL = r'[\w\.-]+@[\w\.-]+'
-
+  REGEX_EXTRACT_EMAIL = '<([^>]*)>'
+  ENCODINGS_TYPES = set(['utf-8', 'iso8859-1'])
 
   def extractAddress(s):
       if type(s) not in [str, unicode]:
           return s
+      res = re.findall(REGEX_EXTRACT_EMAIL, s)
+      if res:
+          return ', '.join(res)
       else:
-          return re.findall(REGEX_EXTRACT_EMAIL,s)
+          return s
+
 
   def dataToMD(emailData):
       md = "### Results:\n"
@@ -460,6 +463,7 @@ script: |-
       md += "* {0}:\t{1}\n".format('Attachments', emailData['Attachments'])
       md += "* {0}:\t{1}\n".format('Headers', emailData['Headers'])
       return md
+
 
   def handleMsg(filePath):
       r = []
@@ -498,6 +502,7 @@ script: |-
       return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
           'EntryContext': {'Email': emailData}}]
 
+
   def getUtfString(text, field):
       if text is None:
         text = ''
@@ -512,7 +517,26 @@ script: |-
 
       return utfString
 
-  def handleEml(filePath, b64 = False):
+
+  def convert_to_unicode(s):
+      global ENCODINGS_TYPES
+      try:
+          encoded_s, encoding = decode_header(s)[0]
+          s = encoded_s.decode(encoding).encode('utf-8').strip()
+          ENCODINGS_TYPES.add(encoding)
+      except Exception:
+          for encoding in ENCODINGS_TYPES:
+              try:
+                  s = s.decode(encoding).encode('utf-8').strip()
+                  break
+              except:
+                  pass
+
+      return s
+
+
+  def handleEml(filePath, b64=False):
+      global ENCODINGS_TYPES
       r = []
       with open(filePath, 'rb') as emlFile:
           fileData = emlFile.read()
@@ -526,7 +550,7 @@ script: |-
           for item in headers.items():
               item_dict = {}
               item_dict['name'] = item[0]
-              item_dict['value'] = item[1]
+              item_dict['value'] = convert_to_unicode(item[1])
 
               header_list.append(item_dict)
 
@@ -543,35 +567,30 @@ script: |-
               if part.is_multipart() or part.get_content_type().startswith('multipart'):
                   parts += part.get_payload()
               elif part.get_filename():
-                  attachments.append(part.get_filename())
-                  demisto.setContext('AttachmentName', part.get_filename())
-                  r.append(fileResult(part.get_filename(), part.get_payload(decode=True)))
+                  file_name = convert_to_unicode(part.get_filename())
+                  attachments.append(file_name)
+                  demisto.setContext('AttachmentName', file_name)
+                  r.append(fileResult(file_name, part.get_payload(decode=True)))
               elif part.get_content_type() == 'text/html':
-                  html = getUtfString(part.get_payload(decode=True),'HTML')
+                  html = getUtfString(part.get_payload(decode=True), 'HTML')
               elif part.get_content_type() == 'text/plain':
-                  text = getUtfString(part.get_payload(decode=True),'TEXT')
-
-
-          try:
-              subjenc, encoding = decode_header(eml['Subject'])[0]
-              subj = subjenc.decode(encoding).strip()
-          except:
-              subj = eml['Subject']
-          subj = unicode(subj).encode('utf-8').strip()
+                  text = getUtfString(part.get_payload(decode=True), 'TEXT')
 
           emailData = {
               'To': extractAddress(eml['To']),
               'CC': extractAddress(eml['Cc']),
               'From': extractAddress(eml['From']),
-              'Subject': subj,
-              'HTML': html,
-              'Text': text,
+              'Subject': convert_to_unicode(eml['Subject']),
+              'HTML': convert_to_unicode(html),
+              'Text': convert_to_unicode(text),
               'Headers': header_list,
               'Attachments': '' if not attachments else ','.join(attachments),
               'Format': eml.get_content_type()
           }
+
           return r, [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': dataToMD(emailData),
               'EntryContext': {'Email': emailData}}]
+
 
   res = []
   fileType = ''
@@ -653,4 +672,4 @@ outputs:
 scripttarget: 0
 runonce: false
 tests:
-  - Forgive me for my sins but I did not create any test
+  - ParseEmailFiles-test

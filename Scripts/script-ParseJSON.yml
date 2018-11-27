@@ -1,0 +1,29 @@
+commonfields:
+  id: ParseJSON
+  version: -1
+name: ParseJSON
+script: |-
+  var value = args.value;
+  try {
+    return JSON.parse(value);
+  } catch(err) {
+    return err;
+  }
+  return null;
+type: javascript
+tags:
+- transformer
+- string
+comment: 'Parse a given JSON string "value" to a representative object. Example: "{''a'':''value''}"
+  => { a: "value"}.'
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+releaseNotes: "Added parse json transformer to parse string to json easily"
+tests:
+- Forgive me for my sins but I did not create any test
