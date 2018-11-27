@@ -1,0 +1,1249 @@
+id: tenable-sc-test
+version: -1
+name: Tenable.sc Test
+description: Test playbook for Tenable.sc integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 473ea1be-95b8-47df-8f86-f16a49ac0abb
+    type: start
+    task:
+      id: 473ea1be-95b8-47df-8f86-f16a49ac0abb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 7a037666-538e-4e5b-8e0b-50c3e769908a
+    type: title
+    task:
+      id: 7a037666-538e-4e5b-8e0b-50c3e769908a
+      version: -1
+      name: Create a scan and delete it
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: bbb84a11-f563-4476-8999-39d2893f409e
+    type: regular
+    task:
+      id: bbb84a11-f563-4476-8999-39d2893f409e
+      version: -1
+      name: Get manageable policies
+      description: Get a list of Tenable.sc scan policies
+      script: Tenable.sc|||tenable-sc-list-policies
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      manageable:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 1c0aa1bc-2a78-406d-8d28-7f0f56fce1e0
+    type: regular
+    task:
+      id: 1c0aa1bc-2a78-406d-8d28-7f0f56fce1e0
+      version: -1
+      name: Get repositories
+      description: Get a list of Tenable.sc scan repositories
+      script: Tenable.sc|||tenable-sc-list-repositories
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 29dbfecf-5313-4ac2-8d97-c0585249e139
+    type: regular
+    task:
+      id: 29dbfecf-5313-4ac2-8d97-c0585249e139
+      version: -1
+      name: Get zones
+      description: Get a list of Tenable.sc scan zones
+      script: Tenable.sc|||tenable-sc-list-zones
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 4fa0cf2b-6ae4-46ed-85d6-e9b044833e36
+    type: regular
+    task:
+      id: 4fa0cf2b-6ae4-46ed-85d6-e9b044833e36
+      version: -1
+      name: Get credentials
+      description: Get a list of Tenable.sc credentials
+      script: Tenable.sc|||tenable-sc-list-credentials
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      manageable: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 35e2e82f-9ad0-4367-83d7-e7f7bba4bfc2
+    type: regular
+    task:
+      id: 35e2e82f-9ad0-4367-83d7-e7f7bba4bfc2
+      version: -1
+      name: Get current time for name
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 54c77e6a-302a-4258-8f35-6667b789d160
+    type: regular
+    task:
+      id: 54c77e6a-302a-4258-8f35-6667b789d160
+      version: -1
+      name: Create scan
+      description: Create a scan on Tenable.sc
+      script: Tenable.sc|||tenable-sc-create-scan
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      asset_ids:
+        simple: ${TenableSC.Asset.ID}
+      credentials:
+        complex:
+          root: TenableSC
+          accessor: Credential
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Test
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: ID
+      dependent_id: {}
+      description:
+        simple: Test scan
+      dhcp_tracking:
+        simple: "true"
+      ip_list:
+        simple: 10.0.0.1
+      max_scan_time:
+        simple: "2"
+      name:
+        simple: test_scan_${TimeNowUnix}
+      policy_id:
+        complex:
+          root: TenableSC
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TenableSC.ScanPolicy.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Host Discovery
+          accessor: ScanPolicy.ID
+      report_ids:
+        complex:
+          root: TenableSC
+          accessor: ReportDefinition
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Critical and Exploitable Vulnerabilities Report
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: ID
+      repository_id:
+        complex:
+          root: TenableSC
+          accessor: ScanRepository
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: repo
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: ID
+      rollover_type: {}
+      scan_virtual_hosts:
+        simple: "false"
+      schedule:
+        simple: never
+      timeout_action: {}
+      zone_id:
+        complex:
+          root: TenableSC
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: TenableSC.ScanZone.ID
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          accessor: ScanZone.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 1d3cfc5c-63e6-42cc-8e6a-fd179c12f6b7
+    type: regular
+    task:
+      id: 1d3cfc5c-63e6-42cc-8e6a-fd179c12f6b7
+      version: -1
+      name: Get manageable report definitions
+      description: Get a list of Tenable.sc report definitions
+      script: Tenable.sc|||tenable-sc-list-report-definitions
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      manageable:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 7c8c122b-53ba-4706-89d0-85cb0abc3bda
+    type: regular
+    task:
+      id: 7c8c122b-53ba-4706-89d0-85cb0abc3bda
+      version: -1
+      name: Delete the scan
+      description: Delete a scan in Tenable.sc
+      script: Tenable.sc|||tenable-sc-delete-scan
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      scan_id:
+        simple: ${TenableSC.Scan.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 5f204e4a-db90-4932-82d1-4bdbd186f5ed
+    type: title
+    task:
+      id: 5f204e4a-db90-4932-82d1-4bdbd186f5ed
+      version: -1
+      name: Launch scan
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 7c095f1a-077f-43b3-8812-9b3c7c3ad1d5
+    type: regular
+    task:
+      id: 7c095f1a-077f-43b3-8812-9b3c7c3ad1d5
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: e86ffa1a-e813-4e59-8d4a-db5eeee3b101
+    type: regular
+    task:
+      id: e86ffa1a-e813-4e59-8d4a-db5eeee3b101
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: d263222f-d5f4-44b3-8d6b-5e7e9dc90f9a
+    type: regular
+    task:
+      id: d263222f-d5f4-44b3-8d6b-5e7e9dc90f9a
+      version: -1
+      name: List scans
+      description: Get a list of Tenable.sc existing scans
+      script: Tenable.sc|||tenable-sc-list-scans
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      manageable:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: 50ba360e-25e0-4550-87a4-d163dcdf9e69
+    type: regular
+    task:
+      id: 50ba360e-25e0-4550-87a4-d163dcdf9e69
+      version: -1
+      name: Launch my_test_scan
+      description: Launch an existing scan from Tenable.sc
+      script: Tenable.sc|||tenable-sc-launch-scan
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      diagnostic_password: {}
+      diagnostic_target: {}
+      scan_id:
+        complex:
+          root: TenableSC
+          accessor: Scan
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: my_test_scan
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 0d284adc-2881-40e2-8abd-45272bb839e3
+    type: regular
+    task:
+      id: 0d284adc-2881-40e2-8abd-45272bb839e3
+      version: -1
+      name: Get scan status
+      description: Get the status of a specific scan in Tenable.sc
+      script: Tenable.sc|||tenable-sc-get-scan-status
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      scan_results_id:
+        simple: ${TenableSC.ScanResults.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 05a3e4a0-cf7e-41be-81b8-257a8e2d01ba
+    type: regular
+    task:
+      id: 05a3e4a0-cf7e-41be-81b8-257a8e2d01ba
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: d72201a3-2317-4906-85d7-728dc511f62c
+    type: title
+    task:
+      id: d72201a3-2317-4906-85d7-728dc511f62c
+      version: -1
+      name: Get scan results
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 2f42b2b2-0ff0-4091-8d52-ddfbbedddb1e
+    type: regular
+    task:
+      id: 2f42b2b2-0ff0-4091-8d52-ddfbbedddb1e
+      version: -1
+      name: Get report from a complete scan
+      description: Get a report with a Tenable.sc scan results
+      script: Tenable.sc|||tenable-sc-get-scan-report
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      scan_results_id:
+        simple: "3331"
+      vulnerability_severity:
+        simple: High
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: af8a268c-806c-4302-8333-4e5bdc419076
+    type: regular
+    task:
+      id: af8a268c-806c-4302-8333-4e5bdc419076
+      version: -1
+      name: tenable-sc-get-vulnerability
+      description: 'Get details about a given vulnerability from a given Tenable.sc
+        scan '
+      script: Tenable.sc|||tenable-sc-get-vulnerability
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      scan_results_id:
+        simple: ${TenableSC.ScanResults.ID}
+      vulnerability_id:
+        complex:
+          root: TenableSC
+          accessor: ScanResults.Vulnerability
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: "117672"
+              field:
+                value:
+                  simple: ID
+              getField:
+                value:
+                  simple: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: bfa5cc8f-ae17-4b19-8f56-50f90adaccd1
+    type: regular
+    task:
+      id: bfa5cc8f-ae17-4b19-8f56-50f90adaccd1
+      version: -1
+      name: Verify CVE
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID
+      path:
+        simple: CVE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4275
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 693c9c57-ff27-4b8e-825d-6f691ac909ab
+    type: regular
+    task:
+      id: 693c9c57-ff27-4b8e-825d-6f691ac909ab
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 417f29e3-3c8c-4da7-817a-11bf5c86609b
+    type: title
+    task:
+      id: 417f29e3-3c8c-4da7-817a-11bf5c86609b
+      version: -1
+      name: Create asset
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 79a806f8-fa02-4c81-8039-21a391bdb2a2
+    type: regular
+    task:
+      id: 79a806f8-fa02-4c81-8039-21a391bdb2a2
+      version: -1
+      name: Get current time for name
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: de3e1786-48a1-4d32-812e-7b9c5ef5ad6e
+    type: regular
+    task:
+      id: de3e1786-48a1-4d32-812e-7b9c5ef5ad6e
+      version: -1
+      name: Create asset
+      description: Create an Asset in Tenable.sc with provided IP addresses
+      script: Tenable.sc|||tenable-sc-create-asset
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      description:
+        simple: desc
+      ip_list:
+        simple: 10.0.0.1
+      name:
+        simple: test_asset_${TimeNow}
+      owner_id:
+        simple: ${TenableSC.User.ID}
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 07e2b89d-afa6-47d6-8138-fc295b4a0192
+    type: regular
+    task:
+      id: 07e2b89d-afa6-47d6-8138-fc295b4a0192
+      version: -1
+      name: Get user
+      description: List users in Tenable.sc
+      script: Tenable.sc|||tenable-sc-list-users
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      email: {}
+      id: {}
+      username:
+        simple: API55
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: 4d6a4b63-3d85-42ff-8f6d-d6b1a4bb588a
+    type: regular
+    task:
+      id: 4d6a4b63-3d85-42ff-8f6d-d6b1a4bb588a
+      version: -1
+      name: Delete the asset
+      description: Delete the Asset with the given ID from Tenable.sc
+      script: Tenable.sc|||tenable-sc-delete-asset
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      asset_id:
+        simple: ${TenableSC.Asset.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: 1c990ad4-308d-4b7e-8572-d2ea54b24e59
+    type: title
+    task:
+      id: 1c990ad4-308d-4b7e-8572-d2ea54b24e59
+      version: -1
+      name: Alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4625
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: d565f54b-0ae0-4a53-8813-7757f504b74d
+    type: regular
+    task:
+      id: d565f54b-0ae0-4a53-8813-7757f504b74d
+      version: -1
+      name: Get manageable alerts
+      description: List alerts from Tenable.sc
+      script: Tenable.sc|||tenable-sc-list-alerts
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      manageable:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: 276d57ad-963d-4553-844e-1e2fb7741774
+    type: regular
+    task:
+      id: 276d57ad-963d-4553-844e-1e2fb7741774
+      version: -1
+      name: Get alert
+      description: Get information about a given alert in tenabel.sc
+      script: Tenable.sc|||tenable-sc-get-alert
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: TenableSC
+          accessor: Alert
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Test Alert
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4945
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: 668fe40b-717c-4980-8c82-b1ec7046ef03
+    type: regular
+    task:
+      id: 668fe40b-717c-4980-8c82-b1ec7046ef03
+      version: -1
+      name: FetchFromInstance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      instance_name:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Tenable.sc
+          accessor: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5120
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: cd731dca-8b61-4580-8fbb-16982e647ff8
+    type: title
+    task:
+      id: cd731dca-8b61-4580-8fbb-16982e647ff8
+      version: -1
+      name: List items
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5470
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: d8d4c3a6-8ee2-4e8b-83a4-8e3dde140437
+    type: regular
+    task:
+      id: d8d4c3a6-8ee2-4e8b-83a4-8e3dde140437
+      version: -1
+      name: List assets
+      description: Get a list of Tenable.sc Assets
+      script: Tenable.sc|||tenable-sc-list-assets
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      manageable:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5615
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: c280eecd-20bc-499d-8cb8-570963de8110
+    type: regular
+    task:
+      id: c280eecd-20bc-499d-8cb8-570963de8110
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5295
+        }
+      }
+    note: false
+    timertriggers: []
+  "35":
+    id: "35"
+    taskid: 4847fee1-8e2f-4cca-85cd-8b187138e89f
+    type: regular
+    task:
+      id: 4847fee1-8e2f-4cca-85cd-8b187138e89f
+      version: -1
+      name: Get device
+      description: Gets the device information from the current user in Tenable.sc
+      script: Tenable.sc|||tenable-sc-get-device
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      dnsName: {}
+      ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5790
+        }
+      }
+    note: false
+    timertriggers: []
+  "36":
+    id: "36"
+    taskid: 44f5f278-2e42-4abd-8f18-1877d86cb7e8
+    type: regular
+    task:
+      id: 44f5f278-2e42-4abd-8f18-1877d86cb7e8
+      version: -1
+      name: Get licensing
+      description: Retrieve licensing information from Tenable.sc
+      script: Tenable.sc|||tenable-sc-get-system-licensing
+      type: regular
+      iscommand: true
+      brand: Tenable.sc
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5965
+        }
+      }
+    note: false
+    timertriggers: []
+  "37":
+    id: "37"
+    taskid: 9230985e-ff1e-4a28-8953-a9467c2ce74c
+    type: regular
+    task:
+      id: 9230985e-ff1e-4a28-8953-a9467c2ce74c
+      version: -1
+      name: Verify lists
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Status,Device,Asset
+      path:
+        simple: TenableSC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6140
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6185,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
