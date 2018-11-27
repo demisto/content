@@ -9,7 +9,7 @@ script: |
   def unicode_dict_reader(utf8_data, **kwargs):
       csv_reader = csv.DictReader(utf8_data, **kwargs)
       for row in csv_reader:
-          yield {unicode(key, 'utf-8'):unicode(value, 'utf-8') for key, value in row.iteritems()}
+          yield {unicode(key, 'utf-8'):(unicode(value, 'utf-8') if value is not None else None) for key, value in row.iteritems()}
 
   def is_valid_ipv4_address(address):
       try:
@@ -212,3 +212,5 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
 scripttarget: 0
+tests:
+  - TestParseCSV

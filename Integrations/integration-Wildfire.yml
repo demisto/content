@@ -605,6 +605,5 @@ script:
       type: string
     description: Upload a file hosted on a website to WildFire for analysis
   runonce: false
-releaseNotes: "Add support for multiple uploads"
 tests:
 - Wildfire Test
