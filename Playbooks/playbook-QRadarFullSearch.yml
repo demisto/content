@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5b8a087a-770b-49d6-8c83-85bff00be6cd
+    taskid: 230a5fa5-ffb2-4d27-857f-647083ec27dc
     type: start
     task:
-      id: 5b8a087a-770b-49d6-8c83-85bff00be6cd
+      id: 230a5fa5-ffb2-4d27-857f-647083ec27dc
       version: -1
       name: ""
       description: Start of playbook
@@ -23,17 +23,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 114ea68b-641b-4020-81f6-4dab223e8f0e
+    taskid: c8436b25-99f9-46ec-8fe6-cc601675c5f3
     type: regular
     task:
-      id: 114ea68b-641b-4020-81f6-4dab223e8f0e
+      id: c8436b25-99f9-46ec-8fe6-cc601675c5f3
       version: -1
       name: qradar-searches
       description: Creates a search in QRadar using the search query
@@ -53,27 +53,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: 832af994-5835-47a7-871a-220e835d96e6
+    taskid: 4dd0f61d-1391-47c3-8a9d-b5580671f092
     type: regular
     task:
-      id: 832af994-5835-47a7-871a-220e835d96e6
+      id: 4dd0f61d-1391-47c3-8a9d-b5580671f092
       version: -1
       name: qradar-get-search
-      script: '|||qradar-get-search'
       description: Gets search object to initialize polling playbook
+      script: '|||qradar-get-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
     scriptarguments:
       headers:
         simple: ${inputs.headers}
@@ -83,21 +83,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 370
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 2de480a0-6374-4ba0-8208-fc5c561cc022
+    taskid: af4d3d48-5707-4522-8fef-a6d3b393eab4
     type: playbook
     task:
-      id: 2de480a0-6374-4ba0-8208-fc5c561cc022
+      id: af4d3d48-5707-4522-8fef-a6d3b393eab4
       version: -1
       name: GenericPolling
-      playbookName: GenericPolling
       description: Generic polling of qradar-get-search
+      playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
@@ -126,20 +126,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: 5d7017b3-cf1b-41e2-831c-7f8b38c23fce
+    taskid: 6eefed42-f1f6-46d7-83b0-ecb2e47575f9
     type: regular
     task:
-      id: 5d7017b3-cf1b-41e2-831c-7f8b38c23fce
+      id: 6eefed42-f1f6-46d7-83b0-ecb2e47575f9
       version: -1
       name: qradar-get-search-results
-      script: '|||qradar-get-search-results'
       description: executes qradar-get-search-results to get the search results
+      script: '|||qradar-get-search-results'
       type: regular
       iscommand: true
       brand: ""
@@ -157,17 +157,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: d9cc5a8d-f394-4228-84fd-111ef4ca5a5a
+    taskid: 172877e1-d636-4b2a-8b3e-70dddf7ea585
     type: title
     task:
-      id: d9cc5a8d-f394-4228-84fd-111ef4ca5a5a
+      id: 172877e1-d636-4b2a-8b3e-70dddf7ea585
       version: -1
       name: Done
       description: Playbook is done
@@ -178,8 +178,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 7c323154-9752-4e8d-8e18-7d43fef89edf
+    type: condition
+    task:
+      id: 7c323154-9752-4e8d-8e18-7d43fef89edf
+      version: -1
+      name: Is search completed?
+      description: Checks whether the search is completed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.Search.Status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -188,8 +225,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 380,
+        "height": 1085,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
@@ -221,4 +258,5 @@ inputs:
 outputs:
 - contextPath: QRadar.Search.Result
   description: The result of the search
-releaseNotes: "-"
+tests:
+- test_Qradar
