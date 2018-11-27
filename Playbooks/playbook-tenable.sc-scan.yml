@@ -129,10 +129,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: cde06ca3-695e-42be-8855-bb8804f68dc3
+    taskid: 2f2f21f2-0962-4372-857a-1284aa4326bc
     type: playbook
     task:
-      id: cde06ca3-695e-42be-8855-bb8804f68dc3
+      id: 2f2f21f2-0962-4372-857a-1284aa4326bc
       version: -1
       name: GenericPolling
       description: |-
@@ -163,7 +163,7 @@ tasks:
         simple: "60"
       dt:
         simple: TenableSC.ScanResults(val.Status == 'Running' || val.Status == 'Pending'
-                  || val.Status != 'Resuming' || val.Status == 'Pausing' || val.Status ==
+                  || val.Status == 'Resuming' || val.Status == 'Pausing' || val.Status ==
                   'Paused' || val.Status == 'Queued' || val.Status == 'Verifying targets'
                   || val.Status == 'Initializing Scanners').ID
     separatecontext: true
