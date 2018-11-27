@@ -786,7 +786,8 @@
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
         "Signal Sciences WAF": "API problems, not returning the correct data",
-        "Server Message Block (SMB)": "No instance"
+        "Server Message Block (SMB)": "No instance",
+        "ServiceNow": "Instance goes to hibernate every few hours"
     },
     "nigthly_integrations": [
         "Lastline"
