@@ -423,7 +423,11 @@ script:
         query = demisto.args().get('query')
         lastRun = demisto.getLastRun()
         offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
-        fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
+        if lastRun and offenseId == 0:
+            startTime = lastRun['startTime'] if 'startTime' in lastRun else '0'
+            fetchQuery = 'start_time>{0}{1}'.format(startTime, ' AND ({0})'.format(query) if query else '')
+        else:
+           fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
             # qradar returns offenses sorted desc on id and there's no way to change sorting.
             # if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
             # start looking for the end of the list by doubling the page position until we're empty.
