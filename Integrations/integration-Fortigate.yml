@@ -7,7 +7,7 @@ category: Network Security
 image: data:image/png;base64,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
 description: Manage FortiGate Firewall
 configuration:
-- display: Server URL (e.g. 192.168.0.1)
+- display: Server URL (e.g. https://192.168.0.1)
   name: server
   defaultvalue: ""
   type: 0
@@ -45,6 +45,7 @@ script:
     USE_SSL = not demisto.params().get('unsecure', False)
     BASE_URL = SERVER + '/api/v2/'
 
+
     # remove proxy if not set to true in params
     if not demisto.params().get('proxy'):
         del os.environ['HTTP_PROXY']
@@ -54,103 +55,6 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
-
-
-    def get_request(url_suffix, params={}):
-        """
-        Used in order to perform get operations - retrieve data.
-        """
-        session = login()
-        try:
-            res = session.get(
-                BASE_URL + url_suffix,
-                verify=USE_SSL,
-                params=params
-            )
-            logout(session)
-            res.raise_for_status()
-            return res.json()
-
-        except Exception, e:
-            LOG(e)
-            raise
-
-
-    def post_request(url_suffix, params={}, data=None):
-        """
-        Used in order to perform add/create operations.
-        """
-        session = login()
-        try:
-            res = session.post(
-                BASE_URL + url_suffix,
-                verify=USE_SSL,
-                params=params,
-                data=data
-            )
-            logout(session)
-            res.raise_for_status()
-            return res.status_code
-
-        except Exception, e:
-            LOG(e)
-            raise
-
-
-    def put_request(url_suffix, params={}, data=None):
-        """
-        Used in order to perform update operations.
-        """
-        session = login()
-        try:
-            res = session.put(
-                BASE_URL + url_suffix,
-                verify=USE_SSL,
-                params=params,
-                data=data
-            )
-            logout(session)
-            res.raise_for_status()
-            return res.status_code
-
-        except Exception, e:
-            LOG(e)
-            raise
-
-
-    def delete_request(url_suffix, params={}):
-        """
-        Used in order to perform delete operations.
-        """
-        session = login()
-        try:
-            res = session.delete(
-                BASE_URL + url_suffix,
-                verify=USE_SSL,
-                params=params
-            )
-            logout(session)
-            res.raise_for_status()
-            return res.status_code
-
-        except Exception, e:
-            LOG(e)
-            raise
-
-
-    def does_path_exist(target_url):
-        """
-        Check if the path itself already exists in the instance, if it does we will not want to resume with certain requests.
-        """
-        session = login()
-        res = session.get(
-            BASE_URL + target_url,
-            verify=USE_SSL
-        )
-        logout(session)
-        if res.status_code == 200:
-            return True
-        return False
 
 
     def login():
@@ -172,10 +76,35 @@ script:
             if cookie.name == 'ccsrftoken':
                 csrftoken = cookie.value[1:-1] # strip quotes
                 session.headers.update({'X-CSRFTOKEN': csrftoken})
-        # Simply make sure the connection is valid and we can continue.
-        login_check = session.get(SERVER + "/api/v2/cmdb/system/vdom",verify=USE_SSL)
-        login_check.raise_for_status()
         return session
+
+
+    SESSION = login()
+
+    def http_request(method, url_suffix, params={}, data=None):
+
+        res = SESSION.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data
+        )
+        if res.status_code not in {200}:
+            return_error('Error in API call to FortiGate [%d] - %s' % (res.status_code, res.reason))
+        if method.upper() != 'GET':
+            return res.status_code
+        return res.json()
+
+
+    def does_path_exist(target_url):
+        """
+        Check if the path itself already exists in the instance, if it does we will not want to resume with certain requests.
+        """
+        res = http_request('GET', target_url)
+        if res:
+            return True
+        return False
 
 
     def logout(session):
@@ -186,6 +115,7 @@ script:
         params = {}
         session.post(SERVER+url_suffix, data=params, verify=USE_SSL)
 
+
     ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -193,12 +123,10 @@ script:
         """
         Perform basic login and logout operation, validate connection.
         """
-        session = login()
-        logout(session)
+        login_check = http_request('GET', 'cmdb/system/vdom')
         return True
 
     def get_addresses_command():
-        headers = []
         contents = []
         context = {}
         addresses_context = []
@@ -229,7 +157,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FortiGate addresses', contents, headers),
+            'HumanReadable': tableToMarkdown('FortiGate addresses', contents),
             'EntryContext': context
         })
 
@@ -240,7 +168,7 @@ script:
         params = {
             'vdom': address
         }
-        response = get_request(uri_suffix, params)
+        response = http_request('GET', uri_suffix, params)
         # Different structure if we choose all domains
         if address == '*':
             return response[0].get('results')
@@ -248,7 +176,6 @@ script:
 
 
     def get_service_groups_command():
-        headers = []
         contents = []
         context = {}
         service_groups_context = []
@@ -275,14 +202,14 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FortiGate service groups', contents, headers),
+            'HumanReadable': tableToMarkdown('FortiGate service groups', contents),
             'EntryContext': context
         })
 
 
     def get_service_groups_request(name):
         uri_suffix = 'cmdb/firewall.service/group/' + name
-        response = get_request(uri_suffix)
+        response = http_request('GET', uri_suffix)
         return response.get('results')
 
 
@@ -302,13 +229,17 @@ script:
         members = service_group.get('member')
         for member in members:
             service_group_members.append(member.get('name'))
+
         contents = {
             'Name': service_group.get('name'),
             'Members': service_group_members
         }
+
         service_group_context = {
             'Name': service_group.get('name'),
-            'Member': { 'Name': service_group_members }
+            'Member': {
+                'Name': service_group_members
+            }
         }
 
         context['Fortigate.ServiceGroup(val.Name && val.Name === obj.Name)'] = service_group_context
@@ -318,7 +249,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FortiGate service group: ' + group_name + ' was successfully updated!' , contents),
+            'HumanReadable': tableToMarkdown('FortiGate service group: ' + group_name + ' was successfully updated' , contents),
             'EntryContext': context
         })
 
@@ -334,7 +265,7 @@ script:
             }
             payload = json.dumps(payload)
 
-        response = put_request(uri_suffix, {}, payload)
+        response = http_request('PUT', uri_suffix, {}, payload)
         return response
 
 
@@ -359,14 +290,14 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FortiGate service group: ' + group_name + ' was deleted successfully!', contents),
+            'HumanReadable': tableToMarkdown('FortiGate service group: ' + group_name + ' was deleted successfully', contents),
             'EntryContext': context
         })
 
 
     def delete_service_group_request(group_name):
         uri_suffix = 'cmdb/firewall.service/group/' + group_name
-        response = delete_request(uri_suffix)
+        response = http_request('DELETE', uri_suffix)
         return response
 
 
@@ -403,14 +334,14 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FortiGate firewall services: ' + service_title, contents),
+            'HumanReadable': tableToMarkdown('FortiGate firewall services ' + service_title, contents),
             'EntryContext': context
         })
 
 
     def get_firewall_service_request(service_name):
         uri_suffix = 'cmdb/firewall.service/custom/' + service_name
-        response = get_request(uri_suffix)
+        response = http_request('GET', uri_suffix)
         return response.get('results')
 
 
@@ -460,7 +391,7 @@ script:
             'tcp-portrange': tcp_range,
             'udp-portrange': udp_range
         }
-        response = post_request(uri_suffix, {}, json.dumps(payload))
+        response = http_request('POST', uri_suffix, {}, json.dumps(payload))
         return response
 
 
@@ -484,14 +415,24 @@ script:
                     if security_profile:
                         security_profiles.append(security_profile)
 
+                src_address = policy.get('srcaddr')
+                if src_address and isinstance(src_address, list) and isinstance(src_address[0], dict):
+                    src_address = src_address[0].get('name')
+                dest_address = policy.get('dstaddr')
+                if dest_address and isinstance(dest_address, list) and isinstance(dest_address[0], dict):
+                    dest_address = dest_address[0].get('name')
+                service = policy.get('service')
+                if service and isinstance(service, list) and isinstance(service[0], dict):
+                    service = service[0].get('name')
+
                 contents.append({
                     'Name': policy.get('name'),
                     'ID': policy.get('policyid'),
                     'Description': policy.get('comments'),
                     'Status': policy.get('status'),
-                    'Source': policy.get('srcaddr')[0].get('name'),
-                    'Destination': policy.get('dstaddr')[0].get('name'),
-                    'Service': policy.get('service')[0].get('name'),
+                    'Source': src_address,
+                    'Destination': dest_address,
+                    'Service': service,
                     'Action': policy.get('action'),
                     'Log': policy.get('logtraffic'),
                     'Security': security_profiles,
@@ -502,9 +443,9 @@ script:
                     'ID': policy.get('policyid'),
                     'Description': policy.get('comments'),
                     'Status': policy.get('status'),
-                    'Source': policy.get('srcaddr')[0].get('name'),
-                    'Destination': policy.get('dstaddr')[0].get('name'),
-                    'Service': policy.get('service')[0].get('name'),
+                    'Source': src_address,
+                    'Destination': dest_address,
+                    'Service': service,
                     'Action': policy.get('action'),
                     'Log': policy.get('logtraffic'),
                     'Security': security_profiles,
@@ -518,7 +459,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FortiGate policy details for: ' + policy_title , contents),
+            'HumanReadable': tableToMarkdown('FortiGate policy details for ' + policy_title , contents),
             'EntryContext': context
         })
 
@@ -531,7 +472,7 @@ script:
         params = {
             'format': 'policyid|action|name|comments|status|service|logtraffic|srcaddr|dstaddr|webfilter-profile|ssl-ssh-profile|dnsfilter-profile|profile-protocol-options|profile-type|av-profile|nat'
         }
-        response = get_request(uri_suffix, params)
+        response = http_request('GET', uri_suffix, params)
         return response.get('results')
 
 
@@ -553,14 +494,24 @@ script:
             if security_profile:
                 security_profiles.append(security_profile)
 
+        src_address = policy.get('srcaddr')
+        if src_address and isinstance(src_address, list) and isinstance(src_address[0], dict):
+            src_address = src_address[0].get('name')
+        dest_address = policy.get('dstaddr')
+        if dest_address and isinstance(dest_address, list) and isinstance(dest_address[0], dict):
+            dest_address = dest_address[0].get('name')
+        service = policy.get('service')
+        if service and isinstance(service, list) and isinstance(service[0], dict):
+            service = service[0].get('name')
+
         contents.append({
             'Name': policy.get('name'),
             'ID': policy.get('policyid'),
             'Description': policy.get('comments'),
             'Status': policy.get('status'),
-            'Source': policy.get('srcaddr')[0].get('name'),
-            'Destination': policy.get('dstaddr')[0].get('name'),
-            'Service': policy.get('service')[0].get('name'),
+            'Source': src_address,
+            'Destination': dest_address,
+            'Service': service,
             'Action': policy.get('action'),
             'Log': policy.get('logtraffic'),
             'Security': security_profiles,
@@ -571,9 +522,9 @@ script:
             'ID': policy.get('policyid'),
             'Description': policy.get('comments'),
             'Status': policy.get('status'),
-            'Source': policy.get('srcaddr')[0].get('name'),
-            'Destination': policy.get('dstaddr')[0].get('name'),
-            'Service': policy.get('service')[0].get('name'),
+            'Source': src_address,
+            'Destination': dest_address,
+            'Service': service,
             'Action': policy.get('action'),
             'Log': policy.get('logtraffic'),
             'Security': security_profiles,
@@ -597,11 +548,21 @@ script:
         if not does_path_exist(uri_suffix):
             return_error('Requested policy ID ' + policy_id + ' does not exist in Firewall config.')
 
+        field_to_api_key = {
+            'description': 'comments',
+            'source': 'srcaddr',
+            'destination': 'dstaddr',
+            'log': 'logtraffic'
+        }
+
+        if policy_field in field_to_api_key:
+            policy_field = field_to_api_key[policy_field]
+
         payload = {
             policy_field: policy_field_value
         }
 
-        response = put_request(uri_suffix, {}, json.dumps(payload))
+        response = http_request('PUT', uri_suffix, {}, json.dumps(payload))
         return response
 
 
@@ -693,7 +654,7 @@ script:
             }
         }
 
-        response = post_request(uri_suffix, {}, json.dumps(payload))
+        response = http_request('POST', uri_suffix, {}, json.dumps(payload))
         return response
 
 
@@ -733,7 +694,7 @@ script:
             position: neighbour
         }
 
-        response = put_request(uri_suffix, params)
+        response = http_request('PUT', uri_suffix, params)
         return response
 
 
@@ -767,7 +728,7 @@ script:
 
     def delete_policy_request(policy_id):
         uri_suffix = 'cmdb/firewall/policy/' + policy_id
-        response = delete_request(uri_suffix)
+        response = http_request('DELETE', uri_suffix)
         return response
 
 
@@ -804,14 +765,14 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('FortiGate address groups: ' + title, contents),
+            'HumanReadable': tableToMarkdown('FortiGate address groups ' + title, contents),
             'EntryContext': context
         })
 
 
     def get_address_groups_request(address_group_name):
         uri_suffix = 'cmdb/firewall/addrgrp/' + address_group_name
-        response = get_request(uri_suffix)
+        response = http_request('GET', uri_suffix)
         return response.get('results')
 
 
@@ -866,7 +827,7 @@ script:
                 'member': [{'name': address}]
             }
             payload = json.dumps(payload)
-        result = put_request(uri_suffix, {}, payload)
+        result = http_request('PUT', uri_suffix, {}, payload)
         return result
 
 
@@ -907,7 +868,7 @@ script:
         payload = {
             'name': group_name, 'member': [{'name': address}]
         }
-        result = post_request(uri_suffix, {} ,json.dumps(payload))
+        result = http_request('POST', uri_suffix, {} ,json.dumps(payload))
         return result
 
 
@@ -941,7 +902,7 @@ script:
 
     def delete_address_group_request(name):
         uri_suffix = 'cmdb/firewall/addrgrp/' + name
-        response = delete_request(uri_suffix)
+        response = http_request('DELETE', uri_suffix)
         return response
 
 
@@ -990,13 +951,16 @@ script:
         LOG(e.message)
         LOG.print_log()
         raise
+
+    finally:
+        logout(SESSION)
   type: python
   commands:
   - name: fortigate-get-addresses
     arguments:
     - name: address
       description: Filter by address (ip or domain)
-      defaultValue: '*'
+      defaultValue: root
     - name: name
       description: Filter by address name
     outputs:
@@ -1196,16 +1160,16 @@ script:
       description: Description for the policy
     - name: sourceIntf
       required: true
-      description: 'Source interface  (example : port1/port2/port3)'
+      description: 'Source interface  (examples : port1, port2 or port3)'
     - name: dstIntf
       required: true
-      description: 'Destination interface (example : port1/port2/port3)'
+      description: 'Destination interface (examples : port1, port2 or port3)'
     - name: source
       required: true
-      description: 'Source IP address, range or domain (example : all/update.microsoft.com)'
+      description: 'Source IP address, range or domain (examples : all, update.microsoft.com)'
     - name: destination
       required: true
-      description: 'Destination IP address, range or domain (example : all/update.microsoft.com)'
+      description: 'Destination IP address, range or domain (examples : all, update.microsoft.com)'
     - name: service
       required: true
       description: Service for the policy (for example HTTP)
