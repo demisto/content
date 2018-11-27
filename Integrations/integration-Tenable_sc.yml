@@ -2488,6 +2488,6 @@ script:
       description: System last check time
       type: date
     description: Get the system information and diagnostics from Tenable.sc
-  releaseNotes: "tenable.sc integration"
+releaseNotes: "tenable.sc integration"
 tests:
   - tenable-sc-test
