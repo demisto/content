@@ -422,6 +422,7 @@ script:
     def fetch_incidents():
         query = demisto.args().get('query')
         lastRun = demisto.getLastRun()
+        demisto.debug('QRadar lastRun: {0}'.format(str(lastRun)))
         offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
         if lastRun and offenseId == 0:
             startTime = lastRun['startTime'] if 'startTime' in lastRun else '0'
