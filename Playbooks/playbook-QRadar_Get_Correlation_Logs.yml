@@ -46,11 +46,11 @@ tasks:
       - "4"
     scriptarguments:
       correlation_id:
-        simple: ${inputs.qid}
+        simple: ${inputs.Qid}
       headers:
-        simple: ${inputs.headers}
+        simple: ${inputs.Headers}
       range:
-        simple: ${inputs.range}
+        simple: ${inputs.Range}
       search_id:
         simple: ${QRadar.Search.ID}
     separatecontext: false
@@ -102,11 +102,11 @@ tasks:
     scriptarguments:
       headers: {}
       query_expression:
-        simple: select RULENAME(${inputs.qid}), sourceip, destinationip, eventcount,
+        simple: select RULENAME(${inputs.Qid}), sourceip, destinationip, eventcount,
           sourceport, username, starttime, destinationport, magnitude, identityip,
-          CATEGORYNAME(category), PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}
-          from events where "CRE Name" IS NULL AND INOFFENSE(${inputs.offenseID})
-          START '${inputs.startTime}'
+          CATEGORYNAME(category), PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid)${inputs.AdditionalQueryFields}
+          from events where "CRE Name" IS NULL AND INOFFENSE(${inputs.OffenseID})
+          START '${inputs.StartTime}'
     separatecontext: false
     view: |-
       {
@@ -136,13 +136,13 @@ tasks:
       Ids:
         simple: ${QRadar.Search.ID}
       Interval:
-        simple: ${inputs.interval}
+        simple: ${inputs.Interval}
       PollingCommandArgName:
         simple: search_id
       PollingCommandName:
         simple: qradar-get-search
       Timeout:
-        simple: ${inputs.timeout}
+        simple: ${inputs.Timeout}
       dt:
         simple: QRadar.Search(val.Status!=='COMPLETED' ).ID
     separatecontext: true
@@ -171,40 +171,40 @@ view: |-
     }
   }
 inputs:
-- key: offenseID
+- key: OffenseID
   value:
     simple: ${incident.labels.id}
   required: true
   description: The offense ID to query.
-- key: startTime
+- key: StartTime
   value:
     simple: ${incident.labels.start_time}
   required: true
   description: query from startTime (in timestamp format).
-- key: interval
+- key: Interval
   value:
     simple: "1"
   required: false
   description: Interval to poll for results in minutes. Default is 1 minute.
-- key: timeout
+- key: Timeout
   value:
     simple: "10"
   required: false
   description: Timeout in minutes. Default is 10 minutes.
-- key: qid
+- key: Qid
   value:
     simple: ${Correlation.QID}
   required: true
   description: The Correlation QID to query.
-- key: additionalQueryFields
+- key: AdditionalQueryFields
   value: {}
   required: false
   description: ""
-- key: headers
+- key: Headers
   value: {}
   required: false
   description: Table headers
-- key: range
+- key: Range
   value: {}
   required: false
   description: Range of results to return (e.g. 5-11)
