@@ -26,7 +26,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "1":
     id: "1"
     taskid: 08437a15-4df4-49cd-8488-140a21d5a220
@@ -66,7 +65,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "2":
     id: "2"
     taskid: 508ea88a-b5bd-4de8-8387-44b54f6a020f
@@ -99,7 +97,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "3":
     id: "3"
     taskid: 7ce222de-5f8b-469e-845a-23df060cfa30
@@ -115,7 +112,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "9"
     scriptarguments:
       File:
         simple: ${File}
@@ -132,40 +129,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 71c45988-92c6-45ac-88cf-8390ae99aeff
-    type: playbook
-    task:
-      description: getting screenshot from previous playbook
-      id: 71c45988-92c6-45ac-88cf-8390ae99aeff
-      version: -1
-      name: CuckooGetScreenshot
-      playbookName: CuckooGetScreenshot
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      TaskID:
-        simple: ${subplaybook-3.Cuckoo.Task.ID}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
   "7":
     id: "7"
     taskid: f2daa2f7-6815-459e-806d-d88649a8f61f
@@ -216,11 +179,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1040
         }
       }
     note: false
-    timertriggers: []
   "9":
     id: "9"
     taskid: 9a0aac37-5da5-45ef-877c-579d4a51726b
@@ -241,11 +203,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
-    timertriggers: []
   "10":
     id: "10"
     taskid: e0f79738-8de0-4b5f-8a27-b3065d43ac79
@@ -274,17 +235,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 865
         }
       }
     note: false
-    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1405,
+        "height": 1230,
         "width": 380,
         "x": 50,
         "y": 50
