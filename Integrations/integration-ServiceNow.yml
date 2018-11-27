@@ -169,6 +169,7 @@ script:
          "work_start", "impact", "incident_state", "title", "type", "change_type", "category", "state"]
 
 
+    # Every table in ServiceNow has those fields
     DEFAULT_RECORD_FIELDS = {
         'sys_id': 'ID',
         'sys_updated_by': 'UpdatedBy',
@@ -243,12 +244,15 @@ script:
             'OpenedAt': data.get('opened_at')
         }
 
+        # These fields refer to records in the database, the value is their system ID.
         if 'closed_by' in data:
             context['ResolvedBy'] = data['closed_by']['value'] if 'value' in data['closed_by'] else ''
         if 'opened_by' in data:
             context['OpenedBy'] = data['opened_by']['value'] if 'value' in data['opened_by'] else ''
         if 'assigned_to' in data:
             context['Assignee'] = data['assigned_to']['value'] if 'value' in data['assigned_to'] else ''
+
+        # Try to map fields
         if 'priority' in data:
                 context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
         if 'state' in data:
@@ -286,6 +290,7 @@ script:
                 'Description': ticket.get('description'),
                 'Opened at': ticket.get('opened_at'),
                 'Due date': ticket.get('due_date'),
+                # This field refers to a record in the database, the valus is its system ID.
                 'Resolved by': ticket.get('closed_by', {}).get('value') if isinstance(ticket['closed_by'], dict) else ticket['closed_by'],
                 'Resolved at': ticket.get('resolved_at'),
                 'SLA due': ticket.get('sla_due'),
@@ -293,6 +298,7 @@ script:
                 'Additional Comments': ticket.get('comments')
             }
 
+            # Try to map the fields
             if 'impact' in ticket:
                 hr['Impact'] = TICKET_SEVERITY.get(ticket['impact'], ticket['impact'])
             if 'urgency' in ticket:
@@ -311,6 +317,7 @@ script:
         return result
 
     def get_ticket_fields(template):
+        # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
         inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
         inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
         body = {}
@@ -337,6 +344,7 @@ script:
 
         if custom_fields:
             for field in custom_fields:
+                # custom fields begin with "u_"
                 body['u_' + field] = custom_fields[field]
 
         return body
@@ -346,6 +354,7 @@ script:
         dic_fields = {}
 
         if fields:
+            # As received by the command
             arr_fields = fields.split(';')
 
             for f in arr_fields:
@@ -460,10 +469,13 @@ script:
         if fields:
             fields = argToList(fields)
             if 'sys_id' not in fields:
+                # ID is added by default
                 fields.append('sys_id')
+            # filter the record for the required fields
             record = dict(filter(lambda kv_pair: kv_pair[0] in fields, record.items()))
             for k,v in record.iteritems():
                 if isinstance(v, dict):
+                    # For objects that refer to a record in the database, take their value(system ID).
                     record[k] = v.get('value', record[k])
             record['ID'] = record.pop('sys_id')
             entry['ReadableContentsFormat'] = formats['markdown']
@@ -493,7 +505,8 @@ script:
                 'number': number
             }
         else:
-            raise ValueError('servicenow-get requires either ticket ID (sys_id) or ticket number')
+            # Only in cases where the table is of type ticket
+            raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number')
 
         return send_request(path, 'get', params = query_params)
 
@@ -812,12 +825,15 @@ script:
         if fields:
             fields = argToList(fields)
             if 'sys_id' not in fields:
+                # ID is added by default
                 fields.append('sys_id')
+            # Filter the records according to the given fields
             records = [dict(filter(lambda kv_pair: kv_pair[0] in fields, r.iteritems())) for r in res['result']]
             for r in records:
                 r['ID'] = r.pop('sys_id')
                 for k,v in r.iteritems():
                     if isinstance(v, dict):
+                        # For objects that refer to a record in the database, take their value (system ID).
                         r[k] = v.get('value', v)
             entry['ReadableContentsFormat'] = formats['markdown']
             entry['HumanReadable'] = tableToMarkdown('ServiceNow records', records, removeNull=True)
@@ -901,7 +917,7 @@ script:
 
         return send_request(path, 'post', headers = headers, body = body, file = {'id': file_id, 'name': file_name})
 
-
+    # Deprecated
     def get_computer_command():
         table_name = 'cmdb_ci_computer'
         computer_name = demisto.args()['computerName']
@@ -1104,7 +1120,7 @@ script:
 
         return entry
 
-
+    # Deprecated
     def get_groups_command():
         table_name = 'sys_user_group'
         group_name = demisto.args()['name']
@@ -1171,7 +1187,7 @@ script:
         return entry
 
     def get_table_fields(table_name):
-        # Get 1 record
+        # Get one record
         path = 'table/' + table_name + '?sysparm_limit=1'
         res = send_request(path, 'GET')
 
@@ -3298,13 +3314,4 @@ script:
     description: Query the sys_user table in ServiceNow
   isfetch: true
   runonce: false
-releaseNotes: "Added ability to get,update,create and delete records from any table generically in addition to tickets.
-      the commands are separated in the following way:
-      servicenow-get -> servicenow-get-ticket, servicenow-get-record
-      servicenow-create -> servicenow-create-ticket, servicenow-create-record
-      servicenow-update -> servicenow-update-ticket, servicenow-update-record,
-      servicenow-query -> servicenow-query-tickets, servicenow-query-table
-      Added a command to view all API fields of a given table.
-      Added commands to query computers, groups and users. Also output improvements."
-tests:
-  - 'Forgive me for my sins but I did not create any test'
+releaseNotes: "-"
