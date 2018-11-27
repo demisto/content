@@ -572,4 +572,4 @@ outputs:
   description: Monitor of the reported task
 releaseNotes: "Added Cuckoo Sandbox to detonation products"
 tests:
-- detonate_file_-_generic_test
+- Detonate File - Generic Test
