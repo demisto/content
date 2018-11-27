@@ -34,7 +34,7 @@ tasks:
       version: -1
       name: meraki-fetch-organizations
       description: List the organizations that the api-key has privileges on
-      script: Cisco Meraki_copy|||meraki-fetch-organizations
+      script: Cisco Meraki|||meraki-fetch-organizations
       type: regular
       iscommand: true
       brand: Cisco Meraki_copy
