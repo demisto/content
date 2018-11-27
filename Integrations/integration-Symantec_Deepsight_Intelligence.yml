@@ -314,11 +314,9 @@ script:
         elif demisto.command() == 'deepsight-get-request-status':
             demisto.results(request_status())
     except Exception, e:
-        LOG(e.message)
+        LOG(e)
         LOG.print_log()
-        raise
-
-
+        return_error(e.messsage)
   type: python
   commands:
   - name: deepsight-get-domain
