@@ -760,7 +760,8 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout"
+        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout",
+        "tenable-sc-scan-test": "Scan takes too long"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
