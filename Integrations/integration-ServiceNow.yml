@@ -534,13 +534,17 @@ script:
         res = update(ticket_type, ticket_id ,fields, custom_fields, template)
 
         hr = get_ticket_human_readable(res['result'], ticket_type)
+        context = get_ticket_context(res['result'], ticket_type)
 
         entry = {
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow ticket updated successfully\nTicket type: ' + ticket_type, hr, removeNull=True)
+            'HumanReadable': tableToMarkdown('ServiceNow ticket updated successfully\nTicket type: ' + ticket_type, hr, removeNull=True),
+            'EntryContext': {
+                'ServiceNow.Ticket(val.ID===obj.ID)': context
+            }
         }
 
         return entry
@@ -569,7 +573,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow updated record', mapped_record, removeNull=True),
+            'HumanReadable': tableToMarkdown('ServiceNow record updated successfully', mapped_record, removeNull=True),
             'EntryContext': {
                 'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
             }
@@ -641,7 +645,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow created record', mapped_record, removeNull=True),
+            'HumanReadable': tableToMarkdown('ServiceNow record created successfully', mapped_record, removeNull=True),
             'EntryContext': {
                 'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
             }
@@ -710,7 +714,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Link added to ServiceNow ticket', hr, removeNull=True)
+            'HumanReadable': tableToMarkdown('Link successfully added to ServiceNow ticket', hr, removeNull=True)
         }
 
         return entry
@@ -737,7 +741,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Comment added to ServiceNow ticket', hr, removeNull=True)
+            'HumanReadable': tableToMarkdown('Comment successfully added to ServiceNow ticket', hr, removeNull=True)
         }
 
         return entry
@@ -872,8 +876,9 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('File Uploaded', hr),
+            'HumanReadable': tableToMarkdown('File uploaded successfully', hr),
             'EntryContext': {
+                'ServiceNow.Ticket(val.ID===obj.ID)' : context,
                 'Ticket(val.ID===obj.ID)' : context
             }
         }
@@ -979,7 +984,7 @@ script:
             'DisplayName': '{} - {}'.format(computer['asset_tag'], computer['name']),
             'SupportGroup': computer['support_group'],
             'OperatingSystem': computer['os'],
-            'Company': computer['company'],
+            'Company': computer.get('company', {}).get('value') if isinstance(computer['company'], dict) else computer['company'],
             'AssignedTo': computer.get('assigned_to', {}).get('value') if isinstance(computer['assigned_to'], dict) else computer['assigned_to'],
             'State': COMPUTER_STATUS.get(computer['install_status'], computer['install_status']),
             'Cost': '{} {}'.format(computer['cost'], computer['cost_cc']),
@@ -2944,13 +2949,13 @@ script:
       description: Filename of uploaded file to override the existing file name in
         entry
     outputs:
-    - contextPath: Ticket.File.Filename
+    - contextPath: ServiceNow.Ticket.File.Filename
       description: Name of the file
       type: string
-    - contextPath: Ticket.File.Link
+    - contextPath: ServiceNow.Ticket.File.Link
       description: Download link for the file
       type: string
-    - contextPath: Ticket.File.SystemID
+    - contextPath: ServiceNow.Ticket.File.SystemID
       description: System ID of the file
       type: string
     description: Upload a file to a specific ticket
@@ -3293,7 +3298,7 @@ script:
     description: Query the sys_user table in ServiceNow
   isfetch: true
   runonce: false
-releaseNotes: "Added ability to retrieve records from any table generically in addition to tickets.
+releaseNotes: "Added ability to get,update,create and delete records from any table generically in addition to tickets.
       the commands are separated in the following way:
       servicenow-get -> servicenow-get-ticket, servicenow-get-record
       servicenow-create -> servicenow-create-ticket, servicenow-create-record
@@ -3301,3 +3306,5 @@ releaseNotes: "Added ability to retrieve records from any table generically in a
       servicenow-query -> servicenow-query-tickets, servicenow-query-table
       Added a command to view all API fields of a given table.
       Added commands to query computers, groups and users. Also output improvements."
+tests:
+  - 'Forgive me for my sins but I did not create any test'
