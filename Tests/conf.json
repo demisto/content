@@ -2,7 +2,7 @@
     "testTimeout": 160,
     "tests": [
         {
-          "integrations": "tenable.sc",
+          "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
           "timeout": 240
         },
@@ -33,7 +33,7 @@
           "timeout": 500
         },
         {
-            "integrations": "tenable.sc",
+            "integrations": "Tenable.sc",
             "playbookID": "tenable-sc-scan-test",
             "nightly": true,
             "timeout": 500
