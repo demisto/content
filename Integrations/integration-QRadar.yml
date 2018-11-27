@@ -219,7 +219,15 @@ script:
             res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
             res.raise_for_status()
         except HTTPError, e:
-            return_error(res.json())
+            err_json = res.json()
+            err_msg = ''
+            if 'message' in err_json:
+              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
+            elif 'http_response' in err_json:
+              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
+            if 'code' in err_json:
+              err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+            return_error(err_msg)
         return res.json()
 
     # Generic function that receives a result json, and turns it into an entryObject
@@ -766,15 +774,21 @@ script:
     def get_reference_by_name_command():
         raw_ref = get_reference_by_name(demisto.args().get('ref_name'))
         ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
-        enrich_reference_set_result(ref)
+        convert_date_elements = True if demisto.args().get('date_value') == 'True' and ref['ElementType'] == 'DATE' else False
+        enrich_reference_set_result(ref, convert_date_elements)
         return get_entry_for_reference_set(ref)
 
-    def enrich_reference_set_result(ref):
+    def enrich_reference_set_result(ref, convert_date_elements=False):
         if 'Data' in ref:
             ref['Data'] = replace_keys(ref['Data'], REFERENCE_NAMES_MAP)
             for item in ref['Data']:
                 item['FirstSeen'] = epoch_to_ISO(item['FirstSeen'])
                 item['LastSeen'] = epoch_to_ISO(item['LastSeen'])
+                if convert_date_elements:
+                    try:
+                        item['Value'] = epoch_to_ISO(int(item['Value']))
+                    except:
+                        pass
         if 'CreationTime' in ref:
             ref['CreationTime'] = epoch_to_ISO(ref['CreationTime'])
         return ref
@@ -809,14 +823,22 @@ script:
 
     def update_reference_set_value_command():
         args = demisto.args()
-        raw_ref = update_reference_set_value(args.get('ref_name'), args.get('value'), args.get('source'))
+        if args.get('date_value') == 'True':
+            value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        else:
+            value = args.get('value')
+        raw_ref = update_reference_set_value(args.get('ref_name'), value, args.get('source'))
         ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
         enrich_reference_set_result(ref)
         return get_entry_for_reference_set(ref, title='Element value was updated successfuly in reference set:')
 
     def delete_reference_set_value_command():
         args = demisto.args()
-        raw_ref = delete_reference_set_value(args.get('ref_name'), args.get('value'))
+        if args.get('date_value') == 'True':
+            value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        else:
+            value = args.get('value')
+        raw_ref = delete_reference_set_value(args.get('ref_name'), value)
         ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
         enrich_reference_set_result(ref)
         return get_entry_for_reference_set(ref, title='Element value was deleted successfuly in reference set:')
@@ -1566,6 +1588,14 @@ script:
     - name: headers
       description: Table headers to use the human readable output (if none provided,
         will show all table headers)
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If set to true will try to convert the data values to ISO-8601
+        string.
+      defaultValue: "False"
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference set.
@@ -1597,13 +1627,27 @@ script:
       description: Reference name to be created
     - name: element_type
       required: true
+      auto: PREDEFINED
+      predefined:
+      - ALN
+      - ALNIC
+      - IP
+      - NUM
+      - PORT
+      - DATE
       description: 'The element type for the values allowed in the reference set.
         The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
         IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date
         values need to be represented in milliseconds since the Unix Epoch January
         1st 1970.'
     - name: timeout_type
-      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The default value is UNKNOWN.
+      auto: PREDEFINED
+      predefined:
+      - FIRST_SEEN
+      - LAST_SEEN
+      - UNKNOWN
+      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
+        default value is UNKNOWN.
     - name: time_to_live
       description: 'The time to live interval, for example: "1 month" or "5 minutes"'
     outputs:
@@ -1622,8 +1666,8 @@ script:
       description: Number of elements in the created reference set.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Timeout type of the reference. The allowed values are FIRST_SEEN,
-                     LAST_SEEN and UNKNOWN.'
+      description: Timeout type of the reference. The allowed values are FIRST_SEEN,
+        LAST_SEEN and UNKNOWN.
       type: string
     description: Creates a new reference set. If the provided name is already in use,
       this command will fail
@@ -1642,9 +1686,21 @@ script:
     - name: value
       required: true
       description: 'The value to add or update in the reference set. Note: Date values
-        must be represented in milliseconds since the Unix Epoch January 1st 1970.'
+        must be represented in epoch in reference sets (milliseconds since the Unix Epoch January 1st
+        1970).
+        If ''date_value'' is set to ''True'', then the argument will be converted from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
     - name: source
-      description: "An indication of where the data originated. The default value is 'reference data api'."
+      description: An indication of where the data originated. The default value is
+                     'reference data api'.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference set.
@@ -1672,8 +1728,16 @@ script:
       description: 'The value to add or update in the reference set. Note: Date values
         must be represented in milliseconds since the Unix Epoch January 1st 1970.'
     - name: source
-      description: "An indication of where the data originated. The default value is
-                     'reference data api'."
+      description: An indication of where the data originated. The default value is
+                     'reference data api'.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference set.
@@ -1698,7 +1762,15 @@ script:
       description: The name of the reference set to remove a value from.
     - name: value
       required: true
-      description: 'The value to remove from the reference set.'
+      description: The value to remove from the reference set.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference set.
