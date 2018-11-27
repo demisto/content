@@ -480,8 +480,8 @@ script:
       description: Machine of task
     - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Cuckoo.Task.Traget
-      description: Traget of task
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
     - contextPath: Cuckoo.Task.Package
       description: Package of task
     - contextPath: Cuckoo.Task.SampleID
@@ -528,8 +528,8 @@ script:
       description: Machine of task
     - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Cuckoo.Task.Traget
-      description: Traget of task
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
     - contextPath: Cuckoo.Task.Package
       description: Package of task
     - contextPath: Cuckoo.Task.SampleID
@@ -577,8 +577,8 @@ script:
       description: Machine of task
     - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Cuckoo.Task.Traget
-      description: Traget of task
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
     - contextPath: Cuckoo.Task.Package
       description: Package of task
     - contextPath: Cuckoo.Task.SampleID
@@ -621,8 +621,8 @@ script:
       description: Machine of task
     - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Cuckoo.Task.Traget
-      description: Traget of task
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
     - contextPath: Cuckoo.Task.Package
       description: Package of task
     - contextPath: Cuckoo.Task.SampleID
@@ -691,8 +691,8 @@ script:
       description: Machine of task
     - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Cuckoo.Task.Traget
-      description: Traget of task
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
     - contextPath: Cuckoo.Task.Package
       description: Package of task
     - contextPath: Cuckoo.Task.SampleID
@@ -739,8 +739,8 @@ script:
       description: Machine of task
     - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Cuckoo.Task.Traget
-      description: Traget of task
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
     - contextPath: Cuckoo.Task.Package
       description: Package of task
     - contextPath: Cuckoo.Task.SampleID
