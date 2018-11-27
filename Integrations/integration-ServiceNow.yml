@@ -156,6 +156,7 @@ script:
 
     DEFAULTS = {
         'limit':10,
+        'offset':0,
         'fetch_limit':10
     }
 
@@ -243,11 +244,11 @@ script:
         }
 
         if 'closed_by' in data:
-            context['ResolvedBy'] = data["closed_by"]['value'] if 'value' in data['closed_by'] else ''
+            context['ResolvedBy'] = data['closed_by']['value'] if 'value' in data['closed_by'] else ''
         if 'opened_by' in data:
-            context['OpenedBy'] = data["opened_by"]['value'] if 'value' in data['opened_by'] else ''
+            context['OpenedBy'] = data['opened_by']['value'] if 'value' in data['opened_by'] else ''
         if 'assigned_to' in data:
-            context['Assignee'] = data["assigned_to"]['value'] if 'value' in data['assigned_to'] else ''
+            context['Assignee'] = data['assigned_to']['value'] if 'value' in data['assigned_to'] else ''
         if 'priority' in data:
                 context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
         if 'state' in data:
@@ -285,7 +286,7 @@ script:
                 'Description': ticket.get('description'),
                 'Opened at': ticket.get('opened_at'),
                 'Due date': ticket.get('due_date'),
-                'Resolved by': ticket.get('closed_by', {}).get('value'),
+                'Resolved by': ticket.get('closed_by', {}).get('value') if isinstance(ticket['closed_by'], dict) else ticket['closed_by'],
                 'Resolved at': ticket.get('resolved_at'),
                 'SLA due': ticket.get('sla_due'),
                 'Short description': ticket.get('short_description'),
@@ -424,8 +425,8 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow ticket', hr, headers=headers, removeNull=True),
             'EntryContext': {
-                  'Ticket(val.ID==obj.ID)': context,
-                  'ServiceNow.Ticket(val.ID==obj.ID)': context
+                  'Ticket(val.ID===obj.ID)': context,
+                  'ServiceNow.Ticket(val.ID===obj.ID)': context
             }
         }
 
@@ -468,14 +469,14 @@ script:
             entry['ReadableContentsFormat'] = formats['markdown']
             entry['HumanReadable'] = tableToMarkdown('ServiceNow record', record, removeNull=True)
             entry['EntryContext'] = {
-                'ServiceNow.Record(val.ID==obj.ID)': createContext(record)
+                'ServiceNow.Record(val.ID===obj.ID)': createContext(record)
             }
         else:
             mapped_record = {DEFAULT_RECORD_FIELDS[k]: record[k] for k in DEFAULT_RECORD_FIELDS}
             entry['ReadableContentsFormat'] = formats['markdown']
             entry['HumanReadable'] = tableToMarkdown('ServiceNow record' + record_id, mapped_record, removeNull=True)
             entry['EntryContext'] = {
-                'ServiceNow.Record(val.ID==obj.ID)': createContext(mapped_record)
+                'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
             }
 
         return entry
@@ -570,7 +571,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow updated record', mapped_record, removeNull=True),
             'EntryContext': {
-                'ServiceNow.Record(val.ID==obj.ID)': createContext(mapped_record)
+                'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
             }
         }
 
@@ -597,7 +598,7 @@ script:
         res = create(ticket_type, fields, custom_fields, template)
 
         hr = get_ticket_human_readable(res['result'], ticket_type)
-        context = get_ticket_context(ticket, ticket_type)
+        context = get_ticket_context(res['result'], ticket_type)
 
         headers = ['System ID','Number','Impact','Urgency','Severity','Priority','State','Created On','Created By','Active','Close notes','Close code',
                    'Description','Opened at','Due date','Resolved by','Resolved at','SLA due','Short description','Additional Comments']
@@ -609,8 +610,8 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow ticket created successfully', hr, headers=headers, removeNull=True),
             'EntryContext': {
-                  'Ticket(val.ID==obj.ID)': context,
-                  'ServiceNow.Ticket(val.ID==obj.ID)': context
+                  'Ticket(val.ID===obj.ID)': context,
+                  'ServiceNow.Ticket(val.ID===obj.ID)': context
             }
         }
 
@@ -642,7 +643,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow created record', mapped_record, removeNull=True),
             'EntryContext': {
-                'ServiceNow.Record(val.ID==obj.ID)': createContext(mapped_record)
+                'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_record)
             }
         }
 
@@ -666,7 +667,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'Ticket with ID ' + ticket_id + ' was succesfully deleted.'
+            'HumanReadable': 'Ticket with ID ' + ticket_id + ' was successfully deleted.'
         }
 
         return entry
@@ -682,7 +683,7 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'Record with ID ' + record_id + ' was succesfully deleted.'
+            'HumanReadable': 'Record with ID ' + record_id + ' was successfully deleted.'
         }
 
         return entry
@@ -751,12 +752,14 @@ script:
     def query_tickets_command():
         sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
         sysparm_query = demisto.args().get('query')
+        sysparm_offset = demisto.args().get('offset', DEFAULTS['offset'])
+
         if not sysparm_query:
             #backward compatibility
             sysparm_query = demisto.args().get('sysparm_query')
         ticket_type = get_table_name(demisto.args().get('ticket_type'))
 
-        res = query(ticket_type, sysparm_limit, sysparm_query)
+        res = query(ticket_type, sysparm_limit, sysparm_offset, sysparm_query)
 
         if not res or 'result' not in res or len(res['result']) == 0:
             return 'No results found'
@@ -774,8 +777,8 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('ServiceNow tickets', hr, headers=headers, removeNull=True),
             'EntryContext': {
-                  'Ticket(val.ID==obj.ID)': context,
-                  'ServiceNow.Ticket(val.ID==obj.ID)': context
+                  'Ticket(val.ID===obj.ID)': context,
+                  'ServiceNow.Ticket(val.ID===obj.ID)': context
             }
         }
 
@@ -786,9 +789,10 @@ script:
         table_name = demisto.args()['table_name']
         sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
         sysparm_query = demisto.args().get('query')
+        sysparm_offset = demisto.args().get('offset', DEFAULTS['offset'])
         fields = demisto.args().get('fields')
 
-        res = query(table_name, sysparm_limit, sysparm_query)
+        res = query(table_name, sysparm_limit, sysparm_offset, sysparm_query)
 
         if not res or 'result' not in res or len(res['result']) == 0:
             return 'No results found'
@@ -814,22 +818,23 @@ script:
             entry['ReadableContentsFormat'] = formats['markdown']
             entry['HumanReadable'] = tableToMarkdown('ServiceNow records', records, removeNull=True)
             entry['EntryContext'] = {
-                'ServiceNow.Record(val.ID==obj.ID)': createContext(records)
+                'ServiceNow.Record(val.ID===obj.ID)': createContext(records)
             }
         else:
             mapped_records = [{DEFAULT_RECORD_FIELDS[k]: r[k] for k in DEFAULT_RECORD_FIELDS} for r in result]
             entry['ReadableContentsFormat'] = formats['markdown']
             entry['HumanReadable'] = tableToMarkdown('ServiceNow records', mapped_records, removeNull=True)
             entry['EntryContext'] = {
-                'ServiceNow.Record(val.ID==obj.ID)': createContext(mapped_records)
+                'ServiceNow.Record(val.ID===obj.ID)': createContext(mapped_records)
             }
 
         return entry
 
 
-    def query(table_name, sysparm_limit, sysparm_query):
+    def query(table_name, sysparm_limit, sysparm_offset, sysparm_query):
         query_params = {}
         query_params['sysparm_limit'] = sysparm_limit
+        query_params['sysparm_offset'] = sysparm_offset
         if sysparm_query:
             query_params['sysparm_query'] = sysparm_query
 
@@ -869,7 +874,7 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('File Uploaded', hr),
             'EntryContext': {
-                'Ticket(val.ID==obj.ID)' : context
+                'Ticket(val.ID===obj.ID)' : context
             }
         }
 
@@ -942,7 +947,8 @@ script:
         computer_name = demisto.args().get('computer_name')
         asset_tag = demisto.args().get('asset_tag')
         computer_query = demisto.args().get('query', {})
-        limit = demisto.args().get('limit')
+        offset = demisto.args().get('offset', DEFAULTS['offset'])
+        limit = demisto.args().get('limit', DEFAULTS['limit'])
 
         if computer_id:
             res = get(table_name, computer_id)
@@ -952,17 +958,19 @@ script:
             elif asset_tag:
                 computer_query = 'asset_tag=' + asset_tag
 
-            res = query(table_name, limit, computer_query)
+            res = query(table_name, limit, offset, computer_query)
 
         if not res or 'result' not in res:
-            return 'Cannot find computers'
+            return 'No computers found'
 
         computers = res['result']
         if not isinstance(computers, list):
             computers = [computers]
 
         if len(computers) == 0:
-            return 'Cannot find computers'
+            return 'No computers found'
+
+        headers = ['ID','AssetTag','Name','DisplayName','SupportGroup','OperatingSystem','Company','AssignedTo','State','Cost','Comments']
 
         mapped_computers = [{
             'ID': computer['sys_id'],
@@ -972,7 +980,7 @@ script:
             'SupportGroup': computer['support_group'],
             'OperatingSystem': computer['os'],
             'Company': computer['company'],
-            'AssignedTo': computer['assigned_to'],
+            'AssignedTo': computer.get('assigned_to', {}).get('value') if isinstance(computer['assigned_to'], dict) else computer['assigned_to'],
             'State': COMPUTER_STATUS.get(computer['install_status'], computer['install_status']),
             'Cost': '{} {}'.format(computer['cost'], computer['cost_cc']),
             'Comments': computer['comments']
@@ -983,14 +991,13 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow Computer', mapped_computers, removeNull=True),
+            'HumanReadable': tableToMarkdown('ServiceNow Computers', mapped_computers, headers=headers, removeNull=True),
             'EntryContext': {
-                  'ServiceNow.Computer(val.ID==obj.ID)': createContext(mapped_computers, removeNull=True),
+                  'ServiceNow.Computer(val.ID===obj.ID)': createContext(mapped_computers, removeNull=True),
             }
         }
 
         return entry
-
 
 
     def query_groups_command():
@@ -998,31 +1005,34 @@ script:
         group_id = demisto.args().get('group_id')
         group_name = demisto.args().get('group_name')
         group_query = demisto.args().get('query', {})
-        limit = demisto.args().get('limit')
+        offset = demisto.args().get('offset', DEFAULTS['offset'])
+        limit = demisto.args().get('limit', DEFAULTS['limit'])
 
         if group_id:
             res = get(table_name, group_id)
         else:
             if group_name:
                 group_query = 'name=' + group_name
-            res = query(table_name, limit, group_query)
+            res = query(table_name, limit, offset, group_query)
 
         if not res or 'result' not in res:
-            return 'Cannot find groups'
+            return 'No groups found'
 
         groups = res['result']
         if not isinstance(groups, list):
             groups = [groups]
 
         if len(groups) == 0:
-            return 'Cannot find groups'
+            return 'No groups found'
+
+        headers = ['ID','Description','Name','Active','Manager','Updated']
 
         mapped_groups = [{
             'ID': group['sys_id'],
             'Description': group['description'],
             'Name': group['name'],
             'Active': group['active'],
-            'Manager': group['manager'],
+            'Manager': group.get('manager', {}).get('value') if isinstance(group['manager'], dict) else group['manager'],
             'Updated': group['sys_updated_on'],
         } for group in groups]
 
@@ -1031,9 +1041,9 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, removeNull=True),
+            'HumanReadable': tableToMarkdown('ServiceNow Groups', mapped_groups, headers=headers, removeNull=True),
             'EntryContext': {
-                  'ServiceNow.Group(val.ID==obj.ID)': createContext(mapped_groups, removeNull=True),
+                  'ServiceNow.Group(val.ID===obj.ID)': createContext(mapped_groups, removeNull=True),
             }
         }
 
@@ -1045,24 +1055,27 @@ script:
         user_id = demisto.args().get('user_id')
         user_name = demisto.args().get('user_name')
         user_query = demisto.args().get('query', {})
-        limit = demisto.args().get('limit')
+        offset = demisto.args().get('offset', DEFAULTS['offset'])
+        limit = demisto.args().get('limit', DEFAULTS['limit'])
 
         if user_id:
             res = get(table_name, user_id)
         else:
             if user_name:
                 user_query = 'user_name=' + user_name
-            res = query(table_name, limit, user_query)
+            res = query(table_name, limit, offset, user_query)
 
         if not res or 'result' not in res:
-            return 'Cannot find users'
+            return 'No users found'
 
         users = res['result']
         if not isinstance(users, list):
             users = [users]
 
         if len(users) == 0:
-            return 'Cannot find users'
+            return 'No users found'
+
+        headers = ['ID','Name','UserName','Email','Created','Updated']
 
         mapped_users = [{
             'ID': user['sys_id'],
@@ -1078,9 +1091,9 @@ script:
             'Contents': res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, removeNull=True),
+            'HumanReadable': tableToMarkdown('ServiceNow Users', mapped_users, headers=headers, removeNull=True),
             'EntryContext': {
-                  'ServiceNow.User(val.ID==obj.ID)': createContext(mapped_users, removeNull=True),
+                  'ServiceNow.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True),
             }
         }
 
@@ -1093,7 +1106,7 @@ script:
         res = query(table_name, None, 'name=' + group_name)
 
         if not res or 'result' not in res:
-            return 'Cannot find groups'
+            return 'No groups found'
 
         hr_groups = []
         context_groups = []
@@ -1225,6 +1238,8 @@ script:
 
         demisto.incidents(incidents)
         demisto.setLastRun({'time': snow_time})
+
+    LOG('Executing command ' + demisto.command())
 
     try:
         if demisto.command() == 'test-module':
@@ -1480,7 +1495,8 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Retrieve ticket information by specific ticket ID
+    description: Deprecated. Please use servicenow-get-ticket or servicenow-get-record
+      instead
   - name: servicenow-create-ticket
     arguments:
     - name: short_description
@@ -1523,13 +1539,13 @@ script:
       - "false"
       description: Set ticket as Active
     - name: activity_due
-      description: Set ticket ActivityDue - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ActivityDue - format "2016-07-02 21:51:11"
     - name: additional_assignee_list
       description: List of assigned users to the ticket
     - name: approval_history
       description: Ticket history approval
     - name: approval_set
-      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11" glide_date_time
+      description: Set ticket ApprovalSet - format "2016-07-02 21:51:11"
     - name: assigned_to
       description: To whom the ticket is assigned
     - name: business_duration
@@ -1670,7 +1686,7 @@ script:
       description: Template name to use as a base to create new tickets.
     - name: custom_fields
       description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;...'
-    - name: type
+    - name: change_type
       auto: PREDEFINED
       predefined:
       - normal
@@ -2107,7 +2123,7 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Create new ServiceNow ticket
+    description: Create a new ServiceNow ticket
   - name: servicenow-update-ticket
     arguments:
     - name: short_description
@@ -2308,7 +2324,7 @@ script:
       defaultValue: normal
     - name: state
       description: State of the ticket
-    description: Update specific ticket by providing ticket id
+    description: Update specific ticket
   - name: servicenow-update
     deprecated: true
     arguments:
@@ -2659,7 +2675,8 @@ script:
     - name: id
       required: true
       description: System ID of the ticket to update
-    description: Update specific ticket by providing ticket id
+    description: Deprecated. Please use servicenow-update-ticket or servicenow-update-record
+      instead
   - name: servicenow-delete-ticket
     arguments:
     - name: id
@@ -2699,7 +2716,7 @@ script:
         the link as WorkNote, format bool
     - name: text
       description: The text to represent the link
-    description: Add link to specific ticket by providing ticket id
+    description: Add a link to specific ticket
   - name: servicenow-incident-add-link
     deprecated: true
     arguments:
@@ -2723,7 +2740,7 @@ script:
         false will publish the link as WorkNote, format bool
     - name: text
       description: The text to represent the link
-    description: Add link to specific ticket by providing ticket id
+    description: Deprecated. Please use servicenow-add-link instead.
   - name: servicenow-add-comment
     arguments:
     - name: id
@@ -2766,7 +2783,7 @@ script:
     - name: post-as-comment
       description: Publish the link as comment on the ticket, if false will publish
         the link as WorkNote, format bool
-    description: Add comment to specific ticket by providing ticket id
+    description: Deprecated. Please use servicenow-add-comment instead.
   - name: servicenow-query-tickets
     arguments:
     - name: limit
@@ -2784,6 +2801,9 @@ script:
       defaultValue: incident
     - name: query
       description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - name: offset
+      description: Starting record index to begin retrieving records from
+      defaultValue: "0"
     outputs:
     - contextPath: Ticket.ID
       description: The unique ticket identifier.
@@ -2823,7 +2843,7 @@ script:
     - contextPath: Ticket.Escalation
       description: Indicates how long the ticket has been open.
       type: string
-    description: Retrieve ticket info with query
+    description: Retrieve ticket info with a query
   - name: servicenow-query
     deprecated: true
     arguments:
@@ -2933,7 +2953,7 @@ script:
     - contextPath: Ticket.File.SystemID
       description: System ID of the file
       type: string
-    description: Upload new file
+    description: Upload a file to a specific ticket
   - name: servicenow-incident-upload-file
     deprecated: true
     arguments:
@@ -2964,9 +2984,8 @@ script:
     - contextPath: Ticket.File.SystemID
       description: System ID of the file
       type: string
-    description: Upload new file
+    description: Deprecated. Please use servicenow-upload-file instead.
   - name: servicenow-get-groups
-    deprecated: true
     arguments:
     - name: name
       required: true
@@ -2978,9 +2997,8 @@ script:
     - contextPath: ServiceNowGroups.GroupName
       description: Group name
       type: string
-    description: Return information about specific servicenow group
+    description: Deprecated. Please use servicenow-query-groups instead.
   - name: servicenow-get-computer
-    deprecated: true
     arguments:
     - name: computerName
       required: true
@@ -3001,7 +3019,7 @@ script:
     - contextPath: ServiceNowComputer.comments
       description: Comments
       type: string
-    description: query the cmdb_ci_computer table with a computer code
+    description: Deprecated. Please user servicenow-query-computers instead.
   - name: servicenow-get-record
     arguments:
     - name: id
@@ -3047,6 +3065,9 @@ script:
       description: Comma separated table fields to display and output to the context,
         e.g name,tag,company. ID field is added by default.
       isArray: true
+    - name: offset
+      description: Starting record index to begin retrieving records from
+      defaultValue: "0"
     outputs:
     - contextPath: ServiceNow.Results.ID
       description: The unique record identifier for the record.
@@ -3163,6 +3184,9 @@ script:
     - name: limit
       description: Query results limit
       defaultValue: "10"
+    - name: offset
+      description: Starting record index to begin retrieving records from
+      defaultValue: "0"
     outputs:
     - contextPath: ServiceNow.Computer.ID
       description: Computer sys_id
@@ -3209,6 +3233,10 @@ script:
         ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
     - name: limit
       description: Query results limit
+      defaultValue: "10"
+    - name: offset
+      description: Starting record index to begin retrieving records from
+      defaultValue: "0"
     outputs:
     - contextPath: ServiceNow.Group.ID
       description: Group sys_id
@@ -3237,6 +3265,10 @@ script:
         ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
     - name: limit
       description: Query results limit
+      defaultValue: "10"
+    - name: offset
+      description: Starting record index to begin retrieving records from
+      defaultValue: "0"
     outputs:
     - contextPath: ServiceNow.User.ID
       description: User sys_id
@@ -3259,4 +3291,10 @@ script:
     description: Query the sys_user table in ServiceNow
   isfetch: true
   runonce: false
-releaseNotes: "Added ability to retrieve records from any table generically in addition to tickets. Added commands to query computers, groups and users. Also output improvements."
+releaseNotes: "Added ability to retrieve records from any table generically in addition to tickets.
+      the commands are separated in the following way:
+      servicenow-get -> servicenow-get-ticket, servicenow-get-record
+      servicenow-create -> servicenow-create-ticket, servicenow-create-record
+      servicenow-update -> servicenow-update-ticket, servicenow-update-record,
+      servicenow-query -> servicenow-query-tickets, servicenow-query-table
+      Added commands to query computers, groups and users. Also output improvements."
