@@ -220,9 +220,26 @@ script:
 
         group_name =  demisto.args().get('groupName')
         service_name =  demisto.args().get('serviceName')
-        raw_data_object = demisto.args().get('data')
+        action = demisto.args().get('action')
+        if action not in ['add','remove']:
+            return_error('Action must be add or remove')
 
-        response = update_service_group_request(group_name, service_name, raw_data_object)
+        old_service_groups = get_service_groups_request(group_name)
+        service_group_members = []
+        new_service_group_members = []
+
+        if isinstance(old_service_groups, list):
+            old_service_group = old_service_groups[0]
+            service_group_members = old_service_group.get('member')
+        if action == 'add':
+            service_group_members.append({'name': service_name})
+            new_service_group_members = service_group_members
+        if action == 'remove':
+            for service_group_member in service_group_members:
+                if service_group_member.get('name') != service_name:
+                    new_service_group_members.append(service_group_member)
+
+        response = update_service_group_request(group_name, new_service_group_members)
         service_group = get_service_groups_request(group_name)[0]
 
         service_group_members = []
@@ -253,19 +270,16 @@ script:
             'EntryContext': context
         })
 
-    def update_service_group_request(group_name, service_name, raw_data_object):
+    def update_service_group_request(group_name, members_list):
         uri_suffix = 'cmdb/firewall.service/group/' + group_name
         if not does_path_exist(uri_suffix):
             return_error('Requested service group ' + group_name + ' does not exist in Firewall config.')
-        if raw_data_object:
-            payload = raw_data_object
-        else:
-            payload = {
-                'member': [{'name': service_name}]
-            }
-            payload = json.dumps(payload)
 
-        response = http_request('PUT', uri_suffix, {}, payload)
+        payload = {
+            'member': members_list
+        }
+
+        response = http_request('PUT', uri_suffix, {}, json.dumps(payload))
         return response
 
 
@@ -782,9 +796,26 @@ script:
         address_group_context = []
         group_name = demisto.args().get('groupName', '')
         address = demisto.args().get('address', '')
-        raw_data_object = demisto.args().get('data')
+        action = demisto.args().get('action')
+        if action not in ['add','remove']:
+            return_error('Action must be add or remove')
 
-        response = update_address_group_request(group_name, address, raw_data_object)
+        old_address_groups = get_address_groups_request(group_name)
+        address_group_members = []
+        new_address_group_members = []
+
+        if isinstance(old_address_groups, list):
+            old_address_group = old_address_groups[0]
+            address_group_members = old_address_group.get('member')
+        if action == 'add':
+            address_group_members.append({'name': address})
+            new_address_group_members = address_group_members
+        if action == 'remove':
+            for address_group_member in address_group_members:
+                if address_group_member.get('name') != address:
+                    new_address_group_members.append(address_group_member)
+
+        response = update_address_group_request(group_name, new_address_group_members)
         address_group = get_address_groups_request(group_name)[0]
         members = address_group.get('member')
         members_list = []
@@ -815,19 +846,15 @@ script:
         })
 
 
-    def update_address_group_request(group_name, address, raw_data_object):
+    def update_address_group_request(group_name, new_address_group_members):
         uri_suffix = 'cmdb/firewall/addrgrp/' + group_name
         # Check whether target object already exists
         if not does_path_exist(uri_suffix):
             return_error('Requested address group' + group_name + 'does not exist in Firewall config.')
-        if raw_data_object:
-            payload = raw_data_object
-        else:
-            payload = {
-                'member': [{'name': address}]
-            }
-            payload = json.dumps(payload)
-        result = http_request('PUT', uri_suffix, {}, payload)
+        payload = {
+            'member': new_address_group_members
+        }
+        result = http_request('PUT', uri_suffix, {}, json.dumps(payload))
         return result
 
 
@@ -998,9 +1025,13 @@ script:
       required: true
       description: Service name to update from the group (If providing data argument
         value does not matter)
-    - name: data
-      description: 'Pass a raw data object (example: {''member'': [{''name'': ''Test''}]}),
-        will over-ride service name argument.'
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      description: Action to take on the service
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
       description: Service group name
@@ -1299,9 +1330,13 @@ script:
       required: true
       description: An address to add or remove from the group (If providing data argument,
         value does not matter)
-    - name: data
-      description: 'Pass a raw data object (example: {''member'': [{''name'': ''Test''}]}),
-        will over-ride address argument.'
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      description: Action to take on the service
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
       description: Address group name
