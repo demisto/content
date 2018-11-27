@@ -136,9 +136,6 @@ script:
                 }
             };
         }
-        if (obj.success === 0) {
-            throw 'Error from Lastline: ' + obj.error;
-        }
         if (obj.error_code) {
             switch (obj.error_code) {
                 case 101:
@@ -147,9 +144,15 @@ script:
                 case 106:
                     // analysis report not ready
                     break;
+                case 115:
+                    // reached api quota
+                    throw "You've reached your API call quota. Contact your Lastline representative.";
                 default:
-                    throw 'Error from Lastline. Error code: ' + obj.error_code + ". Error: " + obj.error;
+                    throw 'Error from Lastline. Error code: ' + obj.error_code + '. Error: ' + obj.error;
             }
+        }
+        if (obj.success === 0) {
+            throw 'Error from Lastline: ' + obj.error;
         }
         return {body: result.Body, obj: obj};
     }
@@ -851,7 +854,6 @@ script:
     - name: uuid
       required: true
       description: Task UUID of the submitted Lastline analysis
-      isArray: true
     - name: threshold
       description: Score threshold to identify file as malicious. Lastline default
         is 70.
@@ -955,7 +957,7 @@ script:
         12:00:00'
     description: Gets a list of tasks
   runonce: false
-releaseNotes: "Add isArray option to uuid argument in lastline-get-report"
+releaseNotes: "Handle quota error gracefully"
 tests:
 - Lastline - testplaybook
 - Detonate URL - Generic Test
