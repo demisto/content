@@ -3,6 +3,7 @@ version: -1
 name: Launch Scan - Tenable.sc
 description: Launches an existing Tenable.sc scan by scan ID and waits for the scan
   to finish by polling its status in pre-defined intervals.
+fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -28,7 +29,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "1":
     id: "1"
     taskid: 670f8b6d-a797-4d7d-8452-8a40bfcf0f78
@@ -67,7 +67,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "5":
     id: "5"
     taskid: 82b163e2-7cb4-470f-8e98-9eadf532fcd1
@@ -89,7 +88,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "7":
     id: "7"
     taskid: dd208f98-1785-4302-8cec-6234e6370e9f
@@ -126,7 +124,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "8":
     id: "8"
     taskid: 2f2f21f2-0962-4372-857a-1284aa4326bc
@@ -179,7 +176,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "9":
     id: "9"
     taskid: 0edc2a4c-4a51-46c6-8752-3a183b11e247
@@ -233,7 +229,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
   "10":
     id: "10"
     taskid: 1f950114-493a-48fb-8a08-f74880f2dbf9
@@ -268,7 +263,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
