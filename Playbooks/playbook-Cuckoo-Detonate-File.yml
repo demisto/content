@@ -73,7 +73,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -146,7 +146,7 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "5"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -197,7 +197,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -237,7 +237,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "11"
     scriptarguments:
       id:
         simple: ${Cuckoo.Task.ID}
@@ -246,7 +246,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -274,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -302,7 +302,36 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1070
+          "y": 895
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: c530de05-cebe-438a-81f8-9c19f317cbbe
+    type: regular
+    task:
+      id: c530de05-cebe-438a-81f8-9c19f317cbbe
+      version: -1
+      name: Get Screenshots
+      script: '|||cuckoo-task-screenshot'
+      type: regular
+      iscommand: true
+      description: "Get screenshots from the machine running the file"
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        simple: ${Cuckoo.Task.ID}
+      screenshot: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1420
         }
       }
     note: false
@@ -381,6 +410,26 @@ outputs:
   description: Reported score of the the task
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
+- contextPath: File.Size
+  description: Size of file
+- contextPath: File.SHA1
+  description: File's SHA1
+- contextPath: File.SHA256
+  description: File's SHA256
+- contextPath: File.Name
+  description: File's name
+- contextPath: File.SSDeep
+  description: File's SSDeep
+- contextPath: File.EntryID
+  description: File's entry id
+- contextPath: File.Info
+  description: File's info
+- contextPath: File.Type
+  description: File's type
+- contextPath: File.MD5
+  description: File's MD5
+- contextPath: File.Extension
+  description: File's Extension
 releaseNotes: "-"
 tests:
   - CuckooTest
