@@ -2,6 +2,7 @@ id: CuckooDetonateFile
 version: -1
 name: CuckooDetonateFile
 description: "Detonating file with Cuckoo"
+fromversion: "4.0.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -129,7 +130,7 @@ tasks:
         }
       }
     note: false
-    
+
   "4":
     id: "4"
     taskid: 087ea815-c0b4-4604-8b43-099927639fa9
@@ -337,7 +338,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},

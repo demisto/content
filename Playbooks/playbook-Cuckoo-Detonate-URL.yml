@@ -2,6 +2,7 @@ id: CuckooDetonateURL
 version: -1
 name: CuckooDetonateURL
 description: Detonating URL with Cuckoo
+fromversion: "4.0.0"
 starttaskid: "0"
 tasks:
   "0":

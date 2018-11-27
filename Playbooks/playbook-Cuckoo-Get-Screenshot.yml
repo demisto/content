@@ -2,6 +2,7 @@ id: CuckooGetScreenshot
 version: -1
 name: CuckooGetScreenshot
 description: "Getting screenshots from Cuckoo's task"
+fromversion: "4.0.0"
 starttaskid: "0"
 tasks:
   "0":
