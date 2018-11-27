@@ -19,13 +19,11 @@ comment: 'Parse a given JSON string "value" to a representative object. Example:
 enabled: true
 args:
 - name: value
-  description : ""
+  description: the string value to convert to JSON.
   required: true
   default: true
 scripttarget: 0
 runonce: false
-runas: DBotWeakRole
-releaseNotes: "Added parse json transformer to parse string to json easily"
+releaseNotes: "Added parse json transformer to parse string to json easily."
 tests:
 - Forgive me for my sins but I did not create any test
-releaseNotes: "-"

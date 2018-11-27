@@ -2,6 +2,9 @@
     "testTimeout": 160,
     "tests": [
         {
+            "playbookID": "WordTokenizeTest"
+        },
+        {
           "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
           "timeout": 240
@@ -674,6 +677,10 @@
         {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
+        },
+        {
+            "integrations": "RSA NetWitness v11.1",
+            "playbookID": "RSA NetWitness Test"
         },
         {
             "integrations": "Rasterize",
