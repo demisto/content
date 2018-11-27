@@ -2,6 +2,9 @@
     "testTimeout": 160,
     "tests": [
         {
+            "playbookID": "WordTokenizeTest"
+        },
+        {
           "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
           "timeout": 240
