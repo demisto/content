@@ -2986,6 +2986,7 @@ script:
       type: string
     description: Deprecated. Please use servicenow-upload-file instead.
   - name: servicenow-get-groups
+    deprecated: true
     arguments:
     - name: name
       required: true
@@ -2999,6 +3000,7 @@ script:
       type: string
     description: Deprecated. Please use servicenow-query-groups instead.
   - name: servicenow-get-computer
+    deprecated: true
     arguments:
     - name: computerName
       required: true
@@ -3297,4 +3299,5 @@ releaseNotes: "Added ability to retrieve records from any table generically in a
       servicenow-create -> servicenow-create-ticket, servicenow-create-record
       servicenow-update -> servicenow-update-ticket, servicenow-update-record,
       servicenow-query -> servicenow-query-tickets, servicenow-query-table
+      Added a command to view all API fields of a given table.
       Added commands to query computers, groups and users. Also output improvements."
