@@ -4600,6 +4600,16 @@ script:
     - name: instanceId
       required: true
       description: The ID of the Windows instance.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     outputs:
     - contextPath: AWS.EC2.Instances.PasswordData.PasswordData
       description: The password of the instance. Returns an empty string if the password
@@ -4644,6 +4654,16 @@ script:
         is terminated. Information about the interface attachment. If modifying the
         'delete on termination' attribute, you must specify the ID of the interface
         attachment.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Modifies the specified network interface attribute. You can specify
       only one attribute at a time.
     execution: true
@@ -4701,6 +4721,16 @@ script:
         specify at least one security group, even if it''s just the default security
         group for the VPC. You must specify the security group ID, not the security
         group name.'
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
     description: Modifies the specified attribute of the specified instance. You can
       specify only one attribute at a time. Using this action to change the security
       groups associated with an elastic network interface (ENI) attached to an instance
