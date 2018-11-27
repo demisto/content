@@ -103,7 +103,7 @@ script: |-
                       url = temp_url[0]
                   if len(url_obj.scheme):
                       url = url_obj.scheme + "://" + url
-                  URLs.append('Data': url)
+                  URLs.append({'Data': url})
 
 
           md = "### Metadata\n"
