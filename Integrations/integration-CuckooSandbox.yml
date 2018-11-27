@@ -31,7 +31,7 @@ configuration:
 script:
   script: |-
     var entityMap = {
-        Machine:{failed on timeout
+        Machine:{
             status :            'Status',
             locked :            'Locked',
             name :              'Name',
