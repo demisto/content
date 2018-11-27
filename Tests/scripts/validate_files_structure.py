@@ -425,6 +425,8 @@ def main():
     parser.add_argument('-c', '--circle', type=str2bool, help='Is CircleCi or not')
     options = parser.parse_args()
     is_circle = options.circle
+    if is_circle is None:
+        is_circle = False
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     validate_conf_json()
