@@ -39,7 +39,7 @@
             "integrations": "Tenable.sc",
             "playbookID": "tenable-sc-scan-test",
             "nightly": true,
-            "timeout": 500
+            "timeout": 600
         },
         {
             "integrations": "google-vault",

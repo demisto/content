@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c613b21c-e424-4a21-8151-1c4dc32caa7a
+    taskid: b18f3f9d-ac23-4f58-82fb-1491f481643a
     type: start
     task:
-      id: c613b21c-e424-4a21-8151-1c4dc32caa7a
+      id: b18f3f9d-ac23-4f58-82fb-1491f481643a
       version: -1
       name: ""
       description: start
@@ -31,10 +31,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 33369f50-8c49-458d-8f5c-ca975e822fe9
+    taskid: 670f8b6d-a797-4d7d-8452-8a40bfcf0f78
     type: regular
     task:
-      id: 33369f50-8c49-458d-8f5c-ca975e822fe9
+      id: 670f8b6d-a797-4d7d-8452-8a40bfcf0f78
       version: -1
       name: Launch scan
       description: Starts a scan for specified asset IP addresses and host names.
@@ -70,10 +70,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: 1c704f4c-7f5e-4225-869f-2fa09265d983
+    taskid: 82b163e2-7cb4-470f-8e98-9eadf532fcd1
     type: title
     task:
-      id: 1c704f4c-7f5e-4225-869f-2fa09265d983
+      id: 82b163e2-7cb4-470f-8e98-9eadf532fcd1
       version: -1
       name: Done
       description: Final task
@@ -92,10 +92,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 35ed2d47-595c-43cf-8a97-cfb18232a824
+    taskid: dd208f98-1785-4302-8cec-6234e6370e9f
     type: regular
     task:
-      id: 35ed2d47-595c-43cf-8a97-cfb18232a824
+      id: dd208f98-1785-4302-8cec-6234e6370e9f
       version: -1
       name: Get scan report
       description: Returns the specified scan.
@@ -129,10 +129,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: e5ca0be8-57c3-4a6d-82dc-8f85d1a9a385
+    taskid: cde06ca3-695e-42be-8855-bb8804f68dc3
     type: playbook
     task:
-      id: e5ca0be8-57c3-4a6d-82dc-8f85d1a9a385
+      id: cde06ca3-695e-42be-8855-bb8804f68dc3
       version: -1
       name: GenericPolling
       description: |-
@@ -164,7 +164,8 @@ tasks:
       dt:
         simple: TenableSC.ScanResults(val.Status == 'Running' || val.Status == 'Pending'
                   || val.Status != 'Resuming' || val.Status == 'Pausing' || val.Status ==
-                  'Paused' || val.Status == 'Queued' || val.Status == 'Verifying targets').ID
+                  'Paused' || val.Status == 'Queued' || val.Status == 'Verifying targets'
+                  || val.Status == 'Initializing Scanners').ID
     separatecontext: true
     loop:
       iscommand: false
@@ -181,10 +182,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 858c4d4b-083a-4435-8099-bd509396b41d
+    taskid: 0edc2a4c-4a51-46c6-8752-3a183b11e247
     type: condition
     task:
-      id: 858c4d4b-083a-4435-8099-bd509396b41d
+      id: 0edc2a4c-4a51-46c6-8752-3a183b11e247
       version: -1
       name: Is Tenable.sc enabled?
       description: Checks wether Nexpose is enabled
@@ -235,10 +236,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: a00bb8ff-dd92-4a9d-8e26-33d279ecdd2f
+    taskid: 1f950114-493a-48fb-8a08-f74880f2dbf9
     type: condition
     task:
-      id: a00bb8ff-dd92-4a9d-8e26-33d279ecdd2f
+      id: 1f950114-493a-48fb-8a08-f74880f2dbf9
       version: -1
       name: Did scan successfully launch?
       description: Checks wether assets were found
