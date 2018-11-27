@@ -44,4 +44,4 @@ tags:
 comment: Get active users from a D2 agent and parsed them into context
 system: true
 scripttarget: 0
-releaseNotes: 'fixed'
+releaseNotes: 'replaced uniqBy use'
