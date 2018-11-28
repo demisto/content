@@ -625,6 +625,7 @@ tasks:
       id: 05262fc3-6fc0-4f84-885d-c4b0b53e7366
       version: -1
       name: Process Email - Generic
+      description: ""
       playbookName: Process Email - Generic
       type: playbook
       iscommand: false
@@ -723,7 +724,7 @@ inputs:
   required: false
   description: '**add description**'
 outputs: []
-tests:
-  - Phishing test - attachment
-  - Phishing test - Inline
 releaseNotes: "-"
+tests:
+- Phishing test - attachment
+- Phishing test - Inline
