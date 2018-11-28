@@ -82,8 +82,8 @@ script:
                 headers=HEADERS,
                 verify=USE_SSL
             )
-            if res.status_code != 200:
-                raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
+            if res.status_code not in {200, 404}:
+                return_error('Your request failed with the following error: ' + error_reason + ' - ' + str(res.status_code))
         except Exception, e:
             LOG(e)
             raise
@@ -120,7 +120,7 @@ script:
         domain = demisto.args().get('domain')
         detailed = False if demisto.args().get('detailed') == 'false' else True
         response = json.loads(domain_lookup(domain))
-        if response:
+        if response and ('error' not in response):
             data = response['data']
             timestamps = data['timestamps']
             risk = data['risk']
@@ -180,16 +180,25 @@ script:
                     'Vendor': 'Recorded Future',
                     'Description': 'Score above ' + str(rf_score)
                 }
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': response,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': hr,
-                'EntryContext': ec
-            })
         else:
-            demisto.results('No records found')
+            hr = 'No records found'
+            ec = {
+                'DBotScore': {
+                    'Indicator': domain,
+                    'Type': 'domain',
+                    'Vendor': 'Recorded Future',
+                    'Score': 0
+                }
+            }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
 
     def domain_lookup(domain):
         cmd_url = 'domain/' + domain + '?fields=sightings%2Ctimestamps%2Crisk'
@@ -200,7 +209,7 @@ script:
         ip = demisto.args().get('ip')
         detailed = False if demisto.args().get('detailed') == 'false' else True
         response = json.loads(ip_lookup(ip))
-        if response:
+        if response and ('error' not in response):
             data = response['data']
             timestamps = data['timestamps']
             risk = data['risk']
@@ -260,16 +269,26 @@ script:
                     'Vendor': 'Recorded Future',
                     'Description': 'Score above ' + str(rf_score)
                 }
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': response,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': hr,
-                'EntryContext': ec
-            })
+
         else:
-            demisto.results('No records found')
+            hr = 'No records found'
+            ec = {
+                'DBotScore': {
+                    'Indicator': ip,
+                    'Type': 'ip',
+                    'Vendor': 'Recorded Future',
+                    'Score': 0
+                }
+            }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
 
     def ip_lookup(ip):
         cmd_url = 'ip/' + ip + '?fields=sightings%2Ctimestamps%2Crisk'
@@ -280,7 +299,7 @@ script:
         file = demisto.args().get('file')
         detailed = False if demisto.args().get('detailed') == 'false' else True
         response = json.loads(file_lookup(file))
-        if response:
+        if response and ('error' not in response):
             data = response['data']
             timestamps = data['timestamps']
             risk = data['risk']
@@ -341,16 +360,26 @@ script:
                     'Vendor': 'Recorded Future',
                     'Description': 'Score above ' + str(rf_score)
                 }
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': response,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': hr,
-                'EntryContext': ec
-            })
+
         else:
-            demisto.results('No records found')
+            hr = 'No records found'
+            ec = {
+                'DBotScore': {
+                    'Indicator': file,
+                    'Type': 'file',
+                    'Vendor': 'Recorded Future',
+                    'Score': 0
+                }
+            }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
 
     def file_lookup(file):
         cmd_url = 'hash/' + file + '?fields=sightings%2Ctimestamps%2Crisk'
@@ -364,7 +393,8 @@ script:
         if entity_type == 'file':
             entity_type = 'hash'
         response = json.loads(get_related_entities(entity_value, entity_type))
-        if response:
+        ec = {}
+        if response and ('error' not in response):
             hr = []
             entity_result_type = entity_result_type.split(',')
             entity_types = []
@@ -405,7 +435,7 @@ script:
                         }
                         output_map[related_entity['type']].append(hr_entity)
             hr = ''
-            ec = {}
+
             related_entities_ec = {}
             if ip_outputs:
                 hr += tableToMarkdown('IP Address', ip_outputs)
@@ -446,16 +476,16 @@ script:
                             'RelatedEntities': related_entities_ec
                         }
                     }
-            else:
-                hr = 'No results found'
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': response,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': hr,
-                'EntryContext': ec
-            })
+        else:
+            hr = 'No results found'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
 
     def get_related_entities(entity_value, entity_type):
         cmd_url = entity_type + '/' + entity_value + '?fields=relatedEntities'

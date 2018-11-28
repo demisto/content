@@ -1,9 +1,5 @@
 ## Status
-- [ ] Ready
-- [ ] In code review
-- [ ] In Progress
-- [ ] Hold
-      Reason for hold:
+Ready/In Progress/In Hold(Reason for hold)
 
 ## Related Issues
 fixes: link to the issue
@@ -24,9 +20,15 @@ branch | PR
 ## Required version of Demisto
 x.x.x
 
+## Does it break backward compatibility?
+   - Yes
+       - Further details:
+   - No
+
 ## Must have
 - [ ] Tests
 - [ ] Documentation (with link to it)
+- [ ] Code Review
 
 ## Additional changes
 Describe additional changes done, for example adding a function to common server.
