@@ -480,7 +480,7 @@ script:
         - contextPath: InfoFile.Info
           description: Basic information of the file
           type: string
-        - contextPath: File.Extension
+        - contextPath: InfoFile.Extension
           description: File Extension
           type: string
       description:
