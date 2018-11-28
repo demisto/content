@@ -566,4 +566,4 @@ outputs:
   type: string
 releaseNotes: "-"
 tests:
-  - Detonate_File_-_SNDBOX_-_Test
+  - Detonate File - SNDBOX - Test
