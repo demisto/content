@@ -6,6 +6,10 @@
             "playbookID": "Fortigate Test"
         },
         {
+            "integrations": "SNDBOX",
+            "playbookID": "SNDBOX_Test"
+        },
+        {
             "playbookID": "WordTokenizeTest"
         },
         {
