@@ -3,7 +3,7 @@
     "tests": [
         {
             "integrations": "carbonblack-v2",
-            "playbookID": "Isolate_Machine_-_Generic_-_Test"
+            "playbookID": "IsolateMachine-Generic-Test"
         },
         {
             "integrations": "FortiGate",
