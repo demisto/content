@@ -158,7 +158,7 @@ tasks:
                 value:
                   simple: ID
       type:
-        simple: pdf
+        simple: json
     separatecontext: false
     view: |-
       {
@@ -564,5 +564,6 @@ outputs:
 - contextPath: File.Extension
   description: File Extension
   type: string
+releaseNotes: "-"
 tests:
   - Detonate_File_-_SNDBOX_-_Test
