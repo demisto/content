@@ -14,9 +14,19 @@ script:
 
     if demisto.command() == 'domain':
 
+        KEYS_TO_COMPARE = ["whois-updated", "whois-created", "dns-a", "dns-mx"]
         DOMAIN = demisto.args()['domain']
         KEY = "domain-name"
-        KEYS_TO_COMPARE = ["whois-updated", "whois-created", "dns-a", "dns-mx"]
+        extractKeys = demisto.args()['extractKeys']
+        extractKeys = extractKeys.replace(" ", "")
+        extractKeys = extractKeys.split(',')
+        for argument in extractKeys:
+            if argument not in KEYS_TO_COMPARE:
+                ErrorText  = "No matching one or more arguments for dnstwist"
+                demisto.results( { "Type" : entryTypes["error"],
+                                   "ContentsFormat" : formats["text"],
+                                   "Contents" : ErrorText } )
+                sys.exit(0)
 
         def get_dnstwist_result(domain):
             res = subprocess.check_output(['/dnstwist/dnstwist.py', '-j', '-w', domain])
@@ -27,14 +37,14 @@ script:
             for x in dns_twist_result:
                 temp = {}
                 for k,v in x.items():
-                    if k in KEYS_TO_COMPARE:
+                    if k in extractKeys:
                         temp[k] = v
                 if temp:
                     temp["domain-name"] = x["domain-name"]
                     results.append(temp)
             return results
 
-        dnstwist_result = get_dnstwist_result(DOMAIN) #contents
+        dnstwist_result = get_dnstwist_result(DOMAIN)
         new_result = get_domain_to_info_map(dnstwist_result)
         md = tableToMarkdown('dnstwist for domain - '  + DOMAIN, new_result)
 
@@ -63,7 +73,14 @@ script:
   type: python
   commands:
   - name: domain
-    arguments: []
+    arguments:
+    - name: domain
+      required: true
+      description: Domain name to check variations
+    - name: extractKeys
+      default: true
+      description: Keys to extract comma separated.
+      defaultValue: whois-updated, whois-created, dns-a, dns-mx
     outputs:
     - contextPath: Domain.Name
       description: Domain name
