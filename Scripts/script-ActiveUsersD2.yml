@@ -45,4 +45,4 @@ comment: Get active users from a D2 agent and parsed them into context
 system: true
 scripttarget: 0
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test

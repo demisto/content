@@ -121,4 +121,4 @@ dependson:
   must:
   - qradar-searches
 tests:
-- Forgive me for my sins but I did not create any test
+- No test
