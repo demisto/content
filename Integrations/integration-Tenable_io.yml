@@ -55,7 +55,7 @@ script:
     # Output Headers / Context Keys
     GET_SCANS_HEADERS = ['FolderId', 'Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Enabled', 'Type', 'Owner', 'Scanner', 'Policy', 'CreationDate', 'LastModificationDate']
     LAUNCH_SCAN_HEADERS = ['Id', 'Targets', 'Status']
-    SCAN_REPORT_INFO_HEADERS = ['FolderId', 'Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy']
+    SCAN_REPORT_INFO_HEADERS = ['Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy']
     SCAN_REPORT_VULNERABILITIES_HEADERS = ['Id', 'Name', 'Severity', 'Description', 'Synopsis', 'Solution', 'FirstSeen', 'LastSeen', 'VulnerabilityOccurences']
     SCAN_REPORT_HOSTS_HEADERS = ['Hostname', 'Score', 'Critical', 'High', 'Medium', 'Low']
     SCAN_REPORT_REMEDIATIONS_HEADERS = ['Id', 'Description', 'AffectedHosts', 'AssociatedVulnerabilities']
@@ -321,6 +321,8 @@ script:
             scan_details['info'] = replace_keys(scan_details['info'])
             results.append(get_entry_for_object('Scan basic info', 'TenableIO.Scan', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
 
+        if 'vulnerabilities' not in scan_details:
+            return "No vulnerabilities found."
         vuln_info, vulns_not_found = get_vuln_info(scan_details['vulnerabilities'])
         vuln_info = convert_severity_values(replace_keys(vuln_info))
         results.append(get_entry_for_object('Vulnerabilities', 'TenableIO.Vulnerabilities', vuln_info, SCAN_REPORT_VULNERABILITIES_HEADERS))
