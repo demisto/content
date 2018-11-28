@@ -851,6 +851,7 @@ script:
     - name: uuid
       required: true
       description: Task UUID of the submitted Lastline analysis
+      isArray: true
     - name: threshold
       description: Score threshold to identify file as malicious. Lastline default
         is 70.
@@ -956,5 +957,5 @@ script:
   runonce: false
 tests:
 - Lastline - testplaybook
-- detonate_url_-_generic_test
-- detonate_file_-_generic_test
+- Detonate URL - Generic Test
+- Detonate File - Generic Test
