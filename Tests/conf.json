@@ -2,6 +2,10 @@
     "testTimeout": 160,
     "tests": [
         {
+            "integrations": "FortiGate",
+            "playbookID": "Fortigate Test"
+        },
+        {
           "integrations": "Tenable.sc",
           "playbookID": "tenable-sc-test",
           "timeout": 240
