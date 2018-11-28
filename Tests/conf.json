@@ -736,7 +736,8 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "Cylance Protect v2 Test": "Currently being updated"
+        "Cylance Protect v2 Test": "Currently being updated",
+        "FireEye HX Test": "Failing on timeout"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
