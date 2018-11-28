@@ -31,6 +31,12 @@ script:
   script: |-
     import json, boto3, sys
 
+    if not demisto.params()['proxy']:
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+
     def invoke_enpoint(runtime, endpoint_name, payload):
         return runtime.invoke_endpoint(EndpointName=ENDPOINT_NAME, ContentType='application/json', Body=json.dumps(payload, ensure_ascii=False).encode('utf-8', 'ignore'))
 
