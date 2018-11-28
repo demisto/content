@@ -679,9 +679,6 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
       type: string
-    - contextPath: URLScan.URLs
-      description: Related URLs found from scanned URL
-      type: string
     - contextPath: URLScan.RelatedIPs
       description: Related IPs found for the URL scanned
       type: string
