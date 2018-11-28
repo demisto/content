@@ -1575,4 +1575,4 @@ script:
       an item is moved, a new id will be associated with it.
   isfetch: true
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test
