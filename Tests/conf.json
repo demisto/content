@@ -2,6 +2,10 @@
     "testTimeout": 160,
     "tests": [
         {
+            "integrations": "carbonblack-v2",
+            "playbookID": "Isolate_Machine_-_Generic_-_Test"
+        },
+        {
             "integrations": "FortiGate",
             "playbookID": "Fortigate Test"
         },
