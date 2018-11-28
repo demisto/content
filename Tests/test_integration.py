@@ -261,7 +261,7 @@ def test_integration(client, integrations, playbook_id, options={}):
             break
 
         if i % DEFAULT_INTERVAL == 0:
-            print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
+            print 'loop no.' + str(i / DEFAULT_INTERVAL + 1) + ', playbook state is ' + playbook_state
         i = i + 1
 
     test_pass = playbook_state == PB_Status.COMPLETED
