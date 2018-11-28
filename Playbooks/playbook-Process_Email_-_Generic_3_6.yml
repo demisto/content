@@ -3,7 +3,6 @@ version: -1
 name: Process Email - Generic
 fromversion: 3.6.0
 toversion: 3.6.0
-releaseNotes: "-"
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
