@@ -420,7 +420,7 @@ script:
         return 'ok'
 
     def fetch_incidents():
-        query = demisto.args().get('query')
+        query = demisto.params().get('query')
         lastRun = demisto.getLastRun()
         offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
         if lastRun and offenseId == 0:
@@ -433,6 +433,7 @@ script:
             # start looking for the end of the list by doubling the page position until we're empty.
             # then start binary search back until you find the end of the list and finally return
             # `offensesPerCall` from the end.
+        demisto.debug('QRadar lastRun: {0}\nFetchQuery: {1}\n'.format(str(lastRun), fetchQuery))
         raw_offenses = get_offenses(_range='0-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)
         if len(raw_offenses) >= OFFENSES_PER_CALL:
             lastOffensePos = find_last_page_pos(fetchQuery)
