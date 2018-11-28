@@ -41,7 +41,7 @@ script:
 
     USER_NAME = demisto.params().get('credentials').get('identifier')
     PASSWORD = demisto.params().get('credentials').get('password')
-    SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+    SERVER = demisto.params()['server'][:-1] if (demisto.params()['server'] and demisto.params()['server'].endswith('/')) else demisto.params()['server']
     USE_SSL = not demisto.params().get('unsecure', False)
     BASE_URL = SERVER + '/api/v2/'
 
@@ -101,8 +101,8 @@ script:
         """
         Check if the path itself already exists in the instance, if it does we will not want to resume with certain requests.
         """
-        res = http_request('GET', target_url)
-        if res:
+        res = SESSION.get(BASE_URL+target_url, verify=USE_SSL)
+        if res.status_code == 200:
             return True
         return False
 
@@ -249,12 +249,12 @@ script:
 
         contents = {
             'Name': service_group.get('name'),
-            'Members': service_group_members
+            'Services': service_group_members
         }
 
         service_group_context = {
             'Name': service_group.get('name'),
-            'Member': {
+            'Service': {
                 'Name': service_group_members
             }
         }
@@ -400,11 +400,13 @@ script:
         uri_suffix = 'cmdb/firewall.service/custom/'
         if does_path_exist(uri_suffix + service_name):
             return_error('Firewall service already exists.')
+
         payload = {
             'name': service_name,
             'tcp-portrange': tcp_range,
             'udp-portrange': udp_range
         }
+
         response = http_request('POST', uri_suffix, {}, json.dumps(payload))
         return response
 
@@ -586,7 +588,7 @@ script:
         policy_context = []
 
         policy_name = demisto.args().get('policyName')
-        policy_description = demisto.args().get('description')
+        policy_description = demisto.args().get('description', '')
         policy_srcintf = demisto.args().get('sourceIntf')
         policy_dstintf = demisto.args().get('dstIntf')
         policy_source_address = demisto.args().get('source')
@@ -828,7 +830,7 @@ script:
         })
         address_group_context.append({
             'Name': address_group.get('name'),
-            'Member': {
+            'Address': {
                 'Name': members_list
             },
             'UUID': address_group.get('uuid')
@@ -1012,7 +1014,7 @@ script:
     - contextPath: Fortigate.ServiceGroup.Name
       description: Service Group name
       type: string
-    - contextPath: Fortigate.ServiceGroup.Members
+    - contextPath: Fortigate.ServiceGroup.Member.Name
       description: Service Group member name
       type: string
     description: Get information about FortiGate service groups
@@ -1036,11 +1038,8 @@ script:
     - contextPath: Fortigate.ServiceGroup.Name
       description: Service group name
       type: string
-    - contextPath: Fortigate.ServiceGroup.ServiceName
+    - contextPath: Fortigate.ServiceGroup.Service.Name
       description: Service name
-      type: string
-    - contextPath: Fortigate.ServiceGroup.Action
-      description: Action taken for updated service group
       type: string
     description: Update a FortiGate service group
   - name: fortigate-delete-service-group
@@ -1287,7 +1286,7 @@ script:
     outputs:
     - contextPath: Fortigate.Policy.ID
       description: Policy ID
-      type: string
+      type: number
     - contextPath: Fortigate.Policy.Moved
       description: Was policy moved successfully
       type: boolean
@@ -1300,8 +1299,8 @@ script:
     outputs:
     - contextPath: Fortigate.Policy.ID
       description: Policy ID
-      type: string
-    - contextPath: Fortigate.Policy.Moved
+      type: number
+    - contextPath: Fortigate.Policy.Deleted
       description: Was policy deleted successfully
       type: boolean
     description: Delete a policy from FortiGate firewall
@@ -1341,9 +1340,11 @@ script:
     - contextPath: Fortigate.AddressGroup.Name
       description: Address group name
       type: string
-    - contextPath: Fortigate.AddressGroup.Address
+    - contextPath: Fortigate.AddressGroup.Address.Name
       description: Address name
       type: string
+    - contextPath: Fortigate.AddressGroup.UUID
+      description: Address group UUID
     description: Update an address group on FortiGate firewall
   - name: fortigate-create-address-group
     arguments:
