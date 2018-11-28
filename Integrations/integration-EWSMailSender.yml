@@ -142,12 +142,25 @@ script:
         return Version(VERSIONS[version_str])
 
 
+    def collect_manual_attachments(manualAttachObj):
+        attachments = []
+        for attachment in manualAttachObj:
+            res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+
+            file_path = res["path"]
+            with open(file_path, 'rb') as f:
+                attachments.append(FileAttachment(content=f.read(), name=attachment['FileName']))
+
+        return attachments
+
+
     def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
-                   attachIDs="", attachNames="", from_mailbox=None):
+                   attachIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
         account = get_account(from_mailbox or ACCOUNT_EMAIL)
         bcc = bcc.split(",") if bcc is not None else None
         cc = cc.split(",") if cc is not None else None
         to = to.split(",") if to is not None else None
+        manualAttachObj = manualAttachObj if manualAttachObj is not None else []
 
         file_entries_for_attachments = []
         attachments_names = []
@@ -163,7 +176,8 @@ script:
                     attachments_names.append(att_name)
             if len(file_entries_for_attachments) != len(attachments_names):
                 raise Exception("attachIDs and attachNames lists should be the same length")
-        attachments = []
+
+        attachments = collect_manual_attachments(manualAttachObj)
         for i in range(0, len(file_entries_for_attachments)):
             entry_id = file_entries_for_attachments[i]
             attachment_name = attachments_names[i]
@@ -301,3 +315,6 @@ script:
         Should be the same number of elements as attachIDs.
     description: Send email via EWS
   dockerimage: demisto/py-ews
+releaseNotes: "-"
+tests:
+  - "EWS Mail Sender Test"
