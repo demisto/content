@@ -777,32 +777,55 @@ script:
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.upload_url, EntryContext: {vtUploadURL: res.obj.upload_url}};
     }
 
-    switch (command) {
-        case 'test-module':
+    var test = function(){
+        // if getting "No content received. Possible API rate limit reached." it's means that the api key use not usable right now, but it's working
+        try
+        {
             doFile('7657fcb7d772448a6d8504e4b20168b8'); // Check sample file - it will throw an error if not successful
-            return true;
-        case 'file':
-            return doFile(args.file, args.long, args.threshold, args.wait, args.retries);
-        case 'ip':
-            return doIP(args.ip, args.long, args.threshold, args.sampleSize, args.wait, args.retries, args.fullResponse);
-        case 'url':
-            return doURL(args.url, args.threshold, args.long, args.sampleSize, args.submitWait, args.wait, args.retries);
-        case 'domain':
-            return doDomain(args.domain, args.threshold, args.long, args.sampleSize, args.wait, args.retries);
-        case 'file-scan':
-            return scanFile(args.entryID, args.uploadURL);
-        case 'file-rescan':
-            return rescanFile(args.file);
-        case 'url-scan':
-            return scanURL(args.url);
-        case 'vt-comments-add':
-            return doComments(args.resource, args.comment);
-        case 'vt-comments-get':
-            return getComments(args.resource, args.before);
-        case 'vt-file-scan-upload-url':
-            return fileScanUploadURL();
-        default:
-            throw 'Unknown command - ' + command;
+        } catch(err)
+        {
+            if (err == "No content received. Possible API rate limit reached."){
+                return true;
+            }
+            return err;
+        }
+        return true;
+    }
+
+    try {
+        switch (command) {
+            case 'test-module':
+                return test();
+            case 'file':
+                return doFile(args.file, args.long, args.threshold, args.wait, args.retries);
+            case 'ip':
+                return doIP(args.ip, args.long, args.threshold, args.sampleSize, args.wait, args.retries, args.fullResponse);
+            case 'url':
+                return doURL(args.url, args.threshold, args.long, args.sampleSize, args.submitWait, args.wait, args.retries);
+            case 'domain':
+                return doDomain(args.domain, args.threshold, args.long, args.sampleSize, args.wait, args.retries);
+            case 'file-scan':
+                return scanFile(args.entryID, args.uploadURL);
+            case 'file-rescan':
+                return rescanFile(args.file);
+            case 'url-scan':
+                return scanURL(args.url);
+            case 'vt-comments-add':
+                return doComments(args.resource, args.comment);
+            case 'vt-comments-get':
+                return getComments(args.resource, args.before);
+            case 'vt-file-scan-upload-url':
+                return fileScanUploadURL();
+            default:
+                throw 'Unknown command - ' + command;
+        }
+    }catch (err) {
+
+        return {'Type' : entryTypes.error,
+            'ContentsFormat' : formats.text,
+            'Contents': err,
+            'EntryContext': {'Error': err}
+        }
     }
   type: javascript
   commands:
@@ -1130,4 +1153,4 @@ script:
     description: Private API. Retrieve comments for a given resource
   runonce: false
 tests:
-- virusTotal-test-playbook
+  - virusTotal-test-playbook

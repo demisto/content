@@ -95,7 +95,7 @@ script: |-
       table = tableToMarkdown('tableToMarkdown test', data)
       expected_table = '''### tableToMarkdown test
   |header_2|header_3|header_1|
-  |-|-|-|
+  |---|---|---|
   |b1|c1|a1|
   |b2|c2|a2|
   |b3|c3|a3|
@@ -106,7 +106,7 @@ script: |-
       table_transform = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
       expected_table_transform = '''### tableToMarkdown test with headerTransform
   |Header2|Header3|Header1|
-  |-|-|-|
+  |---|---|---|
   |b1|c1|a1|
   |b2|c2|a2|
   |b3|c3|a3|
@@ -122,7 +122,7 @@ script: |-
       table_multiline = tableToMarkdown('tableToMarkdown test with multiline', data2)
       expected_table_multiline = '''### tableToMarkdown test with multiline
   |header_2|header_3|header_1|
-  |-|-|-|
+  |---|---|---|
   |b1.1<br>b1.2|c1\|1|a1|
   |b2.1<br>b2.2|c2\|1|a2|
   |b3.1<br>b3.2|c3\|1|a3|
@@ -137,7 +137,7 @@ script: |-
       table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data3)
       expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
   |header_2|header_3|header_1|
-  |-|-|-|
+  |---|---|---|
   ||[url](https:\\demisto.com)|a1|
   ||[url](https:\\demisto.com)|a2|
   ||[url](https:\\demisto.com)|a3|
@@ -148,7 +148,7 @@ script: |-
       table_single_column = tableToMarkdown('tableToMarkdown test with single column', data, ['header_1'])
       expected_table_single_column = '''### tableToMarkdown test with single column
   |header_1|
-  |-|
+  |---|
   |a1|
   |a2|
   |a3|
@@ -163,7 +163,7 @@ script: |-
       table_list_field = tableToMarkdown('tableToMarkdown test with list field', data4)
       expected_table_list_field = '''### tableToMarkdown test with list field
   |header_2|header_3|header_1|
-  |-|-|-|
+  |---|---|---|
   |hi|1,<br>second item|a1|
   |hi|2,<br>second item|a2|
   |hi|3,<br>second item|a3|
@@ -181,7 +181,7 @@ script: |-
       table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data5)
       expected_table_all_none = '''### tableToMarkdown test with all none fields
   |a|c|b|
-  |-|-|-|
+  |---|---|---|
   ||||
   ||||
   ||||
@@ -201,7 +201,7 @@ script: |-
       table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data6, headers=['header_1', 'header_2', 'extra_header'])
       expected_table_extra_header = '''### tableToMarkdown test with extra header
   |header_1|header_2|extra_header|
-  |-|-|-|
+  |---|---|---|
   |a1|b1||
   |a2|b2|sample|
   |a3|b3||
@@ -222,7 +222,7 @@ script: |-
       table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data7, headers=['header_1', 'header_2', 'extra_header'])
       expected_dict_record = '''### tableToMarkdown test with dict record
   |header_1|header_2|extra_header|
-  |-|-|-|
+  |---|---|---|
   |a1|b1||
   |a2|b2|sample: qwerty<br>sample2: asdf|
   |a3|b3||
@@ -233,7 +233,7 @@ script: |-
       table_string_header = tableToMarkdown('tableToMarkdown string header', data, 'header_1')
       expected_string_header_tbl = '''### tableToMarkdown string header
   |header_1|
-  |-|
+  |---|
   |a1|
   |a2|
   |a3|
@@ -244,7 +244,7 @@ script: |-
       table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
       expected_string_array_tbl = '''### tableToMarkdown test with string array
   |header_1|
-  |-|
+  |---|
   |foo|
   |bar|
   |katz|
@@ -255,7 +255,7 @@ script: |-
       table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header', ['foo', 'bar', 'katz'], 'header_1')
       expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
   |header_1|
-  |-|
+  |---|
   |foo|
   |bar|
   |katz|
@@ -275,12 +275,21 @@ script: |-
           demisto.results(str(results))
           demisto.results(return_error('failure'))
 
+  def test_hash_djb2():
+      assert hash_djb2("test") == 2090756197, "Invalid value of hash_djb2"
+
+  def test_camelize():
+      assert camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_').__str__ == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
+      assert camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_').__str__ == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
+
   ''' MAIN TEST RUNNER '''
   TESTS = {
       'DQ' : test_dq,
       # 'XML' : test_xml,
       'ENTRY' : test_entry,
-      'TBLMD' : test_tbl_to_md
+      'TBLMD' : test_tbl_to_md,
+      'HASH'  : test_hash_djb2,
+      'CAMELIZE': test_camelize
   }
 
   test_type = demisto.args()['test_type']
@@ -302,6 +311,7 @@ args:
   - ENTRY
   - XML
   - TBLMD
+  - HASH
   description: one of python common server testing features
   defaultValue: dq
 scripttarget: 0

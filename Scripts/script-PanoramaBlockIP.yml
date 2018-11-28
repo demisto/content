@@ -10,6 +10,10 @@ script: |-
   var blockedSource = true;
   var resp = null;
 
+  if (!args.rulename) {
+      args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
+  }
+
   if (blockingDestination) {
       resp = executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-to'});
       if (isError(resp[0])){
@@ -53,14 +57,13 @@ tags:
 - firewall
 - panorama
 comment: Blocks IP with Panorama
-system: true
+enabled: true
 args:
 - name: ip
   required: true
   default: true
   description: IP to block
 - name: rulename
-  required: true
   description: Rule name
 - name: direction
   auto: PREDEFINED
@@ -82,7 +85,9 @@ outputs:
   description: The IP the Panorama rule blocks
   type: string
 scripttarget: 0
+runonce: false
 dependson:
   must:
   - panorama
-timeout: 0s
+tests:
+- blockip_test_playbook

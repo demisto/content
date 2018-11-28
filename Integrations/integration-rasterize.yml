@@ -16,7 +16,7 @@ configuration:
   required: false
 script:
   script: |-
-    import os, subprocess,sys
+    import os, subprocess,sys, base64
     reload(sys)
     sys.setdefaultencoding("utf-8")
     proxy = demisto.get(demisto.params(),"proxy")
@@ -56,6 +56,39 @@ script:
             demisto.results(error_message)
         sys.exit(0)
 
+    if demisto.command() == 'rasterize-image':
+        res = demisto.getFilePath(demisto.args()['EntryID'])
+        with open(res['path'], 'r') as f:
+            data = f.read()
+        b64 = base64.b64encode(data)
+        html = '<img src="data:image/png;base64, ' + b64 + '">'
+
+        return_code = 0
+        error_message = ''
+
+        friendlyName = 'image.png'
+        f = open('htmlImage.html','w')
+        f.write('<html style="background:white;"><body>' + html + '</body></html>')
+        f.close()
+
+        command = ['phantomjs', '/usr/local/bin/rasterize.js', 'htmlImage.html', friendlyName]
+        if demisto.get(demisto.args(), 'width') and demisto.get(demisto.args(), 'height'):
+            command.append(demisto.gets(demisto.args(), 'width') + '*' + demisto.gets(demisto.args(), 'height'))
+        try:
+            error_message = subprocess.check_output(command)
+        except Exception as e:
+            return_code = -1
+            error_message = e.output
+
+        if return_code == 0:
+            file = file_result_existing_file(friendlyName)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
+
+        else:
+            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
+        sys.exit(0)
+
     if demisto.command() == 'rasterize-email':
         html = demisto.args()['htmlBody']
         friendlyName = 'email.png'
@@ -63,9 +96,9 @@ script:
             friendlyName = 'email.pdf'
         rasterize_email(html, friendlyName)
         if return_code == 0:
-            filename = demisto.uniqueFile()
-            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
-            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+            file = file_result_existing_file(friendlyName)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
         else:
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
@@ -101,9 +134,9 @@ script:
             error_message = e.output
 
         if return_code == 0:
-            filename = demisto.uniqueFile()
-            subprocess.call(['mv', friendlyName, demisto.investigation()['id'] + '_' + filename])
-            demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['image'], 'File': friendlyName, 'FileID': filename, 'Contents': ''})
+            file = file_result_existing_file(friendlyName)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
         else:
             demisto.results({'ContentsFormat': 'text', 'Type': entryTypes['error'], 'Contents': 'PhantomJS returned - ' + error_message})
         sys.exit(0)
@@ -136,5 +169,12 @@ script:
     - name: type
       description: pdf or png. Default is png.
     description: Rasterize an email body into an image
+  - name: rasterize-image
+    arguments:
+    - name: EntryID
+      required: true
+      default: true
+      description: Entry ID of image file
+    description: Rasterize an image file
   dockerimage: demisto/rasterize
-hidden: false
+  runonce: false

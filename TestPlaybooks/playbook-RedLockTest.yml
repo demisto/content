@@ -16,15 +16,15 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 6e434e41-7577-4c02-8bc9-e6f7a3189077
@@ -45,15 +45,15 @@ tasks:
       all:
         simple: "yes"
       key: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 07eafe11-1cab-42aa-86b1-5504892d6666
@@ -71,7 +71,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-      - "4"
     scriptarguments:
       alert-id: {}
       alert-rule-name: {}
@@ -89,28 +88,28 @@ tasks:
       resource-type: {}
       risk-grade: {}
       time-range-date-from:
-        simple: 05/19/2018
+        simple: 05/19/2017
       time-range-date-to:
-        simple: 06/26/2018
+        simple: 11/01/2018
       time-range-unit: {}
       time-range-value: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
-    taskid: 4b4ca0e2-1d6b-47d0-8c31-888ed934e728
+    taskid: 52652c74-eddd-446e-87e9-d905f5f34a9e
     type: regular
     task:
-      id: 4b4ca0e2-1d6b-47d0-8c31-888ed934e728
+      id: 52652c74-eddd-446e-87e9-d905f5f34a9e
       version: -1
-      name: VerifyContext we have 5 alerts
+      name: VerifyContext that we have alerts
       description: |-
         Verifies path in context:
         - Verifies path existence
@@ -123,104 +122,110 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "12"
     scriptarguments:
       expectedValue:
         simple: "true"
       fields: {}
       path:
-        simple: Redlock.Alert=>val.length == 5
-    reputationcalc: 0
+        simple: Redlock.Alert=>val.length > 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 540
+          "x": 50,
+          "y": 545
         }
       }
-  "4":
-    id: "4"
-    taskid: 5b72be05-336d-498f-8b31-e6bd380af486
+    note: false
+  "12":
+    id: "12"
+    taskid: 9f255a7b-c1ab-4d57-894f-c95470ab405d
+    type: regular
+    task:
+      id: 9f255a7b-c1ab-4d57-894f-c95470ab405d
+      version: -1
+      name: get alert P-251 status
+      script: '|||redlock-get-alert-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alert-id:
+        simple: P-251
+      detailed: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 69a75a43-d270-4fc5-869a-b7d304b5e79a
     type: condition
     task:
-      id: 5b72be05-336d-498f-8b31-e6bd380af486
+      id: 69a75a43-d270-4fc5-869a-b7d304b5e79a
       version: -1
-      name: All retrieved alerts' status should be open
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
+      name: is status open?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "6"
+      '#default#':
+      - "15"
       "yes":
-      - "5"
-    scriptarguments:
-      value:
-        simple: ${Redlock.Alert.Status(val != 'open')}
-    reputationcalc: 0
+      - "14"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Redlock.Alert(val.ID === 'P-251').Status}
+          right:
+            value:
+              simple: open
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 540
+          "x": 50,
+          "y": 895
         }
       }
-  "5":
-    id: "5"
-    taskid: 6ace577a-7ddd-4716-8214-e7acbf3eae51
+    note: false
+  "14":
+    id: "14"
+    taskid: 445a0039-f9b8-4b06-8ee6-1e160f3ecdf6
     type: regular
     task:
-      id: 6ace577a-7ddd-4716-8214-e7acbf3eae51
+      id: 445a0039-f9b8-4b06-8ee6-1e160f3ecdf6
       version: -1
-      name: Fail
-      scriptName: Print
+      name: dismiss the alert
+      script: '|||redlock-dismiss-alerts'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
-    scriptarguments:
-      value: {}
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 550,
-          "y": 720
-        }
-      }
-  "6":
-    id: "6"
-    taskid: dd43d2e4-c81b-4f27-8e09-b80d6c9940de
-    type: regular
-    task:
-      id: dd43d2e4-c81b-4f27-8e09-b80d6c9940de
-      version: -1
-      name: Dismiss the first alert
-      script: RedLock|||redlock-dismiss-alerts
-      type: regular
-      iscommand: true
-      brand: RedLock
-    nexttasks:
-      '#none#':
-      - "7"
+      - "16"
     scriptarguments:
       alert-id:
-        simple: ${Redlock.Alert.[0].ID}
+        simple: P-251
       alert-rule-name: {}
       alert-status: {}
       cloud-account: {}
       cloud-region: {}
       cloud-type: {}
       dismissal-note:
-        simple: Dismiss
+        simple: test
       policy-compliance-standard: {}
       policy-id: {}
       policy-label: {}
@@ -235,97 +240,33 @@ tasks:
       time-range-date-to: {}
       time-range-unit: {}
       time-range-value: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 895
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 64df938e-c4c4-40da-86b4-e89ec7c71ff6
-    type: regular
-    task:
-      id: 64df938e-c4c4-40da-86b4-e89ec7c71ff6
-      version: -1
-      name: Retrieve the details of this alert
-      script: RedLock|||redlock-get-alert-details
-      type: regular
-      iscommand: true
-      brand: RedLock
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      alert-id:
-        simple: ${Redlock.Alert.[0].ID}
-      detailed: {}
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
-        }
-      }
-  "8":
-    id: "8"
-    taskid: 2a8ee834-91f5-460f-8c3b-929903c27a2e
-    type: regular
-    task:
-      id: 2a8ee834-91f5-460f-8c3b-929903c27a2e
-      version: -1
-      name: Verify that last status is dismissed
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      expectedValue:
-        simple: dismissed
-      fields: {}
-      path:
-        simple: Redlock.Alert=>val[0].Status
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
+          "x": 50,
           "y": 1245
         }
       }
-  "9":
-    id: "9"
-    taskid: dd6a25fc-685d-47b8-8aa3-e382640739a8
+    note: false
+  "15":
+    id: "15"
+    taskid: a4648276-9af9-4b41-811a-da27b32729cc
     type: regular
     task:
-      id: dd6a25fc-685d-47b8-8aa3-e382640739a8
+      id: a4648276-9af9-4b41-811a-da27b32729cc
       version: -1
-      name: Re-open the last alert
-      script: RedLock|||redlock-reopen-alerts
+      name: reopen the alert
+      script: '|||redlock-reopen-alerts'
       type: regular
       iscommand: true
-      brand: RedLock
+      brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "14"
     scriptarguments:
       alert-id:
-        simple: ${Redlock.Alert.[0].ID}
+        simple: P-251
       alert-rule-name: {}
       alert-status: {}
       cloud-account: {}
@@ -344,84 +285,81 @@ tasks:
       time-range-date-to: {}
       time-range-unit: {}
       time-range-value: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1420
+          "x": -260,
+          "y": 1070
         }
       }
-  "10":
-    id: "10"
-    taskid: 391c805c-2092-4c45-80cc-1375c508c260
+    note: false
+  "16":
+    id: "16"
+    taskid: cf672c28-c34e-4ccb-87bf-57e5bb5f722f
     type: regular
     task:
-      id: 391c805c-2092-4c45-80cc-1375c508c260
+      id: cf672c28-c34e-4ccb-87bf-57e5bb5f722f
       version: -1
-      name: Retrieve the details of this alert
-      script: RedLock|||redlock-get-alert-details
+      name: get alert P-251 status
+      script: '|||redlock-get-alert-details'
       type: regular
       iscommand: true
-      brand: RedLock
+      brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "17"
     scriptarguments:
       alert-id:
-        simple: ${Redlock.Alert.[0].ID}
+        simple: P-251
       detailed: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1595
+          "x": 50,
+          "y": 1410
         }
       }
-  "11":
-    id: "11"
-    taskid: 58c9089a-b1ed-41ec-8c1f-372106a13d6f
+    note: false
+  "17":
+    id: "17"
+    taskid: 76e7adb8-168c-4419-8782-76021c0b4ee5
     type: regular
     task:
-      id: 58c9089a-b1ed-41ec-8c1f-372106a13d6f
+      id: 76e7adb8-168c-4419-8782-76021c0b4ee5
       version: -1
-      name: Verify that last status is open
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      name: verify that P-251 is dismissed
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       expectedValue:
-        simple: open
+        simple: '["dismissed"]'
       fields: {}
       path:
-        simple: Redlock.Alert=>val[0].Status
-    reputationcalc: 0
+        simple: Redlock.Alert(val.ID === 'P-251').Status
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1770
+          "x": 50,
+          "y": 1580
         }
       }
+    note: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "13_14_yes": 0.56,
+      "13_15_#default#": 0.59
+    },
     "paper": {
       "dimensions": {
-        "height": 1815,
-        "width": 970,
-        "x": -40,
+        "height": 1625,
+        "width": 690,
+        "x": -260,
         "y": 50
       }
     }

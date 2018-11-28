@@ -100,7 +100,12 @@ script:
             )
             res.raise_for_status()
 
-            return res.json()
+            if res.status_code == 200:
+                return res.json()
+            # 204 HTTP status code is returned when api rate limit has been exceeded
+            elif res.status_code == 204:
+                return_error("You've reached your API call quota. Contact your VirusTotal representative.")
+
 
         except Exception, e:
             LOG(e)
@@ -1388,4 +1393,4 @@ script:
       download samples that match a given set of criteria.
   runonce: false
 tests:
-  - virusTotalPrivateAPI-test-playbook
+- virusTotalPrivateAPI-test-playbook

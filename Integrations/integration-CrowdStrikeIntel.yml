@@ -321,6 +321,7 @@ script:
         }
         if (!found) {
             md += 'No result found';
+            ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: 0};
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };

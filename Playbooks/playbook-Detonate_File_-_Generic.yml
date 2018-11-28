@@ -24,11 +24,12 @@ tasks:
       - "11"
       - "13"
       - "14"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 50
         }
       }
@@ -49,7 +50,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1340,
           "y": 370
         }
       }
@@ -330,13 +331,45 @@ tasks:
         }
       }
     note: false
+  "15":
+    id: "15"
+    taskid: 0e879eba-0377-44bf-81c4-83468555fec4
+    type: playbook
+    task:
+      id: 0e879eba-0377-44bf-81c4-83468555fec4
+      version: -1
+      name: Detonate File - Cuckoo
+      playbookName: Detonate File - Cuckoo
+      type: playbook
+      description: "Detonates a file using Cuckoo sandbox"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        simple: ${inputs.File}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 195
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 2530,
+        "width": 2960,
         "x": 50,
         "y": 50
       }
@@ -493,6 +526,50 @@ outputs:
 - contextPath: Joe.Analysis
   description: Thee Analysis object
   type: unknown
-releaseNotes: added Lastline Detonate File playbook
+- contextPath: Cuckoo.Task.Category
+  description: Category of task
+- contextPath: Cuckoo.Task.Machine
+  description: Machine of task
+- contextPath: Cuckoo.Task.Errors
+  description: Errors of task
+- contextPath: Cuckoo.Task.Target
+  description: Target of task
+- contextPath: Cuckoo.Task.Package
+  description: Package of task
+- contextPath: Cuckoo.Task.SampleID
+  description: Sample ID of task
+- contextPath: Cuckoo.Task.Guest
+  description: Task guest
+- contextPath: Cuckoo.Task.Custom
+  description: Custom values of task
+- contextPath: Cuckoo.Task.Owner
+  description: Task owner
+- contextPath: Cuckoo.Task.Priority
+  description: Priority of task
+- contextPath: Cuckoo.Task.Platform
+  description: Platform of task
+- contextPath: Cuckoo.Task.Options
+  description: Task options
+- contextPath: Cuckoo.Task.Status
+  description: Task status
+- contextPath: Cuckoo.Task.EnforceTimeout
+  description: Is timeout of task enforced
+- contextPath: Cuckoo.Task.Timeout
+  description: Task timeout
+- contextPath: Cuckoo.Task.Memory
+  description: Task memory
+- contextPath: Cuckoo.Task.Tags
+  description: Task tags
+- contextPath: Cuckoo.Task.ID
+  description: ID of task
+- contextPath: Cuckoo.Task.AddedOn
+  description: Date on which the task was added
+- contextPath: Cuckoo.Task.CompletedOn
+  description: Date on which the task was completed
+- contextPath: Cuckoo.Task.Score
+  description: Reported score of the the task
+- contextPath: Cuckoo.Task.Monitor
+  description: Monitor of the reported task
+releaseNotes: "Added Cuckoo Sandbox to detonation products"
 tests:
-- detonate_file_-_generic_test
+- Detonate File - Generic Test

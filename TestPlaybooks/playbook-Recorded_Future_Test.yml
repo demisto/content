@@ -20,17 +20,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 6de061ca-483d-4c0d-81d6-f6de4de6551c
+    taskid: eb4e9484-cc92-448e-834b-993b103924a1
     type: regular
     task:
-      id: 6de061ca-483d-4c0d-81d6-f6de4de6551c
+      id: eb4e9484-cc92-448e-834b-993b103924a1
       version: -1
       name: recorded-future-get-related-entities
       description: Look up threat intel context for an indicator in Recorded Future.
@@ -43,6 +43,7 @@ tasks:
       - "2"
       - "3"
       - "4"
+      - "9"
     scriptarguments:
       entityType:
         simple: domain
@@ -54,17 +55,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 195
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: 1a3fd11c-fd5c-4f18-818b-70814ad7284e
+    taskid: 212a5c7e-ecca-4ea3-834b-b1702d36ea74
     type: regular
     task:
-      id: 1a3fd11c-fd5c-4f18-818b-70814ad7284e
+      id: 212a5c7e-ecca-4ea3-834b-b1702d36ea74
       version: -1
       name: ip
       description: Look up threat intel information for an IP in Recorded Future.
@@ -77,23 +78,30 @@ tasks:
       - "5"
     scriptarguments:
       detailed: {}
+      enclave-ids: {}
+      fullResponse: {}
       ip:
         simple: ${Domain.RecordedFuture.RelatedEntities.IPAddress.[0].Name}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 370
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 5dfc05df-b7f2-4325-8d40-76b7e4540c00
+    taskid: e1892bfc-c8c2-496f-8a96-2ba343954e8d
     type: regular
     task:
-      id: 5dfc05df-b7f2-4325-8d40-76b7e4540c00
+      id: e1892bfc-c8c2-496f-8a96-2ba343954e8d
       version: -1
       name: domain
       description: Look up threat intel information for a domain or DNS in Recorded
@@ -110,21 +118,24 @@ tasks:
         simple: "true"
       domain:
         simple: ${Domain.RecordedFuture.RelatedEntities.Domain.[0].Name}
+      enclave-ids: {}
+      long: {}
+      threshold: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: 421532ad-3a1d-4890-8602-0093322955d7
+    taskid: 4c018bdf-5072-4893-8e88-5a883cf59fd5
     type: regular
     task:
-      id: 421532ad-3a1d-4890-8602-0093322955d7
+      id: 4c018bdf-5072-4893-8e88-5a883cf59fd5
       version: -1
       name: file
       description: Look up threat intel information for a file in Recorded Future.
@@ -137,13 +148,18 @@ tasks:
       - "7"
     scriptarguments:
       detailed: {}
+      enclave-ids: {}
       file:
         simple: ${Domain.RecordedFuture.RelatedEntities.Hash.[0].Name}
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 370
         }
       }
@@ -179,7 +195,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 545
         }
       }
@@ -215,7 +231,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
@@ -251,7 +267,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 545
         }
       }
@@ -271,8 +287,87 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 720
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 81ae7b8c-06ec-410b-87f3-8267a4212b4f
+    type: regular
+    task:
+      id: 81ae7b8c-06ec-410b-87f3-8267a4212b4f
+      version: -1
+      name: domain
+      description: Look up threat intel information for a domain or DNS in Recorded
+        Future.
+      script: Recorded Future|||domain
+      type: regular
+      iscommand: true
+      brand: Recorded Future
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      detailed:
+        simple: "true"
+      domain:
+        simple: blah
+      enclave-ids: {}
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: a1b417ff-65dc-4ced-8ca1-f46fe5c57b34
+    type: condition
+    task:
+      id: a1b417ff-65dc-4ced-8ca1-f46fe5c57b34
+      version: -1
+      name: Verify DBot Score=0
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: blah
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
         }
       }
     note: false
@@ -282,7 +377,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 1240,
+        "width": 1670,
         "x": 50,
         "y": 50
       }

@@ -2906,6 +2906,5 @@ script:
     description: The timeline command shows when a URL was given attribution of a
       particular security categorization or threat type (indicators of compromise).
   runonce: false
-releaseNotes: "Integration now written in python, added commands"
 tests:
   - Cisco Umbrella Test
