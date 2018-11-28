@@ -1,0 +1,165 @@
+id: IsolateMachine-Generic-Test
+version: -1
+name: IsolateMachine-Generic-Test
+description: A test for the generic machine isolation. Currently, the test is testing
+  only Carbon Black Enterprise. After isolating the machine successfully, it also
+  releases the machine from isolation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: af50cbc5-7cc0-4946-8f16-c9cb501c15c2
+    type: start
+    task:
+      id: af50cbc5-7cc0-4946-8f16-c9cb501c15c2
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -110
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: f465dc16-210f-49cd-8549-e71fca42ec80
+    type: playbook
+    task:
+      id: f465dc16-210f-49cd-8549-e71fca42ec80
+      version: -1
+      name: Isolate Machine - Carbon Black Enterprise Response
+      description: A generic playbook for isolating machines. This playbook uses the
+        different integrations available to block a connecting to and from an endpoint
+        in the network.
+      playbookName: Isolate Machine - Carbon Black Enterprise Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: ${Endpoint
+          accessor: Hostname}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 200
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 548a111f-6673-4d14-8c50-eac5cb0b138c
+    type: regular
+    task:
+      id: 548a111f-6673-4d14-8c50-eac5cb0b138c
+      version: -1
+      name: Release machine from isolation - Carbon Black Enterprise Response
+      description: Releases a machine from isolation, using Carbon Black Enterprise
+        Response.
+      script: '|||cb-unquarantine-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      sensor:
+        complex:
+          root: CbResponse
+          accessor: Sensors.CbSensorID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 360
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 45d4c516-d936-435a-8586-523435ff22dc
+    type: title
+    task:
+      id: 45d4c516-d936-435a-8586-523435ff22dc
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 520
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 29eb9eaf-5184-43ad-8392-b3699466d83d
+    type: regular
+    task:
+      id: 29eb9eaf-5184-43ad-8392-b3699466d83d
+      version: -1
+      name: Set hostname for isolation in context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: WIN-HQA3IUOV1NT
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 40
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 695,
+        "width": 380,
+        "x": 470,
+        "y": -110
+      }
+    }
+  }
+inputs: []
+outputs: []
