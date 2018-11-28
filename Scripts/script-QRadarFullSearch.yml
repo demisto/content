@@ -101,4 +101,4 @@ dependson:
   - qradar-get-search
   - qradar-get-search-results
 tests:
-- Forgive me for my sins but I did not create any test
+- No test
