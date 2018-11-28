@@ -1,0 +1,268 @@
+id: Isolate_Machine_-_Carbon_Black_Enterprise_Response
+version: -1
+name: Isolate Machine - Carbon Black Enterprise Response
+fromversion: 4.0.0
+description: Carbon Black Response - isolate an endpoint, given a hostname.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 284e87a4-5924-499c-8ec5-dcdd60ff3a7f
+    type: start
+    task:
+      id: 284e87a4-5924-499c-8ec5-dcdd60ff3a7f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: aee7ab97-9183-435b-874f-f2f8c2390581
+    type: regular
+    task:
+      id: aee7ab97-9183-435b-874f-f2f8c2390581
+      version: -1
+      name: Get host information from Carbon Black Enterprise Response
+      description: Gets the sensor ID of the hostname that is about to be isolated.
+        The sensor ID is being used by Carbon Black Enterprise Response to isolate
+        the machine.
+      script: '|||cb-sensor-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      groupid: {}
+      hostname:
+        simple: ${inputs.Hostname}
+      ip: {}
+      sensor: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 560
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 15c82f2b-6e4a-4198-808d-f5361cc4acf0
+    type: regular
+    task:
+      id: 15c82f2b-6e4a-4198-808d-f5361cc4acf0
+      version: -1
+      name: Isolate hostname
+      description: Isolates the machine from the network, using Carbon Black Enterprise
+        Response.
+      script: carbonblack-v2|||cb-quarantine-device
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      sensor:
+        complex:
+          root: CbResponse
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CbResponse.Sensors.Hostname
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Hostname
+                iscontext: true
+          accessor: Sensors.CbSensorID
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 780
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: b22f0eaf-c0bc-4299-83c8-381f76cd99e8
+    type: title
+    task:
+      id: b22f0eaf-c0bc-4299-83c8-381f76cd99e8
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1030
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: ca2d6758-fb8f-4377-8d7a-857d38a1206b
+    type: condition
+    task:
+      id: ca2d6758-fb8f-4377-8d7a-857d38a1206b
+      version: -1
+      name: Is Carbon Black Enterprise Response enabled?
+      description: Checks whether Carbon black Enterprise Response is active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: carbonblack-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 170
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: c3d9143e-0bb5-476a-8743-3226cdd1a8be
+    type: condition
+    task:
+      id: c3d9143e-0bb5-476a-8743-3226cdd1a8be
+      version: -1
+      name: Is there an endpoint to isolate?
+      description: Checks whether a hostname of a machine to isolate was given to
+        the playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 360
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 92664db0-5049-430c-8103-9397db3e766f
+    type: title
+    task:
+      id: 92664db0-5049-430c-8103-9397db3e766f
+      version: -1
+      name: Integration disabled / No endpoint given
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 560
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1045,
+        "width": 887.5,
+        "x": 162.5,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value:
+    complex:
+      root: inputs.Hostname
+  required: false
+  description: "The hostname of the machine that will be isolated."
+outputs:
+- contextPath: CbResponse.Sensors.CbSensorID
+  description: Carbon Black Response Sensors ids that has been isolated
+- contextPath: Endpoint
+  description: The isolated enpoint
+- contextPath: InIsolationSince
+  description: The date when the isolation of the machine started
+  type: date
+releaseNotes: "-"
+tests:
+  - Isolate_Machine_-_Generic_-_Test

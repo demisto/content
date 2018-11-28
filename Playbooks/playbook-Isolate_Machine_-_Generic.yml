@@ -1,0 +1,113 @@
+id: Isolate_Machine_-_Generic
+version: -1
+name: Isolate Machine - Generic
+fromversion: 4.0.0
+description: A generic playbook for isolating machines. This playbook uses the different
+  integrations available to block connections to and from an endpoint in the network.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d4586145-d0aa-4d00-8d99-2ec650ff6ea1
+    type: start
+    task:
+      id: d4586145-d0aa-4d00-8d99-2ec650ff6ea1
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 607c352d-70e3-4cec-8f2d-aa25b22e2594
+    type: playbook
+    task:
+      id: 607c352d-70e3-4cec-8f2d-aa25b22e2594
+      version: -1
+      name: Isolate Machine - Carbon Black Enterprise Response
+      description: Carbon Black Response - isolate an endpoint, given a hostname.
+      playbookName: Isolate Machine - Carbon Black Enterprise Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 6faed53b-e96d-419c-8c2a-9695d67ac30b
+    type: title
+    task:
+      id: 6faed53b-e96d-419c-8c2a-9695d67ac30b
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value:
+    complex:
+      root: Endpoint
+      accessor: Hostname
+  required: false
+  description: "The hostname of the machine that will be isolated."
+outputs:
+- contextPath: CbResponse.Sensors.CbSensorID
+  description: Carbon Black Response Sensors ids that has been isolated
+- contextPath: Endpoint
+  description: The isolated enpoint
+releaseNotes: "-"
+tests:
+  - Isolate_Machine_-_Generic_-_Test
