@@ -80,11 +80,11 @@ script: |-
 
           """
               Prepare regex:
-                  regexp = everything that starts with www
-                  regexp2 = ends with any compatible charachter
+                  regex_www = everything that starts with www
+                  regex_tld_ext = ends with any compatible charachter
           """
-          regexp = re.compile('(www.*)')
-          regexp2 = re.compile('[a-zA-z:\./-0-9]*[a-zA-z/]')
+          regex_www = re.compile('(www.*)')
+          regex_tld_ext = re.compile('[a-zA-z:\./-0-9]*[a-zA-z/]')
 
           # Add URLs
           URLs = []
@@ -94,11 +94,11 @@ script: |-
                   url_obj = urlparse(url)
                   url = url_obj.netloc if len(url_obj.netloc) >= len(url_obj.path) else url_obj.path
                   # Removes TLD extentions if presents
-                  temp_url = regexp2.findall(url)
+                  temp_url = regex_tld_ext.findall(url)
                   if temp_url:
                       url = temp_url[0]
                   # Find if there's a url containing www
-                  temp_url = regexp.findall(url)
+                  temp_url = regex_www.findall(url)
                   if temp_url:
                       url = url_no_www[0]
                   if len(url_obj.scheme):
