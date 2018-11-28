@@ -2491,4 +2491,4 @@ script:
   isfetch: true
 releaseNotes: "Enabled fetch incidents (alerts)"
 tests:
-- tenable-sc-test
+  - tenable-sc-test
