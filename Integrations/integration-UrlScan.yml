@@ -205,7 +205,6 @@ script:
             cont['Certificates'] = cert_ec
         url_cont['Data'] = url_query
         if 'urls' in scan_lists:
-            cont['RelatedURLs'] = scan_lists['urls']
             url_cont['Data'] = demisto.args().get('url')
             cont['URL'] = demisto.args().get('url')
         human_readable['Effective URL'] = url_query
