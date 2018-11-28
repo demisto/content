@@ -35,10 +35,10 @@ tasks:
       version: -1
       name: ip
       description: Lookup an IP address
-      script: Awake Security2|||ip
+      script: Awake Security|||ip
       type: regular
       iscommand: true
-      brand: Awake Security2
+      brand: Awake Security
     nexttasks:
       '#none#':
       - "2"
@@ -107,10 +107,10 @@ tasks:
       id: 0818cff8-b9a4-4242-8333-32bc8aa2b98d
       version: -1
       name: email
-      script: Awake Security2|||email
+      script: Awake Security|||email
       type: regular
       iscommand: true
-      brand: Awake Security2
+      brand: Awake Security
     nexttasks:
       '#none#':
       - "5"
@@ -230,10 +230,10 @@ tasks:
       version: -1
       name: domain
       description: Lookup a domain
-      script: Awake Security2|||domain
+      script: Awake Security|||domain
       type: regular
       iscommand: true
-      brand: Awake Security2
+      brand: Awake Security
     nexttasks:
       '#none#':
       - "8"
@@ -297,10 +297,10 @@ tasks:
       version: -1
       name: device
       description: Lookup a device
-      script: Awake Security2|||device
+      script: Awake Security|||device
       type: regular
       iscommand: true
-      brand: Awake Security2
+      brand: Awake Security
     nexttasks:
       '#none#':
       - "10"
@@ -495,10 +495,10 @@ tasks:
       version: -1
       name: awake-query-activities
       description: Query activities
-      script: Awake Security2|||awake-query-activities
+      script: Awake Security|||awake-query-activities
       type: regular
       iscommand: true
-      brand: Awake Security2
+      brand: Awake Security
     nexttasks:
       '#none#':
       - "16"
@@ -570,10 +570,10 @@ tasks:
       version: -1
       name: awake-query-devices
       description: Query devices
-      script: Awake Security2|||awake-query-devices
+      script: Awake Security|||awake-query-devices
       type: regular
       iscommand: true
-      brand: Awake Security2
+      brand: Awake Security
     nexttasks:
       '#none#':
       - "18"
