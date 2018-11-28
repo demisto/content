@@ -118,7 +118,7 @@ script:
 
             return res.json()
 
-        except Exception, e:
+        except Exception as e:
             LOG(e)
             raise(e)
 
@@ -132,7 +132,7 @@ script:
     def test_module():
         try:
             get_on_call_now_users_command()
-        except Exception, e:
+        except Exception as e:
             raise Exception(e.message)
 
         demisto.results('ok')
@@ -599,7 +599,7 @@ script:
             demisto.results(get_users_notification_command(**demisto.args()))
 
 
-    except Exception, e:
+    except Exception as e:
         LOG(e.message)
         LOG.print_log()
         raise
