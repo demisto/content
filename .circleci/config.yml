@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: ronykoz/content-build-node911:latest
     environment:
-      CONTENT_VERSION: "18.11.1"
+      CONTENT_VERSION: "18.11.2"
       GIT_SHA1: "a69202151d14f290307d0a19b8ae9846e1bfddb8"
     steps:
       - checkout
@@ -46,33 +46,3 @@ jobs:
           name: Download Configuration
           command: |
               ./Tests/scripts/download_demisto_conf.sh
-      - run:
-          name: Create Instance
-          command: |
-              ./Tests/scripts/create_instance.sh instance.json
-      - run:
-          name: Setup Instance
-          command: |
-              ./Tests/scripts/run_installer_on_instance.sh
-              ./Tests/scripts/wait_until_server_ready.sh
-      - run:
-          name: Run Tests
-          shell: /bin/bash
-          command: ./Tests/scripts/run_tests.sh
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: ./Tests/scripts/slack_notifier.sh
-          when: always
-      - run:
-          name: Instance Test
-          command: ./Tests/scripts/instance_test.sh
-          when: always
-      - run:
-          name: Destroy Instances
-          command: ./Tests/scripts/destroy_instances.sh $CIRCLE_ARTIFACTS
-          when: always
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
-          when: always
