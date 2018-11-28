@@ -36,11 +36,11 @@ tasks:
     task:
       id: f465dc16-210f-49cd-8549-e71fca42ec80
       version: -1
-      name: Isolate Machine - Generic
+      name: Isolate Machine - Carbon Black Enterprise Response
       description: A generic playbook for isolating machines. This playbook uses the
         different integrations available to block a connecting to and from an endpoint
         in the network.
-      playbookName: Isolate Machine - Generic
+      playbookName: Isolate Machine - Carbon Black Enterprise Response
       type: playbook
       iscommand: false
       brand: ""
