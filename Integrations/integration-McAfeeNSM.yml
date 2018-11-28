@@ -82,7 +82,7 @@ script:
 
     function attacks_to_entry(title, attacks) {
         return createEntry(attacks, {
-            contextPath : 'NSM.Attacks(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.Attacks(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'attackId'},
@@ -97,7 +97,7 @@ script:
 
     function IPS_policies_to_entry(title, ips_policies) {
         return createEntry(ips_policies, {
-            contextPath : 'NSM.IPSPolicies(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.IPSPolicies(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'policyId'},
@@ -113,7 +113,7 @@ script:
     function IPS_policy_to_entry(title, ips_policy, policy_id) {
         ips_policy.ID = policy_id;
         return createEntry([ips_policy], {
-            contextPath : 'NSM.IPSPolicies(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.IPSPolicies(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'ID'},
@@ -134,7 +134,7 @@ script:
 
     function alerts_to_entry(title, alerts) {
         return createEntry(alerts, {
-            contextPath : 'NSM.Alerts(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.Alerts(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'event.alertId'},
@@ -206,9 +206,6 @@ script:
         }
 
         var reference = {
-            // 'arachNidsId': alert.description.reference.arachNidsId,
-            // '' : alert.description.reference.bugtraqId,
-            // '' : alert.description.reference.certId,
             CVE : alert.description.reference.cveId,
             Microsoft : alert.description.reference.microsoftId,
             'Intruvert ID' : alert.description.reference.nspId,
@@ -225,7 +222,7 @@ script:
                 tableToMarkdown('Platform Affected', {Protocols : alert.description.protocals})
             ),
             EntryContext : {
-            'NSM.Alerts(val.ID && val.ID == obj.ID)' : createContext(context),
+            'NSM.Alerts(val.ID && val.ID === obj.ID)' : createContext(context),
             },
         };
         return entry;
@@ -233,7 +230,7 @@ script:
 
     function domains_to_entry(title, domains) {
         return createEntry(domains, {
-            contextPath : 'NSM.Domains(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.Domains(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'DomainDescriptor.id'},
@@ -245,7 +242,7 @@ script:
 
     function sensors_to_entry(title, sensors) {
         return createEntry(sensors, {
-            contextPath : 'NSM.Sensors(val.ID && val.ID == obj.ID)',
+            contextPath : 'NSM.Sensors(val.ID && val.ID === obj.ID)',
             title : title,
             data : [
                 {to : 'ID', from : 'sensorId'},
