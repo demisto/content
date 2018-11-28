@@ -584,3 +584,5 @@ script:
         extension will be "dontrun"
   runonce: false
 releaseNotes: '-'
+tests:
+  - SNDBOX_Test
