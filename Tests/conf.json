@@ -51,6 +51,11 @@
             "playbookID": "Detonate File - BitDam Test"
         },
         {
+            "integrations": "Threat Grid",
+            "playbookID": "ThreatGridTest",
+            "timeout": 600
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
