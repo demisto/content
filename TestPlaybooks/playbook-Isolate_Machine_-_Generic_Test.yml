@@ -1,6 +1,6 @@
 id: IsolateMachine-Generic-Test
 version: -1
-name: Test Isolate Machine - Generic
+name: IsolateMachine-Generic-Test
 description: A test for the generic machine isolation. Currently, the test is testing
   only Carbon Black Enterprise. After isolating the machine successfully, it also
   releases the machine from isolation.
