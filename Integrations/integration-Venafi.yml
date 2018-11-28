@@ -297,4 +297,4 @@ script:
       type: string
     description: Use a certificate guid to extract more details from the cert store.
 tests:
-- Forgive me for my sins but I did not create any test
+- No test - no instance

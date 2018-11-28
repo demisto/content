@@ -426,4 +426,4 @@ script:
     description: Get EC2 EBS Volume Information
 hidden: false
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test
