@@ -178,6 +178,13 @@ def validate_schema(file_path, matching_regex=None):
     return True
 
 
+def is_release_branch():
+    diff_string_config_yml = run_git_command("git diff origin/master .circleci/config.yml")
+    if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
+        return True
+
+    return False
+
 def changed_id(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
     if re.search("[+-](  )?id: .*", change_string):
@@ -296,7 +303,7 @@ def validate_committed_files(branch_name, is_circle):
         print "Validating {}".format(file_path)
         if not validate_schema(file_path):
             has_schema_problem = True
-        if not validate_file_release_notes(file_path):
+        if not is_release_branch() and not validate_file_release_notes(file_path):
             has_schema_problem = True
 
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
