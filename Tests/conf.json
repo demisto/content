@@ -10,6 +10,12 @@
             "playbookID": "SNDBOX_Test"
         },
         {
+            "integrations": "SNDBOX",
+            "playbookID": "Detonate_File_-_SNDBOX_-_Test",
+            "timeout": 1200,
+            "nightly": true
+        },
+        {
             "playbookID": "WordTokenizeTest"
         },
         {
