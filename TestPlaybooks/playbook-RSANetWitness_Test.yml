@@ -1,4 +1,4 @@
-id: 9518d013-a2f3-48a0-8c49-e4e741812be5
+id: RSA NetWitness Test
 version: 6
 name: RSA NetWitness Test
 starttaskid: "0"
@@ -32,7 +32,7 @@ tasks:
       id: 9fb87047-7c61-41ee-8d9d-2abdcc018afa
       version: -1
       name: Get incidents created on 15/03/18
-      script: RSA NetWitness v11.1|||NetWitness-get-incidents
+      script: RSA NetWitness v11.1|||netwitness-get-incidents
       type: regular
       iscommand: true
       brand: RSA NetWitness v11.1
@@ -93,7 +93,7 @@ tasks:
       id: ac5c9be3-abe0-4aa2-824b-17a73d6d79af
       version: -1
       name: Get incident
-      script: RSA NetWitness v11.1|||NetWitness-get-incident
+      script: RSA NetWitness v11.1|||netwitness-get-incident
       type: regular
       iscommand: true
       brand: RSA NetWitness v11.1
