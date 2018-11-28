@@ -137,7 +137,7 @@ script:
             contextPath : 'NSM.Alerts(val.ID && val.ID == obj.ID)',
             title : title,
             data : [
-                {to : 'ID', from : 'uniqueAlertId'},
+                {to : 'ID', from : 'event.alertId'},
                 {to : 'Name', from : 'name'},
                 {to : 'State', from : 'alertState'},
                 {to : 'CreatedTime', from : 'event.time'},
@@ -145,6 +145,7 @@ script:
                 {to : 'AttackSeverity', from : 'attackSeverity'},
                 {to : 'Application', from : 'application'},
                 {to : 'EventResult', from : 'event.result'},
+                {to : 'SensorID', from : 'detection.deviceId'},
 
                 {to : 'Event', from : 'event', humanReadable : false},
                 {to : 'Event.domain', from : 'detection.domain', humanReadable : false},
@@ -162,28 +163,72 @@ script:
 
     function alert_to_entry(title, alert) {
         /// single alert object has different structure than the alerts of alerts_to_entry.
-        return createEntry([alert], {
-            contextPath : 'NSM.Alerts(val.ID && val.ID == obj.ID)',
-            title : title,
-            data : [
-                {to : 'ID', from : 'uniqueAlertId'},
-                {to : 'Name', from : 'name'},
-                {to : 'State', from : 'alertState'},
-                {to : 'CreatedTime', from : 'summary.event.time'},
-                {to : 'Assignee', from : 'assignTo'},
-                {to : 'Description', from : 'description.definition'},
-                {to : 'EventResult', from : 'summary.event.result'},
+        var context = {
+            ID : alert.summary.event.alertId,
+            Name : alert.name,
+            State : alert.alertState,
+            CreatedTime : alert.summary.event.time,
+            Assignee : alert.assignTo,
+            Description : alert.description.definition,
+            EventResult : alert.summary.event.result,
+            Attack : {
+                attackCategory : alert.description.attackCategory,
+                attackSubCategory : alert.description.attackSubCategory,
+                nspId : alert.description.reference.nspId, // no human readable
+            },
+            Protocols : alert.description.protocals,
 
-                {to : 'Event', from : 'summary.event', humanReadable : false},
-                {to : 'Attack.nspId', from : 'description.referance.nspId', humanReadable : false},
-                {to : 'Attack.attackCategory', from : 'description.attackCategory', humanReadable : false},
-                {to : 'Attacker', from : 'summary.attacker', humanReadable : false},
-                {to : 'Target', from : 'summary.target', humanReadable : false},
-                {to : 'MalwareFile', from : 'details.malwareFile', humanReadable : false},
-                {to : 'Details', from : 'details', humanReadable : false},
-            ],
-        },
-        undefined, pascalToSpace);
+            // no human readable
+            SensorID : alert.summary.event.deviceId,
+            Event : alert.summary.event,
+            Attacker : alert.summary.attacker,
+            Target : alert.summary.target,
+            MalwareFile : alert.details.malwareFile,
+            Details : alert.details,
+        };
+
+        var headers = ['ID', 'Name', 'Attack Category', 'Attack SubCategory', 'Description', 'State', 'Assignee', 'CreatedTime', 'EventResult', 'Comments'];
+        var md = {
+            ID : alert.summary.event.alertId,
+            Name : alert.name,
+            State : alert.alertState,
+            CreatedTime : alert.summary.event.time,
+            Assignee : alert.assignTo,
+            Description : alert.description.definition,
+            EventResult : alert.summary.event.result,
+            'Attack Category' : alert.description.attackCategory,
+            'Attack SubCategory' : alert.description.attackSubCategory,
+            Comments : alert.description.comments.comments,
+        };
+        var links = alert.description.reference.additionInfo.split('<BR>');
+        for (var i in links) {
+            links[i] = '[{0}]({0})'.format(links[i]);
+        }
+
+        var reference = {
+            // 'arachNidsId': alert.description.reference.arachNidsId,
+            // '' : alert.description.reference.bugtraqId,
+            // '' : alert.description.reference.certId,
+            CVE : alert.description.reference.cveId,
+            Microsoft : alert.description.reference.microsoftId,
+            'Intruvert ID' : alert.description.reference.nspId,
+            'Additional Info' : links.join('<br>'),
+        };
+
+        var entry = {
+            Type: entryTypes.note,
+            Contents: alert,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable : (tableToMarkdown(title, md, headers) +
+                tableToMarkdown('Reference', reference) +
+                tableToMarkdown('Platform Affected', {Protocols : alert.description.protocals})
+            ),
+            EntryContext : {
+            'NSM.Alerts(val.ID && val.ID == obj.ID)' : createContext(context),
+            },
+        };
+        return entry;
     }
 
     function domains_to_entry(title, domains) {
