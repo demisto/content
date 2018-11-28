@@ -1,4 +1,4 @@
-id: Isolate_Machine_-_Generic_-_Test
+id: IsolateMachine-Generic-Test
 version: -1
 name: Test Isolate Machine - Generic
 description: A test for the generic machine isolation. Currently, the test is testing
