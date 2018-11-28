@@ -72,10 +72,10 @@ tasks:
       name: Isolate hostname
       description: Isolates the machine from the network, using Carbon Black Enterprise
         Response.
-      script: carbonblack-v2|||cb-quarantine-device
+      script: '|||cb-quarantine-device'
       type: regular
       iscommand: true
-      brand: carbonblack-v2
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -254,7 +254,7 @@ inputs:
     complex:
       root: inputs.Hostname
   required: false
-  description: "The hostname of the machine that will be isolated."
+  description: The hostname of the machine that will be isolated.
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
   description: Carbon Black Response Sensors ids that has been isolated
