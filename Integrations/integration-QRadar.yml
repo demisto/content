@@ -571,12 +571,16 @@ script:
 
     # Helper method: For a single offense replaces the source and destination ids with the actual addresses
     def enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs):
-        if 'source_address_ids' in offense and isinstance(offense['source_address_ids'], list):
+        if isinstance(offense.get('source_address_ids'), list):
             for i in range(len(offense['source_address_ids'])):
                 offense['source_address_ids'][i] = src_adrs[offense['source_address_ids'][i]]
-        if 'local_destination_address_ids' in offense and isinstance(offense['local_destination_address_ids'], list):
+        if isinstance(offense.get('local_destination_address_ids'), list):
             for i in range(len(offense['local_destination_address_ids'])):
                 offense['local_destination_address_ids'][i] = dst_adrs[offense['local_destination_address_ids'][i]]
+            if int(offense.get('remote_destination_count', 0)) > 0:
+                remote_destination = get_remote_destination_address(offense.get('id'))
+                if remote_destination:
+                    offense['local_destination_address_ids'].append(remote_destination)
 
         return None
 
@@ -695,12 +699,8 @@ script:
             for ip_address in interface['ip_addresses']:
                 endpoint_dict['IPAddress'].append(ip_address['value'])
         if full_values:
-        # Trying to get Domain name via search in QRadar
-            try:
-                domain_name = get_domain_name(asset['domain_id'])
-                trans_assets['Domain'].append(domain_name)
-            except:
-                pass
+            domain_name = get_domain_name(asset['domain_id'])
+            trans_assets['Domain'].append(domain_name)
         # Adding values found in properties of the asset
         enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
         return asset_dict
@@ -728,9 +728,20 @@ script:
 
     # Retrieves domain name using domain id
     def get_domain_name(domain_id):
-      query_param = {'query_expression': "SELECT DOMAINNAME({0}) AS 'Domain name' FROM events GROUP BY 'Domain name'".format(domain_id)}
-      search_id = search(query_param)['search_id']
-      return get_search_results(search_id)['events'][0]['Domain name']
+        try:
+            query_param = {'query_expression': "SELECT DOMAINNAME({0}) AS 'Domain name' FROM events GROUP BY 'Domain name'".format(domain_id)}
+            search_id = search(query_param)['search_id']
+            return get_search_results(search_id)['events'][0]['Domain name']
+        except:
+            return domain_id
+
+    def get_remote_destination_address(offense_id):
+        try:
+            query_param = {'query_expression': 'SELECT destinationip FROM events WHERE inOffense({0}) GROUP BY destinationip'.format(offense_id)}
+            search_id = search(query_param)['search_id']
+            return get_search_results(search_id)['events'][0]['destinationip']
+        except:
+            return None
 
     def get_closing_reasons_command():
         args = demisto.args()
@@ -1795,5 +1806,6 @@ script:
     description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
+releaseNotes: Added support for fetching remote destination addresses.
 tests:
   - test_Qradar
