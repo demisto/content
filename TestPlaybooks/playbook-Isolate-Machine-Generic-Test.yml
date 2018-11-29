@@ -31,16 +31,16 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: f465dc16-210f-49cd-8549-e71fca42ec80
+    taskid: 07a13c11-af82-4f3b-8dae-a4de8d53aec5
     type: playbook
     task:
-      id: f465dc16-210f-49cd-8549-e71fca42ec80
+      id: 07a13c11-af82-4f3b-8dae-a4de8d53aec5
       version: -1
-      name: Isolate Machine - Carbon Black Enterprise Response
+      name: Isolate Machine - Generic
       description: A generic playbook for isolating machines. This playbook uses the
-        different integrations available to block a connecting to and from an endpoint
+        different integrations available to block connections to and from an endpoint
         in the network.
-      playbookName: Isolate Machine - Carbon Black Enterprise Response
+      playbookName: Isolate Machine - Generic
       type: playbook
       iscommand: false
       brand: ""
@@ -50,8 +50,8 @@ tasks:
     scriptarguments:
       Hostname:
         complex:
-          root: ${Endpoint
-          accessor: Hostname}
+          root: Endpoint
+          accessor: Hostname
     separatecontext: true
     loop:
       iscommand: false
@@ -67,10 +67,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 548a111f-6673-4d14-8c50-eac5cb0b138c
+    taskid: ba09cc47-327e-4494-8c1f-1c7206cfc2e7
     type: regular
     task:
-      id: 548a111f-6673-4d14-8c50-eac5cb0b138c
+      id: ba09cc47-327e-4494-8c1f-1c7206cfc2e7
       version: -1
       name: Release machine from isolation - Carbon Black Enterprise Response
       description: Releases a machine from isolation, using Carbon Black Enterprise
@@ -87,6 +87,7 @@ tasks:
         complex:
           root: CbResponse
           accessor: Sensors.CbSensorID
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -106,7 +107,6 @@ tasks:
       name: Done
       description: ""
       type: title
-      description: ""
       iscommand: false
       brand: ""
     separatecontext: false
@@ -120,10 +120,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 29eb9eaf-5184-43ad-8392-b3699466d83d
+    taskid: f0d23815-7f28-479d-8e0b-b5bbdf305142
     type: regular
     task:
-      id: 29eb9eaf-5184-43ad-8392-b3699466d83d
+      id: f0d23815-7f28-479d-8e0b-b5bbdf305142
       version: -1
       name: Set hostname for isolation in context
       scriptName: Set

@@ -30,10 +30,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: aee7ab97-9183-435b-874f-f2f8c2390581
+    taskid: fce0d008-62e1-4abe-86e6-bda7a3f03354
     type: regular
     task:
-      id: aee7ab97-9183-435b-874f-f2f8c2390581
+      id: fce0d008-62e1-4abe-86e6-bda7a3f03354
       version: -1
       name: Get host information from Carbon Black Enterprise Response
       description: Gets the sensor ID of the hostname that is about to be isolated.
@@ -45,11 +45,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "8"
     scriptarguments:
       groupid: {}
       hostname:
-        simple: ${inputs.Hostname}
+        complex:
+          root: inputs.Hostname
       ip: {}
       sensor: {}
     reputationcalc: 2
@@ -58,16 +59,16 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 560
+          "y": 545
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 15c82f2b-6e4a-4198-808d-f5361cc4acf0
+    taskid: f9c9ab5d-ec58-4926-8819-49acce756b77
     type: regular
     task:
-      id: 15c82f2b-6e4a-4198-808d-f5361cc4acf0
+      id: f9c9ab5d-ec58-4926-8819-49acce756b77
       version: -1
       name: Isolate hostname
       description: Isolates the machine from the network, using Carbon Black Enterprise
@@ -100,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 780
+          "y": 920
         }
       }
     note: false
@@ -121,7 +122,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1030
+          "y": 1300
         }
       }
     note: false
@@ -214,10 +215,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: 92664db0-5049-430c-8103-9397db3e766f
+    taskid: e95eae9b-29c1-4101-89d3-31f91c2ebab9
     type: title
     task:
-      id: 92664db0-5049-430c-8103-9397db3e766f
+      id: e95eae9b-29c1-4101-89d3-31f91c2ebab9
       version: -1
       name: Integration disabled / No endpoint given
       description: ""
@@ -231,8 +232,77 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 560
+          "x": 790,
+          "y": 455
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 7365eb28-9ff9-4aad-8306-5fea8c178fc6
+    type: condition
+    task:
+      id: 7365eb28-9ff9-4aad-8306-5fea8c178fc6
+      version: -1
+      name: Is endpoint available for isolation?
+      description: Checks if the endpoint can be isolated, by checking whether a corresponding
+        sensor for the endpoint was retrieved,  and whether the endpoint is not already
+        isolated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CbResponse
+                accessor: Sensors.CbSensorID
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              complex:
+                root: CbResponse
+                accessor: Sensors.Isolated
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 710
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 2eed236d-2870-4d03-8680-01f6769ac05d
+    type: title
+    task:
+      id: 2eed236d-2870-4d03-8680-01f6769ac05d
+      version: -1
+      name: No sensor found / Already Isolated
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 920
         }
       }
     note: false
@@ -241,8 +311,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1045,
-        "width": 887.5,
+        "height": 1315,
+        "width": 1007.5,
         "x": 162.5,
         "y": 50
       }
