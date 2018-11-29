@@ -3298,13 +3298,5 @@ script:
     description: Query the sys_user table in ServiceNow
   isfetch: true
   runonce: false
-releaseNotes: "Added ability to get,update,create and delete records from any table generically in addition to tickets.
-      the commands are separated in the following way:
-      servicenow-get -> servicenow-get-ticket, servicenow-get-record
-      servicenow-create -> servicenow-create-ticket, servicenow-create-record
-      servicenow-update -> servicenow-update-ticket, servicenow-update-record,
-      servicenow-query -> servicenow-query-tickets, servicenow-query-table
-      Added a command to view all API fields of a given table.
-      Added commands to query computers, groups and users. Also output improvements."
 tests:
-  - 'Forgive me for my sins but I did not create any test'
+  - No test - No instance

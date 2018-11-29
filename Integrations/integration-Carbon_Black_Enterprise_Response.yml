@@ -1841,6 +1841,5 @@ script:
     description: Retrieve watchlist in Carbon black Response.
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
   - CarbonBlackResponseTest
