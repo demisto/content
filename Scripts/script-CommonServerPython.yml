@@ -1232,6 +1232,9 @@ script: |-
          :return: The converted string (e.g. HelloWorld)
          :rtype: ``str``
       """
+      if not isinstance(s, STRING_TYPES):
+          return s
+
       components = s.split('_')
       return ''.join(x.title() for x in components)
 
@@ -1247,6 +1250,9 @@ script: |-
          :return: The converted string
          :rtype: ``str``
       """
+
+      if not isinstance(s, STRING_TYPES):
+          return s
 
       tokens = PASCAL_REGEX.findall(s)
       for t in tokens:
