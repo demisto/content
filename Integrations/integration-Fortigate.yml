@@ -1376,6 +1376,5 @@ script:
       type: boolean
     description: Delete an address group from FortiGate firewall
   runonce: false
-releaseNotes: "New integration with CRUD options for policy, services groups, services and address groups."
 tests:
   - Fortigate Test
