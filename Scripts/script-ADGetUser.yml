@@ -137,13 +137,12 @@ script: |-
       args['size-limit'] = limit
       if using:
           args['using'] = using
-      if not queryType == "distinguishedName":
-          filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType, queryValue)
-          args['filter'] = filterstr
-          args['attributes'] = attrs
-          resp = demisto.executeCommand('ad-search', args)
-          if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
-              return resp
+      filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType, queryValue)
+      args['filter'] = filterstr
+      args['attributes'] = attrs
+      resp = demisto.executeCommand('ad-search', args)
+      if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
+          return resp
       if nested:
           for index,user in enumerate(resp[0]['Contents']):
               memberOf = getGroups(user["dn"])
@@ -249,7 +248,6 @@ args:
 - name: headers
   description: The columns headers to show by order
 - name: nestedSearch
-  deprecated: true
   auto: PREDEFINED
   predefined:
   - "true"
