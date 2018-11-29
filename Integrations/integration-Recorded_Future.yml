@@ -859,4 +859,3 @@ script:
       type: string
     description: Look up threat intel context for an indicator in Recorded Future.
   runonce: false
-releaseNotes: "Improved error message returned for an IOC which does not exist in Recorded Future"

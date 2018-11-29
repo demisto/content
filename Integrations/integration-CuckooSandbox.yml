@@ -2,7 +2,6 @@ commonfields:
   id: Cuckoo Sandbox
   version: -1
 name: Cuckoo Sandbox
-releaseNotes: Fix edge case that might fail on empty results
 display: Cuckoo Sandbox
 category: Forensics & Malware Analysis
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHMAAAAmCAQAAABdCWwpAAALCklEQVQYGd3BC1wNhuIH8N85R3XO6Tk91OmtN51U64XyyJBVjHKEXlKJJCerqEi0KSyPJI9SE3U91qa1IeyGz5VlK4zRvWb3ugxjd8IUld+/e/5dn33andnn436u2/cL9FH5gn1GaamLoouF8bqrtdBXrXVJXmfc0f9G+GavI/NW4n/BUdMPRPgd6qSb7dPyou/7Uo2g+eXgSXjVzTNMTzrgdUqAF1ZnW/XG6svhbYPZn8YXUpbmW+NlKjXfoFgzNlmKl6ZZcmDUuK0z7x+cfk6EF1I9sGLaBweTn3jQ6qbHzpWhtTp42WTTRcTjsLwTQrwU2zQm57jQgJ5csPq0GM+Rr+M7Ole5P3TV2qpDFfSh5Rm7ZXuc8Z9hOU1C0LHxpAQvxdIoyV0QBP13NYrwM+X2vpN95szJm14UVjR1S9zOjMP63wup5DHm0eBBaEHeYPznWCkkBOVnj4vxElRbyC46MZ2lLKDtvSkb1srQrV47bJZdhWuL30/jOYre9OcCHuZ2anANGxlAnRuBEdVC/HsThRt8wt51/NCmdmh5dnylEbpt11wRGZc+7+3dg6ESJ0gbtChlvvJUf3QL1k2NGVY2sNapOjL/LZ9sEbpZKiQE5U0nxOi22FSZMjtjRs66EGClaOPQkHynD60OelYsSygagGem6mXO8ikf+IldTWBBpe+nIjyzauqbj3awlsU8wy3c2ZqzRLk4uMC82a4jhcd5mw/Zxkds5z8F04cH6UTh9ay38GsWq7+RqnUXBEEQHNS4xAdQGA1uBkWcMxsqEcaux0GNzjIP4JCD80k8BkEQFN2NXH1KAzBSSAjKm06Iga16w/aDoPm5zT7vi8dnSH8AQRAEnU6/7QGVgw7OJ/AEBEFQ0Ba+6qg6sEU7wDNG+drD+Uziu8znNT4l2c7jLGQRW9hbKaWMoQO1bi+fiF9TKEiOEt8H8cTmyuufS34AQZvmWsNZuq4NoFrXggiouNrI/g6KH9UOajByPQaC4nvujfYX0QmCi9KAAQoJQeem0+qHxJML0QVanU/xAJRxGvdB0Ogbt0bRPRB0aKg2AT6XDakHQbV7Ll8OvIQOEF3J84HN9hmpkQWhJVNvVPIm2/l8lTSiLR2o+f2CCPy63foOZ0AhnbcFOMyXbfSz+BoEo5ZG93c7Bap1JUVAxdva/CoouX9SK3sGCJp8Mz001jR+YPRKdIJ617JMjEMkBIecBhYtRCcouxw3Ejg0wO5LEJy0Y7VjlOydif3/CoKJS4AlcSAouzR2arh5lG1QETrA/n/fYl+o8XE/dIs9PJvl/Bv/qZNP+UtfcS41KGMQxT/OTMbzlI3CY9D462YDqBxxzInKjSwcFWnodgpU60qKgIq3tflVUKv1o/zgH0EBFTlQ+Vi8KXhF5NqZW6SGoRKC8vbUq5J20PhyVCC6VY3AE9CkuUUfKplxeAI61AFBFaDo6aQlUNkiG9wIihmWiG6l4ux5fof9avSvj+Z1dvILtvE+u/gvD3mC8zmAoB5X0/mh14oEEZ4nIxEER1ehl3BD1wZQrSspAire1uZXQZ3W8vfdCIof5wagFwOFhKAG1QiCQQVQWZYEgiPK0CPbUfc70PjCfl/3s6Dug1w/9IgqBsEZBeiWHZkQ/4UxkDkB9GUE3yF5hO/xAx5hJbPoT02CoClrWMJRexJFeL6ELBAM2YBeZhi6NYBqXUkRUPG2Nr8K6rZuLXUiqPlT+evoxVQhIQiCIGhztsQG3ZKWguCEtegxxsamBTS4W7x3EMHX/lHqgh7KfBCctA8oFyyzhUq2tstZ8DX+ieQDbqScIAiCoBVjeZb321I3HzLAb0nMAMHJhehluqFrA6jWlRQBFS9r86ugTuu2HYMJaj4q8UIvpgoJQbVHluckt0BwzNrLasDCDBAcXYgeo+2sroAGd7ZVORPUu1fogR5Ja0BwchV+5m3BnBCd+7b8hv/vL9zFTKZwOat4gd0e7F6wywS/LScOBL2r0UuUgfspUL1LOQMqQy3MvwF17u0u9uwCxU8y3kIvRgoJwSEXsoycs/sRlNytdgfyIkDQbR96ZMqld0DjKx+7ezWCWm3KIPRQlIFg+Br04h/f/0cH1rKLvbW3Vy3YYYkXsdcDD0Hta/VyqETapi+am50es0R71EFQwEVKqCiHSO+C+he/1FNsA8GRm9Fj06SEbGXmO5YmU6QEXb8A9g0wbQbB4QeALBfRI1C3pckCKonp6ACdjwMhZSA4bhVUNtoMvACKO+Oi8QvJ41xP6nYG80NeZSs72ck7/JTvUbm90Akvplbb+xAIetQv8Q92c55gdwIEw947IpydD4L2TakBiy0Unr770Ala/xFYP0nQCerd9lk81ivUe3YOHoOaN2IG6k2REpQ3nRQDi+ajE0TbyiClts8JEHxjb65XtF1alNYtEMxQArmzQdD46qi4SMeZ7v470QHKWnbI8G98phUT9+aeIV9PuDPrYTxj6cUhtKBfBV7cqnF6N0FQ/aH1Ne12EHT4/IApsNdN/1sQlLS6Npt+B4LoWBYOXNEO2AmCeGp20/gWCKIzWQlEThMRlDefEAOHdWwbQNCs8YBG7jIpQVD3puMlPAZBr/qjOsBF/RG1IChss28xuQ6C6FoZjedYYjdi+OSxoaXW7Y5UcDiH1X8kw4taJ4wJtfxKRBAE+3WNrs4ahG6fCLLGuB4RtYIgKKL+11nxp0Xodl43oER0T0AQFFLrSmrSsX7A+hlCiuhy9qgmuhUHog3E04CLHysz9ts+FhAEwX5d4z7Kt4FKs8GEXRqPBARBEV+7njO3QYDfVG+U/5cJ/ANLGfg4MQG/R7XZgjnD1nsUBazcFFCngWcmqOcFTMx5vWjke9mz0mR4JlG43j9wpUfR0A0Lk2JtoPKJbVJc4pz8iX8WoNs50ZR1IAiGtOeGAtkRgUXysrF52wOOqeOZLOEe37Dl40uCCtPiZxihx1ZRnsYySaY0W7JGHb9wSGfptwmXzl2r4syKz/Xw37baZOgeEARdzsjHfybEc2UZB7pajcuOXpwZsyGkYvyBkXV+n408Mq5GUbY4x2Xamx7HRFDZZJeyfn45UB03u77OCK+CJLPx29EBgjodwTUxc1a5XRHjZ87rFLgEhRqmjdwy9qhTi8FP0nbNVqNbjl95nfT/NHDv5F1TKiZVvlHj9ifnS+bfBn5Y4QVUBsz9tG4WUOeSsWLF6MsCvBo2SHNmm5zHUxAEzW55nPOrdNjmXigvtqwYXON2zuq6wT39W0Yt3rXh67ITd/p7DBpvmWCYo7NJXCmESqlatu5Eq9XB0luO389vGHR70THghvPW0mnxxep4laQbvRvpVm7X2P8HzTbxE+0241azOzZNFnWvV0zNyYr+yC/W2EIrSg2/YUWk1hMNCjny0eHbDQ9C7ua641XUpLXHboP3muEFw8rkdWaHpPidjqqlBQ1/23Wp5nd+9KW0c3rEcNcgefDgCU6jhoQO2qWLvmVGESj8h8tpx6Zhp/yPeDaY/VV+ZnyNomrs0pRh6Dt220zbGrZuruVwFxdPT/chYywvjKkOcrUbs3xhWOmYFQdk6CuW91OK8Uy0v32TciC6jdCfNzV2TbEL+qIaoV/FxGL0OGob+06pHH1RkZfsfIobehyzXRV32AJ90UKl57F0C/So0t9viL6oXBSab1u/e1iJGvq6zFj58fCS1ClG7mPsY8z+IEVftdfKOn3s+4qdMRvnrMvKSZ6e7Ia+6hNhiUG+xVy5t/+0KZsSMid9YIa+brdWutkpQ6j8H9eRlAwxDod1AAAAAElFTkSuQmCC
@@ -294,7 +293,7 @@ script:
             Contents: result,
             ContentsFormat: formats.json,
             HumanReadable: tblToMdWithTransform('Task Table', result.task, undrscrToCamelCase),
-            EntryContext: {'Cuckoo.Task' : jsonToEntity(result.task, entityMap.Task)}
+            EntryContext: {'Cuckoo.Task(val.ID === obj.ID)' : jsonToEntity(result.task, entityMap.Task)}
         };
     };
 
@@ -432,7 +431,7 @@ script:
     - name: options
       description: ' (optional) - options to pass to the analysis package'
     outputs:
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
     description: commands.server.ckFile.description
   - name: cuckoo-create-task-from-file
@@ -463,7 +462,7 @@ script:
     - name: options
       description: ' (optional) - options to pass to the analysis package'
     outputs:
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
     description: commands.server.ckFile.description
   - name: ck-report
@@ -474,45 +473,45 @@ script:
       default: true
       description: commands.server.ckReport.arguments.id.description
     outputs:
-    - contextPath: Task.Category
+    - contextPath: Cuckoo.Task.Category
       description: Category of task
-    - contextPath: Task.Machine
+    - contextPath: Cuckoo.Task.Machine
       description: Machine of task
-    - contextPath: Task.Errors
+    - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Task.Traget
-      description: Traget of task
-    - contextPath: Task.Package
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
+    - contextPath: Cuckoo.Task.Package
       description: Package of task
-    - contextPath: Task.SampleID
+    - contextPath: Cuckoo.Task.SampleID
       description: Sample ID of task
-    - contextPath: Task.Guest
+    - contextPath: Cuckoo.Task.Guest
       description: Task guest
-    - contextPath: Task.Custom
+    - contextPath: Cuckoo.Task.Custom
       description: Custom values of task
-    - contextPath: Task.Owner
+    - contextPath: Cuckoo.Task.Owner
       description: Task owner
-    - contextPath: Task.Priority
+    - contextPath: Cuckoo.Task.Priority
       description: Priority of task
-    - contextPath: Task.Platform
+    - contextPath: Cuckoo.Task.Platform
       description: Platform of task
-    - contextPath: Task.Options
+    - contextPath: Cuckoo.Task.Options
       description: Task options
-    - contextPath: Task.Status
+    - contextPath: Cuckoo.Task.Status
       description: Task status
-    - contextPath: Task.EnforceTimeout
+    - contextPath: Cuckoo.Task.EnforceTimeout
       description: Is timeout of task enforced
-    - contextPath: Task.Timeout
+    - contextPath: Cuckoo.Task.Timeout
       description: Task timeout
-    - contextPath: Task.Memory
+    - contextPath: Cuckoo.Task.Memory
       description: Task memory
-    - contextPath: Task.Tags
+    - contextPath: Cuckoo.Task.Tags
       description: Task tags
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
-    - contextPath: Task.AddedOn
+    - contextPath: Cuckoo.Task.AddedOn
       description: Date on which the task was added
-    - contextPath: Task.CompletedOn
+    - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
     description: commands.server.ckReport.description
   - name: cuckoo-get-task-report
@@ -522,138 +521,138 @@ script:
       default: true
       description: commands.server.ckReport.arguments.id.description
     outputs:
-    - contextPath: Task.Category
+    - contextPath: Cuckoo.Task.Category
       description: Category of task
-    - contextPath: Task.Machine
+    - contextPath: Cuckoo.Task.Machine
       description: Machine of task
-    - contextPath: Task.Errors
+    - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Task.Traget
-      description: Traget of task
-    - contextPath: Task.Package
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
+    - contextPath: Cuckoo.Task.Package
       description: Package of task
-    - contextPath: Task.SampleID
+    - contextPath: Cuckoo.Task.SampleID
       description: Sample ID of task
-    - contextPath: Task.Guest
+    - contextPath: Cuckoo.Task.Guest
       description: Task guest
-    - contextPath: Task.Custom
+    - contextPath: Cuckoo.Task.Custom
       description: Custom values of task
-    - contextPath: Task.Owner
+    - contextPath: Cuckoo.Task.Owner
       description: Task owner
-    - contextPath: Task.Priority
+    - contextPath: Cuckoo.Task.Priority
       description: Priority of task
-    - contextPath: Task.Platform
+    - contextPath: Cuckoo.Task.Platform
       description: Platform of task
-    - contextPath: Task.Options
+    - contextPath: Cuckoo.Task.Options
       description: Task options
-    - contextPath: Task.Status
+    - contextPath: Cuckoo.Task.Status
       description: Task status
-    - contextPath: Task.EnforceTimeout
+    - contextPath: Cuckoo.Task.EnforceTimeout
       description: Is timeout of task enforced
-    - contextPath: Task.Timeout
+    - contextPath: Cuckoo.Task.Timeout
       description: Task timeout
-    - contextPath: Task.Memory
+    - contextPath: Cuckoo.Task.Memory
       description: Task memory
-    - contextPath: Task.Tags
+    - contextPath: Cuckoo.Task.Tags
       description: Task tags
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
-    - contextPath: Task.AddedOn
+    - contextPath: Cuckoo.Task.AddedOn
       description: Date on which the task was added
-    - contextPath: Task.CompletedOn
+    - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
-    - contextPath: Task.Score
+    - contextPath: Cuckoo.Task.Score
       description: Reported score of the the task
-    - contextPath: Task.Monitor
+    - contextPath: Cuckoo.Task.Monitor
       description: Monitor of the reported task
     description: commands.server.ckReport.description
   - name: ck-list
     deprecated: true
     arguments: []
     outputs:
-    - contextPath: Task.Category
+    - contextPath: Cuckoo.Task.Category
       description: Category of task
-    - contextPath: Task.Machine
+    - contextPath: Cuckoo.Task.Machine
       description: Machine of task
-    - contextPath: Task.Errors
+    - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Task.Traget
-      description: Traget of task
-    - contextPath: Task.Package
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
+    - contextPath: Cuckoo.Task.Package
       description: Package of task
-    - contextPath: Task.SampleID
+    - contextPath: Cuckoo.Task.SampleID
       description: Sample ID of task
-    - contextPath: Task.Guest
+    - contextPath: Cuckoo.Task.Guest
       description: Task guest
-    - contextPath: Task.Custom
+    - contextPath: Cuckoo.Task.Custom
       description: Custom values of task
-    - contextPath: Task.Owner
+    - contextPath: Cuckoo.Task.Owner
       description: Task owner
-    - contextPath: Task.Priority
+    - contextPath: Cuckoo.Task.Priority
       description: Priority of task
-    - contextPath: Task.Platform
+    - contextPath: Cuckoo.Task.Platform
       description: Platform of task
-    - contextPath: Task.Options
+    - contextPath: Cuckoo.Task.Options
       description: Task options
-    - contextPath: Task.Status
+    - contextPath: Cuckoo.Task.Status
       description: Task status
-    - contextPath: Task.EnforceTimeout
+    - contextPath: Cuckoo.Task.EnforceTimeout
       description: Is timeout of task enforced
-    - contextPath: Task.Timeout
+    - contextPath: Cuckoo.Task.Timeout
       description: Task timeout
-    - contextPath: Task.Memory
+    - contextPath: Cuckoo.Task.Memory
       description: Task memory
-    - contextPath: Task.Tags
+    - contextPath: Cuckoo.Task.Tags
       description: Task tags
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
-    - contextPath: Task.AddedOn
+    - contextPath: Cuckoo.Task.AddedOn
       description: Date on which the task was added
-    - contextPath: Task.CompletedOn
+    - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
     description: commands.server.ckList.description
   - name: cuckoo-list-tasks
     arguments: []
     outputs:
-    - contextPath: Task.Category
+    - contextPath: Cuckoo.Task.Category
       description: Category of task
-    - contextPath: Task.Machine
+    - contextPath: Cuckoo.Task.Machine
       description: Machine of task
-    - contextPath: Task.Errors
+    - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Task.Traget
-      description: Traget of task
-    - contextPath: Task.Package
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
+    - contextPath: Cuckoo.Task.Package
       description: Package of task
-    - contextPath: Task.SampleID
+    - contextPath: Cuckoo.Task.SampleID
       description: Sample ID of task
-    - contextPath: Task.Guest
+    - contextPath: Cuckoo.Task.Guest
       description: Task guest
-    - contextPath: Task.Custom
+    - contextPath: Cuckoo.Task.Custom
       description: Custom values of task
-    - contextPath: Task.Owner
+    - contextPath: Cuckoo.Task.Owner
       description: Task owner
-    - contextPath: Task.Priority
+    - contextPath: Cuckoo.Task.Priority
       description: Priority of task
-    - contextPath: Task.Platform
+    - contextPath: Cuckoo.Task.Platform
       description: Platform of task
-    - contextPath: Task.Options
+    - contextPath: Cuckoo.Task.Options
       description: Task options
-    - contextPath: Task.Status
+    - contextPath: Cuckoo.Task.Status
       description: Task status
-    - contextPath: Task.EnforceTimeout
+    - contextPath: Cuckoo.Task.EnforceTimeout
       description: Is timeout of task enforced
-    - contextPath: Task.Timeout
+    - contextPath: Cuckoo.Task.Timeout
       description: Task timeout
-    - contextPath: Task.Memory
+    - contextPath: Cuckoo.Task.Memory
       description: Task memory
-    - contextPath: Task.Tags
+    - contextPath: Cuckoo.Task.Tags
       description: Task tags
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
-    - contextPath: Task.AddedOn
+    - contextPath: Cuckoo.Task.AddedOn
       description: Date on which the task was added
-    - contextPath: Task.CompletedOn
+    - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
     description: commands.server.ckList.description
   - name: ck-url
@@ -664,7 +663,7 @@ script:
       default: true
       description: URL to analyze
     outputs:
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
     description: Submit a URL for analysis
   - name: cuckoo-create-task-from-url
@@ -674,7 +673,7 @@ script:
       default: true
       description: URL to analyze
     outputs:
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
     description: Submit a URL for analysis
   - name: ck-view
@@ -685,45 +684,45 @@ script:
       default: true
       description: commands.server.ckView.arguments.id.description
     outputs:
-    - contextPath: Task.Category
+    - contextPath: Cuckoo.Task.Category
       description: Category of task
-    - contextPath: Task.Machine
+    - contextPath: Cuckoo.Task.Machine
       description: Machine of task
-    - contextPath: Task.Errors
+    - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Task.Traget
-      description: Traget of task
-    - contextPath: Task.Package
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
+    - contextPath: Cuckoo.Task.Package
       description: Package of task
-    - contextPath: Task.SampleID
+    - contextPath: Cuckoo.Task.SampleID
       description: Sample ID of task
-    - contextPath: Task.Guest
+    - contextPath: Cuckoo.Task.Guest
       description: Task guest
-    - contextPath: Task.Custom
+    - contextPath: Cuckoo.Task.Custom
       description: Custom values of task
-    - contextPath: Task.Owner
+    - contextPath: Cuckoo.Task.Owner
       description: Task owner
-    - contextPath: Task.Priority
+    - contextPath: Cuckoo.Task.Priority
       description: Priority of task
-    - contextPath: Task.Platform
+    - contextPath: Cuckoo.Task.Platform
       description: Platform of task
-    - contextPath: Task.Options
+    - contextPath: Cuckoo.Task.Options
       description: Task options
-    - contextPath: Task.Status
+    - contextPath: Cuckoo.Task.Status
       description: Task status
-    - contextPath: Task.EnforceTimeout
+    - contextPath: Cuckoo.Task.EnforceTimeout
       description: Is timeout of task enforced
-    - contextPath: Task.Timeout
+    - contextPath: Cuckoo.Task.Timeout
       description: Task timeout
-    - contextPath: Task.Memory
+    - contextPath: Cuckoo.Task.Memory
       description: Task memory
-    - contextPath: Task.Tags
+    - contextPath: Cuckoo.Task.Tags
       description: Task tags
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
-    - contextPath: Task.AddedOn
+    - contextPath: Cuckoo.Task.AddedOn
       description: Date on which the task was added
-    - contextPath: Task.CompletedOn
+    - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
     description: commands.server.ckView.description
   - name: cuckoo-view-task
@@ -733,45 +732,45 @@ script:
       default: true
       description: commands.server.ckView.arguments.id.description
     outputs:
-    - contextPath: Task.Category
+    - contextPath: Cuckoo.Task.Category
       description: Category of task
-    - contextPath: Task.Machine
+    - contextPath: Cuckoo.Task.Machine
       description: Machine of task
-    - contextPath: Task.Errors
+    - contextPath: Cuckoo.Task.Errors
       description: Errors of task
-    - contextPath: Task.Traget
-      description: Traget of task
-    - contextPath: Task.Package
+    - contextPath: Cuckoo.Task.Target
+      description: Target of task
+    - contextPath: Cuckoo.Task.Package
       description: Package of task
-    - contextPath: Task.SampleID
+    - contextPath: Cuckoo.Task.SampleID
       description: Sample ID of task
-    - contextPath: Task.Guest
+    - contextPath: Cuckoo.Task.Guest
       description: Task guest
-    - contextPath: Task.Custom
+    - contextPath: Cuckoo.Task.Custom
       description: Custom values of task
-    - contextPath: Task.Owner
+    - contextPath: Cuckoo.Task.Owner
       description: Task owner
-    - contextPath: Task.Priority
+    - contextPath: Cuckoo.Task.Priority
       description: Priority of task
-    - contextPath: Task.Platform
+    - contextPath: Cuckoo.Task.Platform
       description: Platform of task
-    - contextPath: Task.Options
+    - contextPath: Cuckoo.Task.Options
       description: Task options
-    - contextPath: Task.Status
+    - contextPath: Cuckoo.Task.Status
       description: Task status
-    - contextPath: Task.EnforceTimeout
+    - contextPath: Cuckoo.Task.EnforceTimeout
       description: Is timeout of task enforced
-    - contextPath: Task.Timeout
+    - contextPath: Cuckoo.Task.Timeout
       description: Task timeout
-    - contextPath: Task.Memory
+    - contextPath: Cuckoo.Task.Memory
       description: Task memory
-    - contextPath: Task.Tags
+    - contextPath: Cuckoo.Task.Tags
       description: Task tags
-    - contextPath: Task.ID
+    - contextPath: Cuckoo.Task.ID
       description: ID of task
-    - contextPath: Task.AddedOn
+    - contextPath: Cuckoo.Task.AddedOn
       description: Date on which the task was added
-    - contextPath: Task.CompletedOn
+    - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
     description: commands.server.ckView.description
   - name: ck-del
@@ -810,6 +809,27 @@ script:
     - name: screenshot
       description: (optional) - numerical identifier of a single screenshot (e.g.
         0001, 0002)
+    outputs:
+    - contextPath: File.Size
+      description: Size of file
+    - contextPath: File.SHA1
+      description: File's SHA1
+    - contextPath: File.SHA256
+      description: File's SHA256
+    - contextPath: File.Name
+      description: File's name
+    - contextPath: File.SSDeep
+      description: File's SSDeep
+    - contextPath: File.EntryID
+      description: File's entry id
+    - contextPath: File.Info
+      description: File's info
+    - contextPath: File.Type
+      description: File's type
+    - contextPath: File.MD5
+      description: File's MD5
+    - contextPath: File.Extension
+      description: File's Extension
     description: Retrieve screenshots taken during analysis. If the screenshot number
       argument is omitted, retrieves a zip file with all screenshots.
   - name: ck-machines-list
@@ -955,4 +975,4 @@ script:
 hidden: false
 fromversion: 3.5.0
 tests:
-  - Forgive me for my sins but I did not create any test
+  - CuckooTest

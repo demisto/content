@@ -2667,4 +2667,3 @@ script:
   runonce: false
 tests:
   - CarbonBlackLiveResponseTest
-releaseNotes: "-"
