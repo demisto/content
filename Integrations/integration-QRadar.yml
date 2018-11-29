@@ -700,7 +700,7 @@ script:
                 endpoint_dict['IPAddress'].append(ip_address['value'])
         if full_values:
             domain_name = get_domain_name(asset['domain_id'])
-            asset_dict['Domain'].append(domain_name)
+            endpoint_dict['Domain'].append(domain_name)
         # Adding values found in properties of the asset
         enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
         return asset_dict
