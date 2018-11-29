@@ -6,6 +6,16 @@
             "playbookID": "Fortigate Test"
         },
         {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX"
+            ],
+            "playbookID" : "Detonate File - Generic Test",
+            "timeout" : 2400,
+            "nightly" : true
+        },
+        {
             "integrations": "SNDBOX",
             "playbookID": "SNDBOX_Test"
         },
