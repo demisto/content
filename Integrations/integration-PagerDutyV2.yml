@@ -591,16 +591,28 @@ script:
         if serviceKey is None:
             raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
 
-        res = resolve_or_ack_incident('resolve', incident_key, serviceKey)
-        return extract_new_event_data(RESOLVE_EVENT, res)
+        action_response = resolve_or_ack_incident('resolve', incident_key, serviceKey)
+
+        res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
+        _, contexts, _ = parse_incident_data(res.get('incidents',[]))
+        if contexts[0]['Status'] != "resolved":
+            raise Exception('Could not resolve incident, you may have created it with different Service Key')
+
+        return extract_new_event_data(RESOLVE_EVENT, action_response)
 
 
     def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
         if serviceKey is None:
             raise Exception('You must enter a ServiceKey at the integration parmaters or in the command to process this action.')
 
-        res = resolve_or_ack_incident('acknowledge', incident_key, serviceKey)
-        return extract_new_event_data(ACKNOLWEDGE_EVENT, res)
+        action_response = resolve_or_ack_incident('acknowledge', incident_key, serviceKey)
+
+        res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
+        _, contexts, _ = parse_incident_data(res.get('incidents',[]))
+        if contexts[0]['Status'] != "acknowledged":
+            raise Exception('Could not acknowledge incident, you may have created it with different Service Key')
+
+        return extract_new_event_data(ACKNOLWEDGE_EVENT, action_response)
 
 
     ''' EXECUTION CODE '''
@@ -917,4 +929,4 @@ script:
   runonce: false
 releaseNotes: "Adding PagerDuty-acknowledge-event, PagerDuty-resolve-event commands"
 tests:
-  - PagerDuty Test
+- PagerDuty Test
