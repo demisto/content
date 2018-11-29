@@ -260,9 +260,9 @@ def test_integration(client, integrations, playbook_id, options={}):
             print_error(playbook_id + ' failed on timeout')
             break
 
-        if i % DEFAULT_INTERVAL:
-            print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
-            i = i + 1
+        if i % DEFAULT_INTERVAL == 0:
+            print 'loop no.' + str(i / DEFAULT_INTERVAL) + ', playbook state is ' + playbook_state
+        i = i + 1
 
     test_pass = playbook_state == PB_Status.COMPLETED
     if test_pass:

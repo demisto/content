@@ -369,6 +369,5 @@ outputs:
   description: Reported score of the the task
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
-releaseNotes: "-"
 tests:
   - CuckooTest

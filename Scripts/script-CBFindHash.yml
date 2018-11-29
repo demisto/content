@@ -2,6 +2,7 @@ commonfields:
   id: CBFindHash
   version: -1
 name: CBFindHash
+deprecated: true
 script: |-
   import json
   res = []
@@ -14,9 +15,10 @@ script: |-
           if isError(e):
               res.append(e)
           else:
-              myData = demisto.get(e, 'Contents.results')
+              myData = demisto.get(e, 'Contents')
               if myData:
                   found.append(md5)
+                  myData = json.loads(myData)
                   fileData[md5] = (myData[0]['observed_filename'][0], myData[0]['endpoint'][0].split('|')[0])
                   t += [{k: formatCell(row[k]) for k in row} for row in myData]
   if t:
@@ -43,3 +45,7 @@ dependson:
   must:
   - cb-binary
 timeout: 0s
+releaseNotes: "fix script returning no results"
+tests:
+  - No test
+

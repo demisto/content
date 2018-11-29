@@ -880,4 +880,4 @@ script:
   runonce: false
 releaseNotes: "New integration"
 tests:
-- Forgive me for my sins but I did not create any test
+- No test
