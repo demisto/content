@@ -108,6 +108,5 @@ outputs:
 scripttarget: 0
 runonce: true
 dockerimage: demisto/nltk:1.0
-releaseNotes: "Add new script"
 tests:
   - WordTokenizeTest

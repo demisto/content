@@ -40,6 +40,5 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: python:3
-releaseNotes: "Decoding URLs like https:%2F%2Fexample.com/ to https://example.com/"
 tests:
   - URLDecode-Test

@@ -120,6 +120,5 @@ scripttarget: 0
 dependson:
   must:
   - qradar-searches
-releaseNotes: "-"
 tests:
-- Forgive me for my sins but I did not create any test
+- No test
