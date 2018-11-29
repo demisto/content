@@ -1795,11 +1795,5 @@ script:
     description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
-releaseNotes: 'Added new commands:
-                  1. qradar-create-reference-set - Creates a new reference set.
-                  2. qradar-delete-reference-set - Deletes a reference set.
-                  3. qradar-create-reference-set-value - Creates/Updates a reference set value.
-                  4. qradar-update-reference-set-value - Creates/Updates a reference set value.
-                  5. qradar-delete-reference-set-value - Deletes a reference set value.'
 tests:
   - test_Qradar
