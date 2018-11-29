@@ -2032,6 +2032,9 @@ script:
     - contextPath: File.Md5
       description: The MD5 has for the threat.
       type: string
+    - contextPath: File.Sha256
+      description: The SHA256 has for the threat.
+      type: string
     - contextPath: File.Name
       description: The name of the threat.
       type: string
@@ -2209,6 +2212,5 @@ script:
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
   runonce: false
-releaseNotes: "Changed fetch incidents date strings to prevent potential bug."
 tests:
   - Cylance Protect v2 Test

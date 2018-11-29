@@ -1,0 +1,118 @@
+commonfields:
+  id: Server Message Block (SMB)
+  version: -1
+name: Server Message Block (SMB)
+display: Server Message Block (SMB)
+category: Utilities
+image: data:image/png;base64,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
+description: Retrieve files from an SMB server
+configuration:
+- display: Server IP / Hostname (e.g. 1.2.3.4)
+  name: hostname
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "445"
+  type: 0
+  required: true
+- display: Server NetBIOS (AD) Name
+  name: nbname
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Domain
+  name: domain
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: |-
+    ''' IMPORTS '''
+    import tempfile
+    from smb.SMBConnection import SMBConnection
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    ''' GLOBAL VARS '''
+    USER = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    HOSTNAME = demisto.params()['hostname']
+    PORT = int(demisto.params()['port'])
+    NBNAME = demisto.params()['nbname']
+    DOMAIN = demisto.params().get('domain', None)
+
+
+    ''' HELPER FUNCTIONS '''
+    def split_path(path):
+        share = ''
+        delim = '/' if '/' in path else ['\\']
+        while path and not share:
+            share, path = path.split(delim, 1)
+        return share, path
+
+
+    def connect():
+        if not DOMAIN:
+            conn = SMBConnection(USER, PASSWORD, 'Demisto', NBNAME, is_direct_tcp=True)
+        else:
+            conn = SMBConnection(USER, PASSWORD, 'Demisto', NBNAME, domain=DOMAIN, is_direct_tcp=True)
+        if not conn.connect(HOSTNAME, PORT):
+            return_error('Authentication failed, verify instance configuration parameters and try again.')
+        return conn
+
+
+    ''' FUNCTIONS '''
+    def download():
+        share, path = split_path(demisto.getArg('file_path'))
+        with tempfile.NamedTemporaryFile() as file_obj:
+            file_attributes, filesize = conn.retrieveFile(share, path, file_obj)
+            file_obj.seek(0)
+            filename = path.split('/')[-1] if '/' in path else path.split('\\')[-1]
+            demisto.results(fileResult(filename, file_obj.read()))
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+
+    conn = connect()
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results('ok')
+        elif demisto.command() == 'smb-download':
+            download()
+    except Exception, e:
+        LOG(e)
+        LOG.print_log()
+        return_error(e.message)
+    finally:
+        conn.close()
+  type: python
+  commands:
+  - name: smb-download
+    arguments:
+    - name: file_path
+      required: true
+      default: true
+      description: The path to the file, starting from the share. (e.g. Share/Folder/File)
+    description: Download a file from the SMB server
+  dockerimage: demisto/pysmb
+  runonce: false
+tests:
+  - No test

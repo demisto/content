@@ -64,6 +64,16 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 - display: Fetch URL incidents
   name: fetchURL
   defaultvalue: ""
@@ -78,16 +88,6 @@ configuration:
   name: fetchImpersonations
   defaultvalue: ""
   type: 8
-  required: false
-- display: Fetch incidents
-  name: isFetch
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
 script:
   script: |-
@@ -186,11 +186,10 @@ script:
             integration_context = demisto.getIntegrationContext()
             last_update_ts = integration_context.get('token_last_update')
             current_ts = epoch_seconds()
-            if last_update_ts is not None:
-                if current_ts - last_update_ts > 60 * 60 * 24 * 3 - 1800:
-                    response = refresh_token_request()
-                    current_ts = epoch_seconds()
-                    demisto.setIntegrationContext({'token_last_update': current_ts})
+            if (last_update_ts and current_ts - last_update_ts > 60 * 60 * 24 * 3 - 1800) or last_update_ts is None:
+                response = refresh_token_request()
+                current_ts = epoch_seconds()
+                demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
     def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True):
@@ -1355,14 +1354,9 @@ script:
         contents = []
 
         response = login_request()
-        duration_ms = response.get('duration')
-        if duration_ms:
-            duration_days = duration_ms/(1000*60*60*24)
         contents.append({
             'Access Key': response.get('accessKey'),
-            'Secret Key': response.get('secretKey'),
-            'Duration (ms)': duration_ms,
-            'Duration (days)': duration_days,
+            'Secret Key': response.get('secretKey')
         })
 
         results = {
@@ -1370,7 +1364,7 @@ script:
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Mimecast authentication details', contents, headers)
+            'HumanReadable': tableToMarkdown('Mimecast authentication details \n Tokens are valid for 3 days', contents, headers)
         }
 
         return results
@@ -1397,7 +1391,8 @@ script:
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('command is %s' % (demisto.command(), ))
-    is_token_refreshed = auto_refresh_token()
+    # Check if token needs to be refresh, if it does and relevant params are set, refresh.
+    auto_refresh_token()
 
     try:
         if demisto.command() == 'test-module':
@@ -2132,6 +2127,5 @@ script:
     description: Login to generate Access Key and  Secret Key
   isfetch: true
   runonce: false
-releaseNotes: "Added 3 auth commands from mimecast auth integration, mimecast-login/mimecast-discover/mimecast-refresh-token. Added outputs to mimecast-query command. Added automatic token refresh (App key & Secrey key)."
 tests:
  - Mimecast test
