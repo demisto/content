@@ -628,7 +628,8 @@ script:
         raw_search_results = get_search_results(search_id, demisto.args().get('range'))
         result_key = raw_search_results.keys()[0]
         title = 'QRadar Search Results from ' + result_key
-        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), demisto.args().get('headers'), 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key))
+        context_key = demisto.args().get('output_path') if demisto.args().get('output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
+        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), demisto.args().get('headers'), context_key)
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -1076,6 +1077,10 @@ script:
     - name: headers
       description: Table headers to use the human readable output (if none provided,
         will show all table headers)
+    - name: output_path
+      description: Replaces the default context output path for the query result (QRadar.Search.Result).
+                     e.g. for output_path=QRadar.Correlations the result will be under the key
+                     "QRadar.Correlations" in the context data.
     outputs:
     - contextPath: QRadar.Search.Result
       description: The result of the search
@@ -1702,10 +1707,10 @@ script:
     - name: value
       required: true
       description: 'The value to add or update in the reference set. Note: Date values
-        must be represented in epoch in reference sets (milliseconds since the Unix Epoch January 1st
-        1970).
-        If ''date_value'' is set to ''True'', then the argument will be converted from date in format:
-        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+        must be represented in epoch in reference sets (milliseconds since the Unix
+        Epoch January 1st 1970). If ''date_value'' is set to ''True'', then the argument
+        will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g.
+        ''2018-11-06T08:56:41.000000Z'') to epoch.'
     - name: source
       description: An indication of where the data originated. The default value is
                      'reference data api'.
@@ -1806,6 +1811,8 @@ script:
     description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
-releaseNotes: Added support for fetching remote destination addresses.
+releaseNotes: "QRadar integration enhancements:
+      - Added support for fetching remote destination addresses.
+      - Added ability to use custom output path for 'qradar-get-search-results'"
 tests:
   - test_Qradar
