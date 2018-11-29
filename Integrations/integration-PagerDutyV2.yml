@@ -851,6 +851,5 @@ script:
   isfetch: true
   runonce: false
 hidden: false
-releaseNotes: "Added fetch incidents functionality"
 tests:
   - PagerDuty Test
