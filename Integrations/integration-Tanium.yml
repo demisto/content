@@ -29,6 +29,8 @@ configuration:
   required: false
 script:
   script: |-
+    from collections import OrderedDict
+    from itertools import chain
     import os
     import sys
     import tempfile
@@ -38,6 +40,7 @@ script:
     import io
     import csv
     from cStringIO import StringIO
+    import xml.etree.ElementTree as ET
 
     if not demisto.params()['proxy']:
       del os.environ['HTTP_PROXY']
@@ -72,13 +75,41 @@ script:
     except Exception:
         raise
 
-    def csvstr_to_list(str):
-        lines = str.splitlines()
+    def parse_xml_to_csv(instring):
+        output = StringIO()
+        root = ET.fromstring(instring)
+        columns = []
+        for column in root.findall('./result_set/cs/c/dn'):
+            columns.append(column.text)
+        rows =[]
+        rows.append(columns)
+        for record in root.findall('./result_set/rs/r'):
+            values = record.findall('c/v')
+            # todo bug with count > 2 use limit=1 for  now in index file query
+            row = [i.text for i in values]
+            rows.append(row)
+        writer = csv.writer(output)
+        writer.writerows(rows)
+        return_string = output.getvalue()
+        return return_string
+
+    def csvstr_to_list(string):
+        lines = string.splitlines()
         if len(lines) < 2:
             return []
         else:
             headers = lines[0].split(',')
-            return [ dict(zip(headers, line.split(','))) for line in lines[1:] ]
+            new_headers= []
+            counter={}
+            for header_name in headers:
+                if header_name in counter:
+                    new_headers.append(header_name+str(counter[header_name]))
+                    counter[header_name]+=1
+                else:
+                    new_headers.append(header_name)
+                    counter[header_name]=0
+            return_dict = [ OrderedDict(zip(new_headers, line.split(','))) for line in lines[1:] ]
+            return return_dict
 
     def parseToJson(handler, response):
         export_kwargs = {}
@@ -393,14 +424,31 @@ script:
         if response.get('question_results'):
             export_kwargs = {}
             export_kwargs['obj'] = response['question_results']
-            export_kwargs['export_format'] = 'csv'
+            export_kwargs['export_format'] = 'xml'
+            export_kwargs['header_sort']=False
             out = handler.export_obj(**export_kwargs)
 
-            result = csvstr_to_list(out)
 
-            ec = { 'Tanium.QuestionResults' : result }
-            return create_entry(
-                    'Result for parsed query - %s' % (query_text,),
+            #tanium built in csv output is broken for Multiple columns with the same name.
+            csv_string = parse_xml_to_csv(out)
+            result = csvstr_to_list(csv_string)
+            flat_length = len(list(chain.from_iterable(result)))
+            ttlrecords = len(result)
+            query_text = query_text.replace(r"[",r"\[").replace(r"]","\]")
+            MAX_ENTRIES=1000
+            if flat_length > MAX_ENTRIES:
+                entries_per_row = len(result[0])
+                max_rows = MAX_ENTRIES / entries_per_row
+                resultdisplay = result[:max_rows]
+                ec = { 'Tanium.QuestionResults' : resultdisplay}
+                return create_entry(
+                    'First '+ str(len(resultdisplay)) + ' Results of total {} for parsed query - {}'.format(ttlrecords,query_text),
+                    resultdisplay,
+                    ec)
+            else:
+                ec = { 'Tanium.QuestionResults' : result }
+                return create_entry(
+                    'Result for parsed query - {}'.format(query_text),
                     result,
                     ec)
         else:

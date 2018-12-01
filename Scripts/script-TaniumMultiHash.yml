@@ -1,0 +1,162 @@
+commonfields:
+  id: d7e15b38-e402-4969-85b4-84958da63cc1
+  version: 59
+name: TaniumMultiHash
+script: |-
+  # Python template - reading arguments, calling a command, handling errors and returning results
+  import pandas as pd
+  from itertools import chain
+  def filter_values(contents):
+      """This method takes in context; rotates the columns to display them in a readable way to the analyst; 
+      It also filters out unavailable results"""
+      df_contents = pd.DataFrame(contents)
+      file_name_cols = []
+      for col in list(df_contents.columns.values):
+          if 'File Name' in col:
+              file_name_cols.append(col)
+
+      dir_cols=[]
+      for col in list(df_contents.columns.values):
+          if 'Directory Path' in col:
+              dir_cols.append(col)
+
+      md5_cols=[]
+      for col in list(df_contents.columns.values):
+          if 'MD5' in col:
+              md5_cols.append(col)
+
+      sha256_cols=[]
+      for col in list(df_contents.columns.values):
+          if 'SHA256' in col:
+              sha256_cols.append(col)
+      needed_cols = ['Computer Name']
+      needed_cols.extend(dir_cols)
+      needed_cols.extend(file_name_cols)
+      needed_cols.extend(md5_cols)
+      needed_cols.extend(sha256_cols)
+
+
+      df_contents=df_contents[needed_cols]
+
+      df_dir=df_contents.melt(id_vars=['Computer Name'],value_vars=dir_cols,var_name='dir_seq',value_name='dir')[['Computer Name','dir']]
+      df_file=df_contents.melt(id_vars=['Computer Name'],value_vars=file_name_cols,var_name='file_seq',value_name='file')[['file']]
+      df_md5=df_contents.melt(id_vars=['Computer Name'],value_vars=md5_cols,var_name='md5_seq',value_name='md5')[['md5']]
+      df_sha256=df_contents.melt(id_vars=['Computer Name'],value_vars=sha256_cols,var_name='sha256_seq',value_name='sha256')[['sha256']]
+
+      RES_UNAV= "[current result unavailable]"
+      RES_UNAV2= "[results currently unavailable]"
+      NOT_FOUND = "No Matches Found"
+      df_merge = pd.concat([df_dir,df_file,df_md5,df_sha256],axis=1)
+      df_filtered = df_merge[(df_merge['file'] != RES_UNAV2 ) &
+                             (df_merge['file'] != RES_UNAV ) &
+                             (df_merge['file'] != NOT_FOUND) &
+                             (df_merge['file'] != "")]
+      return df_filtered.to_dict('records')
+
+  md5_array = demisto.args()["hash_array"]
+  complete_pct = demisto.args()["complete_pct"]
+  page_length = int(demisto.args()["page_length"])
+
+  if isinstance(md5_array,list):
+      pass
+  else:
+      md5_array=[md5_array]
+
+  paged_list = [md5_array[i:i+page_length] for i in range(0,len(md5_array),page_length)]
+  hash_type = demisto.args()["hash_type"]
+  if hash_type=="MD5":
+      param_hash ="fileMD5Hash"
+  elif hash_type=="SHA256":
+      param_hash = "fileSHA256Hash"
+  for page in paged_list:
+      cpu_col = "Computer Name;Computer ID"
+      file_cols = "Index Query File Details{{"+param_hash+"={0},limit=1}}"
+      question_filters = "Index Query File Exists{{"+param_hash+"={0}}},that equals:Yes"
+      all_file_cols = [file_cols.format(md5) for md5 in page]
+      all_cols = cpu_col+";"+";".join(all_file_cols)
+      all_filters=[question_filters.format(md5) for md5 in page]
+      all_filters_string=";".join(all_filters)
+
+      tn_manual={}
+      tn_manual["sensors"]=all_cols
+      tn_manual["question_filters"]=all_filters_string
+      tn_manual["complete_pct"]=complete_pct
+      tn_manual["question_options"]="or"
+      hashes = {"hashes":page}
+      demisto.results([{"Type": entryTypes["note"],
+                  "ContentsFormat": formats["json"],
+                  "Contents": hashes,
+                  "HumanReadable":tableToMarkdown("Searching hashes:",hashes)
+
+              }])
+      demisto.info("demisto page hashes: " + str(page))
+      res = demisto.executeCommand("tn-ask-manual-question",tn_manual)
+      if res is None:
+          demisto.results([{"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                              "Contents": "Result from tanium question is None; Error"}])
+          continue
+      result = res[0]
+      contents = result["Contents"]
+      human_readable = result["HumanReadable"]
+      filtered_contents = filter_values(contents)
+      #filtered contents exist check
+      if not filtered_contents:
+          res = {
+              'ContentsFormat': formats['json'],
+              'Type': entryTypes['note'],
+              'Contents': [],
+              'ReadableContentsFormat': formats['markdown'],
+              'HumanReadable': 'No results were found',
+          }
+          demisto.results([res])
+          continue
+
+      flat_length = len(list(chain.from_iterable(filtered_contents)))
+      records = len(filtered_contents)
+      final_contents = None
+      header = human_readable.split("\n")[0]
+      MAX = 10000
+      #length of results check
+      if flat_length > MAX:
+          records = int(MAX / len(filtered_contents[0]))
+          final_contents = filtered_contents[:records]
+          header = "Rerun search in Tanium; Over " + str(MAX) + " values; limited 0 through " + str(records) + ' ' + header
+      else:
+          final_contents = filtered_contents
+
+      entry_contents = {'Tanium.QuestionResults':final_contents}
+      res = {
+          'ContentsFormat': formats['json'],
+          'Type': entryTypes['note'],
+          'Contents': final_contents,
+          'ReadableContentsFormat': formats['markdown'],
+          'HumanReadable': tableToMarkdown(header,final_contents) if final_contents else 'No results were found',
+          'EntryContext':entry_contents
+      }
+      demisto.results([res])
+type: python
+tags: []
+comment: ask for each md5
+enabled: true
+args:
+- name: hash_array
+  description: array list of md5
+  isArray: true
+  required: true
+- name: complete_pct
+  description: search completion percent
+  defaultValue: "90"
+- name: page_length
+  defaultValue: "20"
+- name: hash_type
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - MD5
+  - SHA256
+outputs:
+- contextPath: Tanium.QuestionResults
+scripttarget: 0
+timeout: 6µs
+runonce: false
+dockerimage: demisto/machine-learning
