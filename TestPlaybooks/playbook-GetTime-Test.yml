@@ -627,7 +627,7 @@ tasks:
       flags: {}
       group: {}
       regex:
-        simple: ^[0-3][0-9]$
+        simple: ^[0-9]{1,2}[:.,-]?$
     separatecontext: false
     view: |-
       {
