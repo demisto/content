@@ -782,7 +782,10 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      }
+        },
+        {
+            "playbookID": "DemistoUploadFileToIncident Test"
+        }
     ],
     "skipped_tests": {
         "blockip_test_playbook": "No Check Point FW license",

@@ -1,6 +1,6 @@
-id: ecad0025-7790-4444-8234-3629577855f2
-version: 3
-name: DemistoUploadFileToIncident-test
+id: DemistoUploadFileToIncident Test
+version: -1
+name: DemistoUploadFileToIncident Test
 starttaskid: "0"
 tasks:
   "0":
