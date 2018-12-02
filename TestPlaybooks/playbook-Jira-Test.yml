@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -25,6 +24,7 @@ tasks:
           "y": 50
         }
       }
+    note: false
   "1":
     id: "1"
     taskid: 3c58da08-7839-4473-8319-bf44ec6db001
@@ -45,7 +45,6 @@ tasks:
       all:
         simple: "yes"
       key: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -77,10 +76,13 @@ tasks:
         simple: '"jira descriptions"'
       dueDate: {}
       issueJson: {}
-      issueTypeId: {}
+      issueTypeId:
+        simple: "10001"
       issueTypeName:
         simple: Incident
       labels: {}
+      parentIssueId: {}
+      parentIssueKey: {}
       priority: {}
       projectKey:
         simple: DEM
@@ -88,7 +90,6 @@ tasks:
       reporter: {}
       summary:
         simple: '"jira playbook test"'
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -118,7 +119,6 @@ tasks:
       headers: {}
       issueId:
         simple: ${Ticket.Id}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -156,7 +156,6 @@ tasks:
         simple: ${Ticket.Id}
       value3: {}
       value4: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -188,7 +187,6 @@ tasks:
       issueId:
         simple: ${Ticket.Id}
       visibility: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -224,7 +222,6 @@ tasks:
         simple: Demisto
       url:
         simple: http://www.demisto.com
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -255,7 +252,6 @@ tasks:
         simple: ${Ticket.Id}
       upload:
         simple: ${File.EntryID}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -293,7 +289,6 @@ tasks:
         simple: ${Ticket.Id}
       value3: {}
       value4: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -325,7 +320,6 @@ tasks:
       query:
         simple: id = ${Ticket.[0].Id}
       startAt: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -357,7 +351,6 @@ tasks:
         simple: Hello Demisto
       filename:
         simple: Ho
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -395,7 +388,6 @@ tasks:
         simple: done
       summary:
         simple: Edited
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -426,7 +418,6 @@ tasks:
       fields: {}
       path:
         simple: Ticket.[0].Summary
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -435,6 +426,7 @@ tasks:
           "y": 2179
         }
       }
+    note: false
   "21":
     id: "21"
     taskid: 4f94c3a0-5c82-473f-8604-2f010861a7a7
@@ -456,7 +448,6 @@ tasks:
       fields: {}
       path:
         simple: Ticket.[0].Status
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -465,6 +456,7 @@ tasks:
           "y": 2421
         }
       }
+    note: false
   "22":
     id: "22"
     taskid: 178e2167-e603-4868-8920-20489b8227e4
@@ -511,7 +503,6 @@ tasks:
       fields: {}
       path:
         simple: Ticket.Comment.Comment
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
