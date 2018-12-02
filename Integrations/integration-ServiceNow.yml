@@ -1330,7 +1330,7 @@ script:
     arguments:
     - name: id
       default: true
-      description: Ticket System ID to retrieve
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1344,7 +1344,12 @@ script:
     - name: number
       description: Ticket number to retrieve
     - name: get_attachments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: Whether to retrieve ticket attachments, default false
+      defaultValue: "false"
     outputs:
     - contextPath: ServiceNow.Ticket.ID
       description: ServiceNow ticket ID
