@@ -90,6 +90,7 @@ script:
         'description': 'Description',
         'source_address_ids': 'SourceAddress',
         'local_destination_address_ids': 'DestinationAddress',
+        'remote_destination_count': 'RemoteDestinationCount',
         'start_time': 'StartTime',
         'event_count': 'EventCount',
         'magnitude': 'Magnitude',
@@ -113,6 +114,7 @@ script:
         'description': 'Description',
         'source_address_ids': 'SourceAddress',
         'local_destination_address_ids': 'DestinationAddress',
+        'remote_destination_count': 'RemoteDestinationCount',
         'start_time': 'StartTime',
         'event_count': 'EventCount',
         'flow_count': 'FlowCount',
@@ -736,14 +738,6 @@ script:
         except:
             return domain_id
 
-    def get_remote_destination_address(offense_id):
-        try:
-            query_param = {'query_expression': 'SELECT destinationip FROM events WHERE inOffense({0}) GROUP BY destinationip'.format(offense_id)}
-            search_id = search(query_param)['search_id']
-            return get_search_results(search_id)['events'][0]['destinationip']
-        except:
-            return None
-
     def get_closing_reasons_command():
         args = demisto.args()
         closing_reasons_map = {
@@ -927,7 +921,11 @@ script:
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
     - contextPath: QRadar.Offense.DestinationAddress
-      description: The destination addresses that are associated with the offense.
+      description: The local destination addresses that are associated with the offense. If your offense has a remote destination,
+        you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: The remote destination that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination,
+        you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
     - contextPath: QRadar.Offense.StartTime
       description: The time (ISO) when the offense was started.
       type: date
