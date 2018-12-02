@@ -782,7 +782,11 @@
             ],
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500
-      }
+      },
+        {
+            "integrations": "Zscaler",
+            "playbookID": "Zscaler Test"
+        }
     ],
     "skipped_tests": {
         "blockip_test_playbook": "No Check Point FW license",
