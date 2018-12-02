@@ -176,7 +176,12 @@ script:
         'sys_updated_on': 'UpdatedAt',
         'sys_created_by': 'CreatedBy',
         'sys_created_on': 'CreatedAt'
-        }
+    }
+
+    DEPRECATED_COMMANDS = ['servicenow-get', 'servicenow-incident-get',
+                           'servicenow-create', 'servicenow-incident-create',
+                           'servicenow-update', 'servicenow-query',
+                           'servicenow-incidents-query', 'servicenow-incident-update']
 
     ''' HELPER FUNCTIONS '''
 
@@ -254,11 +259,17 @@ script:
 
         # Try to map fields
         if 'priority' in data:
-                context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
+                # Backward compatibility
+                if demisto.command() in DEPRECATED_COMMANDS:
+                    context['Priority'] = data['priority']
+                else:
+                    context['Priority'] = TICKET_PRIORITY.get(data['priority'], data['priority'])
         if 'state' in data:
             mapped_state = data['state']
-            if ticket_type in TICKET_STATES:
-                mapped_state = TICKET_STATES[ticket_type].get(data['state'], mapped_state)
+            # Backward compatibility
+            if demisto.command() not in DEPRECATED_COMMANDS:
+                if ticket_type in TICKET_STATES:
+                    mapped_state = TICKET_STATES[ticket_type].get(data['state'], mapped_state)
             context['State'] = mapped_state
 
         return createContext(context, removeNull=True)
@@ -922,7 +933,7 @@ script:
         table_name = 'cmdb_ci_computer'
         computer_name = demisto.args()['computerName']
 
-        res = query(table_name, None, 'u_code=' + computer_name)
+        res = query(table_name, None, 0, 'u_code=' + computer_name)
 
         if not res or 'result' not in res:
             return 'Cannot find computer'
@@ -1124,7 +1135,7 @@ script:
     def get_groups_command():
         table_name = 'sys_user_group'
         group_name = demisto.args()['name']
-        res = query(table_name, None, 'name=' + group_name)
+        res = query(table_name, None, 0, 'name=' + group_name)
 
         if not res or 'result' not in res:
             return 'No groups found'
@@ -1192,6 +1203,44 @@ script:
         res = send_request(path, 'GET')
 
         return res
+
+    def get_table_name_command():
+        label = demisto.args()['label']
+        offset = demisto.args().get('offset', DEFAULTS['offset'])
+        limit = demisto.args().get('limit', DEFAULTS['limit'])
+
+        table_query = 'label=' + label
+
+        res = query('sys_db_object', limit, offset, table_query)
+
+        if not res or 'result' not in res:
+            return 'Cannot find table'
+
+        tables = res['result']
+
+        if len(tables) == 0:
+            return 'Cannot find table'
+
+        headers = ['ID', 'Name', 'SystemName']
+
+        mapped_tables = [{
+            'ID': table['sys_id'],
+            'Name': table['name'],
+            'SystemName': table['sys_name']
+        } for table in tables]
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ServiceNow Tables for label - ' + label, mapped_tables, headers=headers),
+            'EntryContext': {
+                  'ServiceNow.Table': createContext(mapped_tables),
+            }
+        }
+
+        return entry
 
 
     def fetch_incidents():
@@ -1309,6 +1358,8 @@ script:
             demisto.results(delete_record_command())
         if demisto.command() == 'servicenow-list-table-fields':
             demisto.results(list_table_fields_command())
+        if demisto.command() == 'servicenow-get-table-name':
+            demisto.results(get_table_name_command())
     except Exception as e:
         LOG(e)
         LOG.print_log()
@@ -1319,7 +1370,7 @@ script:
     arguments:
     - name: id
       default: true
-      description: Ticket System ID to retrieve
+      description: Ticket System ID
     - name: ticket_type
       auto: PREDEFINED
       predefined:
@@ -1333,7 +1384,12 @@ script:
     - name: number
       description: Ticket number to retrieve
     - name: get_attachments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: Whether to retrieve ticket attachments, default false
+      defaultValue: "false"
     outputs:
     - contextPath: ServiceNow.Ticket.ID
       description: ServiceNow ticket ID
@@ -2942,7 +2998,8 @@ script:
     - contextPath: Ticket.Number
       description: ServiceNow ticket number
       type: string
-    description: Retrieve ticket info with query
+    description: Deprecated. Please use servicenow-query-table or servicenow-query-tickets
+      instead.
   - name: servicenow-upload-file
     arguments:
     - name: id
@@ -3312,8 +3369,22 @@ script:
       description: User update time
       type: date
     description: Query the sys_user table in ServiceNow
+  - name: servicenow-get-table-name
+    arguments:
+    - name: label
+      required: true
+      description: The table label, e.g Asset, Incident, IP address etc.
+    outputs:
+    - contextPath: ServiceNow.Table.ID
+      description: Table system ID
+      type: string
+    - contextPath: ServiceNow.Table.Name
+      description: Table name to use in commands, e.g alm_asset
+      type: string
+    - contextPath: ServiceNow.Table.SystemName
+      description: Table system name, e.g Asset
+      type: string
+    description: Get table names by a label to use in commands
   isfetch: true
   runonce: false
-tests:
-  - No test - No instance
-releaseNotes: "-"
+releaseNotes: "table names"
