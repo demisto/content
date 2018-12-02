@@ -2212,6 +2212,5 @@ script:
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
   runonce: false
-releaseNotes: "Changed fetch incidents date strings to prevent potential bug."
 tests:
   - Cylance Protect v2 Test

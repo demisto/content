@@ -1318,4 +1318,3 @@ script:
       defaultValue: "20"
     description: Terminates a process at the sensor/endpoint
   runonce: false
-releaseNotes: "-"

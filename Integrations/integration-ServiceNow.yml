@@ -3314,4 +3314,6 @@ script:
     description: Query the sys_user table in ServiceNow
   isfetch: true
   runonce: false
+tests:
+  - No test - No instance
 releaseNotes: "-"

@@ -11,7 +11,7 @@ configuration: []
 scriptNotVisible: true
 defaultEnabled: true
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test
 script:
   script: |
     switch (command) {
@@ -71,4 +71,3 @@ script:
       description: yep
     description: try me
   runonce: false
-releaseNotes: "-"
