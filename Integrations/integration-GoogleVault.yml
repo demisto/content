@@ -2,7 +2,7 @@ commonfields:
   id: google-vault
   version: -1
 name: google-vault
-display: Google Vault
+display: google-vault
 category: IT Services
 image: data:image/png;base64,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
 description: Archiving and eDiscovery for G Suite.
@@ -28,19 +28,22 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: |-
     from googleapiclient.discovery import build
     from httplib2 import Http
     import json
     from oauth2client import file, client, tools, service_account
-    from google.cloud import storage
+    from google.oauth2 import service_account as google_service_account
+    import googleapiclient.http
     import dateparser
     import datetime
+    import io
+    import os
 
     #  @@@@@@@@ GLOBALS @@@@@@@@
 
     # If modifying these scopes, delete the file token.json.
-    SCOPES = 'https://www.googleapis.com/auth/ediscovery'
+    SCOPES = ['https://www.googleapis.com/auth/ediscovery', 'https://www.googleapis.com/auth/devstorage.full_control']
     DEMISTO_MATTER = "test_search_phishing"
 
     ADMIN_EMAIL = demisto.params()["gsuite_credentials"]["identifier"].encode("utf-8")
@@ -65,12 +68,10 @@ script:
             scopes=scopes)
         return cred.create_delegated(delegated_user)
 
-
     def connect():
         creds = get_credentials()
         service = build('vault', 'v1', http=creds.authorize(Http()))
         return service
-
 
     def is_matter_exist(matter_name): # Not needed at the moment
         """
@@ -84,17 +85,14 @@ script:
             return True
         return False
 
-
     def get_open_matters(service):
         """ Gets first 10 matters """
         open_matters = service.matters().list(state='OPEN').execute()
         return open_matters
 
-
     def get_matter_by_id(service, matter_id):
         matter = service.matters().get(matterId=matter_id).execute()
         return matter
-
 
     def get_matters_by_state(service, state):
         state = state.upper()
@@ -102,44 +100,35 @@ script:
         matter_list = service.matters().list(state=matter_state).execute()
         return matter_list
 
-
     def get_matter_by_id(service, matter_id):
         return service.matters().get(matterId=matter_id).execute()
-
 
     def delete_matter(service, matter_id):
         delete_response = service.matters().delete(
             matterId=matter_id).execute()
         return get_matter_by_id(service, matter_id)  # Note - this is different that the other state updates
 
-
     def close_matter(service, matter_id):
         close_response = service.matters().close(matterId=matter_id, body={}).execute()
         return close_response['matter']
-
 
     def reopen_matter(service, matter_id):
         reopen_response = service.matters().reopen(matterId=matter_id, body={}).execute()
         return reopen_response['matter']
 
-
     def undelete_matter(service, matter_id):
         undeleted_matter = service.matters().undelete(matterId=matter_id, body={}).execute()
         return undeleted_matter
-
 
     def add_held_account(service, matter_id, hold_id, account_id):
         held_account = {'accountId': account_id}
         return service.matters().holds().accounts().create(matterId=matter_id, holdId=hold_id, body=held_account).execute()
 
-
     def remove_held_account(service, matter_id, hold_id, account_id):
         return service.matters().holds().accounts().delete(matterId=matter_id, holdId=hold_id, accountId=account_id).execute()
 
-
     def remove_hold(service, matter_id, hold_id):
         return service.matters().holds().delete(matterId=matter_id, holdId=hold_id).execute()
-
 
     def list_holds(service, matter_id):
         done_paginating = False
@@ -158,7 +147,6 @@ script:
                 done_paginating = True
         return holds
 
-
     def timeframe_to_utc_zulu_range(timeframe_str):
         '''
         Converts a time-frame to UTC Zulu format that can be used for startTime and endTime in various Google Vault requests.
@@ -171,7 +159,6 @@ script:
         except Exception, ex:
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to parse date correctly: {}'.format(ex)})
             sys.exit(2)
-
 
     def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_time="", end_time=""):
         '''
@@ -208,20 +195,17 @@ script:
         request['accounts'] = accounts_for_query
         return request
 
-
     def create_hold_mail_accounts(service, matter_id, request_body):
         '''
         Creates a hold in Google Vault
         '''
         return service.matters().holds().create(matterId=matter_id, body=request_body).execute()
 
-
     def create_export(service, matter, request_body):
         '''
         Creates an export in the given matter, with the given request_body (which is the actual JSON for the request).
         '''
         return service.matters().exports().create(matterId=matter, body=request_body).execute()
-
 
     def create_mail_export_query(export_name, emails, time_frame, start_time, end_time, terms, org_unit="", export_pst="True", export_mbox="False", search_method="All Accounts", include_drafts="True", data_scope="All Data"):
         '''
@@ -366,7 +350,6 @@ script:
         request['name'] = export_name
         return request
 
-
     def create_groups_export_query(export_name, emails, time_frame, start_time, end_time, terms, search_method, export_pst="True", export_mbox="False", data_scope="All Data"):
         '''
         Creates the query that will be used in the request to create a groups export
@@ -421,7 +404,6 @@ script:
         request['name'] = export_name
         return request
 
-
     def get_export_by_id(service, matter_id, export_id):
         return service.matters().exports().get(matterId=matter_id, exportId=export_id).execute()
 
@@ -430,6 +412,49 @@ script:
 
     def remove_held_accounts(service, matter_id, hold_id):
         pass
+
+    def downloadStorageObject(objectID):
+        bucket_name = demisto.getArg('bucketName');
+        service = connectToStorage()
+        req = service.objects().get_media(bucket=bucket_name, object=objectID)
+        out_file = io.BytesIO()
+        downloader = googleapiclient.http.MediaIoBaseDownload(out_file, req)
+        done = False
+        while not done:
+            done = downloader.next_chunk()[1]
+        return out_file
+
+
+    def getObjectNameByType(objectsArr,extension):
+        for file in objectsArr:
+            objName = str(file.get('objectName'))
+            if(objName.endswith(extension)):
+                return objName
+
+    def buildKeyValPer(tagDict):
+        key = filter(str.isalnum, str(tagDict['@TagName']))
+        value = str(tagDict['@TagValue'])
+        keyValPair = { key: value}
+        return keyValPair
+
+    def buildDocumentDict(document):
+        file_info = document['Files']['File']['ExternalFile']
+        newDocumentDict = {
+            'DocType' : os.path.splitext(file_info['@FileName'])[1][1:].strip().lower(),
+            'MD5' : file_info['@Hash']
+        }
+        tags = document['Tags']['Tag']
+        for currentTagDict in tags:
+            newDocumentDict.update(buildKeyValPer(currentTagDict))
+        return newDocumentDict
+
+    def buildDictList(documentsArr, exportType):
+        documentsDictList = []
+        for document in documentsArr:
+            currentDocumentDict = buildDocumentDict(document)
+            documentsDictList.append(currentDocumentDict)
+
+        return documentsDictList
 
 
     # @@@@@@@@ ACTUAL FUNCS @@@@@@@@
@@ -966,34 +991,173 @@ script:
         })
 
 
+
+
     def get_export_command():
         service = connect()
         matter_id = demisto.getArg('matterId')
         export_id = demisto.getArg('exportID')
         try:
             response = get_export_by_id(service, matter_id, export_id)
-            usr_msg = "Here are your export details:\nMatter ID: {}\nExport ID: {}\nExport Name: {}\nExporting Status: {}.".format(matter_id, export_id, response.get('name'), response.get('status'))
             export_name = response.get('name')
             export_status = response.get('status')
+            create_time = response.get('createTime')
+            bucket_name = response.get('cloudStorageSink').get('files')[0].get('bucketName') if export_status == 'COMPLETED' else ''
+            zip_object_name = getObjectNameByType(response.get('cloudStorageSink').get('files'), '.zip') if export_status == 'COMPLETED' else ''
+            xml_object_name = getObjectNameByType(response.get('cloudStorageSink').get('files'), '.xml') if export_status == 'COMPLETED' else ''
             context_output = []
             context_output.append({
                 'MatterID': matter_id,
-                'ID': export_id,
-                'Name': export_name,
-                'Status': export_status
+                'ExportID': export_id,
+                'ExportName': export_name,
+                'Status': export_status,
+                'BucketName': bucket_name,
+                'DownloadID': zip_object_name,
+                'ViewID': xml_object_name
             })
+            title = "You Export details:\n"
+            output_for_markdown = {  # This one is for tableToMarkdown to correctly map
+            'Matter ID': matter_id,
+            'Export ID': export_id,
+            'Export Name': export_name,
+            'Status': export_status,
+            'Created Time': create_time,
+            'Bucket Name(for download)': bucket_name,
+            'Download ID': zip_object_name,
+            'View ID': xml_object_name
+            }
+            if(export_status == 'COMPLETED'):
+                headers = ['Matter ID', 'Export ID', 'Export Name', 'Status', 'Created Time', 'Bucket Name(for download)', 'Download ID','View ID']
+            else:
+                headers = ['Matter ID', 'Export ID', 'Export Name', 'Status', 'Created Time']
+            markdown = tableToMarkdown(title, output_for_markdown, headers)
+
             demisto.results( {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': context_output,
-            'HumanReadable': usr_msg,
+            'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
+                'GoogleVault.Export(val.ExportID == obj.ExportID)': context_output
                              }
             })
         except Exception, ex:
             demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to get export. Error: {}'.format(ex)})
             sys.exit(2)
+
+    def getStorageCredentials():
+        privateKeyJson = json.loads(PRIVATE_KEY_CONTENT)
+        crads = google_service_account.Credentials.from_service_account_info(privateKeyJson, scopes=SCOPES, subject=ADMIN_EMAIL)
+        return crads
+
+    def connectToStorage():
+        service = build('storage', 'v1', credentials=getStorageCredentials())
+        return service
+
+
+    def download_export_command():
+        try:
+            out_file = downloadStorageObject(demisto.getArg('downloadID'))
+            demisto.results(fileResult(demisto.uniqueFile() + ".zip", out_file.getvalue()))
+
+        except Exception, ex:
+            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to download export. Error: {}'.format(ex)})
+            sys.exit(2)
+
+    def downloadAndSanitizeExportResults():
+        out_file = downloadStorageObject(demisto.getArg('viewID'))
+        out_file_json = json.loads(xml2json(out_file.getvalue()))
+
+        documents = out_file_json['Root']['Batch']['Documents']['Document']
+
+        if type(documents) is dict:
+            documents = [documents]
+
+        dictList = buildDictList(documents, 'drive')
+        maxResult = int(demisto.getArg('maxResult'))
+        if len(dictList) > maxResult:
+            return dictList[0: maxResult]
+
+        return dictList
+
+    def get_drive_results_command():
+        try:
+            output = downloadAndSanitizeExportResults()
+            if not (output[0].get('Author') or output[0].get('Collaborators') or output[0].get('Title')):
+                demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match'})
+                sys.exit(2)
+
+            markedown_output = map(lambda document: {
+                'Title': document.get('Title'),
+                'Author': document.get('Author'),
+                'Collaborators': document.get('Collaborators'),
+                'Others': document.get('Others'),
+                'DateCreated': document.get('DateCreated'),
+                'DateModified': document.get('DateModified'),
+                'DocType': document.get('DocType'),
+                'MD5': document.get('MD5'),
+            },output)
+
+            title = "Your DRIVE inquiry details\n"
+            headers = ['Title', 'Author', 'Collaborators', 'Others', 'Labels', 'Viewers', 'DateCreated', 'DateModified','DocType', 'MD5']
+            markdown = tableToMarkdown(title, markedown_output, headers)
+
+            exportID = str(demisto.getArg('viewID')).split('/')[1]
+            contextOutput  = {'ExportID': exportID, 'Results': markedown_output}
+
+            demisto.results( {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contextOutput,
+            'HumanReadable': markdown,
+            'EntryContext': {
+                'GoogleVault.Export(val.ExportID == obj.ExportID)': contextOutput
+                }
+            })
+
+        except Exception, ex:
+            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to display export result. Error: {}'.format(ex)})
+            sys.exit(2)
+
+    def get_mail_and_groups_results_command(inquiryType):
+        try:
+            output = downloadAndSanitizeExportResults()
+
+            if not (output[0].get('From') or output[0].get('To') or output[0].get('Subject')) :
+                demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match'})
+                sys.exit(2)
+
+            markedown_output = map(lambda document: {
+                'From': document.get('From'),
+                'To': document.get('To'),
+                'CC': document.get('CC'),
+                'BCC': document.get('BCC'),
+                'Subject': document.get('Subject'),
+                'DateSent': document.get('DateSent'),
+                'DateReceived': document.get('DateReceived'),
+            },output)
+
+            title = "Your {} inquiry details\n".format(inquiryType)
+            headers = ['Subject', 'From', 'To', 'CC', 'BCC', 'DateSent', 'Labels']
+            markdown = tableToMarkdown(title, markedown_output, headers)
+
+            exportID = str(demisto.getArg('viewID')).split('/')[1]
+            contextOutput  = {'ExportID': exportID, 'Results': markedown_output}
+
+            demisto.results( {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': contextOutput,
+                'HumanReadable': markdown,
+                'EntryContext': {
+                    'GoogleVault.Export(val.ExportID == obj.ExportID)': contextOutput
+                                }
+            })
+
+        except Exception, ex:
+            demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Unable to display export result. Error: {}'.format(ex)})
+            sys.exit(2)
+
 
 
     # @@@@@@@@ DEMISTO COMMANDS @@@@@@@@
@@ -1033,6 +1197,14 @@ script:
         create_groups_export_command()
     elif demisto.command() == 'gvault-export-status':
         get_export_command()
+    elif demisto.command() == 'gvault-download-results':
+        download_export_command()
+    elif demisto.command() == 'gvault-get-drive-results':
+        get_drive_results_command()
+    elif demisto.command() == 'gvault-get-mail-results':
+        get_mail_and_groups_results_command('MAIL')
+    elif demisto.command() == 'gvault-get-groups-results':
+        get_mail_and_groups_results_command("GROUPS")
   type: python
   commands:
   - name: gvault-create-export-mail
@@ -1426,8 +1598,136 @@ script:
     - contextPath: GoogleVault.Export.Status
       description: Export Status (COMPLETED,FAILED,IN_PROGRESS)
       type: string
+    - contextPath: GoogleVault.Export.BucketName
+      description: Bucket holder name for this export
+      type: string
+    - contextPath: GoogleVault.Export.DownloadID
+      description: ID to be used by the download-export command
+      type: string
+    - contextPath: GoogleVault.Export.ViewID
+      description: ID to be used by the get-X-results command (X=drive/mail/groups)
+      type: string
     description: Gets a specified Export status
+  - name: gvault-download-results
+    arguments:
+    - name: bucketName
+      required: true
+      description: name of the bucket that holds the export
+    - name: downloadID
+      required: true
+      description: the export download ID
+    description: Download an export given a bucket name and object name
+  - name: gvault-get-drive-results
+    arguments:
+    - name: bucketName
+      required: true
+      description: name of the bucket that holds the export
+    - name: viewID
+      required: true
+      description: the export view ID
+    - name: maxResult
+      default: true
+      description: Set the threshold of result to be returned (High threshold can
+        slow down your browser)
+      defaultValue: "30"
+    outputs:
+    - contextPath: GoogleVault.Export.Results.Title
+      description: Title of the file
+      type: string
+    - contextPath: GoogleVault.Export.Results.Author
+      description: Author of the file
+      type: string
+    - contextPath: GoogleVault.Export.Results.Others
+      description: Other users related to the file
+      type: string
+    - contextPath: GoogleVault.Export.Results.Viewers
+      description: Viewers of the file
+      type: string
+    - contextPath: GoogleVault.Export.Results.DateModified
+      description: The date the file was modified
+      type: string
+    - contextPath: GoogleVault.Export.Results.DateCreated
+      description: The date the file was created
+      type: string
+    - contextPath: GoogleVault.Export.Results.DocType
+      description: The type of the file (extension)
+      type: string
+    - contextPath: GoogleVault.Export.Results.MD5
+      description: The MD5 of the file (SHA1)
+      type: string
+    description: 'Get the results of a given drive export '
+  - name: gvault-get-mail-results
+    arguments:
+    - name: bucketName
+      required: true
+      description: name of the bucket that holds the export
+    - name: viewID
+      required: true
+      description: the export view ID
+    - name: maxResult
+      default: true
+      description: Set the threshold of result to be returned (High threshold can
+        slow down your browser)
+      defaultValue: "30"
+    outputs:
+    - contextPath: GoogleVault.Export.Results.CC
+      description: CC of the mail
+      type: string
+    - contextPath: GoogleVault.Export.Results.BCC
+      description: 'BCC of the mail '
+      type: string
+    - contextPath: GoogleVault.Export.Results.DateSent
+      description: The date the email was sent
+      type: string
+    - contextPath: GoogleVault.Export.Results.From
+      description: The sender of the email
+      type: string
+    - contextPath: GoogleVault.Export.Results.Subject
+      description: The subject of the email
+      type: string
+    - contextPath: GoogleVault.Export.Results.DateReceived
+      description: The date the email was received
+      type: string
+    - contextPath: GoogleVault.Export.Results.To
+      description: The address the email was sent to
+      type: string
+    description: Get the results of a given mail export
+  - name: gvault-get-groups-results
+    arguments:
+    - name: bucketName
+      required: true
+      description: name of the bucket that holds the export
+    - name: viewID
+      required: true
+      description: the export view ID
+    - name: maxResult
+      default: true
+      description: Set the threshold of result to be returned (High threshold can
+        slow down your browser)
+      defaultValue: "30"
+    outputs:
+    - contextPath: GoogleVault.Export.Results.CC
+      description: CC of the message
+      type: string
+    - contextPath: GoogleVault.Export.Results.BCC
+      description: BCC of the message
+      type: string
+    - contextPath: GoogleVault.Export.Results.DateSent
+      description: The date the message
+      type: string
+    - contextPath: GoogleVault.Export.Results.From
+      description: The sender of the message
+      type: string
+    - contextPath: GoogleVault.Export.Results.Subject
+      description: The subject of the message
+      type: string
+    - contextPath: GoogleVault.Export.Results.DateReceived
+      description: The date the message was received
+      type: string
+    - contextPath: GoogleVault.Export.Results.To
+      description: The address the message was sent to
+      type: string
+    description: Get the results of a given group export
   dockerimage: demisto/gvault
   runonce: false
-tests:
-  - Google-Vault-Generic-Test
+releaseNotes: "Added get-results and download-export commands"
