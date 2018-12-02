@@ -1787,7 +1787,7 @@ script:
 
             response = client.modify_instance_attribute(**kwargs)
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                return "The Network Interface Aattribute was successfully modified"
+                return "The Instance attribute was successfully modified"
 
         except Exception as e:
             return raise_error(e)
@@ -4739,8 +4739,8 @@ script:
       multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute
       action.
     execution: true
-  dockerimage: demisto/boto3
+  dockerimage: demisto/boto3:1.9.55
   runonce: false
-releaseNotes: "Added commands: aws-ec2-modify-instance-attribute & aws-ec2-modify-network-interface-attribute"
+releaseNotes: "Added commands: aws-ec2-modify-instance-attribute & aws-ec2-modify-network-interface-attribute. Upgraded Boto3 to ver 1.9.55"
 tests:
   - Forgive me for my sins but I did not create any test
