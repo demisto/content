@@ -254,6 +254,7 @@ script:
             context['ResolvedBy'] = data['closed_by']['value'] if 'value' in data['closed_by'] else ''
         if 'opened_by' in data:
             context['OpenedBy'] = data['opened_by']['value'] if 'value' in data['opened_by'] else ''
+            context['Creator'] = data['opened_by']['value'] if 'value' in data['opened_by'] else ''
         if 'assigned_to' in data:
             context['Assignee'] = data['assigned_to']['value'] if 'value' in data['assigned_to'] else ''
 
