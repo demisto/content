@@ -797,7 +797,8 @@
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
         "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout",
-        "tenable-sc-scan-test": "Scan takes too long"
+        "tenable-sc-scan-test": "Scan takes too long",
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
