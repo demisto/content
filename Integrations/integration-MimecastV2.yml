@@ -2127,6 +2127,5 @@ script:
     description: Login to generate Access Key and  Secret Key
   isfetch: true
   runonce: false
-releaseNotes: "Added 3 auth commands from mimecast auth integration, mimecast-login/mimecast-discover/mimecast-refresh-token. Added outputs to mimecast-query command. Added automatic token refresh (App key & Secrey key)."
 tests:
  - Mimecast test

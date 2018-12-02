@@ -102,6 +102,5 @@ outputs:
   description: current time in ISO format
 scripttarget: 0
 runonce: false
-releaseNotes: "added functions: utc, year, month. dayinweek, hours, utchours. fixes gmt time to use utc, not case-sensitive"
 tests:
 - GetTime-Test

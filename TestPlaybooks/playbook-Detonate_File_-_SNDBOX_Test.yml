@@ -1,0 +1,142 @@
+id: Detonate File - SNDBOX - Test
+version: 5
+name: Detonate File - SNDBOX - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 78c271cb-d8af-41fd-8fda-a63ffdb3a88e
+    type: start
+    task:
+      id: 78c271cb-d8af-41fd-8fda-a63ffdb3a88e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 3e175f62-728f-4863-809e-08c04f75646d
+    type: regular
+    task:
+      id: 3e175f62-728f-4863-809e-08c04f75646d
+      version: -1
+      name: Start fresh
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: e4d803ff-4a96-40dd-8f12-d88707123dc5
+    type: regular
+    task:
+      id: e4d803ff-4a96-40dd-8f12-d88707123dc5
+      version: -1
+      name: Create sample file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test_file.pdf
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 2c00b69d-0bb7-4d37-876d-5c654c740ab6
+    type: playbook
+    task:
+      id: 2c00b69d-0bb7-4d37-876d-5c654c740ab6
+      version: -1
+      name: SNDBOX - Detonate File
+      playbookName: Detonate File - SNDBOX
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

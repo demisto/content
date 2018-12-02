@@ -296,6 +296,5 @@ script:
       description: Certificate validation end time
       type: string
     description: Use a certificate guid to extract more details from the cert store.
-releaseNotes: "Added venafi-get-certificate-details command and improved venafi-get-certificates command outputs"
 tests:
-- Forgive me for my sins but I did not create any test
+- No test - no instance
