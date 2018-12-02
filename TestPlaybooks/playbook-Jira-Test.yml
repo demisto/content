@@ -54,6 +54,7 @@ tasks:
           "y": 195
         }
       }
+    note: false
   "2":
     id: "2"
     taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
@@ -63,10 +64,10 @@ tasks:
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
-      script: jira|||jira-create-issue
+      script: '|||jira-create-issue'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -82,7 +83,7 @@ tasks:
       labels: {}
       priority: {}
       projectKey:
-        simple: SOC
+        simple: DEM
       projectName: {}
       reporter: {}
       summary:
@@ -96,6 +97,7 @@ tasks:
           "y": 370
         }
       }
+    note: false
   "3":
     id: "3"
     taskid: de36e03d-39df-47f0-8770-3814fb47309d
@@ -105,10 +107,10 @@ tasks:
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
-      script: jira|||jira-get-issue
+      script: '|||jira-get-issue'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -125,6 +127,7 @@ tasks:
           "y": 545
         }
       }
+    note: false
   "4":
     id: "4"
     taskid: ef93cc85-2f16-4f5a-893a-2736c25a6508
@@ -162,6 +165,7 @@ tasks:
           "y": 720
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
@@ -171,10 +175,10 @@ tasks:
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
-      script: jira|||jira-issue-add-comment
+      script: '|||jira-issue-add-comment'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -193,6 +197,7 @@ tasks:
           "y": 896
         }
       }
+    note: false
   "6":
     id: "6"
     taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
@@ -202,10 +207,10 @@ tasks:
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
-      script: jira|||jira-issue-add-link
+      script: '|||jira-issue-add-link'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
@@ -228,6 +233,7 @@ tasks:
           "y": 1070
         }
       }
+    note: false
   "9":
     id: "9"
     taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
@@ -237,10 +243,10 @@ tasks:
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
-      script: jira|||jira-issue-upload-file
+      script: '|||jira-issue-upload-file'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -258,6 +264,7 @@ tasks:
           "y": 1420
         }
       }
+    note: false
   "11":
     id: "11"
     taskid: f0a00a75-2589-4912-8d4f-5db6ca467b93
@@ -295,6 +302,7 @@ tasks:
           "y": 1770
         }
       }
+    note: false
   "12":
     id: "12"
     taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
@@ -304,10 +312,10 @@ tasks:
       version: -1
       name: jira-issue-query
       description: Query Jira issues
-      script: jira|||jira-issue-query
+      script: '|||jira-issue-query'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -326,6 +334,7 @@ tasks:
           "y": 1595
         }
       }
+    note: false
   "13":
     id: "13"
     taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
@@ -357,6 +366,7 @@ tasks:
           "y": 1245
         }
       }
+    note: false
   "14":
     id: "14"
     taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
@@ -365,10 +375,10 @@ tasks:
       id: b64bfaf1-2688-4b84-8e40-12f88afda0dd
       version: -1
       name: jira-edit-issue
-      script: jira|||jira-edit-issue
+      script: '|||jira-edit-issue'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -382,7 +392,7 @@ tasks:
       labels: {}
       priority: {}
       status:
-        simple: Resolve this issue
+        simple: done
       summary:
         simple: Edited
     reputationcalc: 0
@@ -394,6 +404,7 @@ tasks:
           "y": 1944
         }
       }
+    note: false
   "18":
     id: "18"
     taskid: 4c264332-3528-4f2b-812c-bd29fc08cfe6
@@ -441,7 +452,7 @@ tasks:
       - "22"
     scriptarguments:
       expectedValue:
-        simple: Resolved
+        simple: Done
       fields: {}
       path:
         simple: Ticket.[0].Status
@@ -462,10 +473,10 @@ tasks:
       id: 178e2167-e603-4868-8920-20489b8227e4
       version: -1
       name: jira-get-comments
-      script: jira|||jira-get-comments
+      script: '|||jira-get-comments'
       type: regular
       iscommand: true
-      brand: jira
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -481,6 +492,7 @@ tasks:
           "y": 2596
         }
       }
+    note: false
   "23":
     id: "23"
     taskid: 44df5166-91cf-498c-88b6-66dc581ffcb1
@@ -508,6 +520,7 @@ tasks:
           "y": 2800
         }
       }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
