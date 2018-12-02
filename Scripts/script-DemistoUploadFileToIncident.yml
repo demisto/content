@@ -23,7 +23,7 @@ args:
 scripttarget: 0
 runonce: false
 tests:
-- DemistoUploadFileToIncident-test
+- DemistoUploadFileToIncident Test
 dependson:
   must:
   - demisto-api-multipart
