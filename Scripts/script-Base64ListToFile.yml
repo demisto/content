@@ -16,12 +16,12 @@ script: |-
   # get the list
   res = demisto.executeCommand('getList', {'listName': demisto.args()['listname']})
   if res['Type'] == entryTypes['error']:
-    raise Exception("error reading list %s from demisto" % demisto.args()['listname'])
+    return_error("error reading list %s from demisto" % demisto.args()['listname'])
     sys.exit(0)
 
   # convert base64 file to binary file
   bin_file = base64.decodestring(res[0]['Contents'])
-  if demisto.args()['isZipFile']:
+  if demisto.args()['isZipFile'] == 'yes':
       bin_file = zlib.decompress(bin_file)
 
   # output file to warroom
