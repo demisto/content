@@ -1375,13 +1375,13 @@ script:
 
     def fetch_incidents():
         now = datetime.utcnow()
-        last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-        if len(last_run) == 0:
-            now -= timedelta(minutes=10)
+        last_run = demisto.getLastRun().get('time')
+        if last_run is None:
+            now = now - timedelta(days=3)
             last_run = now
-        if isinstance(last_run, unicode):
-            last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S.%f') # Converts string to datetime object
-
+        else:
+            last_run = datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S') #Converts string to datetime object
+        current_run = last_run
         threats = get_threats_request().get('page_items', [])
 
         incidents = []
@@ -1390,9 +1390,11 @@ script:
             if last_found > last_run:
                 incident = threat_to_incident(threat)
                 incidents.append(incident)
+            if last_found > current_run:
+                current_run = last_found
 
         demisto.incidents(incidents)
-        demisto.setLastRun({'time': now.isoformat()})
+        demisto.setLastRun({ 'time': current_run.isoformat().split('.')[0] })
 
 
     # EXECUTION
@@ -2029,6 +2031,9 @@ script:
       type: string
     - contextPath: File.Md5
       description: The MD5 has for the threat.
+      type: string
+    - contextPath: File.Sha256
+      description: The SHA256 has for the threat.
       type: string
     - contextPath: File.Name
       description: The name of the threat.

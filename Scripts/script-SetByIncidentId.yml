@@ -1,0 +1,47 @@
+commonfields:
+  id: 46e2109c-b735-458e-884f-030229a20830
+  version: 209
+name: SetByIncidentId
+script: |-
+  incident_id = demisto.args()['id'] if 'id' in demisto.args() else demisto.incidents()[0]['id']
+  key = demisto.args()['key']
+  value = demisto.args()['value']
+  append = demisto.args()['append']
+
+  args = {'key': key, 'value': value, 'append': append}
+
+  res = demisto.executeCommand('executeCommandAt',
+                              {'incidents': incident_id,
+                               'command':'Set',
+                               'arguments': args})
+
+  demisto.results(res)
+type: python
+tags:
+- DemistoAPI
+comment: Works the same as the 'Set' command, but can work across incidents by specifying
+  'id' as an argument. Sets a value into the context with the given context key. Doesn't
+  append by default.
+enabled: true
+args:
+- name: id
+  default: true
+  description: Incident to set context values in (Default is current incident)
+- name: key
+  required: true
+  description: The key to set
+- name: value
+  required: true
+  description: The value to set to the key. Can be an array. Usually, a dq expression.
+- name: append
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: If false then the context key will be overwritten. If set to true then
+    the script will append to existing context key
+  defaultValue: "false"
+scripttarget: 0
+runonce: false
+tests:
+- No test

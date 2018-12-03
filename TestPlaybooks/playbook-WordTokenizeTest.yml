@@ -1,0 +1,235 @@
+id: WordTokenizeTest
+version: -1
+name: WordTokenizeTest
+description: Test for WordTokenize automation
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 619219ed-afd5-4cfa-875f-537493560623
+    type: start
+    task:
+      id: 619219ed-afd5-4cfa-875f-537493560623
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 69a368ef-9036-4ace-817c-72d573f6a41c
+    type: regular
+    task:
+      id: 69a368ef-9036-4ace-817c-72d573f6a41c
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 8908966d-6105-4b52-8fd3-3f13d9fdff6d
+    type: regular
+    task:
+      id: 8908966d-6105-4b52-8fd3-3f13d9fdff6d
+      version: -1
+      name: WordTokenize
+      scriptName: WordTokenize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cleanHtml: {}
+      encoding: {}
+      hashWordWithSeed: {}
+      removeLineBreaks: {}
+      type: {}
+      value:
+        simple: |-
+          <bla> this is a
+          test </bla>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 89012289-bfb7-4ed5-861e-acb7a9f80ea0
+    type: regular
+    task:
+      id: 89012289-bfb7-4ed5-861e-acb7a9f80ea0
+      version: -1
+      name: Check value
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: this is a test
+      fields: {}
+      path:
+        simple: WordTokenizeOutput
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 6a8eda53-e18a-4f4c-8a09-120a0a25de2c
+    type: regular
+    task:
+      id: 6a8eda53-e18a-4f4c-8a09-120a0a25de2c
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 548bbe70-8a63-427c-84c4-249cf2d47b82
+    type: regular
+    task:
+      id: 548bbe70-8a63-427c-84c4-249cf2d47b82
+      version: -1
+      name: Hash words
+      scriptName: WordTokenize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      cleanHtml: {}
+      encoding: {}
+      hashWordWithSeed:
+        simple: "5381"
+      removeLineBreaks: {}
+      type: {}
+      value:
+        simple: <bla> בדיקה </bla>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: f1f812b6-cdfb-453b-870e-235c7b97829d
+    type: regular
+    task:
+      id: f1f812b6-cdfb-453b-870e-235c7b97829d
+      version: -1
+      name: Check value
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '"1955252253"'
+      fields: {}
+      path:
+        simple: WordTokenizeOutput
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1225,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
