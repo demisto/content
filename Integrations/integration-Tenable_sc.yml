@@ -1263,9 +1263,10 @@ script:
     def get_device_command():
         uuid = demisto.args().get('uuid')
         ip = demisto.args().get('ip')
-        dns_name = demisto.args().get('dnsName')
+        dns_name = demisto.args().get('dns_name')
+        repo = demisto.args().get('repository_id')
 
-        res = get_device(uuid, ip, dns_name)
+        res = get_device(uuid, ip, dns_name, repo)
 
         if not res or 'response' not in res:
             return_message('Device not found')
@@ -1292,20 +1293,27 @@ script:
 
         mapped_device = {
             'IP': device['ip'],
-            'UUID': device['uuid'],
-            'MacAddress': device['macAddress'],
-            'RepositoryID': device['repository'].get('id'),
-            'RepositoryName': device['repository'].get('name'),
-            'NetbiosName': device['netbiosName'],
-            'DNSName': device['dnsName'],
-            'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device['os'] else '',
-            'OsCPE': device['osCPE'],
-            'LastScan': datetime.datetime.utcfromtimestamp(int(device['lastScan'])).strftime('%Y-%m-%dT%H:%M:%SZ') if device['lastScan'] else '',
-            'TotalScore': device['total'],
-            'LowSeverity': device['severityLow'],
-            'MediumSeverity': device['severityMedium'],
-            'HighSeverity': device['severityHigh'],
-            'CriticalSeverity': device['severityCritical']
+            'UUID': device.get('uuid'),
+            'MacAddress': device.get('macAddress'),
+            'RepositoryID': device.get('repository', {}).get('id'),
+            'RepositoryName': device.get('repository', {}).get('name'),
+            'NetbiosName': device.get('netbiosName'),
+            'DNSName': device.get('dnsName'),
+            'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device.get('os') else '',
+            'OsCPE': device.get('osCPE'),
+            'LastScan': datetime.datetime.utcfromtimestamp(int(device.get('lastScan'))).strftime('%Y-%m-%dT%H:%M:%SZ') if device.get('lastScan') and int(device['lastScan']) > 0 else '',
+            'TotalScore': device.get('total'),
+            'LowSeverity': device.get('severityLow'),
+            'MediumSeverity': device.get('severityMedium'),
+            'HighSeverity': device.get('severityHigh'),
+            'CriticalSeverity': device.get('severityCritical')
+        }
+
+        endpoint =  {
+            'IP': mapped_device['IP'],
+            'MAC': mapped_device['MacAddress'],
+            'HostName': mapped_device['DNSName'],
+            'OS': mapped_device['OS']
         }
 
         demisto.results({
@@ -1315,13 +1323,15 @@ script:
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Tenable.sc Device', mapped_device, headers=headers, removeNull=True),
             'EntryContext': {
-                  'TenableSC.Device(val.UUID==obj.UUID)': createContext(mapped_device, removeNull=True)
+                  'TenableSC.Device(val.UUID==obj.UUID)': createContext(mapped_device, removeNull=True),
+                  'Endpoint(val.IP==obj.IP)': createContext(endpoint, removeNull=True)
             }
         })
 
 
-    def get_device(uuid, ip, dns_name):
-        path = 'deviceInfo'
+    def get_device(uuid, ip, dns_name, repo):
+        path = 'repository/' + repo + '/' if repo else ''
+        path += 'deviceInfo'
         params = {
             'fields': 'ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,severityMedium,severityHigh,severityCritical'
         }
@@ -1332,7 +1342,7 @@ script:
             if dns_name:
                 params['dnsName'] = dns_name
 
-        return send_request(path)
+        return send_request(path, params=params)
 
 
     def list_users_command():
@@ -2356,9 +2366,12 @@ script:
   - name: tenable-sc-get-device
     arguments:
     - name: ip
-      description: A valid IP address to filter by
-    - name: dnsName
+      description: A valid IP address of a device
+    - name: dns-name
       description: DNS name for the IP address
+    - name: repository_id
+      description: Repository ID to get the device from, can be retrieved from list-repositories
+        command
     outputs:
     - contextPath: TenableSC.Device.IP
       description: Device IP address
@@ -2405,7 +2418,7 @@ script:
     - contextPath: TenableSC.Device.CriticalSeverity
       description: Device total threat scores with critical severity
       type: number
-    description: Gets the device information from the current user in Tenable.sc
+    description: Gets the specified device information
   - name: tenable-sc-list-users
     arguments:
     - name: id
@@ -2489,6 +2502,6 @@ script:
       type: date
     description: Get the system information and diagnostics from Tenable.sc
   isfetch: true
-releaseNotes: "Enabled fetch incidents (alerts)"
+releaseNotes: "Enabled fetch incidents (alerts), fixes to get-device command"
 tests:
   - tenable-sc-test
