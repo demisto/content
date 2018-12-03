@@ -2,7 +2,6 @@ id: extract_indicators_from_file_-_generic
 version: -1
 name: Extract Indicators From File - Generic
 fromversion: 3.6.0
-releaseNotes: "-"
 description: |-
   Extract indicators from a file.
   Currently supports PDFs and text-based file types (e.g., .txt, .htm, .html, and so on).

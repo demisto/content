@@ -2,7 +2,7 @@ commonfields:
   id: Mimecast
   version: -1
 name: Mimecast
-display: Mimecast
+display: Mimecast Deprecated
 category: Email Gateway
 system: true
 fromversion: 1.6.2
@@ -29,7 +29,7 @@ configuration:
   name: insecure
   defaultvalue: "true"
   type: 8
-  required: false  
+  required: false
 script:
   script: |-
     var insecure = params.insecure;
@@ -255,3 +255,6 @@ script:
         are not fully indexed yet (default false). You can search by mailbox and date
         time across active messages
     description: query mimecast emails
+  runonce: false
+tests:
+ - No test

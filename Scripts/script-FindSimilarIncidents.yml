@@ -322,11 +322,12 @@ comment: |-
   Find similar incidents by common incident keys, labels, custom fields or context keys.
   It's highly recommended to use incident keys if possible (e.g. "type" for same incident type).
   It's also recommended to avoid using context keys if possible (for example, if the value also appear in label key, use label) for better performance.
+  All the conditions applied with "AND" between them.
 enabled: true
 args:
 - name: similarIncidentKeys
-  description: Identical incident keys. Comma separated value
   deprecated: true
+  description: Identical incident keys. Comma separated value
 - name: similarLabelsKeys
   description: 'Similar label keys. Comma separated value. It''s also possible to
     let X different words between labels, within the following way: label_name:X,
@@ -337,9 +338,9 @@ args:
   description: Similar context keys. Comma separated value. It's also possible to
     let X different words between values (see labels description).
 - name: similarCustomFields
+  deprecated: true
   description: Similar custom fields keys. Comma separated value. It's also possible
     to let X different words between values (see labels description).
-  deprecated: true
 - name: ignoreClosedIncidents
   auto: PREDEFINED
   predefined:

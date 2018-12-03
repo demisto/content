@@ -206,4 +206,5 @@ script:
     description: Used for testing, should fetch xml file and return Demisto incident object
   isfetch: true
   runonce: false
-releaseNotes: ArcSight XML will no rely on lxml.etree lib
+tests:
+- No test

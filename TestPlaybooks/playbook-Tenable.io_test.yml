@@ -1,0 +1,216 @@
+id: Tenable.io test
+version: -1
+name: Tenable.io test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b0849f7-b8bd-4520-86ac-b379aa9a9d65
+    type: start
+    task:
+      id: 8b0849f7-b8bd-4520-86ac-b379aa9a9d65
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: fd92b5cb-d7b2-4528-8fb2-b84eadffd3e2
+    type: regular
+    task:
+      id: fd92b5cb-d7b2-4528-8fb2-b84eadffd3e2
+      version: -1
+      name: tenable-io-list-scans
+      description: Retrive scans from the Tenable platform.
+      script: '|||tenable-io-list-scans'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      folderId: {}
+      lastModifiedDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 87f54f14-f8e1-4d4b-8130-a8cd84ac34cb
+    type: regular
+    task:
+      id: 87f54f14-f8e1-4d4b-8130-a8cd84ac34cb
+      version: -1
+      name: tenable-io-get-scan-status
+      description: 'Check the status of a specific scan using its ID. The status can
+        hold following possible values : Running, Completed and Empty (Ready to run).'
+      script: '|||tenable-io-get-scan-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      scanId:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 8aaab108-a1dd-422e-8df5-7a7d90c3df87
+    type: regular
+    task:
+      id: 8aaab108-a1dd-422e-8df5-7a7d90c3df87
+      version: -1
+      name: tenable-io-get-scan-report
+      description: Retrive scan-report for the given scan.
+      script: '|||tenable-io-get-scan-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+    scriptarguments:
+      detailed:
+        simple: "yes"
+      info:
+        simple: "yes"
+      scanId:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: b137b649-6541-4d77-804f-c26fdf86c5d5
+    type: regular
+    task:
+      id: b137b649-6541-4d77-804f-c26fdf86c5d5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 8fd35fbd-2815-47f3-8d50-610833d3934e
+    type: regular
+    task:
+      id: 8fd35fbd-2815-47f3-8d50-610833d3934e
+      version: -1
+      name: tenable-io-get-vulnerability-details
+      description: Retrieve details for the given vulnerability.
+      script: '|||tenable-io-get-vulnerability-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      dateRange: {}
+      vulnerabilityId:
+        complex:
+          root: TenableIO
+          accessor: Vulnerabilities.[0].Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: e3f89e43-fdc7-40ba-8dfd-ed93eb0148ac
+    type: regular
+    task:
+      id: e3f89e43-fdc7-40ba-8dfd-ed93eb0148ac
+      version: -1
+      name: tenable-io-get-vulnerabilities-by-asset
+      description: Get a list of up to 5000 of the vulnerabilities recorded for a
+        given asset. By default, this list is sorted by vulnerability count, descending.
+      script: '|||tenable-io-get-vulnerabilities-by-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      assetId: {}
+      dateRange: {}
+      hostname:
+        simple: debian8628.aspadmin.net
+      ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 1455,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

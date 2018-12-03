@@ -5,8 +5,8 @@ name: QRadar
 display: IBM QRadar
 category: Analytics & SIEM
 image: data:image/png;base64,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
-description: Get incidents and search QRadar
-detaileddescription: Get incidents and search QRadar
+description: Fetch offenses as incidents and search QRadar
+detaileddescription: Fetch offenses as incidents and search QRadar
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -102,7 +102,7 @@ script:
         'relevance': 'Relevance',
         'severity': 'Severity',
         'assigned_to': 'AssignedTo',
-        'local_destination_address_ids': 'DestinationHostname',
+        'destination_networks': 'DestinationHostname',
         'status': 'Status',
         'closing_user': 'ClosingUser',
         'closing_reason_id': 'ClosingReason',
@@ -112,7 +112,7 @@ script:
         'id': 'ID',
         'description': 'Description',
         'source_address_ids': 'SourceAddress',
-        'destination_address_ids': 'DestinationAddress',
+        'local_destination_address_ids': 'DestinationAddress',
         'start_time': 'StartTime',
         'event_count': 'EventCount',
         'flow_count': 'FlowCount',
@@ -155,7 +155,12 @@ script:
         'element_type': 'ElementType',
         'number_of_elements': 'NumberOfElements',
         'time_to_live': 'TimeToLive',
-        'timeout_type': 'TimeoutType'
+        'timeout_type': 'TimeoutType',
+        'data': 'Data',
+        'last_seen': 'LastSeen',
+        'source': 'Source',
+        'value': 'Value',
+        'first_seen': 'FirstSeen'
     }
 
     ''' Utility methods '''
@@ -197,10 +202,11 @@ script:
                 return trans_map[key]
             return key
 
-        if isinstance(src, list):
-            return map(lambda x: replace_keys(x, trans_map), src)
         if trans_map:
-            src = {replace(k, trans_map): v for k,v in src.iteritems()}
+            if isinstance(src, list):
+                return map(lambda x: replace_keys(x, trans_map), src)
+            else:
+                src = {replace(k, trans_map): v for k,v in src.iteritems()}
         return src
 
     # Transforms flat dictionary to comma seperated values
@@ -213,7 +219,15 @@ script:
             res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
             res.raise_for_status()
         except HTTPError, e:
-            return_error(res.json())
+            err_json = res.json()
+            err_msg = ''
+            if 'message' in err_json:
+              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
+            elif 'http_response' in err_json:
+              err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
+            if 'code' in err_json:
+              err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+            return_error(err_msg)
         return res.json()
 
     # Generic function that receives a result json, and turns it into an entryObject
@@ -238,29 +252,36 @@ script:
 
     # Converts epoch (miliseconds) to ISO string
     def epoch_to_ISO(ms_passed_since_epoch):
-        return datetime.datetime.utcfromtimestamp(ms_passed_since_epoch/1000.0).strftime(("%Y-%m-%dT%H:%M:%S.%fZ"))
+        if ms_passed_since_epoch >= 0:
+            return datetime.datetime.utcfromtimestamp(ms_passed_since_epoch/1000.0).strftime(("%Y-%m-%dT%H:%M:%S.%fZ"))
+        return ms_passed_since_epoch
 
     # Converts closing reason name to id
-    def convert_closing_reason_name_to_id(closing_name):
-        res = get_closing_reasons(include_deleted=True, include_reserved=True)
-        for closing_reason in res:
+    def convert_closing_reason_name_to_id(closing_name, closing_reasons=None):
+        if not closing_reasons:
+            closing_reasons = get_closing_reasons(include_deleted=True, include_reserved=True)
+        for closing_reason in closing_reasons:
             if closing_reason['text'] == closing_name:
                 return closing_reason['id']
         return closing_name
 
     # Converts closing reason id to name
-    def convert_closing_reason_id_to_name(closing_id):
-        res = get_closing_reasons(include_deleted=True, include_reserved=True)
-        for closing_reason in res:
+    def convert_closing_reason_id_to_name(closing_id, closing_reasons=None):
+        if not closing_reasons:
+            closing_reasons = get_closing_reasons(include_deleted=True, include_reserved=True)
+        for closing_reason in closing_reasons:
             if closing_reason['id'] == closing_id:
                 return closing_reason['text']
         return closing_id
 
     # Converts offense type id to name
-    def convert_offense_type_id_to_name(offense_type_id):
-        res = get_offense_type(offense_type_id)
-        if 'name' in res:
-            return res['name']
+    def convert_offense_type_id_to_name(offense_type_id, offense_types=None):
+        if not offense_types:
+            offense_types = get_offense_types()
+        if offense_types:
+            for o_type in offense_types:
+                if o_type['id'] == offense_type_id:
+                    return o_type['name']
         return offense_type_id
 
     ''' Request/Response methods '''
@@ -279,7 +300,6 @@ script:
     # Returns the result of a single offense request
     def get_offense_by_id(offense_id, _filter='', _fields=''):
         full_url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
-        demisto.info(full_url)
         params = {"filter": _filter} if _filter else {}
         headers = dict(AUTH_HEADERS)
         if _fields:
@@ -336,12 +356,12 @@ script:
         return send_request('GET', url, headers, params)
 
     # Returns the result of a offense types request
-    def get_offense_type(type_id):
-        url = '{0}/api/siem/offense_types/{1}'.format(SERVER, type_id)
+    def get_offense_types():
+        url = '{0}/api/siem/offense_types'.format(SERVER)
         # Due to a bug in QRadar, this functions does not work if username/password was not provided
         if USERNAME and PASSWORD:
             return send_request('GET', url, headers=None)
-        return {type_id}
+        return {}
 
     # Returns the result of a get note request
     def get_note(offense_id, note_id, fields):
@@ -367,6 +387,31 @@ script:
             headers['Range'] = 'items={0}'.format(_range)
         return send_request('GET', url, headers, params=params)
 
+    def create_reference_set(ref_name, element_type, timeout_type, time_to_live):
+        url = '{0}/api/reference_data/sets'.format(SERVER)
+        params = {'name': ref_name, 'element_type': element_type}
+        if timeout_type:
+            params['timeout_type'] = timeout_type
+        if time_to_live:
+            params['time_to_live'] = time_to_live
+        return send_request('POST', url, params=params)
+
+    def delete_reference_set(ref_name):
+        url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+        return send_request('DELETE', url)
+
+    def update_reference_set_value(ref_name, value, source=None):
+        url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+        params = {'name': ref_name, 'value': value}
+        if source:
+            params['source'] = source
+        return send_request('POST', url, params=params)
+
+    def delete_reference_set_value(ref_name, value):
+        url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, ref_name, value)
+        params = {'name': ref_name, 'value': value}
+        return send_request('DELETE', url, params=params)
+
     ''' Command methods '''
 
     def test_module():
@@ -375,20 +420,26 @@ script:
         return 'ok'
 
     def fetch_incidents():
-        query = demisto.args().get('query')
+        query = demisto.params().get('query')
         lastRun = demisto.getLastRun()
         offenseId = lastRun['id'] if lastRun and 'id' in lastRun else 0
-        fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
+        if lastRun and offenseId == 0:
+            startTime = lastRun['startTime'] if 'startTime' in lastRun else '0'
+            fetchQuery = 'start_time>{0}{1}'.format(startTime, ' AND ({0})'.format(query) if query else '')
+        else:
+           fetchQuery = 'id>{0} {1}'.format(offenseId, 'AND ({0})'.format(query) if query else '')
             # qradar returns offenses sorted desc on id and there's no way to change sorting.
             # if we get `offernsesPerCall` offenses it means we (probably) have more than that so we
             # start looking for the end of the list by doubling the page position until we're empty.
             # then start binary search back until you find the end of the list and finally return
             # `offensesPerCall` from the end.
+        demisto.debug('QRadar lastRun: {0}\nFetchQuery: {1}\n'.format(str(lastRun), fetchQuery))
         raw_offenses = get_offenses(_range='0-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)
         if len(raw_offenses) >= OFFENSES_PER_CALL:
             lastOffensePos = find_last_page_pos(fetchQuery)
             raw_offenses = get_offenses(_range='{0}-{1}'.format(str(lastOffensePos - OFFENSES_PER_CALL + 1), str(lastOffensePos)))
         incidents = []
+        enrich_offense_res_with_source_and_destination_address(raw_offenses)
         for offense in raw_offenses:
             offenseId = max(offenseId, offense['id'])
             incidents.append(create_incident_from_offense(offense))
@@ -396,7 +447,7 @@ script:
         return json.dumps(incidents)
 
     # Finds the last page position for QRadar query that receives a range parameter
-    def find_last_page_pos():
+    def find_last_page_pos(fetchQuery):
         # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
         if len(get_offenses(_range='{0}-{0}'.format(str(OFFENSES_PER_CALL)), _filter=fetchQuery)) == 0:
             return OFFENSES_PER_CALL - 1
@@ -421,8 +472,6 @@ script:
     # Creates incidents from offense
     def create_incident_from_offense(offense):
         occured = epoch_to_ISO(offense['start_time'])
-        enrich_offense_result(offense, full_enrichment=True)
-        offense = unicode_to_str_recur(offense)
         keys = offense.keys()
         labels = []
         for i in range(len(keys)):
@@ -444,33 +493,39 @@ script:
     def enrich_offense_result(response, full_enrichment=False):
         enrich_offense_res_with_source_and_destination_address(response)
         if isinstance(response, list):
+            type_dict = get_offense_types()
+            closing_reason_dict = get_closing_reasons(include_deleted=True, include_reserved=True)
             for offense in response:
-                enrich_single_offense_result(offense, full_enrichment)
+                enrich_single_offense_result(offense, full_enrichment, type_dict, closing_reason_dict)
         else:
             enrich_single_offense_result(response, full_enrichment)
 
         return response
 
     # Convert epoch to iso and closing_reason_id to closing reason name, and if full_enrichment then converts closing_reason_id to name
-    def enrich_single_offense_result(offense, full_enrichment):
+    def enrich_single_offense_result(offense, full_enrichment, type_dict=None, closing_reason_dict=None):
         enrich_offense_start_and_update_times(offense)
         if 'offense_type' in offense:
-            offense['offense_type'] = convert_offense_type_id_to_name(offense['offense_type'])
+            offense['offense_type'] = convert_offense_type_id_to_name(offense['offense_type'], type_dict)
         if full_enrichment and 'closing_reason_id' in offense:
-            offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'])
+            offense['closing_reason_id'] = convert_closing_reason_id_to_name(offense['closing_reason_id'], closing_reason_dict)
 
     # Enriches offense result dictionary with source and destination addresses
     def enrich_offense_res_with_source_and_destination_address(response):
         src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
-        if src_adrs:
-            enrich_source_addresses_dict(src_adrs)
-        if dst_adrs:
-            enrich_destination_addresses_dict(dst_adrs)
-        if isinstance(response, list):
-            for offense in response:
-               enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
-        else:
-            enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
+        # This command might encounter HTML error page in certain cases instead of JSON result. Fallback: cancel the enrichment
+        try:
+            if src_adrs:
+                enrich_source_addresses_dict(src_adrs)
+            if dst_adrs:
+                enrich_destination_addresses_dict(dst_adrs)
+            if isinstance(response, list):
+                for offense in response:
+                   enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
+            else:
+                enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
+        except ValueError:
+            pass
         return response
 
     # Helper method: Extracts all source and destination addresses ids from an offense result
@@ -501,7 +556,7 @@ script:
         source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
         src_res = send_request('GET', source_url, AUTH_HEADERS)
         for src_adr in src_res:
-            src_adrs[src_adr['id']] = src_adr['source_ip']
+            src_adrs[src_adr['id']] = str(src_adr['source_ip'])
         return src_adrs
 
     # Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to the ids
@@ -511,7 +566,7 @@ script:
         headers = {'Content-Type': 'application/json', "SEC": str(TOKEN)}
         dst_res = send_request('GET', destination_url, AUTH_HEADERS)
         for dst_adr in dst_res:
-            dst_adrs[dst_adr['id']] = dst_adr['local_destination_ip']
+            dst_adrs[dst_adr['id']] = str(dst_adr['local_destination_ip'])
         return dst_adrs
 
     # Helper method: For a single offense replaces the source and destination ids with the actual addresses
@@ -562,12 +617,14 @@ script:
         search_id = demisto.args().get('search_id')
         raw_search = get_search(search_id)
         raw_search = filter_dict_nonintersection_key_to_value(replace_keys(raw_search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
-        return get_entry_for_object('QRadar Search Info', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === {0})'.format(search_id))
+        return get_entry_for_object('QRadar Search Info', raw_search, demisto.args().get('headers'), 'QRadar.Search(val.ID === "{0}")'.format(search_id))
 
     def get_search_results_command():
         search_id = demisto.args().get('search_id')
         raw_search_results = get_search_results(search_id, demisto.args().get('range'))
-        return get_entry_for_object('QRadar Search Results', unicode_to_str_recur(raw_search_results), demisto.args().get('headers'), 'QRadar.Search(val.ID === {0}).Result'.format(search_id))
+        result_key = raw_search_results.keys()[0]
+        title = 'QRadar Search Results from ' + result_key
+        return get_entry_for_object(title, unicode_to_str_recur(raw_search_results[result_key]), demisto.args().get('headers'), 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key))
 
     def get_assets_command():
         raw_assets = get_assets(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
@@ -590,12 +647,15 @@ script:
             if isinstance(headers, basestring):
                 headers = headers.split(',')
             headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
+        human_readable_md = ''
+        for k, h_obj in human_readable_obj.iteritems():
+            human_readable_md = human_readable_md + tableToMarkdown(k, h_obj, headers)
         return {
             'Type': entryTypes['note'],
             'Contents': obj,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, human_readable_obj, headers),
+            'HumanReadable': "### {0}\n{1}".format(title, human_readable_md),
             'EntryContext': obj
         }
 
@@ -604,15 +664,27 @@ script:
         human_readable_trans_assets = {}
         endpoint_dict = create_empty_endpoint_dict(full_values)
         for asset in assets:
-            asset_key = 'QRadar.Asset(val.ID === {0})'.format(asset['id'])
+            asset_key = 'QRadar.Asset(val.ID === "{0}")'.format(asset['id'])
             human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
             populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
             trans_assets[asset_key] = populated_asset
-            human_readable_trans_assets[human_readable_key] = populated_asset
+            human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(populated_asset)
         # Adding endpoints context items
         trans_assets['Endpoint'] = endpoint_dict
         human_readable_trans_assets['Endpoint'] = endpoint_dict
         return trans_assets, human_readable_trans_assets
+
+    def transform_single_asset_to_hr(asset):
+        '''
+        Prepares asset for human readable
+        '''
+        hr_asset = []
+        for k,v in asset.iteritems():
+            if isinstance(v, dict):
+                hr_item = v
+                hr_item['Property Name'] = k
+                hr_asset.append(hr_item)
+        return hr_asset
 
     def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
         asset_dict = {}
@@ -690,7 +762,7 @@ script:
         note = replace_keys(raw_note, note_names_map)
         if 'CreateTime' in note:
           note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-        return get_entry_for_object('QRadar Note', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === {0})'.format(demisto.args().get('note_id')))
+        return get_entry_for_object('QRadar note created successfuly', note, demisto.args().get('headers'), 'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get('note_id')))
 
     def create_note_command():
         raw_note = create_note(demisto.args().get('offense_id'), demisto.args().get('note_text'), demisto.args().get('fields'))
@@ -707,9 +779,74 @@ script:
     def get_reference_by_name_command():
         raw_ref = get_reference_by_name(demisto.args().get('ref_name'))
         ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        convert_date_elements = True if demisto.args().get('date_value') == 'True' and ref['ElementType'] == 'DATE' else False
+        enrich_reference_set_result(ref, convert_date_elements)
+        return get_entry_for_reference_set(ref)
+
+    def enrich_reference_set_result(ref, convert_date_elements=False):
+        if 'Data' in ref:
+            ref['Data'] = replace_keys(ref['Data'], REFERENCE_NAMES_MAP)
+            for item in ref['Data']:
+                item['FirstSeen'] = epoch_to_ISO(item['FirstSeen'])
+                item['LastSeen'] = epoch_to_ISO(item['LastSeen'])
+                if convert_date_elements:
+                    try:
+                        item['Value'] = epoch_to_ISO(int(item['Value']))
+                    except:
+                        pass
         if 'CreationTime' in ref:
             ref['CreationTime'] = epoch_to_ISO(ref['CreationTime'])
-        return get_entry_for_object('QRadar References', ref, demisto.args().get('headers'), 'QRadar.Reference')
+        return ref
+
+    def get_entry_for_reference_set(ref, title='QRadar References'):
+        data = ref.pop('Data', None)
+        ec_key = 'QRadar.Reference(val.Name === obj.Name)'
+        entry = get_entry_for_object(title, ref, demisto.args().get('headers'), ec_key)
+        # Add another table for the data values
+        if data:
+            entry['HumanReadable'] = entry['HumanReadable'] + tableToMarkdown("Reference Items", data)
+            entry['EntryContext'][ec_key]['Data'] = data
+        return entry
+
+    def create_reference_set_command():
+        args = demisto.args()
+        raw_ref = create_reference_set(args.get('ref_name'), args.get('element_type'), args.get('timeout_type'), args.get('time_to_live'))
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        enrich_reference_set_result(ref)
+        return get_entry_for_reference_set(ref)
+
+    def delete_reference_set_command():
+        ref_name = demisto.args().get('ref_name')
+        raw_ref = delete_reference_set(ref_name)
+        return {
+            'Type': entryTypes['note'],
+            'Contents': raw_ref,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': "Reference Data Deletion Task for '{0}' was intiated. Refernce set '{0}' should be deleted shortly.".format(ref_name)
+        }
+
+    def update_reference_set_value_command():
+        args = demisto.args()
+        if args.get('date_value') == 'True':
+            value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        else:
+            value = args.get('value')
+        raw_ref = update_reference_set_value(args.get('ref_name'), value, args.get('source'))
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        enrich_reference_set_result(ref)
+        return get_entry_for_reference_set(ref, title='Element value was updated successfuly in reference set:')
+
+    def delete_reference_set_value_command():
+        args = demisto.args()
+        if args.get('date_value') == 'True':
+            value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        else:
+            value = args.get('value')
+        raw_ref = delete_reference_set_value(args.get('ref_name'), value)
+        ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
+        enrich_reference_set_result(ref)
+        return get_entry_for_reference_set(ref, title='Element value was deleted successfuly in reference set:')
 
     # Command selector
     if demisto.command() == 'test-module':
@@ -740,6 +877,14 @@ script:
         demisto.results(create_note_command())
     elif demisto.command() == 'qradar-get-reference-by-name':
         demisto.results(get_reference_by_name_command())
+    elif demisto.command() == 'qradar-create-reference-set':
+        demisto.results(create_reference_set_command())
+    elif demisto.command() == 'qradar-delete-reference-set':
+        demisto.results(delete_reference_set_command())
+    elif demisto.command() in ('qradar-create-reference-set-value', 'qradar-update-reference-set-value'):
+        demisto.results(update_reference_set_value_command())
+    elif demisto.command() == 'qradar-delete-reference-set-value':
+        demisto.results(delete_reference_set_value_command())
   type: python
   commands:
   - name: qradar-offenses
@@ -1448,9 +1593,17 @@ script:
     - name: headers
       description: Table headers to use the human readable output (if none provided,
         will show all table headers)
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If set to true will try to convert the data values to ISO-8601
+        string.
+      defaultValue: "False"
     outputs:
     - contextPath: QRadar.Reference.Name
-      description: The name of the reference.
+      description: The name of the reference set.
       type: string
     - contextPath: QRadar.Reference.CreationTime
       description: The creation time (ISO) of the reference.
@@ -1459,7 +1612,7 @@ script:
       description: Reference element type.
       type: string
     - contextPath: QRadar.Reference.NumberOfElements
-      description: Number of elements
+      description: Number of elements.
       type: number
     - contextPath: QRadar.Reference.TimeToLive
       description: Reference time to live.
@@ -1467,11 +1620,180 @@ script:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
       type: string
+    - contextPath: QRadar.Reference.Data
+      description: Reference set items
     description: Information about the reference set that had data added or updated.
       This returns information set but not the contained data. This feature is supported
       from version 8.1 and upward.
+  - name: qradar-create-reference-set
+    arguments:
+    - name: ref_name
+      required: true
+      description: Reference name to be created
+    - name: element_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ALN
+      - ALNIC
+      - IP
+      - NUM
+      - PORT
+      - DATE
+      description: 'The element type for the values allowed in the reference set.
+        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
+        IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date
+        values need to be represented in milliseconds since the Unix Epoch January
+        1st 1970.'
+    - name: timeout_type
+      auto: PREDEFINED
+      predefined:
+      - FIRST_SEEN
+      - LAST_SEEN
+      - UNKNOWN
+      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
+        default value is UNKNOWN.
+    - name: time_to_live
+      description: 'The time to live interval, for example: "1 month" or "5 minutes"'
+    outputs:
+    - contextPath: QRadar.Reference.CreationTime
+      description: Creation time of the reference set.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: 'The element type for the values allowed in the reference set.
+        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
+        IP (IP address), NUM (numeric), PORT (port number) or DATE.'
+      type: string
+    - contextPath: QRadar.Reference.Name
+      description: Name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements in the created reference set.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: Timeout type of the reference. The allowed values are FIRST_SEEN,
+        LAST_SEEN and UNKNOWN.
+      type: string
+    description: Creates a new reference set. If the provided name is already in use,
+      this command will fail
+  - name: qradar-delete-reference-set
+    arguments:
+    - name: ref_name
+      required: true
+      default: true
+      description: The name of reference set to delete.
+    description: Deletes a reference set corresponding to the name provided.
+  - name: qradar-create-reference-set-value
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to add or update a value in.
+    - name: value
+      required: true
+      description: 'The value to add or update in the reference set. Note: Date values
+        must be represented in epoch in reference sets (milliseconds since the Unix Epoch January 1st
+        1970).
+        If ''date_value'' is set to ''True'', then the argument will be converted from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+    - name: source
+      description: An indication of where the data originated. The default value is
+                     'reference data api'.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+    description: Add or update a value in a reference set.
+  - name: qradar-update-reference-set-value
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to add or update a value in.
+    - name: value
+      required: true
+      description: 'The value to add or update in the reference set. Note: Date values
+        must be represented in milliseconds since the Unix Epoch January 1st 1970.'
+    - name: source
+      description: An indication of where the data originated. The default value is
+                     'reference data api'.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+    description: Add or update a value in a reference set.
+  - name: qradar-delete-reference-set-value
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to remove a value from.
+    - name: value
+      required: true
+      description: The value to remove from the reference set.
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      defaultValue: "False"
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+    description: Deletes a value in a reference set.
   isfetch: true
   runonce: false
 tests:
   - test_Qradar
-releaseNotes: "-"
