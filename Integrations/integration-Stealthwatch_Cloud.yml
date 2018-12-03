@@ -861,3 +861,5 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: "-"
+tests:
+- No test
