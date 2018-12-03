@@ -16,7 +16,7 @@ script: |-
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0],'Contents.events')
+      data = demisto.get(resp[0],'Contents')
 
       if not data:
           resp[0]['HumanReadable'] = "No Correlations were found for offense id {0}".format(offense_id)
@@ -120,3 +120,5 @@ scripttarget: 0
 dependson:
   must:
   - qradar-searches
+tests:
+- No test

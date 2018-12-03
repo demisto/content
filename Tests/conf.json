@@ -2,8 +2,43 @@
     "testTimeout": 160,
     "tests": [
         {
+            "integrations": "FortiGate",
+            "playbookID": "Fortigate Test"
+        },
+        {
+            "integrations": [
+                "Lastline",
+                "WildFire",
+                "SNDBOX"
+            ],
+            "playbookID" : "Detonate File - Generic Test",
+            "timeout" : 2400,
+            "nightly" : true
+        },
+        {
+            "integrations": "SNDBOX",
+            "playbookID": "SNDBOX_Test"
+        },
+        {
+            "integrations": "SNDBOX",
+            "playbookID": "Detonate File - SNDBOX - Test",
+            "timeout": 2400,
+            "nightly": true
+        },
+        {
+            "playbookID": "WordTokenizeTest"
+        },
+        {
+          "integrations": "Tenable.sc",
+          "playbookID": "tenable-sc-test",
+          "timeout": 240
+        },
+        {
             "integrations": "MimecastV2",
             "playbookID": "Mimecast test"
+        },
+        {
+            "playbookID": "CreateEmailHtmlBody_test_pb"
         },
         {
           "playbookID": "ReadPDFFile-Test"
@@ -19,6 +54,11 @@
           "playbookID": "URLDecode-Test"
         },
         {
+          "integrations": "Cuckoo Sandbox",
+          "playbookID": "CuckooTest",
+          "timeout": 600
+        },
+        {
           "playbookID": "GetTime-Test"
         },
         {
@@ -26,6 +66,12 @@
           "playbookID": "Tenable.io Scan Test",
           "nightly": true,
           "timeout": 500
+        },
+        {
+            "integrations": "Tenable.sc",
+            "playbookID": "tenable-sc-scan-test",
+            "nightly": true,
+            "timeout": 600
         },
         {
             "integrations": "google-vault",
@@ -619,6 +665,10 @@
             "playbookID": "PhishAi-Test"
         },
         {
+            "integrations": "Phish.AI",
+            "playbookID": "Test-Detonate URL - Phish.AI"
+        },
+        {
             "integrations": "Centreon",
             "playbookID": "Centreon-Test-Playbook"
         },
@@ -656,6 +706,10 @@
         {
             "integrations": "Cisco pxGrid ISE",
             "playbookID": "cisco-ise-test-playbook"
+        },
+        {
+            "integrations": "RSA NetWitness v11.1",
+            "playbookID": "RSA NetWitness Test"
         },
         {
             "integrations": "Rasterize",
@@ -742,9 +796,9 @@
         "Jask_Test": "Need to check the reason for skipping",
         "Qualys-Test": "Need to check the reason for skipping",
         "sep_-_test_endpoint_search": "Failed test, need to fix",
-        "Phishing test - Inline": "Ip range problem in IsIPInRanges",
-        "Phishing test - attachment": "can't find entryID in ExtractIndicatorsFromTextFile.",
-        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout"
+        "FireEye HX Test": "fireeye-hx-file-acquisition failed on timeout",
+        "tenable-sc-scan-test": "Scan takes too long",
+        "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
         "Anomali ThreatStream": "Instance is down",
@@ -759,10 +813,11 @@
         "XFE": "Need to check the reason for skipping",
         "iDefense": "DevOps investigation",
         "LogRhythm": "DevOps investigation",
-        "Phish.AI": "Need to check the reason for skipping",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Service Manager": "Expired license",
-        "Signal Sciences WAF": "API problems, not returning the correct data"
+        "Signal Sciences WAF": "API problems, not returning the correct data",
+        "Server Message Block (SMB)": "No instance",
+        "ServiceNow": "Instance goes to hibernate every few hours"
     },
     "nigthly_integrations": [
         "Lastline"

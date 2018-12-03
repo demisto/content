@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 68b13ecf-b0dd-4ba7-875a-0bf13a793f3e
+    taskid: a443b23f-ee37-474c-81b7-6413f61a0617
     type: start
     task:
-      id: 68b13ecf-b0dd-4ba7-875a-0bf13a793f3e
+      id: a443b23f-ee37-474c-81b7-6413f61a0617
       version: -1
       name: ""
       description: start
@@ -28,10 +28,10 @@ tasks:
     note: false
   "1":
     id: "1"
-    taskid: b2b681e2-6ef3-49a5-894d-bb11a1405779
+    taskid: a8d790be-a71b-457b-84ed-e15691575d1e
     type: regular
     task:
-      id: b2b681e2-6ef3-49a5-894d-bb11a1405779
+      id: a8d790be-a71b-457b-84ed-e15691575d1e
       version: -1
       name: qradar-get-assets
       description: execute command qradar-get-assets
@@ -59,10 +59,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: dddfd74c-cb20-4379-894b-eb020156a5c9
+    taskid: 01f0a821-6cce-4ece-88cf-464d3f910bfc
     type: regular
     task:
-      id: dddfd74c-cb20-4379-894b-eb020156a5c9
+      id: 01f0a821-6cce-4ece-88cf-464d3f910bfc
       version: -1
       name: qradar-create-note in existing offense
       description: execute command qradar-create-note
@@ -91,10 +91,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: c95026fa-9fbb-4f11-890f-cfce5fe6d5c0
+    taskid: 94577465-8f0f-4fa5-8efc-4e701ed6cea5
     type: regular
     task:
-      id: c95026fa-9fbb-4f11-890f-cfce5fe6d5c0
+      id: 94577465-8f0f-4fa5-8efc-4e701ed6cea5
       version: -1
       name: qradar-get-note
       description: execute command qradar-get-note
@@ -123,10 +123,10 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: a446f0ea-b99d-431a-8015-c4f30d3a83b6
+    taskid: ed1eac3d-2a71-46cd-8c8e-6db683b69463
     type: regular
     task:
-      id: a446f0ea-b99d-431a-8015-c4f30d3a83b6
+      id: ed1eac3d-2a71-46cd-8c8e-6db683b69463
       version: -1
       name: qradar-offenses
       description: execute command qradar-offenses
@@ -155,10 +155,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: a687ea90-cf0c-4bcf-8d93-5c6307cc325d
+    taskid: 9396f695-77b7-4b74-8bca-09ffcce545b5
     type: regular
     task:
-      id: a687ea90-cf0c-4bcf-8d93-5c6307cc325d
+      id: 9396f695-77b7-4b74-8bca-09ffcce545b5
       version: -1
       name: qradar-offense-by-id
       description: execute command qradar-offense-by-id
@@ -186,10 +186,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: c90fb6bb-2a09-494d-8fb0-f3286cf52a2b
+    taskid: 401ee09f-a2da-4408-8410-5d290d2ee6a7
     type: condition
     task:
-      id: c90fb6bb-2a09-494d-8fb0-f3286cf52a2b
+      id: 401ee09f-a2da-4408-8410-5d290d2ee6a7
       version: -1
       name: Verify offense credibility exists
       description: Verifies offense credibility exists
@@ -220,10 +220,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: a8da951d-7043-425c-8b9d-619a4853fd89
+    taskid: 09d446e9-1966-45e5-8b62-a7901fdba0e9
     type: regular
     task:
-      id: a8da951d-7043-425c-8b9d-619a4853fd89
+      id: 09d446e9-1966-45e5-8b62-a7901fdba0e9
       version: -1
       name: Set offense protected to false (qradar-update-offense)
       description: execute command qradar-update-offense
@@ -256,10 +256,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: 967f8d87-9c90-48ac-8200-813134d4f9ea
+    taskid: 847dfa01-1e52-413c-8bcf-699f91010681
     type: condition
     task:
-      id: 967f8d87-9c90-48ac-8200-813134d4f9ea
+      id: 847dfa01-1e52-413c-8bcf-699f91010681
       version: -1
       name: Verify protected was set to false
       description: Verifies protected was set to false
@@ -288,10 +288,10 @@ tasks:
     note: false
   "15":
     id: "15"
-    taskid: 232258b9-58a7-4413-83ae-421588dccd49
+    taskid: e36de7b0-e502-492f-8177-c8d2a388cc70
     type: regular
     task:
-      id: 232258b9-58a7-4413-83ae-421588dccd49
+      id: e36de7b0-e502-492f-8177-c8d2a388cc70
       version: -1
       name: Set offense protected to true (qradar-update-offense)
       description: execute command qradar-update-offense
@@ -324,10 +324,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: dc66b600-e0f1-46c6-896d-948691da7c5a
+    taskid: 657042b5-2652-4480-8a4b-2883adb54abf
     type: condition
     task:
-      id: dc66b600-e0f1-46c6-896d-948691da7c5a
+      id: 657042b5-2652-4480-8a4b-2883adb54abf
       version: -1
       name: Verify protected was set to true
       description: Verifies protected was set to true
@@ -356,10 +356,10 @@ tasks:
     note: false
   "17":
     id: "17"
-    taskid: 4bc30d41-1a4b-4797-8ebc-99e8aa6a3242
+    taskid: 1fb77ec6-a009-47cd-814e-e94aeb7ffae8
     type: title
     task:
-      id: 4bc30d41-1a4b-4797-8ebc-99e8aa6a3242
+      id: 1fb77ec6-a009-47cd-814e-e94aeb7ffae8
       version: -1
       name: Offense test was completed successfully
       description: Offense test end
@@ -377,10 +377,10 @@ tasks:
     note: false
   "18":
     id: "18"
-    taskid: 4f575ce9-d525-40d9-8177-f2d388f95fc0
+    taskid: ea9434c0-8c7f-4f0b-8a66-2a3dcfb794d3
     type: title
     task:
-      id: 4f575ce9-d525-40d9-8177-f2d388f95fc0
+      id: ea9434c0-8c7f-4f0b-8a66-2a3dcfb794d3
       version: -1
       name: Offense test was completed successfully
       description: Offense test end
@@ -398,10 +398,10 @@ tasks:
     note: false
   "19":
     id: "19"
-    taskid: 7b834b43-d769-442f-8371-5f41289cc29d
+    taskid: b29fcc9f-5c2d-4776-8acd-0eebd53fe323
     type: condition
     task:
-      id: 7b834b43-d769-442f-8371-5f41289cc29d
+      id: b29fcc9f-5c2d-4776-8acd-0eebd53fe323
       version: -1
       name: Verify note text matches
       description: Verifies note text matches request
@@ -433,10 +433,10 @@ tasks:
     note: false
   "20":
     id: "20"
-    taskid: 3cacb428-5866-49da-8c6f-8415e90c604a
+    taskid: 09f3e602-e6f4-4f46-8428-2be01d8b3c26
     type: title
     task:
-      id: 3cacb428-5866-49da-8c6f-8415e90c604a
+      id: 09f3e602-e6f4-4f46-8428-2be01d8b3c26
       version: -1
       name: Notes test was completed successfully
       description: Notes test end
@@ -454,10 +454,10 @@ tasks:
     note: false
   "21":
     id: "21"
-    taskid: e61779ef-f6d8-4977-8eef-464c672310cd
+    taskid: 176e6819-c581-41ba-8ce0-0d0fc26a1540
     type: regular
     task:
-      id: e61779ef-f6d8-4977-8eef-464c672310cd
+      id: 176e6819-c581-41ba-8ce0-0d0fc26a1540
       version: -1
       name: qradar-get-asset-by-id
       description: execute command qradar-get-asset-by-id
@@ -482,10 +482,10 @@ tasks:
     note: false
   "22":
     id: "22"
-    taskid: d98bfa17-2a7f-4348-8637-2c6c8c73f01c
+    taskid: d2eb65f2-19e5-4469-8bd0-405a255e7c6c
     type: condition
     task:
-      id: d98bfa17-2a7f-4348-8637-2c6c8c73f01c
+      id: d2eb65f2-19e5-4469-8bd0-405a255e7c6c
       version: -1
       name: Verify MACAddress was pulled successfully
       description: Verifies MACAddress was pulled successfully
@@ -514,10 +514,10 @@ tasks:
     note: false
   "23":
     id: "23"
-    taskid: e7f652ec-e83e-415c-8430-f921f3a429ba
+    taskid: 685350b0-bed2-43fb-889f-2540ced93536
     type: title
     task:
-      id: e7f652ec-e83e-415c-8430-f921f3a429ba
+      id: 685350b0-bed2-43fb-889f-2540ced93536
       version: -1
       name: Assets test was completed successfully
       description: Assets test end
@@ -535,10 +535,10 @@ tasks:
     note: false
   "24":
     id: "24"
-    taskid: 907cad1a-9fe7-4ab9-8a05-8de6ee7056fc
+    taskid: c66cf267-7772-43c1-8a46-7e10bd833dd9
     type: title
     task:
-      id: 907cad1a-9fe7-4ab9-8a05-8de6ee7056fc
+      id: c66cf267-7772-43c1-8a46-7e10bd833dd9
       version: -1
       name: Search test was completed successfully
       description: Search test end
@@ -556,10 +556,10 @@ tasks:
     note: false
   "25":
     id: "25"
-    taskid: 9994b4bc-95ba-4def-8ffd-6e0ae5333a6d
+    taskid: 9e9da58d-7082-4b84-852b-b532b384f4bc
     type: regular
     task:
-      id: 9994b4bc-95ba-4def-8ffd-6e0ae5333a6d
+      id: 9e9da58d-7082-4b84-852b-b532b384f4bc
       version: -1
       name: Delete All Context
       description: Deletes all the context
@@ -591,10 +591,10 @@ tasks:
     note: false
   "26":
     id: "26"
-    taskid: 84662ee6-93ea-4c8a-850b-db7112a631b1
+    taskid: d04764c9-04f5-4ea0-81d9-15f70f0b6191
     type: playbook
     task:
-      id: 84662ee6-93ea-4c8a-850b-db7112a631b1
+      id: d04764c9-04f5-4ea0-81d9-15f70f0b6191
       version: -1
       name: QRadarFullSearch
       description: Use QRadarFullSearch to initiate a search and get the results
@@ -630,10 +630,10 @@ tasks:
     note: false
   "27":
     id: "27"
-    taskid: 46a2be50-6e8d-48d3-8c3c-2ce7e1b2a2ab
+    taskid: cf4b74fe-e5cc-4ddf-8e99-3d033219a857
     type: regular
     task:
-      id: 46a2be50-6e8d-48d3-8c3c-2ce7e1b2a2ab
+      id: cf4b74fe-e5cc-4ddf-8e99-3d033219a857
       version: -1
       name: qradar-delete-reference-set
       description: Deletes a reference set (if exists)
@@ -659,10 +659,10 @@ tasks:
     note: false
   "28":
     id: "28"
-    taskid: 36619b86-4a22-479f-8589-eb0357f1c4f0
+    taskid: a8f5feb9-a3dc-4621-80f1-79bb24711ef7
     type: regular
     task:
-      id: 36619b86-4a22-479f-8589-eb0357f1c4f0
+      id: a8f5feb9-a3dc-4621-80f1-79bb24711ef7
       version: -1
       name: qradar-create-reference-set
       description: Creates a new refernce set for the test
@@ -675,7 +675,7 @@ tasks:
       - "29"
     scriptarguments:
       element_type:
-        simple: ALN
+        simple: DATE
       ref_name:
         simple: test_playbook
       time_to_live: {}
@@ -691,10 +691,10 @@ tasks:
     note: false
   "29":
     id: "29"
-    taskid: 5c3f1a37-4e57-4a22-8fc4-139aae5e42a2
+    taskid: 75bf2ac5-5fb0-483c-85d7-63b9adac61dc
     type: regular
     task:
-      id: 5c3f1a37-4e57-4a22-8fc4-139aae5e42a2
+      id: 75bf2ac5-5fb0-483c-85d7-63b9adac61dc
       version: -1
       name: qradar-create-reference-set-value
       script: QRadar|||qradar-create-reference-set-value
@@ -705,12 +705,14 @@ tasks:
       '#none#':
       - "30"
     scriptarguments:
+      date_value:
+        simple: "True"
       ref_name:
         simple: test_playbook
       source:
-        simple: test_value
+        simple: test
       value:
-        simple: test_value
+        simple: 2018-11-06T08:56:31.000000Z
     separatecontext: false
     view: |-
       {
@@ -722,10 +724,10 @@ tasks:
     note: false
   "30":
     id: "30"
-    taskid: 9ee8cc41-79be-4af5-897e-8c62ab07c0ed
+    taskid: 66797136-780e-4fbc-8bd3-f20f428adfaf
     type: regular
     task:
-      id: 9ee8cc41-79be-4af5-897e-8c62ab07c0ed
+      id: 66797136-780e-4fbc-8bd3-f20f428adfaf
       version: -1
       name: qradar-get-reference-by-name
       description: Get the reference set and values
@@ -737,6 +739,8 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
+      date_value:
+        simple: "True"
       headers: {}
       ref_name:
         simple: test_playbook
@@ -751,10 +755,10 @@ tasks:
     note: false
   "31":
     id: "31"
-    taskid: 2bb55eeb-42b1-4df9-8f30-ae75c3f9d030
+    taskid: 46f56c92-bab7-4044-8643-fb2ca513c4e7
     type: condition
     task:
-      id: 2bb55eeb-42b1-4df9-8f30-ae75c3f9d030
+      id: 46f56c92-bab7-4044-8643-fb2ca513c4e7
       version: -1
       name: Validate test_value appears in reference set
       description: Validates reference set values are pulled correctly
@@ -775,7 +779,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: test_value
+              simple: 2018-11-06T08:56:31.000000Z
     view: |-
       {
         "position": {
@@ -786,10 +790,10 @@ tasks:
     note: false
   "32":
     id: "32"
-    taskid: 0e22cfff-f748-4b85-8215-adb0cfab3e1b
+    taskid: 23342869-fd31-44d3-8aea-e04ad571110a
     type: regular
     task:
-      id: 0e22cfff-f748-4b85-8215-adb0cfab3e1b
+      id: 23342869-fd31-44d3-8aea-e04ad571110a
       version: -1
       name: Delete test_value from reference set
       script: QRadar|||qradar-delete-reference-set-value
@@ -800,10 +804,12 @@ tasks:
       '#none#':
       - "33"
     scriptarguments:
+      date_value:
+        simple: "True"
       ref_name:
         simple: test_playbook
       value:
-        simple: test_value
+        simple: 2018-11-06T08:56:31.000000Z
     separatecontext: false
     view: |-
       {
@@ -815,10 +821,10 @@ tasks:
     note: false
   "33":
     id: "33"
-    taskid: 50d985f1-0a8e-4733-84fa-1274005bcc16
+    taskid: 879e39a6-df9b-4573-83ce-e93dff5c94bb
     type: regular
     task:
-      id: 50d985f1-0a8e-4733-84fa-1274005bcc16
+      id: 879e39a6-df9b-4573-83ce-e93dff5c94bb
       version: -1
       name: qradar-get-reference-by-name
       script: QRadar|||qradar-get-reference-by-name
@@ -829,6 +835,7 @@ tasks:
       '#none#':
       - "34"
     scriptarguments:
+      date_value: {}
       headers: {}
       ref_name:
         simple: test_playbook
@@ -843,10 +850,10 @@ tasks:
     note: false
   "34":
     id: "34"
-    taskid: aa291003-a642-43e2-8ee4-0a9ad98e57bd
+    taskid: 655462ad-cf2c-486c-832f-431153d546cf
     type: condition
     task:
-      id: aa291003-a642-43e2-8ee4-0a9ad98e57bd
+      id: 655462ad-cf2c-486c-832f-431153d546cf
       version: -1
       name: Validate test_playbook reference set is empty
       description: Validates test_playbook reference set is empty
@@ -878,10 +885,10 @@ tasks:
     note: false
   "35":
     id: "35"
-    taskid: 7360803b-71e0-4ac3-8514-4d2f8954995f
+    taskid: e51941b8-d9f2-4aab-86e7-5f7afcca4a70
     type: regular
     task:
-      id: 7360803b-71e0-4ac3-8514-4d2f8954995f
+      id: e51941b8-d9f2-4aab-86e7-5f7afcca4a70
       version: -1
       name: qradar-delete-reference-set
       description: Deletes the reference set
@@ -906,10 +913,10 @@ tasks:
     note: false
   "36":
     id: "36"
-    taskid: 228e07d5-baff-4dfc-8b1d-083c50ca370c
+    taskid: 81cf1b74-e0a5-4f77-808b-b8126676e412
     type: title
     task:
-      id: 228e07d5-baff-4dfc-8b1d-083c50ca370c
+      id: 81cf1b74-e0a5-4f77-808b-b8126676e412
       version: -1
       name: Reference set was completed successfuly
       description: Reference set was completed successfuly
@@ -939,6 +946,5 @@ view: |-
   }
 inputs: []
 outputs: []
-releaseNotes: "-"
 tests:
-- Forgive me for my sins but I did not create any test
+- No test
