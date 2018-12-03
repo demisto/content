@@ -56,6 +56,7 @@ tasks:
         complex:
           root: inputs.Role
       username: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -124,10 +125,10 @@ tasks:
       version: -1
       name: Close investigation
       description: Close the investigation.
-      scriptName: CloseInvestigation
+      script: Builtin|||closeInvestigation
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "29"
@@ -193,6 +194,7 @@ tasks:
         complex:
           root: incident
           accessor: labels.Email/from
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -212,15 +214,16 @@ tasks:
       name: Acknowledge incident was received
       description: |
         Send an auto-response to user that reported the incident, informing them the incident was received and being handled.
-      scriptName: SendEmail
+      script: '|||send-mail'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
       attachIDs: {}
+      attachNames: {}
       bcc: {}
       body:
         simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']
@@ -237,6 +240,7 @@ tasks:
         complex:
           root: incident
           accessor: labels.Email/from
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -315,18 +319,19 @@ tasks:
     task:
       id: 9fff2dfd-443c-4b97-8db1-22ff69f8360b
       version: -1
-      name: Update  the user that the reported email is safe
+      name: Update the user that the reported email is safe
       description: Send an email to the user explaining that the email they reported
         is safe.
-      scriptName: SendEmail
+      script: '|||send-mail'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "27"
     scriptarguments:
       attachIDs: {}
+      attachNames: {}
       bcc: {}
       body:
         simple: |-
@@ -344,6 +349,7 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -363,15 +369,16 @@ tasks:
       name: Update  the user that the reported email is malicious
       description: Send an email to the user explaining that the email they reported
         is malicious.
-      scriptName: SendEmail
+      script: '|||send-mail'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "27"
     scriptarguments:
       attachIDs: {}
+      attachNames: {}
       bcc: {}
       body:
         simple: |-
@@ -388,6 +395,7 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -843,6 +851,7 @@ inputs:
     Enable the "Block Indicators" capability (can be either "True" or "False").
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 outputs: []
+releaseNotes: "-"
 tests:
   - Phishing test - attachment
   - Phishing test - Inline
