@@ -3,6 +3,7 @@ commonfields:
   version: -1
 rolename: []
 name: FetchFromInstance
+fromversion: 4.0
 script: |
   import re
 
@@ -37,5 +38,6 @@ args:
   description: The name of the instance you want to fetch from
 scripttarget: 0
 runonce: false
+deprecated: true
 tests:
   - No test - cannot create a dummy integration inorder to test that
