@@ -66,8 +66,8 @@ tasks:
     task:
       id: 8908966d-6105-4b52-8fd3-3f13d9fdff6d
       version: -1
-      name: WordTokenize
-      scriptName: WordTokenize
+      name: WordTokenizer
+      scriptName: WordTokenizer
       type: regular
       iscommand: false
       brand: ""
@@ -165,7 +165,7 @@ tasks:
       id: 548bbe70-8a63-427c-84c4-249cf2d47b82
       version: -1
       name: Hash words
-      scriptName: WordTokenize
+      scriptName: WordTokenizer
       type: regular
       iscommand: false
       brand: ""

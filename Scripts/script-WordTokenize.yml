@@ -1,7 +1,7 @@
 commonfields:
-  id: WordTokenize
+  id: WordTokenizer
   version: -1
-name: WordTokenize
+name: WordTokenizer
 script: |-
   import nltk, re
   from HTMLParser import HTMLParser
