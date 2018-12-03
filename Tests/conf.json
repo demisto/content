@@ -611,11 +611,6 @@
             "playbookID": "Cisco Umbrella Test"
         },
         {
-            "integrations": "icebrg",
-            "playbookID": "Icebrg Test",
-            "timeout" : 500
-        },
-        {
             "integrations": "Symantec MSS",
             "playbookID": "SymantecMSSTest"
         },
@@ -791,6 +786,7 @@
       }
     ],
     "skipped_tests": {
+        "Icebrg Test": "Requires BD",
         "blockip_test_playbook": "No Check Point FW license",
         "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
