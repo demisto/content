@@ -143,6 +143,7 @@ script:
     arguments:
     - name: query
       required: true
+      description: URL, IP, or domain to be enriched
     outputs:
     - contextPath: Whois.Domain
       description: Domain
