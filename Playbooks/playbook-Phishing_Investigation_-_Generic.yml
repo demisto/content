@@ -212,10 +212,10 @@ tasks:
       name: Acknowledge incident was received
       description: |
         Send an auto-response to user that reported the incident, informing them the incident was received and being handled.
-      script: EWS Mail Sender|||send-mail
+      script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: EWS Mail Sender
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -293,10 +293,10 @@ tasks:
       name: Update the user that the reported email is safe
       description: Send an email to the user explaining that the email they reported
         is safe.
-      script: EWS Mail Sender|||send-mail
+      script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: EWS Mail Sender
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -338,10 +338,10 @@ tasks:
       name: Update the user that the reported email is malicious
       description: Send an email to the user explaining that the email they reported
         is malicious.
-      script: EWS Mail Sender|||send-mail
+      script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: EWS Mail Sender
+      brand: ""
     nexttasks:
       '#none#':
       - "27"
