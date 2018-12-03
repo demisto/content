@@ -2418,6 +2418,18 @@ script:
     - contextPath: TenableSC.Device.CriticalSeverity
       description: Device total threat scores with critical severity
       type: number
+    - contextPath: Endpoint.IP
+      description: Endpoint IP address
+      type: string
+    - contextPath: Endpoint.HostName
+      description: Endpoint DNS name
+      type: string
+    - contextPath: Endpoint.MAC
+      description: Endpoint mac address
+      type: string
+    - contextPath: Endpoint.OS
+      description: Endpoint OS
+      type: string
     description: Gets the specified device information
   - name: tenable-sc-list-users
     arguments:
