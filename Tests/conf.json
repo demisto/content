@@ -114,6 +114,10 @@
             "playbookID": "IntSights Test"
         },
         {
+            "integrations": "dnstwist",
+            "playbookID": "dnstwistTest"
+        },
+        {
             "integrations": "BitDam",
             "playbookID": "Detonate File - BitDam Test"
         },
