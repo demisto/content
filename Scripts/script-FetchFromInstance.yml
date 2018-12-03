@@ -1,7 +1,6 @@
 commonfields:
   id: FetchFromInstance
   version: -1
-rolename: []
 name: FetchFromInstance
 fromversion: 4.0
 script: |
@@ -39,5 +38,7 @@ args:
 scripttarget: 0
 runonce: false
 deprecated: true
+comment: Execute FetchIncident for a given instance
 tests:
   - No test - cannot create a dummy integration inorder to test that
+releaseNotes: "-"
