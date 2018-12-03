@@ -43,7 +43,6 @@ script:
 
 
     ''' HELPER FUNCTIONS '''
-
     # Returns an item in a list at a given index
     def list_tool(item, list, number):
         if isinstance(item, list):
@@ -69,40 +68,36 @@ script:
             return obj
 
 
-
-
     '''COMMANDS'''
     def whois_command():
         try:
-            w = whois.whois(DOMAIN)
+            whois_result = whois.whois(DOMAIN)
             md = {}
-            for key in w:
-                value = w[key]
+            for key in whois_result:
+                value = whois_result[key]
                 value = my_converter(value)
                 key = string_to_table_header(key)
                 md.update({key: value})
             ec = {}
             ec.update({
-                'Domain':
-                    {
-                    'Name': str(list_tool(w.domain_name, list, 0)),
-                    'Whois':
-                        {
-                        'Domain': str(list_tool(w.domain_name, list, 0)),
-                        'DomainStatus': w.status,
-                        'DNSSec': str(w.dnssec),
-                        'Raw': str(w),
-                        'NameServers': w.name_servers,
-                        'CreationDate': str(time_list_tool(w.creation_date)),
-                        'UpdatedDate': str(time_list_tool(w.updated_date)),
-                        'ExpirationDate': str(time_list_tool(w.expiration_date)),
+                'Domain': {
+                    'Name': str(list_tool(whois_result.domain_name, list, 0)),
+                    'Whois': {
+                        'Domain': str(list_tool(whois_result.domain_name, list, 0)),
+                        'DomainStatus': whois_result.status,
+                        'DNSSec': str(whois_result.dnssec),
+                        'Raw': str(whois_result),
+                        'NameServers': whois_result.name_servers,
+                        'CreationDate': str(time_list_tool(whois_result.creation_date)),
+                        'UpdatedDate': str(time_list_tool(whois_result.updated_date)),
+                        'ExpirationDate': str(time_list_tool(whois_result.expiration_date)),
                         'Registrar': {
-                            'Name': str(w.registrar),
-                            'AbuseEmail': str(list_tool(w.emails, list, 0))
+                            'Name': str(whois_result.registrar),
+                            'AbuseEmail': str(list_tool(whois_result.emails, list, 0))
                             },
                         'Registrant': {
-                            'Name': str(w.get('name')),
-                            'Email': str(list_tool(w.emails, list, 1))
+                            'Name': str(whois_result.get('name')),
+                            'Email': str(list_tool(whois_result.emails, list, 1))
                             }
                         }
                     }
@@ -110,7 +105,7 @@ script:
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['markdown'],
-                'Contents': str(w),
+                'Contents': str(whois_result),
                 'HumanReadable': tableToMarkdown('Whois results for {}'.format(DOMAIN), md, removeNull=True),
                 'EntryContext': createContext(ec, removeNull=True)
                 })
@@ -119,11 +114,10 @@ script:
 
 
     def test_command():
-
         try:
-            w = whois.whois('google.com')
+            whois_result = whois.whois('google.com')
 
-            domain_test = list_tool(w.domain_name, list, 1)
+            domain_test = list_tool(whois_result.domain_name, list, 1)
 
             if domain_test == 'google.com':
                 demisto.results('ok')
@@ -132,9 +126,7 @@ script:
 
 
     ''' EXECUTION CODE '''
-
     LOG('command is %s' % (demisto.command(), ))
-
     try:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
