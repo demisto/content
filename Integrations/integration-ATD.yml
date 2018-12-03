@@ -1241,5 +1241,3 @@ script:
 releaseNotes: "Handle outputs for malicious files"
 tests:
 - Test Playbook McAfee ATD
-- Detonate URL - Generic Test
-- Detonate File - Generic Test
