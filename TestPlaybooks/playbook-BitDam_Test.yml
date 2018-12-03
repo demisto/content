@@ -29,6 +29,7 @@ tasks:
     id: "1"
     taskid: def55e04-3ec5-4160-88d6-edd57d1ddb6b
     type: playbook
+    timertriggers: []
     task:
       id: def55e04-3ec5-4160-88d6-edd57d1ddb6b
       version: -1

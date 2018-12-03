@@ -24,11 +24,13 @@ tasks:
       - "11"
       - "13"
       - "14"
+      - "15"
+      - "16"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1555,
           "y": 50
         }
       }
@@ -49,7 +51,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1555,
           "y": 370
         }
       }
@@ -330,13 +332,82 @@ tasks:
         }
       }
     note: false
+  "15":
+    id: "15"
+    taskid: 0e879eba-0377-44bf-81c4-83468555fec4
+    type: playbook
+    task:
+      id: 0e879eba-0377-44bf-81c4-83468555fec4
+      version: -1
+      name: Detonate File - Cuckoo
+      playbookName: Detonate File - Cuckoo
+      type: playbook
+      description: "Detonates a file using Cuckoo sandbox"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        simple: ${inputs.File}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 195
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: e69051d8-12bd-440c-85de-3f3c713d1556
+    type: playbook
+    task:
+      id: e69051d8-12bd-440c-85de-3f3c713d1556
+      version: -1
+      name: Detonate File - SNDBOX
+      playbookName: Detonate File - SNDBOX
+      description: "Detonates a file using SNDBOX"
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 195
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 2530,
+        "width": 3390,
         "x": 50,
         "y": 50
       }
@@ -493,5 +564,82 @@ outputs:
 - contextPath: Joe.Analysis
   description: Thee Analysis object
   type: unknown
+- contextPath: Cuckoo.Task.Category
+  description: Category of task
+- contextPath: Cuckoo.Task.Machine
+  description: Machine of task
+- contextPath: Cuckoo.Task.Errors
+  description: Errors of task
+- contextPath: Cuckoo.Task.Target
+  description: Target of task
+- contextPath: Cuckoo.Task.Package
+  description: Package of task
+- contextPath: Cuckoo.Task.SampleID
+  description: Sample ID of task
+- contextPath: Cuckoo.Task.Guest
+  description: Task guest
+- contextPath: Cuckoo.Task.Custom
+  description: Custom values of task
+- contextPath: Cuckoo.Task.Owner
+  description: Task owner
+- contextPath: Cuckoo.Task.Priority
+  description: Priority of task
+- contextPath: Cuckoo.Task.Platform
+  description: Platform of task
+- contextPath: Cuckoo.Task.Options
+  description: Task options
+- contextPath: Cuckoo.Task.Status
+  description: Task status
+- contextPath: Cuckoo.Task.EnforceTimeout
+  description: Is timeout of task enforced
+- contextPath: Cuckoo.Task.Timeout
+  description: Task timeout
+- contextPath: Cuckoo.Task.Memory
+  description: Task memory
+- contextPath: Cuckoo.Task.Tags
+  description: Task tags
+- contextPath: Cuckoo.Task.ID
+  description: ID of task
+- contextPath: Cuckoo.Task.AddedOn
+  description: Date on which the task was added
+- contextPath: Cuckoo.Task.CompletedOn
+  description: Date on which the task was completed
+- contextPath: Cuckoo.Task.Score
+  description: Reported score of the the task
+- contextPath: Cuckoo.Task.Monitor
+  description: Monitor of the reported task
+- contextPath: SNDBOX.Analysis.ID
+  description: Analysis ID
+  type: string
+- contextPath: SNDBOX.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: SNDBOX.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: SNDBOX.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: SNDBOX.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: SNDBOX.Analysis.Errors
+  description: Raised errors during sampling
+- contextPath: SNDBOX.Analysis.Link
+  description: Analysis Link
+  type: string
+- contextPath: SNDBOX.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis
+  description: SNDBOX analysis
+  type: unknown
+releaseNotes: "added SNDBOX"
 tests:
-- detonate_file_-_generic_test
+  - Detonate File - Generic Test

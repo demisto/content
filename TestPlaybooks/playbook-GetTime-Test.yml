@@ -1,0 +1,1484 @@
+id: GetTime-Test
+version: -1
+name: GetTime-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1ccb46e6-232c-4a28-8e42-e91b6d8da298
+    type: start
+    task:
+      id: 1ccb46e6-232c-4a28-8e42-e91b6d8da298
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 45319632-2fd2-427d-8cc8-9e174b39c3f9
+    type: regular
+    task:
+      id: 45319632-2fd2-427d-8cc8-9e174b39c3f9
+      version: -1
+      name: Get UTC
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: utc
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 496478f3-044e-4c1b-8639-055cd5cde377
+    type: regular
+    task:
+      id: 496478f3-044e-4c1b-8639-055cd5cde377
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
+          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 43049653-f243-4055-8070-6abe38aae555
+    type: regular
+    task:
+      id: 43049653-f243-4055-8070-6abe38aae555
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 4a95ef64-f535-4c4e-8cd8-5e3acf411fcb
+    type: condition
+    task:
+      id: 4a95ef64-f535-4c4e-8cd8-5e3acf411fcb
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: b67d6ab6-f778-4b59-805a-e2e72c76e5cd
+    type: regular
+    task:
+      id: b67d6ab6-f778-4b59-805a-e2e72c76e5cd
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: fb41ef96-6df4-4f6a-8457-6bcf951924a1
+    type: regular
+    task:
+      id: fb41ef96-6df4-4f6a-8457-6bcf951924a1
+      version: -1
+      name: Get ISO
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: ISO
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 225
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: adb46c3b-5279-4a82-8a46-d8cbc45fc453
+    type: regular
+    task:
+      id: adb46c3b-5279-4a82-8a46-d8cbc45fc453
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](:[0-5][0-9]){2}.[0-9]{3}Z$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 400
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 6553ae61-84fb-4c37-8e6f-cf7ea89b00bf
+    type: condition
+    task:
+      id: 6553ae61-84fb-4c37-8e6f-cf7ea89b00bf
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 575
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 08249424-b22a-4b46-805f-94383316bc50
+    type: regular
+    task:
+      id: 08249424-b22a-4b46-805f-94383316bc50
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: efaaa1c1-8023-4965-8153-eca215da5dec
+    type: regular
+    task:
+      id: efaaa1c1-8023-4965-8153-eca215da5dec
+      version: -1
+      name: Get Locale
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: locale
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 225
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: f40d0660-8ff9-43a5-85f1-e6427bc97efd
+    type: regular
+    task:
+      id: f40d0660-8ff9-43a5-85f1-e6427bc97efd
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^[0-1][0-9]/[0-3][0-9]/[0-9]{4}, [0-2][0-9](:[0-5][0-9]){2}$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 400
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 9720c74e-5363-4c16-82c9-931f8e093b52
+    type: condition
+    task:
+      id: 9720c74e-5363-4c16-82c9-931f8e093b52
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 575
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: ec8e9a2a-1aa9-450e-863d-381484eef6ec
+    type: regular
+    task:
+      id: ec8e9a2a-1aa9-450e-863d-381484eef6ec
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 25f907c2-6226-467a-8622-bf23a56e393d
+    type: regular
+    task:
+      id: 25f907c2-6226-467a-8622-bf23a56e393d
+      version: -1
+      name: Get Date
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: date
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 225
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 7d2f7410-d6e9-4565-8246-a30fdaf962c2
+    type: regular
+    task:
+      id: 7d2f7410-d6e9-4565-8246-a30fdaf962c2
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4}$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 400
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: c994c7e1-6418-430b-8d4b-ccdcf872cecb
+    type: condition
+    task:
+      id: c994c7e1-6418-430b-8d4b-ccdcf872cecb
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 575
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 2853562c-f695-4fd6-8a29-bfd926dfe420
+    type: regular
+    task:
+      id: 2853562c-f695-4fd6-8a29-bfd926dfe420
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 50
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 6d3aed0a-cd82-49e0-83bf-b87548431ae6
+    type: regular
+    task:
+      id: 6d3aed0a-cd82-49e0-83bf-b87548431ae6
+      version: -1
+      name: Get Day
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: day
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 225
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: e9b7aadd-1a97-4689-8748-d0a9d05adcf4
+    type: regular
+    task:
+      id: e9b7aadd-1a97-4689-8748-d0a9d05adcf4
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^([1-9]|[12][0-9]|3[01])$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 400
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 312d6256-599a-4d5e-8faa-4f9259b0d0a6
+    type: condition
+    task:
+      id: 312d6256-599a-4d5e-8faa-4f9259b0d0a6
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 575
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: 777654f2-f586-474f-8827-ef6527b830c0
+    type: regular
+    task:
+      id: 777654f2-f586-474f-8827-ef6527b830c0
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 50
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 8aec51e4-2d68-4a0d-8e30-e26deedd7aa1
+    type: regular
+    task:
+      id: 8aec51e4-2d68-4a0d-8e30-e26deedd7aa1
+      version: -1
+      name: Get Month
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: month
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 225
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: d5ec8eb7-84d2-4f09-895c-0a6a4cd9795c
+    type: regular
+    task:
+      id: d5ec8eb7-84d2-4f09-895c-0a6a4cd9795c
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^[0-1][0-9]$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 400
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: fe1c233b-4cd4-47ea-82ce-1967abb09b64
+    type: condition
+    task:
+      id: fe1c233b-4cd4-47ea-82ce-1967abb09b64
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 575
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: 7921bf30-663d-4689-8275-2260e27621a5
+    type: regular
+    task:
+      id: 7921bf30-663d-4689-8275-2260e27621a5
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 50
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 7b4725b5-c960-4420-83a8-cabe48dbd967
+    type: regular
+    task:
+      id: 7b4725b5-c960-4420-83a8-cabe48dbd967
+      version: -1
+      name: Get Year
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: year
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 225
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 797654be-293c-4df4-8e3c-dbcc6c7acde2
+    type: regular
+    task:
+      id: 797654be-293c-4df4-8e3c-dbcc6c7acde2
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^[0-9]{4}$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 400
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: 46b15211-b206-48d4-8809-b0824083fa2f
+    type: condition
+    task:
+      id: 46b15211-b206-48d4-8809-b0824083fa2f
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 575
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: ac0999e6-1815-4713-89c6-435eb7e9587a
+    type: regular
+    task:
+      id: ac0999e6-1815-4713-89c6-435eb7e9587a
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 50
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: f63f430d-1e03-41ca-84bd-7944ea7f0fa9
+    type: regular
+    task:
+      id: f63f430d-1e03-41ca-84bd-7944ea7f0fa9
+      version: -1
+      name: Get DayInWeek
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: dayinweek
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 225
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: 3ad72ada-76bd-4ba9-8007-6f1eff8b6655
+    type: regular
+    task:
+      id: 3ad72ada-76bd-4ba9-8007-6f1eff8b6655
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^[0-6]$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 400
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: 1633a926-f6f2-448a-8545-9a5b4bf25e21
+    type: condition
+    task:
+      id: 1633a926-f6f2-448a-8545-9a5b4bf25e21
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 575
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: 3437b5d9-9b5e-4730-801b-afee32ff46c6
+    type: regular
+    task:
+      id: 3437b5d9-9b5e-4730-801b-afee32ff46c6
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 50
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: 504b0e60-c20d-4ee7-851f-9f4f2c4c00d7
+    type: regular
+    task:
+      id: 504b0e60-c20d-4ee7-851f-9f4f2c4c00d7
+      version: -1
+      name: Get MonthsAgo
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 225
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: d84d741d-0762-43a2-8d80-52d8c579e6a8
+    type: regular
+    task:
+      id: d84d741d-0762-43a2-8d80-52d8c579e6a8
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
+          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 390
+        }
+      }
+    note: false
+  "36":
+    id: "36"
+    taskid: 1231ca73-958e-4456-8a62-6b9ae9d43b05
+    type: condition
+    task:
+      id: 1231ca73-958e-4456-8a62-6b9ae9d43b05
+      version: -1
+      name: ' Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 575
+        }
+      }
+    note: false
+  "37":
+    id: "37"
+    taskid: 4d0b5c88-0e3a-4dd9-8cec-d7e317e5840d
+    type: regular
+    task:
+      id: 4d0b5c88-0e3a-4dd9-8cec-d7e317e5840d
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 50
+        }
+      }
+    note: false
+  "38":
+    id: "38"
+    taskid: 705778d3-ef56-40f6-8d82-658fd5d48815
+    type: regular
+    task:
+      id: 705778d3-ef56-40f6-8d82-658fd5d48815
+      version: -1
+      name: Get MinutesAgo
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo:
+        simple: "260"
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 225
+        }
+      }
+    note: false
+  "39":
+    id: "39"
+    taskid: c96ef6e4-a59b-4cfb-87b6-2568bd02a64c
+    type: regular
+    task:
+      id: c96ef6e4-a59b-4cfb-87b6-2568bd02a64c
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
+          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 390
+        }
+      }
+    note: false
+  "40":
+    id: "40"
+    taskid: affb65df-143c-4abb-80c8-f64b609480e5
+    type: condition
+    task:
+      id: affb65df-143c-4abb-80c8-f64b609480e5
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 575
+        }
+      }
+    note: false
+  "41":
+    id: "41"
+    taskid: 1b59860b-8359-40d0-84de-1df61ebd0859
+    type: regular
+    task:
+      id: 1b59860b-8359-40d0-84de-1df61ebd0859
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 50
+        }
+      }
+    note: false
+  "42":
+    id: "42"
+    taskid: f98b3a54-55a5-41a7-8199-53dff54af256
+    type: regular
+    task:
+      id: f98b3a54-55a5-41a7-8199-53dff54af256
+      version: -1
+      name: Get HoursAgo
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo:
+        simple: "4"
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 225
+        }
+      }
+    note: false
+  "43":
+    id: "43"
+    taskid: fb238629-e9bb-4441-88d4-633b41b54c8f
+    type: regular
+    task:
+      id: fb238629-e9bb-4441-88d4-633b41b54c8f
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: ${TimeNow}
+      flags: {}
+      group: {}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
+          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 390
+        }
+      }
+    note: false
+  "44":
+    id: "44"
+    taskid: 709a00e6-7599-499e-814b-ee6127cf1e58
+    type: condition
+    task:
+      id: 709a00e6-7599-499e-814b-ee6127cf1e58
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 575
+        }
+      }
+    note: false
+  "45":
+    id: "45"
+    taskid: 9cac70b2-6fe2-43cd-8325-4485e90e9556
+    type: title
+    task:
+      id: 9cac70b2-6fe2-43cd-8325-4485e90e9556
+      version: -1
+      name: Test end
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4940,
+          "y": 380
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 795,
+        "width": 5270,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

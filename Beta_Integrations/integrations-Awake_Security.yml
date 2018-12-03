@@ -583,4 +583,4 @@ script:
     description: Lookup a device
   isfetch: true
   runonce: false
-releaseNotes: ""
+releaseNotes: "-"
