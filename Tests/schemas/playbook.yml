@@ -51,6 +51,9 @@ mapping:
           scriptarguments:
             type: map
             allowempty: True
+          timertriggers:
+            type: map
+            allowempty: True
           task:
             type: map
             required: yes

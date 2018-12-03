@@ -24,6 +24,7 @@ import re
 import os
 import glob
 import json
+import argparse
 from subprocess import Popen, PIPE
 from pykwalify.core import Core
 
@@ -177,6 +178,13 @@ def validate_schema(file_path, matching_regex=None):
     return True
 
 
+def is_release_branch():
+    diff_string_config_yml = run_git_command("git diff origin/master .circleci/config.yml")
+    if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
+        return True
+
+    return False
+
 def changed_id(file_path):
     change_string = run_git_command("git diff HEAD {0}".format(file_path))
     if re.search("[+-](  )?id: .*", change_string):
@@ -268,11 +276,36 @@ def has_duplicated_ids(id_to_file):
     return has_duplicate
 
 
-def validate_committed_files(branch_name):
-    files_string = run_git_command("git diff --name-status --no-merges HEAD")
-    modified_files, added_files = get_modified_files(files_string)
+def get_modified_and_added_files(branch_name, is_circle):
+    all_changed_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+
+    if is_circle:
+        modified_files, added_files = get_modified_files(all_changed_files_string)
+
+    else:
+        files_string = run_git_command("git diff --name-status --no-merges HEAD")
+
+        modified_files, added_files = get_modified_files(files_string)
+        _, added_files_from_branch = get_modified_files(all_changed_files_string)
+        for mod_file in modified_files:
+            if mod_file in added_files_from_branch:
+                added_files.add(mod_file)
+                modified_files = modified_files - set([mod_file])
+
+    return modified_files, added_files
+
+
+def validate_committed_files(branch_name, is_circle):
+    modified_files, added_files = get_modified_and_added_files(branch_name, is_circle)
+
     has_schema_problem = False
     for file_path in modified_files:
+        print "Validating {}".format(file_path)
+        if not validate_schema(file_path):
+            has_schema_problem = True
+        if not is_release_branch() and not validate_file_release_notes(file_path):
+            has_schema_problem = True
+
         if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE) or re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             if changed_id(file_path):
                 has_schema_problem = True
@@ -283,13 +316,6 @@ def validate_committed_files(branch_name):
                 has_schema_problem = True
             if is_added_required_fields(file_path):
                 has_schema_problem = True
-
-        print "Validating {}".format(file_path)
-        if not validate_file_release_notes(file_path):
-            has_schema_problem = True
-
-        if not validate_schema(file_path):
-            has_schema_problem = True
 
     id_to_file = {}
     for file_path in added_files:
@@ -382,6 +408,15 @@ def validate_conf_json():
         sys.exit(1)
 
 
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
 def main():
     '''
     This script runs both in a local and a remote environment. In a local environment we don't have any
@@ -393,6 +428,13 @@ def main():
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
+    parser = argparse.ArgumentParser(description='Utility CircleCI usage')
+    parser.add_argument('-c', '--circle', type=str2bool, help='Is CircleCi or not')
+    options = parser.parse_args()
+    is_circle = options.circle
+    if is_circle is None:
+        is_circle = False
+
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     validate_conf_json()
     if branch_name != 'master':
@@ -400,7 +442,7 @@ def main():
         logging.basicConfig(level=logging.CRITICAL)
 
         # validates only committed files
-        validate_committed_files(branch_name)
+        validate_committed_files(branch_name, is_circle)
     else:
         # validates all of Content repo directories according to their schemas
         validate_all_files()

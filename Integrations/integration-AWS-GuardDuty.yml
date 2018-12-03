@@ -1329,6 +1329,5 @@ script:
   dockerimage: demisto/boto3
   isfetch: true
   runonce: false
-releaseNotes: "-"
 tests:
-  - Forgive me for my sins but I did not create any test
+  - No test
