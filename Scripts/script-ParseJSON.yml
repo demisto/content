@@ -24,6 +24,5 @@ args:
   default: true
 scripttarget: 0
 runonce: false
-releaseNotes: "Added parse json transformer to parse string to json easily."
 tests:
-- Forgive me for my sins but I did not create any test
+- No test

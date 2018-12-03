@@ -2770,6 +2770,5 @@ script:
     description: Delete data acquisition.
   isfetch: true
   runonce: false
-releaseNotes: "Fix host containment command"
 tests:
   - FireEye HX Test

@@ -28,6 +28,5 @@ outputs:
   description: The JSON object loaded from input
 scripttarget: 0
 runonce: false
-releaseNotes: "Can read complicated JSONs (list inside a list)"
 tests:
 - JSONtoCSV-Test
