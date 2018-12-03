@@ -189,7 +189,7 @@ script:
     description: Provides data enrichment for Domains, URLs, and IP addresses.
   dockerimage: demisto/ippysocks
   runonce: false
-  releaseNotes: Enables proxy support, search by IP, as well as more structured content data.
+releaseNotes: "Enables proxy support, search by IP, as well as more structured content data."
 fromversion: 4.1.0
 tests:
   - whois_test
