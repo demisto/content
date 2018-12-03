@@ -123,9 +123,6 @@ script:
         )
         if res.status_code < 200 or res.status_code >= 300:
                 return_error('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
-        uriStr = str(uri)
-        if (uriStr.find("session") == -1):
-            logout()
         result = res.content
         if not uri.startswith('php/showreport.php?'):
             result = json.loads(result)
@@ -702,6 +699,8 @@ script:
         LOG(e.message)
         LOG.print_log()
         return_error(e.message)
+
+    logout()
   type: python
   commands:
   - name: atd-file-upload
