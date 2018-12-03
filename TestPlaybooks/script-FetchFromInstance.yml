@@ -4,6 +4,8 @@ commonfields:
 rolename: []
 name: FetchFromInstance
 script: |
+  import re
+
   res = []
   instance_name = demisto.args()["instance_name"]
   command = '!{0}-fetch'.format(instance_name)
@@ -16,6 +18,8 @@ script: |
       for inc in response:
           contents = inc.get('Contents', '')
           if 'Error' in contents:
+              raise Exception("Error occurred while fetching incidents from {0}: {1}".format(instance_name, contents))
+          if re.match("invalid character \'[a-zA-Z]\' looking for beginning of value", contents, re.IGNORECASE):
               raise Exception("Error occurred while fetching incidents from {0}: {1}".format(instance_name, contents))
 
       res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": response})
