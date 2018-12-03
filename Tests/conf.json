@@ -791,7 +791,6 @@
       }
     ],
     "skipped_tests": {
-        "Icebrg Test": "Requires BD",
         "blockip_test_playbook": "No Check Point FW license",
         "File Enrichment - Generic Test": "Need to check the reason for skipping",
         "entity_enrichment_generic_test": "Need to check the reason for skipping",
@@ -808,6 +807,7 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
+        "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Cylance Protect": "Under development",
