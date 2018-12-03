@@ -1,0 +1,37 @@
+commonfields:
+  id: FetchFromInstance
+  version: -1
+rolename: []
+name: FetchFromInstance
+script: |
+  res = []
+  instance_name = demisto.args()["instance_name"]
+  command = '!{0}-fetch'.format(instance_name)
+
+  response = demisto.executeCommand(command, {})
+  try:
+      if not response:
+          raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
+
+      for inc in response:
+          contents = inc.get('Contents', '')
+          if 'Error' in contents:
+              raise Exception("Error occurred while fetching incidents from {0}: {1}".format(instance_name, contents))
+
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": response})
+
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})
+
+  demisto.results(res)
+type: python
+tags: []
+enabled: true
+args:
+- name: instance_name
+  required: true
+  description: The name of the instance you want to fetch from
+scripttarget: 0
+runonce: false
+tests:
+  - No test - cannot create a dummy integration inorder to test that

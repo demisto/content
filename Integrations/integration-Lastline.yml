@@ -119,7 +119,7 @@ script:
             params.proxy
         );
         if (result.StatusCode < 200 && result.StatusCode > 299) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+            throw  'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
         var obj;
         try {
@@ -127,29 +127,23 @@ script:
         } catch (ex) {
             throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
         }
-        // analysis is not ready yet
-        if (obj.error_code && obj.error_code == 106) {
-            return {
-                body: null,
-                obj: {
-                    data: null
-                }
-            };
-        }
-        if (obj.success === 0) {
-            throw 'Error from Lastline: ' + obj.error;
-        }
         if (obj.error_code) {
             switch (obj.error_code) {
                 case 101:
                     // file hash does not exist
-                    break;
+                    throw "File hash does not exist.";
                 case 106:
                     // analysis report not ready
-                    break;
+                    throw "Analysis report is not ready yet.";
+                case 115:
+                    // reached api quota
+                    throw "You've reached your API call quota. Contact your Lastline representative.";
                 default:
-                    throw 'Error from Lastline. Error code: ' + obj.error_code + ". Error: " + obj.error;
+                    throw 'Error from Lastline. Error code: ' + obj.error_code + '. Error: ' + obj.error;
             }
+        }
+        if (obj.success === 0) {
+            throw 'Error from Lastline: ' + obj.error;
         }
         return {body: result.Body, obj: obj};
     }
@@ -185,12 +179,15 @@ script:
             switch (obj.error_code) {
                 case 101:
                     // file hash does not exist
-                    break;
+                    throw "File hash does not exist.";
                 case 106:
                     // analysis report not ready
-                    break;
+                    throw "Analysis report is not ready yet.";
+                case 115:
+                    // reached api quota
+                    throw "You've reached your API call quota. Contact your Lastline representative.";
                 default:
-                    throw 'Error code: ' + obj.error_code + ". Error: " + obj.error;
+                    throw 'Error from Lastline. Error code: ' + obj.error_code + '. Error: ' + obj.error;
             }
         }
         return {body: result.Body, obj: obj};
@@ -575,50 +572,58 @@ script:
     }
 
     // The command input arg holds the command sent from the user.
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            UrlUpload('https://google.com');
-            return 'ok';
+    try {
+        switch (command) {
+            // This is the call made when pressing the integration test button.
+            case 'test-module':
+                UrlUpload('https://google.com');
+                return 'ok';
 
-        case 'file':
-            return HashGet(args.file, args.threshold);
+            case 'file':
+                return HashGet(args.file, args.threshold);
 
-        case 'url': //deprecated
-            return UrlUpload(args.url, args.threshold, args.timeout, args.interval);
-        case 'lastline-upload-url':
-            return UrlUpload(args.url, args.threshold, 0, 0);
+            case 'url': //deprecated
+                return UrlUpload(args.url, args.threshold, args.timeout, args.interval);
+            case 'lastline-upload-url':
+                return UrlUpload(args.url, args.threshold, 0, 0);
 
-        case 'lastline-upload': //deprecated
-            return FileUpload(args.file_id, args.threshold, args.timeout, args.interval);
-        case 'lastline-upload-file':
-            return FileUpload(args.EntryID, args.threshold, 0, 0, args.pushToPortal);
+            case 'lastline-upload': //deprecated
+                return FileUpload(args.file_id, args.threshold, args.timeout, args.interval);
+            case 'lastline-upload-file':
+                return FileUpload(args.EntryID, args.threshold, 0, 0, args.pushToPortal);
 
-        case 'lastline-get': //deprecated
-            if (!args.threshold) {
-                args.threshold = LAST_LINE_DEFAULTS.threshold;
-            }
-            return GetReport(args.uuid, args.threshold, args.timeout, args.interval);
-        case 'lastline-get-report':
-            if (!args.threshold) {
-                args.threshold = LAST_LINE_DEFAULTS.threshold;
-            }
-            var uuids = argToList(args.uuid);
-            var entries = [];
-            for (var i=0; i < uuids.length; i++) {
-                var reportResponse = GetReport(uuids[i], args.threshold, 0, 0);
-                if (reportResponse.error){
-                    return reportResponse.error;
+            case 'lastline-get': //deprecated
+                if (!args.threshold) {
+                    args.threshold = LAST_LINE_DEFAULTS.threshold;
                 }
-                entries.push(reportResponse);
-            }
-            return entries;
+                return GetReport(args.uuid, args.threshold, args.timeout, args.interval);
+            case 'lastline-get-report':
+                if (!args.threshold) {
+                    args.threshold = LAST_LINE_DEFAULTS.threshold;
+                }
+                var uuids = argToList(args.uuid);
+                var entries = [];
+                for (var i=0; i < uuids.length; i++) {
+                    var reportResponse = GetReport(uuids[i], args.threshold, 0, 0);
+                    if (reportResponse.error){
+                        return reportResponse.error;
+                    }
+                    entries.push(reportResponse);
+                }
+                return entries;
 
-        case 'lastline-get-task-list':
-            return GetTaskList(args.before, args.after);
+            case 'lastline-get-task-list':
+                return GetTaskList(args.before, args.after);
 
-        default:
-            throw 'Unknown command - ' + command;
+            default:
+                throw 'Unknown command - ' + command;
+        }
+    } catch (err) {
+      return {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err
+      }
     }
   type: javascript
   commands:
@@ -954,7 +959,8 @@ script:
         12:00:00'
     description: Gets a list of tasks
   runonce: false
+releaseNotes: "Handle quota error gracefully"
 tests:
 - Lastline - testplaybook
-- detonate_url_-_generic_test
-- detonate_file_-_generic_test
+- Detonate URL - Generic Test
+- Detonate File - Generic Test
