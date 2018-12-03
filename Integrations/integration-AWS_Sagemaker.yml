@@ -27,23 +27,28 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
-    import json, boto3, sys
+    import json, boto3, sys, os
 
     if not demisto.params()['proxy']:
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
 
     def invoke_enpoint(runtime, endpoint_name, payload):
-        return runtime.invoke_endpoint(EndpointName=ENDPOINT_NAME, ContentType='application/json', Body=json.dumps(payload, ensure_ascii=False).encode('utf-8', 'ignore'))
+        return runtime.invoke_endpoint(EndpointName=endpoint_name, ContentType='application/json', Body=json.dumps(payload, ensure_ascii=False).encode('utf-8', 'ignore'))
 
     runtime = boto3.Session(aws_access_key_id=demisto.params()['AWSAccessKey'],
     aws_secret_access_key=demisto.params()['AWSSecretKey'],
     region_name=demisto.params()['AWSRegion']).client('runtime.sagemaker')
-    ENDPOINT_NAME = demisto.params()['EndpointName']
+    endpoint_name = demisto.params()['EndpointName']
 
     def parse_results(result):
         res = []
@@ -55,7 +60,7 @@ script:
         return res
 
     if demisto.command() == 'test-module':
-        response = invoke_enpoint(runtime, ENDPOINT_NAME, ["test"])
+        response = invoke_enpoint(runtime, endpoint_name, ["test"])
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             demisto.results('ok')
         sys.exit(0)
@@ -63,7 +68,7 @@ script:
         input_text = demisto.args()['inputText']
         if type(input_text) != list:
            input_text = [input_text]
-        response = invoke_enpoint(runtime, ENDPOINT_NAME, input_text)
+        response = invoke_enpoint(runtime, endpoint_name, input_text)
         if response['ResponseMetadata']['HTTPStatusCode'] != 200:
             raise Exception("Failed to invoke enpoint")
         result = json.loads(response['Body'].read().decode())
@@ -89,13 +94,14 @@ script:
       description: The input text (usually email subject + body)
     outputs:
     - contextPath: DBotPhishingPrediction.Label
-      description: The predicated label
+      description: 'The predicated label: malicious \ other'
       type: string
     - contextPath: DBotPhishingPrediction.Probability
-      description: The predication probability
+      description: The predication probability (range 0-1)
       type: number
+    description: Classify input text (usually email content)
   dockerimage: demisto/boto3
   runonce: false
-releaseNotes: "Add new integration"
+releaseNotes: "Adding AWS SageMaker machine learning service integration"
 tests:
 - Test_Sagemaker
