@@ -136,14 +136,7 @@ script:
 
         cur_t = time.time()
 
-        lastRunTime = demisto.getLastRun()
-
-        if lastRunTime is None:
-            lastRunTime = cur_t - fetch_interval
-
-        if cur_t - fetch_interval < lastRunTime:
-            demisto.incidents([])
-            sys.exit(0)
+        checkTime = cur_t - fetch_interval
 
         event = demisto.getParam('event_name')
         if event is None:
@@ -164,7 +157,9 @@ script:
         index_str = 'aella-ser*'
 
         query_str = 'event_name:{}  AND severity:>{}'.format(event, score)
-        ts_str = str(long(lastRunTime * 1000))
+
+        ts_str = str(long(checkTime * 1000))
+
         query_json = { 'query':
             { 'bool':
                 { 'must':
@@ -199,6 +194,14 @@ script:
                 return
             hits = data.get('hits', {}).get('hits', [])
             incidents = []
+
+            try:
+                cached_event = demisto.getLastRun().get("cached_event", {})
+            except:
+                cached_event = {}
+
+            new_cached_event = {}
+
             for hit in hits:
                 source = hit.get('_source', None)
                 if not source:
@@ -207,32 +210,38 @@ script:
                 try:
                     event_severity = int(source.get('severity', None))
                     if event_severity > 75:
-                        severity = 'high'
+                        severity = 3
                     elif event_severity > 50:
-                        severity = 'medium'
+                        severity = 2
                     else:
-                        severity = 'low'
+                        severity = 1
                 except:
-                    severity = 'unknown'
+                    severity = 0
 
                 if not event_name:
                     continue
                 eid = hit['_id']
+
+                new_cached_event[eid] = True
+                if cached_event.get(eid, False):
+                    continue
+
                 sdi = '{}_{}'.format(event_name, eid)
                 incident = {
                     'name' : sdi,
+                    'severity' : severity,
                     'rawJSON':json.dumps({  'name':sdi,
                                             'label':'Starlight event',
                                             'aella_eid': eid,
                                             'aella_event':event_name,
-                                            'event_severity': severity
+                                            'event_severity': event_severity
                                         })
                 }
                 incidents.append(incident)
             demisto.info('Incidents is {}'.format(incidents))
+            demisto.setLastRun({'cached_event': new_cached_event})
             demisto.incidents(incidents)
-            demisto.info('Set LastRun to be {}'.format(cur_t))
-            demisto.setLastRun(cur_t)
+
         else:
             demisto.info('Poll incidents failed {}'.format(action_result))
             demisto.incidents([])
@@ -429,3 +438,5 @@ script:
     description: Query the details for a specific Start Light event
   isfetch: true
   runonce: false
+tests:
+- No test

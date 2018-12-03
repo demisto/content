@@ -86,10 +86,10 @@ script:
     SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
     def get_current_splunk_time(splunk_service):
-        t = datetime.utcnow() - timedelta(days=7)
+        t = datetime.utcnow() - timedelta(days=3)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count':1,'earliest_time':time}
-        searchquery_oneshot = 'search index=* | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
+        searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S") | sort 1 -_time | table clock'
 
         oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 
@@ -354,7 +354,7 @@ script:
             t = t - timedelta(minutes=10)
             lastRun = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now}
+                      "index_latest": now, "count": 0}
         searchquery_oneshot = demisto.params()['fetchQuery']
 
         if demisto.get(demisto.params(), 'extractFields'):
@@ -527,4 +527,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: "Support fetch of notable events using Splunk Time instead of Demisto machine time"

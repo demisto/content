@@ -1,0 +1,326 @@
+id: Detonate URL - Phish.AI
+version: -1
+name: Detonate URL - Phish.AI
+description: Detonates a URL using the Phish.AI integration.
+fromversion: "4.0.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d2f4d7dc-4562-4517-8d63-3539676ca81d
+    type: start
+    task:
+      id: d2f4d7dc-4562-4517-8d63-3539676ca81d
+      version: -1
+      name: ""
+      description: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 22ee088d-a727-45d6-876b-da7f5e7366e9
+    type: playbook
+    task:
+      id: 22ee088d-a727-45d6-876b-da7f5e7366e9
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      Ids:
+        simple: ${inputs.URL}
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: url
+      PollingCommandName:
+        simple: phish-ai-check-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: URL(val.Status === 'in progress')
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 840
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 8202a867-8ad7-4b4b-87f5-bc9e501c5260
+    type: condition
+    task:
+      id: 8202a867-8ad7-4b4b-87f5-bc9e501c5260
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks that there is a URL in the playbook’s input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ${inputs
+                accessor: URL}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 410
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+    type: title
+    task:
+      id: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+      version: -1
+      name: Done
+      description: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 1230
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 28c25e00-7d40-4198-8851-81f597651fb0
+    type: condition
+    task:
+      id: 28c25e00-7d40-4198-8851-81f597651fb0
+      version: -1
+      name: Is Phish.AI enabled?
+      description: |
+        Verify that there is a valid instance of McAfee ATD enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Phish.AI_copy
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 353cf72a-fae0-4289-87fc-0e3146ec97cb
+    type: regular
+    task:
+      id: 353cf72a-fae0-4289-87fc-0e3146ec97cb
+      version: -1
+      name: Analyze URL
+      description: Updates the status of the tasks in the context.
+      script: '|||phish-ai-scan-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1020
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 9cb09aaf-bd5f-4f98-8810-d44aa492c6b1
+    type: regular
+    task:
+      id: 9cb09aaf-bd5f-4f98-8810-d44aa492c6b1
+      version: -1
+      name: Check status
+      description: "checks url's status"
+      script: '|||phish-ai-check-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 660
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_11_yes": 0.9,
+      "9_6_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 652.5,
+        "x": -110,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+outputs:
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+tests:
+  - Test-Detonate URL - Phish.AI

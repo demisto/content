@@ -21,10 +21,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 265,
           "y": 50
         }
       }
+    note: false
   "4":
     id: "4"
     taskid: d3eb1773-d77b-4590-8128-83b65bf6e083
@@ -49,10 +50,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 201
+          "x": 265,
+          "y": 195
         }
       }
+    note: false
   "5":
     id: "5"
     taskid: 55310715-a100-4d29-8423-9cf7946fc1ff
@@ -79,10 +81,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 381
+          "x": 265,
+          "y": 370
         }
       }
+    note: false
   "6":
     id: "6"
     taskid: 8362ebe6-8622-420c-8ab7-881abed983ab
@@ -114,10 +117,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 891
+          "x": 480,
+          "y": 1070
         }
       }
+    note: false
   "7":
     id: "7"
     taskid: 62559528-c212-46ef-82ae-03c3d21d9fe1
@@ -136,6 +140,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -146,10 +153,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1086
+          "x": 480,
+          "y": 1245
         }
       }
+    note: false
   "8":
     id: "8"
     taskid: e7c58fe2-f780-4ae3-8f7f-3ee3e5b493d5
@@ -165,7 +173,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "10"
     scriptarguments:
       url:
         simple: ${Test.url}
@@ -177,10 +185,11 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 716
+          "x": 265,
+          "y": 720
         }
       }
+    note: false
   "9":
     id: "9"
     taskid: 82983881-8c77-418c-82ab-c4aeb4b525d1
@@ -208,18 +217,106 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 554
+          "x": 265,
+          "y": 545
         }
       }
+    note: false
+  "10":
+    id: "10"
+    taskid: 597b30fe-8383-4f4c-805a-eb14401bf925
+    type: condition
+    task:
+      id: 597b30fe-8383-4f4c-805a-eb14401bf925
+      version: -1
+      name: Check for error
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 4d0d56fb-8849-4deb-8caa-960f4fee91e5
+    type: condition
+    task:
+      id: 4d0d56fb-8849-4deb-8caa-960f4fee91e5
+      version: -1
+      name: Check if API RATE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Error}
+            iscontext: true
+          right:
+            value:
+              simple: No content received. Possible API rate limit reached.
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: bfbbe0fb-1d04-47c0-820b-92ae52e89de0
+    type: title
+    task:
+      id: bfbbe0fb-1d04-47c0-820b-92ae52e89de0
+      version: -1
+      name: End test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1131,
-        "width": 380,
-        "x": 450,
+        "height": 1435,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }

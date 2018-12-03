@@ -42,4 +42,3 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/exifread
-releaseNotes: "Read image files metadata and provide Exif tags"
