@@ -474,7 +474,7 @@ inputs:
   value:
     complex:
       root: incident
-      accessor: labels.Email
+      accessor: labels.Email/from
   required: false
   description: Email address of the reporting user.
 - key: InReplyTo
@@ -516,6 +516,7 @@ outputs:
 - contextPath: File
   description: Original attachments
   type: unknown
-releaseNotes: "-"
 tests:
-  - No test
+  - Phishing test - attachment
+  - Phishing test - Inline
+releaseNotes: "-"
