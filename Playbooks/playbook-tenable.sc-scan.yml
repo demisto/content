@@ -350,6 +350,5 @@ outputs:
 - contextPath: TenableSC.ScanResults.Vulnerability.Total
   description: Scan vulnerability total hosts
   type: number
-releaseNotes: "Tenable.sc scan playbook"
 tests:
   - tenable-sc-test

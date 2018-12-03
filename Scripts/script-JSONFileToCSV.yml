@@ -78,6 +78,5 @@ outputs:
 scripttarget: 0
 timeout: 600ns
 runonce: false
-releaseNotes: "Converts JSON to CSV from War room"
 tests:
 - JSONtoCSV-Test

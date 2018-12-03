@@ -233,6 +233,5 @@ script:
       description: URL's Status
     description: Checks on url's status, e.g. completed/in progress
   runonce: false
-releaseNotes: 'Phish.AI enhancement'
 tests:
   - PhishAi-Test

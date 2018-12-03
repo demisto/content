@@ -114,13 +114,13 @@ def re_create_id_set():
         json.dump(id_list, id_set_file, indent=4)
 
 
-def update_id_set():
+def update_id_set(git_sha):
     branches = run_git_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status HEAD")
+    files_string = run_git_command("git diff --name-status {}".format(git_sha))
     second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files = get_added_files(files_string + '\n' + second_files_string)
 
@@ -144,7 +144,3 @@ def update_id_set():
             json.dump(id_list, id_set_file, indent=4)
 
         print("Finished updating id_set.json")
-
-
-if __name__ == "__main__":
-    update_id_set()
