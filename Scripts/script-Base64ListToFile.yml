@@ -17,7 +17,6 @@ script: |-
   res = demisto.executeCommand('getList', {'listName': demisto.args()['listname']})
   if res['Type'] == entryTypes['error']:
     return_error("error reading list %s from demisto" % demisto.args()['listname'])
-    sys.exit(0)
 
   # convert base64 file to binary file
   bin_file = base64.decodestring(res[0]['Contents'])
