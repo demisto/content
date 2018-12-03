@@ -1,0 +1,91 @@
+id: test_QRadar-Get_offense_correlations
+version: -1
+name: test_QRadar-Get_offense_correlations
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 320527cd-2fd9-45c2-82aa-3c3b37f6bc70
+    type: start
+    task:
+      id: 320527cd-2fd9-45c2-82aa-3c3b37f6bc70
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: f930cbd3-d38d-4c70-8ac7-d0344905e023
+    type: playbook
+    task:
+      id: f930cbd3-d38d-4c70-8ac7-d0344905e023
+      version: -1
+      name: QRadar - Get offense correlations
+      description: |-
+        Run on a QRadar offense to get more information
+
+        * Get all correlations relevant to the offense
+        * Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs" to "True")
+
+        Inputs:
+        * GetCorrelationLogs (default: False)
+        * MaxLogsCount (default: 20)
+      playbookName: QRadar - Get offense correlations
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      GetCorrelationLogs:
+        simple: "True"
+      ID:
+        simple: "79"
+      Interval:
+        simple: "1"
+      MaxLogsCount:
+        simple: "20"
+      StartTime:
+        simple: 2018-11-06T08:31:18.073000Z
+      Timeout:
+        simple: "10"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 290
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 335,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+releaseNotes: "-"
+tests:
+- No test

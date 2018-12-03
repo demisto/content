@@ -2,6 +2,7 @@ commonfields:
   id: QRadarGetCorrelationLogs
   version: -1
 name: QRadarGetCorrelationLogs
+deprecated: true
 script: |-
   QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, sourceport, username, starttime, destinationport, magnitude, identityip, CATEGORYNAME(category), PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid){1} from events where \"CRE Name\" IS NULL AND INOFFENSE({2}) START '{3}'"
 
@@ -146,4 +147,6 @@ dependson:
   - qradar-searches
 tests:
 - No test
-releaseNotes: "QRadarGetCorrelationsLogs start_time field can now be either epoch time or date string"
+releaseNotes: "QRadarGetCorrelationsLogs:
+    - The argument 'start_time' can now be either epoch time or date string.
+    - The script has been deprecated."

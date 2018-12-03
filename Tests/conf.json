@@ -591,6 +591,10 @@
             "playbookID": "test_Qradar"
         },
         {
+            "integrations": "QRadar",
+            "playbookID": "test_QRadar-Get_offense_correlations"
+        },
+        {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
         },

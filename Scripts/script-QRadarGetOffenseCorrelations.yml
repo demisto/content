@@ -2,6 +2,7 @@ commonfields:
   id: QRadarGetOffenseCorrelations
   version: -1
 name: QRadarGetOffenseCorrelations
+deprecated: true
 script: |-
   QUERY = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) FROM events WHERE \"CRE NAME\" <> NULL AND INOFFENSE({0}) START '{1}'"
 
@@ -126,4 +127,6 @@ dependson:
   - qradar-searches
 tests:
 - No test
-releaseNotes: "QRadarGetOffenseCorrelations start_time field can now be either epoch time or date string"
+releaseNotes: "QRadarGetOffenseCorrelations:
+    - The argument 'start_time' can now be either epoch time or date string.
+    - The script has been deprecated."
