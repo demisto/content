@@ -1,0 +1,97 @@
+id: Test_Sagemaker
+version: -1
+rolename: []
+name: Test Sagemaker
+description: Sagemaker integration test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a736baaf-0043-47dd-80ac-f89f32c81dca
+    type: start
+    task:
+      id: a736baaf-0043-47dd-80ac-f89f32c81dca
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 21377f81-3b7a-4d54-8c77-878b4a9eef74
+    type: regular
+    task:
+      id: 21377f81-3b7a-4d54-8c77-878b4a9eef74
+      version: -1
+      name: Predict Phishing
+      script: '|||predict-phishing'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      inputText:
+        simple: Just a test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 72667334-1759-4c51-8b85-973cca6bfcdc
+    type: regular
+    task:
+      id: 72667334-1759-4c51-8b85-973cca6bfcdc
+      version: -1
+      name: Verify fields
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Label,Probability
+      path:
+        simple: DBotPhishingPrediction
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
