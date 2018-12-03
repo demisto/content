@@ -807,6 +807,8 @@
         "Microsoft Graph Test": "DB is missing alerts to test on - in work of DevOps"
     },
     "skipped_integrations": {
+        "Skyformation": "Server installed by skyformation is down, waiting on reply",
+        "icebrg": "Requires BD",
         "Anomali ThreatStream": "Instance is down",
         "McAfee Advanced Threat Defense": "No Credentials",
         "Cylance Protect": "Under development",
