@@ -382,7 +382,7 @@ script:
 
         # prepare query
         query = {
-            'machine_name': args.get('machineName'),  # string
+            'MachineName': args.get('machineName'),  # string
             'iocscore_gte': int(args.get('iocScoreGreaterThan')) if args.get('iocScoreGreaterThan') else None,  # int
             'iocscore_lte': int(args.get('iocScoreLessThan')) if args.get('iocScoreLessThan') else None,  # int
             'IpAddress': args.get('ipAddress'),  # string
