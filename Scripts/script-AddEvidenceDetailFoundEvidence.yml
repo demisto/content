@@ -1,0 +1,99 @@
+commonfields:
+  id: 23f601f2-8100-4a41-8928-f6e74407c1ff
+  version: 1
+name: AddEvidence_NE_detail_found_evidence
+script: |-
+  if (!args.entryIDs) {
+      throw 'Missing argument values for command AddEvidenceJS are : entryIDs';
+  }
+  var entryIDs = args.entryIDs;
+  var entryTags = args.tags;
+  var desc = (args.description) ? args.description : args.desc ? args.desc : 'Evidence added by DBot';
+  entryIDs = (Array.isArray(entryIDs)) ? entryIDs : [entryIDs];
+  entryTags = (Array.isArray(entryTags)) ? entryTags.join(',') : entryTags;
+
+
+  for (var i=0;i<entryIDs.length;i++) {
+      var entryID = entryIDs[i];
+      entries = executeCommand('getEntry',{'id':entryID})
+      var title= executeCommand('getEntry', {'id': entryID},raw_response=true)[0]['Contents'].split(" ")[1];
+      var contents = String(executeCommand('getEntry', {'id': entryID},raw_response=true)[0]['Contents']);
+      var detail_pre1= contents.split(":");
+      //logInfo('contents---'+contents)
+
+      var detail_pre2= detail_pre1.slice(1)
+      //logInfo('pre2---')
+      //logInfo(detail_pre2.join(","))
+      var detail_pre = detail_pre2.join(':')
+      //logInfo('pre---')
+      //logInfo(detail_pre)
+      var detail_final = detail_pre.split('\n')[0]
+      //logInfo('prefinal---')
+      //logInfo(detail_final)
+
+      var desc2 = desc + ' ' + title + ' ' + detail_final;
+      if (isValidRes(entries)) {
+              var ent=entries[0];
+
+              //logInfo("evidence-ent:"+JSON.stringify(ent))
+              var obj = { 'id': entryID, 'description': desc2};
+              if (args.occurred) {
+                obj.when = args.occurred;
+              }
+              if (entryTags) {
+                obj.tags = entryTags;
+              }
+              //logInfo("contents no matches:"+contents.indexOf("No Matches"))
+              //logInfo("contents error:"+contents.indexOf("ERROR"))
+              //logInfo("contents needfile:"+contents.indexOf("NEEDFILE"))
+              var res;
+              if (contents.indexOf("No Matches")==-1 &&
+                  contents.indexOf("No results found")==-1 &&
+                  contents.indexOf("No Results Found")==-1 &&
+                  contents.indexOf("rate_limitchange")==-1 &&
+                  contents.indexOf("VirusTotal does not have details")==-1 &&
+                  contents.indexOf("No matches")==-1 &&
+                  contents.indexOf("UNKNOWN")==-1 &&
+                  contents.indexOf("ERROR")==-1 &&
+                  contents.indexOf("No devices found on given threat")==-1 &&
+                  contents.indexOf("NEEDFILE")==-1){
+                  res = executeCommand('markAsEvidence', obj);
+                  logInfo("Match Found")
+              }
+              else{
+                  logInfo("No Found")
+                  return
+              }
+              if (!isValidRes(res)) {
+                  return res
+              }
+      } else {
+          return entries;
+      }
+
+  }
+
+  return "Entry ID " + entryIDs + " added to evidence";
+type: javascript
+tags:
+- Utility
+comment: |
+  include hash detail and intel source if found
+enabled: true
+args:
+- name: entryIDs
+  required: true
+  default: true
+  description: Entry IDs to add its output to Evidence Board
+  defaultValue: ${lastCompletedTaskEntries}
+- name: desc
+  deprecated: true
+  description: Description to add to Evidence Board
+- name: description
+  description: Description to add to Evidence Board
+- name: occurred
+  description: 'Occurred time of the evidence (time format: 2008-01-02T15:04:05)'
+- name: tags
+  description: Evidence tags
+scripttarget: 0
+runonce: false
