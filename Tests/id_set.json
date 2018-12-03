@@ -773,7 +773,6 @@
     "HTTPListRedirects",
     "DataHashReputation",
     "CBEvents",
-    "Whois",
     "MarkAsNoteByTag",
     "TaniumApprovePendingActions",
     "GenericPollingScheduledTask",
