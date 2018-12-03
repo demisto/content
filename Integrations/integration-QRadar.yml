@@ -489,7 +489,16 @@ script:
         raw_offenses = get_offenses(demisto.args().get('range'), demisto.args().get('filter'), demisto.args().get('fields'))
         enrich_offense_result(raw_offenses)
         offenses = filter_dict_nonintersection_key_to_value(replace_keys(raw_offenses, OFFENSES_NAMES_MAP), OFFENSES_NAMES_MAP)
-        return get_entry_for_object('QRadar offenses', offenses, demisto.args().get('headers'), 'QRadar.Offense(val.ID === obj.ID)')
+
+        # prepare for printing:
+        headers = demisto.args().get('headers')
+        if not headers:
+            offenses_names_map_cpy = dict(OFFENSES_NAMES_MAP)
+            offenses_names_map_cpy.pop('id', None)
+            offenses_names_map_cpy.pop('description', None)
+            headers = 'ID,Description,' + dict_values_to_comma_seperated_string(offenses_names_map_cpy)
+
+        return get_entry_for_object('QRadar offenses', offenses, headers, 'QRadar.Offense(val.ID === obj.ID)')
 
     # Enriches the values of a given offense result (full_enrichment adds more enrichment options)
     def enrich_offense_result(response, full_enrichment=False):
@@ -506,7 +515,7 @@ script:
 
     # Convert epoch to iso and closing_reason_id to closing reason name, and if full_enrichment then converts closing_reason_id to name
     def enrich_single_offense_result(offense, full_enrichment, type_dict=None, closing_reason_dict=None):
-        enrich_offense_start_and_update_times(offense)
+        enrich_offense_times(offense)
         if 'offense_type' in offense:
             offense['offense_type'] = convert_offense_type_id_to_name(offense['offense_type'], type_dict)
         if full_enrichment and 'closing_reason_id' in offense:
@@ -579,19 +588,17 @@ script:
         if isinstance(offense.get('local_destination_address_ids'), list):
             for i in range(len(offense['local_destination_address_ids'])):
                 offense['local_destination_address_ids'][i] = dst_adrs[offense['local_destination_address_ids'][i]]
-            if int(offense.get('remote_destination_count', 0)) > 0:
-                remote_destination = get_remote_destination_address(offense.get('id'))
-                if remote_destination:
-                    offense['local_destination_address_ids'].append(remote_destination)
 
         return None
 
     # Helper method: For a single offense replaces the epoch times with ISO string
-    def enrich_offense_start_and_update_times(offense):
+    def enrich_offense_times(offense):
         if 'start_time' in offense:
             offense['start_time'] = epoch_to_ISO(offense['start_time'])
         if 'last_updated_time' in offense:
             offense['last_updated_time'] = epoch_to_ISO(offense['last_updated_time'])
+        if offense.get('close_time'):
+            offense['close_time'] = epoch_to_ISO(offense['close_time'])
 
         return None
 
@@ -921,11 +928,15 @@ script:
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
     - contextPath: QRadar.Offense.DestinationAddress
-      description: The local destination addresses that are associated with the offense. If your offense has a remote destination,
-        you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The local destination addresses that are associated with the offense.
+        If your offense has a remote destination, you will need to use QRadarFullSearch
+        playbook with the following query - SELECT destinationip FROM events WHERE
+        inOffense(<offenseID>) GROUP BY destinationip
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destination that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination,
-        you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The remote destination that are associated with the offesne. If
+        this value is greater than 0 that means your offense has a remote destination,
+        you will need to use QRadarFullSearch playbook with the following query -
+        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
     - contextPath: QRadar.Offense.StartTime
       description: The time (ISO) when the offense was started.
       type: date
@@ -973,7 +984,15 @@ script:
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
     - contextPath: QRadar.Offense.DestinationAddress
-      description: The destination addresses that are associated with the offense.
+      description: The local destination addresses that are associated with the offense.
+        If your offense has a remote destination, you will need to use QRadarFullSearch
+        playbook with the following query - SELECT destinationip FROM events WHERE
+        inOffense(<offenseID>) GROUP BY destinationip
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: The remote destination that are associated with the offesne. If
+        this value is greater than 0 that means your offense has a remote destination,
+        you will need to use QRadarFullSearch playbook with the following query -
+        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
     - contextPath: QRadar.Offense.AssignedTo
       description: The user the offense is assigned to.
       type: string
@@ -1810,7 +1829,8 @@ script:
   isfetch: true
   runonce: false
 releaseNotes: "QRadar integration enhancements:
-      - Added support for fetching remote destination addresses.
-      - Added ability to use custom output path for 'qradar-get-search-results'"
+      - Added remoteDestinationCount field to indicate an offense has a remote destination.
+      - Added ability to use custom output path for 'qradar-get-search-results'
+      - CloseTime field is now converted to date string"
 tests:
   - test_Qradar
