@@ -1,0 +1,82 @@
+commonfields:
+  id: JSONFileToCSV
+  version: -1
+name: JSONFileToCSV
+script: |-
+  import json
+  import io
+  import csv
+
+  entry_id = demisto.args()['entryid']
+  if isinstance(entry_id, list):
+      entry_id = entry_id[0]
+
+  outfilename = demisto.args()['filename']
+  res = demisto.executeCommand('getFilePath', {'id': entry_id})
+
+  # Check to see if valid file entryid was provided as input
+  if res[0]['Type'] == entryTypes['error']:
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'Failed to get the file path for entry: ' + fileEntryID +' the error message was '+ res[0]['Contents']
+    })
+    sys.exit(0)
+  filePath = res[0]['Contents']['path']
+
+  # open file and read data
+  with open(filePath, 'r') as f:
+      data = f.read()
+
+  dictlist = json.loads(data)
+
+  def json_to_csv(data):
+      si = io.BytesIO()
+      cw = csv.writer(si)
+      keys = list(dictlist[0].iterkeys())
+      cw.writerow(keys)
+      for d in data:
+          val_lst = []
+          for k in keys:
+              val_lst.append(d[k])
+          cw.writerow(val_lst)
+      return si.getvalue().strip("\r\n")
+
+  csv_out = json_to_csv(dictlist)
+
+  #output cvs as a file to warroom
+  demisto.results(fileResult(outfilename,csv_out.encode("utf-8")))
+  sys.exit(0)
+type: python
+tags: []
+comment: Script to convert a JSON File waroom output to a CSV file.
+enabled: true
+args:
+- name: entryid
+  required: true
+  description: entry id of json
+- name: filename
+  required: true
+  description: output csv filename
+- name: delimiter
+  default: true
+  description: CSV Delimiter.
+  defaultValue: '|'
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+scripttarget: 0
+timeout: 600ns
+runonce: false
+tests:
+- JSONtoCSV-Test

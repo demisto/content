@@ -23,22 +23,43 @@ script: |-
   }
   var timeStr = String(d);
   if ((args.dateFormat) && (args.dateFormat.length > 0)){
-      switch(args.dateFormat) {
-          case 'ISO':
+      switch(args.dateFormat.toLowerCase()) {
+          case 'iso':
               timeStr = d.toISOString();
               break;
-          case 'GMT':
-              timeStr = d.toGMTString();
-              break;
-          case 'UTC':
+          case 'gmt':
+          case 'utc':
               timeStr = d.toUTCString();
               break;
-          case 'Locale':
+          case 'locale':
               timeStr = d.toLocaleString();
               break;
-          case 'Date':
+          case 'date':
               timeStr = d.toDateString();
               break;
+          case 'year':
+              timeStr = d.getFullYear();
+              break;
+          case 'month':
+              timeStr = d.getMonth();
+              break;
+          case 'day':
+              timeStr = d.getDate();
+              break;
+          case 'dayinweek':
+              timeStr = d.getDay();
+              break;
+          case 'hours':
+              timeStr = d.getHours();
+              break;
+          case 'utchours':
+              timeStr = d.getUTCHours();
+              break;
+          case 'minutes':
+              timeStr = d.getMinutes();
+              break;
+
+
           default:
               throw 'Unsupported date format: '+args.dateFormat
       }
@@ -65,7 +86,7 @@ args:
   default: true
   description: The date to use in the object
 - name: dateFormat
-  description: The date format for the result, can be ISO/GMT/UTC/Locale/Date
+  description: The date format for the result, can be ISO/GMT/UTC/Locale/Date/Year/Month/Day/DayInWeek/Hours
 - name: contextKey
   description: prefix the keys in the context for the results
 - name: monthsAgo
@@ -81,3 +102,5 @@ outputs:
   description: current time in ISO format
 scripttarget: 0
 runonce: false
+tests:
+- GetTime-Test

@@ -2297,7 +2297,7 @@ script:
         logout()
   type: python
   commands:
-  - name: fireeye-hx-host-containmentn
+  - name: fireeye-hx-host-containment
     arguments:
     - name: hostName
       description: The host name to be contained. If the hostName is not specified,

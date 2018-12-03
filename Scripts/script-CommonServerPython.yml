@@ -1165,6 +1165,28 @@ script: |-
       })
       sys.exit(0)
 
+  def camelize(src, delim=' '):
+      """
+          Convert all keys of a dictionary (or list of dictionaries) to CamelCase (with capital first letter)
+
+          :type src: ``dict`` or ``list``
+          :param src: The dictionary (or list of dictionaries) to convert the keys for. (required)
+
+          :type delim: ``str``
+          :param delim: The delimiter between two words in the key (e.g. delim=' ' for "Start Date"). Default ' '.
+
+          :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
+          :rtype: ``dict`` or ``list``
+      """
+      def camelize_str(src_str, delim):
+          components = src_str.split(delim)
+          return ''.join(map(lambda x: x.decode('utf-8').title(), components))
+
+      if isinstance(src, list):
+          return map(lambda x: camelize(x, delim), src)
+      src = {camelize_str(k, delim): v for k,v in src.iteritems()}
+      return src
+
   # Constants for common merge paths
   outputPaths = {
     'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
@@ -1223,6 +1245,89 @@ script: |-
       else:
           raise Exception('The key is not a string: {}'.format(string))
 
+  def parse_date_range(date_range, date_format = None, to_timestamp = False):
+      """
+        Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
+        Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
+
+        :type date_range: ``str``
+        :param date_range: The date range to be parsed (required)
+
+        :type date_format: ``str``
+        :param date_format: Date format to convert the date_range to. (optional)
+
+        :type to_timestamp: ``bool``
+        :param to_timestamp: If set to True, then will return time stamp rather than a datetime.datetime. (optional)
+
+        :return: The parsed date range.
+        :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
+      """
+      range_split = date_range.split(' ')
+      if len(range_split) != 2:
+          return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes, 6 months, 1 day, etc.)')
+
+      number = int(range_split[0])
+      if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
+          return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
+
+      end_time = datetime.now()
+      start_time = datetime.now()
+      unit = range_split[1]
+      if 'minute' in unit:
+          start_time = end_time - timedelta(minutes=number)
+      elif 'hour' in unit:
+          start_time = end_time - timedelta(hours=number)
+      elif 'day' in unit:
+          start_time = end_time - timedelta(days=number)
+      elif 'month' in unit:
+          start_time = end_time - timedelta(days=number*30)
+      elif 'year' in unit:
+          start_time = end_time - timedelta(days=number*365)
+
+      if to_timestamp:
+          return date_to_timestamp(start_time), date_to_timestamp(end_time)
+
+      if date_format:
+          return datetime.strftime(start_time, date_format), datetime.strftime(end_time, date_format)
+
+      return start_time, end_time
+
+  def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
+      """
+        Parses timestamp (milliseconds) to a date string in the provided date format (by default: ISO 8601 format)
+        Examples: (1541494441222, 1541495441000, etc.)
+
+        :type timestamp: ``int`` or ``str``
+        :param timestamp: The timestamp to be parsed (required)
+
+        :type date_format: ``str``
+        :param date_format: The date format the timestamp should be parsed to. (optional)
+
+        :return: The parsed timestamp in the date_format
+        :rtype: ``str``
+      """
+      return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
+
+  def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
+      """
+        Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to miliseconds
+        Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
+
+        :type date_str_or_dt: ``str`` or ``datetime.datetime``
+        :param date_str_or_dt: The date to be parsed. (required)
+
+        :type date_format: ``str``
+        :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type datetime.datetime). (optional)
+
+        :return: The parsed timestamp.
+        :rtype: ``int``
+      """
+      if isinstance(date_str_or_dt, basestring):
+          return int(time.mktime(time.strptime(date_str_or_dt, date_format))*1000)
+
+      # otherwise datetime.datetime
+      return int(time.mktime(date_str_or_dt.timetuple()*1000))
+
 type: python
 tags:
 - infra
@@ -1234,4 +1339,3 @@ dependson: {}
 timeout: 0s
 tests:
   - TestPYCommonServer
-releaseNotes: "Add djb2 hash function"

@@ -6,7 +6,7 @@ from test_utils import print_error
 
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60
-DEFAULT_INTERVAL = 10
+DEFAULT_INTERVAL = 20
 ENTRY_TYPE_ERROR = 4
 
 
@@ -141,6 +141,9 @@ def __create_incident_with_playbook(client, name, playbook_id):
     while incidents['total'] != 1:
         incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
         if time.time() > timeout:
+            if inc_id == 'incCreateErr':
+                print_error('Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.')
+                return False, -1
             print_error('failed to get incident with id:' + inc_id)
             return False, -1
         time.sleep(1)
@@ -237,13 +240,12 @@ def test_integration(client, integrations, playbook_id, options={}):
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount
-    interval = options['interval'] if 'interval' in options else DEFAULT_INTERVAL
 
     i = 1
     # wait for playbook to finish run
     while True:
         # give playbook time to run
-        time.sleep(interval)
+        time.sleep(1)
 
         # fetch status
         playbook_state = __get_investigation_playbook_state(client, investigation_id)
@@ -258,7 +260,8 @@ def test_integration(client, integrations, playbook_id, options={}):
             print_error(playbook_id + ' failed on timeout')
             break
 
-        print 'loop no.' + str(i) + ', playbook state is ' + playbook_state
+        if i % DEFAULT_INTERVAL == 0:
+            print 'loop no.' + str(i / DEFAULT_INTERVAL) + ', playbook state is ' + playbook_state
         i = i + 1
 
     test_pass = playbook_state == PB_Status.COMPLETED

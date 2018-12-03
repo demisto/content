@@ -1,0 +1,1214 @@
+id: Fortigate Test
+version: -1
+name: Fortigate Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 12d204b1-baaf-4a20-8287-86a4c64face3
+    type: start
+    task:
+      id: 12d204b1-baaf-4a20-8287-86a4c64face3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 26dac48e-6315-4ea9-84b9-6fddf1e98411
+    type: regular
+    task:
+      id: 26dac48e-6315-4ea9-84b9-6fddf1e98411
+      version: -1
+      name: fortigate-get-addresses
+      script: '|||fortigate-get-addresses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      address: {}
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 65b28155-589c-4217-850a-9e6007731b18
+    type: regular
+    task:
+      id: 65b28155-589c-4217-850a-9e6007731b18
+      version: -1
+      name: fortigate-get-service-groups
+      script: '|||fortigate-get-service-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: b73137cf-2849-4592-860c-3d09118a7775
+    type: regular
+    task:
+      id: b73137cf-2849-4592-860c-3d09118a7775
+      version: -1
+      name: fortigate-update-service-group ADD
+      script: '|||fortigate-update-service-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      action:
+        simple: add
+      groupName:
+        simple: Maya
+      serviceName:
+        simple: HTTPS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 26d35ac4-a4c4-415b-8788-eb140bd1ac6f
+    type: regular
+    task:
+      id: 26d35ac4-a4c4-415b-8788-eb140bd1ac6f
+      version: -1
+      name: fortigate-update-service-group REMOVE
+      script: '|||fortigate-update-service-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      action:
+        simple: remove
+      groupName:
+        simple: Maya
+      serviceName:
+        simple: HTTPS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 18c289cf-24d7-4594-8b13-c055bfe5a7b9
+    type: regular
+    task:
+      id: 18c289cf-24d7-4594-8b13-c055bfe5a7b9
+      version: -1
+      name: fortigate-get-firewall-service
+      script: '|||fortigate-get-firewall-service'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      serviceName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: ee4e5228-5a13-4233-8113-45bce2cf36a5
+    type: regular
+    task:
+      id: ee4e5228-5a13-4233-8113-45bce2cf36a5
+      version: -1
+      name: fortigate-create-firewall-service
+      script: '|||fortigate-create-firewall-service'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      serviceName:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: SERVICE
+              suffix: {}
+      tcpRange:
+        simple: "1"
+      udpRange:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 600b4f04-1645-4369-8d45-a408cf3c01c5
+    type: regular
+    task:
+      id: 600b4f04-1645-4369-8d45-a408cf3c01c5
+      version: -1
+      name: fortigate-get-policy
+      script: '|||fortigate-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      policyID: {}
+      policyName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 10cff81c-62cd-45f7-8a88-3b46fe9f9d36
+    type: regular
+    task:
+      id: 10cff81c-62cd-45f7-8a88-3b46fe9f9d36
+      version: -1
+      name: fortigate-update-policy
+      script: '|||fortigate-update-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      field:
+        simple: description
+      policyID:
+        simple: "6"
+      value:
+        simple: TEST DEMISTO
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 6b1a8476-f5a7-4fa8-83e1-59ab91b3de32
+    type: regular
+    task:
+      id: 6b1a8476-f5a7-4fa8-83e1-59ab91b3de32
+      version: -1
+      name: fortigate-create-policy
+      script: '|||fortigate-create-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      action:
+        simple: accept
+      description:
+        simple: TEST DEMISTO
+      destination:
+        simple: all
+      dstIntf:
+        simple: port2
+      log:
+        simple: disable
+      nat:
+        simple: disable
+      policyName:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: POLICY
+              suffix: {}
+      service:
+        simple: HTTP
+      source:
+        simple: all
+      sourceIntf:
+        simple: port2
+      status:
+        simple: enable
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: a645e6bf-634f-48a9-878b-75e02fc3538c
+    type: regular
+    task:
+      id: a645e6bf-634f-48a9-878b-75e02fc3538c
+      version: -1
+      name: fortigate-move-policy
+      script: '|||fortigate-move-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      neighbor:
+        simple: "31"
+      policyID:
+        simple: "30"
+      position:
+        simple: after
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 4580baee-a84e-40c6-8938-dd1bf1c97fe3
+    type: regular
+    task:
+      id: 4580baee-a84e-40c6-8938-dd1bf1c97fe3
+      version: -1
+      name: fortigate-delete-policy
+      script: '|||fortigate-delete-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      policyID:
+        complex:
+          root: Fortigate
+          accessor: Policy.ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "20"
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 604078f6-1664-4459-8478-de61b03e5a21
+    type: regular
+    task:
+      id: 604078f6-1664-4459-8478-de61b03e5a21
+      version: -1
+      name: fortigate-get-address-groups
+      script: '|||fortigate-get-address-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      groupName:
+        simple: YARDEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: a3e13224-a5e9-4773-8611-08ec5a9bed60
+    type: regular
+    task:
+      id: a3e13224-a5e9-4773-8611-08ec5a9bed60
+      version: -1
+      name: fortigate-update-address-group ADD
+      script: '|||fortigate-update-address-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      action:
+        simple: add
+      address:
+        simple: all
+      groupName:
+        simple: YARDEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 263b3fac-1ffa-41af-8b52-5807c38c3b8a
+    type: regular
+    task:
+      id: 263b3fac-1ffa-41af-8b52-5807c38c3b8a
+      version: -1
+      name: fortigate-update-address-group REMOVE
+      script: '|||fortigate-update-address-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      action:
+        simple: remove
+      address:
+        simple: all
+      groupName:
+        simple: YARDEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: da4219af-671c-401a-86a2-a14a6b85ded0
+    type: regular
+    task:
+      id: da4219af-671c-401a-86a2-a14a6b85ded0
+      version: -1
+      name: fortigate-create-address-group
+      script: '|||fortigate-create-address-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      address:
+        simple: all
+      groupName:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 63e0882c-3321-4810-83a4-4a76762083f7
+    type: regular
+    task:
+      id: 63e0882c-3321-4810-83a4-4a76762083f7
+      version: -1
+      name: fortigate-delete-address-group
+      script: '|||fortigate-delete-address-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      name:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 25a6c5f2-f150-490c-8a8c-b82af99283e7
+    type: title
+    task:
+      id: 25a6c5f2-f150-490c-8a8c-b82af99283e7
+      version: -1
+      name: TEST done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 37df81c8-6121-40ce-8345-b7ccbbbcf9a1
+    type: regular
+    task:
+      id: 37df81c8-6121-40ce-8345-b7ccbbbcf9a1
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: af6c42fc-bc35-4c99-81dd-634cb0490841
+    type: condition
+    task:
+      id: af6c42fc-bc35-4c99-81dd-634cb0490841
+      version: -1
+      name: Test get addresses context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.Address.Name
+            iscontext: true
+          right:
+            value:
+              simple: all
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: e112859d-a385-4385-89fb-af07b096717d
+    type: condition
+    task:
+      id: e112859d-a385-4385-89fb-af07b096717d
+      version: -1
+      name: Test get service groups context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.Member.Name
+            iscontext: true
+          right:
+            value:
+              simple: DNS
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: 72106f3f-0910-4e8f-8779-a2a16e35f1b2
+    type: condition
+    task:
+      id: 72106f3f-0910-4e8f-8779-a2a16e35f1b2
+      version: -1
+      name: TEST fortigate-update-service-group ADD context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Fortigate
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Fortigate.ServiceGroup.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Maya
+                accessor: ServiceGroup.Service.Name
+            iscontext: true
+          right:
+            value:
+              simple: HTTPS
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: ebc92d72-76b5-471d-8cbc-f133c5be3a43
+    type: condition
+    task:
+      id: ebc92d72-76b5-471d-8cbc-f133c5be3a43
+      version: -1
+      name: TEST fortigate-update-service-group REMOVE context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: Fortigate
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Fortigate.ServiceGroup.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Maya
+                accessor: ServiceGroup.Service.Name
+            iscontext: true
+          right:
+            value:
+              simple: HTTPS
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: aa733746-33f8-4d87-83e5-c79ac5af60fb
+    type: condition
+    task:
+      id: aa733746-33f8-4d87-83e5-c79ac5af60fb
+      version: -1
+      name: TEST fortigate-get-firewall-service context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.Service.Name
+            iscontext: true
+          right:
+            value:
+              simple: ALL
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: c60e9d02-3d99-4cc6-823d-94c9c4de1c72
+    type: condition
+    task:
+      id: c60e9d02-3d99-4cc6-823d-94c9c4de1c72
+      version: -1
+      name: TEST fortigate-create-firewall-service context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.Service.Name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: incident
+                accessor: occurred
+                transformers:
+                - operator: toUnix
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: SERVICE
+                    suffix: {}
+                - operator: Stringify
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: 67805b27-2b85-4557-860d-cf3d5f19cb58
+    type: condition
+    task:
+      id: 67805b27-2b85-4557-860d-cf3d5f19cb58
+      version: -1
+      name: TEST fortigate-get-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.Policy.Security
+            iscontext: true
+          right:
+            value:
+              simple: default
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 9a9cf917-03d6-4b5e-85c4-e583530910f2
+    type: condition
+    task:
+      id: 9a9cf917-03d6-4b5e-85c4-e583530910f2
+      version: -1
+      name: TESt fortigate-update-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.Policy.Description
+            iscontext: true
+          right:
+            value:
+              simple: TEST DEMISTO
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 171c79bd-aa6b-4179-897e-ae860a11580d
+    type: condition
+    task:
+      id: 171c79bd-aa6b-4179-897e-ae860a11580d
+      version: -1
+      name: TEST fortigate-create-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.Policy.Name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: incident
+                accessor: occurred
+                transformers:
+                - operator: toUnix
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: POLICY
+                    suffix: {}
+                - operator: Stringify
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: ed06aa83-2302-47cf-8b1a-9a967a48a446
+    type: condition
+    task:
+      id: ed06aa83-2302-47cf-8b1a-9a967a48a446
+      version: -1
+      name: TEST fortigate-move-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: Fortigate
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Fortigate.Policy.ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "30"
+                accessor: Policy.Moved
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: ac464d42-3207-404a-8a53-923d4f2e0edc
+    type: condition
+    task:
+      id: ac464d42-3207-404a-8a53-923d4f2e0edc
+      version: -1
+      name: TEST fortigate-delete-policy context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Fortigate.Policy.Deleted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+  "30":
+    id: "30"
+    taskid: 37f30844-d288-4038-8894-fe3a927d6bc1
+    type: condition
+    task:
+      id: 37f30844-d288-4038-8894-fe3a927d6bc1
+      version: -1
+      name: TEST fortigate-get-address-groups context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+          right:
+            value:
+              simple: YARDEN
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+  "31":
+    id: "31"
+    taskid: c10c3b1a-6c22-4da8-8e24-6f6cca48e157
+    type: condition
+    task:
+      id: c10c3b1a-6c22-4da8-8e24-6f6cca48e157
+      version: -1
+      name: TEST fortigate-update-address-group ADD context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Address.Name
+            iscontext: true
+          right:
+            value:
+              simple: all
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+  "32":
+    id: "32"
+    taskid: 30829d39-396e-4e84-8e14-69084784b526
+    type: condition
+    task:
+      id: 30829d39-396e-4e84-8e14-69084784b526
+      version: -1
+      name: TEST fortigate-update-address-group REMOVE context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: Fortigate
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Fortigate.AddressGroup.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: YARDEN
+                accessor: AddressGroup.Address.Name
+            iscontext: true
+          right:
+            value:
+              simple: all
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+  "33":
+    id: "33"
+    taskid: 457cf325-0b2c-4bf9-80de-78ea7f5dc067
+    type: condition
+    task:
+      id: 457cf325-0b2c-4bf9-80de-78ea7f5dc067
+      version: -1
+      name: TEST fortigate-create-address-group context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Address
+            iscontext: true
+          right:
+            value:
+              simple: all
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+  "34":
+    id: "34"
+    taskid: 7263ef0d-9ddd-4d2e-8b82-3a91b2e908d3
+    type: condition
+    task:
+      id: 7263ef0d-9ddd-4d2e-8b82-3a91b2e908d3
+      version: -1
+      name: TEST fortigate-delete-address-group context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Deleted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5985,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
