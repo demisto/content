@@ -132,10 +132,10 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: 6eefed42-f1f6-46d7-83b0-ecb2e47575f9
+    taskid: b4cb04a8-b5cc-4d88-841f-ae9f71d8dd10
     type: regular
     task:
-      id: 6eefed42-f1f6-46d7-83b0-ecb2e47575f9
+      id: b4cb04a8-b5cc-4d88-841f-ae9f71d8dd10
       version: -1
       name: qradar-get-search-results
       description: executes qradar-get-search-results to get the search results
@@ -149,6 +149,8 @@ tasks:
     scriptarguments:
       headers:
         simple: ${inputs.headers}
+      output_path:
+        simple: ${inputs.output_path}
       range:
         simple: ${inputs.range}
       search_id:
@@ -255,8 +257,18 @@ inputs:
   value: {}
   required: false
   description: Table headers
+- key: output_path
+  value: {}
+  required: false
+  description: |-
+    Replaces the default context output path for the query result (QRadar.Search.Result).
+    e.g. for output_path=QRadar.Correlations the result will be under the key "QRadar.Correlations" in the context data.
 outputs:
 - contextPath: QRadar.Search.Result
   description: The result of the search
+- contextPath: QRadar
+  description: QRadar root context key
+  type: unknown
+releaseNotes: Configured QRadarFullSearch to support changes to qradar-get-search-results
 tests:
 - test_Qradar
