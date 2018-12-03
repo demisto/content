@@ -18,13 +18,14 @@ configuration:
   defaultvalue: https://example.awake.cloud
   type: 0
   required: true
-- display: 'Trust any certificate (unsecure)'
+- display: Trust any certificate (unsecure)
   name: unsecure
   defaultvalue: "True"
   type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
+  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
@@ -49,13 +50,13 @@ configuration:
   defaultvalue: "1"
   type: 0
   required: true
-- display: Minimum Threshold for suspicous indicator - ALEXXXXXXX
-  name: min_threshold
+- display: Minimum threshold to determine an indicator suspicious in Demisto
+  name: suspicious_threshold
   defaultvalue: "33"
   type: 0
   required: true
-- display: Maximum Threshold for malicous indicator - ALEXXXXXXXXXXXX
-  name: max_threshold
+- display: Minimum threshold to determine an indicator malicious in Demisto
+  name: malicious_threshold
   defaultvalue: "66"
   type: 0
   required: true
@@ -83,8 +84,8 @@ script:
     credentials = params["credentials"]
     identifier = credentials["identifier"]
     password = credentials["password"]
-    min_threshold = params["min_threshold"]
-    max_threshold = params["max_threshold"]
+    suspicious_threshold = params["suspicious_threshold"]
+    malicious_threshold = params["malicious_threshold"]
     authTokenRequest = {
       "loginUsername": identifier,
       "loginPassword": password
@@ -186,9 +187,9 @@ script:
         })
 
     def toDBotScore(indicator_type, percentile, lookup_key):
-        if percentile <= min_threshold:
+        if percentile <= suspicious_threshold:
             score = 1
-        elif percentile <= max_threshold:
+        elif percentile <= malicious_threshold:
             # Something doing something out of the ordinary
             score = 2
         else:
