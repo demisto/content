@@ -79,17 +79,6 @@ script:
     }
 
     ''' HELPERS '''
-    def string_arr_to_int_arr(stringArr):
-        ''' Converts a string array to int array '''
-        intArr = []
-        if isinstance(stringArr, list):
-            for index in range(len(stringArr)):
-                if stringArr[index]:
-                    intArr.append(int(stringArr[index]))
-        else:
-            intArr = [int(stringArr)]
-        return intArr
-
     def cast_to_int(val):
         ''' Casts a string to int '''
         if isinstance(val, str):
@@ -121,14 +110,16 @@ script:
             params=params,
             files=files
         )
+        demisto.log(str(dir(res)))
+        sys.exit(0)
         if res.status_code < 200 or res.status_code >= 300:
-                return_error('Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(res.headers))
+                return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + str(res.reason))
         result = res.content
         if not uri.startswith('php/showreport.php?'):
             result = json.loads(result)
             if 'success' in result:
                 if (result['success'] == 'false'):
-                    return_error('ATD Api call to ' + uri + ' failed with request body: ' + body)
+                    return_error('ATD Api call to ' + uri + ' failed. Reason is: ' + str(res.reason))
         return result
 
 
@@ -283,11 +274,11 @@ script:
             return_error('You must specify one (and only one) of the following: jobId, taskId.')
 
         if ('jobId' in args):
-            ids = string_arr_to_int_arr(argToList(args['jobId']))
+            ids = argToList(args['jobId'])
             result = check_task_status_by_jobId(ids)
 
         elif ('taskId' in args):
-            ids = string_arr_to_int_arr(argToList(args['taskId']))
+            ids = argToList(args['taskId'])
             result = check_task_status_by_taskId(ids)
 
         md = tableToMarkdown(
@@ -317,7 +308,7 @@ script:
         return results
 
     def get_taskIds_command():
-        jobIds = string_arr_to_int_arr(argToList(demisto.args()['jobId']))
+        jobIds = argToList(demisto.args()['jobId'])
         results = get_taskIds(jobIds)
 
         multipleMd = []
@@ -767,7 +758,7 @@ script:
     outputs:
     - contextPath: ATD.Task.taskId
       description: The task ID of the sample uploaded
-      type: number
+      type: string
     - contextPath: ATD.Task.jobId
       description: The job ID of the sample uploaded
       type: number
@@ -794,7 +785,7 @@ script:
       type: string
     - contextPath: ATD.taskId
       description: The task ID of the sample uploaded
-      type: number
+      type: string
     - contextPath: URL.Data
       description: In case of a url upload, the url uploaded
       type: string
@@ -807,9 +798,9 @@ script:
       description: Serves as an identifier for the previously submitted file.
       isArray: true
     outputs:
-    - contextPath: ATD.Task.jobId
+    - contextPath: ATD.Task.taskId
       description: The corresponding taskId of the jobId sent
-      type: number
+      type: string
     - contextPath: ATD.Task.jobId
       description: The jobId sent
       type: number
@@ -1218,7 +1209,7 @@ script:
     - contextPath: ATD.Task.taskId
       description: This is the returned TaskId value in the submission step, previously
         returned value in the File/URL submission step
-      type: number
+      type: string
     - contextPath: ATD.Task.jobId
       description: This is the returned JobId value in the submission step, previously
         returned value in the File/URL submission step
