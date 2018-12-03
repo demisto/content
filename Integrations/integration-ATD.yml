@@ -1238,7 +1238,7 @@ script:
       type: string
     description: Checks the analysis status of up to 100 jobIDs/taskIDs
   runonce: false
-releaseNotes: "Handle quota error gracefully"
+releaseNotes: "Handle outputs for malicious files"
 tests:
 - Test Playbook McAfee ATD
 - Detonate URL - Generic Test
