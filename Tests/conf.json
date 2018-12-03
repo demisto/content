@@ -2,6 +2,10 @@
     "testTimeout": 160,
     "tests": [
         {
+            "integrations": "Cymon",
+            "playbookID": "playbook-Cymon_Test"
+        },
+        {
             "integrations": "FortiGate",
             "playbookID": "Fortigate Test"
         },
