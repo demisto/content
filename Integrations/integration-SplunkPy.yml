@@ -527,4 +527,3 @@ script:
     description: Parse the Raw part of the event
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
-releaseNotes: "Fix Splunk issue ability to fetch more then 100 notable events per minute"
