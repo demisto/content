@@ -1,5 +1,5 @@
 id: tenable-sc-test
-version: 7
+version: 9
 name: Tenable.sc Test
 description: Test playbook for Tenable.sc integration
 starttaskid: "0"
@@ -1239,10 +1239,10 @@ tasks:
     timertriggers: []
   "38":
     id: "38"
-    taskid: 9f9a13c8-3f6e-43db-8b80-6caf7e57c273
+    taskid: 0adeea67-7885-4a6e-88e2-f0e2246b704c
     type: regular
     task:
-      id: 9f9a13c8-3f6e-43db-8b80-6caf7e57c273
+      id: 0adeea67-7885-4a6e-88e2-f0e2246b704c
       version: -1
       name: Verify Endpoint
       description: |-
@@ -1260,7 +1260,7 @@ tasks:
         simple: 10.0.0.4
       fields: {}
       path:
-        simple: Endpoint.IP
+        simple: Endpoint.IPAddress
     separatecontext: false
     view: |-
       {
