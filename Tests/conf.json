@@ -803,8 +803,13 @@
             "timeout": 500
         },
         {
+            "integrations": "Zscaler",
+            "playbookID": "Zscaler Test"
+        },
+        {
             "playbookID": "DemistoUploadFileToIncident Test",
             "integrations": "Demisto REST API"
+
         }
     ],
     "skipped_tests": {
