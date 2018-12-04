@@ -867,7 +867,7 @@ script:
         context_output = []
         context_output.append({
             'MatterID': matter_id,
-            'ID': export_id,
+            'ExportID': export_id,
             'Name': export_name,
             'CreateTime': create_time
         })
@@ -885,7 +885,7 @@ script:
             'Contents': context_output,
             'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
+                'GoogleVault.Export(val.ExportID == obj.ExportID)': context_output
             }
         })
 
@@ -918,7 +918,7 @@ script:
         context_output = []
         context_output.append({
             'MatterID': matter_id,
-            'ID': export_id,
+            'ExportID': export_id,
             'Name': export_name,
             'CreateTime': create_time
         })
@@ -936,7 +936,7 @@ script:
             'Contents': context_output,
             'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
+                'GoogleVault.Export(val.ExportID == obj.ExportID)': context_output
             }
         })
 
@@ -968,7 +968,7 @@ script:
         context_output = []
         context_output.append({
             'MatterID': matter_id,
-            'ID': export_id,
+            'ExportID': export_id,
             'Name': export_name,
             'CreateTime': create_time
         })
@@ -986,11 +986,9 @@ script:
             'Contents': context_output,
             'HumanReadable': markdown,
             'EntryContext': {
-                'GoogleVault.Export(val.ID == obj.ID)': context_output
+                'GoogleVault.Export(val.ExportID == obj.ExportID)': context_output
             }
         })
-
-
 
 
     def get_export_command():
@@ -1065,15 +1063,20 @@ script:
             sys.exit(2)
 
     def downloadAndSanitizeExportResults():
+
         out_file = downloadStorageObject(demisto.getArg('viewID'))
         out_file_json = json.loads(xml2json(out_file.getvalue()))
 
+        if not out_file_json['Root']['Batch'].get('Documents'):
+            demisto.results('The export given contains 0 documents')
+            sys.exit(0)
         documents = out_file_json['Root']['Batch']['Documents']['Document']
 
         if type(documents) is dict:
             documents = [documents]
 
         dictList = buildDictList(documents, 'drive')
+
         maxResult = int(demisto.getArg('maxResult'))
         if len(dictList) > maxResult:
             return dictList[0: maxResult]
@@ -1083,6 +1086,7 @@ script:
     def get_drive_results_command():
         try:
             output = downloadAndSanitizeExportResults()
+
             if not (output[0].get('Author') or output[0].get('Collaborators') or output[0].get('Title')):
                 demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match'})
                 sys.exit(2)
@@ -1731,3 +1735,5 @@ script:
   dockerimage: demisto/gvault
   runonce: false
 releaseNotes: "Added get-results and download-export commands"
+tests:
+  - Google-Vault-Generic-Test
