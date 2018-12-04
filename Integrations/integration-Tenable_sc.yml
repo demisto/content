@@ -2368,7 +2368,7 @@ script:
     - name: ip
       description: A valid IP address of a device
     - name: dns_name
-      description: DNS name for the IP address
+      description: DNS name of a device
     - name: repository_id
       description: Repository ID to get the device from, can be retrieved from list-repositories
         command
