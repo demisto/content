@@ -619,7 +619,11 @@ script:
                 throw 'Unknown command - ' + command;
         }
     } catch (err) {
-        return err;
+      return {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err
+      }
     }
   type: javascript
   commands:
