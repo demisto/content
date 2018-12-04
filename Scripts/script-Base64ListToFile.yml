@@ -15,11 +15,12 @@ script: |-
 
   # get the list
   res = demisto.executeCommand('getList', {'listName': demisto.args()['listname']})
-  if res['Type'] == entryTypes['error']:
+  res = res[0]
+  if isError(res):
     return_error("error reading list %s from demisto" % demisto.args()['listname'])
 
   # convert base64 file to binary file
-  bin_file = base64.decodestring(res[0]['Contents'])
+  bin_file = base64.decodestring(res['Contents'])
   if demisto.args()['isZipFile'] == 'yes':
       bin_file = zlib.decompress(bin_file)
 
@@ -61,4 +62,4 @@ outputs:
   description: EntryID of the file (only in case of report type=json)
 scripttarget: 0
 runonce: false
-releaseNotes: "Support compressed data (zipped)"
+releaseNotes: "-"
